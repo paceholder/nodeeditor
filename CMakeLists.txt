@@ -14,10 +14,6 @@ find_package(Qt5Widgets)
 find_package(Qt5Core)
 find_package(Qt5Gui)
 
-include_directories(${Qt5Core_INCLUDES})
-include_directories(${Qt5Widgets_INCLUDES})
-include_directories(${Qt5Gui_INCLUDES})
-
 add_definitions(${Qt5Widgets_DEFINITIONS})
 set(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 
