@@ -3,31 +3,12 @@
 
 #include <QGraphicsObject>
 
-class ConnectionPoint: public QGraphicsObject
+class Connection: public QGraphicsObject
 {
   Q_OBJECT
 
 public:
-  ConnectionPoint(QGraphicsItem* parent):
-    QGraphicsObject(parent) {}
-
-  QRectF
-  boundingRect() const override;
-
-protected:
-  void
-  paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = 0) override;
-
-  void
-  mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
-
-  // void
-  // mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
-};
-
-class Connection: public QGraphicsObject
-{
-  Q_OBJECT
+  enum Dragging { SOURCE, SINK, NONE };
 
 public:
   Connection(int BlockOutID, int BlockInID);
@@ -44,6 +25,12 @@ public:
   void
   mousePressEvent(QGraphicsSceneMouseEvent* event) override;
 
+  void
+  mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
+
+  void
+  mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
+
 protected:
   void
   paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = 0) override;
@@ -53,8 +40,11 @@ protected:
    * */
 
 private:
-  ConnectionPoint* source;
-  ConnectionPoint* sink;
+  QPointF _source;
+  QPointF _sink;
+  QPointF _lastPoint;
+
+  Dragging _dragging;
 
   int _animationPhase;
 };
