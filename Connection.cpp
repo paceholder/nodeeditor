@@ -22,7 +22,13 @@ boundingRect() const
 {
   QPointF addon(4, 4);
 
-  return QRectF(_source - addon, _sink - _source + 4 * addon);
+  QPointF minimum(qMin(_source.x(), _sink.x()),
+                  qMin(_source.y(), _sink.y()));
+
+  QPointF maximum(qMax(_source.x(), _sink.x()),
+                  qMax(_source.y(), _sink.y()));
+
+  return QRectF(minimum - addon, maximum + addon);
 }
 
 void
@@ -107,13 +113,13 @@ void
 Connection::
 mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
-  auto distance = [](QPointF& d) { return d.x() * d.x() + d.y() * d.y(); };
+  auto   distance  = [](QPointF& d) { return d.x() * d.x() + d.y() * d.y(); };
+  double tolerance = 8.0;
 
   {
-    // prepareGeometryChange();
     QPointF diff = event->pos() - _source;
 
-    if (distance(diff) < 4) {
+    if (distance(diff) < tolerance) {
       _dragging = SOURCE;
       return;
     }
@@ -122,7 +128,7 @@ mousePressEvent(QGraphicsSceneMouseEvent* event)
   {
     QPointF diff = event->pos() - _sink;
 
-    if (distance(diff) < 4) {
+    if (distance(diff) < tolerance) {
       _dragging = SINK;
       return;
     }
@@ -153,6 +159,8 @@ mouseMoveEvent(QGraphicsSceneMouseEvent* event)
     default:
       break;
   }
+
+  // std::cout << _source.x() << "   " << _source.y() << std::endl;
 }
 
 void
