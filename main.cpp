@@ -1,4 +1,5 @@
 #include "Connection.hpp"
+#include "FlowItem.hpp"
 
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QGraphicsScene>
@@ -22,12 +23,17 @@ main(int argc, char* argv[])
   c->setPos(140, 100);
   scene.addItem(c);
 
+  FlowItem* b = new FlowItem();
+
+  b->setPos(0, 200);
+  scene.addItem(b);
+
   QGraphicsView view(&scene);
 
   view.setRenderHint(QPainter::Antialiasing);
   view.setBackgroundBrush(Qt::darkGray);
   view.setWindowTitle(QT_TRANSLATE_NOOP(QGraphicsView, "Qt DBus Controlled Connection"));
-  view.resize(400, 300);
+  view.resize(800, 600);
   view.show();
 
   return app.exec();

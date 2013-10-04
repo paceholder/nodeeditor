@@ -8,6 +8,7 @@ Connection(int BlockOutID, int BlockInID):
   _source(10, 10),
   _sink(100, 100),
   _dragging(NONE),
+  _pointDiameter(12),
   _animationPhase(0)
 {
   setFlag(QGraphicsItem::ItemIsMovable, true);
@@ -20,7 +21,7 @@ QRectF
 Connection::
 boundingRect() const
 {
-  QPointF addon(4, 4);
+  QPointF addon(_pointDiameter, _pointDiameter);
 
   QPointF minimum(qMin(_source.x(), _sink.x()),
                   qMin(_source.y(), _sink.y()));
@@ -54,13 +55,14 @@ paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget
   Q_UNUSED(widget);
 
   // --- bounding rect
-  painter->setPen(Qt::white);
+  painter->setPen(Qt::darkGray);
   painter->drawRect(this->boundingRect());
 
   // ---- connection line
   QPen p;
   p.setWidth(2);
   p.setColor(Qt::yellow);
+  p.setColor(Qt::cyan);
   painter->setPen(p);
 
   QPainterPath path(_source);
@@ -75,18 +77,18 @@ paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget
 
   // ----- draw bspline knots
 
-  painter->setPen(Qt::white);
-  painter->setBrush(Qt::red);
-  painter->drawEllipse(c1, 4, 4);
-  painter->setBrush(Qt::blue);
-  painter->drawEllipse(c2, 4, 4);
+  // painter->setPen(Qt::white);
+  // painter->setBrush(Qt::red);
+  // painter->drawEllipse(c1, 4, 4);
+  // painter->setBrush(Qt::blue);
+  // painter->drawEllipse(c2, 4, 4);
 
   // ---- draw _sink and _source
 
   painter->setPen(Qt::white);
   painter->setBrush(Qt::white);
-  painter->drawEllipse(_source, 4, 4);
-  painter->drawEllipse(_sink, 4, 4);
+  painter->drawEllipse(_source, _pointDiameter / 2, _pointDiameter / 2);
+  painter->drawEllipse(_sink, _pointDiameter / 2, _pointDiameter / 2);
 
   p.setWidth(1);
   p.setColor(Qt::yellow);
@@ -113,8 +115,8 @@ void
 Connection::
 mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
-  auto   distance  = [](QPointF& d) { return d.x() * d.x() + d.y() * d.y(); };
-  double tolerance = 8.0;
+  auto   distance  = [](QPointF& d) { return sqrt(d.x() * d.x() + d.y() * d.y()); };
+  double tolerance = 2.0 * _pointDiameter;
 
   {
     QPointF diff = event->pos() - _source;

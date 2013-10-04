@@ -3,6 +3,8 @@
 
 #include <QGraphicsObject>
 
+class FlowItemEntry;
+
 class FlowItem: public QGraphicsObject
 {
   Q_OBJECT
@@ -27,9 +29,25 @@ public:
    *
    * */
 
+protected:
+  void
+  paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = 0) override;
+
 private:
   int _width;
   int _height;
+
+  int _connectionPointDiameter;
+
+  QList<FlowItemEntry*> _sourceEntries;
+  QList<FlowItemEntry*> _sinkEntries;
+
+private:
+  void
+  initializeEntries();
+
+  void
+  recalculateSize();
 };
 
 #endif // FLOW_ITEM_H

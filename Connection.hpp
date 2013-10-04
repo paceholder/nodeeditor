@@ -46,6 +46,8 @@ private:
 
   Dragging _dragging;
 
+  double _pointDiameter;
+
   int _animationPhase;
 };
 
