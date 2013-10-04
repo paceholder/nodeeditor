@@ -25,6 +25,6 @@ FlowItemEntry::
 paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
 {
   painter->setPen(Qt::white);
-  painter->setBrush(QColor(Qt::gray).darker());
+  painter->setBrush(QColor(Qt::darkGray));
   painter->drawRoundedRect(this->boundingRect(), 3.0, 3.0);
 }

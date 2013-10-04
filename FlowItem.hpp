@@ -36,6 +36,7 @@ protected:
 private:
   int _width;
   int _height;
+  int _spacing;
 
   int _connectionPointDiameter;
 

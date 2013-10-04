@@ -9,6 +9,7 @@ FlowItem::
 FlowItem():
   _width(100),
   _height(150),
+  _spacing(10),
   _connectionPointDiameter(12)
 {
   setFlag(QGraphicsItem::ItemIsMovable, true);
@@ -36,7 +37,7 @@ initializeEntries()
   _sinkEntries.append(entry);
 
   for (int i = 0; i < _sinkEntries.size(); ++i)
-    _sinkEntries[i]->setPos(0, i * (_sinkEntries.size() + height + 6) + 2);
+    _sinkEntries[i]->setPos(0, i * (height + _spacing) + _spacing / 2);
 }
 
 void
@@ -48,14 +49,14 @@ recalculateSize()
   if (_sinkEntries.size() > 0)
     height = _sinkEntries[0]->height();
 
-  _height = _sinkEntries.size() * (height + 6);
+  _height = _sinkEntries.size() * (height + _spacing);
 }
 
 QRectF
 FlowItem::
 boundingRect() const
 {
-  double addon = _connectionPointDiameter;
+  double addon = 2 * _connectionPointDiameter;
   return QRectF(0 - addon, 0 - addon,
                 _width + 2 * addon, _height + 2 * addon);
 }
@@ -65,6 +66,18 @@ FlowItem::
 paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
 {
   painter->setPen(Qt::white);
-  painter->setBrush(QColor(Qt::gray).darker());
+  painter->setBrush(QColor(Qt::darkGray));
   painter->drawRoundedRect(this->boundingRect(), 10.0, 10.0);
+
+  painter->setBrush(QColor(Qt::gray).darker());
+
+  for (int i = 0; i < _sinkEntries.size(); ++i) {
+    double h = _sinkEntries[i]->height();
+
+    double y = (h + _spacing) * i + _spacing / 2 + h / 2;
+    double x = 0.0 - _connectionPointDiameter * 2.3;
+    painter->drawEllipse(QPointF(x, y),
+                         _connectionPointDiameter * 0.85,
+                         _connectionPointDiameter * 0.85);
+  }
 }

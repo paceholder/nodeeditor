@@ -31,8 +31,8 @@ main(int argc, char* argv[])
   QGraphicsView view(&scene);
 
   view.setRenderHint(QPainter::Antialiasing);
-  view.setBackgroundBrush(Qt::darkGray);
-  view.setWindowTitle(QT_TRANSLATE_NOOP(QGraphicsView, "Qt DBus Controlled Connection"));
+  view.setBackgroundBrush(QColor(Qt::gray).darker());
+  view.setWindowTitle(QT_TRANSLATE_NOOP(QGraphicsView, "Node-based flow editor"));
   view.resize(800, 600);
   view.show();
 
