@@ -26,5 +26,5 @@ paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget
 {
   painter->setPen(Qt::white);
   painter->setBrush(QColor(Qt::gray).darker());
-  painter->drawRoundedRect(this->boundingRect(), 5.0, 5.0);
+  painter->drawRoundedRect(this->boundingRect(), 3.0, 3.0);
 }

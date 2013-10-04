@@ -55,8 +55,8 @@ paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget
   Q_UNUSED(widget);
 
   // --- bounding rect
-  painter->setPen(Qt::darkGray);
-  painter->drawRect(this->boundingRect());
+  // painter->setPen(Qt::darkGray);
+  // painter->drawRect(this->boundingRect());
 
   // ---- connection line
   QPen p;
