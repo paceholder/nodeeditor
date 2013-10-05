@@ -34,6 +34,12 @@ public:
   double
   height() const { return _height; }
 
+  void
+  setConnectionID(QUuid connectionID);
+
+  QUuid
+  getConnectionID() const;
+
 protected:
   void
   paint(QPainter*                       painter,

@@ -37,6 +37,20 @@ boundingRect() const
 
 void
 FlowItemEntry::
+setConnectionID(QUuid connectionID)
+{
+  _connectionID = connectionID;
+}
+
+QUuid
+FlowItemEntry::
+getConnectionID() const
+{
+  return _connectionID;
+}
+
+void
+FlowItemEntry::
 paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
 {
   painter->setPen(Qt::white);
