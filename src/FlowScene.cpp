@@ -24,30 +24,21 @@ registerFlowItem(FlowItemInterface* flowItemIterface)
 
 QUuid
 FlowScene::
-createConnection(QUuid flowItemID, Connection::Dragging dragging)
+createConnection(QUuid                flowItemID,
+                 int                  entryNumber,
+                 Connection::Dragging dragging)
 {
-  Connection* connection = nullptr;
-
-  switch (dragging) {
-    case Connection::SOURCE:
-      // we are dragging source, it gets zero Uuid
-      connection = new Connection(QUuid(), flowItemID);
-
-      break;
-
-    case Connection::SINK:
-      connection = new Connection(flowItemID, QUuid());
-
-      break;
-
-    default:
-      break;
-  }
+  Connection* connection =
+    new Connection(flowItemID, entryNumber, dragging);
 
   this->addItem(connection);
   _connections[connection->id()] = connection;
 
   connection->initializeConnection();
+
+  FlowItem* item = FlowScene::instance()->getFlowItem(flowItemID);
+
+  connection->stackBefore(item);
 
   return connection->id();
 }

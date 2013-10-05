@@ -23,7 +23,9 @@ public:
   registerFlowItem(FlowItemInterface* flowItemIterface);
 
   QUuid
-  createConnection(QUuid flowItemID, Connection::Dragging dragging);
+  createConnection(QUuid                flowItemID,
+                   int                  entryNumber,
+                   Connection::Dragging dragging);
 
   QUuid
   createFlowItem();
