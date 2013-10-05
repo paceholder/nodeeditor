@@ -15,7 +15,7 @@ QRectF
 FlowItemEntry::
 boundingRect() const
 {
-  double addon = 2;
+  double addon = 0;
   return QRectF(0 - addon, 0 - addon,
                 _width + 2 * addon, _height + 2 * addon);
 }

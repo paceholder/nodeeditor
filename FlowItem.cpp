@@ -56,7 +56,7 @@ QRectF
 FlowItem::
 boundingRect() const
 {
-  double addon = 2 * _connectionPointDiameter;
+  double addon = 3 * _connectionPointDiameter;
   return QRectF(0 - addon, 0 - addon,
                 _width + 2 * addon, _height + 2 * addon);
 }
@@ -67,7 +67,12 @@ paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget
 {
   painter->setPen(Qt::white);
   painter->setBrush(QColor(Qt::darkGray));
-  painter->drawRoundedRect(this->boundingRect(), 10.0, 10.0);
+  QRectF boundary(0 - _connectionPointDiameter,
+                  0 - _connectionPointDiameter,
+                  _width + 2 *  _connectionPointDiameter,
+                  _height + 2 * _connectionPointDiameter);
+
+  painter->drawRoundedRect(boundary, 10.0, 10.0);
 
   painter->setBrush(QColor(Qt::gray).darker());
 
@@ -75,9 +80,9 @@ paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget
     double h = _sinkEntries[i]->height();
 
     double y = (h + _spacing) * i + _spacing / 2 + h / 2;
-    double x = 0.0 - _connectionPointDiameter * 2.3;
+    double x = 0.0 - _connectionPointDiameter * 1.5;
     painter->drawEllipse(QPointF(x, y),
-                         _connectionPointDiameter * 0.85,
-                         _connectionPointDiameter * 0.85);
+                         _connectionPointDiameter * 0.8,
+                         _connectionPointDiameter * 0.8);
   }
 }
