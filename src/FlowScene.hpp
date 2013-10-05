@@ -28,6 +28,12 @@ public:
   QUuid
   createFlowItem();
 
+  Connection*
+  getConnection(QUuid id) const;
+
+  FlowItem*
+  getFlowItem(QUuid id) const;
+
 private:
   FlowScene();
 

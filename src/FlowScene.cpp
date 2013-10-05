@@ -56,6 +56,22 @@ createFlowItem()
 
   this->addItem(flowItem);
   _flowItems[flowItem->id()] = flowItem;
+
+  flowItem->initializeFlowItem();
+}
+
+Connection*
+FlowScene::
+getConnection(QUuid id) const
+{
+  return _connections[id];
+}
+
+FlowItem*
+FlowScene::
+getFlowItem(QUuid id) const
+{
+  return _flowItems[id];
 }
 
 FlowScene::
