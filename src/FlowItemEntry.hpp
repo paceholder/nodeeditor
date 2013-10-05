@@ -23,7 +23,7 @@ public:
   parentID() const;
 
 public:
-  FlowItemEntry(Type type, QGraphicsItem* parent);
+  FlowItemEntry(Type type, QUuid parentID);
 
   QRectF
   boundingRect() const override;
@@ -42,6 +42,7 @@ protected:
 
 private:
   QUuid _id;
+  QUuid _parentID;
   Type  _type;
   int   _width;
   int   _height;

@@ -2,14 +2,16 @@
 #include <QtGui/QPainter>
 
 #include "FlowItem.hpp"
+#include "FlowScene.hpp"
 FlowItemEntry::
-FlowItemEntry(Type type, QGraphicsItem* parent):
-  QGraphicsObject(parent),
+FlowItemEntry(Type type, QUuid parentID):
   _type(type),
+  _parentID(parentID),
   _width(100),
   _height(20)
 {
-  //
+  FlowItem* flowItem = FlowScene::instance()->getFlowItem(_parentID);
+  this->setParentItem(flowItem);
 }
 
 QUuid
@@ -20,9 +22,7 @@ QUuid
 FlowItemEntry::
 parentID() const
 {
-  FlowItem* flowItem = static_cast<FlowItem*>(parentItem());
-
-  return flowItem->id();
+  return _parentID;
 }
 
 QRectF
