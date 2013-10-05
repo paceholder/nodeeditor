@@ -23,7 +23,7 @@ public:
   parentID() const;
 
 public:
-  FlowItemEntry(Type type, QUuid parentID);
+  FlowItemEntry(Type type, QUuid parentID, QUuid connectionID = QUuid());
 
   QRectF
   boundingRect() const override;
@@ -42,8 +42,9 @@ protected:
 
 private:
   QUuid _id;
-  QUuid _parentID;
   Type  _type;
+  QUuid _parentID;
+  QUuid _connectionID;
   int   _width;
   int   _height;
 };

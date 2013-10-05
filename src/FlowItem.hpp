@@ -38,10 +38,10 @@ public:
   id();
 
   QPointF
-  sourcePointPos(int index);
+  sourcePointPos(int index) const;
 
   QPointF
-  sinkPointPos(int index);
+  sinkPointPos(int index) const;
 
 protected:
   void
@@ -75,6 +75,12 @@ private:
 
   void
   recalculateSize();
+
+  int
+  checkHitSinkPoint(const QPointF eventPoint) const;
+
+  void
+  checkHitSourcePoint();
 };
 
 #endif // FLOW_ITEM_H

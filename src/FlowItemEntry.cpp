@@ -4,9 +4,10 @@
 #include "FlowItem.hpp"
 #include "FlowScene.hpp"
 FlowItemEntry::
-FlowItemEntry(Type type, QUuid parentID):
+FlowItemEntry(Type type, QUuid parentID, QUuid connectionID):
   _type(type),
   _parentID(parentID),
+  _connectionID(connectionID),
   _width(100),
   _height(20)
 {

@@ -92,14 +92,14 @@ id() { return _id; }
 
 QPointF
 FlowItem::
-sourcePointPos(int index)
+sourcePointPos(int index) const
 {
   //
 }
 
 QPointF
 FlowItem::
-sinkPointPos(int index)
+sinkPointPos(int index) const
 {
   double totalHeight = 0;
 
@@ -160,13 +160,52 @@ paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget
   }
 }
 
+int
+FlowItem::
+checkHitSinkPoint(const QPointF eventPoint) const
+{
+  int result = -1;
+
+  // labmda function for Euclidian distance
+  auto distance = [](QPointF& d) { return sqrt(d.x() * d.x() +
+                                               d.y() * d.y()); };
+
+  double tolerance = 1.0 * _connectionPointDiameter;
+
+  for (int i = 0; i < _sinkEntries.size(); ++i) {
+    QPointF p = sinkPointPos(i) - eventPoint;
+
+    if (distance(p) < tolerance)
+      result = i;
+  }
+
+  return result;
+}
+
+void
+FlowItem::
+checkHitSourcePoint()
+{
+  //
+}
+
 void
 FlowItem::
 mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
-  std::cout << " Block pressed" << std::endl;
+  int hit = checkHitSinkPoint(mapToScene(event->pos()));
 
-  FlowScene::instance()->createConnection(_id, Connection::SOURCE);
+  if (hit >= 0)
+    std::cout << "HIT!" << std::endl;
+  else
+    std::cout << "no hit" << std::endl;
+
+  return;
+
+  QUuid connectionID =  FlowScene::instance()->createConnection(_id, Connection::SOURCE);
+
+  Connection* connection =
+    FlowScene::instance()->getConnection(connectionID);
 
   // event->ignore();
   // QGraphicsObject::mousePressEvent(event);
