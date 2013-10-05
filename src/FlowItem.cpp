@@ -153,9 +153,12 @@ paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget
 
     double y = totalHeight + (_spacing  + h) / 2;
     double x = 0.0 - _connectionPointDiameter * 1.5;
-    painter->drawEllipse(QPointF(x, y),
-                         _connectionPointDiameter * 0.4,
-                         _connectionPointDiameter * 0.4);
+
+    if (!_sinkEntries[i]->getConnectionID().isNull())
+      painter->drawEllipse(QPointF(x, y),
+                           _connectionPointDiameter * 0.4,
+                           _connectionPointDiameter * 0.4);
+
     totalHeight += h + _spacing;
   }
 }
@@ -195,17 +198,15 @@ mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
   int hit = checkHitSinkPoint(mapToScene(event->pos()));
 
-  if (hit >= 0)
+  if (hit >= 0) {
     std::cout << "HIT!" << std::endl;
-  else
+    QUuid connectionID =
+      FlowScene::instance()->createConnection(_id, hit, Connection::SOURCE);
+
+    FlowItemEntry* entry = _sinkEntries[hit];
+    entry->setConnectionID(connectionID);
+  } else
     std::cout << "no hit" << std::endl;
-
-  return;
-
-  QUuid connectionID =  FlowScene::instance()->createConnection(_id, Connection::SOURCE);
-
-  Connection* connection =
-    FlowScene::instance()->getConnection(connectionID);
 
   // event->ignore();
   // QGraphicsObject::mousePressEvent(event);
