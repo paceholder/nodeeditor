@@ -15,8 +15,9 @@ public:
   id() { return _id; }
 
 public:
-  Connection(QUuid flowItemSourceID,
-             QUuid flowItemSinkID);
+  Connection(QUuid    flowItemID,
+             int      entryNumber,
+             Dragging dragging);
 
   void
   initializeConnection();
@@ -48,9 +49,13 @@ protected:
    * */
 
 private:
-  QUuid   _id;
-  QUuid   _flowItemSourceID;
-  QUuid   _flowItemSinkID;
+  QUuid _id;
+  QUuid _flowItemSourceID;
+  QUuid _flowItemSinkID;
+
+  int _sourceEntryNumber;
+  int _sinkEntryNumber;
+
   QPointF _source;
   QPointF _sink;
   QPointF _lastPoint;

@@ -7,19 +7,33 @@
 #include <iostream>
 #include <math.h>
 Connection::
-Connection(QUuid flowItemSourceID,
-           QUuid flowItemSinkID):
+Connection(QUuid    flowItemID,
+           int      entryNumber,
+           Dragging dragging):
   _id(QUuid::createUuid()),
-  _flowItemSourceID(flowItemSourceID),
-  _flowItemSinkID(flowItemSinkID),
   _source(10, 10),
   _sink(100, 100),
-  _dragging(NONE),
+  _dragging(dragging),
   _pointDiameter(12),
   _animationPhase(0)
 {
   setFlag(QGraphicsItem::ItemIsMovable, true);
   setFlag(QGraphicsItem::ItemIsFocusable, true);
+
+  switch (_dragging) {
+    case  SOURCE:
+      _flowItemSinkID  = flowItemID;
+      _sinkEntryNumber = entryNumber;
+      break;
+
+    case SINK:
+      _flowItemSourceID  = flowItemID;
+      _sourceEntryNumber = entryNumber;
+      break;
+
+    default:
+      break;
+  }
 
   startTimer(200);
 }
@@ -28,24 +42,25 @@ void
 Connection::
 initializeConnection()
 {
-  if (_flowItemSourceID.isNull() && !_flowItemSinkID.isNull()) {
-    // first, we set correct coordinate for a fixed point
+  switch (_dragging) {
+    case  SOURCE: {
+      FlowItem* item = FlowScene::instance()->getFlowItem(_flowItemSinkID);
 
-    // we drag source point
-    _dragging = SOURCE;
+      QPointF pointPos = mapFromScene(item->sinkPointPos(_sinkEntryNumber));
 
-    FlowItem* item = FlowScene::instance()->getFlowItem(_flowItemSinkID);
+      _source = pointPos;
+      _sink   = pointPos;
 
-    QPointF pointPos = mapFromScene(item->sinkPointPos(0));
+      grabMouse();
+      break;
+    }
 
-    _source = pointPos;
-    _sink   = pointPos;
+    case SINK:
+      grabMouse();
+      break;
 
-    grabMouse();
-  } else if (!_flowItemSourceID.isNull() && _flowItemSinkID.isNull()) {
-    // we drag sink point
-    _dragging = SINK;
-    grabMouse();
+    default:
+      break;
   }
 }
 
@@ -86,12 +101,25 @@ paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget
   Q_UNUSED(option);
   Q_UNUSED(widget);
 
+  prepareGeometryChange();
+
+  if (!_flowItemSourceID.isNull()) {
+    FlowItem* item = FlowScene::instance()->getFlowItem(_flowItemSourceID);
+    _source = mapFromScene(item->sourcePointPos(_sourceEntryNumber));
+  }
+
+  if (!_flowItemSinkID.isNull()) {
+    FlowItem* item = FlowScene::instance()->getFlowItem(_flowItemSinkID);
+    _sink = mapFromScene(item->sinkPointPos(_sinkEntryNumber));
+  }
+
   // --- bounding rect
   // painter->setPen(Qt::darkGray);
   // painter->drawRect(this->boundingRect());
 
   // ---- connection line
   QPen p;
+
   p.setWidth(2);
   p.setColor(Qt::yellow);
   p.setColor(Qt::cyan);
@@ -138,7 +166,7 @@ paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget
 
   // painter->drawEllipse(p, 2, 2);
   // }
-  // }
+  //
 
   return;
 }
