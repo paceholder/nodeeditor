@@ -17,15 +17,11 @@ find_package(Qt5Gui)
 add_definitions(${Qt5Widgets_DEFINITIONS})
 set(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 
+file(GLOB_RECURSE SOURCE_FILES  ./src/*.cpp )
 
 # Tell CMake to create the helloworld executable
 add_executable(blocks
-               main.cpp
-               FlowItemEntry.cpp
-               Connection.cpp
-               FlowItem.cpp
-               FlowItemInterface.cpp
-               FlowScene.cpp
+               ${SOURCE_FILES}
 )
 
 # Use the Widgets module from Qt 5.
