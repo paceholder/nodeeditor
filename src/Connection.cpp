@@ -25,14 +25,16 @@ void
 Connection::
 initializeConnection()
 {
-  if (flowItemSourceID.isNull()) {
+  if (_flowItemSourceID.isNull() && !_flowItemSinkID.isNull()) {
+    // first, we set correct coordinate for a fixed point
+
     // we drag source point
     _dragging = SOURCE;
 
     grabMouse();
-  } else if (flowItemSinkID.isNull()) {
+  } else if (!_flowItemSourceID.isNull() && _flowItemSinkID.isNull()) {
     // we drag sink point
-    _dragging = SOURCE;
+    _dragging = SINK;
     grabMouse();
   }
 }

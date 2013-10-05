@@ -85,6 +85,32 @@ boundingRect() const
                 _width + 2 * addon, _height + 2 * addon);
 }
 
+QUuid
+FlowItem::
+id() { return _id; }
+
+QPointF
+FlowItem::
+sourcePointPos(int index)
+{
+  //
+}
+
+QPointF
+FlowItem::
+sinkPointPos(int index)
+{
+  double totalHeight = 0;
+
+  for (int i = 0; i <= index; ++i)
+    totalHeight += _sinkEntries[i]->height() + _spacing;
+
+  totalHeight += _spacing / 2 + _sinkEntries[index]->height() / 2;
+  double x = 0.0 - _connectionPointDiameter * 1.5;
+
+  return mapToScene(QPointF(x, totalHeight));
+}
+
 void
 FlowItem::
 paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
@@ -100,27 +126,36 @@ paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget
 
   painter->setBrush(QColor(Qt::gray).darker());
 
+  double totalHeight = 0;
+
   for (int i = 0; i < _sinkEntries.size(); ++i) {
     double h = _sinkEntries[i]->height();
 
-    double y = (h + _spacing) * i + _spacing / 2 + h / 2;
+    double y = totalHeight + (_spacing  + h) / 2;
     double x = 0.0 - _connectionPointDiameter * 1.5;
     painter->drawEllipse(QPointF(x, y),
                          _connectionPointDiameter * 0.8,
                          _connectionPointDiameter * 0.8);
+
+    totalHeight += h + _spacing;
   }
+
+  // draw sink points
 
   painter->setPen(Qt::cyan);
   painter->setBrush(Qt::cyan);
 
+  totalHeight = 0;
+
   for (int i = 0; i < _sinkEntries.size(); ++i) {
     double h = _sinkEntries[i]->height();
 
-    double y = (h + _spacing) * i + _spacing / 2 + h / 2;
+    double y = totalHeight + (_spacing  + h) / 2;
     double x = 0.0 - _connectionPointDiameter * 1.5;
     painter->drawEllipse(QPointF(x, y),
                          _connectionPointDiameter * 0.4,
                          _connectionPointDiameter * 0.4);
+    totalHeight += h + _spacing;
   }
 }
 

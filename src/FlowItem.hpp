@@ -35,11 +35,19 @@ public:
 
 public:
   QUuid
-  id() { return _id; }
+  id();
+
+  QPointF
+  sourcePointPos(int index);
+
+  QPointF
+  sinkPointPos(int index);
 
 protected:
   void
-  paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = 0) override;
+  paint(QPainter*                       painter,
+        const QStyleOptionGraphicsItem* option,
+        QWidget*                        widget = 0) override;
 
   void
   mousePressEvent(QGraphicsSceneMouseEvent* event) override;
