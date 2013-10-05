@@ -4,7 +4,11 @@
 #include <iostream>
 #include <math.h>
 Connection::
-Connection(int BlockOutID, int BlockInID):
+Connection(QUuid flowItemSourceID,
+           QUuid flowItemSinkID):
+  _id(QUuid::createUuid()),
+  _flowItemSourceID(flowItemSourceID),
+  _flowItemSinkID(flowItemSinkID),
   _source(10, 10),
   _sink(100, 100),
   _dragging(NONE),

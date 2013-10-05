@@ -7,6 +7,7 @@
 #include "FlowItemEntry.hpp"
 FlowItem::
 FlowItem():
+  _id(QUuid::createUuid()),
   _width(100),
   _height(150),
   _spacing(10),
@@ -16,6 +17,7 @@ FlowItem():
   setFlag(QGraphicsItem::ItemIsFocusable, true);
 
   initializeEntries();
+  // embedQWidget();
   recalculateSize();
 }
 
@@ -38,6 +40,20 @@ initializeEntries()
 
   for (int i = 0; i < _sinkEntries.size(); ++i)
     _sinkEntries[i]->setPos(0, i * (height + _spacing) + _spacing / 2);
+}
+
+void
+FlowItem::
+embedQWidget()
+{
+  QPushButton* button = new QPushButton(QString("Hello"));
+
+  QGraphicsProxyWidget* proxyWidget = new QGraphicsProxyWidget();
+
+  proxyWidget->setWidget(button);
+
+  button->setVisible(true);
+  proxyWidget->setParentItem(this);
 }
 
 void
@@ -85,4 +101,20 @@ paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget
                          _connectionPointDiameter * 0.8,
                          _connectionPointDiameter * 0.8);
   }
+}
+
+void
+FlowItem::
+mousePressEvent(QGraphicsSceneMouseEvent* event)
+{
+  std::cout << " Block pressed" << std::endl;
+  QGraphicsObject::mousePressEvent(event);
+}
+
+void
+FlowItem::
+mouseMoveEvent(QGraphicsSceneMouseEvent* event)
+{
+  event->ignore();
+  QGraphicsObject::mouseMoveEvent(event);
 }

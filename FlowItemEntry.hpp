@@ -1,9 +1,10 @@
 #ifndef FLOW_ITEM_ENTRY_H
 #define FLOW_ITEM_ENTRY_H
 
-#include <QGraphicsObject>
+#include <QtWidgets/QGraphicsObject>
 
-#include <QWeakPointer>
+#include <QtCore/QUuid>
+#include <QtCore/QWeakPointer>
 
 class FlowItem;
 
@@ -13,6 +14,13 @@ class FlowItemEntry: public QGraphicsObject
 
 public:
   enum Type { SOURCE, SINK };
+
+public:
+  QUuid
+  id() const;
+
+  QUuid
+  parentID() const;
 
 public:
   FlowItemEntry(Type type, QGraphicsItem* parent);
@@ -28,12 +36,15 @@ public:
 
 protected:
   void
-  paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = 0) override;
+  paint(QPainter*                       painter,
+        const QStyleOptionGraphicsItem* option,
+        QWidget*                        widget = 0) override;
 
 private:
-  int  _width;
-  int  _height;
-  Type _type;
+  QUuid _id;
+  Type  _type;
+  int   _width;
+  int   _height;
 };
 
 #endif //  FLOW_ITEM_ENTRY_H

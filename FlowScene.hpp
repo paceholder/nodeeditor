@@ -2,18 +2,42 @@
 #define _FLOW_SCENE_HPP_
 
 #include <QtCore/QMap>
+#include <QtCore/QUuid>
+
 #include <QtWidgets/QGraphicsScene>
+
+#include "Connection.hpp"
+
+class FlowItemInterface;
+class FlowItem;
 
 class FlowScene: public QGraphicsScene
 {
 public:
-  FlowScene() {}
+  static
+  FlowScene*
+  instance();
 
+public:
   void
-  registerFlowItem(FlowItemIterface* flowItemIterface);
+  registerFlowItem(FlowItemInterface* flowItemIterface);
+
+  QUuid
+  createConnection(QUuid flowItemID, Connection::Dragging dragging);
+
+  QUuid
+  createFlowItem();
 
 private:
-  QMap<QString, FlowItemIterface*> _registeredInterfaces;
+  FlowScene();
+
+private:
+  QMap<QString, FlowItemInterface*> _registeredInterfaces;
+
+  static FlowScene* _instance;
+
+  QMap<QUuid, Connection*> _connections;
+  QMap<QUuid, FlowItem*>   _flowItems;
 };
 
 #endif //  _FLOW_SCENE_HPP_

@@ -1,7 +1,8 @@
 #ifndef CONNECTION_H
 #define CONNECTION_H
 
-#include <QGraphicsObject>
+#include <QtCore/QUuid>
+#include <QtWidgets/QGraphicsObject>
 
 class Connection: public QGraphicsObject
 {
@@ -10,8 +11,12 @@ class Connection: public QGraphicsObject
 public:
   enum Dragging { SOURCE, SINK, NONE };
 
+  QUuid
+  id() { return _id; }
+
 public:
-  Connection(int BlockOutID, int BlockInID);
+  Connection(QUuid flowItemSourceID,
+             QUuid flowItemSinkID);
 
   QRectF
   boundingRect() const override;
@@ -40,6 +45,9 @@ protected:
    * */
 
 private:
+  QUuid   _id;
+  QUuid   _flowItemSourceID;
+  QUuid   _flowItemSinkID;
   QPointF _source;
   QPointF _sink;
   QPointF _lastPoint;

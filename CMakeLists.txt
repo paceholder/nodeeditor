@@ -24,6 +24,8 @@ add_executable(blocks
                FlowItemEntry.cpp
                Connection.cpp
                FlowItem.cpp
+               FlowItemInterface.cpp
+               FlowScene.cpp
 )
 
 # Use the Widgets module from Qt 5.

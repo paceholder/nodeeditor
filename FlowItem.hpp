@@ -1,7 +1,8 @@
 #ifndef FLOW_ITEM_H
 #define FLOW_ITEM_H
 
-#include <QGraphicsObject>
+#include <QtCore/QUuid>
+#include <QtWidgets/QGraphicsObject>
 
 class FlowItemEntry;
 
@@ -29,14 +30,25 @@ public:
    *
    * */
 
+public:
+  QUuid
+  id() { return _id; }
+
 protected:
   void
   paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = 0) override;
 
+  void
+  mousePressEvent(QGraphicsSceneMouseEvent* event) override;
+
+  void
+  mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
+
 private:
-  int _width;
-  int _height;
-  int _spacing;
+  QUuid _id;
+  int   _width;
+  int   _height;
+  int   _spacing;
 
   int _connectionPointDiameter;
 
@@ -46,6 +58,9 @@ private:
 private:
   void
   initializeEntries();
+
+  void
+  embedQWidget();
 
   void
   recalculateSize();
