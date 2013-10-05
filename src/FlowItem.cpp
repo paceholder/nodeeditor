@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include "FlowItemEntry.hpp"
+#include "FlowScene.hpp"
 FlowItem::
 FlowItem():
   _id(QUuid::createUuid()),
@@ -102,7 +103,7 @@ sinkPointPos(int index)
 {
   double totalHeight = 0;
 
-  for (int i = 0; i <= index; ++i)
+  for (int i = 1; i <= index; ++i)
     totalHeight += _sinkEntries[i]->height() + _spacing;
 
   totalHeight += _spacing / 2 + _sinkEntries[index]->height() / 2;
@@ -164,7 +165,11 @@ FlowItem::
 mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
   std::cout << " Block pressed" << std::endl;
-  QGraphicsObject::mousePressEvent(event);
+
+  FlowScene::instance()->createConnection(_id, Connection::SOURCE);
+
+  // event->ignore();
+  // QGraphicsObject::mousePressEvent(event);
 }
 
 void

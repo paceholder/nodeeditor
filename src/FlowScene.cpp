@@ -46,6 +46,8 @@ createConnection(QUuid flowItemID, Connection::Dragging dragging)
 
   this->addItem(connection);
   _connections[connection->id()] = connection;
+
+  connection->initializeConnection();
 }
 
 QUuid

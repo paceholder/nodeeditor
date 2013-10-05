@@ -1,6 +1,9 @@
 #include "Connection.hpp"
 #include <QtWidgets/QtWidgets>
 
+#include "FlowItem.hpp"
+#include "FlowScene.hpp"
+
 #include <iostream>
 #include <math.h>
 Connection::
@@ -30,6 +33,13 @@ initializeConnection()
 
     // we drag source point
     _dragging = SOURCE;
+
+    FlowItem* item = FlowScene::instance()->getFlowItem(_flowItemSinkID);
+
+    QPointF pointPos = mapFromScene(item->sinkPointPos(0));
+
+    _source = pointPos;
+    _sink   = pointPos;
 
     grabMouse();
   } else if (!_flowItemSourceID.isNull() && _flowItemSinkID.isNull()) {
