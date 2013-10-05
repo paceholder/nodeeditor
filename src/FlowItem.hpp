@@ -13,6 +13,9 @@ class FlowItem: public QGraphicsObject
 public:
   FlowItem();
 
+  void
+  initializeFlowItem();
+
   QRectF
   boundingRect() const override;
 

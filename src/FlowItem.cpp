@@ -15,9 +15,14 @@ FlowItem():
 {
   setFlag(QGraphicsItem::ItemIsMovable, true);
   setFlag(QGraphicsItem::ItemIsFocusable, true);
+}
 
+void
+FlowItem::
+initializeFlowItem()
+{
   initializeEntries();
-  // embedQWidget();
+  embedQWidget();
   recalculateSize();
 }
 
@@ -25,16 +30,19 @@ void
 FlowItem::
 initializeEntries()
 {
-  FlowItemEntry* entry = new FlowItemEntry(FlowItemEntry::SINK, this);
+  FlowItemEntry* entry = new FlowItemEntry(FlowItemEntry::SINK, _id);
+
+  std::cout << "id " << _id.toString().toLocal8Bit().data() << std::endl;
 
   int height = entry->height();
   _sinkEntries.append(entry);
 
-  entry = new FlowItemEntry(FlowItemEntry::SINK, this);
+  std::cout << "create flow item entry " << std::endl;
+  entry = new FlowItemEntry(FlowItemEntry::SINK, _id);
 
   _sinkEntries.append(entry);
 
-  entry = new FlowItemEntry(FlowItemEntry::SINK, this);
+  entry = new FlowItemEntry(FlowItemEntry::SINK, _id);
 
   _sinkEntries.append(entry);
 
@@ -100,6 +108,19 @@ paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget
     painter->drawEllipse(QPointF(x, y),
                          _connectionPointDiameter * 0.8,
                          _connectionPointDiameter * 0.8);
+  }
+
+  painter->setPen(Qt::cyan);
+  painter->setBrush(Qt::cyan);
+
+  for (int i = 0; i < _sinkEntries.size(); ++i) {
+    double h = _sinkEntries[i]->height();
+
+    double y = (h + _spacing) * i + _spacing / 2 + h / 2;
+    double x = 0.0 - _connectionPointDiameter * 1.5;
+    painter->drawEllipse(QPointF(x, y),
+                         _connectionPointDiameter * 0.4,
+                         _connectionPointDiameter * 0.4);
   }
 }
 
