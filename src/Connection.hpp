@@ -18,6 +18,9 @@ public:
   Connection(QUuid flowItemSourceID,
              QUuid flowItemSinkID);
 
+  void
+  initializeConnection();
+
   QRectF
   boundingRect() const override;
 

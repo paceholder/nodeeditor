@@ -21,6 +21,22 @@ Connection(QUuid flowItemSourceID,
   startTimer(200);
 }
 
+void
+Connection::
+initializeConnection()
+{
+  if (flowItemSourceID.isNull()) {
+    // we drag source point
+    _dragging = SOURCE;
+
+    grabMouse();
+  } else if (flowItemSinkID.isNull()) {
+    // we drag sink point
+    _dragging = SOURCE;
+    grabMouse();
+  }
+}
+
 QRectF
 Connection::
 boundingRect() const
@@ -174,4 +190,5 @@ Connection::
 mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 {
   _dragging = NONE;
+  ungrabMouse();
 }
