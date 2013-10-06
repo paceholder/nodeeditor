@@ -23,7 +23,7 @@ FlowItem::
 initializeFlowItem()
 {
   initializeEntries();
-  embedQWidget();
+  // embedQWidget();
   recalculateSize();
 }
 
@@ -198,15 +198,13 @@ mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
   int hit = checkHitSinkPoint(mapToScene(event->pos()));
 
-  if (hit >= 0) {
-    std::cout << "HIT!" << std::endl;
+  if (hit >= 0 && _sinkEntries[hit]->getConnectionID().isNull()) {
     QUuid connectionID =
       FlowScene::instance()->createConnection(_id, hit, Connection::SOURCE);
 
     FlowItemEntry* entry = _sinkEntries[hit];
     entry->setConnectionID(connectionID);
-  } else
-    std::cout << "no hit" << std::endl;
+  }
 
   // event->ignore();
   // QGraphicsObject::mousePressEvent(event);
@@ -216,6 +214,8 @@ void
 FlowItem::
 mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 {
-  event->ignore();
+  if (event->lastPos() != event->pos())
+    emit itemMoved();
+
   QGraphicsObject::mouseMoveEvent(event);
 }

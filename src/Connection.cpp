@@ -35,7 +35,7 @@ Connection(QUuid    flowItemID,
       break;
   }
 
-  startTimer(200);
+  // startTimer(200);
 }
 
 void
@@ -50,6 +50,8 @@ initializeConnection()
 
       _source = pointPos;
       _sink   = pointPos;
+
+      connect(item, &FlowItem::itemMoved, this, &Connection::onItemMoved);
 
       grabMouse();
       break;
@@ -83,15 +85,14 @@ void
 Connection::
 advance(int phase)
 {
-  if (phase == 1)
-    _animationPhase = (_animationPhase + 1) % 7;
+  // if (phase == 1) _animationPhase = (_animationPhase + 1) % 7;
 }
 
 void
 Connection::
 timerEvent(QTimerEvent* event)
 {
-  this->advance(1);
+  // this->advance(1);
 }
 
 void
@@ -100,8 +101,6 @@ paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget
 {
   Q_UNUSED(option);
   Q_UNUSED(widget);
-
-  prepareGeometryChange();
 
   if (!_flowItemSourceID.isNull()) {
     FlowItem* item = FlowScene::instance()->getFlowItem(_flowItemSourceID);
@@ -231,4 +230,21 @@ mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 {
   _dragging = NONE;
   ungrabMouse();
+}
+
+void
+Connection::
+onItemMoved()
+{
+  prepareGeometryChange();
+
+  if (!_flowItemSourceID.isNull()) {
+    FlowItem* item = FlowScene::instance()->getFlowItem(_flowItemSourceID);
+    _source = mapFromScene(item->sourcePointPos(_sourceEntryNumber));
+  }
+
+  if (!_flowItemSinkID.isNull()) {
+    FlowItem* item = FlowScene::instance()->getFlowItem(_flowItemSinkID);
+    _sink = mapFromScene(item->sinkPointPos(_sinkEntryNumber));
+  }
 }

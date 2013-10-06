@@ -43,6 +43,10 @@ public:
   QPointF
   sinkPointPos(int index) const;
 
+signals:
+  void
+  itemMoved();
+
 protected:
   void
   paint(QPainter*                       painter,

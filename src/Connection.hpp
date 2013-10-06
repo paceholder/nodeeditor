@@ -40,6 +40,10 @@ public:
   void
   mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
 
+public slots:
+  void
+  onItemMoved();
+
 protected:
   void
   paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = 0) override;
