@@ -83,8 +83,8 @@ private:
   int
   checkHitSinkPoint(const QPointF eventPoint) const;
 
-  void
-  checkHitSourcePoint();
+  int
+  checkHitSourcePoint(const QPointF eventPoint) const;
 
   void
   drawConnectionPoints(QPainter* painter);

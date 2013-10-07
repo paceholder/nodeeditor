@@ -57,9 +57,18 @@ initializeConnection()
       break;
     }
 
-    case SINK:
+    case SINK: {
+      FlowItem* item = FlowScene::instance()->getFlowItem(_flowItemSourceID);
+
+      QPointF pointPos = mapFromScene(item->sourcePointPos(_sourceEntryNumber));
+
+      _source = pointPos;
+      _sink   = pointPos;
+
+      connect(item, &FlowItem::itemMoved, this, &Connection::onItemMoved);
       grabMouse();
       break;
+    }
 
     default:
       break;

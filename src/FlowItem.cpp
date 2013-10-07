@@ -118,13 +118,6 @@ id() { return _id; }
 
 QPointF
 FlowItem::
-sourcePointPos(int index) const
-{
-  //
-}
-
-QPointF
-FlowItem::
 sinkPointPos(int index) const
 {
   double totalHeight = 0;
@@ -133,7 +126,27 @@ sinkPointPos(int index) const
     totalHeight += _sinkEntries[i]->height() + _spacing;
 
   totalHeight += _spacing / 2 + _sinkEntries[index]->height() / 2;
-  double x = 0.0 - _connectionPointDiameter * 1.5;
+  double x = 0.0 - _connectionPointDiameter * 1.3;
+
+  return mapToScene(QPointF(x, totalHeight));
+}
+
+QPointF
+FlowItem::
+sourcePointPos(int index) const
+{
+  double totalHeight = 0;
+
+  for (int i = 0; i < _sinkEntries.size(); ++i)
+    totalHeight += _sinkEntries[i]->height() + _spacing;
+
+  totalHeight += _spacing;
+
+  for (int i = 1; i <= index; ++i)
+    totalHeight += _sourceEntries[i]->height() + _spacing;
+
+  totalHeight += (_spacing  + _sourceEntries[index]->height()) / 2.0;
+  double x = _width + _connectionPointDiameter * 1.3;
 
   return mapToScene(QPointF(x, totalHeight));
 }
@@ -221,7 +234,7 @@ drawFilledConnectionPoints(QPainter* painter)
     double y = totalHeight + (_spacing  + h) / 2;
     double x = _width + _connectionPointDiameter * 1.3;
 
-    if (!_sinkEntries[i]->getConnectionID().isNull())
+    if (!_sourceEntries[i]->getConnectionID().isNull())
       painter->drawEllipse(QPointF(x, y),
                            _connectionPointDiameter * 0.4,
                            _connectionPointDiameter * 0.4);
@@ -252,11 +265,26 @@ checkHitSinkPoint(const QPointF eventPoint) const
   return result;
 }
 
-void
+int
 FlowItem::
-checkHitSourcePoint()
+checkHitSourcePoint(const QPointF eventPoint) const
 {
-  //
+  int result = -1;
+
+  // labmda function for Euclidian distance
+  auto distance = [](QPointF& d) { return sqrt(d.x() * d.x() +
+                                               d.y() * d.y()); };
+
+  double tolerance = 1.0 * _connectionPointDiameter;
+
+  for (int i = 0; i < _sourceEntries.size(); ++i) {
+    QPointF p = sourcePointPos(i) - eventPoint;
+
+    if (distance(p) < tolerance)
+      result = i;
+  }
+
+  return result;
 }
 
 void
@@ -270,6 +298,16 @@ mousePressEvent(QGraphicsSceneMouseEvent* event)
       FlowScene::instance()->createConnection(_id, hit, Connection::SOURCE);
 
     FlowItemEntry* entry = _sinkEntries[hit];
+    entry->setConnectionID(connectionID);
+  }
+
+  hit = checkHitSourcePoint(mapToScene(event->pos()));
+
+  if (hit >= 0 && _sourceEntries[hit]->getConnectionID().isNull()) {
+    QUuid connectionID =
+      FlowScene::instance()->createConnection(_id, hit, Connection::SINK);
+
+    FlowItemEntry* entry = _sourceEntries[hit];
     entry->setConnectionID(connectionID);
   }
 
