@@ -85,6 +85,12 @@ private:
 
   void
   checkHitSourcePoint();
+
+  void
+  drawConnectionPoints(QPainter* painter);
+
+  void
+  drawFilledConnectionPoints(QPainter* painter);
 };
 
 #endif // FLOW_ITEM_H

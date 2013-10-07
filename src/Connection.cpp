@@ -14,7 +14,7 @@ Connection(QUuid    flowItemID,
   _source(10, 10),
   _sink(100, 100),
   _dragging(dragging),
-  _pointDiameter(12),
+  _pointDiameter(10),
   _animationPhase(0)
 {
   setFlag(QGraphicsItem::ItemIsMovable, true);

@@ -151,7 +151,51 @@ paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget
 
   painter->drawRoundedRect(boundary, 10.0, 10.0);
 
+  drawConnectionPoints(painter);
+
+  drawFilledConnectionPoints(painter);
+}
+
+void
+FlowItem::
+drawConnectionPoints(QPainter* painter)
+{
   painter->setBrush(QColor(Qt::gray).darker());
+  double totalHeight = 0;
+
+  for (int i = 0; i < _sinkEntries.size(); ++i) {
+    double h = _sinkEntries[i]->height();
+
+    double y = totalHeight + (_spacing  + h) / 2;
+    double x = 0.0 - _connectionPointDiameter * 1.3;
+    painter->drawEllipse(QPointF(x, y),
+                         _connectionPointDiameter * 0.6,
+                         _connectionPointDiameter * 0.6);
+
+    totalHeight += h + _spacing;
+  }
+
+  totalHeight += _spacing;
+
+  for (int i = 0; i < _sourceEntries.size(); ++i) {
+    double h = _sourceEntries[i]->height();
+
+    double y = totalHeight + (_spacing  + h) / 2;
+    double x = _width + _connectionPointDiameter * 1.3;
+    painter->drawEllipse(QPointF(x, y),
+                         _connectionPointDiameter * 0.6,
+                         _connectionPointDiameter * 0.6);
+
+    totalHeight += h + _spacing;
+  }
+}
+
+void
+FlowItem::
+drawFilledConnectionPoints(QPainter* painter)
+{
+  painter->setPen(Qt::cyan);
+  painter->setBrush(Qt::cyan);
 
   double totalHeight = 0;
 
@@ -159,26 +203,23 @@ paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget
     double h = _sinkEntries[i]->height();
 
     double y = totalHeight + (_spacing  + h) / 2;
-    double x = 0.0 - _connectionPointDiameter * 1.5;
-    painter->drawEllipse(QPointF(x, y),
-                         _connectionPointDiameter * 0.8,
-                         _connectionPointDiameter * 0.8);
+    double x = 0.0 - _connectionPointDiameter * 1.3;
+
+    if (!_sinkEntries[i]->getConnectionID().isNull())
+      painter->drawEllipse(QPointF(x, y),
+                           _connectionPointDiameter * 0.4,
+                           _connectionPointDiameter * 0.4);
 
     totalHeight += h + _spacing;
   }
 
-  // draw sink points
+  totalHeight += _spacing;
 
-  painter->setPen(Qt::cyan);
-  painter->setBrush(Qt::cyan);
-
-  totalHeight = 0;
-
-  for (int i = 0; i < _sinkEntries.size(); ++i) {
-    double h = _sinkEntries[i]->height();
+  for (int i = 0; i < _sourceEntries.size(); ++i) {
+    double h = _sourceEntries[i]->height();
 
     double y = totalHeight + (_spacing  + h) / 2;
-    double x = 0.0 - _connectionPointDiameter * 1.5;
+    double x = _width + _connectionPointDiameter * 1.3;
 
     if (!_sinkEntries[i]->getConnectionID().isNull())
       painter->drawEllipse(QPointF(x, y),
