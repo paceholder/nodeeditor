@@ -6,6 +6,8 @@
 
 #include <QtWidgets/QGraphicsScene>
 
+#include <tuple>
+
 #include "Connection.hpp"
 
 class FlowItemInterface;
@@ -36,6 +38,18 @@ public:
   FlowItem*
   getFlowItem(QUuid id) const;
 
+  /** Remembers the connection currently is being dragged */
+  void
+  setDraggingConnection(QUuid id, Connection::Dragging dragging);
+
+  /** Returns information about dragged connection */
+  std::pair<QUuid, Connection::Dragging>
+  getDraggingConnection(QUuid& id, Connection::Dragging& dragging) const;
+
+  /** Sets currently dragging connection to empty value */
+  void
+  clearDraggingConnection(QUuid id, Connection::Dragging dragging);
+
 private:
   FlowScene();
 
@@ -46,6 +60,9 @@ private:
 
   QMap<QUuid, Connection*> _connections;
   QMap<QUuid, FlowItem*>   _flowItems;
+
+  QUuid                _draggingConnectionID;
+  Connection::Dragging _dragging;
 };
 
 #endif //  _FLOW_SCENE_HPP_

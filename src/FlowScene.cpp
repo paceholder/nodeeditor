@@ -80,8 +80,31 @@ getFlowItem(QUuid id) const
   return _flowItems[id];
 }
 
+void
 FlowScene::
-FlowScene()
+setDraggingConnection(QUuid id, Connection::Dragging dragging)
+{
+  _draggingConnectionID = id;
+  _dragging             = dragging;
+}
+
+std::pair<QUuid, Connection::Dragging>
+FlowScene::
+getDraggingConnection(QUuid& id, Connection::Dragging& dragging) const
+{
+  //
+}
+
+void
+FlowScene::
+clearDraggingConnection(QUuid id, Connection::Dragging dragging)
+{
+  //
+}
+
+FlowScene::
+FlowScene():
+  _dragging(Connection::NONE)
 {
   //
 }
