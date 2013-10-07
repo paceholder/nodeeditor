@@ -293,23 +293,31 @@ mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
   int hit = checkHitSinkPoint(mapToScene(event->pos()));
 
-  if (hit >= 0 && _sinkEntries[hit]->getConnectionID().isNull()) {
-    QUuid connectionID =
-      FlowScene::instance()->createConnection(_id, hit, Connection::SOURCE);
+  if (hit >= 0)
+    if (_sinkEntries[hit]->getConnectionID().isNull()) {
+      QUuid connectionID =
+        FlowScene::instance()->createConnection(_id, hit, Connection::SOURCE);
 
-    FlowItemEntry* entry = _sinkEntries[hit];
-    entry->setConnectionID(connectionID);
-  }
+      FlowItemEntry* entry = _sinkEntries[hit];
+      entry->setConnectionID(connectionID);
+    } else {
+      //
+      //
+    }
 
   hit = checkHitSourcePoint(mapToScene(event->pos()));
 
-  if (hit >= 0 && _sourceEntries[hit]->getConnectionID().isNull()) {
-    QUuid connectionID =
-      FlowScene::instance()->createConnection(_id, hit, Connection::SINK);
+  if (hit >= 0)
+    if (_sourceEntries[hit]->getConnectionID().isNull()) {
+      QUuid connectionID =
+        FlowScene::instance()->createConnection(_id, hit, Connection::SINK);
 
-    FlowItemEntry* entry = _sourceEntries[hit];
-    entry->setConnectionID(connectionID);
-  }
+      FlowItemEntry* entry = _sourceEntries[hit];
+      entry->setConnectionID(connectionID);
+    } else {
+      //
+      //
+    }
 
   // event->ignore();
   // QGraphicsObject::mousePressEvent(event);
