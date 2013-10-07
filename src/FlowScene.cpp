@@ -54,6 +54,15 @@ createFlowItem()
 
   flowItem->initializeFlowItem();
 
+  ////
+
+  flowItem = new FlowItem();
+
+  this->addItem(flowItem);
+  _flowItems[flowItem->id()] = flowItem;
+
+  flowItem->initializeFlowItem();
+
   return flowItem->id();
 }
 

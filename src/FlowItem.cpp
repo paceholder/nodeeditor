@@ -47,8 +47,29 @@ initializeEntries()
 
   _sinkEntries.append(entry);
 
-  for (int i = 0; i < _sinkEntries.size(); ++i)
-    _sinkEntries[i]->setPos(0, i * (height + _spacing) + _spacing / 2);
+  int totalHeight = 0;
+
+  for (int i = 0; i < _sinkEntries.size(); ++i) {
+    _sinkEntries[i]->setPos(0, totalHeight + _spacing / 2);
+    totalHeight += _sinkEntries[i]->height() + _spacing;
+  }
+
+  ////////////////////////////
+
+  entry = new FlowItemEntry(FlowItemEntry::SOURCE, _id);
+
+  _sourceEntries.append(entry);
+
+  entry = new FlowItemEntry(FlowItemEntry::SOURCE, _id);
+
+  _sourceEntries.append(entry);
+
+  totalHeight += _spacing;
+
+  for (int i = 0; i < _sourceEntries.size(); ++i) {
+    _sourceEntries[i]->setPos(0, totalHeight + _spacing / 2);
+    totalHeight += _sourceEntries[i]->height() + _spacing;
+  }
 }
 
 void
@@ -69,12 +90,17 @@ void
 FlowItem::
 recalculateSize()
 {
-  int height = 0;
+  int totalHeight = 0;
 
-  if (_sinkEntries.size() > 0)
-    height = _sinkEntries[0]->height();
+  for (int i = 0; i < _sinkEntries.size(); ++i)
+    totalHeight += _sinkEntries[i]->height() + _spacing;
 
-  _height = _sinkEntries.size() * (height + _spacing);
+  totalHeight += _spacing;
+
+  for (int i = 0; i < _sourceEntries.size(); ++i)
+    totalHeight += _sourceEntries[i]->height() + _spacing;
+
+  _height = totalHeight;
 }
 
 QRectF
