@@ -86,6 +86,9 @@ setDraggingConnection(QUuid id, Connection::Dragging dragging)
 {
   _draggingConnectionID = id;
   _dragging             = dragging;
+
+  Connection* c = _connections[id];
+  c->setDragging(dragging);
 }
 
 std::pair<QUuid, Connection::Dragging>
@@ -97,13 +100,22 @@ getDraggingConnection(QUuid& id, Connection::Dragging& dragging) const
 
 void
 FlowScene::
-clearDraggingConnection(QUuid id, Connection::Dragging dragging)
+clearDraggingConnection()
 {
-  //
+  _draggingConnectionID = QUuid();
+  _dragging             = Connection::NONE;
+}
+
+bool
+FlowScene::
+isDragging()
+{
+  return !_draggingConnectionID.isNull();
 }
 
 FlowScene::
 FlowScene():
+  _draggingConnectionID(QUuid()),
   _dragging(Connection::NONE)
 {
   //

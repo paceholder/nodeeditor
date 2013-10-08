@@ -46,9 +46,12 @@ public:
   std::pair<QUuid, Connection::Dragging>
   getDraggingConnection(QUuid& id, Connection::Dragging& dragging) const;
 
+  bool
+  isDragging();
+
   /** Sets currently dragging connection to empty value */
   void
-  clearDraggingConnection(QUuid id, Connection::Dragging dragging);
+  clearDraggingConnection();
 
 private:
   FlowScene();

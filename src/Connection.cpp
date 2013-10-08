@@ -75,6 +75,35 @@ initializeConnection()
   }
 }
 
+QUuid
+Connection::
+id()
+{
+  return _id;
+}
+
+void
+Connection::
+setDragging(Dragging dragging)
+{
+  _dragging = dragging;
+  grabMouse();
+
+  switch (_dragging) {
+    case SOURCE:
+      _flowItemSourceID  = QUuid();
+      _sourceEntryNumber = -1;
+      break;
+
+    case SINK:
+      _flowItemSinkID  = QUuid();
+      _sinkEntryNumber = -1;
+      break;
+  }
+
+  // std::cout << "Start dragging" << std::endl;
+}
+
 QRectF
 Connection::
 boundingRect() const
@@ -223,6 +252,8 @@ mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 
     case SINK: {
       _sink += p;
+      // std::cout << "Dragging SINK" << _sink.x() <<
+      // ";  " << _sink.y() << std::endl;
       break;
     }
 
@@ -239,6 +270,8 @@ mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 {
   _dragging = NONE;
   ungrabMouse();
+
+  FlowScene::instance()->clearDraggingConnection();
 }
 
 void

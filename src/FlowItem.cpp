@@ -300,10 +300,12 @@ mousePressEvent(QGraphicsSceneMouseEvent* event)
 
       FlowItemEntry* entry = _sinkEntries[hit];
       entry->setConnectionID(connectionID);
-    } else
-      FlowScene::setDraggingConnection(_sourceEntries[hit]->getConnectionID(), Connection::SOURCE);
+    } else {
+      FlowScene::instance()->setDraggingConnection(_sinkEntries[hit]->getConnectionID(),
+                                                   Connection::SINK);
+      _sinkEntries[hit]->setConnectionID(QUuid());
+    }
 
-  //
   //
 
   hit = checkHitSourcePoint(mapToScene(event->pos()));
@@ -315,10 +317,12 @@ mousePressEvent(QGraphicsSceneMouseEvent* event)
 
       FlowItemEntry* entry = _sourceEntries[hit];
       entry->setConnectionID(connectionID);
-    } else
-      FlowScene::setDraggingConnection(_sourceEntries[hit]->getConnectionID(), Connection::SINK);
+    } else {
+      FlowScene::instance()->setDraggingConnection(_sourceEntries[hit]->getConnectionID(),
+                                                   Connection::SOURCE);
+      _sourceEntries[hit]->setConnectionID(QUuid());
+    }
 
-  //
   //
 
   // event->ignore();
@@ -329,8 +333,10 @@ void
 FlowItem::
 mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 {
-  if (event->lastPos() != event->pos())
-    emit itemMoved();
+  if (!FlowScene::instance()->isDragging()) {
+    if (event->lastPos() != event->pos())
+      emit itemMoved();
 
-  QGraphicsObject::mouseMoveEvent(event);
+    QGraphicsObject::mouseMoveEvent(event);
+  }
 }

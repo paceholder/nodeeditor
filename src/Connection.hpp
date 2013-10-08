@@ -11,9 +11,6 @@ class Connection: public QGraphicsObject
 public:
   enum Dragging { SOURCE, SINK, NONE };
 
-  QUuid
-  id() { return _id; }
-
 public:
   Connection(QUuid    flowItemID,
              int      entryNumber,
@@ -21,6 +18,12 @@ public:
 
   void
   initializeConnection();
+
+  QUuid
+  id();
+
+  void
+  setDragging(Dragging dragging);
 
   QRectF
   boundingRect() const override;
