@@ -12,6 +12,7 @@ FlowItem():
   _width(100),
   _height(150),
   _spacing(10),
+  _hovered(false),
   _connectionPointDiameter(12)
 {
   setFlag(QGraphicsItem::ItemIsMovable, true);
@@ -22,6 +23,8 @@ void
 FlowItem::
 initializeFlowItem()
 {
+  setAcceptHoverEvents(true);
+
   initializeEntries();
   // embedQWidget();
   recalculateSize();
@@ -33,12 +36,11 @@ initializeEntries()
 {
   FlowItemEntry* entry = new FlowItemEntry(FlowItemEntry::SINK, _id);
 
-  std::cout << "id " << _id.toString().toLocal8Bit().data() << std::endl;
+  // std::cout << "id " << _id.toString().toLocal8Bit().data() << std::endl;
 
   int height = entry->height();
   _sinkEntries.append(entry);
 
-  std::cout << "create flow item entry " << std::endl;
   entry = new FlowItemEntry(FlowItemEntry::SINK, _id);
 
   _sinkEntries.append(entry);
@@ -155,8 +157,18 @@ void
 FlowItem::
 paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
 {
-  painter->setPen(Qt::white);
+  if (_hovered) {
+    QPen p(Qt::white, 1.5);
+
+    painter->setPen(p);
+  } else {
+    QPen p(Qt::white, 1.0);
+
+    painter->setPen(p);
+  }
+
   painter->setBrush(QColor(Qt::darkGray));
+
   QRectF boundary(0 - _connectionPointDiameter,
                   0 - _connectionPointDiameter,
                   _width + 2 *  _connectionPointDiameter,
@@ -323,8 +335,6 @@ mousePressEvent(QGraphicsSceneMouseEvent* event)
       _sourceEntries[hit]->setConnectionID(QUuid());
     }
 
-  //
-
   // event->ignore();
   // QGraphicsObject::mousePressEvent(event);
 }
@@ -339,4 +349,22 @@ mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 
     QGraphicsObject::mouseMoveEvent(event);
   }
+}
+
+void
+FlowItem::
+hoverEnterEvent(QGraphicsSceneHoverEvent* event)
+{
+  _hovered = true;
+  update();
+  event->accept();
+}
+
+void
+FlowItem::
+hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
+{
+  _hovered = false;
+  update();
+  event->accept();
 }

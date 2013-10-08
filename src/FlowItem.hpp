@@ -59,11 +59,19 @@ protected:
   void
   mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
 
+  void
+  hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
+
+  void
+  hoverLeaveEvent(QGraphicsSceneHoverEvent* event) override;
+
 private:
   QUuid _id;
   int   _width;
   int   _height;
   int   _spacing;
+
+  bool _hovered;
 
   int _connectionPointDiameter;
 
