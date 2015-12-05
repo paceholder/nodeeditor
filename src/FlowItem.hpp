@@ -6,18 +6,16 @@
 
 class FlowItemEntry;
 
-class FlowItem: public QGraphicsObject
+class FlowItem : public QGraphicsObject
 {
   Q_OBJECT
 
 public:
   FlowItem();
 
-  void
-  initializeFlowItem();
+  void initializeFlowItem();
 
-  QRectF
-  boundingRect() const override;
+  QRectF boundingRect() const override;
 
   /* *
    * EVENTS
@@ -34,71 +32,62 @@ public:
    * */
 
 public:
-  QUuid
-  id();
+  QUuid id();
 
-  QPointF
-  sourcePointPos(int index) const;
+  QPointF sourcePointPos(int index) const;
 
-  QPointF
-  sinkPointPos(int index) const;
+  QPointF sinkPointPos(int index) const;
 
 signals:
-  void
-  itemMoved();
+  void itemMoved();
 
 protected:
-  void
-  paint(QPainter*                       painter,
-        const QStyleOptionGraphicsItem* option,
-        QWidget*                        widget = 0) override;
+  void paint(QPainter*                       painter,
+             QStyleOptionGraphicsItem const* option,
+             QWidget*                        widget = 0) override;
 
-  void
-  mousePressEvent(QGraphicsSceneMouseEvent* event) override;
+  void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
 
-  void
-  mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
+  void mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
 
-  void
-  hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
+  void hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
 
-  void
-  hoverLeaveEvent(QGraphicsSceneHoverEvent* event) override;
+  void hoverLeaveEvent(QGraphicsSceneHoverEvent* event) override;
 
 private:
+  void initializeEntries();
+
+  void embedQWidget();
+
+  void recalculateSize();
+
+  int checkHitSinkPoint(QPointF const eventPoint) const;
+
+  int checkHitSourcePoint(QPointF const eventPoint) const;
+
+  void drawConnectionPoints(QPainter* painter);
+
+  void drawFilledConnectionPoints(QPainter* painter);
+
+private:
+  // addressing
+
   QUuid _id;
-  int   _width;
-  int   _height;
-  int   _spacing;
 
-  bool _hovered;
-
-  int _connectionPointDiameter;
+  // structure
 
   QList<FlowItemEntry*> _sourceEntries;
   QList<FlowItemEntry*> _sinkEntries;
 
-private:
-  void
-  initializeEntries();
+  // painting
 
-  void
-  embedQWidget();
+  int _width;
+  int _height;
+  int _spacing;
 
-  void
-  recalculateSize();
+  bool _hovered;
 
-  int
-  checkHitSinkPoint(const QPointF eventPoint) const;
-
-  int
-  checkHitSourcePoint(const QPointF eventPoint) const;
-
-  void
-  drawConnectionPoints(QPainter* painter);
-
-  void
-  drawFilledConnectionPoints(QPainter* painter);
+  int _connectionPointDiameter;
 };
 
 #endif // FLOW_ITEM_H

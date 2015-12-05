@@ -5,15 +5,15 @@
 
 FlowScene* FlowScene::_instance = nullptr;
 
-FlowScene*
+FlowScene&
 FlowScene::
 instance()
 {
-  if (_instance == nullptr)
-    _instance = new FlowScene();
+  static FlowScene flowScene;
 
-  return _instance;
+  return flowScene;
 }
+
 
 void
 FlowScene::
@@ -22,26 +22,32 @@ registerFlowItem(FlowItemInterface* flowItemIterface)
   //
 }
 
+
 QUuid
 FlowScene::
-createConnection(QUuid                flowItemID,
-                 int                  entryNumber,
+createConnection(QUuid flowItemID,
+                 int entryNumber,
                  Connection::Dragging dragging)
 {
   Connection* connection =
     new Connection(flowItemID, entryNumber, dragging);
 
+  // add to scene
   this->addItem(connection);
+
+  // add to map
   _connections[connection->id()] = connection;
 
   connection->initializeConnection();
 
-  FlowItem* item = FlowScene::instance()->getFlowItem(flowItemID);
+  FlowItem* item = FlowScene::instance().getFlowItem(flowItemID);
 
+  // z-ordering
   connection->stackBefore(item);
 
   return connection->id();
 }
+
 
 QUuid
 FlowScene::
@@ -66,12 +72,14 @@ createFlowItem()
   return flowItem->id();
 }
 
+
 Connection*
 FlowScene::
 getConnection(QUuid id) const
 {
   return _connections[id];
 }
+
 
 FlowItem*
 FlowScene::
@@ -80,16 +88,18 @@ getFlowItem(QUuid id) const
   return _flowItems[id];
 }
 
+
 void
 FlowScene::
 setDraggingConnection(QUuid id, Connection::Dragging dragging)
 {
   _draggingConnectionID = id;
-  _dragging             = dragging;
+  _dragging = dragging;
 
   Connection* c = _connections[id];
   c->setDragging(dragging);
 }
+
 
 std::pair<QUuid, Connection::Dragging>
 FlowScene::
@@ -98,23 +108,26 @@ getDraggingConnection(QUuid& id, Connection::Dragging& dragging) const
   //
 }
 
+
 void
 FlowScene::
 clearDraggingConnection()
 {
   _draggingConnectionID = QUuid();
-  _dragging             = Connection::NONE;
+  _dragging = Connection::NONE;
 }
+
 
 bool
 FlowScene::
-isDragging()
+isDraggingConnection()
 {
   return !_draggingConnectionID.isNull();
 }
 
+
 FlowScene::
-FlowScene():
+FlowScene() :
   _draggingConnectionID(QUuid()),
   _dragging(Connection::NONE)
 {

@@ -7,20 +7,22 @@
 #include <iostream>
 #include <math.h>
 Connection::
-Connection(QUuid    flowItemID,
-           int      entryNumber,
-           Dragging dragging):
+Connection(QUuid flowItemID,
+           int entryNumber,
+           Dragging dragging) :
   _id(QUuid::createUuid()),
   _source(10, 10),
   _sink(100, 100),
   _dragging(dragging),
   _pointDiameter(10),
-  _animationPhase(0)
+  _animationPhase(0),
+  _lineWidth(3.0)
 {
   setFlag(QGraphicsItem::ItemIsMovable, true);
   setFlag(QGraphicsItem::ItemIsFocusable, true);
 
-  switch (_dragging) {
+  switch (_dragging)
+  {
     case  SOURCE:
       _flowItemSinkID  = flowItemID;
       _sinkEntryNumber = entryNumber;
@@ -35,16 +37,27 @@ Connection(QUuid    flowItemID,
       break;
   }
 
+  auto effect = new QGraphicsDropShadowEffect;
+  effect->setOffset(4, 4);
+  effect->setBlurRadius(20);
+  effect->setColor(QColor(Qt::gray).darker(800));
+
+  setGraphicsEffect(effect);
+
   // startTimer(200);
 }
+
 
 void
 Connection::
 initializeConnection()
 {
-  switch (_dragging) {
-    case  SOURCE: {
-      FlowItem* item = FlowScene::instance()->getFlowItem(_flowItemSinkID);
+  // which end is being dragged?
+  switch (_dragging)
+  {
+    case SOURCE:
+    {
+      FlowItem* item = FlowScene::instance().getFlowItem(_flowItemSinkID);
 
       QPointF pointPos = mapFromScene(item->sinkPointPos(_sinkEntryNumber));
 
@@ -57,8 +70,9 @@ initializeConnection()
       break;
     }
 
-    case SINK: {
-      FlowItem* item = FlowScene::instance()->getFlowItem(_flowItemSourceID);
+    case SINK:
+    {
+      FlowItem* item = FlowScene::instance().getFlowItem(_flowItemSourceID);
 
       QPointF pointPos = mapFromScene(item->sourcePointPos(_sourceEntryNumber));
 
@@ -75,12 +89,14 @@ initializeConnection()
   }
 }
 
+
 QUuid
 Connection::
 id()
 {
   return _id;
 }
+
 
 void
 Connection::
@@ -89,7 +105,8 @@ setDragging(Dragging dragging)
   _dragging = dragging;
   grabMouse();
 
-  switch (_dragging) {
+  switch (_dragging)
+  {
     case SOURCE:
       _flowItemSourceID  = QUuid();
       _sourceEntryNumber = -1;
@@ -104,11 +121,14 @@ setDragging(Dragging dragging)
   // std::cout << "Start dragging" << std::endl;
 }
 
+
 QRectF
 Connection::
 boundingRect() const
 {
-  QPointF addon(_pointDiameter, _pointDiameter);
+  double  protectOvershooting = 20;
+  QPointF addon(_pointDiameter + protectOvershooting,
+                _pointDiameter + protectOvershooting);
 
   QPointF minimum(qMin(_source.x(), _sink.x()),
                   qMin(_source.y(), _sink.y()));
@@ -119,12 +139,14 @@ boundingRect() const
   return QRectF(minimum - addon, maximum + addon);
 }
 
+
 void
 Connection::
 advance(int phase)
 {
   // if (phase == 1) _animationPhase = (_animationPhase + 1) % 7;
 }
+
 
 void
 Connection::
@@ -133,20 +155,25 @@ timerEvent(QTimerEvent* event)
   // this->advance(1);
 }
 
+
 void
 Connection::
-paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
+paint(QPainter* painter,
+      const QStyleOptionGraphicsItem* option,
+      QWidget* widget)
 {
   Q_UNUSED(option);
   Q_UNUSED(widget);
 
-  if (!_flowItemSourceID.isNull()) {
-    FlowItem* item = FlowScene::instance()->getFlowItem(_flowItemSourceID);
+  if (!_flowItemSourceID.isNull())
+  {
+    FlowItem* item = FlowScene::instance().getFlowItem(_flowItemSourceID);
     _source = mapFromScene(item->sourcePointPos(_sourceEntryNumber));
   }
 
-  if (!_flowItemSinkID.isNull()) {
-    FlowItem* item = FlowScene::instance()->getFlowItem(_flowItemSinkID);
+  if (!_flowItemSinkID.isNull())
+  {
+    FlowItem* item = FlowScene::instance().getFlowItem(_flowItemSinkID);
     _sink = mapFromScene(item->sinkPointPos(_sinkEntryNumber));
   }
 
@@ -157,16 +184,19 @@ paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget
   // ---- connection line
   QPen p;
 
-  p.setWidth(2);
+  p.setWidth(_lineWidth);
   p.setColor(Qt::yellow);
-  p.setColor(Qt::cyan);
+  p.setColor(QColor(Qt::cyan).darker());
   painter->setPen(p);
 
   QPainterPath path(_source);
 
-  QPointF c1((_sink.x() + _source.x()) / 2.0, _source.y());
+  double ratio1 = 0.3;
+  double ratio2 = 1 - ratio1;
 
-  QPointF c2((_sink.x() + _source.x()) / 2.0, _sink.y());
+  QPointF c1(_sink.x() * ratio2 + _source.x() * ratio1, _source.y());
+
+  QPointF c2(_sink.x() * ratio1 + _source.x() * ratio2, _sink.y());
 
   path.cubicTo(c1, c2, _sink);
 
@@ -208,17 +238,19 @@ paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget
   return;
 }
 
+
 void
 Connection::
 mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
-  auto   distance  = [](QPointF& d) { return sqrt(d.x() * d.x() + d.y() * d.y()); };
+  auto   distance  = [] (QPointF & d) { return sqrt (QPointF::dotProduct(d, d)); };
   double tolerance = 2.0 * _pointDiameter;
 
   {
     QPointF diff = event->pos() - _source;
 
-    if (distance(diff) < tolerance) {
+    if (distance(diff) < tolerance)
+    {
       _dragging = SOURCE;
       return;
     }
@@ -227,7 +259,8 @@ mousePressEvent(QGraphicsSceneMouseEvent* event)
   {
     QPointF diff = event->pos() - _sink;
 
-    if (distance(diff) < tolerance) {
+    if (distance(diff) < tolerance)
+    {
       _dragging = SINK;
       return;
     }
@@ -235,6 +268,7 @@ mousePressEvent(QGraphicsSceneMouseEvent* event)
 
   event->ignore();
 }
+
 
 void
 Connection::
@@ -244,13 +278,16 @@ mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 
   prepareGeometryChange();
 
-  switch (_dragging) {
-    case SOURCE: {
+  switch (_dragging)
+  {
+    case SOURCE:
+    {
       _source += p;
       break;
     }
 
-    case SINK: {
+    case SINK:
+    {
       _sink += p;
       // std::cout << "Dragging SINK" << _sink.x() <<
       // ";  " << _sink.y() << std::endl;
@@ -261,18 +298,22 @@ mouseMoveEvent(QGraphicsSceneMouseEvent* event)
       break;
   }
 
-  // std::cout << _source.x() << "   " << _source.y() << std::endl;
+  event->ignore();
 }
+
 
 void
 Connection::
 mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 {
+  (void)event;
+
   _dragging = NONE;
   ungrabMouse();
 
-  FlowScene::instance()->clearDraggingConnection();
+  FlowScene::instance().clearDraggingConnection();
 }
+
 
 void
 Connection::
@@ -280,13 +321,15 @@ onItemMoved()
 {
   prepareGeometryChange();
 
-  if (!_flowItemSourceID.isNull()) {
-    FlowItem* item = FlowScene::instance()->getFlowItem(_flowItemSourceID);
+  if (!_flowItemSourceID.isNull())
+  {
+    FlowItem* item = FlowScene::instance().getFlowItem(_flowItemSourceID);
     _source = mapFromScene(item->sourcePointPos(_sourceEntryNumber));
   }
 
-  if (!_flowItemSinkID.isNull()) {
-    FlowItem* item = FlowScene::instance()->getFlowItem(_flowItemSinkID);
+  if (!_flowItemSinkID.isNull())
+  {
+    FlowItem* item = FlowScene::instance().getFlowItem(_flowItemSinkID);
     _sink = mapFromScene(item->sinkPointPos(_sinkEntryNumber));
   }
 }

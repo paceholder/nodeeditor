@@ -13,45 +13,36 @@
 class FlowItemInterface;
 class FlowItem;
 
-class FlowScene: public QGraphicsScene
+class FlowScene : public QGraphicsScene
 {
 public:
   static
-  FlowScene*
-  instance();
+  FlowScene&instance();
 
 public:
-  void
-  registerFlowItem(FlowItemInterface* flowItemIterface);
+  void registerFlowItem(FlowItemInterface* flowItemIterface);
 
-  QUuid
-  createConnection(QUuid                flowItemID,
-                   int                  entryNumber,
-                   Connection::Dragging dragging);
+  QUuid createConnection(QUuid flowItemID,
+                         int entryNumber,
+                         Connection::Dragging dragging);
 
-  QUuid
-  createFlowItem();
+  QUuid createFlowItem();
 
-  Connection*
-  getConnection(QUuid id) const;
+  Connection* getConnection(QUuid id) const;
 
-  FlowItem*
-  getFlowItem(QUuid id) const;
+  FlowItem* getFlowItem(QUuid id) const;
 
-  /** Remembers the connection currently is being dragged */
-  void
-  setDraggingConnection(QUuid id, Connection::Dragging dragging);
+  /// Remembers the connection currently is being dragged
+  void setDraggingConnection(QUuid id, Connection::Dragging dragging);
 
-  /** Returns information about dragged connection */
+  /// Returns information about dragged connection
   std::pair<QUuid, Connection::Dragging>
   getDraggingConnection(QUuid& id, Connection::Dragging& dragging) const;
 
-  bool
-  isDragging();
+  bool isDraggingConnection();
 
-  /** Sets currently dragging connection to empty value */
-  void
-  clearDraggingConnection();
+  /// Sets currently dragging connection to empty value
+  void clearDraggingConnection();
 
 private:
   FlowScene();
@@ -64,7 +55,7 @@ private:
   QMap<QUuid, Connection*> _connections;
   QMap<QUuid, FlowItem*>   _flowItems;
 
-  QUuid                _draggingConnectionID;
+  QUuid _draggingConnectionID;
   Connection::Dragging _dragging;
 };
 

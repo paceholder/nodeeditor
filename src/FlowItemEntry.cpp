@@ -3,17 +3,22 @@
 
 #include "FlowItem.hpp"
 #include "FlowScene.hpp"
+
 FlowItemEntry::
-FlowItemEntry(Type type, QUuid parentID, QUuid connectionID):
-  _type(type),
-  _parentID(parentID),
-  _connectionID(connectionID),
-  _width(100),
-  _height(20)
+FlowItemEntry(Type type, QUuid parentID, QString name, QUuid connectionID)
+  : _id(QUuid::createUuid())
+  , _parentID(parentID)
+  , _connectionID(connectionID)
+  , _type(type)
+  , _name(name)
+  , _width(100)
+  , _height(20)
 {
-  FlowItem* flowItem = FlowScene::instance()->getFlowItem(_parentID);
-  this->setParentItem(flowItem);
+  FlowItem* flowItem = FlowScene::instance().getFlowItem(_parentID);
+
+  setParentItem(flowItem);
 }
+
 
 QUuid
 FlowItemEntry::
@@ -26,14 +31,19 @@ parentID() const
   return _parentID;
 }
 
+
 QRectF
 FlowItemEntry::
 boundingRect() const
 {
   double addon = 0;
-  return QRectF(0 - addon, 0 - addon,
-                _width + 2 * addon, _height + 2 * addon);
+
+  return QRectF(0 - addon,
+                0 - addon,
+                _width + 2 * addon,
+                _height + 2 * addon);
 }
+
 
 void
 FlowItemEntry::
@@ -42,6 +52,7 @@ setConnectionID(QUuid connectionID)
   _connectionID = connectionID;
 }
 
+
 QUuid
 FlowItemEntry::
 getConnectionID() const
@@ -49,11 +60,17 @@ getConnectionID() const
   return _connectionID;
 }
 
+
 void
 FlowItemEntry::
-paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
+paint(QPainter* painter,
+      QStyleOptionGraphicsItem const* option,
+      QWidget* widget)
 {
+  Q_UNUSED(option);
+  Q_UNUSED(widget);
+
   painter->setPen(Qt::white);
   painter->setBrush(QColor(Qt::darkGray));
-  painter->drawRoundedRect(this->boundingRect(), 3.0, 3.0);
+  painter->drawRect(boundingRect());
 }
