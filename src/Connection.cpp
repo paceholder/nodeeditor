@@ -30,7 +30,7 @@ Connection(std::pair<QUuid, int> address,
   stackBefore(item);
   connect(item, &FlowItem::itemMoved, this, &Connection::onItemMoved);
 
-  item->installSceneEventFilter(this);
+  grabMouse();
 
   QPointF pointPos;
   switch (_dragging)
@@ -133,6 +133,57 @@ Connection::
 timerEvent(QTimerEvent*)
 {
   // this->advance(1);
+}
+
+
+void
+Connection::
+connectToFlowItem(std::pair<QUuid, int> address)
+{
+  Q_ASSERT(_dragging != NONE);
+
+  switch (_dragging)
+  {
+    case SOURCE:
+      _sourceAddress = address;
+      break;
+
+    case SINK:
+      _sinkAddress = address;
+      break;
+
+    default:
+      break;
+  }
+
+  _dragging = NONE;
+
+  ungrabMouse();
+}
+
+
+QPointF
+Connection::
+endPointSceneCoordinate(EndType endType)
+{
+  QPointF result;
+
+  switch (endType)
+  {
+    case SOURCE:
+      result = _source;
+
+      break;
+
+    case SINK:
+      result = _sink;
+      break;
+
+    default:
+      break;
+  }
+
+  return result;
 }
 
 
@@ -277,28 +328,37 @@ mouseMoveEvent(QGraphicsSceneMouseEvent* event)
       break;
   }
 
-  // checking underlying items
+  event->accept();
+}
 
-  QPointF scenePoint = mapToScene(event->pos());
 
-  FlowGraphicsView* view = static_cast<FlowGraphicsView*>(event->widget());
+FlowItem*
+Connection::
+locateFlowItemAt(QPointF const &scenePoint,
+                 QTransform const &transform)
+{
 
   auto& scene = FlowScene::instance();
 
-  auto flowItemEntry = dynamic_cast<FlowItem*>(scene.itemAt(scenePoint,
-                                                                 view->transform()));
+  QList<QGraphicsItem*> items = scene.items(scenePoint,
+                                            Qt::IntersectsItemShape,
+                                            Qt::AscendingOrder,
+                                            transform);
 
-  if (flowItemEntry)
-  {
-    std::cout << "FLOW ITEM ENTRY " << std::endl;
-  }
-  else
-  {
-    //std::cout << "EMPTY ENTRY" << std::endl;
-    std::cout << "-" << std::endl;
-  }
+  std::vector<QGraphicsItem*> filteredItems;
 
-  event->accept();
+  std::copy_if (items.begin(),
+                items.end(),
+                std::back_inserter(filteredItems),
+                [](QGraphicsItem * item)
+                { return dynamic_cast<FlowItem*>(item); });
+
+  if (filteredItems.empty())
+    return nullptr;
+
+  FlowItem* flowItem = dynamic_cast<FlowItem*>(filteredItems.front());
+
+  return flowItem;
 }
 
 
@@ -308,48 +368,28 @@ mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 {
   (void)event;
 
-  _dragging = NONE;
-  ungrabMouse();
 
+  // TODO why need this?
   FlowScene::instance().clearDraggingConnection();
-}
 
+  QPointF scenePoint     = mapToScene(event->pos());
+  FlowGraphicsView* view = static_cast<FlowGraphicsView*>(event->widget());
 
-bool
-Connection::
-sceneEventFilter(QGraphicsItem* watched, QEvent* event)
-{
-  // filter just mouse events
-  if (auto me = dynamic_cast<QGraphicsSceneMouseEvent*>(event))
+  auto flowItem = locateFlowItemAt(scenePoint, view->transform());
+
+  if (flowItem)
   {
-    switch (me->type())
-    {
-      case QEvent::GraphicsSceneMouseMove:
-      {
-        mouseMoveEvent(me);
-
-        return true;
-        break;
-      }
-
-      case QEvent::GraphicsSceneMouseRelease:
-      {
-        if (auto item = dynamic_cast<FlowItem*>(watched))
-        {
-          item->removeSceneEventFilter(this);
-
-          return true;
-        }
-
-        break;
-      }
-
-      default:
-        break;
-    }
+    flowItem->tryConnect(this);
   }
 
-  return false;
+
+
+
+  _dragging = NONE;
+
+  ungrabMouse();
+
+  event->accept();
 }
 
 

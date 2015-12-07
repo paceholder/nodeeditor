@@ -24,6 +24,8 @@ createConnection(std::pair<QUuid, int> address,
 {
   Connection* connection = new Connection(address, draggingEnd);
 
+  std::cout << "CREATE CONNECTION WITH D END " << draggingEnd << std::endl;
+
   // add to map
   _connections[connection->id()] = connection;
 
@@ -35,23 +37,20 @@ QUuid
 FlowScene::
 createFlowItem()
 {
-  FlowItem* flowItem = new FlowItem();
 
-  this->addItem(flowItem);
-  _flowItems[flowItem->id()] = flowItem;
+  for (auto i : {1, 2, 3, 4, 5, 6, 7, 8})
+  {
+    (void)i;
 
-  flowItem->initializeFlowItem();
+    FlowItem* flowItem = new FlowItem();
 
-  ////
+    this->addItem(flowItem);
+    _flowItems[flowItem->id()] = flowItem;
 
-  flowItem = new FlowItem();
+    flowItem->initializeFlowItem();
+  }
 
-  this->addItem(flowItem);
-  _flowItems[flowItem->id()] = flowItem;
-
-  flowItem->initializeFlowItem();
-
-  return flowItem->id();
+  return QUuid();
 }
 
 

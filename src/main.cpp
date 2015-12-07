@@ -13,6 +13,8 @@ main(int argc, char* argv[])
   QApplication app(argc, argv);
 
   FlowScene::instance();
+
+  // TODO what is it?
   FlowScene::instance().setItemIndexMethod(QGraphicsScene::NoIndex);
 
   FlowScene::instance().createFlowItem();

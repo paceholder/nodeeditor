@@ -42,6 +42,8 @@ public:
   QPointF connectionPointPosition(int index,
                                   Connection::EndType type) const;
 
+  bool tryConnect(Connection* connection);
+
 signals:
   void itemMoved();
 
@@ -65,6 +67,9 @@ private:
 
   void recalculateSize();
 
+  int checkHitPoint(Connection::EndType endType,
+                    QPointF const eventPoint) const;
+
   int checkHitSinkPoint(QPointF const eventPoint) const;
 
   int checkHitSourcePoint(QPointF const eventPoint) const;
@@ -80,8 +85,8 @@ private:
 
   // structure
 
-  QList<FlowItemEntry*> _sourceEntries;
-  QList<FlowItemEntry*> _sinkEntries;
+  std::vector<FlowItemEntry*> _sourceEntries;
+  std::vector<FlowItemEntry*> _sinkEntries;
 
   // painting
 

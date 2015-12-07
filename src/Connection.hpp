@@ -4,6 +4,8 @@
 #include <QtCore/QUuid>
 #include <QtWidgets/QGraphicsObject>
 
+class FlowItem;
+
 class Connection : public QGraphicsObject
 {
   Q_OBJECT
@@ -26,11 +28,18 @@ public:
 
   void setDragging(EndType dragging);
 
+  EndType dragging() const { return _dragging; }
+
   QRectF boundingRect() const override;
 
   void advance(int phase);
 
   void timerEvent(QTimerEvent* event);
+
+public:
+  void connectToFlowItem(std::pair<QUuid, int> address);
+
+  QPointF endPointSceneCoordinate(EndType endType);
 
 protected:
   void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
@@ -39,13 +48,16 @@ protected:
 
   void mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
 
-  bool sceneEventFilter(QGraphicsItem* watched, QEvent* event) override;
-
 public slots:
   void onItemMoved();
 
 protected:
   void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = 0) override;
+
+private:
+
+  FlowItem* locateFlowItemAt(QPointF const &scenePoint,
+                             QTransform const &transform);
 
 private:
 

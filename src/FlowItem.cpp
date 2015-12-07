@@ -4,18 +4,19 @@
 #include <QtWidgets/QGraphicsEffect>
 
 #include <iostream>
+#include <cstdlib>
 
 #include "FlowItemEntry.hpp"
 #include "FlowScene.hpp"
 
 FlowItem::
-FlowItem() :
-  _id(QUuid::createUuid()),
-  _width(100),
-  _height(150),
-  _spacing(10),
-  _hovered(false),
-  _connectionPointDiameter(12)
+FlowItem()
+  : _id(QUuid::createUuid())
+  , _width(100)
+  , _height(150)
+  , _spacing(10)
+  , _hovered(false)
+  , _connectionPointDiameter(12)
 {
   setFlag(QGraphicsItem::ItemIsMovable, true);
   setFlag(QGraphicsItem::ItemIsFocusable, true);
@@ -45,50 +46,6 @@ initializeFlowItem()
 
 void
 FlowItem::
-initializeEntries()
-{
-  FlowItemEntry* entry = new FlowItemEntry(FlowItemEntry::SINK, _id);
-
-  _sinkEntries.append(entry);
-
-  entry = new FlowItemEntry(FlowItemEntry::SINK, _id);
-
-  _sinkEntries.append(entry);
-
-  entry = new FlowItemEntry(FlowItemEntry::SINK, _id);
-
-  _sinkEntries.append(entry);
-
-  int totalHeight = 0;
-
-  for (int i = 0; i < _sinkEntries.size(); ++i)
-  {
-    _sinkEntries[i]->setPos(0, totalHeight + _spacing / 2);
-    totalHeight += _sinkEntries[i]->height() + _spacing;
-  }
-
-  ////////////////////////////
-
-  entry = new FlowItemEntry(FlowItemEntry::SOURCE, _id);
-
-  _sourceEntries.append(entry);
-
-  entry = new FlowItemEntry(FlowItemEntry::SOURCE, _id);
-
-  _sourceEntries.append(entry);
-
-  totalHeight += _spacing;
-
-  for (int i = 0; i < _sourceEntries.size(); ++i)
-  {
-    _sourceEntries[i]->setPos(0, totalHeight + _spacing / 2);
-    totalHeight += _sourceEntries[i]->height() + _spacing;
-  }
-}
-
-
-void
-FlowItem::
 embedQWidget()
 {
   QPushButton* button = new QPushButton(QString("Hello"));
@@ -108,12 +65,12 @@ recalculateSize()
 {
   int totalHeight = 0;
 
-  for (int i = 0; i < _sinkEntries.size(); ++i)
+  for (size_t i = 0; i < _sinkEntries.size(); ++i)
     totalHeight += _sinkEntries[i]->height() + _spacing;
 
   totalHeight += _spacing;
 
-  for (int i = 0; i < _sourceEntries.size(); ++i)
+  for (size_t i = 0; i < _sourceEntries.size(); ++i)
     totalHeight += _sourceEntries[i]->height() + _spacing;
 
   _height = totalHeight;
@@ -153,7 +110,7 @@ connectionPointPosition(int index,
     {
       double totalHeight = 0;
 
-      for (int i = 0; i < _sinkEntries.size(); ++i)
+      for (size_t i = 0; i < _sinkEntries.size(); ++i)
         totalHeight += _sinkEntries[i]->height() + _spacing;
 
       totalHeight += _spacing;
@@ -187,6 +144,85 @@ connectionPointPosition(int index,
   }
 
   return QPointF();
+}
+
+
+bool
+FlowItem::
+tryConnect(Connection* connection)
+{
+  std::cout << "TRY CONNECT " << std::endl;
+
+  using EndType = Connection::EndType;
+
+  Connection::EndType draggingEnd = connection->dragging();
+
+  switch (draggingEnd)
+  {
+    case EndType::SOURCE:
+    {
+      std::cout << "DRAGGING SOURCE" << std::endl;
+
+      auto p = connection->endPointSceneCoordinate(draggingEnd);
+
+      int entry = checkHitPoint(draggingEnd, p);
+
+      std::cout << "HIT ENTRY " << entry << std::endl;
+
+      if (entry >= 0 &&
+          _sourceEntries[entry]->getConnectionID().isNull())
+      {
+        // can connect
+        _sourceEntries[entry]->setConnectionID(connection->id());
+
+        connect(this, &FlowItem::itemMoved,
+                connection, &Connection::onItemMoved);
+
+        auto address = std::make_pair(_id, entry);
+        connection->connectToFlowItem(address);
+
+        return true;
+      }
+
+      break;
+    }
+
+    case EndType::SINK:
+    {
+      std::cout << "DRAGGING SINK" << std::endl;
+
+      auto p = connection->endPointSceneCoordinate(draggingEnd);
+
+      std::cout << "POINT " << p.x() << ", " << p.y() << std::endl;
+
+      int entry = checkHitPoint(draggingEnd, p);
+
+      std::cout << "HIT ENTRY " << entry << std::endl;
+
+      if (entry >= 0 &&
+          _sinkEntries[entry]->getConnectionID().isNull())
+      {
+        // can connect
+        _sinkEntries[entry]->setConnectionID(connection->id());
+
+        connect(this, &FlowItem::itemMoved,
+                connection, &Connection::onItemMoved);
+
+        auto address = std::make_pair(_id, entry);
+        connection->connectToFlowItem(address);
+
+        return true;
+      }
+
+      break;
+    }
+
+    case EndType::NONE:
+      std::cout << "DRAGGING NONE" << std::endl;
+      break;
+  }
+
+  return false;
 }
 
 
@@ -231,7 +267,7 @@ drawConnectionPoints(QPainter* painter)
   painter->setBrush(QColor(Qt::gray).darker());
   double totalHeight = 0;
 
-  for (int i = 0; i < _sinkEntries.size(); ++i)
+  for (size_t i = 0; i < _sinkEntries.size(); ++i)
   {
     double h = _sinkEntries[i]->height();
 
@@ -246,7 +282,7 @@ drawConnectionPoints(QPainter* painter)
 
   totalHeight += _spacing;
 
-  for (int i = 0; i < _sourceEntries.size(); ++i)
+  for (size_t i = 0; i < _sourceEntries.size(); ++i)
   {
     double h = _sourceEntries[i]->height();
 
@@ -270,7 +306,7 @@ drawFilledConnectionPoints(QPainter* painter)
 
   double totalHeight = 0;
 
-  for (int i = 0; i < _sinkEntries.size(); ++i)
+  for (size_t i = 0; i < _sinkEntries.size(); ++i)
   {
     double h = _sinkEntries[i]->height();
 
@@ -287,7 +323,7 @@ drawFilledConnectionPoints(QPainter* painter)
 
   totalHeight += _spacing;
 
-  for (int i = 0; i < _sourceEntries.size(); ++i)
+  for (size_t i = 0; i < _sourceEntries.size(); ++i)
   {
     double h = _sourceEntries[i]->height();
 
@@ -304,6 +340,31 @@ drawFilledConnectionPoints(QPainter* painter)
 }
 
 
+// todo make unsigned, define invalid #
+int
+FlowItem::
+checkHitPoint(Connection::EndType endType,
+              QPointF const point) const
+{
+
+  switch (endType)
+  {
+    case Connection::EndType::SINK:
+      return checkHitSinkPoint(point);
+      break;
+
+    case Connection::EndType::SOURCE:
+      return checkHitSourcePoint(point);
+      break;
+
+    default:
+      break;
+  }
+
+  return -1;
+}
+
+
 int
 FlowItem::
 checkHitSinkPoint(const QPointF eventPoint) const
@@ -312,7 +373,7 @@ checkHitSinkPoint(const QPointF eventPoint) const
 
   double tolerance = 1.0 * _connectionPointDiameter;
 
-  for (int i = 0; i < _sinkEntries.size(); ++i)
+  for (size_t i = 0; i < _sinkEntries.size(); ++i)
   {
     QPointF p = connectionPointPosition(i, Connection::SINK) - eventPoint;
 
@@ -334,7 +395,7 @@ checkHitSourcePoint(const QPointF eventPoint) const
 
   double tolerance = 1.0 * _connectionPointDiameter;
 
-  for (int i = 0; i < _sourceEntries.size(); ++i)
+  for (size_t i = 0; i < _sourceEntries.size(); ++i)
   {
     QPointF p = connectionPointPosition(i, Connection::SOURCE) - eventPoint;
     auto    distance = std::sqrt(QPointF::dotProduct(p, p));
@@ -397,8 +458,9 @@ mousePressEvent(QGraphicsSceneMouseEvent* event)
     }
   }
 
-  // event->ignore();
-  // QGraphicsObject::mousePressEvent(event);
+  //event->ignore();
+
+  QGraphicsObject::mousePressEvent(event);
 }
 
 
@@ -406,14 +468,15 @@ void
 FlowItem::
 mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 {
-  std::cout << "MOUSE MOVE ON ITEM " << std::endl;
   if (!FlowScene::instance().isDraggingConnection())
   {
     if (event->lastPos() != event->pos())
       emit itemMoved();
-
-    QGraphicsObject::mouseMoveEvent(event);
   }
+
+  //event->ignore();
+
+  QGraphicsObject::mouseMoveEvent(event);
 }
 
 
@@ -434,4 +497,48 @@ hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
   _hovered = false;
   update();
   event->accept();
+}
+
+
+void
+FlowItem::
+initializeEntries()
+{
+
+  unsigned int n = std::rand() % 4 + 2;
+
+  for (auto i = 0ul; i < n; ++i)
+  {
+    FlowItemEntry* entry =
+      new FlowItemEntry(FlowItemEntry::SINK, _id);
+
+    _sinkEntries.push_back(entry);
+  }
+
+  int totalHeight = 0;
+  for (size_t i = 0; i < _sinkEntries.size(); ++i)
+  {
+    _sinkEntries[i]->setPos(0, totalHeight + _spacing / 2);
+    totalHeight += _sinkEntries[i]->height() + _spacing;
+  }
+
+  ////////////////////////////
+
+  n = std::rand() % 4 + 2;
+
+  for (auto i = 0ul; i < n; ++i)
+  {
+    FlowItemEntry* entry =
+      new FlowItemEntry(FlowItemEntry::SOURCE, _id);
+
+    _sourceEntries.push_back(entry);
+  }
+
+  totalHeight += _spacing;
+
+  for (size_t i = 0; i < _sourceEntries.size(); ++i)
+  {
+    _sourceEntries[i]->setPos(0, totalHeight + _spacing / 2);
+    totalHeight += _sourceEntries[i]->height() + _spacing;
+  }
 }
