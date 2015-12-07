@@ -4,6 +4,8 @@
 #include <QtCore/QUuid>
 #include <QtWidgets/QGraphicsObject>
 
+#include "Connection.hpp"
+
 class FlowItemEntry;
 
 class FlowItem : public QGraphicsObject
@@ -32,11 +34,13 @@ public:
    * */
 
 public:
-  QUuid id();
+  QUuid id() { return _id; }
 
-  QPointF sourcePointPos(int index) const;
+  QPointF connectionPointPosition(std::pair<QUuid, int> address,
+                                  Connection::EndType endType) const;
 
-  QPointF sinkPointPos(int index) const;
+  QPointF connectionPointPosition(int index,
+                                  Connection::EndType type) const;
 
 signals:
   void itemMoved();

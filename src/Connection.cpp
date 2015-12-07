@@ -2,40 +2,64 @@
 #include <QtWidgets/QtWidgets>
 
 #include "FlowItem.hpp"
+#include "FlowItemEntry.hpp"
 #include "FlowScene.hpp"
+#include "FlowGraphicsView.h"
 
 #include <iostream>
 #include <math.h>
+
 Connection::
-Connection(QUuid flowItemID,
-           int entryNumber,
-           Dragging dragging) :
-  _id(QUuid::createUuid()),
-  _source(10, 10),
-  _sink(100, 100),
-  _dragging(dragging),
-  _pointDiameter(10),
-  _animationPhase(0),
-  _lineWidth(3.0)
+Connection(std::pair<QUuid, int> address,
+           EndType dragging)
+  : _id(QUuid::createUuid())
+  , _source(10, 10)
+  , _sink(100, 100)
+  , _dragging(dragging)
+  , _pointDiameter(10)
+  , _animationPhase(0)
+  , _lineWidth(3.0)
 {
   setFlag(QGraphicsItem::ItemIsMovable, true);
   setFlag(QGraphicsItem::ItemIsFocusable, true);
 
+  FlowScene &flowScene = FlowScene::instance();
+  flowScene.addItem(this);
+
+  FlowItem* item = flowScene.getFlowItem(address.first);
+  stackBefore(item);
+  connect(item, &FlowItem::itemMoved, this, &Connection::onItemMoved);
+
+  item->installSceneEventFilter(this);
+
+  QPointF pointPos;
   switch (_dragging)
   {
     case  SOURCE:
-      _flowItemSinkID  = flowItemID;
-      _sinkEntryNumber = entryNumber;
+    {
+      _sinkAddress = address;
+      pointPos     = mapFromScene(item->connectionPointPosition(address, SINK));
+
+      //grabMouse();
       break;
+    }
 
     case SINK:
-      _flowItemSourceID  = flowItemID;
-      _sourceEntryNumber = entryNumber;
+    {
+      _sourceAddress = address;
+      pointPos       = mapFromScene(item->connectionPointPosition(address, SOURCE));
+
+      //grabMouse();
       break;
+    }
 
     default:
+      // should not get to here
       break;
   }
+
+  _source = pointPos;
+  _sink   = pointPos;
 
   auto effect = new QGraphicsDropShadowEffect;
   effect->setOffset(4, 4);
@@ -43,50 +67,6 @@ Connection(QUuid flowItemID,
   effect->setColor(QColor(Qt::gray).darker(800));
 
   setGraphicsEffect(effect);
-
-  // startTimer(200);
-}
-
-
-void
-Connection::
-initializeConnection()
-{
-  // which end is being dragged?
-  switch (_dragging)
-  {
-    case SOURCE:
-    {
-      FlowItem* item = FlowScene::instance().getFlowItem(_flowItemSinkID);
-
-      QPointF pointPos = mapFromScene(item->sinkPointPos(_sinkEntryNumber));
-
-      _source = pointPos;
-      _sink   = pointPos;
-
-      connect(item, &FlowItem::itemMoved, this, &Connection::onItemMoved);
-
-      grabMouse();
-      break;
-    }
-
-    case SINK:
-    {
-      FlowItem* item = FlowScene::instance().getFlowItem(_flowItemSourceID);
-
-      QPointF pointPos = mapFromScene(item->sourcePointPos(_sourceEntryNumber));
-
-      _source = pointPos;
-      _sink   = pointPos;
-
-      connect(item, &FlowItem::itemMoved, this, &Connection::onItemMoved);
-      grabMouse();
-      break;
-    }
-
-    default:
-      break;
-  }
 }
 
 
@@ -100,25 +80,25 @@ id()
 
 void
 Connection::
-setDragging(Dragging dragging)
+setDragging(EndType dragging)
 {
   _dragging = dragging;
-  grabMouse();
+
+  //grabMouse();
 
   switch (_dragging)
   {
     case SOURCE:
-      _flowItemSourceID  = QUuid();
-      _sourceEntryNumber = -1;
+      _sourceAddress = std::make_pair(QUuid(), -1);
       break;
 
     case SINK:
-      _flowItemSinkID  = QUuid();
-      _sinkEntryNumber = -1;
+      _sinkAddress = std::make_pair(QUuid(), -1);
+      break;
+
+    default:
       break;
   }
-
-  // std::cout << "Start dragging" << std::endl;
 }
 
 
@@ -142,7 +122,7 @@ boundingRect() const
 
 void
 Connection::
-advance(int phase)
+advance(int )
 {
   // if (phase == 1) _animationPhase = (_animationPhase + 1) % 7;
 }
@@ -150,7 +130,7 @@ advance(int phase)
 
 void
 Connection::
-timerEvent(QTimerEvent* event)
+timerEvent(QTimerEvent*)
 {
   // this->advance(1);
 }
@@ -159,22 +139,21 @@ timerEvent(QTimerEvent* event)
 void
 Connection::
 paint(QPainter* painter,
-      const QStyleOptionGraphicsItem* option,
-      QWidget* widget)
+      QStyleOptionGraphicsItem const*,
+      QWidget*)
 {
-  Q_UNUSED(option);
-  Q_UNUSED(widget);
-
-  if (!_flowItemSourceID.isNull())
+  if (!_sourceAddress.first.isNull())
   {
-    FlowItem* item = FlowScene::instance().getFlowItem(_flowItemSourceID);
-    _source = mapFromScene(item->sourcePointPos(_sourceEntryNumber));
+    FlowItem* item = FlowScene::instance().getFlowItem(_sourceAddress.first);
+    _source = mapFromScene(item->connectionPointPosition(_sourceAddress.second,
+                                                         SOURCE));
   }
 
-  if (!_flowItemSinkID.isNull())
+  if (!_sinkAddress.first.isNull())
   {
-    FlowItem* item = FlowScene::instance().getFlowItem(_flowItemSinkID);
-    _sink = mapFromScene(item->sinkPointPos(_sinkEntryNumber));
+    FlowItem* item = FlowScene::instance().getFlowItem(_sinkAddress.first);
+    _sink = mapFromScene(item->connectionPointPosition(_sinkAddress.second,
+                                                       SINK));
   }
 
   // --- bounding rect
@@ -274,6 +253,8 @@ void
 Connection::
 mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 {
+  // motion
+
   QPointF p = event->pos() - event->lastPos();
 
   prepareGeometryChange();
@@ -289,8 +270,6 @@ mouseMoveEvent(QGraphicsSceneMouseEvent* event)
     case SINK:
     {
       _sink += p;
-      // std::cout << "Dragging SINK" << _sink.x() <<
-      // ";  " << _sink.y() << std::endl;
       break;
     }
 
@@ -298,7 +277,28 @@ mouseMoveEvent(QGraphicsSceneMouseEvent* event)
       break;
   }
 
-  event->ignore();
+  // checking underlying items
+
+  QPointF scenePoint = mapToScene(event->pos());
+
+  FlowGraphicsView* view = static_cast<FlowGraphicsView*>(event->widget());
+
+  auto& scene = FlowScene::instance();
+
+  auto flowItemEntry = dynamic_cast<FlowItem*>(scene.itemAt(scenePoint,
+                                                                 view->transform()));
+
+  if (flowItemEntry)
+  {
+    std::cout << "FLOW ITEM ENTRY " << std::endl;
+  }
+  else
+  {
+    //std::cout << "EMPTY ENTRY" << std::endl;
+    std::cout << "-" << std::endl;
+  }
+
+  event->accept();
 }
 
 
@@ -315,21 +315,61 @@ mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 }
 
 
+bool
+Connection::
+sceneEventFilter(QGraphicsItem* watched, QEvent* event)
+{
+  // filter just mouse events
+  if (auto me = dynamic_cast<QGraphicsSceneMouseEvent*>(event))
+  {
+    switch (me->type())
+    {
+      case QEvent::GraphicsSceneMouseMove:
+      {
+        mouseMoveEvent(me);
+
+        return true;
+        break;
+      }
+
+      case QEvent::GraphicsSceneMouseRelease:
+      {
+        if (auto item = dynamic_cast<FlowItem*>(watched))
+        {
+          item->removeSceneEventFilter(this);
+
+          return true;
+        }
+
+        break;
+      }
+
+      default:
+        break;
+    }
+  }
+
+  return false;
+}
+
+
 void
 Connection::
 onItemMoved()
 {
   prepareGeometryChange();
 
-  if (!_flowItemSourceID.isNull())
+  if (!_sourceAddress.first.isNull())
   {
-    FlowItem* item = FlowScene::instance().getFlowItem(_flowItemSourceID);
-    _source = mapFromScene(item->sourcePointPos(_sourceEntryNumber));
+    FlowItem* item = FlowScene::instance().getFlowItem(_sourceAddress.first);
+    _source = mapFromScene(item->connectionPointPosition(_sourceAddress.second,
+                                                         SOURCE));
   }
 
-  if (!_flowItemSinkID.isNull())
+  if (!_sinkAddress.first.isNull())
   {
-    FlowItem* item = FlowScene::instance().getFlowItem(_flowItemSinkID);
-    _sink = mapFromScene(item->sinkPointPos(_sinkEntryNumber));
+    FlowItem* item = FlowScene::instance().getFlowItem(_sinkAddress.first);
+    _sink = mapFromScene(item->connectionPointPosition(_sinkAddress.second,
+                                                       SINK));
   }
 }

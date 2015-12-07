@@ -9,18 +9,22 @@ class Connection : public QGraphicsObject
   Q_OBJECT
 
 public:
-  enum Dragging { SOURCE, SINK, NONE };
+  enum EndType
+  {
+    SOURCE,
+    SINK,
+    NONE
+  };
 
 public:
-  Connection(QUuid flowItemID,
-             int entryNumber,
-             Dragging dragging);
+  Connection(std::pair<QUuid, int> address,
+             EndType dragging);
 
   void initializeConnection();
 
   QUuid id();
 
-  void setDragging(Dragging dragging);
+  void setDragging(EndType dragging);
 
   QRectF boundingRect() const override;
 
@@ -28,13 +32,14 @@ public:
 
   void timerEvent(QTimerEvent* event);
 
-
 protected:
   void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
 
   void mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
 
   void mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
+
+  bool sceneEventFilter(QGraphicsItem* watched, QEvent* event) override;
 
 public slots:
   void onItemMoved();
@@ -47,11 +52,9 @@ private:
   // addressing
 
   QUuid _id;
-  QUuid _flowItemSourceID;
-  QUuid _flowItemSinkID;
 
-  int _sourceEntryNumber;
-  int _sinkEntryNumber;
+  std::pair<QUuid, int> _sourceAddress; // ItemID, entry number
+  std::pair<QUuid, int> _sinkAddress;
 
   QPointF _source;
   QPointF _sink;
@@ -59,7 +62,7 @@ private:
 
   // state
 
-  Dragging _dragging;
+  EndType _dragging;
 
   // painting
 

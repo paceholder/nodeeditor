@@ -49,10 +49,6 @@ initializeEntries()
 {
   FlowItemEntry* entry = new FlowItemEntry(FlowItemEntry::SINK, _id);
 
-  // std::cout << "id " << _id.toString().toLocal8Bit().data() << std::endl;
-
-  int height = entry->height();
-
   _sinkEntries.append(entry);
 
   entry = new FlowItemEntry(FlowItemEntry::SINK, _id);
@@ -135,50 +131,70 @@ boundingRect() const
 }
 
 
-QUuid
-FlowItem::
-id() { return _id; }
-
 QPointF
 FlowItem::
-sinkPointPos(int index) const
+connectionPointPosition(std::pair<QUuid, int> address,
+                        Connection::EndType endType) const
 {
-  double totalHeight = 0;
 
-  for (int i = 1; i <= index; ++i)
-    totalHeight += _sinkEntries[i]->height() + _spacing;
-
-  totalHeight += _spacing / 2 + _sinkEntries[index]->height() / 2;
-  double x = 0.0 - _connectionPointDiameter * 1.3;
-
-  return mapToScene(QPointF(x, totalHeight));
+  return connectionPointPosition(address.second, endType);
 }
 
 
 QPointF
 FlowItem::
-sourcePointPos(int index) const
+connectionPointPosition(int index,
+                        Connection::EndType endType) const
 {
-  double totalHeight = 0;
 
-  for (int i = 0; i < _sinkEntries.size(); ++i)
-    totalHeight += _sinkEntries[i]->height() + _spacing;
+  switch (endType)
+  {
+    case Connection::SOURCE:
+    {
+      double totalHeight = 0;
 
-  totalHeight += _spacing;
+      for (int i = 0; i < _sinkEntries.size(); ++i)
+        totalHeight += _sinkEntries[i]->height() + _spacing;
 
-  for (int i = 1; i <= index; ++i)
-    totalHeight += _sourceEntries[i]->height() + _spacing;
+      totalHeight += _spacing;
 
-  totalHeight += (_spacing  + _sourceEntries[index]->height()) / 2.0;
-  double x = _width + _connectionPointDiameter * 1.3;
+      for (int i = 1; i <= index; ++i)
+        totalHeight += _sourceEntries[i]->height() + _spacing;
 
-  return mapToScene(QPointF(x, totalHeight));
+      totalHeight += (_spacing  + _sourceEntries[index]->height()) / 2.0;
+      double x = _width + _connectionPointDiameter * 1.3;
+
+      return mapToScene(QPointF(x, totalHeight));
+      break;
+    }
+
+    case Connection::SINK:
+    {
+      double totalHeight = 0;
+
+      for (int i = 1; i <= index; ++i)
+        totalHeight += _sinkEntries[i]->height() + _spacing;
+
+      totalHeight += _spacing / 2 + _sinkEntries[index]->height() / 2;
+      double x = 0.0 - _connectionPointDiameter * 1.3;
+
+      return mapToScene(QPointF(x, totalHeight));
+      break;
+    }
+
+    default:
+      break;
+  }
+
+  return QPointF();
 }
 
 
 void
 FlowItem::
-paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
+paint(QPainter* painter,
+      QStyleOptionGraphicsItem const*,
+      QWidget* )
 {
   if (_hovered)
   {
@@ -298,7 +314,7 @@ checkHitSinkPoint(const QPointF eventPoint) const
 
   for (int i = 0; i < _sinkEntries.size(); ++i)
   {
-    QPointF p = sinkPointPos(i) - eventPoint;
+    QPointF p = connectionPointPosition(i, Connection::SINK) - eventPoint;
 
     auto distance = std::sqrt(QPointF::dotProduct(p, p));
 
@@ -320,7 +336,7 @@ checkHitSourcePoint(const QPointF eventPoint) const
 
   for (int i = 0; i < _sourceEntries.size(); ++i)
   {
-    QPointF p = sourcePointPos(i) - eventPoint;
+    QPointF p = connectionPointPosition(i, Connection::SOURCE) - eventPoint;
     auto    distance = std::sqrt(QPointF::dotProduct(p, p));
 
     if (distance < tolerance)
@@ -337,20 +353,24 @@ mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
   int hit = checkHitSinkPoint(mapToScene(event->pos()));
 
+  FlowScene &flowScene = FlowScene::instance();
+
   if (hit >= 0)
   {
+    // node's sink has no connection
     if (_sinkEntries[hit]->getConnectionID().isNull())
     {
-      QUuid connectionID =
-        FlowScene::instance().createConnection(_id, hit, Connection::SOURCE);
+      auto  address      = std::make_pair(_id, hit);
+      QUuid connectionID = flowScene.createConnection(address,
+                                                      Connection::SOURCE);
 
       FlowItemEntry* entry = _sinkEntries[hit];
       entry->setConnectionID(connectionID);
     }
     else
     {
-      FlowScene::instance().setDraggingConnection(_sinkEntries[hit]->getConnectionID(),
-                                                  Connection::SINK);
+      flowScene.setDraggingConnection(_sinkEntries[hit]->getConnectionID(),
+                                      Connection::SINK);
       _sinkEntries[hit]->setConnectionID(QUuid());
     }
   }
@@ -361,19 +381,18 @@ mousePressEvent(QGraphicsSceneMouseEvent* event)
 
   if (hit >= 0)
   {
-
     if (_sourceEntries[hit]->getConnectionID().isNull())
     {
-      QUuid connectionID =
-        FlowScene::instance().createConnection(_id, hit, Connection::SINK);
+      auto  address      = std::make_pair(_id, hit);
+      QUuid connectionID = flowScene.createConnection(address, Connection::SINK);
 
       FlowItemEntry* entry = _sourceEntries[hit];
       entry->setConnectionID(connectionID);
     }
     else
     {
-      FlowScene::instance().setDraggingConnection(_sourceEntries[hit]->getConnectionID(),
-                                                  Connection::SOURCE);
+      flowScene.setDraggingConnection(_sourceEntries[hit]->getConnectionID(),
+                                      Connection::SOURCE);
       _sourceEntries[hit]->setConnectionID(QUuid());
     }
   }
@@ -387,6 +406,7 @@ void
 FlowItem::
 mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 {
+  std::cout << "MOUSE MOVE ON ITEM " << std::endl;
   if (!FlowScene::instance().isDraggingConnection())
   {
     if (event->lastPos() != event->pos())

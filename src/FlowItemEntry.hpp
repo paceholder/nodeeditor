@@ -41,11 +41,22 @@ public:
   QUuid getConnectionID() const;
 
 protected: // events
+
+  void mousePressEvent(QGraphicsSceneMouseEvent* event) override
+  {
+    (void)event;
+
+    std::cout << "PRESS CHILD" << std::endl;
+  }
+
+
   void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override
   {
     double const x = event->pos().x();
     double const y = event->pos().y();
     std::cout << "Mouse Event Item " << x << ", " << y << std::endl;
+
+    event->accept();
   }
 
 protected:

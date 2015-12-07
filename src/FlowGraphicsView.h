@@ -24,6 +24,8 @@ public:
     setBackgroundBrush(QColor(Qt::gray).darker(300));
 
     //setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+
+    setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
   }
 
 protected:

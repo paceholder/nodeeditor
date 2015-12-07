@@ -20,24 +20,19 @@ public:
   FlowScene&instance();
 
 public:
-  void registerFlowItem(FlowItemInterface* flowItemIterface);
-
-  QUuid createConnection(QUuid flowItemID,
-                         int entryNumber,
-                         Connection::Dragging dragging);
+  QUuid createConnection(std::pair<QUuid, int> address,
+                         Connection::EndType draggingEnd);
 
   QUuid createFlowItem();
+
+public:
 
   Connection* getConnection(QUuid id) const;
 
   FlowItem* getFlowItem(QUuid id) const;
 
   /// Remembers the connection currently is being dragged
-  void setDraggingConnection(QUuid id, Connection::Dragging dragging);
-
-  /// Returns information about dragged connection
-  std::pair<QUuid, Connection::Dragging>
-  getDraggingConnection(QUuid& id, Connection::Dragging& dragging) const;
+  void setDraggingConnection(QUuid id, Connection::EndType dragging);
 
   bool isDraggingConnection();
 
@@ -56,7 +51,7 @@ private:
   QMap<QUuid, FlowItem*>   _flowItems;
 
   QUuid _draggingConnectionID;
-  Connection::Dragging _dragging;
+  Connection::EndType _dragging;
 };
 
 #endif //  _FLOW_SCENE_HPP_

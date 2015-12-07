@@ -3,6 +3,8 @@
 #include "FlowItem.hpp"
 #include "FlowItemInterface.hpp"
 
+#include <iostream>
+
 FlowScene* FlowScene::_instance = nullptr;
 
 FlowScene&
@@ -15,35 +17,15 @@ instance()
 }
 
 
-void
-FlowScene::
-registerFlowItem(FlowItemInterface* flowItemIterface)
-{
-  //
-}
-
-
 QUuid
 FlowScene::
-createConnection(QUuid flowItemID,
-                 int entryNumber,
-                 Connection::Dragging dragging)
+createConnection(std::pair<QUuid, int> address,
+                 Connection::EndType draggingEnd)
 {
-  Connection* connection =
-    new Connection(flowItemID, entryNumber, dragging);
-
-  // add to scene
-  this->addItem(connection);
+  Connection* connection = new Connection(address, draggingEnd);
 
   // add to map
   _connections[connection->id()] = connection;
-
-  connection->initializeConnection();
-
-  FlowItem* item = FlowScene::instance().getFlowItem(flowItemID);
-
-  // z-ordering
-  connection->stackBefore(item);
 
   return connection->id();
 }
@@ -91,21 +73,13 @@ getFlowItem(QUuid id) const
 
 void
 FlowScene::
-setDraggingConnection(QUuid id, Connection::Dragging dragging)
+setDraggingConnection(QUuid id, Connection::EndType dragging)
 {
   _draggingConnectionID = id;
   _dragging = dragging;
 
   Connection* c = _connections[id];
   c->setDragging(dragging);
-}
-
-
-std::pair<QUuid, Connection::Dragging>
-FlowScene::
-getDraggingConnection(QUuid& id, Connection::Dragging& dragging) const
-{
-  //
 }
 
 
