@@ -1,14 +1,28 @@
 #ifndef _FLOW_SCENE_HPP_
 #define _FLOW_SCENE_HPP_
 
-#include <QtCore/QMap>
 #include <QtCore/QUuid>
+
+#include <unordered_map>
 
 #include <QtWidgets/QGraphicsScene>
 
 #include <tuple>
 
 #include "Connection.hpp"
+
+namespace std
+{
+template<>
+struct hash<QUuid>
+{
+  inline
+  size_t operator()(QUuid const& uid) const
+  {
+    return qHash(uid);
+  }
+};
+}
 
 class FlowItemInterface;
 class Node;
@@ -47,8 +61,8 @@ private:
 
   static FlowScene* _instance;
 
-  QMap<QUuid, Connection*> _connections;
-  QMap<QUuid, Node*>   _flowItems;
+  std::unordered_map<QUuid, Connection*> _connections;
+  std::unordered_map<QUuid, Node*>       _flowItems;
 
   QUuid _draggingConnectionID;
   Connection::EndType _dragging;

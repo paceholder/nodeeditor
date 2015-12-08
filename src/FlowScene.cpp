@@ -24,8 +24,6 @@ createConnection(std::pair<QUuid, int> address,
 {
   Connection* connection = new Connection(address, draggingEnd);
 
-  std::cout << "CREATE CONNECTION WITH D END " << draggingEnd << std::endl;
-
   // add to map
   _connections[connection->id()] = connection;
 
@@ -46,6 +44,7 @@ createNode()
     Node* flowItem = new Node();
 
     this->addItem(flowItem);
+
     _flowItems[flowItem->id()] = flowItem;
 
     flowItem->initializeNode();
@@ -62,7 +61,12 @@ Connection*
 FlowScene::
 getConnection(QUuid id) const
 {
-  return _connections[id];
+  auto it = _connections.find(id);
+
+  if (it != _connections.end())
+    return it->second;
+
+  return nullptr;
 }
 
 
@@ -70,7 +74,12 @@ Node*
 FlowScene::
 getNode(QUuid id) const
 {
-  return _flowItems[id];
+  auto it = _flowItems.find(id);
+
+  if (it != _flowItems.end())
+    return it->second;
+
+  return nullptr;
 }
 
 
