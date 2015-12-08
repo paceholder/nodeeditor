@@ -84,7 +84,7 @@ setDragging(EndType dragging)
 {
   _dragging = dragging;
 
-  //grabMouse();
+  grabMouse();
 
   switch (_dragging)
   {

@@ -83,8 +83,10 @@ boundingRect() const
 {
   double addon = 3 * _connectionPointDiameter;
 
-  return QRectF(0 - addon, 0 - addon,
-                _width + 2 * addon, _height + 2 * addon);
+  return QRectF(0 - addon,
+                0 - addon,
+                _width + 2 * addon,
+                _height + 2 * addon);
 }
 
 
@@ -190,7 +192,6 @@ tryConnect(Connection* connection)
   {
     return tryConnectToEnd(draggingEnd);
   }
-
 
   return false;
 }
