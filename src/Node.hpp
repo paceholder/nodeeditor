@@ -36,11 +36,11 @@ public:
 public:
   QUuid id() { return _id; }
 
-  QPointF connectionPointPosition(std::pair<QUuid, int> address,
-                                  Connection::EndType endType) const;
+  QPointF connectionPointScenePosition(std::pair<QUuid, int> address,
+                                       Connection::EndType endType) const;
 
-  QPointF connectionPointPosition(int index,
-                                  Connection::EndType type) const;
+  QPointF connectionPointScenePosition(int index,
+                                       Connection::EndType type) const;
 
   bool tryConnect(Connection* connection);
 
@@ -67,12 +67,12 @@ private:
 
   void recalculateSize();
 
-  int checkHitPoint(Connection::EndType endType,
-                    QPointF const eventPoint) const;
+  int checkHitScenePoint(Connection::EndType endType,
+                         QPointF const eventPoint) const;
 
-  int checkHitSinkPoint(QPointF const eventPoint) const;
+  int checkHitSinkScenePoint(QPointF const eventPoint) const;
 
-  int checkHitSourcePoint(QPointF const eventPoint) const;
+  int checkHitSourceScenePoint(QPointF const eventPoint) const;
 
   void drawConnectionPoints(QPainter* painter);
 

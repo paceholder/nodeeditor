@@ -92,18 +92,18 @@ boundingRect() const
 
 QPointF
 Node::
-connectionPointPosition(std::pair<QUuid, int> address,
-                        Connection::EndType endType) const
+connectionPointScenePosition(std::pair<QUuid, int> address,
+                             Connection::EndType endType) const
 {
 
-  return connectionPointPosition(address.second, endType);
+  return connectionPointScenePosition(address.second, endType);
 }
 
 
 QPointF
 Node::
-connectionPointPosition(int index,
-                        Connection::EndType endType) const
+connectionPointScenePosition(int index,
+                             Connection::EndType endType) const
 {
 
   switch (endType)
@@ -162,7 +162,7 @@ tryConnect(Connection* connection)
     {
       auto p = connection->endPointSceneCoordinate(endType);
 
-      int hit = checkHitPoint(endType, p);
+      int hit = checkHitScenePoint(endType, p);
 
       auto &entries = getEntryArray(endType);
 
@@ -314,18 +314,18 @@ drawFilledConnectionPoints(QPainter* painter)
 // todo make unsigned, define invalid #
 int
 Node::
-checkHitPoint(Connection::EndType endType,
-              QPointF const point) const
+checkHitScenePoint(Connection::EndType endType,
+                   QPointF const point) const
 {
 
   switch (endType)
   {
     case Connection::EndType::SINK:
-      return checkHitSinkPoint(point);
+      return checkHitSinkScenePoint(point);
       break;
 
     case Connection::EndType::SOURCE:
-      return checkHitSourcePoint(point);
+      return checkHitSourceScenePoint(point);
       break;
 
     default:
@@ -338,7 +338,7 @@ checkHitPoint(Connection::EndType endType,
 
 int
 Node::
-checkHitSinkPoint(const QPointF eventPoint) const
+checkHitSinkScenePoint(const QPointF eventPoint) const
 {
   int result = -1;
 
@@ -346,7 +346,7 @@ checkHitSinkPoint(const QPointF eventPoint) const
 
   for (size_t i = 0; i < _sinkEntries.size(); ++i)
   {
-    QPointF p = connectionPointPosition(i, Connection::SINK) - eventPoint;
+    QPointF p = connectionPointScenePosition(i, Connection::SINK) - eventPoint;
 
     auto distance = std::sqrt(QPointF::dotProduct(p, p));
 
@@ -360,7 +360,7 @@ checkHitSinkPoint(const QPointF eventPoint) const
 
 int
 Node::
-checkHitSourcePoint(const QPointF eventPoint) const
+checkHitSourceScenePoint(const QPointF eventPoint) const
 {
   int result = -1;
 
@@ -368,7 +368,7 @@ checkHitSourcePoint(const QPointF eventPoint) const
 
   for (size_t i = 0; i < _sourceEntries.size(); ++i)
   {
-    QPointF p = connectionPointPosition(i, Connection::SOURCE) - eventPoint;
+    QPointF p = connectionPointScenePosition(i, Connection::SOURCE) - eventPoint;
     auto    distance = std::sqrt(QPointF::dotProduct(p, p));
 
     if (distance < tolerance)
@@ -383,7 +383,7 @@ void
 Node::
 mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
-  int hit = checkHitSinkPoint(mapToScene(event->pos()));
+  int hit = checkHitSinkScenePoint(mapToScene(event->pos()));
 
   FlowScene &flowScene = FlowScene::instance();
 
@@ -409,7 +409,7 @@ mousePressEvent(QGraphicsSceneMouseEvent* event)
 
   //
 
-  hit = checkHitSourcePoint(mapToScene(event->pos()));
+  hit = checkHitSourceScenePoint(mapToScene(event->pos()));
 
   if (hit >= 0)
   {

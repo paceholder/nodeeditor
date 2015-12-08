@@ -38,7 +38,7 @@ Connection(std::pair<QUuid, int> address,
     case  SOURCE:
     {
       _sinkAddress = address;
-      pointPos     = mapFromScene(item->connectionPointPosition(address, SINK));
+      pointPos     = mapFromScene(item->connectionPointScenePosition(address, SINK));
 
       //grabMouse();
       break;
@@ -47,7 +47,7 @@ Connection(std::pair<QUuid, int> address,
     case SINK:
     {
       _sourceAddress = address;
-      pointPos       = mapFromScene(item->connectionPointPosition(address, SOURCE));
+      pointPos       = mapFromScene(item->connectionPointScenePosition(address, SOURCE));
 
       //grabMouse();
       break;
@@ -183,7 +183,7 @@ endPointSceneCoordinate(EndType endType)
       break;
   }
 
-  return result;
+  return mapToScene(result);
 }
 
 
@@ -193,18 +193,19 @@ paint(QPainter* painter,
       QStyleOptionGraphicsItem const*,
       QWidget*)
 {
+
   if (!_sourceAddress.first.isNull())
   {
     Node* item = FlowScene::instance().getNode(_sourceAddress.first);
-    _source = mapFromScene(item->connectionPointPosition(_sourceAddress.second,
-                                                         SOURCE));
+    _source = mapFromScene(item->connectionPointScenePosition(_sourceAddress.second,
+                                                              SOURCE));
   }
 
   if (!_sinkAddress.first.isNull())
   {
     Node* item = FlowScene::instance().getNode(_sinkAddress.first);
-    _sink = mapFromScene(item->connectionPointPosition(_sinkAddress.second,
-                                                       SINK));
+    _sink = mapFromScene(item->connectionPointScenePosition(_sinkAddress.second,
+                                                            SINK));
   }
 
   // --- bounding rect
@@ -273,9 +274,9 @@ void
 Connection::
 mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
-  auto distance    = [] (QPointF & d) {
-                       return sqrt (QPointF::dotProduct(d, d));
-                     };
+  auto distance = [] (QPointF & d) {
+                    return sqrt (QPointF::dotProduct(d, d));
+                  };
   double tolerance = 2.0 * _pointDiameter;
 
   {
@@ -337,7 +338,7 @@ mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 Node*
 Connection::
 locateNodeAt(QPointF const &scenePoint,
-                 QTransform const &transform)
+             QTransform const &transform)
 {
 
   auto& scene = FlowScene::instance();
@@ -402,14 +403,14 @@ onItemMoved()
   if (!_sourceAddress.first.isNull())
   {
     Node* item = FlowScene::instance().getNode(_sourceAddress.first);
-    _source = mapFromScene(item->connectionPointPosition(_sourceAddress.second,
-                                                         SOURCE));
+    _source = mapFromScene(item->connectionPointScenePosition(_sourceAddress.second,
+                                                              SOURCE));
   }
 
   if (!_sinkAddress.first.isNull())
   {
     Node* item = FlowScene::instance().getNode(_sinkAddress.first);
-    _sink = mapFromScene(item->connectionPointPosition(_sinkAddress.second,
-                                                       SINK));
+    _sink = mapFromScene(item->connectionPointScenePosition(_sinkAddress.second,
+                                                            SINK));
   }
 }

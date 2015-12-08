@@ -68,9 +68,9 @@ private:
   std::pair<QUuid, int> _sourceAddress; // ItemID, entry number
   std::pair<QUuid, int> _sinkAddress;
 
+  // local object coordinates
   QPointF _source;
   QPointF _sink;
-  QPointF _lastPoint;
 
   // state
 
