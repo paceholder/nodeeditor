@@ -16,7 +16,7 @@ Node()
   , _height(150)
   , _spacing(10)
   , _hovered(false)
-  , _connectionPointDiameter(12)
+  , _connectionPointDiameter(10)
 {
   setFlag(QGraphicsItem::ItemIsMovable, true);
   setFlag(QGraphicsItem::ItemIsFocusable, true);
