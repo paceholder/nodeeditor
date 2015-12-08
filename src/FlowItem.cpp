@@ -155,72 +155,42 @@ tryConnect(Connection* connection)
 
   using EndType = Connection::EndType;
 
+  auto tryConnectToEnd =
+    [&](EndType endType)
+    {
+      auto p = connection->endPointSceneCoordinate(endType);
+
+      int hit = checkHitPoint(endType, p);
+
+      auto &entries = getEntryArray(endType);
+
+      bool result = false;
+
+      if (hit >= 0 &&
+          entries[hit]->getConnectionID().isNull())
+      {
+        // can connect
+        entries[hit]->setConnectionID(connection->id());
+
+        connect(this, &FlowItem::itemMoved,
+                connection, &Connection::onItemMoved);
+
+        auto address = std::make_pair(_id, hit);
+        connection->connectToFlowItem(address);
+
+        result = true;
+      }
+
+      return result;
+    };
+
   Connection::EndType draggingEnd = connection->dragging();
 
-  switch (draggingEnd)
+  if (draggingEnd != EndType::NONE)
   {
-    case EndType::SOURCE:
-    {
-      std::cout << "DRAGGING SOURCE" << std::endl;
-
-      auto p = connection->endPointSceneCoordinate(draggingEnd);
-
-      int entry = checkHitPoint(draggingEnd, p);
-
-      std::cout << "HIT ENTRY " << entry << std::endl;
-
-      if (entry >= 0 &&
-          _sourceEntries[entry]->getConnectionID().isNull())
-      {
-        // can connect
-        _sourceEntries[entry]->setConnectionID(connection->id());
-
-        connect(this, &FlowItem::itemMoved,
-                connection, &Connection::onItemMoved);
-
-        auto address = std::make_pair(_id, entry);
-        connection->connectToFlowItem(address);
-
-        return true;
-      }
-
-      break;
-    }
-
-    case EndType::SINK:
-    {
-      std::cout << "DRAGGING SINK" << std::endl;
-
-      auto p = connection->endPointSceneCoordinate(draggingEnd);
-
-      std::cout << "POINT " << p.x() << ", " << p.y() << std::endl;
-
-      int entry = checkHitPoint(draggingEnd, p);
-
-      std::cout << "HIT ENTRY " << entry << std::endl;
-
-      if (entry >= 0 &&
-          _sinkEntries[entry]->getConnectionID().isNull())
-      {
-        // can connect
-        _sinkEntries[entry]->setConnectionID(connection->id());
-
-        connect(this, &FlowItem::itemMoved,
-                connection, &Connection::onItemMoved);
-
-        auto address = std::make_pair(_id, entry);
-        connection->connectToFlowItem(address);
-
-        return true;
-      }
-
-      break;
-    }
-
-    case EndType::NONE:
-      std::cout << "DRAGGING NONE" << std::endl;
-      break;
+    return tryConnectToEnd(draggingEnd);
   }
+
 
   return false;
 }
@@ -540,5 +510,27 @@ initializeEntries()
   {
     _sourceEntries[i]->setPos(0, totalHeight + _spacing / 2);
     totalHeight += _sourceEntries[i]->height() + _spacing;
+  }
+}
+
+
+std::vector<FlowItemEntry*>&
+FlowItem::
+getEntryArray(Connection::EndType endType)
+{
+  using EndType = Connection::EndType;
+
+  switch (endType)
+  {
+    case EndType::SOURCE:
+      return _sourceEntries;
+      break;
+
+    case EndType::SINK:
+      return _sinkEntries;
+      break;
+
+    default:
+      break;
   }
 }

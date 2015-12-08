@@ -342,7 +342,7 @@ locateFlowItemAt(QPointF const &scenePoint,
 
   QList<QGraphicsItem*> items = scene.items(scenePoint,
                                             Qt::IntersectsItemShape,
-                                            Qt::AscendingOrder,
+                                            Qt::DescendingOrder,
                                             transform);
 
   std::vector<QGraphicsItem*> filteredItems;

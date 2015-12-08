@@ -79,6 +79,10 @@ private:
   void drawFilledConnectionPoints(QPainter* painter);
 
 private:
+
+  std::vector<FlowItemEntry*>& getEntryArray(Connection::EndType endType);
+
+private:
   // addressing
 
   QUuid _id;
