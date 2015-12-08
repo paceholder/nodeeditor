@@ -1,11 +1,11 @@
 #include "FlowItemEntry.hpp"
 #include <QtGui/QPainter>
 
-#include "FlowItem.hpp"
+#include "Node.hpp"
 #include "FlowScene.hpp"
 
 FlowItemEntry::
-FlowItemEntry(Type type, QUuid parentID, QString name, QUuid connectionID)
+FlowItemEntry(Connection::EndType type, QUuid parentID, QString name, QUuid connectionID)
   : _id(QUuid::createUuid())
   , _parentID(parentID)
   , _connectionID(connectionID)
@@ -14,7 +14,7 @@ FlowItemEntry(Type type, QUuid parentID, QString name, QUuid connectionID)
   , _width(100)
   , _height(20)
 {
-  FlowItem* flowItem = FlowScene::instance().getFlowItem(_parentID);
+  Node* flowItem = FlowScene::instance().getNode(_parentID);
 
   setParentItem(flowItem);
 }

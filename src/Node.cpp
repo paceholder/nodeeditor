@@ -1,4 +1,4 @@
-#include "FlowItem.hpp"
+#include "Node.hpp"
 
 #include <QtWidgets/QtWidgets>
 #include <QtWidgets/QGraphicsEffect>
@@ -9,8 +9,8 @@
 #include "FlowItemEntry.hpp"
 #include "FlowScene.hpp"
 
-FlowItem::
-FlowItem()
+Node::
+Node()
   : _id(QUuid::createUuid())
   , _width(100)
   , _height(150)
@@ -31,8 +31,8 @@ FlowItem()
 
 
 void
-FlowItem::
-initializeFlowItem()
+Node::
+initializeNode()
 {
   setAcceptHoverEvents(true);
 
@@ -45,7 +45,7 @@ initializeFlowItem()
 
 
 void
-FlowItem::
+Node::
 embedQWidget()
 {
   QPushButton* button = new QPushButton(QString("Hello"));
@@ -60,7 +60,7 @@ embedQWidget()
 
 
 void
-FlowItem::
+Node::
 recalculateSize()
 {
   int totalHeight = 0;
@@ -78,7 +78,7 @@ recalculateSize()
 
 
 QRectF
-FlowItem::
+Node::
 boundingRect() const
 {
   double addon = 3 * _connectionPointDiameter;
@@ -91,7 +91,7 @@ boundingRect() const
 
 
 QPointF
-FlowItem::
+Node::
 connectionPointPosition(std::pair<QUuid, int> address,
                         Connection::EndType endType) const
 {
@@ -101,7 +101,7 @@ connectionPointPosition(std::pair<QUuid, int> address,
 
 
 QPointF
-FlowItem::
+Node::
 connectionPointPosition(int index,
                         Connection::EndType endType) const
 {
@@ -150,7 +150,7 @@ connectionPointPosition(int index,
 
 
 bool
-FlowItem::
+Node::
 tryConnect(Connection* connection)
 {
   std::cout << "TRY CONNECT " << std::endl;
@@ -174,11 +174,11 @@ tryConnect(Connection* connection)
         // can connect
         entries[hit]->setConnectionID(connection->id());
 
-        connect(this, &FlowItem::itemMoved,
+        connect(this, &Node::itemMoved,
                 connection, &Connection::onItemMoved);
 
         auto address = std::make_pair(_id, hit);
-        connection->connectToFlowItem(address);
+        connection->connectToNode(address);
 
         result = true;
       }
@@ -198,7 +198,7 @@ tryConnect(Connection* connection)
 
 
 void
-FlowItem::
+Node::
 paint(QPainter* painter,
       QStyleOptionGraphicsItem const*,
       QWidget* )
@@ -232,7 +232,7 @@ paint(QPainter* painter,
 
 
 void
-FlowItem::
+Node::
 drawConnectionPoints(QPainter* painter)
 {
   painter->setBrush(QColor(Qt::gray).darker());
@@ -269,7 +269,7 @@ drawConnectionPoints(QPainter* painter)
 
 
 void
-FlowItem::
+Node::
 drawFilledConnectionPoints(QPainter* painter)
 {
   painter->setPen(Qt::cyan);
@@ -313,7 +313,7 @@ drawFilledConnectionPoints(QPainter* painter)
 
 // todo make unsigned, define invalid #
 int
-FlowItem::
+Node::
 checkHitPoint(Connection::EndType endType,
               QPointF const point) const
 {
@@ -337,7 +337,7 @@ checkHitPoint(Connection::EndType endType,
 
 
 int
-FlowItem::
+Node::
 checkHitSinkPoint(const QPointF eventPoint) const
 {
   int result = -1;
@@ -359,7 +359,7 @@ checkHitSinkPoint(const QPointF eventPoint) const
 
 
 int
-FlowItem::
+Node::
 checkHitSourcePoint(const QPointF eventPoint) const
 {
   int result = -1;
@@ -380,7 +380,7 @@ checkHitSourcePoint(const QPointF eventPoint) const
 
 
 void
-FlowItem::
+Node::
 mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
   int hit = checkHitSinkPoint(mapToScene(event->pos()));
@@ -436,7 +436,7 @@ mousePressEvent(QGraphicsSceneMouseEvent* event)
 
 
 void
-FlowItem::
+Node::
 mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 {
   if (!FlowScene::instance().isDraggingConnection())
@@ -452,7 +452,7 @@ mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 
 
 void
-FlowItem::
+Node::
 hoverEnterEvent(QGraphicsSceneHoverEvent* event)
 {
   _hovered = true;
@@ -462,7 +462,7 @@ hoverEnterEvent(QGraphicsSceneHoverEvent* event)
 
 
 void
-FlowItem::
+Node::
 hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
 {
   _hovered = false;
@@ -472,16 +472,17 @@ hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
 
 
 void
-FlowItem::
+Node::
 initializeEntries()
 {
+  using EndType = Connection::EndType;
 
   unsigned int n = std::rand() % 4 + 2;
 
   for (auto i = 0ul; i < n; ++i)
   {
     FlowItemEntry* entry =
-      new FlowItemEntry(FlowItemEntry::SINK, _id);
+      new FlowItemEntry(EndType::SINK, _id);
 
     _sinkEntries.push_back(entry);
   }
@@ -500,7 +501,7 @@ initializeEntries()
   for (auto i = 0ul; i < n; ++i)
   {
     FlowItemEntry* entry =
-      new FlowItemEntry(FlowItemEntry::SOURCE, _id);
+      new FlowItemEntry(EndType::SOURCE, _id);
 
     _sourceEntries.push_back(entry);
   }
@@ -516,7 +517,7 @@ initializeEntries()
 
 
 std::vector<FlowItemEntry*>&
-FlowItem::
+Node::
 getEntryArray(Connection::EndType endType)
 {
   using EndType = Connection::EndType;

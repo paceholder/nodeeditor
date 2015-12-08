@@ -1,5 +1,5 @@
 #include "Connection.hpp"
-#include "FlowItem.hpp"
+#include "Node.hpp"
 
 #include "FlowScene.hpp"
 #include "FlowGraphicsView.h"
@@ -17,7 +17,7 @@ main(int argc, char* argv[])
   // TODO what is it?
   FlowScene::instance().setItemIndexMethod(QGraphicsScene::NoIndex);
 
-  FlowScene::instance().createFlowItem();
+  FlowScene::instance().createNode();
 
   FlowGraphicsView view(&FlowScene::instance());
 

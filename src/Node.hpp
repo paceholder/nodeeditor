@@ -8,14 +8,14 @@
 
 class FlowItemEntry;
 
-class FlowItem : public QGraphicsObject
+class Node : public QGraphicsObject
 {
   Q_OBJECT
 
 public:
-  FlowItem();
+  Node();
 
-  void initializeFlowItem();
+  void initializeNode();
 
   QRectF boundingRect() const override;
 

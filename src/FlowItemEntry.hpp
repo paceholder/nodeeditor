@@ -7,17 +7,15 @@
 #include <QtCore/QUuid>
 #include <QtCore/QWeakPointer>
 
-
 #include <iostream>
 
-class FlowItem;
+#include "Connection.hpp"
+
+class Node;
 
 class FlowItemEntry : public QGraphicsObject
 {
   Q_OBJECT
-
-public:
-  enum Type { SOURCE, SINK };
 
 public:
   QUuid id() const;
@@ -25,7 +23,7 @@ public:
   QUuid parentID() const;
 
 public:
-  FlowItemEntry(Type type,
+  FlowItemEntry(Connection::EndType type,
                 QUuid parentID,
                 QString name = QString("Entry"),
                 QUuid connectionID = QUuid());
@@ -74,7 +72,7 @@ private:
 
   // structure
 
-  Type _type;
+  Connection::EndType _type;
 
   QString _name;
 

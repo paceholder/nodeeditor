@@ -4,7 +4,7 @@
 #include <QtCore/QUuid>
 #include <QtWidgets/QGraphicsObject>
 
-class FlowItem;
+class Node;
 
 class Connection : public QGraphicsObject
 {
@@ -37,7 +37,7 @@ public:
   void timerEvent(QTimerEvent* event);
 
 public:
-  void connectToFlowItem(std::pair<QUuid, int> address);
+  void connectToNode(std::pair<QUuid, int> address);
 
   QPointF endPointSceneCoordinate(EndType endType);
 
@@ -56,8 +56,8 @@ protected:
 
 private:
 
-  FlowItem* locateFlowItemAt(QPointF const &scenePoint,
-                             QTransform const &transform);
+  Node* locateNodeAt(QPointF const &scenePoint,
+                     QTransform const &transform);
 
 private:
 

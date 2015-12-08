@@ -1,6 +1,6 @@
 #include "FlowScene.hpp"
 
-#include "FlowItem.hpp"
+#include "Node.hpp"
 #include "FlowItemInterface.hpp"
 
 #include <iostream>
@@ -35,19 +35,19 @@ createConnection(std::pair<QUuid, int> address,
 
 QUuid
 FlowScene::
-createFlowItem()
+createNode()
 {
 
   for (auto i : {1, 2, 3, 4, 5, 6, 7, 8})
   {
     (void)i;
 
-    FlowItem* flowItem = new FlowItem();
+    Node* flowItem = new Node();
 
     this->addItem(flowItem);
     _flowItems[flowItem->id()] = flowItem;
 
-    flowItem->initializeFlowItem();
+    flowItem->initializeNode();
   }
 
   return QUuid();
@@ -62,9 +62,9 @@ getConnection(QUuid id) const
 }
 
 
-FlowItem*
+Node*
 FlowScene::
-getFlowItem(QUuid id) const
+getNode(QUuid id) const
 {
   return _flowItems[id];
 }

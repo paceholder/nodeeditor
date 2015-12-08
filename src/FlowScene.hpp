@@ -11,7 +11,7 @@
 #include "Connection.hpp"
 
 class FlowItemInterface;
-class FlowItem;
+class Node;
 
 class FlowScene : public QGraphicsScene
 {
@@ -23,13 +23,13 @@ public:
   QUuid createConnection(std::pair<QUuid, int> address,
                          Connection::EndType draggingEnd);
 
-  QUuid createFlowItem();
+  QUuid createNode();
 
 public:
 
   Connection* getConnection(QUuid id) const;
 
-  FlowItem* getFlowItem(QUuid id) const;
+  Node* getNode(QUuid id) const;
 
   /// Remembers the connection currently is being dragged
   void setDraggingConnection(QUuid id, Connection::EndType dragging);
@@ -48,7 +48,7 @@ private:
   static FlowScene* _instance;
 
   QMap<QUuid, Connection*> _connections;
-  QMap<QUuid, FlowItem*>   _flowItems;
+  QMap<QUuid, Node*>   _flowItems;
 
   QUuid _draggingConnectionID;
   Connection::EndType _dragging;

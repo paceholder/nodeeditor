@@ -1,7 +1,7 @@
 #include "Connection.hpp"
 #include <QtWidgets/QtWidgets>
 
-#include "FlowItem.hpp"
+#include "Node.hpp"
 #include "FlowItemEntry.hpp"
 #include "FlowScene.hpp"
 #include "FlowGraphicsView.h"
@@ -26,9 +26,9 @@ Connection(std::pair<QUuid, int> address,
   FlowScene &flowScene = FlowScene::instance();
   flowScene.addItem(this);
 
-  FlowItem* item = flowScene.getFlowItem(address.first);
+  Node* item = flowScene.getNode(address.first);
   stackBefore(item);
-  connect(item, &FlowItem::itemMoved, this, &Connection::onItemMoved);
+  connect(item, &Node::itemMoved, this, &Connection::onItemMoved);
 
   grabMouse();
 
@@ -138,7 +138,7 @@ timerEvent(QTimerEvent*)
 
 void
 Connection::
-connectToFlowItem(std::pair<QUuid, int> address)
+connectToNode(std::pair<QUuid, int> address)
 {
   Q_ASSERT(_dragging != NONE);
 
@@ -195,14 +195,14 @@ paint(QPainter* painter,
 {
   if (!_sourceAddress.first.isNull())
   {
-    FlowItem* item = FlowScene::instance().getFlowItem(_sourceAddress.first);
+    Node* item = FlowScene::instance().getNode(_sourceAddress.first);
     _source = mapFromScene(item->connectionPointPosition(_sourceAddress.second,
                                                          SOURCE));
   }
 
   if (!_sinkAddress.first.isNull())
   {
-    FlowItem* item = FlowScene::instance().getFlowItem(_sinkAddress.first);
+    Node* item = FlowScene::instance().getNode(_sinkAddress.first);
     _sink = mapFromScene(item->connectionPointPosition(_sinkAddress.second,
                                                        SINK));
   }
@@ -273,7 +273,9 @@ void
 Connection::
 mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
-  auto   distance  = [] (QPointF & d) { return sqrt (QPointF::dotProduct(d, d)); };
+  auto distance    = [] (QPointF & d) {
+                       return sqrt (QPointF::dotProduct(d, d));
+                     };
   double tolerance = 2.0 * _pointDiameter;
 
   {
@@ -332,9 +334,9 @@ mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 }
 
 
-FlowItem*
+Node*
 Connection::
-locateFlowItemAt(QPointF const &scenePoint,
+locateNodeAt(QPointF const &scenePoint,
                  QTransform const &transform)
 {
 
@@ -351,12 +353,14 @@ locateFlowItemAt(QPointF const &scenePoint,
                 items.end(),
                 std::back_inserter(filteredItems),
                 [](QGraphicsItem * item)
-                { return dynamic_cast<FlowItem*>(item); });
+                {
+                  return dynamic_cast<Node*>(item);
+                });
 
   if (filteredItems.empty())
     return nullptr;
 
-  FlowItem* flowItem = dynamic_cast<FlowItem*>(filteredItems.front());
+  Node* flowItem = dynamic_cast<Node*>(filteredItems.front());
 
   return flowItem;
 }
@@ -368,22 +372,18 @@ mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 {
   (void)event;
 
-
   // TODO why need this?
   FlowScene::instance().clearDraggingConnection();
 
   QPointF scenePoint     = mapToScene(event->pos());
   FlowGraphicsView* view = static_cast<FlowGraphicsView*>(event->widget());
 
-  auto flowItem = locateFlowItemAt(scenePoint, view->transform());
+  auto flowItem = locateNodeAt(scenePoint, view->transform());
 
   if (flowItem)
   {
     flowItem->tryConnect(this);
   }
-
-
-
 
   _dragging = NONE;
 
@@ -401,14 +401,14 @@ onItemMoved()
 
   if (!_sourceAddress.first.isNull())
   {
-    FlowItem* item = FlowScene::instance().getFlowItem(_sourceAddress.first);
+    Node* item = FlowScene::instance().getNode(_sourceAddress.first);
     _source = mapFromScene(item->connectionPointPosition(_sourceAddress.second,
                                                          SOURCE));
   }
 
   if (!_sinkAddress.first.isNull())
   {
-    FlowItem* item = FlowScene::instance().getFlowItem(_sinkAddress.first);
+    Node* item = FlowScene::instance().getNode(_sinkAddress.first);
     _sink = mapFromScene(item->connectionPointPosition(_sinkAddress.second,
                                                        SINK));
   }
