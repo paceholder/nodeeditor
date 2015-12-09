@@ -1,9 +1,13 @@
 #include "FlowScene.hpp"
 
+#include <iostream>
+
+#include <QtWidgets/QGraphicsSceneMoveEvent>
+
 #include "Node.hpp"
 #include "FlowItemInterface.hpp"
+#include "FlowGraphicsView.h"
 
-#include <iostream>
 
 FlowScene* FlowScene::_instance = nullptr;
 
@@ -16,6 +20,38 @@ instance()
   return flowScene;
 }
 
+
+Node*
+FlowScene::
+locateNodeAt(QGraphicsSceneMouseEvent * event)
+{
+  auto view = static_cast<FlowGraphicsView*>(event->widget());
+
+  auto& scene = FlowScene::instance();
+
+  // items under cursor
+  QList<QGraphicsItem*> items = scene.items(event->scenePos(),
+                                            Qt::IntersectsItemShape,
+                                            Qt::DescendingOrder,
+                                            view->transform());
+
+  std::vector<QGraphicsItem*> filteredItems;
+
+  std::copy_if(items.begin(),
+               items.end(),
+               std::back_inserter(filteredItems),
+               [](QGraphicsItem * item)
+               {
+                 return dynamic_cast<Node*>(item);
+               });
+
+  if (filteredItems.empty())
+    return nullptr;
+
+  Node* flowItem = dynamic_cast<Node*>(filteredItems.front());
+
+  return flowItem;
+}
 
 QUuid
 FlowScene::
@@ -48,7 +84,6 @@ createNode()
     _flowItems[flowItem->id()] = flowItem;
 
     flowItem->initializeNode();
-
 
     flowItem->moveBy(std::rand() % 100, std::rand() % 100);
   }

@@ -6,6 +6,7 @@
 
 class Node;
 
+//------------------------------------------------------------------------------
 
 enum class EndType
 {
@@ -14,9 +15,66 @@ enum class EndType
   SINK
 };
 
+//------------------------------------------------------------------------------
 
+struct ConnectionGeometry
+{
+  ConnectionGeometry()
+    : source(10, 10)
+    , sink(100, 100)
+    , pointDiameter(10)
+    , animationPhase(0)
+    , lineWidth(3.0)
+  {}
 
-class Connection : public QGraphicsObject
+  inline
+  QPointF&getEndPoint(EndType endType)
+  {
+    Q_ASSERT(endType != EndType::NONE);
+
+    return (endType == EndType::SOURCE) ? source : sink;
+  }
+
+  // local object coordinates
+  QPointF source;
+  QPointF sink;
+
+  double pointDiameter;
+
+  int animationPhase;
+
+  double lineWidth;
+};
+
+//------------------------------------------------------------------------------
+
+class Connection;
+
+class ConnectionGraphicsObject : public QGraphicsObject
+{
+public:
+  ConnectionGraphicsObject(Connection& connection,
+                           ConnectionGeometry& connectionGeometry)
+    : _connection(connection)
+    , _connectionGeometry(connectionGeometry)
+  {}
+
+protected:
+  void mousePressEvent(QGraphicsSceneMouseEvent* event) override
+  { QGraphicsObject::mousePressEvent(event); }
+
+  void mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
+
+  void mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
+
+private:
+  Connection& _connection;
+  ConnectionGeometry& _connectionGeometry;
+};
+
+//------------------------------------------------------------------------------
+
+class Connection
 {
   Q_OBJECT
 
@@ -28,11 +86,10 @@ public:
 
   void initializeConnection();
 
-  QUuid id();
+  QUuid id() const;
 
-  void setDragging(EndType dragging);
-
-  EndType dragging() const { return _dragging; }
+  void setDraggingEnd(EndType dragging);
+  EndType draggingEnd() const { return _draggingEnd; }
 
   QRectF boundingRect() const override;
 
@@ -46,22 +103,18 @@ public:
   QPointF endPointSceneCoordinate(EndType endType);
 
 protected:
-  void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
-
-  void mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
-
-  void mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
 
 public slots:
   void onItemMoved();
 
 protected:
-  void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget = 0) override;
+  void paint(QPainter* painter,
+             const QStyleOptionGraphicsItem* option,
+             QWidget* widget = 0) override;
 
 private:
 
-  Node* locateNodeAt(QPointF const &scenePoint,
-                     QTransform const &transform);
+  Node* locateNodeAt(QGraphicsSceneMouseEvent* event);
 
 private:
 
@@ -72,21 +125,13 @@ private:
   std::pair<QUuid, int> _sourceAddress; // ItemID, entry number
   std::pair<QUuid, int> _sinkAddress;
 
-  // local object coordinates
-  QPointF _source;
-  QPointF _sink;
-
   // state
 
-  EndType _dragging;
+  EndType _draggingEnd;
 
   // painting
 
-  double _pointDiameter;
-
-  int _animationPhase;
-
-  double _lineWidth;
+  ConnectionGeometry connectionGeometry;
 };
 
 #endif // CONNECTION_H

@@ -151,47 +151,33 @@ connectionPointScenePosition(int index,
 
 bool
 Node::
-tryConnect(Connection* connection)
+canConnect(EndType draggingEnd, QPointF const &scenePoint)
 {
-  auto tryConnectToEnd =
-    [&](EndType endType)
-    {
-      auto p = connection->endPointSceneCoordinate(endType);
+  auto &entries = getEntryArray(draggingEnd);
+  int  hit      = checkHitScenePoint(draggingEnd, scenePoint);
 
-      int hit = checkHitScenePoint(endType, p);
+  return (hit >= 0 &&
+          entries[hit]->getConnectionID().isNull());
+}
 
-      auto &entries = getEntryArray(endType);
 
-      bool result = false;
+std::pair<QUuid, int>
+Node::
+connect(Connection const* connection,
+        EndType draggingEnd,
+        QPointF const& scenePoint)
+{
+  auto &entries = getEntryArray(draggingEnd);
+  int  hit      = checkHitScenePoint(draggingEnd, scenePoint);
 
-      if (hit >= 0 &&
-          entries[hit]->getConnectionID().isNull())
-      {
-        // can connect
-        entries[hit]->setConnectionID(connection->id());
+  entries[hit]->setConnectionID(connection->id());
 
-        connect(this, &Node::itemMoved,
-                connection, &Connection::onItemMoved);
+  QObject::connect(this, &Node::itemMoved,
+          connection, &Connection::onItemMoved);
 
-        auto address = std::make_pair(_id, hit);
-        connection->connectToNode(address);
+  auto address = std::make_pair(_id, hit);
 
-        connection->stackBefore(this);
-
-        result = true;
-      }
-
-      return result;
-    };
-
-  EndType draggingEnd = connection->dragging();
-
-  if (draggingEnd != EndType::NONE)
-  {
-    return tryConnectToEnd(draggingEnd);
-  }
-
-  return false;
+  return address;
 }
 
 

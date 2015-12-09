@@ -11,16 +11,65 @@
 
 #define DEBUG_DRAWING 1
 
+void
+ConnectionGraphicsObject::
+mouseMoveEvent(QGraphicsSceneMouseEvent* event)
+{
+  QPointF p = event->pos() - event->lastPos();
+
+  prepareGeometryChange();
+
+  auto draggingEnd = _connection.draggingEnd();
+
+  if (draggingEnd != EndType::NONE)
+  {
+    auto &endPoint = _connectionGeometry.getEndPoint(draggingEnd);
+
+    endPoint += p;
+  }
+
+  event->accept();
+}
+
+
+void
+ConnectionGraphicsObject::
+mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
+{
+  (void)event;
+
+  // TODO why need this?
+  //FlowScene::instance().clearDraggingConnection();
+
+  auto node = FlowScene::locateNodeAt(event);
+
+  if (node)
+
+    _connection.tryConnectToNode(node, event->scenePos());
+
+  {
+    flowItem->tryConnect(this);
+  }
+
+  //----------------
+
+  {
+
+    // TODO call from connection
+    _connection.setDraggingEnd(EndType::NONE);
+
+    ungrabMouse();
+
+    event->accept();
+  }
+}
+
+
 Connection::
 Connection(std::pair<QUuid, int> address,
            EndType dragging)
   : _id(QUuid::createUuid())
-  , _source(10, 10)
-  , _sink(100, 100)
   , _dragging(dragging)
-  , _pointDiameter(10)
-  , _animationPhase(0)
-  , _lineWidth(3.0)
 {
   setFlag(QGraphicsItem::ItemIsMovable, true);
   setFlag(QGraphicsItem::ItemIsFocusable, true);
@@ -140,6 +189,25 @@ timerEvent(QTimerEvent*)
 
 void
 Connection::
+tryConnectToNode(Node* node, QPointF scenePoint)
+{
+  bool ok = node->canConnect(_draggingEnd, scenePoint);
+
+  if (ok)
+  {
+    auto address = node->connect(this, _draggingEnd, scenePoint);
+
+
+    _draggingEnd = EndType::NONE;
+
+    // ungrabMouse
+
+  }
+}
+
+
+void
+Connection::
 connectToNode(std::pair<QUuid, int> address)
 {
   Q_ASSERT(_dragging != EndType::NONE);
@@ -240,130 +308,6 @@ paint(QPainter* painter,
   painter->setBrush(Qt::white);
   painter->drawEllipse(_source, _pointDiameter / 2, _pointDiameter / 2);
   painter->drawEllipse(_sink, _pointDiameter / 2, _pointDiameter / 2);
-}
-
-
-void
-Connection::
-mousePressEvent(QGraphicsSceneMouseEvent* event)
-{
-  auto distance = [] (QPointF & d) {
-                    return sqrt (QPointF::dotProduct(d, d));
-                  };
-  double tolerance = 2.0 * _pointDiameter;
-
-  {
-    QPointF diff = event->pos() - _source;
-
-    if (distance(diff) < tolerance)
-    {
-      _dragging = EndType::SOURCE;
-      return;
-    }
-  }
-
-  {
-    QPointF diff = event->pos() - _sink;
-
-    if (distance(diff) < tolerance)
-    {
-      _dragging = EndType::SINK;
-      return;
-    }
-  }
-
-  event->ignore();
-}
-
-
-void
-Connection::
-mouseMoveEvent(QGraphicsSceneMouseEvent* event)
-{
-  // motion
-
-  QPointF p = event->pos() - event->lastPos();
-
-  prepareGeometryChange();
-
-  switch (_dragging)
-  {
-    case EndType::SOURCE:
-    {
-      _source += p;
-      break;
-    }
-
-    case EndType::SINK:
-    {
-      _sink += p;
-      break;
-    }
-
-    default:
-      break;
-  }
-
-  event->accept();
-}
-
-
-Node*
-Connection::
-locateNodeAt(QPointF const &scenePoint,
-             QTransform const &transform)
-{
-
-  auto& scene = FlowScene::instance();
-
-  QList<QGraphicsItem*> items = scene.items(scenePoint,
-                                            Qt::IntersectsItemShape,
-                                            Qt::DescendingOrder,
-                                            transform);
-
-  std::vector<QGraphicsItem*> filteredItems;
-
-  std::copy_if (items.begin(),
-                items.end(),
-                std::back_inserter(filteredItems),
-                [](QGraphicsItem * item)
-                {
-                  return dynamic_cast<Node*>(item);
-                });
-
-  if (filteredItems.empty())
-    return nullptr;
-
-  Node* flowItem = dynamic_cast<Node*>(filteredItems.front());
-
-  return flowItem;
-}
-
-
-void
-Connection::
-mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
-{
-  (void)event;
-
-  // TODO why need this?
-  FlowScene::instance().clearDraggingConnection();
-
-  QPointF scenePoint     = mapToScene(event->pos());
-  FlowGraphicsView* view = static_cast<FlowGraphicsView*>(event->widget());
-
-  auto flowItem = locateNodeAt(scenePoint, view->transform());
-
-  if (flowItem)
-  {
-    flowItem->tryConnect(this);
-  }
-
-  _dragging = EndType::NONE;
-
-  ungrabMouse();
-
-  event->accept();
 }
 
 

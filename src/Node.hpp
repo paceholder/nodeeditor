@@ -42,7 +42,12 @@ public:
   QPointF connectionPointScenePosition(int index,
                                        EndType type) const;
 
-  bool tryConnect(Connection* connection);
+  bool canConnect(EndType draggingEnd, QPointF const &scenePoint);
+
+  std::pair<QUuid, int>
+  connect(Connection const* connection,
+          EndType draggingEnd,
+          QPointF const& scenePoint);
 
 signals:
   void itemMoved();

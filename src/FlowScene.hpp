@@ -31,7 +31,10 @@ class FlowScene : public QGraphicsScene
 {
 public:
   static
-  FlowScene&instance();
+  FlowScene& instance();
+
+  static
+  Node* locateNodeAt(QGraphicsSceneMouseEvent* event);
 
 public:
   QUuid createConnection(std::pair<QUuid, int> address,
