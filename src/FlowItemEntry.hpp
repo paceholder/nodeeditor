@@ -23,7 +23,7 @@ public:
   QUuid parentID() const;
 
 public:
-  FlowItemEntry(Connection::EndType type,
+  FlowItemEntry(EndType type,
                 QUuid parentID,
                 QString name = QString("Entry"),
                 QUuid connectionID = QUuid());
@@ -72,7 +72,7 @@ private:
 
   // structure
 
-  Connection::EndType _type;
+  EndType _type;
 
   QString _name;
 

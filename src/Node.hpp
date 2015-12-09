@@ -37,10 +37,10 @@ public:
   QUuid id() { return _id; }
 
   QPointF connectionPointScenePosition(std::pair<QUuid, int> address,
-                                       Connection::EndType endType) const;
+                                       EndType endType) const;
 
   QPointF connectionPointScenePosition(int index,
-                                       Connection::EndType type) const;
+                                       EndType type) const;
 
   bool tryConnect(Connection* connection);
 
@@ -67,7 +67,7 @@ private:
 
   void recalculateSize();
 
-  int checkHitScenePoint(Connection::EndType endType,
+  int checkHitScenePoint(EndType endType,
                          QPointF const eventPoint) const;
 
   int checkHitSinkScenePoint(QPointF const eventPoint) const;
@@ -80,7 +80,7 @@ private:
 
 private:
 
-  std::vector<FlowItemEntry*>& getEntryArray(Connection::EndType endType);
+  std::vector<FlowItemEntry*>& getEntryArray(EndType endType);
 
 private:
   // addressing

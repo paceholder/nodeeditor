@@ -9,6 +9,8 @@
 #include <iostream>
 #include <math.h>
 
+#define DEBUG_DRAWING 1
+
 Connection::
 Connection(std::pair<QUuid, int> address,
            EndType dragging)
@@ -35,19 +37,19 @@ Connection(std::pair<QUuid, int> address,
   QPointF pointPos;
   switch (_dragging)
   {
-    case  SOURCE:
+    case  EndType::SOURCE:
     {
       _sinkAddress = address;
-      pointPos     = mapFromScene(item->connectionPointScenePosition(address, SINK));
+      pointPos     = mapFromScene(item->connectionPointScenePosition(address, EndType::SINK));
 
       //grabMouse();
       break;
     }
 
-    case SINK:
+    case EndType::SINK:
     {
       _sourceAddress = address;
-      pointPos       = mapFromScene(item->connectionPointScenePosition(address, SOURCE));
+      pointPos       = mapFromScene(item->connectionPointScenePosition(address, EndType::SOURCE));
 
       //grabMouse();
       break;
@@ -88,11 +90,11 @@ setDragging(EndType dragging)
 
   switch (_dragging)
   {
-    case SOURCE:
+    case EndType::SOURCE:
       _sourceAddress = std::make_pair(QUuid(), -1);
       break;
 
-    case SINK:
+    case EndType::SINK:
       _sinkAddress = std::make_pair(QUuid(), -1);
       break;
 
@@ -140,25 +142,33 @@ void
 Connection::
 connectToNode(std::pair<QUuid, int> address)
 {
-  Q_ASSERT(_dragging != NONE);
+  Q_ASSERT(_dragging != EndType::NONE);
+
+  Node* item = FlowScene::instance().getNode(address.first);
 
   switch (_dragging)
   {
-    case SOURCE:
+    case EndType::SOURCE:
       _sourceAddress = address;
+      _source = mapFromScene(item->connectionPointScenePosition(_sourceAddress.second,
+                                                                EndType::SOURCE));
       break;
 
-    case SINK:
+    case EndType::SINK:
       _sinkAddress = address;
+      _sink = mapFromScene(item->connectionPointScenePosition(_sinkAddress.second,
+                                                              EndType::SINK));
       break;
 
     default:
       break;
   }
 
-  _dragging = NONE;
+  _dragging = EndType::NONE;
 
   ungrabMouse();
+
+  update();
 }
 
 
@@ -170,12 +180,12 @@ endPointSceneCoordinate(EndType endType)
 
   switch (endType)
   {
-    case SOURCE:
+    case EndType::SOURCE:
       result = _source;
 
       break;
 
-    case SINK:
+    case EndType::SINK:
       result = _sink;
       break;
 
@@ -194,79 +204,42 @@ paint(QPainter* painter,
       QWidget*)
 {
 
-  if (!_sourceAddress.first.isNull())
-  {
-    Node* item = FlowScene::instance().getNode(_sourceAddress.first);
-    _source = mapFromScene(item->connectionPointScenePosition(_sourceAddress.second,
-                                                              SOURCE));
-  }
-
-  if (!_sinkAddress.first.isNull())
-  {
-    Node* item = FlowScene::instance().getNode(_sinkAddress.first);
-    _sink = mapFromScene(item->connectionPointScenePosition(_sinkAddress.second,
-                                                            SINK));
-  }
-
-  // --- bounding rect
-  // painter->setPen(Qt::darkGray);
-  // painter->drawRect(this->boundingRect());
-
-  // ---- connection line
-  QPen p;
-
-  p.setWidth(_lineWidth);
-  p.setColor(Qt::yellow);
-  p.setColor(QColor(Qt::cyan).darker());
-  painter->setPen(p);
-
-  QPainterPath path(_source);
-
-  double ratio1 = 0.3;
-  double ratio2 = 1 - ratio1;
-
+  double const ratio1 = 0.5;
+  double const ratio2 = 1 - ratio1;
   QPointF c1(_sink.x() * ratio2 + _source.x() * ratio1, _source.y());
-
   QPointF c2(_sink.x() * ratio1 + _source.x() * ratio2, _sink.y());
 
-  path.cubicTo(c1, c2, _sink);
+#ifdef DEBUG_DRAWING
 
+  {
+    painter->setPen(Qt::red);
+    painter->setBrush(Qt::red);
+
+    painter->drawLine(QLineF(_source, c1));
+    painter->drawLine(QLineF(c1, c2));
+    painter->drawLine(QLineF(c2, _sink));
+    painter->drawEllipse(c1, 4, 4);
+    painter->drawEllipse(c2, 4, 4);
+  }
+#endif
+
+  QPen p;
+  p.setWidth(_lineWidth);
+  p.setColor(QColor(Qt::cyan).darker());
+  painter->setPen(p);
+  painter->setBrush(Qt::NoBrush);
+
+  // cubic spline
+  QPainterPath path(_source);
+  path.cubicTo(c1, c2, _sink);
   painter->drawPath(path);
 
-  // ----- draw bspline knots
-
-  // painter->setPen(Qt::white);
-  // painter->setBrush(Qt::red);
-  // painter->drawEllipse(c1, 4, 4);
-  // painter->setBrush(Qt::blue);
-  // painter->drawEllipse(c2, 4, 4);
-
-  // ---- draw _sink and _source
+  //path.angleAtPercent(t)
 
   painter->setPen(Qt::white);
   painter->setBrush(Qt::white);
   painter->drawEllipse(_source, _pointDiameter / 2, _pointDiameter / 2);
   painter->drawEllipse(_sink, _pointDiameter / 2, _pointDiameter / 2);
-
-  p.setWidth(1);
-  p.setColor(Qt::yellow);
-  painter->setBrush(Qt::yellow);
-  painter->setPen(p);
-
-  // for (int i = 1; i < 70; ++i) {
-  // double t = i / (double)70;
-
-  // if ((i + _animationPhase) % 7 == 0) {
-  // QPoint p;
-  // p.setX(B(_source.x(), c1.x(), c2.x(), _sink.x(), t));
-
-  // p.setY(B(_source.y(), c1.y(), c2.y(), _sink.y(), t));
-
-  // painter->drawEllipse(p, 2, 2);
-  // }
-  //
-
-  return;
 }
 
 
@@ -284,7 +257,7 @@ mousePressEvent(QGraphicsSceneMouseEvent* event)
 
     if (distance(diff) < tolerance)
     {
-      _dragging = SOURCE;
+      _dragging = EndType::SOURCE;
       return;
     }
   }
@@ -294,7 +267,7 @@ mousePressEvent(QGraphicsSceneMouseEvent* event)
 
     if (distance(diff) < tolerance)
     {
-      _dragging = SINK;
+      _dragging = EndType::SINK;
       return;
     }
   }
@@ -315,13 +288,13 @@ mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 
   switch (_dragging)
   {
-    case SOURCE:
+    case EndType::SOURCE:
     {
       _source += p;
       break;
     }
 
-    case SINK:
+    case EndType::SINK:
     {
       _sink += p;
       break;
@@ -386,7 +359,7 @@ mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
     flowItem->tryConnect(this);
   }
 
-  _dragging = NONE;
+  _dragging = EndType::NONE;
 
   ungrabMouse();
 
@@ -404,13 +377,13 @@ onItemMoved()
   {
     Node* item = FlowScene::instance().getNode(_sourceAddress.first);
     _source = mapFromScene(item->connectionPointScenePosition(_sourceAddress.second,
-                                                              SOURCE));
+                                                              EndType::SOURCE));
   }
 
   if (!_sinkAddress.first.isNull())
   {
     Node* item = FlowScene::instance().getNode(_sinkAddress.first);
     _sink = mapFromScene(item->connectionPointScenePosition(_sinkAddress.second,
-                                                            SINK));
+                                                            EndType::SINK));
   }
 }

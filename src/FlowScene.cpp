@@ -20,7 +20,7 @@ instance()
 QUuid
 FlowScene::
 createConnection(std::pair<QUuid, int> address,
-                 Connection::EndType draggingEnd)
+                 EndType draggingEnd)
 {
   Connection* connection = new Connection(address, draggingEnd);
 
@@ -85,7 +85,7 @@ getNode(QUuid id) const
 
 void
 FlowScene::
-setDraggingConnection(QUuid id, Connection::EndType dragging)
+setDraggingConnection(QUuid id, EndType dragging)
 {
   _draggingConnectionID = id;
   _dragging = dragging;
@@ -100,7 +100,7 @@ FlowScene::
 clearDraggingConnection()
 {
   _draggingConnectionID = QUuid();
-  _dragging = Connection::NONE;
+  _dragging = EndType::NONE;
 }
 
 
@@ -115,7 +115,7 @@ isDraggingConnection()
 FlowScene::
 FlowScene() :
   _draggingConnectionID(QUuid()),
-  _dragging(Connection::NONE)
+  _dragging(EndType::NONE)
 {
   //
 }

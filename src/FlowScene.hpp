@@ -35,7 +35,7 @@ public:
 
 public:
   QUuid createConnection(std::pair<QUuid, int> address,
-                         Connection::EndType draggingEnd);
+                         EndType draggingEnd);
 
   QUuid createNode();
 
@@ -46,7 +46,7 @@ public:
   Node* getNode(QUuid id) const;
 
   /// Remembers the connection currently is being dragged
-  void setDraggingConnection(QUuid id, Connection::EndType dragging);
+  void setDraggingConnection(QUuid id, EndType dragging);
 
   bool isDraggingConnection();
 
@@ -64,8 +64,8 @@ private:
   std::unordered_map<QUuid, Connection*> _connections;
   std::unordered_map<QUuid, Node*>       _flowItems;
 
-  QUuid _draggingConnectionID;
-  Connection::EndType _dragging;
+  QUuid   _draggingConnectionID;
+  EndType _dragging;
 };
 
 #endif //  _FLOW_SCENE_HPP_

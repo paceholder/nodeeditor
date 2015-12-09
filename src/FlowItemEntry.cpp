@@ -5,7 +5,7 @@
 #include "FlowScene.hpp"
 
 FlowItemEntry::
-FlowItemEntry(Connection::EndType type, QUuid parentID, QString name, QUuid connectionID)
+FlowItemEntry(EndType type, QUuid parentID, QString name, QUuid connectionID)
   : _id(QUuid::createUuid())
   , _parentID(parentID)
   , _connectionID(connectionID)

@@ -93,7 +93,7 @@ boundingRect() const
 QPointF
 Node::
 connectionPointScenePosition(std::pair<QUuid, int> address,
-                             Connection::EndType endType) const
+                             EndType endType) const
 {
 
   return connectionPointScenePosition(address.second, endType);
@@ -103,12 +103,12 @@ connectionPointScenePosition(std::pair<QUuid, int> address,
 QPointF
 Node::
 connectionPointScenePosition(int index,
-                             Connection::EndType endType) const
+                             EndType endType) const
 {
 
   switch (endType)
   {
-    case Connection::SOURCE:
+    case EndType::SOURCE:
     {
       double totalHeight = 0;
 
@@ -127,7 +127,7 @@ connectionPointScenePosition(int index,
       break;
     }
 
-    case Connection::SINK:
+    case EndType::SINK:
     {
       double totalHeight = 0;
 
@@ -153,10 +153,6 @@ bool
 Node::
 tryConnect(Connection* connection)
 {
-  std::cout << "TRY CONNECT " << std::endl;
-
-  using EndType = Connection::EndType;
-
   auto tryConnectToEnd =
     [&](EndType endType)
     {
@@ -180,13 +176,15 @@ tryConnect(Connection* connection)
         auto address = std::make_pair(_id, hit);
         connection->connectToNode(address);
 
+        connection->stackBefore(this);
+
         result = true;
       }
 
       return result;
     };
 
-  Connection::EndType draggingEnd = connection->dragging();
+  EndType draggingEnd = connection->dragging();
 
   if (draggingEnd != EndType::NONE)
   {
@@ -314,17 +312,17 @@ drawFilledConnectionPoints(QPainter* painter)
 // todo make unsigned, define invalid #
 int
 Node::
-checkHitScenePoint(Connection::EndType endType,
+checkHitScenePoint(EndType endType,
                    QPointF const point) const
 {
 
   switch (endType)
   {
-    case Connection::EndType::SINK:
+    case EndType::SINK:
       return checkHitSinkScenePoint(point);
       break;
 
-    case Connection::EndType::SOURCE:
+    case EndType::SOURCE:
       return checkHitSourceScenePoint(point);
       break;
 
@@ -346,7 +344,7 @@ checkHitSinkScenePoint(const QPointF eventPoint) const
 
   for (size_t i = 0; i < _sinkEntries.size(); ++i)
   {
-    QPointF p = connectionPointScenePosition(i, Connection::SINK) - eventPoint;
+    QPointF p = connectionPointScenePosition(i, EndType::SINK) - eventPoint;
 
     auto distance = std::sqrt(QPointF::dotProduct(p, p));
 
@@ -368,7 +366,7 @@ checkHitSourceScenePoint(const QPointF eventPoint) const
 
   for (size_t i = 0; i < _sourceEntries.size(); ++i)
   {
-    QPointF p = connectionPointScenePosition(i, Connection::SOURCE) - eventPoint;
+    QPointF p = connectionPointScenePosition(i, EndType::SOURCE) - eventPoint;
     auto    distance = std::sqrt(QPointF::dotProduct(p, p));
 
     if (distance < tolerance)
@@ -394,7 +392,7 @@ mousePressEvent(QGraphicsSceneMouseEvent* event)
     {
       auto  address      = std::make_pair(_id, hit);
       QUuid connectionID = flowScene.createConnection(address,
-                                                      Connection::SOURCE);
+                                                      EndType::SOURCE);
 
       FlowItemEntry* entry = _sinkEntries[hit];
       entry->setConnectionID(connectionID);
@@ -402,7 +400,7 @@ mousePressEvent(QGraphicsSceneMouseEvent* event)
     else
     {
       flowScene.setDraggingConnection(_sinkEntries[hit]->getConnectionID(),
-                                      Connection::SINK);
+                                      EndType::SINK);
       _sinkEntries[hit]->setConnectionID(QUuid());
     }
   }
@@ -416,7 +414,7 @@ mousePressEvent(QGraphicsSceneMouseEvent* event)
     if (_sourceEntries[hit]->getConnectionID().isNull())
     {
       auto  address      = std::make_pair(_id, hit);
-      QUuid connectionID = flowScene.createConnection(address, Connection::SINK);
+      QUuid connectionID = flowScene.createConnection(address, EndType::SINK);
 
       FlowItemEntry* entry = _sourceEntries[hit];
       entry->setConnectionID(connectionID);
@@ -424,7 +422,7 @@ mousePressEvent(QGraphicsSceneMouseEvent* event)
     else
     {
       flowScene.setDraggingConnection(_sourceEntries[hit]->getConnectionID(),
-                                      Connection::SOURCE);
+                                      EndType::SOURCE);
       _sourceEntries[hit]->setConnectionID(QUuid());
     }
   }
@@ -475,8 +473,6 @@ void
 Node::
 initializeEntries()
 {
-  using EndType = Connection::EndType;
-
   unsigned int n = std::rand() % 4 + 2;
 
   for (auto i = 0ul; i < n; ++i)
@@ -518,10 +514,8 @@ initializeEntries()
 
 std::vector<FlowItemEntry*>&
 Node::
-getEntryArray(Connection::EndType endType)
+getEntryArray(EndType endType)
 {
-  using EndType = Connection::EndType;
-
   switch (endType)
   {
     case EndType::SOURCE:

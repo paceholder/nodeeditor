@@ -6,17 +6,21 @@
 
 class Node;
 
+
+enum class EndType
+{
+  NONE,
+  SOURCE,
+  SINK
+};
+
+
+
 class Connection : public QGraphicsObject
 {
   Q_OBJECT
 
 public:
-  enum EndType
-  {
-    SOURCE,
-    SINK,
-    NONE
-  };
 
 public:
   Connection(std::pair<QUuid, int> address,
