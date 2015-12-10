@@ -1,6 +1,7 @@
 #include "ConnectionGraphicsObject.hpp"
 
 #include <QtWidgets/QGraphicsSceneMouseEvent>
+#include <QtWidgets/QGraphicsDropShadowEffect>
 
 #include "FlowScene.hpp"
 
@@ -26,6 +27,10 @@ ConnectionGraphicsObject(Connection& connection,
     effect->setColor(QColor(Qt::gray).darker(800));
     setGraphicsEffect(effect);
   }
+
+
+  FlowScene &flowScene = FlowScene::instance();
+  flowScene.addItem(this);
 
   grabMouse();
 }

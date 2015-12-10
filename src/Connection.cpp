@@ -12,28 +12,27 @@
 #define DEBUG_DRAWING 1
 
 Connection::
-Connection(std::pair<QUuid, int> address, EndType dragging)
+Connection(std::pair<QUuid, int> address, EndType draggingEnd)
   : _id(QUuid::createUuid())
-  , _dragging(dragging)
+  , _draggingEnd(draggingEnd)
   , _connectionPainter(_connectionGeometry)
-  , _connectionGraphicsObject(new ConnectionGraphicsObject(this,
-                                                           connectionGeometry,
-                                                           connectionPainter))
+  , _connectionGraphicsObject(new ConnectionGraphicsObject(*this,
+                                                           _connectionGeometry,
+                                                           _connectionPainter))
 {
-  FlowScene &flowScene = FlowScene::instance();
+  {
+    Node* item = flowScene.getNode(address.first);
+    _connectionGraphicsObject->stackBefore(item);
+  }
 
-  flowScene.addItem(this);
-
-  Node* item = flowScene.getNode(address.first);
-  stackBefore(item);
-  connect(item, &Node::itemMoved, this, &Connection::onItemMoved);
+  QObject::connect(item, &Node::itemMoved, this, &Connection::onItemMoved);
 
   _connectionGraphicsObject->grabMouse();
 
   setAddress(dragging, address);
 
   QPointF pointPos;
-  switch (_dragging)
+  switch (_draggingEnd)
   {
     case  EndType::SOURCE:
     {
@@ -60,7 +59,6 @@ Connection(std::pair<QUuid, int> address, EndType dragging)
 
   _source = pointPos;
   _sink   = pointPos;
-
 }
 
 
@@ -68,11 +66,11 @@ void
 Connection::
 setDragging(EndType dragging)
 {
-  _dragging = dragging;
+  _draggingEnd = dragging;
 
   grabMouse();
 
-  switch (_dragging)
+  switch (_draggingEnd)
   {
     case EndType::SOURCE:
       _sourceAddress = std::make_pair(QUuid(), -1);
