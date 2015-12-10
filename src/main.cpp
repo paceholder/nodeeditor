@@ -2,7 +2,7 @@
 #include "Node.hpp"
 
 #include "FlowScene.hpp"
-#include "FlowGraphicsView.h"
+#include "FlowGraphicsView.hpp"
 
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QGraphicsView>

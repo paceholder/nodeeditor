@@ -47,10 +47,15 @@ public:
   std::pair<QUuid, int>
   connect(Connection const* connection,
           EndType draggingEnd,
+          int hit);
+
+  std::pair<QUuid, int>
+  connect(Connection const* connection,
+          EndType draggingEnd,
           QPointF const& scenePoint);
 
 signals:
-  void itemMoved();
+  void itemMoved(QPointF const&);
 
 protected:
   void paint(QPainter*                       painter,

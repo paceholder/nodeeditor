@@ -17,8 +17,11 @@ class Connection : QObject
   Q_OBJECT
 
 public:
-  Connection(std::pair<QUuid, int> address,
-             EndType dragging);
+
+  Connection();
+
+  //Connection(std::pair<QUuid, int> address,
+  //EndType dragging);
 
   QUuid id() const { return _id; }
 
@@ -61,10 +64,16 @@ public:
   }
 
 public:
+
+  /// Connection initiates interaction
   void tryConnectToNode(Node* node, QPointF const& scenePoint);
 
-public slots:
-  void onItemMoved();
+  /// Node initiates
+  void connectToNode(std::pair<QUuid, int> const &address,
+                     QPointF const& scenePoint);
+
+  ConnectionGraphicsObject* getConnectionGraphicsObject() const
+  { return _connectionGraphicsObject; }
 
 private:
   QUuid _id;

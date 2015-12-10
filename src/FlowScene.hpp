@@ -37,8 +37,10 @@ public:
   Node* locateNodeAt(QGraphicsSceneMouseEvent* event);
 
 public:
-  QUuid createConnection(std::pair<QUuid, int> address,
-                         EndType draggingEnd);
+  //QUuid createConnection(std::pair<QUuid, int> address,
+                         //EndType draggingEnd);
+
+  Connection* createConnection();
 
   QUuid createNode();
 
@@ -47,9 +49,6 @@ public:
   Connection* getConnection(QUuid id) const;
 
   Node* getNode(QUuid id) const;
-
-  /// Remembers the connection currently is being dragged
-  void setDraggingConnection(QUuid id, EndType dragging);
 
   bool isDraggingConnection();
 

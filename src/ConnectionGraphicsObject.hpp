@@ -24,6 +24,9 @@ public:
 
   QRectF boundingRect() const override;
 
+public slots:
+  void onItemMoved(QPointF const &offset);
+
 protected:
   void paint(QPainter* painter,
              const QStyleOptionGraphicsItem* option,

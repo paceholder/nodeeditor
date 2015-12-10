@@ -28,7 +28,6 @@ ConnectionGraphicsObject(Connection& connection,
     setGraphicsEffect(effect);
   }
 
-
   FlowScene &flowScene = FlowScene::instance();
   flowScene.addItem(this);
 
@@ -41,6 +40,31 @@ ConnectionGraphicsObject::
 boundingRect() const
 {
   return _connectionGeometry.boundingRect();
+}
+
+
+void
+ConnectionGraphicsObject::
+onItemMoved(QPointF const &offset)
+{
+  prepareGeometryChange();
+
+  auto moveEndPoint =
+    [&](EndType end)
+    {
+      auto address = _connection.getAddress(end);
+
+      if (!address.first.isNull())
+      {
+
+        auto p = _connectionGeometry.getEndPoint(end);
+
+        _connectionGeometry.setEndPoint(end, p + offset);
+      }
+    };
+
+  moveEndPoint(EndType::SINK);
+  moveEndPoint(EndType::SOURCE);
 }
 
 

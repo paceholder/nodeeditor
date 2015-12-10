@@ -165,19 +165,31 @@ std::pair<QUuid, int>
 Node::
 connect(Connection const* connection,
         EndType draggingEnd,
-        QPointF const& scenePoint)
+        int hit)
 {
   auto &entries = getEntryArray(draggingEnd);
-  int  hit      = checkHitScenePoint(draggingEnd, scenePoint);
 
   entries[hit]->setConnectionID(connection->id());
 
   QObject::connect(this, &Node::itemMoved,
-          connection, &Connection::onItemMoved);
+                   connection->getConnectionGraphicsObject(),
+                   &ConnectionGraphicsObject::onItemMoved);
 
   auto address = std::make_pair(_id, hit);
 
   return address;
+}
+
+
+std::pair<QUuid, int>
+Node::
+connect(Connection const* connection,
+        EndType draggingEnd,
+        QPointF const& scenePoint)
+{
+  int hit = checkHitScenePoint(draggingEnd, scenePoint);
+
+  connect(connection, draggingEnd, hit);
 }
 
 
@@ -367,55 +379,48 @@ void
 Node::
 mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
-  int hit = checkHitSinkScenePoint(mapToScene(event->pos()));
 
-  FlowScene &flowScene = FlowScene::instance();
-
-  if (hit >= 0)
-  {
-    // node's sink has no connection
-    if (_sinkEntries[hit]->getConnectionID().isNull())
+  auto clickEnd =
+    [&](EndType endToCheck)
     {
-      auto  address      = std::make_pair(_id, hit);
-      QUuid connectionID = flowScene.createConnection(address,
-                                                      EndType::SOURCE);
+      int hit = checkHitScenePoint(endToCheck,
+                                   event->scenePos());
 
-      FlowItemEntry* entry = _sinkEntries[hit];
-      entry->setConnectionID(connectionID);
-    }
-    else
-    {
-      flowScene.setDraggingConnection(_sinkEntries[hit]->getConnectionID(),
-                                      EndType::SINK);
-      _sinkEntries[hit]->setConnectionID(QUuid());
-    }
-  }
+      FlowScene &flowScene = FlowScene::instance();
 
-  //
+      if (hit >= 0)
+      {
+        auto& entries = getEntryArray(endToCheck);
 
-  hit = checkHitSourceScenePoint(mapToScene(event->pos()));
+        // node's sink has no connection
 
-  if (hit >= 0)
-  {
-    if (_sourceEntries[hit]->getConnectionID().isNull())
-    {
-      auto  address      = std::make_pair(_id, hit);
-      QUuid connectionID = flowScene.createConnection(address, EndType::SINK);
+        QUuid const id = entries[hit]->getConnectionID();
 
-      FlowItemEntry* entry = _sourceEntries[hit];
-      entry->setConnectionID(connectionID);
-    }
-    else
-    {
-      flowScene.setDraggingConnection(_sourceEntries[hit]->getConnectionID(),
-                                      EndType::SOURCE);
-      _sourceEntries[hit]->setConnectionID(QUuid());
-    }
-  }
+        if (id.isNull())
+        {
+          // todo add to FlowScene
+          auto connection = flowScene.createConnection();
+
+          connect(connection, endToCheck, hit);
+
+          auto address = std::make_pair(_id, hit);
+          connection->connectToNode(address, event->scenePos());
+          connection->setDraggingEnd(oppositeEnd(endToCheck));
+        }
+        else
+        {
+          auto connection = flowScene.getConnection(id);
+
+          connection->setDraggingEnd(oppositeEnd(endToCheck));
+          entries[hit]->setConnectionID(QUuid());
+        }
+      }
+    };
+
+  clickEnd(EndType::SINK);
+  clickEnd(EndType::SOURCE);
 
   //event->ignore();
-
-  QGraphicsObject::mousePressEvent(event);
 }
 
 
@@ -423,10 +428,12 @@ void
 Node::
 mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 {
+  QPointF d = event->pos() - event->lastPos();
+
   if (!FlowScene::instance().isDraggingConnection())
   {
     if (event->lastPos() != event->pos())
-      emit itemMoved();
+      emit itemMoved(d);
   }
 
   //event->ignore();

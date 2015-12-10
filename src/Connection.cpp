@@ -12,63 +12,76 @@
 #define DEBUG_DRAWING 1
 
 Connection::
-Connection(std::pair<QUuid, int> address, EndType draggingEnd)
-  : _id(QUuid::createUuid())
-  , _draggingEnd(draggingEnd)
+Connection()
+  : _id(QUuid())
+  , _draggingEnd(EndType::NONE)
   , _connectionPainter(_connectionGeometry)
   , _connectionGraphicsObject(new ConnectionGraphicsObject(*this,
                                                            _connectionGeometry,
                                                            _connectionPainter))
 {
-  {
-    Node* item = flowScene.getNode(address.first);
-    _connectionGraphicsObject->stackBefore(item);
-  }
-
-  QObject::connect(item, &Node::itemMoved, this, &Connection::onItemMoved);
-
-  _connectionGraphicsObject->grabMouse();
-
-  setAddress(dragging, address);
-
-  QPointF pointPos;
-  switch (_draggingEnd)
-  {
-    case  EndType::SOURCE:
-    {
-      _sinkAddress = address;
-      pointPos     = mapFromScene(item->connectionPointScenePosition(address, EndType::SINK));
-
-      //grabMouse();
-      break;
-    }
-
-    case EndType::SINK:
-    {
-      _sourceAddress = address;
-      pointPos       = mapFromScene(item->connectionPointScenePosition(address, EndType::SOURCE));
-
-      //grabMouse();
-      break;
-    }
-
-    default:
-      // should not get to here
-      break;
-  }
-
-  _source = pointPos;
-  _sink   = pointPos;
+//
 }
+
+
+//Connection::
+//Connection(std::pair<QUuid, int> address, EndType draggingEnd)
+  //: _id(QUuid::createUuid())
+  //, _draggingEnd(draggingEnd)
+  //, _connectionPainter(_connectionGeometry)
+  //, _connectionGraphicsObject(new ConnectionGraphicsObject(*this,
+                                                           //_connectionGeometry,
+                                                           //_connectionPainter))
+//{
+  //{
+    //Node* item = flowScene.getNode(address.first);
+    //_connectionGraphicsObject->stackBefore(item);
+  //}
+
+  //QObject::connect(item, &Node::itemMoved, this, &Connection::onItemMoved);
+
+  //_connectionGraphicsObject->grabMouse();
+
+  //setAddress(dragging, address);
+
+  //QPointF pointPos;
+  //switch (_draggingEnd)
+  //{
+    //case  EndType::SOURCE:
+    //{
+      //_sinkAddress = address;
+      //pointPos     = mapFromScene(item->connectionPointScenePosition(address, EndType::SINK));
+
+      ////grabMouse();
+      //break;
+    //}
+
+    //case EndType::SINK:
+    //{
+      //_sourceAddress = address;
+      //pointPos       = mapFromScene(item->connectionPointScenePosition(address, EndType::SOURCE));
+
+      ////grabMouse();
+      //break;
+    //}
+
+    //default:
+      //// should not get to here
+      //break;
+  //}
+
+  //_source = pointPos;
+  //_sink   = pointPos;
+//}
 
 
 void
 Connection::
-setDragging(EndType dragging)
+setDraggingEnd(EndType dragging)
 {
   _draggingEnd = dragging;
 
-  grabMouse();
+  _connectionGraphicsObject->grabMouse();
 
   switch (_draggingEnd)
   {
@@ -112,10 +125,7 @@ tryConnectToNode(Node* node, QPointF const& scenePoint)
 
     if (!address.first.isNull())
     {
-
-      setAddress(_draggingEnd, address);
-
-      _connectionGeometry.setEndPoint(_draggingEnd, scenePoint);
+      connectToNode(address, scenePoint);
 
       //------
 
@@ -127,21 +137,10 @@ tryConnectToNode(Node* node, QPointF const& scenePoint)
 
 void
 Connection::
-onItemMoved()
+connectToNode(std::pair<QUuid, int> const &address,
+              QPointF const& scenePoint)
 {
-  prepareGeometryChange();
+  setAddress(_draggingEnd, address);
 
-  if (!_sourceAddress.first.isNull())
-  {
-    Node* item = FlowScene::instance().getNode(_sourceAddress.first);
-    _source = mapFromScene(item->connectionPointScenePosition(_sourceAddress.second,
-                                                              EndType::SOURCE));
-  }
-
-  if (!_sinkAddress.first.isNull())
-  {
-    Node* item = FlowScene::instance().getNode(_sinkAddress.first);
-    _sink = mapFromScene(item->connectionPointScenePosition(_sinkAddress.second,
-                                                            EndType::SINK));
-  }
+  _connectionGeometry.setEndPoint(_draggingEnd, scenePoint);
 }
