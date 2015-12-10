@@ -1,4 +1,4 @@
-#include "FlowGraphicsView.h"
+#include "FlowGraphicsView.hpp"
 
 #include <QtWidgets/QGraphicsScene>
 

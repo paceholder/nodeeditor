@@ -2,136 +2,87 @@
 #define CONNECTION_H
 
 #include <QtCore/QUuid>
-#include <QtWidgets/QGraphicsObject>
+
+#include "EndType.hpp"
+#include "ConnectionGeometry.hpp"
+#include "ConnectionPainter.hpp"
+#include "ConnectionGraphicsObject.hpp"
 
 class Node;
 
 //------------------------------------------------------------------------------
 
-enum class EndType
-{
-  NONE,
-  SOURCE,
-  SINK
-};
-
-//------------------------------------------------------------------------------
-
-struct ConnectionGeometry
-{
-  ConnectionGeometry()
-    : source(10, 10)
-    , sink(100, 100)
-    , pointDiameter(10)
-    , animationPhase(0)
-    , lineWidth(3.0)
-  {}
-
-  inline
-  QPointF&getEndPoint(EndType endType)
-  {
-    Q_ASSERT(endType != EndType::NONE);
-
-    return (endType == EndType::SOURCE) ? source : sink;
-  }
-
-  // local object coordinates
-  QPointF source;
-  QPointF sink;
-
-  double pointDiameter;
-
-  int animationPhase;
-
-  double lineWidth;
-};
-
-//------------------------------------------------------------------------------
-
-class Connection;
-
-class ConnectionGraphicsObject : public QGraphicsObject
-{
-public:
-  ConnectionGraphicsObject(Connection& connection,
-                           ConnectionGeometry& connectionGeometry)
-    : _connection(connection)
-    , _connectionGeometry(connectionGeometry)
-  {}
-
-protected:
-  void mousePressEvent(QGraphicsSceneMouseEvent* event) override
-  { QGraphicsObject::mousePressEvent(event); }
-
-  void mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
-
-  void mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
-
-private:
-  Connection& _connection;
-  ConnectionGeometry& _connectionGeometry;
-};
-
-//------------------------------------------------------------------------------
-
-class Connection
+class Connection : QObject
 {
   Q_OBJECT
-
-public:
 
 public:
   Connection(std::pair<QUuid, int> address,
              EndType dragging);
 
-  void initializeConnection();
-
-  QUuid id() const;
+  QUuid id() const { return _id; }
 
   void setDraggingEnd(EndType dragging);
   EndType draggingEnd() const { return _draggingEnd; }
 
-  QRectF boundingRect() const override;
+  std::pair<QUuid, int> getAddress(EndType endType) const
+  {
+    switch (endType)
+    {
+      case EndType::SOURCE:
+        return _sourceAddress;
+        break;
 
-  void advance(int phase);
+      case EndType::SINK:
+        return _sinkAddress;
+        break;
 
-  void timerEvent(QTimerEvent* event);
+      default:
+        break;
+    }
+    return std::make_pair(QUuid(), 0);
+  }
+
+  void setAddress(EndType endType, std::pair<QUuid, int> address)
+  {
+    switch (endType)
+    {
+      case EndType::SOURCE:
+        _sourceAddress = address;
+        break;
+
+      case EndType::SINK:
+        _sinkAddress = address;
+        break;
+
+      default:
+        break;
+    }
+  }
 
 public:
-  void connectToNode(std::pair<QUuid, int> address);
-
-  QPointF endPointSceneCoordinate(EndType endType);
-
-protected:
+  void tryConnectToNode(Node* node, QPointF const& scenePoint);
 
 public slots:
   void onItemMoved();
 
-protected:
-  void paint(QPainter* painter,
-             const QStyleOptionGraphicsItem* option,
-             QWidget* widget = 0) override;
-
 private:
-
-  Node* locateNodeAt(QGraphicsSceneMouseEvent* event);
-
-private:
-
-  // addressing
-
   QUuid _id;
 
   std::pair<QUuid, int> _sourceAddress; // ItemID, entry number
   std::pair<QUuid, int> _sinkAddress;
 
   // state
-
   EndType _draggingEnd;
 
-  // painting
+private:
 
-  ConnectionGeometry connectionGeometry;
+  // painting
+  ConnectionGeometry _connectionGeometry;
+
+  ConnectionPainter _connectionPainter;
+
+  ConnectionGraphicsObject* _connectionGraphicsObject;
 };
 
 #endif // CONNECTION_H
