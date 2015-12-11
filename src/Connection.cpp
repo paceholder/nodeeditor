@@ -25,56 +25,6 @@ Connection()
 }
 
 
-//Connection::
-//Connection(std::pair<QUuid, int> address, EndType draggingEnd)
-//: _id(QUuid::createUuid())
-//, _draggingEnd(draggingEnd)
-//, _connectionPainter(_connectionGeometry)
-//, _connectionGraphicsObject(new ConnectionGraphicsObject(*this,
-//_connectionGeometry,
-//_connectionPainter))
-//{
-//{
-//Node* item = flowScene.getNode(address.first);
-//_connectionGraphicsObject->stackBefore(item);
-//}
-
-//QObject::connect(item, &Node::itemMoved, this, &Connection::onItemMoved);
-
-//_connectionGraphicsObject->grabMouse();
-
-//setAddress(dragging, address);
-
-//QPointF pointPos;
-//switch (_draggingEnd)
-//{
-//case  EndType::SOURCE:
-//{
-//_sinkAddress = address;
-//pointPos     = mapFromScene(item->connectionPointScenePosition(address, EndType::SINK));
-
-////grabMouse();
-//break;
-//}
-
-//case EndType::SINK:
-//{
-//_sourceAddress = address;
-//pointPos       = mapFromScene(item->connectionPointScenePosition(address, EndType::SOURCE));
-
-////grabMouse();
-//break;
-//}
-
-//default:
-//// should not get to here
-//break;
-//}
-
-//_source = pointPos;
-//_sink   = pointPos;
-//}
-
 void
 Connection::
 setDraggingEnd(EndType dragging)
@@ -98,20 +48,6 @@ setDraggingEnd(EndType dragging)
   }
 }
 
-
-//void
-//Connection::
-//advance(int )
-//{
-//// if (phase == 1) _animationPhase = (_animationPhase + 1) % 7;
-//}
-
-//void
-//Connection::
-//timerEvent(QTimerEvent*)
-//{
-//// this->advance(1);
-//}
 
 void
 Connection::
