@@ -18,6 +18,7 @@ public:
     , _pointDiameter(10)
     , _animationPhase(0)
     , _lineWidth(3.0)
+    , _hovered(false)
   { }
 
 public:
@@ -73,6 +74,9 @@ public:
 
   double lineWidth() const { return _lineWidth; }
 
+  bool hovered() const { return _hovered; }
+  void setHovered(bool hovered) { _hovered = hovered; }
+
 private:
   // local object coordinates
   QPointF _source;
@@ -83,6 +87,8 @@ private:
   int _animationPhase;
 
   double _lineWidth;
+
+  bool _hovered;
 };
 
 #endif //  CONNECTION_GEOMETRY_H

@@ -16,11 +16,54 @@ public:
 
 public:
 
+  QPainterPath painterPath() const
+  {
+    QPainterPath path;
+
+    QPointF const& source = _connectionGeometry.source();
+    QPointF const& sink   = _connectionGeometry.sink();
+
+    QPointF diff = (sink - source);
+
+    double xDistance = sink.x() - source.x();
+    double distance  = std::sqrt(QPointF::dotProduct(diff, diff));
+
+    double const defaultOffset = 200;
+
+    double const lineWidth     = _connectionGeometry.lineWidth();
+
+    double const ratio1 = 0.5;
+
+    double verticalOffset = 0;
+
+    if (xDistance <= 0)
+    {
+      verticalOffset = -qMin(defaultOffset, std::abs(xDistance));
+    }
+
+    QPointF c1(source.x() + defaultOffset * ratio1, source.y() + 2 * verticalOffset);
+    QPointF c2(sink.x() - defaultOffset * ratio1, sink.y() + verticalOffset);
+
+    QPen p;
+
+    p.setWidth(2 * lineWidth);
+
+    // cubic spline
+    QPainterPath cubic(source);
+    cubic.cubicTo(c1, c2, sink);
+
+    path.addPath(cubic);
+
+    return path;
+  }
+
   inline
   void paint(QPainter* painter) const
   {
     QPointF const& source = _connectionGeometry.source();
     QPointF const& sink   = _connectionGeometry.sink();
+
+    bool const hovered = _connectionGeometry.hovered();
 
     QPointF diff = (sink - source);
 
@@ -37,18 +80,15 @@ public:
     //QPointF c1(sink.x() * ratio2 + source.x() * ratio1, source.y());
     //QPointF c2(sink.x() * ratio1 + source.x() * ratio2, sink.y());
 
-
     double verticalOffset = 0;
+
     if (xDistance <= 0)
     {
-      verticalOffset = - qMin(defaultOffset, std::abs(xDistance));
+      verticalOffset = -qMin(defaultOffset, std::abs(xDistance));
     }
-
 
     QPointF c1(source.x() + defaultOffset * ratio1, source.y() + 2 * verticalOffset);
     QPointF c2(sink.x() - defaultOffset * ratio1, sink.y() + verticalOffset);
-
-
 
 #ifdef DEBUG_DRAWING
 
@@ -64,7 +104,22 @@ public:
     }
 #endif
 
-                            QPen p;
+    if (hovered)
+    {
+      QPen p;
+
+      p.setWidth(2 * lineWidth);
+      p.setColor(QColor(Qt::cyan).lighter());
+      painter->setPen(p);
+      painter->setBrush(Qt::NoBrush);
+
+      // cubic spline
+      QPainterPath path(source);
+      path.cubicTo(c1, c2, sink);
+      painter->drawPath(path);
+    }
+
+    QPen p;
 
     p.setWidth(lineWidth);
     p.setColor(QColor(Qt::cyan).darker());

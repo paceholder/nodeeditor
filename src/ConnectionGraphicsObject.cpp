@@ -20,6 +20,8 @@ ConnectionGraphicsObject(Connection& connection,
   setFlag(QGraphicsItem::ItemIsMovable, true);
   setFlag(QGraphicsItem::ItemIsFocusable, true);
 
+  setAcceptHoverEvents(true);
+
   {
     auto effect = new QGraphicsDropShadowEffect;
     effect->setOffset(4, 4);
@@ -64,6 +66,14 @@ onItemMoved(QUuid id, QPointF const &offset)
   moveEndPoint(EndType::SINK);
   moveEndPoint(EndType::SOURCE);
 }
+
+
+//QPainterPath
+//ConnectionGraphicsObject::
+//shape() const
+//{
+  //return _connectionPainter.painterPath();
+//}
 
 
 void
@@ -118,5 +128,27 @@ mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 
   ungrabMouse();
 
+  event->accept();
+}
+
+
+void
+ConnectionGraphicsObject::
+hoverEnterEvent(QGraphicsSceneHoverEvent* event)
+{
+  _connectionGeometry.setHovered(true);
+
+  update();
+  event->accept();
+}
+
+
+void
+ConnectionGraphicsObject::
+hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
+{
+  _connectionGeometry.setHovered(false);
+
+  update();
   event->accept();
 }
