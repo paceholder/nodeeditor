@@ -52,7 +52,7 @@ public:
   inline
   QRectF boundingRect() const
   {
-    double protectOvershooting = 20;
+    double protectOvershooting = 200;
 
     QPointF addon(_pointDiameter + protectOvershooting,
                   _pointDiameter + protectOvershooting);

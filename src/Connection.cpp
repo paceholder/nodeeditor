@@ -9,8 +9,6 @@
 #include <iostream>
 #include <math.h>
 
-#define DEBUG_DRAWING 1
-
 Connection::
 Connection()
 //: _id(QUuid())

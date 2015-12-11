@@ -5,26 +5,50 @@
 
 #include "ConnectionGeometry.hpp"
 
+//#define DEBUG_DRAWING 1
+
 class ConnectionPainter
 {
 public:
   ConnectionPainter(ConnectionGeometry& connectionGeometry)
     : _connectionGeometry(connectionGeometry)
-  {
-  }
+  {}
 
 public:
+
+  inline
   void paint(QPainter* painter) const
   {
     QPointF const& source = _connectionGeometry.source();
-    QPointF const& sink = _connectionGeometry.sink();
-    double const lineWidth = _connectionGeometry.lineWidth();
+    QPointF const& sink   = _connectionGeometry.sink();
+
+    QPointF diff = (sink - source);
+
+    double xDistance = sink.x() - source.x();
+    double distance  = std::sqrt(QPointF::dotProduct(diff, diff));
+
+    double const defaultOffset = 200;
+
+    double const lineWidth     = _connectionGeometry.lineWidth();
     double const pointDiameter = _connectionGeometry.pointDiameter();
 
     double const ratio1 = 0.5;
-    double const ratio2 = 1 - ratio1;
-    QPointF c1(sink.x() * ratio2 + source.x() * ratio1, source.y());
-    QPointF c2(sink.x() * ratio1 + source.x() * ratio2, sink.y());
+    //double const ratio2 = 1 - ratio1;
+    //QPointF c1(sink.x() * ratio2 + source.x() * ratio1, source.y());
+    //QPointF c2(sink.x() * ratio1 + source.x() * ratio2, sink.y());
+
+
+    double verticalOffset = 0;
+    if (xDistance <= 0)
+    {
+      verticalOffset = - qMin(defaultOffset, std::abs(xDistance));
+    }
+
+
+    QPointF c1(source.x() + defaultOffset * ratio1, source.y() + 2 * verticalOffset);
+    QPointF c2(sink.x() - defaultOffset * ratio1, sink.y() + verticalOffset);
+
+
 
 #ifdef DEBUG_DRAWING
 
@@ -40,7 +64,8 @@ public:
     }
 #endif
 
-    QPen p;
+                            QPen p;
+
     p.setWidth(lineWidth);
     p.setColor(QColor(Qt::cyan).darker());
     painter->setPen(p);
