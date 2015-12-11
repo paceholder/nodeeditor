@@ -85,7 +85,7 @@ createNode()
 {
 
   //for (auto i : {1, 2, 3, 4, 5, 6, 7, 8})
-  for (auto i : {1, 2})
+  for (auto i : {1, 2, 3})
   {
     (void)i;
 
@@ -97,7 +97,7 @@ createNode()
 
     flowItem->initializeNode();
 
-    flowItem->moveBy(std::rand() % 100, std::rand() % 100);
+    //flowItem->moveBy(std::rand() % 100, std::rand() % 100);
   }
 
   return QUuid();

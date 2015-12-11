@@ -13,7 +13,8 @@
 
 Connection::
 Connection()
-  : _id(QUuid())
+//: _id(QUuid())
+  : _id(QUuid::createUuid())
   , _draggingEnd(EndType::NONE)
   , _connectionPainter(_connectionGeometry)
   , _connectionGraphicsObject(new ConnectionGraphicsObject(*this,
@@ -26,54 +27,53 @@ Connection()
 
 //Connection::
 //Connection(std::pair<QUuid, int> address, EndType draggingEnd)
-  //: _id(QUuid::createUuid())
-  //, _draggingEnd(draggingEnd)
-  //, _connectionPainter(_connectionGeometry)
-  //, _connectionGraphicsObject(new ConnectionGraphicsObject(*this,
-                                                           //_connectionGeometry,
-                                                           //_connectionPainter))
+//: _id(QUuid::createUuid())
+//, _draggingEnd(draggingEnd)
+//, _connectionPainter(_connectionGeometry)
+//, _connectionGraphicsObject(new ConnectionGraphicsObject(*this,
+//_connectionGeometry,
+//_connectionPainter))
 //{
-  //{
-    //Node* item = flowScene.getNode(address.first);
-    //_connectionGraphicsObject->stackBefore(item);
-  //}
-
-  //QObject::connect(item, &Node::itemMoved, this, &Connection::onItemMoved);
-
-  //_connectionGraphicsObject->grabMouse();
-
-  //setAddress(dragging, address);
-
-  //QPointF pointPos;
-  //switch (_draggingEnd)
-  //{
-    //case  EndType::SOURCE:
-    //{
-      //_sinkAddress = address;
-      //pointPos     = mapFromScene(item->connectionPointScenePosition(address, EndType::SINK));
-
-      ////grabMouse();
-      //break;
-    //}
-
-    //case EndType::SINK:
-    //{
-      //_sourceAddress = address;
-      //pointPos       = mapFromScene(item->connectionPointScenePosition(address, EndType::SOURCE));
-
-      ////grabMouse();
-      //break;
-    //}
-
-    //default:
-      //// should not get to here
-      //break;
-  //}
-
-  //_source = pointPos;
-  //_sink   = pointPos;
+//{
+//Node* item = flowScene.getNode(address.first);
+//_connectionGraphicsObject->stackBefore(item);
 //}
 
+//QObject::connect(item, &Node::itemMoved, this, &Connection::onItemMoved);
+
+//_connectionGraphicsObject->grabMouse();
+
+//setAddress(dragging, address);
+
+//QPointF pointPos;
+//switch (_draggingEnd)
+//{
+//case  EndType::SOURCE:
+//{
+//_sinkAddress = address;
+//pointPos     = mapFromScene(item->connectionPointScenePosition(address, EndType::SINK));
+
+////grabMouse();
+//break;
+//}
+
+//case EndType::SINK:
+//{
+//_sourceAddress = address;
+//pointPos       = mapFromScene(item->connectionPointScenePosition(address, EndType::SOURCE));
+
+////grabMouse();
+//break;
+//}
+
+//default:
+//// should not get to here
+//break;
+//}
+
+//_source = pointPos;
+//_sink   = pointPos;
+//}
 
 void
 Connection::
@@ -125,7 +125,9 @@ tryConnectToNode(Node* node, QPointF const& scenePoint)
 
     if (!address.first.isNull())
     {
-      connectToNode(address, scenePoint);
+
+      auto p = node->connectionPointScenePosition(address, _draggingEnd);
+      connectToNode(address, p);
 
       //------
 
@@ -142,5 +144,14 @@ connectToNode(std::pair<QUuid, int> const &address,
 {
   setAddress(_draggingEnd, address);
 
-  _connectionGeometry.setEndPoint(_draggingEnd, scenePoint);
+  auto p = _connectionGraphicsObject->mapFromScene(scenePoint);
+
+  _connectionGeometry.setEndPoint(_draggingEnd, p);
+
+  if (getAddress(oppositeEnd(_draggingEnd)).first.isNull())
+  {
+    _connectionGeometry.setEndPoint(oppositeEnd(_draggingEnd), p);
+  }
+
+  _connectionGraphicsObject->update();
 }

@@ -95,7 +95,6 @@ Node::
 connectionPointScenePosition(std::pair<QUuid, int> address,
                              EndType endType) const
 {
-
   return connectionPointScenePosition(address.second, endType);
 }
 
@@ -175,6 +174,8 @@ connect(Connection const* connection,
                    connection->getConnectionGraphicsObject(),
                    &ConnectionGraphicsObject::onItemMoved);
 
+  connection->getConnectionGraphicsObject()->stackBefore(this);
+
   auto address = std::make_pair(_id, hit);
 
   return address;
@@ -189,7 +190,7 @@ connect(Connection const* connection,
 {
   int hit = checkHitScenePoint(draggingEnd, scenePoint);
 
-  connect(connection, draggingEnd, hit);
+  return connect(connection, draggingEnd, hit);
 }
 
 
@@ -281,9 +282,12 @@ drawFilledConnectionPoints(QPainter* painter)
     double x = 0.0 - _connectionPointDiameter * 1.3;
 
     if (!_sinkEntries[i]->getConnectionID().isNull())
+    {
+
       painter->drawEllipse(QPointF(x, y),
                            _connectionPointDiameter * 0.4,
                            _connectionPointDiameter * 0.4);
+    }
 
     totalHeight += h + _spacing;
   }
@@ -298,9 +302,11 @@ drawFilledConnectionPoints(QPainter* painter)
     double x = _width + _connectionPointDiameter * 1.3;
 
     if (!_sourceEntries[i]->getConnectionID().isNull())
+    {
       painter->drawEllipse(QPointF(x, y),
                            _connectionPointDiameter * 0.4,
                            _connectionPointDiameter * 0.4);
+    }
 
     totalHeight += h + _spacing;
   }
@@ -379,7 +385,6 @@ void
 Node::
 mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
-
   auto clickEnd =
     [&](EndType endToCheck)
     {
@@ -404,14 +409,23 @@ mousePressEvent(QGraphicsSceneMouseEvent* event)
           connect(connection, endToCheck, hit);
 
           auto address = std::make_pair(_id, hit);
-          connection->connectToNode(address, event->scenePos());
+
+          auto conPoint = connectionPointScenePosition(address, endToCheck);
+
+          connection->setDraggingEnd(endToCheck);
+          connection->connectToNode(address, conPoint);
+
           connection->setDraggingEnd(oppositeEnd(endToCheck));
         }
         else
         {
           auto connection = flowScene.getConnection(id);
 
-          connection->setDraggingEnd(oppositeEnd(endToCheck));
+          QObject::disconnect(this, &Node::itemMoved,
+                              connection->getConnectionGraphicsObject(),
+                              &ConnectionGraphicsObject::onItemMoved);
+
+          connection->setDraggingEnd(endToCheck);
           entries[hit]->setConnectionID(QUuid());
         }
       }
@@ -433,7 +447,7 @@ mouseMoveEvent(QGraphicsSceneMouseEvent* event)
   if (!FlowScene::instance().isDraggingConnection())
   {
     if (event->lastPos() != event->pos())
-      emit itemMoved(d);
+      emit itemMoved(_id, d);
   }
 
   //event->ignore();

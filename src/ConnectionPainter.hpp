@@ -8,9 +8,10 @@
 class ConnectionPainter
 {
 public:
-  ConnectionPainter(ConnectionGeometry const& connectionGeometry)
+  ConnectionPainter(ConnectionGeometry& connectionGeometry)
     : _connectionGeometry(connectionGeometry)
-  {}
+  {
+  }
 
 public:
   void paint(QPainter* painter) const
@@ -61,7 +62,7 @@ public:
   }
 
 private:
-  ConnectionGeometry const& _connectionGeometry;
+  ConnectionGeometry& _connectionGeometry;
 };
 
 #endif //  CONNECTION_PAINTER_HPP

@@ -55,7 +55,7 @@ public:
           QPointF const& scenePoint);
 
 signals:
-  void itemMoved(QPointF const&);
+  void itemMoved(QUuid, QPointF const&);
 
 protected:
   void paint(QPainter*                       painter,

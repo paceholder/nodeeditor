@@ -31,7 +31,7 @@ ConnectionGraphicsObject(Connection& connection,
   FlowScene &flowScene = FlowScene::instance();
   flowScene.addItem(this);
 
-  grabMouse();
+  //grabMouse();
 }
 
 
@@ -45,7 +45,7 @@ boundingRect() const
 
 void
 ConnectionGraphicsObject::
-onItemMoved(QPointF const &offset)
+onItemMoved(QUuid id, QPointF const &offset)
 {
   prepareGeometryChange();
 
@@ -54,7 +54,7 @@ onItemMoved(QPointF const &offset)
     {
       auto address = _connection.getAddress(end);
 
-      if (!address.first.isNull())
+      if (address.first == id)
       {
 
         auto p = _connectionGeometry.getEndPoint(end);
@@ -73,6 +73,14 @@ ConnectionGraphicsObject::
 paint(QPainter* painter, QStyleOptionGraphicsItem const*, QWidget*)
 {
   _connectionPainter.paint(painter);
+}
+
+
+void
+ConnectionGraphicsObject::
+mousePressEvent(QGraphicsSceneMouseEvent* event)
+{
+  event->ignore();
 }
 
 

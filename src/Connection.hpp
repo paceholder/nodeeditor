@@ -75,6 +75,9 @@ public:
   ConnectionGraphicsObject* getConnectionGraphicsObject() const
   { return _connectionGraphicsObject; }
 
+  ConnectionGeometry& connectionGeometry()
+  { return _connectionGeometry; }
+
 private:
   QUuid _id;
 

@@ -6,6 +6,8 @@
 #include <QtCore/QPointF>
 #include <QtCore/QRectF>
 
+#include <iostream>
+
 class ConnectionGeometry
 {
 public:
@@ -16,7 +18,7 @@ public:
     , _pointDiameter(10)
     , _animationPhase(0)
     , _lineWidth(3.0)
-  {}
+  { }
 
 public:
 
@@ -69,7 +71,7 @@ public:
 
   double pointDiameter() const { return _pointDiameter; }
 
-  double lineWidth() const { _lineWidth; }
+  double lineWidth() const { return _lineWidth; }
 
 private:
   // local object coordinates

@@ -25,12 +25,14 @@ public:
   QRectF boundingRect() const override;
 
 public slots:
-  void onItemMoved(QPointF const &offset);
+  void onItemMoved(QUuid id, QPointF const &offset);
 
 protected:
   void paint(QPainter* painter,
              const QStyleOptionGraphicsItem* option,
              QWidget* widget = 0) override;
+
+  void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
 
   void mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
 
