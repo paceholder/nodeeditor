@@ -13,6 +13,7 @@ ADD_DEFINITIONS(-std=c++11)
 find_package(Qt5Widgets)
 find_package(Qt5Core)
 find_package(Qt5Gui)
+find_package(Qt5OpenGL)
 
 add_definitions(${Qt5Widgets_DEFINITIONS})
 set(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
@@ -25,11 +26,12 @@ add_executable(blocks
 )
 
 # Use the Widgets module from Qt 5.
-qt5_use_modules(blocks Widgets Gui Core)
+qt5_use_modules(blocks Widgets Gui Core OpenGL)
 
 
 target_link_libraries(blocks
   ${Qt5Widgets_LIBRARIES}
   ${Qt5Core_LIBRARIES}
   ${QtGui_LIBRARIES}
+  ${QtOpenGL_LIBRARIES}
   )

@@ -7,9 +7,12 @@
 #include <QtGui/QWheelEvent>
 #include <QtCore/QRectF>
 
+
+#include <QtOpenGL>
+#include <QtWidgets>
+
 #include <QDebug>
 #include <iostream>
-
 
 FlowGraphicsView::
 FlowGraphicsView(QGraphicsScene *scene)
@@ -19,7 +22,7 @@ FlowGraphicsView(QGraphicsScene *scene)
   setRenderHint(QPainter::Antialiasing);
   setBackgroundBrush(QColor(Qt::gray).darker(300));
 
-  //setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+  setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
 
   setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
 }

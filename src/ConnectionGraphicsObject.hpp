@@ -27,7 +27,7 @@ public:
 public slots:
   void onItemMoved(QUuid id, QPointF const &offset);
 
-  //QPainterPath shape() const override;
+  QPainterPath shape() const override;
 
 protected:
   void paint(QPainter* painter,

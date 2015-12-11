@@ -16,10 +16,8 @@ public:
 
 public:
 
-  QPainterPath painterPath() const
+  QPainterPath cubicPath() const
   {
-    QPainterPath path;
-
     QPointF const& source = _connectionGeometry.source();
     QPointF const& sink   = _connectionGeometry.sink();
 
@@ -30,7 +28,7 @@ public:
 
     double const defaultOffset = 200;
 
-    double const lineWidth     = _connectionGeometry.lineWidth();
+    double const lineWidth = _connectionGeometry.lineWidth();
 
     double const ratio1 = 0.5;
 
@@ -44,18 +42,28 @@ public:
     QPointF c1(source.x() + defaultOffset * ratio1, source.y() + 2 * verticalOffset);
     QPointF c2(sink.x() - defaultOffset * ratio1, sink.y() + verticalOffset);
 
-    QPen p;
-
-    p.setWidth(2 * lineWidth);
-
     // cubic spline
     QPainterPath cubic(source);
     cubic.cubicTo(c1, c2, sink);
 
-    path.addPath(cubic);
+    QPainterPath result(source);
 
-    return path;
+    unsigned segments = 20;
+
+    for (auto i = 0ul; i < segments; ++i)
+    {
+      result.lineTo(cubic.pointAtPercent( double(i + 1) / segments ));
+    }
+
+    QPainterPathStroker stroker; stroker.setWidth(10.0);
+
+    return stroker.createStroke(result);
   }
+
+  //QPainterPath painterPath() const
+  //{
+  //return cubicPath();
+  //}
 
   inline
   void paint(QPainter* painter) const
@@ -101,6 +109,10 @@ public:
       painter->drawLine(QLineF(c2, sink));
       painter->drawEllipse(c1, 4, 4);
       painter->drawEllipse(c2, 4, 4);
+
+      painter->setBrush(Qt::NoBrush);
+
+      painter->drawPath(cubicPath());
     }
 #endif
 

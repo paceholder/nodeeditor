@@ -68,12 +68,12 @@ onItemMoved(QUuid id, QPointF const &offset)
 }
 
 
-//QPainterPath
-//ConnectionGraphicsObject::
-//shape() const
-//{
-  //return _connectionPainter.painterPath();
-//}
+QPainterPath
+ConnectionGraphicsObject::
+shape() const
+{
+  return _connectionPainter.cubicPath();
+}
 
 
 void
