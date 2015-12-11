@@ -2,6 +2,7 @@
 
 #include <QtWidgets/QGraphicsSceneMouseEvent>
 #include <QtWidgets/QGraphicsDropShadowEffect>
+#include <QtWidgets/QStyleOptionGraphicsItem>
 
 #include "FlowScene.hpp"
 
@@ -19,16 +20,17 @@ ConnectionGraphicsObject(Connection& connection,
 {
   setFlag(QGraphicsItem::ItemIsMovable, true);
   setFlag(QGraphicsItem::ItemIsFocusable, true);
+  setCacheMode( QGraphicsItem::DeviceCoordinateCache );
 
   setAcceptHoverEvents(true);
 
-  {
-    auto effect = new QGraphicsDropShadowEffect;
-    effect->setOffset(4, 4);
-    effect->setBlurRadius(20);
-    effect->setColor(QColor(Qt::gray).darker(800));
-    setGraphicsEffect(effect);
-  }
+  //{
+    //auto effect = new QGraphicsDropShadowEffect;
+    //effect->setOffset(4, 4);
+    //effect->setBlurRadius(20);
+    //effect->setColor(QColor(Qt::gray).darker(800));
+    //setGraphicsEffect(effect);
+  //}
 
   FlowScene &flowScene = FlowScene::instance();
   flowScene.addItem(this);
@@ -72,14 +74,15 @@ QPainterPath
 ConnectionGraphicsObject::
 shape() const
 {
-  return _connectionPainter.cubicPath();
+return _connectionPainter.cubicPath();
 }
-
 
 void
 ConnectionGraphicsObject::
-paint(QPainter* painter, QStyleOptionGraphicsItem const*, QWidget*)
+paint(QPainter* painter, QStyleOptionGraphicsItem const* option, QWidget*)
 {
+
+  painter->setClipRect(option->exposedRect);
   _connectionPainter.paint(painter);
 }
 
