@@ -34,6 +34,7 @@ ConnectionGraphicsObject(Connection& connection,
 
   FlowScene &flowScene = FlowScene::instance();
   flowScene.addItem(this);
+
 }
 
 

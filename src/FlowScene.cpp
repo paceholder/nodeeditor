@@ -8,7 +8,6 @@
 #include "FlowItemInterface.hpp"
 #include "FlowGraphicsView.hpp"
 
-
 FlowScene* FlowScene::_instance = nullptr;
 
 FlowScene&
@@ -52,19 +51,6 @@ locateNodeAt(QGraphicsSceneMouseEvent * event)
 
   return flowItem;
 }
-
-//QUuid
-//FlowScene::
-//createConnection(std::pair<QUuid, int> address,
-                 //EndType draggingEnd)
-//{
-  //Connection* connection = new Connection(address, draggingEnd);
-
-  //// add to map
-  //_connections[connection->id()] = connection;
-
-  //return connection->id();
-//}
 
 
 Connection*
@@ -130,7 +116,6 @@ getNode(QUuid id) const
 }
 
 
-
 void
 FlowScene::
 clearDraggingConnection()
@@ -154,4 +139,19 @@ FlowScene() :
   _dragging(EndType::NONE)
 {
   //
+}
+
+
+FlowScene::
+~FlowScene()
+{
+  for (auto &c : _connections)
+  {
+    delete c.second;
+  }
+
+  for (auto &n : _flowItems)
+  {
+    delete n.second;
+  }
 }

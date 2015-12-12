@@ -35,7 +35,7 @@ public:
 public:
 
   /// Connection initiates interaction
-  void tryConnectToNode(Node* node, QPointF const& scenePoint);
+  bool tryConnectToNode(Node* node, QPointF const& scenePoint);
 
   /// Node initiates
   void connectToNode(std::pair<QUuid, int> const &address,

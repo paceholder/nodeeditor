@@ -57,6 +57,7 @@ public:
 
 private:
   FlowScene();
+  ~FlowScene();
 
 private:
   //QMap<QString, FlowItemInterface*> _registeredInterfaces;

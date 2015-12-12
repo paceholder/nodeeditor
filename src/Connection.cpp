@@ -27,6 +27,16 @@ public:
                                                              _connectionPainter))
   {}
 
+  ~ConnectionImpl()
+  {
+    std::cout << "About to delete graphics object"
+              << std::endl;
+    FlowScene &flowScene = FlowScene::instance();
+
+    flowScene.removeItem(_connectionGraphicsObject);
+    delete _connectionGraphicsObject;
+  }
+
 public:
   QUuid _id;
 
@@ -59,7 +69,10 @@ Connection()
 
 Connection::
 ~Connection()
-{}
+{
+    std::cout << "Connection destructor"
+              << std::endl;
+}
 
 QUuid
 Connection::
@@ -142,7 +155,7 @@ setAddress(EndType endType, std::pair<QUuid, int> address)
 }
 
 
-void
+bool
 Connection::
 tryConnectToNode(Node* node, QPointF const& scenePoint)
 {
@@ -163,6 +176,8 @@ tryConnectToNode(Node* node, QPointF const& scenePoint)
       _impl->_draggingEnd = EndType::NONE;
     }
   }
+
+  return ok;
 }
 
 
