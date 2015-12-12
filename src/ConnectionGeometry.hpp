@@ -16,7 +16,7 @@ public:
     : _source(10, 10)
     , _sink(100, 100)
     , _pointDiameter(10)
-    , _animationPhase(0)
+    //, _animationPhase(0)
     , _lineWidth(3.0)
     , _hovered(false)
   { }
@@ -53,18 +53,48 @@ public:
   inline
   QRectF boundingRect() const
   {
-    double protectOvershooting = 200;
+    auto points = pointsC1C2();
 
-    QPointF addon(_pointDiameter + protectOvershooting,
-                  _pointDiameter + protectOvershooting);
+    QRectF basicRect(_source, _sink);
 
-    QPointF minimum(qMin(_source.x(), _sink.x()),
-                    qMin(_source.y(), _sink.y()));
+    QRectF c1c2Rect(points.first, points.second);
 
-    QPointF maximum(qMax(_source.x(), _sink.x()),
-                    qMax(_source.y(), _sink.y()));
+    QMargins margins(_pointDiameter,
+                     _pointDiameter,
+                     _pointDiameter,
+                     _pointDiameter);
 
-    return QRectF(minimum - addon, maximum + addon);
+    return basicRect.united(c1c2Rect).marginsAdded(margins);
+  }
+
+  std::pair<QPointF, QPointF>
+  pointsC1C2() const
+  {
+    double xDistance = _sink.x() - _source.x();
+    double const defaultOffset = 200;
+
+    double minimum = qMin(defaultOffset, std::abs(xDistance));
+
+    double verticalOffset = 0;
+
+    double ratio1 = 0.5;
+
+    if (xDistance <= 0)
+    {
+      verticalOffset = -minimum;
+
+      ratio1 = 1.0;
+    }
+
+    QPointF c1(_source.x() + minimum * ratio1,
+               _source.y() + 2 * verticalOffset);
+
+    ratio1 = 0.5;
+
+    QPointF c2(_sink.x() - minimum * ratio1,
+               _sink.y() + verticalOffset);
+
+    return std::make_pair(c1, c2);
   }
 
   QPointF source() const { return _source; }
@@ -84,7 +114,7 @@ private:
 
   double _pointDiameter;
 
-  int _animationPhase;
+  //int _animationPhase;
 
   double _lineWidth;
 

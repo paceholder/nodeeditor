@@ -59,7 +59,7 @@ private:
   FlowScene();
 
 private:
-  QMap<QString, FlowItemInterface*> _registeredInterfaces;
+  //QMap<QString, FlowItemInterface*> _registeredInterfaces;
 
   static FlowScene* _instance;
 

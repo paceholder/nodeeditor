@@ -1,13 +1,13 @@
 #ifndef FLOW_ITEM_ENTRY_H
 #define FLOW_ITEM_ENTRY_H
 
+#include <iostream>
+
 #include <QtWidgets/QGraphicsObject>
 #include <QtWidgets/QGraphicsSceneMoveEvent>
 
 #include <QtCore/QUuid>
 #include <QtCore/QWeakPointer>
-
-#include <iostream>
 
 #include "Connection.hpp"
 
@@ -44,17 +44,16 @@ protected: // events
   {
     (void)event;
 
-    std::cout << "PRESS CHILD" << std::endl;
+    //std::cout << "PRESS CHILD" << std::endl;
   }
-
 
   void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override
   {
-    double const x = event->pos().x();
-    double const y = event->pos().y();
-    std::cout << "Mouse Event Item " << x << ", " << y << std::endl;
+    //double const x = event->pos().x();
+    //double const y = event->pos().y();
+    //std::cout << "Mouse Event Item " << x << ", " << y << std::endl;
 
-    event->accept();
+    event->ignore();
   }
 
 protected:

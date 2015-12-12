@@ -25,11 +25,11 @@ ConnectionGraphicsObject(Connection& connection,
   setAcceptHoverEvents(true);
 
   //{
-    //auto effect = new QGraphicsDropShadowEffect;
-    //effect->setOffset(4, 4);
-    //effect->setBlurRadius(20);
-    //effect->setColor(QColor(Qt::gray).darker(800));
-    //setGraphicsEffect(effect);
+  //auto effect = new QGraphicsDropShadowEffect;
+  //effect->setOffset(4, 4);
+  //effect->setBlurRadius(20);
+  //effect->setColor(QColor(Qt::gray).darker(800));
+  //setGraphicsEffect(effect);
   //}
 
   FlowScene &flowScene = FlowScene::instance();
@@ -74,8 +74,20 @@ QPainterPath
 ConnectionGraphicsObject::
 shape() const
 {
-return _connectionPainter.cubicPath();
+#ifdef DEBUG_DRAWING
+
+  //QPainterPath path;
+
+  //path.addRect(boundingRect());
+  //return path;
+
+#else
+
+  return _connectionPainter.getPainterStroke();
+
+#endif
 }
+
 
 void
 ConnectionGraphicsObject::

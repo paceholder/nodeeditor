@@ -6,6 +6,7 @@
 #include <iostream>
 #include <cstdlib>
 
+#include "ConnectionGraphicsObject.hpp"
 #include "FlowItemEntry.hpp"
 #include "FlowScene.hpp"
 

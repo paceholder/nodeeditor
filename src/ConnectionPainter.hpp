@@ -21,38 +21,29 @@ public:
     QPointF const& source = _connectionGeometry.source();
     QPointF const& sink   = _connectionGeometry.sink();
 
-    QPointF diff = (sink - source);
-
-    double xDistance = sink.x() - source.x();
-    double distance  = std::sqrt(QPointF::dotProduct(diff, diff));
-
-    double const defaultOffset = 200;
-
-    double const lineWidth = _connectionGeometry.lineWidth();
-
-    double const ratio1 = 0.5;
-
-    double verticalOffset = 0;
-
-    if (xDistance <= 0)
-    {
-      verticalOffset = -qMin(defaultOffset, std::abs(xDistance));
-    }
-
-    QPointF c1(source.x() + defaultOffset * ratio1, source.y() + 2 * verticalOffset);
-    QPointF c2(sink.x() - defaultOffset * ratio1, sink.y() + verticalOffset);
+    auto c1c2 = _connectionGeometry.pointsC1C2();
 
     // cubic spline
     QPainterPath cubic(source);
-    cubic.cubicTo(c1, c2, sink);
 
+    cubic.cubicTo(c1c2.first, c1c2.second, sink);
+
+    return cubic;
+  }
+
+  QPainterPath getPainterStroke() const
+  {
+    auto cubic = cubicPath();
+
+    QPointF const& source = _connectionGeometry.source();
     QPainterPath result(source);
 
     unsigned segments = 20;
 
     for (auto i = 0ul; i < segments; ++i)
     {
-      result.lineTo(cubic.pointAtPercent( double(i + 1) / segments ));
+      double ratio = double(i + 1) / segments;
+      result.lineTo(cubic.pointAtPercent(ratio));
     }
 
     QPainterPathStroker stroker; stroker.setWidth(10.0);
@@ -60,61 +51,38 @@ public:
     return stroker.createStroke(result);
   }
 
-  //QPainterPath painterPath() const
-  //{
-  //return cubicPath();
-  //}
-
   inline
   void paint(QPainter* painter) const
   {
-    QPointF const& source = _connectionGeometry.source();
-    QPointF const& sink   = _connectionGeometry.sink();
-
     bool const hovered = _connectionGeometry.hovered();
-
-    QPointF diff = (sink - source);
-
-    double xDistance = sink.x() - source.x();
-    double distance  = std::sqrt(QPointF::dotProduct(diff, diff));
-
-    double const defaultOffset = 200;
 
     double const lineWidth     = _connectionGeometry.lineWidth();
     double const pointDiameter = _connectionGeometry.pointDiameter();
 
-    double const ratio1 = 0.5;
-    //double const ratio2 = 1 - ratio1;
-    //QPointF c1(sink.x() * ratio2 + source.x() * ratio1, source.y());
-    //QPointF c2(sink.x() * ratio1 + source.x() * ratio2, sink.y());
-
-    double verticalOffset = 0;
-
-    if (xDistance <= 0)
-    {
-      verticalOffset = -qMin(defaultOffset, std::abs(xDistance));
-    }
-
-    QPointF c1(source.x() + defaultOffset * ratio1, source.y() + 2 * verticalOffset);
-    QPointF c2(sink.x() - defaultOffset * ratio1, sink.y() + verticalOffset);
-
 #ifdef DEBUG_DRAWING
 
     {
+      QPointF const& source = _connectionGeometry.source();
+      QPointF const& sink   = _connectionGeometry.sink();
+
+      auto points = _connectionGeometry.pointsC1C2();
+
       painter->setPen(Qt::red);
       painter->setBrush(Qt::red);
 
-      painter->drawLine(QLineF(source, c1));
-      painter->drawLine(QLineF(c1, c2));
-      painter->drawLine(QLineF(c2, sink));
-      painter->drawEllipse(c1, 4, 4);
-      painter->drawEllipse(c2, 4, 4);
+      painter->drawLine(QLineF(source, points.first));
+      painter->drawLine(QLineF(points.first, points.second));
+      painter->drawLine(QLineF(points.second, sink));
+      painter->drawEllipse(points.first, 4, 4);
+      painter->drawEllipse(points.second, 4, 4);
 
       painter->setBrush(Qt::NoBrush);
 
       painter->drawPath(cubicPath());
     }
 #endif
+
+    auto cubic = cubicPath();
 
     if (hovered)
     {
@@ -126,9 +94,8 @@ public:
       painter->setBrush(Qt::NoBrush);
 
       // cubic spline
-      QPainterPath path(source);
-      path.cubicTo(c1, c2, sink);
-      painter->drawPath(path);
+
+      painter->drawPath(cubic);
     }
 
     QPen p;
@@ -139,15 +106,13 @@ public:
     painter->setBrush(Qt::NoBrush);
 
     // cubic spline
-    QPainterPath path(source);
-    path.cubicTo(c1, c2, sink);
-    painter->drawPath(path);
+    painter->drawPath(cubic);
 
-    //path.angleAtPercent(t)
+    QPointF const& source = _connectionGeometry.source();
+    QPointF const& sink   = _connectionGeometry.sink();
 
     painter->setPen(Qt::white);
     painter->setBrush(Qt::white);
-
     double const pointRadius = pointDiameter / 2.0;
     painter->drawEllipse(source, pointRadius, pointRadius);
     painter->drawEllipse(sink, pointRadius, pointRadius);
