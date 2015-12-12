@@ -7,7 +7,6 @@
 #include <QtGui/QWheelEvent>
 #include <QtCore/QRectF>
 
-
 #include <QtOpenGL>
 #include <QtWidgets>
 
@@ -25,6 +24,8 @@ FlowGraphicsView(QGraphicsScene *scene)
   setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
 
   setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+
+  //setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
 }
 
 
