@@ -59,7 +59,7 @@ onItemMoved(QUuid id, QPointF const &offset)
       if (address.first == id)
       {
 
-        auto p = _connectionGeometry.getEndPoint(end);
+        auto& p = _connectionGeometry.getEndPoint(end);
 
         _connectionGeometry.setEndPoint(end, p + offset);
       }
@@ -67,6 +67,8 @@ onItemMoved(QUuid id, QPointF const &offset)
 
   moveEndPoint(EndType::SINK);
   moveEndPoint(EndType::SOURCE);
+
+  update();
 }
 
 
@@ -123,8 +125,11 @@ mouseMoveEvent(QGraphicsSceneMouseEvent* event)
   {
     auto &endPoint = _connectionGeometry.getEndPoint(draggingEnd);
 
-    endPoint += p;
+    _connectionGeometry.setEndPoint(draggingEnd, endPoint + p);
   }
+
+
+  update();
 
   event->accept();
 }

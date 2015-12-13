@@ -10,9 +10,9 @@ ConnectionGeometry()
   , _hovered(false)
 { }
 
-QPointF&
+QPointF const&
 ConnectionGeometry::
-getEndPoint(EndType endType)
+getEndPoint(EndType endType) const
 {
   Q_ASSERT(endType != EndType::NONE);
 

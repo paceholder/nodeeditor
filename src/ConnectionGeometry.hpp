@@ -16,7 +16,7 @@ public:
 
 public:
 
-  QPointF& getEndPoint(EndType endType);
+  QPointF const& getEndPoint(EndType endType) const;
 
   void setEndPoint(EndType endType, QPointF const& point);
 
