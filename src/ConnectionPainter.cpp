@@ -5,18 +5,17 @@
 #include "ConnectionGeometry.hpp"
 
 ConnectionPainter::
-ConnectionPainter(ConnectionGeometry& connectionGeometry)
-  : _connectionGeometry(connectionGeometry)
+ConnectionPainter()
 {}
 
 QPainterPath
 ConnectionPainter::
-cubicPath() const
+cubicPath(ConnectionGeometry const& geom) const
 {
-  QPointF const& source = _connectionGeometry.source();
-  QPointF const& sink   = _connectionGeometry.sink();
+  QPointF const& source = geom.source();
+  QPointF const& sink   = geom.sink();
 
-  auto c1c2 = _connectionGeometry.pointsC1C2();
+  auto c1c2 = geom.pointsC1C2();
 
   // cubic spline
   QPainterPath cubic(source);
@@ -29,11 +28,11 @@ cubicPath() const
 
 QPainterPath
 ConnectionPainter::
-getPainterStroke() const
+getPainterStroke(ConnectionGeometry const& geom) const
 {
-  auto cubic = cubicPath();
+  auto cubic = cubicPath(geom);
 
-  QPointF const& source = _connectionGeometry.source();
+  QPointF const& source = geom.source();
   QPainterPath result(source);
 
   unsigned segments = 20;
@@ -52,20 +51,20 @@ getPainterStroke() const
 
 void
 ConnectionPainter::
-paint(QPainter* painter) const
+paint(QPainter* painter, ConnectionGeometry const &geom) const
 {
-  bool const hovered = _connectionGeometry.hovered();
+  bool const hovered = geom.hovered();
 
-  double const lineWidth     = _connectionGeometry.lineWidth();
-  double const pointDiameter = _connectionGeometry.pointDiameter();
+  double const lineWidth     = geom.lineWidth();
+  double const pointDiameter = geom.pointDiameter();
 
 #ifdef DEBUG_DRAWING
 
   {
-    QPointF const& source = _connectionGeometry.source();
-    QPointF const& sink   = _connectionGeometry.sink();
+    QPointF const& source = geom.source();
+    QPointF const& sink   = geom.sink();
 
-    auto points = _connectionGeometry.pointsC1C2();
+    auto points = geom.pointsC1C2();
 
     painter->setPen(Qt::red);
     painter->setBrush(Qt::red);
@@ -82,7 +81,7 @@ paint(QPainter* painter) const
   }
 #endif
 
-  auto cubic = cubicPath();
+  auto cubic = cubicPath(geom);
 
   if (hovered)
   {
@@ -108,8 +107,8 @@ paint(QPainter* painter) const
   // cubic spline
   painter->drawPath(cubic);
 
-  QPointF const& source = _connectionGeometry.source();
-  QPointF const& sink   = _connectionGeometry.sink();
+  QPointF const& source = geom.source();
+  QPointF const& sink   = geom.sink();
 
   painter->setPen(Qt::white);
   painter->setBrush(Qt::white);

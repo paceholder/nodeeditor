@@ -22,9 +22,11 @@ FlowGraphicsView(QGraphicsScene *scene)
   setBackgroundBrush(QColor(Qt::gray).darker(300));
 
   //setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
-  setViewportUpdateMode(QGraphicsView::MinimalViewportUpdate);
+  //setViewportUpdateMode(QGraphicsView::MinimalViewportUpdate);
 
   setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+
+  setCacheMode(QGraphicsView::CacheBackground);
 
   //setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
 }

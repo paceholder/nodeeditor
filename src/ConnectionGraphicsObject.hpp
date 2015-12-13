@@ -31,7 +31,7 @@ public slots:
 
 protected:
   void paint(QPainter* painter,
-             const QStyleOptionGraphicsItem* option,
+             QStyleOptionGraphicsItem const* option,
              QWidget* widget = 0) override;
 
   void mousePressEvent(QGraphicsSceneMouseEvent* event) override;

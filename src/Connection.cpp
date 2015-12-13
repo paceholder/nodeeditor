@@ -21,7 +21,6 @@ public:
   ConnectionImpl(Connection* connection)
     : _id(QUuid::createUuid())
     , _draggingEnd(EndType::NONE)
-    , _connectionPainter(_connectionGeometry)
     , _connectionGraphicsObject(new ConnectionGraphicsObject(*connection,
                                                              _connectionGeometry,
                                                              _connectionPainter))

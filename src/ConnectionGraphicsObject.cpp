@@ -83,7 +83,7 @@ shape() const
 
 #else
 
-  return _connectionPainter.getPainterStroke();
+  return _connectionPainter.getPainterStroke(_connectionGeometry);
 
 #endif
 }
@@ -91,11 +91,13 @@ shape() const
 
 void
 ConnectionGraphicsObject::
-paint(QPainter* painter, QStyleOptionGraphicsItem const* option, QWidget*)
+paint(QPainter* painter,
+      QStyleOptionGraphicsItem const* option,
+      QWidget*)
 {
-
   painter->setClipRect(option->exposedRect);
-  _connectionPainter.paint(painter);
+
+  _connectionPainter.paint(painter, _connectionGeometry);
 }
 
 

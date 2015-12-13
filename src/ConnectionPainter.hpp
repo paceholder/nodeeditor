@@ -3,25 +3,22 @@
 
 #include <QtGui/QPainter>
 
-
 class ConnectionGeometry;
 
 class ConnectionPainter
 {
 public:
 
-  ConnectionPainter(ConnectionGeometry& connectionGeometry);
+  ConnectionPainter();
 
 public:
 
-  QPainterPath cubicPath() const;
+  QPainterPath cubicPath(ConnectionGeometry const& geom) const;
 
-  QPainterPath getPainterStroke() const;
+  QPainterPath getPainterStroke(ConnectionGeometry const& geom) const;
 
-  void paint(QPainter* painter) const;
-
-private:
-  ConnectionGeometry& _connectionGeometry;
+  void paint(QPainter* painter,
+             ConnectionGeometry const& geom) const;
 };
 
 #endif //  CONNECTION_PAINTER_HPP

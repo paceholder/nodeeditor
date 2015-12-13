@@ -214,9 +214,11 @@ disconnect(Connection const* connection,
 void
 Node::
 paint(QPainter* painter,
-      QStyleOptionGraphicsItem const*,
+      QStyleOptionGraphicsItem const* option,
       QWidget* )
 {
+  painter->setClipRect(option->exposedRect);
+
   if (_hovered)
   {
     QPen p(Qt::white, 2.0);
