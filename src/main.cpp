@@ -15,7 +15,7 @@ main(int argc, char* argv[])
   FlowScene::instance();
 
   // TODO what is it?
-  //FlowScene::instance().setItemIndexMethod(QGraphicsScene::NoIndex);
+  FlowScene::instance().setItemIndexMethod(QGraphicsScene::NoIndex);
 
   FlowScene::instance().createNode();
 

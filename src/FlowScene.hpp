@@ -37,10 +37,10 @@ public:
   Node* locateNodeAt(QGraphicsSceneMouseEvent* event);
 
 public:
-  //QUuid createConnection(std::pair<QUuid, int> address,
-                         //EndType draggingEnd);
 
   Connection* createConnection();
+
+  void deleteConnection(Connection* c);
 
   QUuid createNode();
 
@@ -50,25 +50,15 @@ public:
 
   Node* getNode(QUuid id) const;
 
-  bool isDraggingConnection();
-
-  /// Sets currently dragging connection to empty value
-  void clearDraggingConnection();
-
 private:
   FlowScene();
   ~FlowScene();
 
 private:
-  //QMap<QString, FlowItemInterface*> _registeredInterfaces;
-
   static FlowScene* _instance;
 
   std::unordered_map<QUuid, Connection*> _connections;
   std::unordered_map<QUuid, Node*>       _flowItems;
-
-  QUuid   _draggingConnectionID;
-  EndType _dragging;
 };
 
 #endif //  _FLOW_SCENE_HPP_

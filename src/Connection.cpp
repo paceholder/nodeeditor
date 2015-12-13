@@ -70,9 +70,27 @@ Connection()
 Connection::
 ~Connection()
 {
-    std::cout << "Connection destructor"
-              << std::endl;
+  std::cout << "Connection destructor" << std::endl;
+
+  auto& scene = FlowScene::instance();
+
+  auto tryDisconnectNode =
+    [&](EndType endType)
+    {
+      auto address = getAddress(endType);
+
+      if (!address.first.isNull())
+      {
+        Node* node = scene.getNode(address.first);
+
+        node->disconnect(this, endType, address.second);
+      }
+    };
+
+  tryDisconnectNode(EndType::SINK);
+  tryDisconnectNode(EndType::SOURCE);
 }
+
 
 QUuid
 Connection::

@@ -65,13 +65,23 @@ createConnection()
 }
 
 
+void
+FlowScene::
+deleteConnection(Connection* c)
+{
+  _connections.erase(c->id());
+
+  delete c;
+}
+
+
 QUuid
 FlowScene::
 createNode()
 {
 
-  for (auto i : {1, 2, 3, 4, 5, 6, 7, 8})
-  //for (auto i : {1, 2, 3})
+  //for (auto i : {1, 2, 3, 4, 5, 6, 7, 8})
+  for (auto i : {1, 2, 3})
   {
     (void)i;
 
@@ -116,27 +126,8 @@ getNode(QUuid id) const
 }
 
 
-void
 FlowScene::
-clearDraggingConnection()
-{
-  _draggingConnectionID = QUuid();
-  _dragging = EndType::NONE;
-}
-
-
-bool
-FlowScene::
-isDraggingConnection()
-{
-  return !_draggingConnectionID.isNull();
-}
-
-
-FlowScene::
-FlowScene() :
-  _draggingConnectionID(QUuid()),
-  _dragging(EndType::NONE)
+FlowScene()
 {
   //
 }

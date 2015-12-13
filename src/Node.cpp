@@ -22,12 +22,12 @@ Node()
   setFlag(QGraphicsItem::ItemIsMovable, true);
   setFlag(QGraphicsItem::ItemIsFocusable, true);
 
-  auto effect = new QGraphicsDropShadowEffect;
-  effect->setOffset(4, 4);
-  effect->setBlurRadius(20);
-  effect->setColor(QColor(Qt::gray).darker(800));
+  //auto effect = new QGraphicsDropShadowEffect;
+  //effect->setOffset(4, 4);
+  //effect->setBlurRadius(20);
+  //effect->setColor(QColor(Qt::gray).darker(800));
 
-  setGraphicsEffect(effect);
+  //setGraphicsEffect(effect);
 }
 
 
@@ -192,6 +192,22 @@ connect(Connection const* connection,
   int hit = checkHitScenePoint(draggingEnd, scenePoint);
 
   return connect(connection, draggingEnd, hit);
+}
+
+
+void
+Node::
+disconnect(Connection const* connection,
+           EndType endType,
+           int hit)
+{
+  QObject::disconnect(this, &Node::itemMoved,
+                      connection->getConnectionGraphicsObject(),
+                      &ConnectionGraphicsObject::onItemMoved);
+
+  auto& entries = getEntryArray(endType);
+
+  entries[hit]->setConnectionID(QUuid());
 }
 
 
@@ -422,12 +438,9 @@ mousePressEvent(QGraphicsSceneMouseEvent* event)
         {
           auto connection = flowScene.getConnection(id);
 
-          QObject::disconnect(this, &Node::itemMoved,
-                              connection->getConnectionGraphicsObject(),
-                              &ConnectionGraphicsObject::onItemMoved);
+          disconnect(connection, endToCheck, hit);
 
           connection->setDraggingEnd(endToCheck);
-          entries[hit]->setConnectionID(QUuid());
         }
       }
     };
@@ -445,13 +458,8 @@ mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 {
   QPointF d = event->pos() - event->lastPos();
 
-  if (!FlowScene::instance().isDraggingConnection())
-  {
-    if (event->lastPos() != event->pos())
-      emit itemMoved(_id, d);
-  }
-
-  //event->ignore();
+  if (event->lastPos() != event->pos())
+    emit itemMoved(_id, d);
 
   QGraphicsObject::mouseMoveEvent(event);
 }

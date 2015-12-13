@@ -54,8 +54,12 @@ public:
           EndType draggingEnd,
           QPointF const& scenePoint);
 
+  void disconnect(Connection const* connection,
+                  EndType endType,
+                  int hit);
+
 signals:
-  void itemMoved(QUuid, QPointF const&);
+  void itemMoved(QUuid, QPointF const &);
 
 protected:
   void paint(QPainter*                       painter,

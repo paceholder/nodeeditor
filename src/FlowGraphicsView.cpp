@@ -21,7 +21,8 @@ FlowGraphicsView(QGraphicsScene *scene)
   setRenderHint(QPainter::Antialiasing);
   setBackgroundBrush(QColor(Qt::gray).darker(300));
 
-  setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+  //setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+  setViewportUpdateMode(QGraphicsView::MinimalViewportUpdate);
 
   setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
 

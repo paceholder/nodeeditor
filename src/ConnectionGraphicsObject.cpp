@@ -34,7 +34,6 @@ ConnectionGraphicsObject(Connection& connection,
 
   FlowScene &flowScene = FlowScene::instance();
   flowScene.addItem(this);
-
 }
 
 
@@ -133,18 +132,24 @@ void
 ConnectionGraphicsObject::
 mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 {
-  (void)event;
+  ungrabMouse();
+  event->accept();
+
+//---------------
 
   auto node = FlowScene::locateNodeAt(event);
 
-  if (node)
+  // connection is deleted if not connected to any node
+  bool deleteConection =
+    !(node && _connection.tryConnectToNode(node, event->scenePos()));
+
+  std::cout << "Delete C: " << deleteConection << std::endl;
+
+  if (deleteConection)
   {
-    _connection.tryConnectToNode(node, event->scenePos());
+    auto& scene = FlowScene::instance();
+    scene.deleteConnection(&_connection);
   }
-
-  ungrabMouse();
-
-  event->accept();
 }
 
 
