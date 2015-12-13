@@ -5,14 +5,17 @@
 #include "FlowScene.hpp"
 
 FlowItemEntry::
-FlowItemEntry(EndType type, QUuid parentID, QString name, QUuid connectionID)
+FlowItemEntry(EndType type,
+              QUuid parentID,
+              NodeGeometry const& nodeGeom,
+              QString name,
+              QUuid connectionID)
   : _id(QUuid::createUuid())
   , _parentID(parentID)
   , _connectionID(connectionID)
   , _type(type)
   , _name(name)
-  , _width(100)
-  , _height(20)
+  , _nodeGeometry(nodeGeom)
 {
   Node* flowItem = FlowScene::instance().getNode(_parentID);
 
@@ -36,12 +39,7 @@ QRectF
 FlowItemEntry::
 boundingRect() const
 {
-  double addon = 0;
-
-  return QRectF(0 - addon,
-                0 - addon,
-                _width + 2 * addon,
-                _height + 2 * addon);
+  return _nodeGeometry.entryBoundingRect();
 }
 
 
@@ -64,12 +62,9 @@ getConnectionID() const
 void
 FlowItemEntry::
 paint(QPainter* painter,
-      QStyleOptionGraphicsItem const* option,
-      QWidget* widget)
+      QStyleOptionGraphicsItem const*,
+      QWidget*)
 {
-  Q_UNUSED(option);
-  Q_UNUSED(widget);
-
   painter->setPen(Qt::white);
   painter->setBrush(QColor(Qt::darkGray));
   painter->drawRect(boundingRect());

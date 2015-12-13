@@ -9,15 +9,11 @@
 #include "ConnectionGraphicsObject.hpp"
 #include "FlowItemEntry.hpp"
 #include "FlowScene.hpp"
+#include "NodePainter.hpp"
 
 Node::
 Node()
   : _id(QUuid::createUuid())
-  , _width(100)
-  , _height(150)
-  , _spacing(10)
-  , _hovered(false)
-  , _connectionPointDiameter(10)
 {
   setFlag(QGraphicsItem::ItemIsMovable, true);
   setFlag(QGraphicsItem::ItemIsFocusable, true);
@@ -41,7 +37,7 @@ initializeNode()
 
   //embedQWidget();
 
-  recalculateSize();
+  _nodeGeometry.recalculateSize();
 }
 
 
@@ -60,34 +56,11 @@ embedQWidget()
 }
 
 
-void
-Node::
-recalculateSize()
-{
-  int totalHeight = 0;
-
-  for (size_t i = 0; i < _sinkEntries.size(); ++i)
-    totalHeight += _sinkEntries[i]->height() + _spacing;
-
-  totalHeight += _spacing;
-
-  for (size_t i = 0; i < _sourceEntries.size(); ++i)
-    totalHeight += _sourceEntries[i]->height() + _spacing;
-
-  _height = totalHeight;
-}
-
-
 QRectF
 Node::
 boundingRect() const
 {
-  double addon = 3 * _connectionPointDiameter;
-
-  return QRectF(0 - addon,
-                0 - addon,
-                _width + 2 * addon,
-                _height + 2 * addon);
+  return _nodeGeometry.boundingRect();
 }
 
 
@@ -96,7 +69,8 @@ Node::
 connectionPointScenePosition(std::pair<QUuid, int> address,
                              EndType endType) const
 {
-  return connectionPointScenePosition(address.second, endType);
+  return mapToScene(_nodeGeometry.connectionPointScenePosition(address.second,
+                                                               endType));
 }
 
 
@@ -105,47 +79,8 @@ Node::
 connectionPointScenePosition(int index,
                              EndType endType) const
 {
-
-  switch (endType)
-  {
-    case EndType::SOURCE:
-    {
-      double totalHeight = 0;
-
-      for (size_t i = 0; i < _sinkEntries.size(); ++i)
-        totalHeight += _sinkEntries[i]->height() + _spacing;
-
-      totalHeight += _spacing;
-
-      for (int i = 1; i <= index; ++i)
-        totalHeight += _sourceEntries[i]->height() + _spacing;
-
-      totalHeight += (_spacing  + _sourceEntries[index]->height()) / 2.0;
-      double x = _width + _connectionPointDiameter * 1.3;
-
-      return mapToScene(QPointF(x, totalHeight));
-      break;
-    }
-
-    case EndType::SINK:
-    {
-      double totalHeight = 0;
-
-      for (int i = 1; i <= index; ++i)
-        totalHeight += _sinkEntries[i]->height() + _spacing;
-
-      totalHeight += _spacing / 2 + _sinkEntries[index]->height() / 2;
-      double x = 0.0 - _connectionPointDiameter * 1.3;
-
-      return mapToScene(QPointF(x, totalHeight));
-      break;
-    }
-
-    default:
-      break;
-  }
-
-  return QPointF();
+  return mapToScene(_nodeGeometry.connectionPointScenePosition(index,
+                                                               endType));
 }
 
 
@@ -219,116 +154,9 @@ paint(QPainter* painter,
 {
   painter->setClipRect(option->exposedRect);
 
-  if (_hovered)
-  {
-    QPen p(Qt::white, 2.0);
-    painter->setPen(p);
-  }
-  else
-  {
-    QPen p(Qt::white, 1.5);
-    painter->setPen(p);
-  }
-
-  painter->setBrush(QColor(Qt::darkGray));
-
-  QRectF boundary(0 - _connectionPointDiameter,
-                  0 - _connectionPointDiameter,
-                  _width + 2 *  _connectionPointDiameter,
-                  _height + 2 * _connectionPointDiameter);
-
-  constexpr double radius = 3.0;
-
-  painter->drawRoundedRect(boundary, radius, radius);
-
-  drawConnectionPoints(painter);
-
-  drawFilledConnectionPoints(painter);
-}
-
-
-void
-Node::
-drawConnectionPoints(QPainter* painter)
-{
-  painter->setBrush(QColor(Qt::gray).darker());
-  double totalHeight = 0;
-
-  for (size_t i = 0; i < _sinkEntries.size(); ++i)
-  {
-    double h = _sinkEntries[i]->height();
-
-    double y = totalHeight + (_spacing  + h) / 2;
-    double x = 0.0 - _connectionPointDiameter * 1.3;
-    painter->drawEllipse(QPointF(x, y),
-                         _connectionPointDiameter * 0.6,
-                         _connectionPointDiameter * 0.6);
-
-    totalHeight += h + _spacing;
-  }
-
-  totalHeight += _spacing;
-
-  for (size_t i = 0; i < _sourceEntries.size(); ++i)
-  {
-    double h = _sourceEntries[i]->height();
-
-    double y = totalHeight + (_spacing  + h) / 2;
-    double x = _width + _connectionPointDiameter * 1.3;
-    painter->drawEllipse(QPointF(x, y),
-                         _connectionPointDiameter * 0.6,
-                         _connectionPointDiameter * 0.6);
-
-    totalHeight += h + _spacing;
-  }
-}
-
-
-void
-Node::
-drawFilledConnectionPoints(QPainter* painter)
-{
-  painter->setPen(Qt::cyan);
-  painter->setBrush(Qt::cyan);
-
-  double totalHeight = 0;
-
-  for (size_t i = 0; i < _sinkEntries.size(); ++i)
-  {
-    double h = _sinkEntries[i]->height();
-
-    double y = totalHeight + (_spacing  + h) / 2;
-    double x = 0.0 - _connectionPointDiameter * 1.3;
-
-    if (!_sinkEntries[i]->getConnectionID().isNull())
-    {
-
-      painter->drawEllipse(QPointF(x, y),
-                           _connectionPointDiameter * 0.4,
-                           _connectionPointDiameter * 0.4);
-    }
-
-    totalHeight += h + _spacing;
-  }
-
-  totalHeight += _spacing;
-
-  for (size_t i = 0; i < _sourceEntries.size(); ++i)
-  {
-    double h = _sourceEntries[i]->height();
-
-    double y = totalHeight + (_spacing  + h) / 2;
-    double x = _width + _connectionPointDiameter * 1.3;
-
-    if (!_sourceEntries[i]->getConnectionID().isNull())
-    {
-      painter->drawEllipse(QPointF(x, y),
-                           _connectionPointDiameter * 0.4,
-                           _connectionPointDiameter * 0.4);
-    }
-
-    totalHeight += h + _spacing;
-  }
+  NodePainter::paint(painter, _nodeGeometry,
+                     getEntryArray(EndType::SOURCE),
+                     getEntryArray(EndType::SINK));
 }
 
 
@@ -363,7 +191,8 @@ checkHitSinkScenePoint(const QPointF eventPoint) const
 {
   int result = -1;
 
-  double tolerance = 1.0 * _connectionPointDiameter;
+  auto   diameter  = _nodeGeometry.connectionPointDiameter();
+  double tolerance = 1.0 * diameter;
 
   for (size_t i = 0; i < _sinkEntries.size(); ++i)
   {
@@ -385,7 +214,8 @@ checkHitSourceScenePoint(const QPointF eventPoint) const
 {
   int result = -1;
 
-  double tolerance = 1.0 * _connectionPointDiameter;
+  auto   diameter  = _nodeGeometry.connectionPointDiameter();
+  double tolerance = 1.0 * diameter;
 
   for (size_t i = 0; i < _sourceEntries.size(); ++i)
   {
@@ -471,7 +301,7 @@ void
 Node::
 hoverEnterEvent(QGraphicsSceneHoverEvent* event)
 {
-  _hovered = true;
+  _nodeGeometry.setHovered(true);
   update();
   event->accept();
 }
@@ -481,7 +311,7 @@ void
 Node::
 hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
 {
-  _hovered = false;
+  _nodeGeometry.setHovered(false);
   update();
   event->accept();
 }
@@ -496,7 +326,7 @@ initializeEntries()
   for (auto i = 0ul; i < n; ++i)
   {
     FlowItemEntry* entry =
-      new FlowItemEntry(EndType::SINK, _id);
+      new FlowItemEntry(EndType::SINK, _id, _nodeGeometry);
 
     _sinkEntries.push_back(entry);
   }
@@ -504,9 +334,11 @@ initializeEntries()
   int totalHeight = 0;
   for (size_t i = 0; i < _sinkEntries.size(); ++i)
   {
-    _sinkEntries[i]->setPos(0, totalHeight + _spacing / 2);
-    totalHeight += _sinkEntries[i]->height() + _spacing;
+    _sinkEntries[i]->setPos(0, totalHeight + _nodeGeometry.spacing() / 2);
+    totalHeight += _nodeGeometry.entryHeight() + _nodeGeometry.spacing();
   }
+
+  _nodeGeometry.setNSinks(n);
 
   ////////////////////////////
 
@@ -515,18 +347,20 @@ initializeEntries()
   for (auto i = 0ul; i < n; ++i)
   {
     FlowItemEntry* entry =
-      new FlowItemEntry(EndType::SOURCE, _id);
+      new FlowItemEntry(EndType::SOURCE, _id, _nodeGeometry);
 
     _sourceEntries.push_back(entry);
   }
 
-  totalHeight += _spacing;
+  totalHeight += _nodeGeometry.spacing();
 
   for (size_t i = 0; i < _sourceEntries.size(); ++i)
   {
-    _sourceEntries[i]->setPos(0, totalHeight + _spacing / 2);
-    totalHeight += _sourceEntries[i]->height() + _spacing;
+    _sourceEntries[i]->setPos(0, totalHeight + _nodeGeometry.spacing() / 2);
+    totalHeight += _nodeGeometry.entryHeight() + _nodeGeometry.spacing();
   }
+
+  _nodeGeometry.setNSources(n);
 }
 
 

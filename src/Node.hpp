@@ -6,6 +6,8 @@
 
 #include "Connection.hpp"
 
+#include "NodeGeometry.hpp"
+
 class FlowItemEntry;
 
 class Node : public QGraphicsObject
@@ -108,13 +110,7 @@ private:
 
   // painting
 
-  int _width;
-  int _height;
-  int _spacing;
-
-  bool _hovered;
-
-  int _connectionPointDiameter;
+  NodeGeometry _nodeGeometry;
 };
 
 #endif // FLOW_ITEM_H

@@ -150,8 +150,6 @@ mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
   bool deleteConection =
     !(node && _connection.tryConnectToNode(node, event->scenePos()));
 
-  std::cout << "Delete C: " << deleteConection << std::endl;
-
   if (deleteConection)
   {
     auto& scene = FlowScene::instance();

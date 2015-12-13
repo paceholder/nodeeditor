@@ -12,6 +12,7 @@
 #include "Connection.hpp"
 
 class Node;
+class NodeGeometry;
 
 class FlowItemEntry : public QGraphicsObject
 {
@@ -25,14 +26,11 @@ public:
 public:
   FlowItemEntry(EndType type,
                 QUuid parentID,
+                NodeGeometry const& nodeGeom,
                 QString name = QString("Entry"),
                 QUuid connectionID = QUuid());
 
   QRectF boundingRect() const override;
-
-  double width() const { return _width; }
-
-  double height() const { return _height; }
 
   void setConnectionID(QUuid connectionID);
 
@@ -77,8 +75,7 @@ private:
 
   // painting
 
-  int _width;
-  int _height;
+  NodeGeometry const& _nodeGeometry;
 };
 
 #endif //  FLOW_ITEM_ENTRY_H
