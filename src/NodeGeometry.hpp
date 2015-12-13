@@ -44,6 +44,11 @@ public:
   void setNSinks(unsigned int nSinks)
   { _nSinks = nSinks; }
 
+  QPointF const& draggingPos() const
+  { return _draggingPos; }
+  void setDraggingPosition(QPointF const& pos)
+  { _draggingPos = pos; }
+
 public:
   QRectF entryBoundingRect() const;
 
@@ -67,6 +72,8 @@ private:
 
   unsigned int _nSources;
   unsigned int _nSinks;
+
+  QPointF _draggingPos;
 };
 
 #endif //  NODE_GEOMETRY_HPP

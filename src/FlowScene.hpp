@@ -58,7 +58,7 @@ private:
   static FlowScene* _instance;
 
   std::unordered_map<QUuid, Connection*> _connections;
-  std::unordered_map<QUuid, Node*>       _flowItems;
+  std::unordered_map<QUuid, Node*>       _nodes;
 };
 
 #endif //  _FLOW_SCENE_HPP_

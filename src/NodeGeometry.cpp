@@ -9,6 +9,7 @@ NodeGeometry()
   , _spacing(10)
   , _connectionPointDiameter(10)
   , _hovered(false)
+  , _draggingPos(-1000, -1000)
 {
   //
 }
@@ -104,3 +105,6 @@ connectionPointScenePosition(int index,
 
   return QPointF();
 }
+
+
+void setDraggingPosition(QPointF const& pos);

@@ -10,6 +10,8 @@
 #include "ConnectionGeometry.hpp"
 #include "ConnectionPainter.hpp"
 
+#include "Node.hpp"
+
 ConnectionGraphicsObject::
 ConnectionGraphicsObject(Connection& connection,
                          ConnectionGeometry& connectionGeometry,
@@ -115,19 +117,35 @@ void
 ConnectionGraphicsObject::
 mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 {
-  QPointF p = event->pos() - event->lastPos();
-
   prepareGeometryChange();
 
-  auto draggingEnd = _connection.draggingEnd();
+  //-------------------
+
+  auto node = FlowScene::locateNodeAt(event);
+
+  if (node)
+  {
+    node->reactToPossibleConnection(_connection.draggingEnd(),
+                                    event->scenePos());
+
+    node->update();
+  }
+
+  //-------------------
+
+  QPointF offset      = event->pos() - event->lastPos();
+  auto    draggingEnd = _connection.draggingEnd();
 
   if (draggingEnd != EndType::NONE)
   {
-    auto &endPoint = _connectionGeometry.getEndPoint(draggingEnd);
+    auto &endPoint =
+      _connectionGeometry.getEndPoint(draggingEnd);
 
-    _connectionGeometry.setEndPoint(draggingEnd, endPoint + p);
+    _connectionGeometry.setEndPoint(draggingEnd,
+                                    endPoint + offset);
   }
 
+  //-------------------
 
   update();
 

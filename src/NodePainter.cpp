@@ -28,7 +28,7 @@ paint(QPainter* painter,
   painter->setBrush(QColor(Qt::darkGray));
 
   unsigned int diam = geom.connectionPointDiameter();
-  QRectF boundary(0.0, 0.0, geom.width(), geom.height());
+  QRectF   boundary(0.0, 0.0, geom.width(), geom.height());
   QMargins m(diam, diam, diam, diam);
 
   double const radius = 3.0;
@@ -51,14 +51,29 @@ drawConnectionPoints(QPainter* painter,
 
   auto diameter = geom.connectionPointDiameter();
 
+  // TODO: make class-member
+  double const offsetMult = 1.3;
+
   double const h = geom.entryHeight();
   for (size_t i = 0; i < geom.nSinks(); ++i)
   {
     double y = totalHeight + (geom.spacing()  + h) / 2;
-    double x = 0.0 - diameter * 1.3;
-    painter->drawEllipse(QPointF(x, y),
-                         diameter * 0.6,
-                         diameter * 0.6);
+    double x = 0.0 - diameter * offsetMult;
+
+    QPointF p(x, y);
+
+    auto   diff = geom.draggingPos() - p;
+    double dist = std::sqrt(QPointF::dotProduct(diff, diff));
+
+    double const thres = 40.0;
+
+    double const r = (dist < thres) ?
+                     (2.0 - dist / thres / 2.) :
+                     1.0;
+
+    painter->drawEllipse(p,
+                         diameter * 0.6 * r,
+                         diameter * 0.6 * r);
 
     totalHeight += h + geom.spacing();
   }
@@ -68,8 +83,23 @@ drawConnectionPoints(QPainter* painter,
   for (size_t i = 0; i < geom.nSources(); ++i)
   {
     double y = totalHeight + (geom.spacing()  + h) / 2;
-    double x = geom.width() + diameter * 1.3;
-    painter->drawEllipse(QPointF(x, y),
+    double x = geom.width() + diameter * offsetMult;
+
+    QPointF p(x, y);
+
+    auto   diff = geom.draggingPos() - p;
+    double dist = std::sqrt(QPointF::dotProduct(diff, diff));
+
+    double const thres = 20.0;
+
+    double const r = (dist < thres) ?
+                     (2.0 - dist / thres / 2.) :
+                     1.0;
+
+    painter->drawEllipse(p,
+                         diameter * 0.6 * r,
+                         diameter * 0.6 * r);
+    painter->drawEllipse(p,
                          diameter * 0.6,
                          diameter * 0.6);
 

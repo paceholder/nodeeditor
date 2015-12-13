@@ -90,7 +90,7 @@ createNode()
 
     this->addItem(flowItem);
 
-    _flowItems[flowItem->id()] = flowItem;
+    _nodes[flowItem->id()] = flowItem;
 
     flowItem->initializeNode();
 
@@ -118,9 +118,9 @@ Node*
 FlowScene::
 getNode(QUuid id) const
 {
-  auto it = _flowItems.find(id);
+  auto it = _nodes.find(id);
 
-  if (it != _flowItems.end())
+  if (it != _nodes.end())
     return it->second;
 
   return nullptr;
@@ -142,7 +142,7 @@ FlowScene::
     delete c.second;
   }
 
-  for (auto &n : _flowItems)
+  for (auto &n : _nodes)
   {
     delete n.second;
   }

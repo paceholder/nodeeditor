@@ -44,6 +44,9 @@ public:
   QPointF connectionPointScenePosition(int index,
                                        EndType type) const;
 
+  void reactToPossibleConnection(EndType draggingEnd,
+                                 QPointF const &scenePoint);
+
   bool canConnect(EndType draggingEnd, QPointF const &scenePoint);
 
   std::pair<QUuid, int>
@@ -81,18 +84,12 @@ private:
 
   void embedQWidget();
 
-  void recalculateSize();
-
   int checkHitScenePoint(EndType endType,
                          QPointF const eventPoint) const;
 
   int checkHitSinkScenePoint(QPointF const eventPoint) const;
 
   int checkHitSourceScenePoint(QPointF const eventPoint) const;
-
-  void drawConnectionPoints(QPainter* painter);
-
-  void drawFilledConnectionPoints(QPainter* painter);
 
 private:
 

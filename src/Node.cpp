@@ -84,6 +84,15 @@ connectionPointScenePosition(int index,
 }
 
 
+void
+Node::
+reactToPossibleConnection(EndType,
+                          QPointF const &scenePoint)
+{
+  _nodeGeometry.setDraggingPosition(mapFromScene(scenePoint));
+}
+
+
 bool
 Node::
 canConnect(EndType draggingEnd, QPointF const &scenePoint)
