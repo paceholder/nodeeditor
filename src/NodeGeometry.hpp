@@ -49,6 +49,8 @@ public:
   void setDraggingPosition(QPointF const& pos)
   { _draggingPos = pos; }
 
+  double opacity() const { return _opacity; }
+
 public:
   QRectF entryBoundingRect() const;
 
@@ -74,6 +76,8 @@ private:
   unsigned int _nSinks;
 
   QPointF _draggingPos;
+
+  double _opacity;
 };
 
 #endif //  NODE_GEOMETRY_HPP

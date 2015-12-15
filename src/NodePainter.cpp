@@ -51,14 +51,11 @@ drawConnectionPoints(QPainter* painter,
 
   auto diameter = geom.connectionPointDiameter();
 
-  // TODO: make class-member
-  double const offsetMult = 1.3;
-
   double const h = geom.entryHeight();
   for (size_t i = 0; i < geom.nSinks(); ++i)
   {
     double y = totalHeight + (geom.spacing()  + h) / 2;
-    double x = 0.0 - diameter * offsetMult;
+    double x = 0.0 - diameter;
 
     QPointF p(x, y);
 
@@ -83,7 +80,7 @@ drawConnectionPoints(QPainter* painter,
   for (size_t i = 0; i < geom.nSources(); ++i)
   {
     double y = totalHeight + (geom.spacing()  + h) / 2;
-    double x = geom.width() + diameter * offsetMult;
+    double x = geom.width() + diameter;
 
     QPointF p(x, y);
 
@@ -128,7 +125,7 @@ drawFilledConnectionPoints(QPainter* painter,
   {
 
     double y = totalHeight + (geom.spacing()  + h) / 2;
-    double x = 0.0 - diameter * 1.3;
+    double x = 0.0 - diameter;
 
     if (!sinks[i]->getConnectionID().isNull())
     {
@@ -146,7 +143,7 @@ drawFilledConnectionPoints(QPainter* painter,
   for (size_t i = 0; i < geom.nSources(); ++i)
   {
     double y = totalHeight + (geom.spacing()  + h) / 2;
-    double x = geom.width() + diameter * 1.3;
+    double x = geom.width() + diameter;
 
     if (!sources[i]->getConnectionID().isNull())
     {

@@ -7,6 +7,7 @@
 #include "Connection.hpp"
 
 #include "NodeGeometry.hpp"
+#include "NodeState.hpp"
 
 class FlowItemEntry;
 
@@ -104,6 +105,8 @@ private:
 
   std::vector<FlowItemEntry*> _sourceEntries;
   std::vector<FlowItemEntry*> _sinkEntries;
+
+  NodeState _nodeState;
 
   // painting
 

@@ -42,6 +42,8 @@ protected: // events
   {
     (void)event;
 
+    event->ignore();
+
     //std::cout << "PRESS CHILD" << std::endl;
   }
 

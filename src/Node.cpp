@@ -24,6 +24,8 @@ Node()
   //effect->setColor(QColor(Qt::gray).darker(800));
 
   //setGraphicsEffect(effect);
+
+  setOpacity(_nodeGeometry.opacity());
 }
 
 
@@ -97,11 +99,13 @@ bool
 Node::
 canConnect(EndType draggingEnd, QPointF const &scenePoint)
 {
-  auto &entries = getEntryArray(draggingEnd);
   int  hit      = checkHitScenePoint(draggingEnd, scenePoint);
 
-  return (hit >= 0 &&
-          entries[hit]->getConnectionID().isNull());
+  //auto &entries = getEntryArray(draggingEnd);
+ 
+  auto &entries = _nodeState.getEntries(draggingEnd);
+  return (hit >= 0 && _nodeState.connectionID(draggingEnd, hit);
+          //entries[hit]->getConnectionID().isNull());
 }
 
 
@@ -119,7 +123,9 @@ connect(Connection const* connection,
                    connection->getConnectionGraphicsObject(),
                    &ConnectionGraphicsObject::onItemMoved);
 
-  connection->getConnectionGraphicsObject()->stackBefore(this);
+  //connection->getConnectionGraphicsObject()->stackBefore(this);
+
+  connection->getConnectionGraphicsObject()->setZValue(-1.0);
 
   auto address = std::make_pair(_id, hit);
 

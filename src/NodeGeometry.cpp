@@ -7,9 +7,10 @@ NodeGeometry()
   , _entryWidth(100)
   , _entryHeight(20)
   , _spacing(10)
-  , _connectionPointDiameter(10)
+  , _connectionPointDiameter(8)
   , _hovered(false)
   , _draggingPos(-1000, -1000)
+  , _opacity(0.90)
 {
   //
 }
@@ -32,7 +33,7 @@ QRectF
 NodeGeometry::
 boundingRect() const
 {
-  double addon = 3 * _connectionPointDiameter;
+  double addon = 4 * _connectionPointDiameter;
 
   return QRectF(0 - addon,
                 0 - addon,
@@ -78,7 +79,7 @@ connectionPointScenePosition(int index,
       // TODO: why?
       totalHeight += (_spacing + _entryHeight) / 2.0;
 
-      double x = _width + _connectionPointDiameter * 1.3;
+      double x = _width + _connectionPointDiameter;
 
       return QPointF(x, totalHeight);
       break;
@@ -93,7 +94,7 @@ connectionPointScenePosition(int index,
       totalHeight += _spacing / 2 +
                      _entryHeight / 2;
 
-      double x = 0.0 - _connectionPointDiameter * 1.3;
+      double x = 0.0 - _connectionPointDiameter;
 
       return QPointF(x, totalHeight);
       break;

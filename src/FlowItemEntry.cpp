@@ -65,6 +65,9 @@ paint(QPainter* painter,
       QStyleOptionGraphicsItem const*,
       QWidget*)
 {
+
+  return;
+
   painter->setPen(Qt::white);
   painter->setBrush(QColor(Qt::darkGray));
   painter->drawRect(boundingRect());
