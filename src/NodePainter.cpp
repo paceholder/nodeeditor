@@ -96,9 +96,6 @@ drawConnectionPoints(QPainter* painter,
     painter->drawEllipse(p,
                          diameter * 0.6 * r,
                          diameter * 0.6 * r);
-    painter->drawEllipse(p,
-                         diameter * 0.6,
-                         diameter * 0.6);
 
     totalHeight += h + geom.spacing();
   }

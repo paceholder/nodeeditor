@@ -20,17 +20,18 @@ Node()
   setFlag(QGraphicsItem::ItemIsMovable, true);
   setFlag(QGraphicsItem::ItemIsFocusable, true);
 
+  // TODO: Pass state to geometry
   _nodeGeometry.setNSources(_nodeState.getEntries(EndType::SOURCE).size());
   _nodeGeometry.setNSinks(_nodeState.getEntries(EndType::SINK).size());
 
   _nodeGeometry.recalculateSize();
 
-  //auto effect = new QGraphicsDropShadowEffect;
-  //effect->setOffset(4, 4);
-  //effect->setBlurRadius(20);
-  //effect->setColor(QColor(Qt::gray).darker(800));
+  auto effect = new QGraphicsDropShadowEffect;
+  effect->setOffset(4, 4);
+  effect->setBlurRadius(20);
+  effect->setColor(QColor(Qt::gray).darker(800));
 
-  //setGraphicsEffect(effect);
+  setGraphicsEffect(effect);
 
   setOpacity(_nodeGeometry.opacity());
 }
@@ -203,14 +204,11 @@ checkHitSinkScenePoint(const QPointF eventPoint) const
   int result = -1;
 
   auto   diameter  = _nodeGeometry.connectionPointDiameter();
-  double tolerance = 1.0 * diameter;
+  double tolerance = 2.0 * diameter;
 
 
   for(size_t i = 0; i < _nodeState.getEntries(EndType::SINK).size(); ++i)
   {
-    std::cout << "EVENT POS " << eventPoint.x()
-              << ", " << eventPoint.y() << std::endl;
-
     QPointF p = connectionPointScenePosition(i, EndType::SINK) - eventPoint;
 
     auto distance = std::sqrt(QPointF::dotProduct(p, p));
@@ -230,7 +228,7 @@ checkHitSourceScenePoint(const QPointF eventPoint) const
   int result = -1;
 
   auto   diameter  = _nodeGeometry.connectionPointDiameter();
-  double tolerance = 1.0 * diameter;
+  double tolerance = 2.0 * diameter;
 
   for(size_t i = 0; i < _nodeState.getEntries(EndType::SOURCE).size(); ++i)
   {
@@ -293,7 +291,7 @@ mousePressEvent(QGraphicsSceneMouseEvent * event)
   clickEnd(EndType::SINK);
   clickEnd(EndType::SOURCE);
 
-  //event->ignore();
+  event->accept();
 }
 
 

@@ -60,8 +60,7 @@ recalculateSize()
 
 QPointF
 NodeGeometry::
-connectionPointScenePosition(int index,
-                             EndType endType) const
+connectionPointScenePosition(int index, EndType endType) const
 {
   unsigned int step = _entryHeight + _spacing;
 
