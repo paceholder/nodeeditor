@@ -1,7 +1,10 @@
 #include "ConnectionGraphicsObject.hpp"
 
 #include <QtWidgets/QGraphicsSceneMouseEvent>
+
 #include <QtWidgets/QGraphicsDropShadowEffect>
+#include <QtWidgets/QGraphicsBlurEffect>
+
 #include <QtWidgets/QStyleOptionGraphicsItem>
 
 #include "FlowScene.hpp"
@@ -9,6 +12,8 @@
 #include "Connection.hpp"
 #include "ConnectionGeometry.hpp"
 #include "ConnectionPainter.hpp"
+
+#include "MyBlurEffect.hpp"
 
 #include "Node.hpp"
 
@@ -26,13 +31,16 @@ ConnectionGraphicsObject(Connection& connection,
 
   setAcceptHoverEvents(true);
 
-  //{
-  //auto effect = new QGraphicsDropShadowEffect;
-  //effect->setOffset(4, 4);
-  //effect->setBlurRadius(20);
-  //effect->setColor(QColor(Qt::gray).darker(800));
-  //setGraphicsEffect(effect);
-  //}
+  {
+    //auto effect = new QGraphicsDropShadowEffect;
+    //auto effect = new QGraphicsBlurEffect;
+    auto effect = new MyBlurEffect(this);
+
+    //effect->setOffset(4, 4);
+    effect->setBlurRadius(5);
+    //effect->setColor(QColor(Qt::gray).darker(800));
+    setGraphicsEffect(effect);
+  }
 
   FlowScene &flowScene = FlowScene::instance();
   flowScene.addItem(this);
@@ -99,7 +107,7 @@ paint(QPainter* painter,
       QStyleOptionGraphicsItem const* option,
       QWidget*)
 {
-  painter->setClipRect(option->exposedRect);
+  //painter->setClipRect(option->exposedRect);
 
   _connectionPainter.paint(painter, _connectionGeometry);
 }
