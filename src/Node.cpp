@@ -14,9 +14,16 @@
 Node::
 Node()
   : _id(QUuid::createUuid())
+  , _nodeState(std::rand() % 4 + 2,
+               std::rand() % 4 + 2)
 {
   setFlag(QGraphicsItem::ItemIsMovable, true);
   setFlag(QGraphicsItem::ItemIsFocusable, true);
+
+  _nodeGeometry.setNSources(_nodeState.getEntries(EndType::SOURCE).size());
+  _nodeGeometry.setNSinks(_nodeState.getEntries(EndType::SINK).size());
+
+  _nodeGeometry.recalculateSize();
 
   //auto effect = new QGraphicsDropShadowEffect;
   //effect->setOffset(4, 4);
@@ -34,8 +41,6 @@ Node::
 initializeNode()
 {
   setAcceptHoverEvents(true);
-
-  initializeEntries();
 
   //embedQWidget();
 
@@ -99,13 +104,12 @@ bool
 Node::
 canConnect(EndType draggingEnd, QPointF const &scenePoint)
 {
-  int  hit      = checkHitScenePoint(draggingEnd, scenePoint);
+  int hit = checkHitScenePoint(draggingEnd, scenePoint);
 
-  //auto &entries = getEntryArray(draggingEnd);
- 
   auto &entries = _nodeState.getEntries(draggingEnd);
-  return (hit >= 0 && _nodeState.connectionID(draggingEnd, hit);
-          //entries[hit]->getConnectionID().isNull());
+
+  return ((hit >= 0) &&
+          _nodeState.connectionID(draggingEnd, hit).isNull());
 }
 
 
@@ -115,15 +119,11 @@ connect(Connection const* connection,
         EndType draggingEnd,
         int hit)
 {
-  auto &entries = getEntryArray(draggingEnd);
-
-  entries[hit]->setConnectionID(connection->id());
+  _nodeState.setConnectionId(draggingEnd, hit, connection->id());
 
   QObject::connect(this, &Node::itemMoved,
                    connection->getConnectionGraphicsObject(),
                    &ConnectionGraphicsObject::onItemMoved);
-
-  //connection->getConnectionGraphicsObject()->stackBefore(this);
 
   connection->getConnectionGraphicsObject()->setZValue(-1.0);
 
@@ -137,7 +137,7 @@ std::pair<QUuid, int>
 Node::
 connect(Connection const* connection,
         EndType draggingEnd,
-        QPointF const& scenePoint)
+        QPointF const & scenePoint)
 {
   int hit = checkHitScenePoint(draggingEnd, scenePoint);
 
@@ -155,23 +155,19 @@ disconnect(Connection const* connection,
                       connection->getConnectionGraphicsObject(),
                       &ConnectionGraphicsObject::onItemMoved);
 
-  auto& entries = getEntryArray(endType);
-
-  entries[hit]->setConnectionID(QUuid());
+  _nodeState.setConnectionId(endType, hit, QUuid());
 }
 
 
 void
 Node::
-paint(QPainter* painter,
+paint(QPainter * painter,
       QStyleOptionGraphicsItem const* option,
       QWidget* )
 {
   painter->setClipRect(option->exposedRect);
 
-  NodePainter::paint(painter, _nodeGeometry,
-                     getEntryArray(EndType::SOURCE),
-                     getEntryArray(EndType::SINK));
+  NodePainter::paint(painter, _nodeGeometry, _nodeState);
 }
 
 
@@ -209,8 +205,12 @@ checkHitSinkScenePoint(const QPointF eventPoint) const
   auto   diameter  = _nodeGeometry.connectionPointDiameter();
   double tolerance = 1.0 * diameter;
 
-  for (size_t i = 0; i < _sinkEntries.size(); ++i)
+
+  for(size_t i = 0; i < _nodeState.getEntries(EndType::SINK).size(); ++i)
   {
+    std::cout << "EVENT POS " << eventPoint.x()
+              << ", " << eventPoint.y() << std::endl;
+
     QPointF p = connectionPointScenePosition(i, EndType::SINK) - eventPoint;
 
     auto distance = std::sqrt(QPointF::dotProduct(p, p));
@@ -232,7 +232,7 @@ checkHitSourceScenePoint(const QPointF eventPoint) const
   auto   diameter  = _nodeGeometry.connectionPointDiameter();
   double tolerance = 1.0 * diameter;
 
-  for (size_t i = 0; i < _sourceEntries.size(); ++i)
+  for(size_t i = 0; i < _nodeState.getEntries(EndType::SOURCE).size(); ++i)
   {
     QPointF p = connectionPointScenePosition(i, EndType::SOURCE) - eventPoint;
     auto    distance = std::sqrt(QPointF::dotProduct(p, p));
@@ -247,7 +247,7 @@ checkHitSourceScenePoint(const QPointF eventPoint) const
 
 void
 Node::
-mousePressEvent(QGraphicsSceneMouseEvent* event)
+mousePressEvent(QGraphicsSceneMouseEvent * event)
 {
   auto clickEnd =
     [&](EndType endToCheck)
@@ -257,13 +257,11 @@ mousePressEvent(QGraphicsSceneMouseEvent* event)
 
       FlowScene &flowScene = FlowScene::instance();
 
+      std::cout << "HIT " << hit << std::endl;
+
       if (hit >= 0)
       {
-        auto& entries = getEntryArray(endToCheck);
-
-        // node's sink has no connection
-
-        QUuid const id = entries[hit]->getConnectionID();
+        QUuid const id = _nodeState.connectionID(endToCheck, hit);
 
         if (id.isNull())
         {
@@ -301,7 +299,7 @@ mousePressEvent(QGraphicsSceneMouseEvent* event)
 
 void
 Node::
-mouseMoveEvent(QGraphicsSceneMouseEvent* event)
+mouseMoveEvent(QGraphicsSceneMouseEvent * event)
 {
   QPointF d = event->pos() - event->lastPos();
 
@@ -314,7 +312,7 @@ mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 
 void
 Node::
-hoverEnterEvent(QGraphicsSceneHoverEvent* event)
+hoverEnterEvent(QGraphicsSceneHoverEvent * event)
 {
   _nodeGeometry.setHovered(true);
   update();
@@ -324,76 +322,9 @@ hoverEnterEvent(QGraphicsSceneHoverEvent* event)
 
 void
 Node::
-hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
+hoverLeaveEvent(QGraphicsSceneHoverEvent * event)
 {
   _nodeGeometry.setHovered(false);
   update();
   event->accept();
-}
-
-
-void
-Node::
-initializeEntries()
-{
-  unsigned int n = std::rand() % 4 + 2;
-
-  for (auto i = 0ul; i < n; ++i)
-  {
-    FlowItemEntry* entry =
-      new FlowItemEntry(EndType::SINK, _id, _nodeGeometry);
-
-    _sinkEntries.push_back(entry);
-  }
-
-  int totalHeight = 0;
-  for (size_t i = 0; i < _sinkEntries.size(); ++i)
-  {
-    _sinkEntries[i]->setPos(0, totalHeight + _nodeGeometry.spacing() / 2);
-    totalHeight += _nodeGeometry.entryHeight() + _nodeGeometry.spacing();
-  }
-
-  _nodeGeometry.setNSinks(n);
-
-  ////////////////////////////
-
-  n = std::rand() % 4 + 2;
-
-  for (auto i = 0ul; i < n; ++i)
-  {
-    FlowItemEntry* entry =
-      new FlowItemEntry(EndType::SOURCE, _id, _nodeGeometry);
-
-    _sourceEntries.push_back(entry);
-  }
-
-  totalHeight += _nodeGeometry.spacing();
-
-  for (size_t i = 0; i < _sourceEntries.size(); ++i)
-  {
-    _sourceEntries[i]->setPos(0, totalHeight + _nodeGeometry.spacing() / 2);
-    totalHeight += _nodeGeometry.entryHeight() + _nodeGeometry.spacing();
-  }
-
-  _nodeGeometry.setNSources(n);
-}
-
-
-std::vector<FlowItemEntry*>&
-Node::
-getEntryArray(EndType endType)
-{
-  switch (endType)
-  {
-    case EndType::SOURCE:
-      return _sourceEntries;
-      break;
-
-    case EndType::SINK:
-      return _sinkEntries;
-      break;
-
-    default:
-      break;
-  }
 }

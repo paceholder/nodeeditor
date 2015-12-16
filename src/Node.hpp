@@ -81,8 +81,6 @@ protected:
   void hoverLeaveEvent(QGraphicsSceneHoverEvent* event) override;
 
 private:
-  void initializeEntries();
-
   void embedQWidget();
 
   int checkHitScenePoint(EndType endType,
@@ -93,18 +91,9 @@ private:
   int checkHitSourceScenePoint(QPointF const eventPoint) const;
 
 private:
-
-  std::vector<FlowItemEntry*>& getEntryArray(EndType endType);
-
-private:
   // addressing
 
   QUuid _id;
-
-  // structure
-
-  std::vector<FlowItemEntry*> _sourceEntries;
-  std::vector<FlowItemEntry*> _sinkEntries;
 
   NodeState _nodeState;
 

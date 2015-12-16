@@ -40,6 +40,14 @@ public:
     return entries[nEntry];
   }
 
+  void setConnectionId(EndType endType, size_t nEntry, QUuid id)
+  {
+    std::vector<QUuid> const& entries =
+      const_cast<NodeState const&>(*this).getEntries(endType);
+
+    const_cast<std::vector<QUuid>&>(entries)[nEntry] = id;
+  }
+
 private:
   std::vector<QUuid> _sources;
   std::vector<QUuid> _sinks;

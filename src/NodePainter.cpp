@@ -1,6 +1,7 @@
 #include "NodePainter.hpp"
 
 #include "NodeGeometry.hpp"
+#include "NodeState.hpp"
 
 #include "FlowItemEntry.hpp"
 
@@ -10,8 +11,7 @@ void
 NodePainter::
 paint(QPainter* painter,
       NodeGeometry const& geom,
-      std::vector<FlowItemEntry*>const & sources,
-      std::vector<FlowItemEntry*>const & sinks)
+      NodeState const& state)
 {
 
   if (geom.hovered())
@@ -37,7 +37,7 @@ paint(QPainter* painter,
 
   drawConnectionPoints(painter, geom);
 
-  drawFilledConnectionPoints(painter, geom, sources, sinks);
+  drawFilledConnectionPoints(painter, geom, state);
 }
 
 
@@ -109,8 +109,7 @@ void
 NodePainter::
 drawFilledConnectionPoints(QPainter* painter,
                            NodeGeometry const& geom,
-                           std::vector<FlowItemEntry*> const& sources,
-                           std::vector<FlowItemEntry*> const& sinks)
+                           NodeState const& state)
 {
   painter->setPen(Qt::cyan);
   painter->setBrush(Qt::cyan);
@@ -127,7 +126,7 @@ drawFilledConnectionPoints(QPainter* painter,
     double y = totalHeight + (geom.spacing()  + h) / 2;
     double x = 0.0 - diameter;
 
-    if (!sinks[i]->getConnectionID().isNull())
+    if (!state.connectionID(EndType::SINK, i).isNull())
     {
 
       painter->drawEllipse(QPointF(x, y),
@@ -145,7 +144,7 @@ drawFilledConnectionPoints(QPainter* painter,
     double y = totalHeight + (geom.spacing()  + h) / 2;
     double x = geom.width() + diameter;
 
-    if (!sources[i]->getConnectionID().isNull())
+    if (!state.connectionID(EndType::SOURCE, i).isNull())
     {
       painter->drawEllipse(QPointF(x, y),
                            diameter * 0.4,

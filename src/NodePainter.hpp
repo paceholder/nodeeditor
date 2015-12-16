@@ -6,6 +6,7 @@
 #include "EndType.hpp"
 
 class NodeGeometry;
+class NodeState;
 class FlowItemEntry;
 
 class NodePainter
@@ -19,8 +20,7 @@ public:
   static
   void paint(QPainter* painter,
              NodeGeometry const& geom,
-             std::vector<FlowItemEntry*>const & sources,
-             std::vector<FlowItemEntry*>const & sinks);
+             NodeState const& state);
 
   static
   void drawConnectionPoints(QPainter* painter,
@@ -29,8 +29,7 @@ public:
   static
   void drawFilledConnectionPoints(QPainter* painter,
                                   NodeGeometry const& geom,
-                                  std::vector<FlowItemEntry*>const & sources,
-                                  std::vector<FlowItemEntry*>const & sinks);
+                                  NodeState const& state);
 };
 
 #endif //  NODE_PAINTER_HPP
