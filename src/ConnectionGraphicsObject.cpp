@@ -13,17 +13,15 @@
 #include "ConnectionGeometry.hpp"
 #include "ConnectionPainter.hpp"
 
-#include "MyBlurEffect.hpp"
+#include "ConnectionBlurEffect.hpp"
 
 #include "Node.hpp"
 
 ConnectionGraphicsObject::
 ConnectionGraphicsObject(Connection& connection,
-                         ConnectionGeometry& connectionGeometry,
-                         ConnectionPainter const& connectionPainter)
+                         ConnectionGeometry& connectionGeometry)
   : _connection(connection)
   , _connectionGeometry(connectionGeometry)
-  , _connectionPainter(connectionPainter)
 {
   setFlag(QGraphicsItem::ItemIsMovable, true);
   setFlag(QGraphicsItem::ItemIsFocusable, true);
@@ -34,12 +32,12 @@ ConnectionGraphicsObject(Connection& connection,
   {
     //auto effect = new QGraphicsDropShadowEffect;
     //auto effect = new QGraphicsBlurEffect;
-    auto effect = new MyBlurEffect(this);
+    //auto effect = new ConnectionBlurEffect(this);
 
     //effect->setOffset(4, 4);
-    effect->setBlurRadius(5);
+    //effect->setBlurRadius(5);
     //effect->setColor(QColor(Qt::gray).darker(800));
-    setGraphicsEffect(effect);
+    //setGraphicsEffect(effect);
   }
 
   FlowScene &flowScene = FlowScene::instance();
@@ -95,9 +93,17 @@ shape() const
 
 #else
 
-  return _connectionPainter.getPainterStroke(_connectionGeometry);
+  return ConnectionPainter::getPainterStroke(_connectionGeometry);
 
 #endif
+}
+
+
+ConnectionGeometry&
+ConnectionGraphicsObject::
+connectionGeometry()
+{
+  return _connectionGeometry;
 }
 
 
@@ -107,9 +113,10 @@ paint(QPainter* painter,
       QStyleOptionGraphicsItem const* option,
       QWidget*)
 {
-  //painter->setClipRect(option->exposedRect);
+  painter->setClipRect(option->exposedRect);
 
-  _connectionPainter.paint(painter, _connectionGeometry);
+  ConnectionPainter::paint(painter,
+                           _connectionGeometry);
 }
 
 

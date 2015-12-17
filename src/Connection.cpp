@@ -11,7 +11,6 @@
 #include "FlowGraphicsView.hpp"
 
 #include "ConnectionGeometry.hpp"
-#include "ConnectionPainter.hpp"
 #include "ConnectionGraphicsObject.hpp"
 
 class
@@ -22,8 +21,7 @@ public:
     : _id(QUuid::createUuid())
     , _draggingEnd(EndType::NONE)
     , _connectionGraphicsObject(new ConnectionGraphicsObject(*connection,
-                                                             _connectionGeometry,
-                                                             _connectionPainter))
+                                                             _connectionGeometry))
   {}
 
   ~ConnectionImpl()
@@ -47,8 +45,6 @@ public:
 
   // painting
   ConnectionGeometry _connectionGeometry;
-
-  ConnectionPainter _connectionPainter;
 
   ConnectionGraphicsObject* _connectionGraphicsObject;
 };

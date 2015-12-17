@@ -13,12 +13,15 @@ public:
 
 public:
 
-  QPainterPath cubicPath(ConnectionGeometry const& geom) const;
+  static
+  QPainterPath cubicPath(ConnectionGeometry const& geom);
 
-  QPainterPath getPainterStroke(ConnectionGeometry const& geom) const;
+  static
+  QPainterPath getPainterStroke(ConnectionGeometry const& geom);
 
+  static
   void paint(QPainter* painter,
-             ConnectionGeometry const& geom) const;
+             ConnectionGeometry const& geom);
 };
 
 #endif //  CONNECTION_PAINTER_HPP

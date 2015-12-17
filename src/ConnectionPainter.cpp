@@ -10,7 +10,7 @@ ConnectionPainter()
 
 QPainterPath
 ConnectionPainter::
-cubicPath(ConnectionGeometry const& geom) const
+cubicPath(ConnectionGeometry const& geom)
 {
   QPointF const& source = geom.source();
   QPointF const& sink   = geom.sink();
@@ -28,7 +28,7 @@ cubicPath(ConnectionGeometry const& geom) const
 
 QPainterPath
 ConnectionPainter::
-getPainterStroke(ConnectionGeometry const& geom) const
+getPainterStroke(ConnectionGeometry const& geom)
 {
   auto cubic = cubicPath(geom);
 
@@ -51,7 +51,7 @@ getPainterStroke(ConnectionGeometry const& geom) const
 
 void
 ConnectionPainter::
-paint(QPainter* painter, ConnectionGeometry const &geom) const
+paint(QPainter* painter, ConnectionGeometry const &geom)
 {
   bool const hovered = geom.hovered();
 

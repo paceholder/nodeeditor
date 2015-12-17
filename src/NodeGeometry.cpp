@@ -10,7 +10,7 @@ NodeGeometry()
   , _connectionPointDiameter(8)
   , _hovered(false)
   , _draggingPos(-1000, -1000)
-  , _opacity(0.90)
+  , _opacity(0.80)
 {
   //
 }

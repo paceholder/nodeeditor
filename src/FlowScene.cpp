@@ -79,9 +79,8 @@ QUuid
 FlowScene::
 createNode()
 {
-
-  //for (auto i : {1, 2, 3, 4, 5, 6, 7, 8})
-  for (auto i : {1, 2, 3, 4})
+  for (auto i : {1, 2, 3, 4, 5, 6, 7, 8})
+  //for (auto i : {1, 2, 3, 4})
   //for (auto i : {1})
   {
     (void)i;
@@ -94,7 +93,10 @@ createNode()
 
     flowItem->initializeNode();
 
-    flowItem->moveBy(std::rand() % 500, std::rand() % 500);
+    constexpr int spread = 700;
+
+    flowItem->moveBy(std::rand() % spread - spread / 2,
+                     std::rand() % spread - spread / 2);
   }
 
   return QUuid();

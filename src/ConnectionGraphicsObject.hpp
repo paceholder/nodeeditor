@@ -7,7 +7,6 @@ class QGraphicsSceneMouseEvent;
 
 class Connection;
 class ConnectionGeometry;
-class ConnectionPainter;
 
 class ConnectionGraphicsObject
   : public QGraphicsObject
@@ -17,8 +16,7 @@ class ConnectionGraphicsObject
 public:
 
   ConnectionGraphicsObject(Connection& connection,
-                           ConnectionGeometry& connectionGeometry,
-                           ConnectionPainter const& connectionPainter);
+                           ConnectionGeometry& connectionGeometry);
 
 public:
 
@@ -28,6 +26,9 @@ public slots:
   void onItemMoved(QUuid id, QPointF const &offset);
 
   QPainterPath shape() const override;
+
+public:
+  ConnectionGeometry& connectionGeometry();
 
 protected:
   void paint(QPainter* painter,
@@ -47,7 +48,6 @@ private:
 
   Connection& _connection;
   ConnectionGeometry& _connectionGeometry;
-  ConnectionPainter const& _connectionPainter;
 };
 
 #endif //  CONNECTION_GRAPHICS_OBJECT_H
