@@ -26,8 +26,7 @@ public:
 
   ~ConnectionImpl()
   {
-    std::cout << "About to delete graphics object"
-              << std::endl;
+    std::cout << "About to delete graphics object" << std::endl;
     FlowScene &flowScene = FlowScene::instance();
 
     flowScene.removeItem(_connectionGraphicsObject);

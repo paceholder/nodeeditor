@@ -1,105 +1,34 @@
-#ifndef FLOW_ITEM_H
-#define FLOW_ITEM_H
+#ifndef NODE_HPP
+#define NODE_HPP
 
+#include <memory>
+
+#include <QtCore/QObject>
 #include <QtCore/QUuid>
-#include <QtWidgets/QGraphicsObject>
 
-#include "Connection.hpp"
-
-#include "NodeGeometry.hpp"
 #include "NodeState.hpp"
+#include "NodeGeometry.hpp"
 
-class FlowItemEntry;
-
-class Node : public QGraphicsObject
+class Node : public QObject
 {
   Q_OBJECT
 
 public:
+
   Node();
-
-  void initializeNode();
-
-  QRectF boundingRect() const override;
-
-  /* *
-   * EVENTS
-   *
-   * mouseOverIn
-   * mouseOverOut
-   *
-   * mouseReleaseIn
-   * mouseReleaseOut
-   *
-   * mousePressIn
-   * mousePressOut
-   *
-   * */
+  ~Node();
 
 public:
-  QUuid id() { return _id; }
 
-  QPointF connectionPointScenePosition(std::pair<QUuid, int> address,
-                                       EndType endType) const;
-
-  QPointF connectionPointScenePosition(int index,
-                                       EndType type) const;
-
-  void reactToPossibleConnection(EndType draggingEnd,
-                                 QPointF const &scenePoint);
-
-  bool canConnect(EndType draggingEnd, QPointF const &scenePoint);
-
-  std::pair<QUuid, int>
-  connect(Connection const* connection,
-          EndType draggingEnd,
-          int hit);
-
-  std::pair<QUuid, int>
-  connect(Connection const* connection,
-          EndType draggingEnd,
-          QPointF const& scenePoint);
-
-  void disconnect(Connection const* connection,
-                  EndType endType,
-                  int hit);
-
-signals:
-  void itemMoved(QUuid, QPointF const &);
-
-protected:
-  void paint(QPainter*                       painter,
-             QStyleOptionGraphicsItem const* option,
-             QWidget*                        widget = 0) override;
-
-  void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
-
-  void mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
-
-  void hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
-
-  void hoverLeaveEvent(QGraphicsSceneHoverEvent* event) override;
+  QUuid id();
 
 private:
-  void embedQWidget();
 
-  int checkHitScenePoint(EndType endType,
-                         QPointF const eventPoint) const;
+  class NodeImpl;
 
-  int checkHitSinkScenePoint(QPointF const eventPoint) const;
+  std::unique_ptr<NodeImpl> _impl;
 
-  int checkHitSourceScenePoint(QPointF const eventPoint) const;
-
-private:
-  // addressing
-
-  QUuid _id;
-
-  NodeState _nodeState;
-
-  // painting
-
-  NodeGeometry _nodeGeometry;
 };
 
-#endif // FLOW_ITEM_H
+
+#endif // NODE_HPP
