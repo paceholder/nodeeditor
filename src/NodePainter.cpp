@@ -23,7 +23,19 @@ paint(QPainter* painter,
     painter->setPen(p);
   }
 
-  painter->setBrush(QColor(Qt::darkGray));
+  //painter->setBrush(QColor(Qt::darkGray));
+
+  QLinearGradient gradient(QPointF(0.0, 0.0),
+                           QPointF(10.0, geom.height()));
+
+  QColor darkGray1 = QColor(Qt::gray).darker(200);
+  QColor darkGray2 = QColor(Qt::gray).darker(250);
+
+  gradient.setColorAt(0.0,  darkGray1);
+  gradient.setColorAt(0.95,  darkGray2);
+  gradient.setColorAt(1.0,  darkGray2.darker(110));
+
+  painter->setBrush(gradient);
 
   unsigned int diam = geom.connectionPointDiameter();
   QRectF   boundary(0.0, 0.0, geom.width(), geom.height());

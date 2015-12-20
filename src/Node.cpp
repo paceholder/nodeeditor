@@ -8,9 +8,10 @@
 
 #include "NodeState.hpp"
 #include "NodeGeometry.hpp"
-
 #include "NodeGraphicsObject.hpp"
+
 #include "ConnectionGraphicsObject.hpp"
+#include "ConnectionState.hpp"
 
 class Node::NodeImpl
 {
@@ -101,27 +102,31 @@ update()
 
 bool
 Node::
-canConnect(EndType draggingEnd, QPointF const &scenePoint)
+canConnect(ConnectionState const& conState,
+           QPointF const &scenePoint)
 {
   auto g   = _impl->_nodeGraphicsObject;
   int  hit =
-    _impl->_nodeGeometry.checkHitScenePoint(draggingEnd,
+    _impl->_nodeGeometry.checkHitScenePoint(conState.draggingEnd(),
                                             scenePoint,
                                             _impl->_nodeState,
                                             g->sceneTransform());
 
   return ((hit >= 0) &&
-          _impl->_nodeState.connectionID(draggingEnd, hit).isNull());
+          _impl->_nodeState.connectionID(conState.draggingEnd(), hit).isNull());
 }
 
 
 std::pair<QUuid, int>
 Node::
-connect(Connection const* connection,
-        EndType draggingEnd,
-        int hit)
+connect(Connection const* connection, int hit)
 {
-  _impl->_nodeState.setConnectionId(draggingEnd, hit, connection->id());
+  ConnectionState const& conState =
+    connection->connectionState();
+
+  _impl->_nodeState.setConnectionId(conState.draggingEnd(),
+                                    hit,
+                                    connection->id());
 
   QObject::connect(_impl->_nodeGraphicsObject,
                    &NodeGraphicsObject::itemMoved,
@@ -137,17 +142,19 @@ connect(Connection const* connection,
 std::pair<QUuid, int>
 Node::
 connect(Connection const* connection,
-        EndType draggingEnd,
         QPointF const & scenePoint)
 {
+  ConnectionState const& conState =
+    connection->connectionState();
+
   auto g   = _impl->_nodeGraphicsObject;
   int  hit =
-    _impl->_nodeGeometry.checkHitScenePoint(draggingEnd,
+    _impl->_nodeGeometry.checkHitScenePoint(conState.draggingEnd(),
                                             scenePoint,
                                             _impl->_nodeState,
                                             g->sceneTransform());
 
-  return connect(connection, draggingEnd, hit);
+  return connect(connection, hit);
 }
 
 

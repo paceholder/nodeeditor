@@ -10,6 +10,7 @@
 
 class Node;
 class ConnectionGraphicsObject;
+class ConnectionState;
 class ConnectionGeometry;
 class QPointF;
 
@@ -42,6 +43,9 @@ public:
                      //QPointF const& scenePoint);
 
   ConnectionGraphicsObject* getConnectionGraphicsObject() const;
+
+  ConnectionState const & connectionState() const;
+  ConnectionState& connectionState();
 
   ConnectionGeometry& connectionGeometry();
 

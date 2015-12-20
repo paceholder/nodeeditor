@@ -7,6 +7,8 @@
 #include <QtWidgets/QGraphicsEffect>
 
 #include "ConnectionGraphicsObject.hpp"
+#include "ConnectionState.hpp"
+
 #include "FlowScene.hpp"
 #include "NodePainter.hpp"
 
@@ -119,8 +121,9 @@ mousePressEvent(QGraphicsSceneMouseEvent * event)
         {
           // todo add to FlowScene
           auto connection = flowScene.createConnection();
+          connection->connectionState().setDraggingEnd(endToCheck);
 
-          _node.connect(connection, endToCheck, hit);
+          _node.connect(connection, hit);
 
           auto address = std::make_pair(_node.id(), hit);
 

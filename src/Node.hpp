@@ -9,6 +9,7 @@
 #include "EndType.hpp"
 
 class Connection;
+class ConnectionState;
 class NodeGeometry;
 class NodeGraphicsObject;
 
@@ -31,20 +32,16 @@ public:
   /// Updates graphics
   void update();
 
-  bool canConnect(EndType draggingEnd,
+  bool canConnect(ConnectionState const& connectionState,
                   QPointF const &scenePoint);
 
   std::pair<QUuid, int>
   connect(Connection const* connection,
-          EndType draggingEnd,
           int hit);
 
   std::pair<QUuid, int>
   connect(Connection const* connection,
-          EndType draggingEnd,
           QPointF const& scenePoint);
-
-
 
   void disconnect(Connection const* connection,
                   EndType endType,

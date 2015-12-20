@@ -53,8 +53,6 @@ void
 ConnectionPainter::
 paint(QPainter* painter, ConnectionGeometry const &geom)
 {
-  bool const hovered = geom.hovered();
-
   double const lineWidth     = geom.lineWidth();
   double const pointDiameter = geom.pointDiameter();
 
@@ -83,6 +81,7 @@ paint(QPainter* painter, ConnectionGeometry const &geom)
 
   auto cubic = cubicPath(geom);
 
+  bool const hovered = geom.hovered();
   if (hovered)
   {
     QPen p;
@@ -97,15 +96,18 @@ paint(QPainter* painter, ConnectionGeometry const &geom)
     painter->drawPath(cubic);
   }
 
-  QPen p;
+  // draw normal line
+  {
+    QPen p;
 
-  p.setWidth(lineWidth);
-  p.setColor(QColor(Qt::cyan).darker());
-  painter->setPen(p);
-  painter->setBrush(Qt::NoBrush);
+    p.setWidth(lineWidth);
+    p.setColor(QColor(Qt::cyan).darker());
+    painter->setPen(p);
+    painter->setBrush(Qt::NoBrush);
 
-  // cubic spline
-  painter->drawPath(cubic);
+    // cubic spline
+    painter->drawPath(cubic);
+  }
 
   QPointF const& source = geom.source();
   QPointF const& sink   = geom.sink();

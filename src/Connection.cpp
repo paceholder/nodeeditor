@@ -12,6 +12,7 @@
 #include "NodeGeometry.hpp"
 #include "NodeGraphicsObject.hpp"
 
+#include "ConnectionState.hpp"
 #include "ConnectionGeometry.hpp"
 #include "ConnectionGraphicsObject.hpp"
 
@@ -21,7 +22,7 @@ Connection::ConnectionImpl
 public:
   ConnectionImpl(Connection* connection)
     : _id(QUuid::createUuid())
-    , _draggingEnd(EndType::NONE)
+    , _connectionState()
     , _connectionGraphicsObject(new ConnectionGraphicsObject(*connection,
                                                              _connectionGeometry))
   {}
@@ -41,12 +42,8 @@ public:
   std::pair<QUuid, int> _sourceAddress; // ItemID, entry number
   std::pair<QUuid, int> _sinkAddress;
 
-  // state
-  EndType _draggingEnd;
-
-  // painting
+  ConnectionState    _connectionState;
   ConnectionGeometry _connectionGeometry;
-
   ConnectionGraphicsObject* _connectionGraphicsObject;
 };
 
@@ -100,11 +97,11 @@ void
 Connection::
 setDraggingEnd(EndType dragging)
 {
-  _impl->_draggingEnd = dragging;
+  _impl->_connectionState.setDraggingEnd(dragging);
 
   _impl->_connectionGraphicsObject->grabMouse();
 
-  switch (_impl->_draggingEnd)
+  switch (dragging)
   {
     case EndType::SOURCE:
       _impl->_sourceAddress = std::make_pair(QUuid(), -1);
@@ -124,7 +121,7 @@ EndType
 Connection::
 draggingEnd() const
 {
-  return _impl->_draggingEnd;
+  return _impl->_connectionState.draggingEnd();
 }
 
 
@@ -173,24 +170,22 @@ bool
 Connection::
 tryConnectToNode(Node* node, QPointF const& scenePoint)
 {
-  bool ok = node->canConnect(_impl->_draggingEnd, scenePoint);
+  bool ok = node->canConnect(_impl->_connectionState,
+                             scenePoint);
 
   if (ok)
   {
-    auto address = node->connect(this,
-                                 _impl->_draggingEnd,
-                                 scenePoint);
+    auto address = node->connect(this, scenePoint);
 
     if (!address.first.isNull())
     {
       //auto p = node->connectionPointScenePosition(address,
-                                                  //_impl->_draggingEnd);
+      //_impl->_draggingEnd);
 
       connectToNode(address);
 
       //------
-
-      _impl->_draggingEnd = EndType::NONE;
+      _impl->_connectionState.clearDragging();
     }
   }
 
@@ -202,7 +197,7 @@ void
 Connection::
 connectToNode(std::pair<QUuid, int> const &address)
 {
-  setAddress(_impl->_draggingEnd, address);
+  setAddress(_impl->_connectionState.draggingEnd(), address);
 
   Node const* node = FlowScene::instance().getNode(address.first);
 
@@ -211,16 +206,16 @@ connectToNode(std::pair<QUuid, int> const &address)
 
   QPointF const scenePoint =
     nodeGeometry.connectionPointScenePosition(address.second,
-                                              _impl->_draggingEnd,
+                                              _impl->_connectionState.draggingEnd(),
                                               o->sceneTransform());
 
   auto p = _impl->_connectionGraphicsObject->mapFromScene(scenePoint);
 
-  _impl->_connectionGeometry.setEndPoint(_impl->_draggingEnd, p);
+  _impl->_connectionGeometry.setEndPoint(_impl->_connectionState.draggingEnd(), p);
 
-  if (getAddress(oppositeEnd(_impl->_draggingEnd)).first.isNull())
+  if (getAddress(oppositeEnd(_impl->_connectionState.draggingEnd())).first.isNull())
   {
-    _impl->_connectionGeometry.setEndPoint(oppositeEnd(_impl->_draggingEnd), p);
+    _impl->_connectionGeometry.setEndPoint(oppositeEnd(_impl->_connectionState.draggingEnd()), p);
   }
 
   _impl->_connectionGraphicsObject->update();
@@ -232,6 +227,21 @@ Connection::
 getConnectionGraphicsObject() const
 {
   return _impl->_connectionGraphicsObject;
+}
+
+
+ConnectionState&
+Connection::
+connectionState()
+{
+  return _impl->_connectionState;
+}
+
+ConnectionState const&
+Connection::
+connectionState() const
+{
+  return _impl->_connectionState;
 }
 
 
