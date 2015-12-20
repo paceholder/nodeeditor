@@ -6,8 +6,11 @@
 #include <QtCore/QObject>
 #include <QtCore/QUuid>
 
-#include "NodeState.hpp"
-#include "NodeGeometry.hpp"
+#include "EndType.hpp"
+
+class Connection;
+class NodeGeometry;
+class NodeGraphicsObject;
 
 class Node : public QObject
 {
@@ -20,15 +23,43 @@ public:
 
 public:
 
-  QUuid id();
+  QUuid const id() const;
+
+  void reactToPossibleConnection(EndType,
+                                 QPointF const & scenePoint);
+
+  /// Updates graphics
+  void update();
+
+  bool canConnect(EndType draggingEnd,
+                  QPointF const &scenePoint);
+
+  std::pair<QUuid, int>
+  connect(Connection const* connection,
+          EndType draggingEnd,
+          int hit);
+
+  std::pair<QUuid, int>
+  connect(Connection const* connection,
+          EndType draggingEnd,
+          QPointF const& scenePoint);
+
+
+
+  void disconnect(Connection const* connection,
+                  EndType endType,
+                  int hit);
+
+  NodeGraphicsObject const* nodeGraphicsObject() const;
+
+  NodeGeometry& nodeGeometry();
+  NodeGeometry const& nodeGeometry() const;
 
 private:
 
   class NodeImpl;
 
   std::unique_ptr<NodeImpl> _impl;
-
 };
-
 
 #endif // NODE_HPP

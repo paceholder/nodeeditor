@@ -16,40 +16,13 @@ class NodeGraphicsObject : public QGraphicsObject
   Q_OBJECT
 
 public:
-  NodeGraphicsObject(Node* node,
+  NodeGraphicsObject(Node& node,
                      NodeState& nodeState,
                      NodeGeometry& nodeGeometry);
 
-  void initializeNode();
+  Node* node();
 
   QRectF boundingRect() const override;
-
-public:
-
-  QPointF connectionPointScenePosition(std::pair<QUuid, int> address,
-                                       EndType endType) const;
-
-  QPointF connectionPointScenePosition(int index,
-                                       EndType type) const;
-
-  void reactToPossibleConnection(EndType draggingEnd,
-                                 QPointF const &scenePoint);
-
-  bool canConnect(EndType draggingEnd, QPointF const &scenePoint);
-
-  std::pair<QUuid, int>
-  connect(Connection const* connection,
-          EndType draggingEnd,
-          int hit);
-
-  std::pair<QUuid, int>
-  connect(Connection const* connection,
-          EndType draggingEnd,
-          QPointF const& scenePoint);
-
-  void disconnect(Connection const* connection,
-                  EndType endType,
-                  int hit);
 
 signals:
   void itemMoved(QUuid, QPointF const &);
@@ -70,18 +43,10 @@ protected:
 private:
   void embedQWidget();
 
-  int checkHitScenePoint(EndType endType,
-                         QPointF const eventPoint) const;
-
-  int checkHitSinkScenePoint(QPointF const eventPoint) const;
-
-  int checkHitSourceScenePoint(QPointF const eventPoint) const;
-
 private:
   // addressing
 
-  Node* _node;
-
+  Node& _node;
 
   NodeState& _nodeState;
 

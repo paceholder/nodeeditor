@@ -38,8 +38,8 @@ public:
   bool tryConnectToNode(Node* node, QPointF const& scenePoint);
 
   /// Node initiates
-  void connectToNode(std::pair<QUuid, int> const &address,
-                     QPointF const& scenePoint);
+  void connectToNode(std::pair<QUuid, int> const &address);
+                     //QPointF const& scenePoint);
 
   ConnectionGraphicsObject* getConnectionGraphicsObject() const;
 

@@ -1,11 +1,9 @@
 #include "NodePainter.hpp"
 
+#include <QtCore/QMargins>
+
 #include "NodeGeometry.hpp"
 #include "NodeState.hpp"
-
-#include "FlowItemEntry.hpp"
-
-#include <QtCore/QMargins>
 
 void
 NodePainter::

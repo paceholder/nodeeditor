@@ -1,5 +1,7 @@
 #include "NodeGeometry.hpp"
 
+#include "NodeState.hpp"
+
 NodeGeometry::
 NodeGeometry()
   : _width(100)
@@ -60,9 +62,13 @@ recalculateSize()
 
 QPointF
 NodeGeometry::
-connectionPointScenePosition(int index, EndType endType) const
+connectionPointScenePosition(int index,
+                             EndType endType,
+                             QTransform t) const
 {
   unsigned int step = _entryHeight + _spacing;
+
+  QPointF result;
 
   switch (endType)
   {
@@ -80,7 +86,7 @@ connectionPointScenePosition(int index, EndType endType) const
 
       double x = _width + _connectionPointDiameter;
 
-      return QPointF(x, totalHeight);
+      result = QPointF(x, totalHeight);
       break;
     }
 
@@ -95,7 +101,7 @@ connectionPointScenePosition(int index, EndType endType) const
 
       double x = 0.0 - _connectionPointDiameter;
 
-      return QPointF(x, totalHeight);
+      result = QPointF(x, totalHeight);
       break;
     }
 
@@ -103,8 +109,37 @@ connectionPointScenePosition(int index, EndType endType) const
       break;
   }
 
-  return QPointF();
+  return t.map(result);
 }
 
 
-void setDraggingPosition(QPointF const& pos);
+int
+NodeGeometry::
+checkHitScenePoint(EndType endType,
+                   QPointF const point,
+                   NodeState const& nodeState,
+                   QTransform t) const
+{
+  int result = -1;
+
+  if (endType == EndType::NONE)
+    return result;
+
+  double tolerance = 2.0 * _connectionPointDiameter;
+
+  size_t nItems = nodeState.getEntries(endType).size();
+
+  for (size_t i = 0; i < nItems; ++i)
+  {
+    QPointF p = connectionPointScenePosition(i, endType, t) - point;
+    auto distance = std::sqrt(QPointF::dotProduct(p, p));
+
+    if (distance < tolerance)
+    {
+      result = i;
+      break;
+    }
+  }
+
+  return result;
+}

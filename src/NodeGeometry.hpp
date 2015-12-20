@@ -3,8 +3,11 @@
 
 #include <QtCore/QRectF>
 #include <QtCore/QPointF>
+#include <QtGui/QTransform>
 
 #include "EndType.hpp"
+
+class NodeState;
 
 class NodeGeometry
 {
@@ -59,7 +62,13 @@ public:
   void recalculateSize();
 
   QPointF connectionPointScenePosition(int index,
-                                       EndType endType) const;
+                                       EndType endType,
+                                       QTransform t = QTransform()) const;
+
+  int checkHitScenePoint(EndType endType,
+                         QPointF const point,
+                         NodeState const& nodeState,
+                         QTransform t = QTransform()) const;
 
 private:
   unsigned int _width;

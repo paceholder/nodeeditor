@@ -6,9 +6,11 @@
 #include <QtWidgets/QtWidgets>
 
 #include "Node.hpp"
-#include "FlowItemEntry.hpp"
 #include "FlowScene.hpp"
 #include "FlowGraphicsView.hpp"
+
+#include "NodeGeometry.hpp"
+#include "NodeGraphicsObject.hpp"
 
 #include "ConnectionGeometry.hpp"
 #include "ConnectionGraphicsObject.hpp"
@@ -175,13 +177,16 @@ tryConnectToNode(Node* node, QPointF const& scenePoint)
 
   if (ok)
   {
-    auto address = node->connect(this, _impl->_draggingEnd, scenePoint);
+    auto address = node->connect(this,
+                                 _impl->_draggingEnd,
+                                 scenePoint);
 
     if (!address.first.isNull())
     {
+      //auto p = node->connectionPointScenePosition(address,
+                                                  //_impl->_draggingEnd);
 
-      auto p = node->connectionPointScenePosition(address, _impl->_draggingEnd);
-      connectToNode(address, p);
+      connectToNode(address);
 
       //------
 
@@ -195,10 +200,19 @@ tryConnectToNode(Node* node, QPointF const& scenePoint)
 
 void
 Connection::
-connectToNode(std::pair<QUuid, int> const &address,
-              QPointF const& scenePoint)
+connectToNode(std::pair<QUuid, int> const &address)
 {
   setAddress(_impl->_draggingEnd, address);
+
+  Node const* node = FlowScene::instance().getNode(address.first);
+
+  NodeGraphicsObject const* o = node->nodeGraphicsObject();
+  NodeGeometry const      & nodeGeometry = node->nodeGeometry();
+
+  QPointF const scenePoint =
+    nodeGeometry.connectionPointScenePosition(address.second,
+                                              _impl->_draggingEnd,
+                                              o->sceneTransform());
 
   auto p = _impl->_connectionGraphicsObject->mapFromScene(scenePoint);
 

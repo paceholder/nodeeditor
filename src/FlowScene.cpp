@@ -5,6 +5,8 @@
 #include <QtWidgets/QGraphicsSceneMoveEvent>
 
 #include "Node.hpp"
+#include "NodeGraphicsObject.hpp"
+
 #include "FlowItemInterface.hpp"
 #include "FlowGraphicsView.hpp"
 
@@ -41,15 +43,13 @@ locateNodeAt(QGraphicsSceneMouseEvent * event)
                std::back_inserter(filteredItems),
                [](QGraphicsItem * item)
                {
-                 return dynamic_cast<Node*>(item);
+                 return (dynamic_cast<NodeGraphicsObject*>(item) != nullptr);
                });
 
   if (filteredItems.empty())
     return nullptr;
 
-  Node* flowItem = dynamic_cast<Node*>(filteredItems.front());
-
-  return flowItem;
+  return dynamic_cast<NodeGraphicsObject*>(filteredItems.front())->node();
 }
 
 
@@ -85,18 +85,9 @@ createNode()
   {
     (void)i;
 
-    Node* flowItem = new Node();
+    Node* node = new Node();
 
-    this->addItem(flowItem);
-
-    _nodes[flowItem->id()] = flowItem;
-
-    flowItem->initializeNode();
-
-    constexpr int spread = 700;
-
-    flowItem->moveBy(std::rand() % spread - spread / 2,
-                     std::rand() % spread - spread / 2);
+    _nodes[node->id()] = node;
   }
 
   return QUuid();
