@@ -3,6 +3,7 @@
 //#define DEBUG_DRAWING 1
 
 #include "ConnectionGeometry.hpp"
+#include "ConnectionState.hpp"
 
 ConnectionPainter::
 ConnectionPainter()
@@ -51,7 +52,9 @@ getPainterStroke(ConnectionGeometry const& geom)
 
 void
 ConnectionPainter::
-paint(QPainter* painter, ConnectionGeometry const &geom)
+paint(QPainter* painter,
+      ConnectionGeometry const& geom,
+      ConnectionState const& state)
 {
   double const lineWidth     = geom.lineWidth();
   double const pointDiameter = geom.pointDiameter();
@@ -101,7 +104,15 @@ paint(QPainter* painter, ConnectionGeometry const &geom)
     QPen p;
 
     p.setWidth(lineWidth);
-    p.setColor(QColor(Qt::cyan).darker());
+    p.setColor(QColor(Qt::cyan).darker(150));
+
+    if (state.isDragging())
+    {
+      p.setWidth(2.0);
+      p.setColor(QColor(Qt::gray));
+      p.setStyle(Qt::DashLine);
+    }
+
     painter->setPen(p);
     painter->setBrush(Qt::NoBrush);
 

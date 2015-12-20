@@ -18,10 +18,8 @@
 #include "Node.hpp"
 
 ConnectionGraphicsObject::
-ConnectionGraphicsObject(Connection& connection,
-                         ConnectionGeometry& connectionGeometry)
+ConnectionGraphicsObject(Connection& connection)
   : _connection(connection)
-  , _connectionGeometry(connectionGeometry)
 {
   setFlag(QGraphicsItem::ItemIsMovable, true);
   setFlag(QGraphicsItem::ItemIsFocusable, true);
@@ -49,7 +47,7 @@ QRectF
 ConnectionGraphicsObject::
 boundingRect() const
 {
-  return _connectionGeometry.boundingRect();
+  return _connection.connectionGeometry().boundingRect();
 }
 
 
@@ -66,10 +64,9 @@ onItemMoved(QUuid id, QPointF const &offset)
 
       if (address.first == id)
       {
+        auto& p = _connection.connectionGeometry().getEndPoint(end);
 
-        auto& p = _connectionGeometry.getEndPoint(end);
-
-        _connectionGeometry.setEndPoint(end, p + offset);
+        _connection.connectionGeometry().setEndPoint(end, p + offset);
       }
     };
 
@@ -93,19 +90,18 @@ shape() const
 
 #else
 
-  return ConnectionPainter::getPainterStroke(_connectionGeometry);
+  return ConnectionPainter::getPainterStroke(_connection.connectionGeometry());
 
 #endif
 }
 
 
-ConnectionGeometry&
-ConnectionGraphicsObject::
-connectionGeometry()
-{
-  return _connectionGeometry;
-}
-
+//ConnectionGeometry&
+//ConnectionGraphicsObject::
+//connectionGeometry()
+//{
+//return _connectionGeometry;
+//}
 
 void
 ConnectionGraphicsObject::
@@ -116,7 +112,8 @@ paint(QPainter* painter,
   painter->setClipRect(option->exposedRect);
 
   ConnectionPainter::paint(painter,
-                           _connectionGeometry);
+                           _connection.connectionGeometry(),
+                           _connection.connectionState());
 }
 
 
@@ -153,10 +150,9 @@ mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 
   if (draggingEnd != EndType::NONE)
   {
-    auto &endPoint =
-      _connectionGeometry.getEndPoint(draggingEnd);
+    auto &endPoint = _connection.connectionGeometry().getEndPoint(draggingEnd);
 
-    _connectionGeometry.setEndPoint(draggingEnd,
+    _connection.connectionGeometry().setEndPoint(draggingEnd,
                                     endPoint + offset);
   }
 
@@ -195,7 +191,7 @@ void
 ConnectionGraphicsObject::
 hoverEnterEvent(QGraphicsSceneHoverEvent* event)
 {
-  _connectionGeometry.setHovered(true);
+  _connection.connectionGeometry().setHovered(true);
 
   update();
   event->accept();
@@ -206,7 +202,7 @@ void
 ConnectionGraphicsObject::
 hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
 {
-  _connectionGeometry.setHovered(false);
+  _connection.connectionGeometry().setHovered(false);
 
   update();
   event->accept();

@@ -15,8 +15,7 @@ class ConnectionGraphicsObject
 
 public:
 
-  ConnectionGraphicsObject(Connection& connection,
-                           ConnectionGeometry& connectionGeometry);
+  ConnectionGraphicsObject(Connection& connection);
 
 public:
 
@@ -28,7 +27,7 @@ public slots:
   QPainterPath shape() const override;
 
 public:
-  ConnectionGeometry& connectionGeometry();
+  //ConnectionGeometry& connectionGeometry();
 
 protected:
   void paint(QPainter* painter,
@@ -47,7 +46,6 @@ protected:
 private:
 
   Connection& _connection;
-  ConnectionGeometry& _connectionGeometry;
 };
 
 #endif //  CONNECTION_GRAPHICS_OBJECT_H

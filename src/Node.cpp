@@ -170,6 +170,8 @@ disconnect(Connection const* connection,
                       &ConnectionGraphicsObject::onItemMoved);
 
   _impl->_nodeState.setConnectionId(endType, hit, QUuid());
+
+  _impl->_nodeGraphicsObject->update();
 }
 
 

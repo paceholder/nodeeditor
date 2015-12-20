@@ -17,8 +17,9 @@ draw(QPainter* painter)
 {
   QGraphicsBlurEffect::draw(painter);
 
-  ConnectionPainter::paint(painter,
-                           _object->connectionGeometry());
+  //ConnectionPainter::paint(painter,
+                            //_object->connectionGeometry(),
+                            //_object->connectionState());
 
   //_item->paint(painter, nullptr, nullptr);
 }

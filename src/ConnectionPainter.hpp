@@ -4,6 +4,7 @@
 #include <QtGui/QPainter>
 
 class ConnectionGeometry;
+class ConnectionState;
 
 class ConnectionPainter
 {
@@ -21,7 +22,8 @@ public:
 
   static
   void paint(QPainter* painter,
-             ConnectionGeometry const& geom);
+             ConnectionGeometry const& geom,
+             ConnectionState const& state);
 };
 
 #endif //  CONNECTION_PAINTER_HPP

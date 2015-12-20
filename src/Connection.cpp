@@ -23,8 +23,7 @@ public:
   ConnectionImpl(Connection* connection)
     : _id(QUuid::createUuid())
     , _connectionState()
-    , _connectionGraphicsObject(new ConnectionGraphicsObject(*connection,
-                                                             _connectionGeometry))
+    , _connectionGraphicsObject(new ConnectionGraphicsObject(*connection))
   {}
 
   ~ConnectionImpl()
