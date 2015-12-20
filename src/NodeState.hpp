@@ -9,12 +9,19 @@
 
 class NodeState
 {
+public:
+  enum ReactToConnectionState
+  {
+    REACTING,
+    NOT_REACTING
+  };
 
 public:
   NodeState(unsigned int nSources,
             unsigned int nSinks)
     : _sources(nSources, QUuid())
     , _sinks(nSinks, QUuid())
+    , _reaction(NOT_REACTING)
   {}
 
 public:
@@ -48,9 +55,20 @@ public:
     const_cast<std::vector<QUuid>&>(entries)[nEntry] = id;
   }
 
+  ReactToConnectionState reaction() const
+  { return _reaction; }
+
+  void setReaction(ReactToConnectionState reaction)
+  { _reaction = reaction; }
+
+  bool isReacting() const
+  { return _reaction == REACTING; }
+
 private:
   std::vector<QUuid> _sources;
   std::vector<QUuid> _sinks;
+
+  ReactToConnectionState _reaction;
 };
 
 #endif //  NODE_STATE_HPP

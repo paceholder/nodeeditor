@@ -26,13 +26,14 @@ paint(QPainter* painter,
   //painter->setBrush(QColor(Qt::darkGray));
 
   QLinearGradient gradient(QPointF(0.0, 0.0),
-                           QPointF(10.0, geom.height()));
+                           QPointF(5.0, geom.height()));
 
   QColor darkGray1 = QColor(Qt::gray).darker(200);
   QColor darkGray2 = QColor(Qt::gray).darker(250);
 
-  gradient.setColorAt(0.0,  darkGray1);
-  gradient.setColorAt(0.95,  darkGray2);
+  gradient.setColorAt(0.0,  Qt::gray);
+  gradient.setColorAt(0.05, darkGray1);
+  gradient.setColorAt(0.95, darkGray2);
   gradient.setColorAt(1.0,  darkGray2.darker(110));
 
   painter->setBrush(gradient);
@@ -45,7 +46,7 @@ paint(QPainter* painter,
 
   painter->drawRoundedRect(boundary.marginsAdded(m), radius, radius);
 
-  drawConnectionPoints(painter, geom);
+  drawConnectionPoints(painter, geom, state);
 
   drawFilledConnectionPoints(painter, geom, state);
 }
@@ -54,61 +55,45 @@ paint(QPainter* painter,
 void
 NodePainter::
 drawConnectionPoints(QPainter* painter,
-                     NodeGeometry const& geom)
+                     NodeGeometry const& geom,
+                     NodeState const& state)
 {
   painter->setBrush(QColor(Qt::darkGray));
-  double totalHeight = 0;
 
   auto diameter = geom.connectionPointDiameter();
+  auto reducedDiameter = diameter * 0.6;
 
-  double const h = geom.entryHeight();
-  for (size_t i = 0; i < geom.nSinks(); ++i)
-  {
-    double y = totalHeight + (geom.spacing()  + h) / 2;
-    double x = 0.0 - diameter;
+  auto drawPoints =
+    [&](EndType end)
+    {
+      size_t n = state.getEntries(end).size();
 
-    QPointF p(x, y);
+      for (size_t i = 0; i < n; ++i)
+      {
 
-    auto   diff = geom.draggingPos() - p;
-    double dist = std::sqrt(QPointF::dotProduct(diff, diff));
+        QPointF p = geom.connectionPointScenePosition(i, end);
 
-    double const thres = 40.0;
+        double r = 1.0;
+        if (state.isReacting())
+        {
+          auto   diff = geom.draggingPos() - p;
+          double dist = std::sqrt(QPointF::dotProduct(diff, diff));
 
-    double const r = (dist < thres) ?
-                     (2.0 - dist / thres / 2.) :
-                     1.0;
+          double const thres = 40.0;
 
-    painter->drawEllipse(p,
-                         diameter * 0.6 * r,
-                         diameter * 0.6 * r);
+          r = (dist < thres) ?
+              (2.0 - dist / thres ) :
+              1.0;
+        }
 
-    totalHeight += h + geom.spacing();
-  }
+        painter->drawEllipse(p,
+                             reducedDiameter * r,
+                             reducedDiameter * r);
+      }
+    };
 
-  totalHeight += geom.spacing();
-
-  for (size_t i = 0; i < geom.nSources(); ++i)
-  {
-    double y = totalHeight + (geom.spacing()  + h) / 2;
-    double x = geom.width() + diameter;
-
-    QPointF p(x, y);
-
-    auto   diff = geom.draggingPos() - p;
-    double dist = std::sqrt(QPointF::dotProduct(diff, diff));
-
-    double const thres = 20.0;
-
-    double const r = (dist < thres) ?
-                     (2.0 - dist / thres / 2.) :
-                     1.0;
-
-    painter->drawEllipse(p,
-                         diameter * 0.6 * r,
-                         diameter * 0.6 * r);
-
-    totalHeight += h + geom.spacing();
-  }
+  drawPoints(EndType::SOURCE);
+  drawPoints(EndType::SINK);
 }
 
 
@@ -121,43 +106,26 @@ drawFilledConnectionPoints(QPainter* painter,
   painter->setPen(Qt::cyan);
   painter->setBrush(Qt::cyan);
 
-  double totalHeight = 0;
-
   auto diameter = geom.connectionPointDiameter();
 
-  double const h = geom.entryHeight();
-
-  for (size_t i = 0; i < geom.nSinks(); ++i)
-  {
-
-    double y = totalHeight + (geom.spacing()  + h) / 2;
-    double x = 0.0 - diameter;
-
-    if (!state.connectionID(EndType::SINK, i).isNull())
+  auto drawPoints =
+    [&](EndType end)
     {
+      size_t n = state.getEntries(end).size();
 
-      painter->drawEllipse(QPointF(x, y),
-                           diameter * 0.4,
-                           diameter * 0.4);
-    }
+      for (size_t i = 0; i < n; ++i)
+      {
+        QPointF p = geom.connectionPointScenePosition(i, end);
 
-    totalHeight += h + geom.spacing();
-  }
+        if (!state.connectionID(end, i).isNull())
+        {
+          painter->drawEllipse(p,
+                               diameter * 0.4,
+                               diameter * 0.4);
+        }
+      }
+    };
 
-  totalHeight += geom.spacing();
-
-  for (size_t i = 0; i < geom.nSources(); ++i)
-  {
-    double y = totalHeight + (geom.spacing()  + h) / 2;
-    double x = geom.width() + diameter;
-
-    if (!state.connectionID(EndType::SOURCE, i).isNull())
-    {
-      painter->drawEllipse(QPointF(x, y),
-                           diameter * 0.4,
-                           diameter * 0.4);
-    }
-
-    totalHeight += h + geom.spacing();
-  }
+  drawPoints(EndType::SOURCE);
+  drawPoints(EndType::SINK);
 }

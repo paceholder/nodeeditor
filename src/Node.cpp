@@ -89,13 +89,18 @@ reactToPossibleConnection(EndType,
   QPointF p = t.inverted().map(scenePoint);
 
   _impl->_nodeGeometry.setDraggingPosition(p);
+
+  _impl->_nodeGraphicsObject->update();
+
+  _impl->_nodeState.setReaction(NodeState::REACTING);
 }
 
 
 void
 Node::
-update()
+resetReactionToConnection()
 {
+  _impl->_nodeState.setReaction(NodeState::NOT_REACTING);
   _impl->_nodeGraphicsObject->update();
 }
 

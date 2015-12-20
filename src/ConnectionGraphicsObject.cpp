@@ -12,6 +12,7 @@
 #include "Connection.hpp"
 #include "ConnectionGeometry.hpp"
 #include "ConnectionPainter.hpp"
+#include "ConnectionState.hpp"
 
 #include "ConnectionBlurEffect.hpp"
 
@@ -140,7 +141,14 @@ mouseMoveEvent(QGraphicsSceneMouseEvent* event)
     node->reactToPossibleConnection(_connection.draggingEnd(),
                                     event->scenePos());
 
-    node->update();
+    auto &state = _connection.connectionState();
+    state.setLastHoveredNode(node->id());
+  }
+  else
+  {
+    auto &state = _connection.connectionState();
+
+    state.resetLastHoveredNode();
   }
 
   //-------------------
@@ -153,7 +161,7 @@ mouseMoveEvent(QGraphicsSceneMouseEvent* event)
     auto &endPoint = _connection.connectionGeometry().getEndPoint(draggingEnd);
 
     _connection.connectionGeometry().setEndPoint(draggingEnd,
-                                    endPoint + offset);
+                                                 endPoint + offset);
   }
 
   //-------------------
@@ -175,11 +183,11 @@ mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 
   auto node = FlowScene::locateNodeAt(event);
 
-  // connection is deleted if not connected to any node
-  bool deleteConection =
-    !(node && _connection.tryConnectToNode(node, event->scenePos()));
-
-  if (deleteConection)
+  if (node && _connection.tryConnectToNode(node, event->scenePos()))
+  {
+    node->resetReactionToConnection();
+  }
+  else
   {
     auto& scene = FlowScene::instance();
     scene.deleteConnection(&_connection);

@@ -29,8 +29,7 @@ public:
   void reactToPossibleConnection(EndType,
                                  QPointF const & scenePoint);
 
-  /// Updates graphics
-  void update();
+  void resetReactionToConnection();
 
   bool canConnect(ConnectionState const& connectionState,
                   QPointF const &scenePoint);

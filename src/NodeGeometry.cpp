@@ -6,7 +6,7 @@ NodeGeometry::
 NodeGeometry()
   : _width(100)
   , _height(150)
-  , _entryWidth(100)
+  , _entryWidth(70)
   , _entryHeight(20)
   , _spacing(10)
   , _connectionPointDiameter(8)
@@ -50,13 +50,13 @@ recalculateSize()
 {
   _height = 0;
 
+  unsigned int maxNumOfEntries = qMax(_nSinks, _nSources);
+
   unsigned int step = _entryHeight + _spacing;
 
-  _height += step * _nSinks;
+  _height += step * maxNumOfEntries;
 
-  _height += _spacing;
-
-  _height += step * _nSources;
+  _width = 2 * _entryWidth + _spacing;
 }
 
 
@@ -75,9 +75,6 @@ connectionPointScenePosition(int index,
     case EndType::SOURCE:
     {
       double totalHeight = 0;
-
-      totalHeight += step * _nSinks;
-      totalHeight += _spacing;
 
       totalHeight += step * index;
 

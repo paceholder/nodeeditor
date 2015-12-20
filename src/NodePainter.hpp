@@ -24,7 +24,8 @@ public:
 
   static
   void drawConnectionPoints(QPainter* painter,
-                            NodeGeometry const& geom);
+                            NodeGeometry const& geom,
+                            NodeState const& state);
 
   static
   void drawFilledConnectionPoints(QPainter* painter,

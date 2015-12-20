@@ -28,6 +28,7 @@ public:
 
   ~ConnectionImpl()
   {
+
     std::cout << "About to delete graphics object" << std::endl;
     FlowScene &flowScene = FlowScene::instance();
 
@@ -62,9 +63,9 @@ Connection()
 Connection::
 ~Connection()
 {
-  std::cout << "Connection destructor" << std::endl;
+  auto &scene = FlowScene::instance();
 
-  auto& scene = FlowScene::instance();
+  std::cout << "Connection destructor" << std::endl;
 
   auto tryDisconnectNode =
     [&](EndType endType)
@@ -235,6 +236,7 @@ connectionState()
 {
   return _impl->_connectionState;
 }
+
 
 ConnectionState const&
 Connection::
