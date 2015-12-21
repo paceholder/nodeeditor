@@ -26,14 +26,14 @@ paint(QPainter* painter,
   //painter->setBrush(QColor(Qt::darkGray));
 
   QLinearGradient gradient(QPointF(0.0, 0.0),
-                           QPointF(5.0, geom.height()));
+                           QPointF(2.0, geom.height()));
 
   QColor darkGray1 = QColor(Qt::gray).darker(200);
   QColor darkGray2 = QColor(Qt::gray).darker(250);
 
-  gradient.setColorAt(0.0,  Qt::gray);
-  gradient.setColorAt(0.05, darkGray1);
-  gradient.setColorAt(0.95, darkGray2);
+  gradient.setColorAt(0.0,  Qt::darkGray);
+  gradient.setColorAt(0.03, darkGray1);
+  gradient.setColorAt(0.97, darkGray2);
   gradient.setColorAt(1.0,  darkGray2.darker(110));
 
   painter->setBrush(gradient);
