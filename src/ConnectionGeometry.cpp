@@ -66,7 +66,9 @@ ConnectionGeometry::
 pointsC1C2() const
 {
   double xDistance = _sink.x() - _source.x();
-  double const defaultOffset = 200;
+  //double yDistance = _sink.y() - _source.y() - 100;
+
+  double defaultOffset = 200;
 
   double minimum = qMin(defaultOffset, std::abs(xDistance));
 
@@ -81,10 +83,14 @@ pointsC1C2() const
     ratio1 = 1.0;
   }
 
+  //double verticalOffset2 = verticalOffset;
+  //if (xDistance <= 0)
+    //verticalOffset2 = qMin(defaultOffset, std::abs(yDistance));
+  //auto sign = [](double d) { return d > 0.0 ? +1.0 : -1.0; };
+  //verticalOffset2 = 0.0;
+
   QPointF c1(_source.x() + minimum * ratio1,
              _source.y() + verticalOffset);
-
-  //ratio1 = 0.5;
 
   QPointF c2(_sink.x() - minimum * ratio1,
              _sink.y() + verticalOffset);

@@ -23,6 +23,14 @@ public:
              NodeState const& state);
 
   static
+  void drawNodeRect(QPainter* painter, NodeGeometry const& geom);
+
+  static
+  void drawEntryLabels(QPainter* painter,
+                       NodeGeometry const& geom,
+                       NodeState const& state);
+
+  static
   void drawConnectionPoints(QPainter* painter,
                             NodeGeometry const& geom,
                             NodeState const& state);
