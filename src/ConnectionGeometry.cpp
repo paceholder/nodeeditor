@@ -82,9 +82,9 @@ pointsC1C2() const
   }
 
   QPointF c1(_source.x() + minimum * ratio1,
-             _source.y() + 2 * verticalOffset);
+             _source.y() + verticalOffset);
 
-  ratio1 = 0.5;
+  //ratio1 = 0.5;
 
   QPointF c2(_sink.x() - minimum * ratio1,
              _sink.y() + verticalOffset);
