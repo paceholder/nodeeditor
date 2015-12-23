@@ -35,16 +35,14 @@ public:
                   QPointF const &scenePoint);
 
   std::pair<QUuid, int>
-  connect(Connection const* connection,
-          int hit);
+  connect(Connection const* connection, int hit);
 
   std::pair<QUuid, int>
-  connect(Connection const* connection,
-          QPointF const& scenePoint);
+  connect(Connection const* connection, QPointF const& scenePoint);
 
-  void disconnect(Connection const* connection,
-                  EndType endType,
-                  int hit);
+  void disconnect(Connection const* connection, EndType endType, int hit);
+
+public:
 
   NodeGraphicsObject const* nodeGraphicsObject() const;
 
