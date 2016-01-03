@@ -1,8 +1,8 @@
-#include "Connection.hpp"
-#include "Node.hpp"
+#include <nodes/Connection>
+#include <nodes/Node>
 
-#include "FlowScene.hpp"
-#include "FlowGraphicsView.hpp"
+#include <nodes/FlowScene>
+#include <nodes/FlowGraphicsView>
 
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QGraphicsView>
@@ -14,7 +14,6 @@ main(int argc, char* argv[])
 
   FlowScene::instance();
 
-  // TODO what is it?
   FlowScene::instance().setItemIndexMethod(QGraphicsScene::NoIndex);
 
   FlowScene::instance().createNode();

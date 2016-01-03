@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.9)
+cmake_minimum_required(VERSION 3.1)
 
 project(blocks)
 
@@ -9,29 +9,42 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 ADD_DEFINITIONS(-std=c++11)
 
+
+set(QT_PATH "~/projects/geoqt5_thirdparty/Linux/Qt")
+set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${QT_PATH})
+
 # Find the QtWidgets library
-find_package(Qt5Widgets)
-find_package(Qt5Core)
-find_package(Qt5Gui)
-find_package(Qt5OpenGL)
+find_package(Qt5 COMPONENTS
+             Core
+             Widgets
+             Gui
+             OpenGL)
 
 add_definitions(${Qt5Widgets_DEFINITIONS})
 set(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 
-file(GLOB_RECURSE SOURCE_FILES  ./src/*.cpp )
+
+#############################################################
+
+file(GLOB_RECURSE LIB_CPPS  ./src/*.cpp )
 
 # Tell CMake to create the helloworld executable
-add_executable(blocks
-               ${SOURCE_FILES}
-)
+add_library(nodes SHARED ${LIB_CPPS})
 
-# Use the Widgets module from Qt 5.
-qt5_use_modules(blocks Widgets Gui Core OpenGL)
+target_include_directories(nodes INTERFACE "include")
+
+target_link_libraries(nodes
+                      Qt5::Core
+                      Qt5::Widgets
+                      Qt5::Gui
+                      Qt5::OpenGL)
+
+#############################################################
+
+file(GLOB_RECURSE EXAMPLE1_CPPS  ./examples/*.cpp )
 
 
-target_link_libraries(blocks
-  ${Qt5Widgets_LIBRARIES}
-  ${Qt5Core_LIBRARIES}
-  ${QtGui_LIBRARIES}
-  ${QtOpenGL_LIBRARIES}
-  )
+add_executable(example1 ${EXAMPLE1_CPPS})
+
+target_link_libraries(example1
+                      nodes)
