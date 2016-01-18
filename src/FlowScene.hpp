@@ -8,8 +8,10 @@
 #include <QtWidgets/QGraphicsScene>
 
 #include <tuple>
+#include <memory>
 
 #include "Connection.hpp"
+#include "DataModelRegistry.hpp"
 
 namespace std
 {
@@ -33,6 +35,7 @@ public:
   static
   FlowScene& instance();
 
+  /// TODO: make a free function
   static
   Node* locateNodeAt(QGraphicsSceneMouseEvent* event);
 

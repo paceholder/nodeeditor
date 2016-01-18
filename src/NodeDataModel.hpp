@@ -14,19 +14,19 @@ class NodeDataModel : QObject
 
 public:
 
-  unsigned int nSlots(EndType end) const;
+  virtual unsigned int nSlots(EndType end) const = 0;
 
-  DataType dataType(EndType end, int slot);
+  virtual DataType dataType(EndType end, int slot) = 0;
 
   /// Triggers the algorithm
-  void setInputData(std::shared_ptr<NodeData> nodeData);
+  virtual void setInputData(std::shared_ptr<NodeData> nodeData, int slot) = 0;
 
-  QWidget * embeddedWidget();
+  virtual QWidget * embeddedWidget() = 0;
 
 signals:
 
-  void computingStarted();
-  void computingFinished();
+  virtual void computingStarted()  = 0;
+  virtual void computingFinished() = 0;
 };
 
 #endif //  NODE_DATA_MODEL_HPP

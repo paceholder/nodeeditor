@@ -123,7 +123,7 @@ getNode(QUuid id) const
 FlowScene::
 FlowScene()
 {
-  //
+  setItemIndexMethod(QGraphicsScene::NoIndex);
 }
 
 

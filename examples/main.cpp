@@ -7,14 +7,40 @@
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QGraphicsView>
 
+#include <nodes/DataModelRegistry>
+
+// simplest stupid model
+class NaiveDataModel : public NodeDataModel
+{
+public:
+  unsigned int nSlots(EndType) const override
+  {
+    return 3;
+  }
+
+  DataType dataType(EndType, slot) override
+  {
+
+  }
+};
+
+static bool
+registerDataModels()
+{
+  DataModelRegistry::registerModel
+
+  return true;
+}
+
+
+static bool registerOK = registerDataModels();
+
 int
 main(int argc, char* argv[])
 {
   QApplication app(argc, argv);
 
   FlowScene::instance();
-
-  FlowScene::instance().setItemIndexMethod(QGraphicsScene::NoIndex);
 
   FlowScene::instance().createNode();
 
