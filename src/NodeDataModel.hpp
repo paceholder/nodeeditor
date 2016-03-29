@@ -8,7 +8,9 @@
 
 #include "EndType.hpp"
 
-class NodeDataModel : QObject
+#include "NodeData.hpp"
+
+class NodeDataModel : public QObject
 {
   Q_OBJECT
 
@@ -16,7 +18,9 @@ public:
 
   virtual unsigned int nSlots(EndType end) const = 0;
 
-  virtual DataType dataType(EndType end, int slot) = 0;
+  virtual
+  std::shared_ptr<NodeData>
+  data(EndType end, int slot) = 0;
 
   /// Triggers the algorithm
   virtual void setInputData(std::shared_ptr<NodeData> nodeData, int slot) = 0;

@@ -1,5 +1,6 @@
 #include <nodes/Connection>
-#include <nodes/Node>
+//#include <nodes/Node>
+#include <nodes/NodeData>
 
 #include <nodes/FlowScene>
 #include <nodes/FlowGraphicsView>
@@ -9,25 +10,13 @@
 
 #include <nodes/DataModelRegistry>
 
-// simplest stupid model
-class NaiveDataModel : public NodeDataModel
-{
-public:
-  unsigned int nSlots(EndType) const override
-  {
-    return 3;
-  }
+#include "models.hpp"
 
-  DataType dataType(EndType, slot) override
-  {
-
-  }
-};
 
 static bool
 registerDataModels()
 {
-  DataModelRegistry::registerModel
+  DataModelRegistry::registerModel<NaiveDataModel>("NaiveDataModel");
 
   return true;
 }

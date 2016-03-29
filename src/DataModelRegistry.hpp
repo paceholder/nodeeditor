@@ -14,60 +14,77 @@ public:
 
   virtual ~RegistryItem() {}
 
-  // a way for derived classes to identify themselves
-  virtual QString getName() const = 0;
-
-  virtual NodeDataModel* create() = 0;
+  virtual std::unique_ptr<NodeDataModel> create() const = 0;
 };
+
+//------------------------------------------------------------------------------
+
+template<typename T, typename ... Args>
+std::unique_ptr<T> make_unique( Args&& ... args )
+{
+  return std::unique_ptr<T>( new T( std::forward<Args>(args) ... ) );
+}
+
 
 //------------------------------------------------------------------------------
 
 template<typename T>
 class RegistryItemImpl : public RegistryItem
 {
+
 public:
-  // get the identifier of the derived class
-  QString getName() const override
-  {
-    return T::_name;
-  }
 
   // give derived classes the ability to create themselves
-  NodeDataModel *create() override { return new T(); }
+  std::unique_ptr<NodeDataModel> create() const override
+  { return make_unique<T>(); }
 };
+
+//------------------------------------------------------------------------------
+
+namespace std
+{
+template<>
+struct hash<QString>
+{
+  inline
+  size_t operator()(QString const& s) const
+  {
+    return qHash(s);
+  }
+};
+}
 
 //------------------------------------------------------------------------------
 
 class DataModelRegistry
 {
+
 public:
+
+  using RegistryItemPtr = std::unique_ptr<RegistryItem>;
+  using RegisteredModelsMap =
+          std::unordered_map<QString, RegistryItemPtr>;
+
+public:
+
   template<typename ModelType>
-  static void registerModel(std::unique_ptr<RegistryItem> modelEntry)
+  static void registerModel(QString const &modelName)
   {
-    if (_registeredModels.count(modelEntry->getName() == 0))
+    if (_registeredModels.count(modelName) == 0)
     {
-      _registeredModels[modelEntry->getName()] = modelEntry;
+      //_registeredModels.insert(
+        //std::make_pair(modelName,
+                       //make_unique<RegistryItemImpl<ModelType>>()));
     }
   }
 
   static std::unique_ptr<NodeDataModel>
-  create(QString name)
-  {
-    auto it = _registeredModels.find(name);
-
-    if (it != _registeredModels.end())
-    {
-      return std::unique_ptr<NodeDataModel>(it->second->create());
-    }
-
-    return std::unique_ptr<NodeDataModel>();
-  }
+  create(QString const &modelName);
 
 private:
 
-  static
-  std::unordered_map<QString, std::unique_ptr<RegistryItem > > _registeredModels;
-};
 
+  static RegisteredModelsMap _registeredModels;
+};
 
 #endif // DATA_MODEL_REGISTRY_HPP
