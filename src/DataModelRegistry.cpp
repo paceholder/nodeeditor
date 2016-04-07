@@ -1,6 +1,5 @@
 #include "DataModelRegistry.hpp"
 
-
 DataModelRegistry::
 RegisteredModelsMap DataModelRegistry::_registeredModels;
 
@@ -16,4 +15,12 @@ create(QString const &modelName)
   }
 
   return std::unique_ptr<NodeDataModel>();
+}
+
+
+DataModelRegistry::RegisteredModelsMap const &
+DataModelRegistry::
+registeredModels()
+{
+  return _registeredModels;
 }

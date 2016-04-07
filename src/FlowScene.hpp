@@ -1,5 +1,4 @@
-#ifndef _FLOW_SCENE_HPP_
-#define _FLOW_SCENE_HPP_
+#pragma once
 
 #include <QtCore/QUuid>
 
@@ -63,5 +62,3 @@ private:
   std::unordered_map<QUuid, Connection*> _connections;
   std::unordered_map<QUuid, Node*>       _nodes;
 };
-
-#endif //  _FLOW_SCENE_HPP_

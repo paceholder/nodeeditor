@@ -7,7 +7,6 @@
 
 class MyNodeData : public NodeData
 {
-
 public:
 
   bool sameType(NodeData const &nodeData) const override
@@ -19,10 +18,17 @@ public:
   { return "MyNodeData"; }
 };
 
+//------------------------------------------------------------------------------
+
 // simplest stupid model
 class NaiveDataModel : public NodeDataModel
 {
   Q_OBJECT
+
+public:
+
+  virtual ~NaiveDataModel() {}
+
 public:
 
   unsigned int nSlots(EndType) const override
@@ -43,7 +49,6 @@ public:
 
 signals:
 
-  void computingStarted() override {  }
-  void computingFinished() override {  }
+  void computingStarted() override;
+  void computingFinished() override;
 };
-

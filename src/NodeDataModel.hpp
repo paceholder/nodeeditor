@@ -1,5 +1,4 @@
-#ifndef NODE_DATA_MODEL_HPP
-#define NODE_DATA_MODEL_HPP
+#pragma once
 
 #include <memory>
 
@@ -12,7 +11,10 @@
 
 class NodeDataModel : public QObject
 {
-  Q_OBJECT
+
+public:
+
+  virtual ~NodeDataModel() {}
 
 public:
 
@@ -32,5 +34,3 @@ signals:
   virtual void computingStarted()  = 0;
   virtual void computingFinished() = 0;
 };
-
-#endif //  NODE_DATA_MODEL_HPP

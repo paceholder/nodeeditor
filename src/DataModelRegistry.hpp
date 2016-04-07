@@ -1,5 +1,4 @@
-#ifndef DATA_MODEL_REGISTRY_HPP
-#define DATA_MODEL_REGISTRY_HPP
+#pragma once
 
 #include <unordered_map>
 
@@ -7,6 +6,7 @@
 
 #include "NodeDataModel.hpp"
 
+/// Base abstract class for Model Registry items
 class RegistryItem
 {
 public:
@@ -19,6 +19,7 @@ public:
 
 //------------------------------------------------------------------------------
 
+/// Not yet in C++11
 template<typename T, typename ... Args>
 std::unique_ptr<T> make_unique( Args&& ... args )
 {
@@ -28,13 +29,14 @@ std::unique_ptr<T> make_unique( Args&& ... args )
 
 //------------------------------------------------------------------------------
 
+/// Encapsulate templated concrete Model type T
 template<typename T>
 class RegistryItemImpl : public RegistryItem
 {
 
 public:
 
-  // give derived classes the ability to create themselves
+  /// Gives derived classes the ability to create instances of T
   std::unique_ptr<NodeDataModel> create() const override
   { return make_unique<T>(); }
 };
@@ -56,12 +58,13 @@ struct hash<QString>
 
 //------------------------------------------------------------------------------
 
+/// Class uses static map for storing models (name, model)
 class DataModelRegistry
 {
 
 public:
 
-  using RegistryItemPtr = std::unique_ptr<RegistryItem>;
+  using RegistryItemPtr     = std::unique_ptr<RegistryItem>;
   using RegisteredModelsMap =
           std::unordered_map<QString, RegistryItemPtr>;
 
@@ -72,19 +75,17 @@ public:
   {
     if (_registeredModels.count(modelName) == 0)
     {
-      //_registeredModels.insert(
-        //std::make_pair(modelName,
-                       //make_unique<RegistryItemImpl<ModelType>>()));
+      _registeredModels[modelName] =
+        make_unique < RegistryItemImpl < ModelType >> ();
     }
   }
 
   static std::unique_ptr<NodeDataModel>
   create(QString const &modelName);
 
-private:
+  static RegisteredModelsMap const &registeredModels();
 
+private:
 
   static RegisteredModelsMap _registeredModels;
 };
-
-#endif // DATA_MODEL_REGISTRY_HPP

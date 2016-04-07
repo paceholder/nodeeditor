@@ -5,6 +5,8 @@
 #include <QtGui/QPen>
 #include <QtGui/QBrush>
 #include <QtGui/QWheelEvent>
+#include <QtWidgets/QMenu>
+
 #include <QtCore/QRectF>
 
 #include <QtOpenGL>
@@ -12,6 +14,10 @@
 
 #include <QDebug>
 #include <iostream>
+
+#include "FlowScene.hpp"
+
+#include "DataModelRegistry.hpp"
 
 FlowGraphicsView::
 FlowGraphicsView(QGraphicsScene *scene)
@@ -29,6 +35,27 @@ FlowGraphicsView(QGraphicsScene *scene)
   setCacheMode(QGraphicsView::CacheBackground);
 
   //setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
+}
+
+
+void
+FlowGraphicsView::
+contextMenuEvent(QContextMenuEvent *event)
+{
+  QMenu modelMenu;
+
+  for (auto const &modelRegistry : DataModelRegistry::registeredModels())
+  {
+    QString const &modelName = modelRegistry.first;
+    modelMenu.addAction(modelName);
+  }
+
+  if (QAction * action = modelMenu.exec(event->globalPos()))
+  {
+    qDebug() << action->text();
+
+    FlowScene::instance().createNode();
+  }
 }
 
 

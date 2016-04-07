@@ -1,5 +1,4 @@
-#ifndef FLOW_GRAPHICS_VIEW_H
-#define FLOW_GRAPHICS_VIEW_H
+#pragma once
 
 #include <QtWidgets/QGraphicsView>
 
@@ -11,9 +10,9 @@ public:
 
 protected:
 
+  void contextMenuEvent(QContextMenuEvent *event) override;
+
   void wheelEvent(QWheelEvent *event) override;
 
   void drawBackground(QPainter* painter, const QRectF& r) override;
 };
-
-#endif //  FLOW_GRAPHICS_VIEW_H

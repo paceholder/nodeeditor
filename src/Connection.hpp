@@ -16,7 +16,7 @@ class QPointF;
 
 //------------------------------------------------------------------------------
 
-class Connection : QObject
+class Connection : public QObject
 {
   Q_OBJECT
 

@@ -1,7 +1,7 @@
-#include <nodes/Connection>
-//#include <nodes/Node>
-#include <nodes/NodeData>
+#include <iostream>
 
+#include <nodes/Connection>
+#include <nodes/NodeData>
 #include <nodes/FlowScene>
 #include <nodes/FlowGraphicsView>
 
@@ -29,9 +29,8 @@ main(int argc, char* argv[])
 {
   QApplication app(argc, argv);
 
-  FlowScene::instance();
+  //FlowScene::instance();
 
-  FlowScene::instance().createNode();
 
   FlowGraphicsView view(&FlowScene::instance());
 
