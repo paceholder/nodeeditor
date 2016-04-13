@@ -1,5 +1,4 @@
-#ifndef NODE_GRAPHICS_OBJECT_HPP
-#define NODE_GRAPHICS_OBJECT_HPP
+#pragma once
 
 #include <QtCore/QUuid>
 #include <QtWidgets/QGraphicsObject>
@@ -11,6 +10,8 @@
 
 class FlowItemEntry;
 
+/// Class reacts on GUI events, mouse clicks and
+/// forwards painting operation.
 class NodeGraphicsObject : public QGraphicsObject
 {
   Q_OBJECT
@@ -54,5 +55,3 @@ private:
 
   NodeGeometry& _nodeGeometry;
 };
-
-#endif // NODE_GRAPHICS_OBJECT_HPP

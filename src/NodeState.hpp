@@ -1,5 +1,4 @@
-#ifndef NODE_STATE_HPP
-#define NODE_STATE_HPP
+#pragma once
 
 #include <vector>
 
@@ -7,6 +6,8 @@
 
 #include "EndType.hpp"
 
+/// Contains vectors of connected input and output connections.
+/// Stores bool for reacting on hovering connections
 class NodeState
 {
 public:
@@ -18,51 +19,26 @@ public:
 
 public:
   NodeState(unsigned int nSources,
-            unsigned int nSinks)
-    : _sources(nSources, QUuid())
-    , _sinks(nSinks, QUuid())
-    , _reaction(NOT_REACTING)
-  {}
+            unsigned int nSinks);
 
 public:
 
-  std::vector<QUuid> const& getEntries(EndType endType) const
-  {
-    Q_ASSERT(endType != EndType::NONE);
+  /// Returns vector of connections ID.
+  /// Some of them can be empty (null)
+  std::vector<QUuid> const& getEntries(EndType endType) const;
 
-    if (endType == EndType::SOURCE)
-      return _sources;
-    else
-      return _sinks;
-  }
+  /// Returns connection id for given endtype and
+  /// given connection number
+  QUuid const connectionID(EndType endType, size_t nEntry) const;
 
-  QUuid const connectionID(EndType endType, size_t nEntry) const
-  {
-    std::vector<QUuid> const& entries =
-      getEntries(endType);
+  /// Assign connection id to the given entry
+  void setConnectionId(EndType endType, size_t nEntry, QUuid id);
 
-    if (nEntry >= entries.size())
-      return QUuid();
+  ReactToConnectionState reaction() const;
 
-    return entries[nEntry];
-  }
+  void setReaction(ReactToConnectionState reaction);
 
-  void setConnectionId(EndType endType, size_t nEntry, QUuid id)
-  {
-    std::vector<QUuid> const& entries =
-      const_cast<NodeState const&>(*this).getEntries(endType);
-
-    const_cast<std::vector<QUuid>&>(entries)[nEntry] = id;
-  }
-
-  ReactToConnectionState reaction() const
-  { return _reaction; }
-
-  void setReaction(ReactToConnectionState reaction)
-  { _reaction = reaction; }
-
-  bool isReacting() const
-  { return _reaction == REACTING; }
+  bool isReacting() const;
 
 private:
   std::vector<QUuid> _sources;
@@ -70,5 +46,3 @@ private:
 
   ReactToConnectionState _reaction;
 };
-
-#endif //  NODE_STATE_HPP

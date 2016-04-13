@@ -5,6 +5,9 @@
 #include <nodes/NodeData>
 #include <nodes/NodeDataModel>
 
+
+/// The class can potentially incapsulate any user data which
+/// need to be transferred within the Node Editor graph
 class MyNodeData : public NodeData
 {
 public:
@@ -20,7 +23,8 @@ public:
 
 //------------------------------------------------------------------------------
 
-// simplest stupid model
+/// The model dictates the number of inputs and outputs for the Node.
+/// In this example it has no logic.
 class NaiveDataModel : public NodeDataModel
 {
   Q_OBJECT

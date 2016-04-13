@@ -30,6 +30,7 @@ public:
     _nodeGeometry.recalculateSize();
   }
 
+  /// Destructor
   ~NodeImpl()
   {
     std::cout << "About to delete graphics object" << std::endl;

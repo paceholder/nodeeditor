@@ -18,19 +18,27 @@ registerDataModels()
 {
   DataModelRegistry::registerModel<NaiveDataModel>("NaiveDataModel");
 
+  /*
+   We could have more models registered.
+   All of them become items in the context meny of the scene.
+
+  DataModelRegistry::registerModel<AnotherDataModel>("AnotherDataModel");
+  DataModelRegistry::registerModel<OneMoreDataModel>("OneMoreDataModel");
+
+  */
+
   return true;
 }
 
-
 static bool registerOK = registerDataModels();
+
+
+//------------------------------------------------------------------------------
 
 int
 main(int argc, char* argv[])
 {
   QApplication app(argc, argv);
-
-  //FlowScene::instance();
-
 
   FlowGraphicsView view(&FlowScene::instance());
 
