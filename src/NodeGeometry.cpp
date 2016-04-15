@@ -74,7 +74,7 @@ connectionPointScenePosition(int index,
   {
     case EndType::SOURCE:
     {
-      double totalHeight = 0;
+      double totalHeight = 0.0;
 
       totalHeight += step * index;
 
@@ -110,30 +110,30 @@ connectionPointScenePosition(int index,
 }
 
 
-int
+PortNumber
 NodeGeometry::
 checkHitScenePoint(EndType endType,
-                   QPointF const point,
+                   QPointF const scenePoint,
                    NodeState const& nodeState,
-                   QTransform t) const
+                   QTransform sceneTransform) const
 {
-  int result = -1;
+  PortNumber result = PortNumber::INVALID;
 
   if (endType == EndType::NONE)
     return result;
 
-  double tolerance = 2.0 * _connectionPointDiameter;
+  double const tolerance = 2.0 * _connectionPointDiameter;
 
-  size_t nItems = nodeState.getEntries(endType).size();
+  size_t const nItems = nodeState.getEntries(endType).size();
 
   for (size_t i = 0; i < nItems; ++i)
   {
-    QPointF p = connectionPointScenePosition(i, endType, t) - point;
+    QPointF p = connectionPointScenePosition(i, endType, sceneTransform) - scenePoint;
     auto distance = std::sqrt(QPointF::dotProduct(p, p));
 
     if (distance < tolerance)
     {
-      result = i;
+      result = PortNumber(i);
       break;
     }
   }

@@ -1,10 +1,12 @@
-#ifndef CONNECTION_STATE_HPP
-#define CONNECTION_STATE_HPP
+#pragma once
 
 #include <QtCore/QUuid>
 
 #include "EndType.hpp"
 
+
+/// Stores currently draggind end.
+/// Remembers last hovered Node.
 class ConnectionState
 {
 public:
@@ -27,7 +29,7 @@ public:
   void clearDragging()
   { _draggingEnd = EndType::NONE; }
 
-  //----
+public:
 
   void setLastHoveredNode(QUuid id);
 
@@ -37,9 +39,8 @@ public:
   void resetLastHoveredNode();
 
 private:
+
   EndType _draggingEnd;
 
   QUuid _lastHoveredNodeId;
 };
-
-#endif // CONNECTION_STATE_HPP

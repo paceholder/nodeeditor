@@ -1,5 +1,6 @@
-#ifndef CONNECTION_GRAPHICS_OBJECT_H
-#define CONNECTION_GRAPHICS_OBJECT_H
+#pragma once
+
+#include <QtCore/QUuid>
 
 #include <QtWidgets/QGraphicsObject>
 
@@ -47,5 +48,3 @@ private:
 
   Connection& _connection;
 };
-
-#endif //  CONNECTION_GRAPHICS_OBJECT_H

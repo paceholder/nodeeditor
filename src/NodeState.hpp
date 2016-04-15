@@ -41,6 +41,7 @@ public:
   bool isReacting() const;
 
 private:
+
   std::vector<QUuid> _sources;
   std::vector<QUuid> _sinks;
 

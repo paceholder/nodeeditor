@@ -115,7 +115,7 @@ mousePressEvent(QGraphicsSceneMouseEvent * event)
 
       FlowScene &flowScene = FlowScene::instance();
 
-      if (hit >= 0)
+      if (hit != INVALID)
       {
         QUuid const id = _nodeState.connectionID(endToCheck, hit);
 

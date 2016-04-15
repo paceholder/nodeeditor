@@ -1,10 +1,8 @@
 #include "ConnectionGraphicsObject.hpp"
 
 #include <QtWidgets/QGraphicsSceneMouseEvent>
-
 #include <QtWidgets/QGraphicsDropShadowEffect>
 #include <QtWidgets/QGraphicsBlurEffect>
-
 #include <QtWidgets/QStyleOptionGraphicsItem>
 
 #include "FlowScene.hpp"

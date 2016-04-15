@@ -1,5 +1,4 @@
-#ifndef NODE_GEOMETRY_HPP
-#define NODE_GEOMETRY_HPP
+#pragma once
 
 #include <QtCore/QRectF>
 #include <QtCore/QPointF>
@@ -65,10 +64,10 @@ public:
                                        EndType endType,
                                        QTransform t = QTransform()) const;
 
-  int checkHitScenePoint(EndType endType,
-                         QPointF const point,
-                         NodeState const& nodeState,
-                         QTransform t = QTransform()) const;
+  PortNumber checkHitScenePoint(EndType endType,
+                                QPointF const point,
+                                NodeState const& nodeState,
+                                QTransform t = QTransform()) const;
 
 private:
   unsigned int _width;
@@ -88,5 +87,3 @@ private:
 
   double _opacity;
 };
-
-#endif //  NODE_GEOMETRY_HPP

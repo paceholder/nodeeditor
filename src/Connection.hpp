@@ -1,5 +1,4 @@
-#ifndef CONNECTION_H
-#define CONNECTION_H
+#pragma once
 
 #include <memory>
 
@@ -16,10 +15,9 @@ class QPointF;
 
 //------------------------------------------------------------------------------
 
-class Connection : public QObject
+///
+class Connection
 {
-  Q_OBJECT
-
 public:
 
   Connection();
@@ -27,20 +25,25 @@ public:
 
   QUuid id() const;
 
+  /// Remembers the end being dragged.
+  /// Invalidates Node address.
+  /// Grabs mouse.
   void setDraggingEnd(EndType dragging);
   EndType draggingEnd() const;
 
+  /// Returns address of Node for givend endType (NodeId, EndN)
   std::pair<QUuid, int> getAddress(EndType endType) const;
   void setAddress(EndType endType, std::pair<QUuid, int> address);
 
 public:
 
-  /// Connection initiates interaction
+  /// When Connection initiates interaction
   bool tryConnectToNode(Node* node, QPointF const& scenePoint);
 
-  /// Node initiates
+  /// When Node initiates interaction
   void connectToNode(std::pair<QUuid, int> const &address);
-                     //QPointF const& scenePoint);
+
+public:
 
   ConnectionGraphicsObject* getConnectionGraphicsObject() const;
 
@@ -55,5 +58,3 @@ private:
 
   std::unique_ptr<ConnectionImpl> _impl;
 };
-
-#endif // CONNECTION_H

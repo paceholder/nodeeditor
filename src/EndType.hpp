@@ -1,11 +1,15 @@
-#ifndef END_TYPE_HPP
-#define END_TYPE_HPP
+#pragma once
 
 enum class EndType
 {
   NONE,
   SOURCE,
   SINK
+};
+
+enum PortNumber
+{
+  INVALID = -1
 };
 
 static
@@ -31,5 +35,3 @@ oppositeEnd(EndType end)
   return result;
 }
 
-
-#endif //  END_TYPE_HPP
