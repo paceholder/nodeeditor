@@ -25,6 +25,8 @@ NodeGraphicsObject(Node& node,
   setFlag(QGraphicsItem::ItemIsMovable, true);
   setFlag(QGraphicsItem::ItemIsFocusable, true);
 
+  setCacheMode( QGraphicsItem::DeviceCoordinateCache );
+
   // TODO: Pass state to geometry
 
   {

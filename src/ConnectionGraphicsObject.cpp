@@ -24,7 +24,6 @@ ConnectionGraphicsObject(Connection& connection)
 {
   setFlag(QGraphicsItem::ItemIsMovable, true);
   setFlag(QGraphicsItem::ItemIsFocusable, true);
-  setCacheMode( QGraphicsItem::DeviceCoordinateCache );
 
   setAcceptHoverEvents(true);
 
@@ -96,13 +95,6 @@ shape() const
 #endif
 }
 
-
-//ConnectionGeometry&
-//ConnectionGraphicsObject::
-//connectionGeometry()
-//{
-//return _connectionGeometry;
-//}
 
 void
 ConnectionGraphicsObject::
