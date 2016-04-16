@@ -28,37 +28,40 @@ struct hash<QUuid>
 class FlowItemInterface;
 class Node;
 
+/// Scene holds connections and nodes.
 class FlowScene : public QGraphicsScene
 {
 public:
   static
   FlowScene& instance();
 
-  /// TODO: make a free function
-  static
-  Node* locateNodeAt(QGraphicsSceneMouseEvent* event);
-
 public:
 
-  Connection* createConnection();
+  std::shared_ptr<Connection> createConnection();
 
-  void deleteConnection(Connection* c);
+  void deleteConnection(QUuid const & id);
 
   QUuid createNode();
 
 public:
 
-  Connection* getConnection(QUuid id) const;
+  std::shared_ptr<Connection> getConnection(QUuid id) const;
 
-  Node* getNode(QUuid id) const;
+  std::shared_ptr<Node> getNode(QUuid id) const;
 
 private:
+
   FlowScene();
   ~FlowScene();
 
 private:
-  static FlowScene* _instance;
 
-  std::unordered_map<QUuid, Connection*> _connections;
-  std::unordered_map<QUuid, Node*>       _nodes;
+  using SharedConnection = std::shared_ptr<Connection>;
+  using SharedNode       = std::shared_ptr<Node>;
+
+  std::unordered_map<QUuid, SharedConnection> _connections;
+  std::unordered_map<QUuid, SharedNode>       _nodes;
 };
+
+std::shared_ptr<Node>
+locateNodeAt(QGraphicsSceneMouseEvent* event);

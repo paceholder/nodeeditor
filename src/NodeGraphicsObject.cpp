@@ -58,11 +58,11 @@ NodeGraphicsObject(Node& node,
 }
 
 
-Node*
+Node&
 NodeGraphicsObject::
 node()
 {
-  return &_node;
+  return _node;
 }
 
 
@@ -108,26 +108,28 @@ mousePressEvent(QGraphicsSceneMouseEvent * event)
   auto clickEnd =
     [&](EndType endToCheck)
     {
-      int hit = _nodeGeometry.checkHitScenePoint(endToCheck,
-                                                 event->scenePos(),
-                                                 _nodeState,
-                                                 sceneTransform());
+      int portNumber = _nodeGeometry.checkHitScenePoint(endToCheck,
+                                                        event->scenePos(),
+                                                        _nodeState,
+                                                        sceneTransform());
 
       FlowScene &flowScene = FlowScene::instance();
 
-      if (hit != INVALID)
+      if (portNumber != INVALID)
       {
-        QUuid const id = _nodeState.connectionID(endToCheck, hit);
+        QUuid const connectionId = _nodeState.connectionID(endToCheck, portNumber);
 
-        if (id.isNull())
+        /// initialize new Connection
+        if (connectionId.isNull())
         {
           // todo add to FlowScene
           auto connection = flowScene.createConnection();
+
           connection->connectionState().setDraggingEnd(endToCheck);
 
-          _node.connect(connection, hit);
+          _node.connect(connection.get(), portNumber);
 
-          auto address = std::make_pair(_node.id(), hit);
+          auto address = std::make_pair(_node.id(), portNumber);
 
           connection->setDraggingEnd(endToCheck);
           connection->connectToNode(address);
@@ -136,9 +138,9 @@ mousePressEvent(QGraphicsSceneMouseEvent * event)
         }
         else
         {
-          auto connection = flowScene.getConnection(id);
+          auto connection = flowScene.getConnection(connectionId);
 
-          _node.disconnect(connection, endToCheck, hit);
+          _node.disconnect(connection.get(), endToCheck, portNumber);
 
           connection->setDraggingEnd(endToCheck);
         }

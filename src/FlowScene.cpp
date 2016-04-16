@@ -10,8 +10,6 @@
 #include "FlowItemInterface.hpp"
 #include "FlowGraphicsView.hpp"
 
-FlowScene* FlowScene::_instance = nullptr;
-
 FlowScene&
 FlowScene::
 instance()
@@ -22,42 +20,11 @@ instance()
 }
 
 
-Node*
-FlowScene::
-locateNodeAt(QGraphicsSceneMouseEvent * event)
-{
-  auto view = static_cast<FlowGraphicsView*>(event->widget());
-
-  auto& scene = FlowScene::instance();
-
-  // items under cursor
-  QList<QGraphicsItem*> items = scene.items(event->scenePos(),
-                                            Qt::IntersectsItemShape,
-                                            Qt::DescendingOrder,
-                                            view->transform());
-
-  std::vector<QGraphicsItem*> filteredItems;
-
-  std::copy_if(items.begin(),
-               items.end(),
-               std::back_inserter(filteredItems),
-               [](QGraphicsItem * item)
-               {
-                 return (dynamic_cast<NodeGraphicsObject*>(item) != nullptr);
-               });
-
-  if (filteredItems.empty())
-    return nullptr;
-
-  return dynamic_cast<NodeGraphicsObject*>(filteredItems.front())->node();
-}
-
-
-Connection*
+std::shared_ptr<Connection>
 FlowScene::
 createConnection()
 {
-  auto* connection = new Connection();
+  auto connection = std::make_shared<Connection>();
 
   _connections[connection->id()] = connection;
 
@@ -67,11 +34,9 @@ createConnection()
 
 void
 FlowScene::
-deleteConnection(Connection* c)
+deleteConnection(QUuid const & id)
 {
-  _connections.erase(c->id());
-
-  delete c;
+  _connections.erase(id);
 }
 
 
@@ -79,13 +44,12 @@ QUuid
 FlowScene::
 createNode()
 {
-  //for (auto i : {1, 2, 3, 4, 5, 6, 7, 8})
   for (auto i : {1, 2, 3, 4})
   //for (auto i : {1})
   {
-    (void)i;
+    (void)i; // unused variable
 
-    Node* node = new Node();
+    auto node = std::make_shared<Node>();
 
     _nodes[node->id()] = node;
   }
@@ -94,29 +58,30 @@ createNode()
 }
 
 
-Connection*
+std::shared_ptr<Connection>
 FlowScene::
 getConnection(QUuid id) const
 {
   auto it = _connections.find(id);
 
-  if (it != _connections.end())
-    return it->second;
+  Q_ASSERT_X(it != _connections.end(),
+             "getConnection()",
+             "Connection with given ID does not exist");
 
-  return nullptr;
+  return it->second;
 }
 
 
-Node*
+std::shared_ptr<Node>
 FlowScene::
 getNode(QUuid id) const
 {
   auto it = _nodes.find(id);
 
-  if (it != _nodes.end())
-    return it->second;
+  if (it == _nodes.end())
+    return std::shared_ptr<Node>();
 
-  return nullptr;
+  return it->second;
 }
 
 
@@ -130,13 +95,46 @@ FlowScene()
 FlowScene::
 ~FlowScene()
 {
-  for (auto &c : _connections)
+  //
+}
+
+
+//------------------------------------------------------------------------------
+
+std::shared_ptr<Node>
+locateNodeAt(QGraphicsSceneMouseEvent * event)
+{
+  auto view = static_cast<FlowGraphicsView*>(event->widget());
+
+  auto& scene = FlowScene::instance();
+
+  // items under cursor
+  QList<QGraphicsItem*> items =
+    scene.items(event->scenePos(),
+                Qt::IntersectsItemShape,
+                Qt::DescendingOrder,
+                view->transform());
+
+  // items convertable to NodeGraphicsObject
+  std::vector<QGraphicsItem*> filteredItems;
+
+  std::copy_if(items.begin(),
+               items.end(),
+               std::back_inserter(filteredItems),
+               [](QGraphicsItem * item)
+               {
+                 return (dynamic_cast<NodeGraphicsObject*>(item) != nullptr);
+               });
+
+  std::shared_ptr<Node> resultNode;
+
+  if (!filteredItems.empty())
   {
-    delete c.second;
+    QGraphicsItem* graphicsItem = filteredItems.front();
+    auto ngo = dynamic_cast<NodeGraphicsObject*>(graphicsItem);
+
+    resultNode = scene.getNode(ngo->node().id());
   }
 
-  for (auto &n : _nodes)
-  {
-    delete n.second;
-  }
+  return resultNode;
 }

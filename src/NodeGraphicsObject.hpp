@@ -21,7 +21,7 @@ public:
                      NodeState& nodeState,
                      NodeGeometry& nodeGeometry);
 
-  Node* node();
+  Node& node();
 
   QRectF boundingRect() const override;
 

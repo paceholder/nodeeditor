@@ -17,7 +17,7 @@
 #include "Node.hpp"
 
 ConnectionGraphicsObject::
-ConnectionGraphicsObject(Connection& connection)
+ConnectionGraphicsObject(Connection &connection)
   : _connection(connection)
 {
   setFlag(QGraphicsItem::ItemIsMovable, true);
@@ -25,19 +25,9 @@ ConnectionGraphicsObject(Connection& connection)
 
   setAcceptHoverEvents(true);
 
-  {
-    //auto effect = new QGraphicsDropShadowEffect;
-    //auto effect = new QGraphicsBlurEffect;
-    //auto effect = new ConnectionBlurEffect(this);
+  // addGraphicsEffect();
 
-    //effect->setOffset(4, 4);
-    //effect->setBlurRadius(5);
-    //effect->setColor(QColor(Qt::gray).darker(800));
-    //setGraphicsEffect(effect);
-  }
-
-  FlowScene &flowScene = FlowScene::instance();
-  flowScene.addItem(this);
+  FlowScene::instance().addItem(this);
 }
 
 
@@ -124,7 +114,7 @@ mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 
   //-------------------
 
-  auto node = FlowScene::locateNodeAt(event);
+  auto node = ::locateNodeAt(event);
 
   if (node)
   {
@@ -171,7 +161,7 @@ mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 
 //---------------
 
-  auto node = FlowScene::locateNodeAt(event);
+  std::shared_ptr<Node> node = ::locateNodeAt(event);
 
   if (node && _connection.tryConnectToNode(node, event->scenePos()))
   {
@@ -179,8 +169,7 @@ mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
   }
   else
   {
-    auto& scene = FlowScene::instance();
-    scene.deleteConnection(&_connection);
+    FlowScene::instance().deleteConnection(_connection.id());
   }
 }
 
@@ -204,4 +193,20 @@ hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
 
   update();
   event->accept();
+}
+
+
+void
+ConnectionGraphicsObject::
+addGraphicsEffect()
+{
+  auto effect = new QGraphicsBlurEffect;
+
+  effect->setBlurRadius(5);
+  setGraphicsEffect(effect);
+
+  //auto effect = new QGraphicsDropShadowEffect;
+  //auto effect = new ConnectionBlurEffect(this);
+  //effect->setOffset(4, 4);
+  //effect->setColor(QColor(Qt::gray).darker(800));
 }

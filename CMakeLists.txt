@@ -23,6 +23,7 @@ find_package(Qt5 COMPONENTS
 add_definitions(${Qt5Widgets_DEFINITIONS})
 set(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 #############################################################
 

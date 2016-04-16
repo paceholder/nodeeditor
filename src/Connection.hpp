@@ -38,14 +38,14 @@ public:
 public:
 
   /// When Connection initiates interaction
-  bool tryConnectToNode(Node* node, QPointF const& scenePoint);
+  bool tryConnectToNode(std::shared_ptr<Node> node, QPointF const& scenePoint);
 
   /// When Node initiates interaction
   void connectToNode(std::pair<QUuid, int> const &address);
 
 public:
 
-  ConnectionGraphicsObject* getConnectionGraphicsObject() const;
+  std::unique_ptr<ConnectionGraphicsObject> & getConnectionGraphicsObject() const;
 
   ConnectionState const & connectionState() const;
   ConnectionState& connectionState();
@@ -54,7 +54,7 @@ public:
 
 private:
 
-  class ConnectionImpl;
+  struct ConnectionImpl;
 
   std::unique_ptr<ConnectionImpl> _impl;
 };

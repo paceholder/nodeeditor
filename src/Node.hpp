@@ -24,7 +24,7 @@ public:
 
 public:
 
-  QUuid const id() const;
+  QUuid id() const;
 
   void reactToPossibleConnection(EndType,
                                  QPointF const & scenePoint);
@@ -44,14 +44,14 @@ public:
 
 public:
 
-  NodeGraphicsObject const* nodeGraphicsObject() const;
+  std::unique_ptr<NodeGraphicsObject> const &nodeGraphicsObject() const;
 
   NodeGeometry& nodeGeometry();
   NodeGeometry const& nodeGeometry() const;
 
 private:
 
-  class NodeImpl;
+  struct NodeImpl;
 
   std::unique_ptr<NodeImpl> _impl;
 };

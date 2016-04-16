@@ -13,14 +13,13 @@
 #include "ConnectionGraphicsObject.hpp"
 #include "ConnectionState.hpp"
 
-class Node::NodeImpl
+struct Node::NodeImpl
 {
-public:
-  NodeImpl(Node* node)
+  NodeImpl(Node &node)
     : _id(QUuid::createUuid())
     , _nodeState(std::rand() % 4 + 2,
                  std::rand() % 4 + 2)
-    , _nodeGraphicsObject(new NodeGraphicsObject(*node,
+    , _nodeGraphicsObject(new NodeGraphicsObject(node,
                                                  _nodeState,
                                                  _nodeGeometry))
   {
@@ -33,14 +32,11 @@ public:
   /// Destructor
   ~NodeImpl()
   {
-    std::cout << "About to delete graphics object" << std::endl;
+    std::cout << "Remove NodeGraphicsObject from scene" << std::endl;
     FlowScene &flowScene = FlowScene::instance();
 
-    flowScene.removeItem(_nodeGraphicsObject);
-    delete _nodeGraphicsObject;
+    flowScene.removeItem(_nodeGraphicsObject.get());
   }
-
-public:
 
   // addressing
 
@@ -52,14 +48,14 @@ public:
 
   NodeGeometry _nodeGeometry;
 
-  NodeGraphicsObject* _nodeGraphicsObject;
+  std::unique_ptr<NodeGraphicsObject> _nodeGraphicsObject;
 };
 
 //------------------------------------------------------------------------------
 
 Node::
 Node()
-  : _impl(new NodeImpl(this))
+  : _impl(new NodeImpl(*this))
 {
 //
 }
@@ -72,7 +68,7 @@ Node::
 }
 
 
-QUuid const
+QUuid
 Node::
 id() const
 {
@@ -111,14 +107,15 @@ Node::
 canConnect(ConnectionState const& conState,
            QPointF const &scenePoint)
 {
-  auto g   = _impl->_nodeGraphicsObject;
+  auto &g   = _impl->_nodeGraphicsObject;
+
   int  hit =
     _impl->_nodeGeometry.checkHitScenePoint(conState.draggingEnd(),
                                             scenePoint,
                                             _impl->_nodeState,
                                             g->sceneTransform());
 
-  return ((hit >= 0) &&
+  return ((hit != INVALID) &&
           _impl->_nodeState.connectionID(conState.draggingEnd(), hit).isNull());
 }
 
@@ -134,9 +131,9 @@ connect(Connection const* connection, int hit)
                                     hit,
                                     connection->id());
 
-  QObject::connect(_impl->_nodeGraphicsObject,
+  QObject::connect(_impl->_nodeGraphicsObject.get(),
                    &NodeGraphicsObject::itemMoved,
-                   connection->getConnectionGraphicsObject(),
+                   connection->getConnectionGraphicsObject().get(),
                    &ConnectionGraphicsObject::onItemMoved);
 
   connection->getConnectionGraphicsObject()->setZValue(-1.0);
@@ -153,7 +150,7 @@ connect(Connection const* connection,
   ConnectionState const& conState =
     connection->connectionState();
 
-  auto g   = _impl->_nodeGraphicsObject;
+  auto &g   = _impl->_nodeGraphicsObject;
   int  hit =
     _impl->_nodeGeometry.checkHitScenePoint(conState.draggingEnd(),
                                             scenePoint,
@@ -170,9 +167,9 @@ disconnect(Connection const* connection,
            EndType endType,
            int hit)
 {
-  QObject::disconnect(_impl->_nodeGraphicsObject,
+  QObject::disconnect(_impl->_nodeGraphicsObject.get(),
                       &NodeGraphicsObject::itemMoved,
-                      connection->getConnectionGraphicsObject(),
+                      connection->getConnectionGraphicsObject().get(),
                       &ConnectionGraphicsObject::onItemMoved);
 
   _impl->_nodeState.setConnectionId(endType, hit, QUuid());
@@ -181,7 +178,7 @@ disconnect(Connection const* connection,
 }
 
 
-NodeGraphicsObject const*
+std::unique_ptr<NodeGraphicsObject> const &
 Node::
 nodeGraphicsObject() const
 {

@@ -25,7 +25,7 @@ ConnectionState::
 resetLastHoveredNode()
 {
   auto &scene = FlowScene::instance();
-  Node * n    = scene.getNode(_lastHoveredNodeId);
+  std::shared_ptr<Node> n = scene.getNode(_lastHoveredNodeId);
 
   if (n)
     n->resetReactionToConnection();

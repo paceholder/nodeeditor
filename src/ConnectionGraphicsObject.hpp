@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include <QtCore/QUuid>
 
 #include <QtWidgets/QGraphicsObject>
@@ -9,6 +11,7 @@ class QGraphicsSceneMouseEvent;
 class Connection;
 class ConnectionGeometry;
 
+/// Graphic Object for connection. Adds itself to scene
 class ConnectionGraphicsObject
   : public QGraphicsObject
 {
@@ -16,21 +19,20 @@ class ConnectionGraphicsObject
 
 public:
 
-  ConnectionGraphicsObject(Connection& connection);
+  ConnectionGraphicsObject(Connection &connection);
 
 public:
 
   QRectF boundingRect() const override;
 
 public slots:
+
   void onItemMoved(QUuid id, QPointF const &offset);
 
   QPainterPath shape() const override;
 
-public:
-  //ConnectionGeometry& connectionGeometry();
-
 protected:
+
   void paint(QPainter* painter,
              QStyleOptionGraphicsItem const* option,
              QWidget* widget = 0) override;
@@ -44,7 +46,12 @@ protected:
   void hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
 
   void hoverLeaveEvent(QGraphicsSceneHoverEvent* event) override;
+
 private:
 
-  Connection& _connection;
+  void addGraphicsEffect();
+
+private:
+
+  Connection & _connection;
 };

@@ -16,35 +16,42 @@
 #include "ConnectionGeometry.hpp"
 #include "ConnectionGraphicsObject.hpp"
 
-class
+namespace std {
+
+template<typename T, typename ... Args>
+std::unique_ptr<T> make_unique(Args&& ... args)
+{
+  return std::unique_ptr<T>(new T(std::forward<Args>(args) ...));
+}
+}
+
+struct
 Connection::ConnectionImpl
 {
-public:
-  ConnectionImpl(Connection* connection)
+  ConnectionImpl(Connection &connection)
     : _id(QUuid::createUuid())
     , _connectionState()
-    , _connectionGraphicsObject(new ConnectionGraphicsObject(*connection))
-  {}
+    , _connectionGraphicsObject(new ConnectionGraphicsObject(connection))
+  {
+    //
+  }
 
   ~ConnectionImpl()
   {
-
-    std::cout << "About to delete graphics object" << std::endl;
+    std::cout << "Remove ConnectionGraphicsObject from scene" << std::endl;
     FlowScene &flowScene = FlowScene::instance();
 
-    flowScene.removeItem(_connectionGraphicsObject);
-    delete _connectionGraphicsObject;
+    flowScene.removeItem(_connectionGraphicsObject.get());
   }
 
-public:
   QUuid _id;
 
   std::pair<QUuid, int> _sourceAddress; // ItemID, entry number
   std::pair<QUuid, int> _sinkAddress;
 
-  ConnectionState    _connectionState;
+  ConnectionState _connectionState;
   ConnectionGeometry _connectionGeometry;
-  ConnectionGraphicsObject* _connectionGraphicsObject;
+  std::unique_ptr<ConnectionGraphicsObject> _connectionGraphicsObject;
 };
 
 //----------------------------------------------------------
@@ -54,18 +61,18 @@ public:
 
 Connection::
 Connection()
-  : _impl(new ConnectionImpl(this))
+  : _impl(new ConnectionImpl(*this))
 {
-//
+  //
 }
 
 
 Connection::
 ~Connection()
 {
-  auto &scene = FlowScene::instance();
-
   std::cout << "Connection destructor" << std::endl;
+
+  auto &scene = FlowScene::instance();
 
   auto tryDisconnectNode =
     [&](EndType endType)
@@ -74,9 +81,11 @@ Connection::
 
       if (!address.first.isNull())
       {
-        Node* node = scene.getNode(address.first);
+        std::shared_ptr<Node> node = scene.getNode(address.first);
 
-        node->disconnect(this, endType, address.second);
+
+        if (node)
+          node->disconnect(this, endType, address.second);
       }
     };
 
@@ -168,7 +177,7 @@ setAddress(EndType endType, std::pair<QUuid, int> address)
 
 bool
 Connection::
-tryConnectToNode(Node* node, QPointF const& scenePoint)
+tryConnectToNode(std::shared_ptr<Node> node, QPointF const& scenePoint)
 {
   bool ok = node->canConnect(_impl->_connectionState,
                              scenePoint);
@@ -199,10 +208,10 @@ connectToNode(std::pair<QUuid, int> const &address)
 {
   setAddress(_impl->_connectionState.draggingEnd(), address);
 
-  Node const* node = FlowScene::instance().getNode(address.first);
+  std::shared_ptr<Node> const node = FlowScene::instance().getNode(address.first);
 
-  NodeGraphicsObject const* o = node->nodeGraphicsObject();
-  NodeGeometry const      & nodeGeometry = node->nodeGeometry();
+  std::unique_ptr<NodeGraphicsObject> const & o = node->nodeGraphicsObject();
+  NodeGeometry const & nodeGeometry = node->nodeGeometry();
 
   QPointF const scenePoint =
     nodeGeometry.connectionPointScenePosition(address.second,
@@ -222,7 +231,7 @@ connectToNode(std::pair<QUuid, int> const &address)
 }
 
 
-ConnectionGraphicsObject*
+std::unique_ptr<ConnectionGraphicsObject> &
 Connection::
 getConnectionGraphicsObject() const
 {
