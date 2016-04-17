@@ -1,5 +1,4 @@
-#ifndef NODE_DATA_HPP
-#define NODE_DATA_HPP
+#pragma once
 
 #include <QtCore/QString>
 
@@ -11,7 +10,9 @@ class NodeData
 public:
   virtual bool sameType(NodeData const &nodeDataType) const = 0;
 
+  /// Type for inner use
   virtual QString type() const = 0;
-};
 
-#endif //  NODE_DATA_HPP
+  /// Name for GUI
+  virtual QString name() const = 0;
+};

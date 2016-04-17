@@ -1,5 +1,6 @@
-#ifndef NODE_PAINTER_HPP
-#define NODE_PAINTER_HPP
+#pragma once
+
+#include <memory>
 
 #include <QtGui/QPainter>
 
@@ -7,6 +8,8 @@
 
 class NodeGeometry;
 class NodeState;
+class Node;
+class NodeDataModel;
 class FlowItemEntry;
 
 class NodePainter
@@ -19,8 +22,7 @@ public:
 
   static
   void paint(QPainter* painter,
-             NodeGeometry const& geom,
-             NodeState const& state);
+             Node const &node);
 
   static
   void drawNodeRect(QPainter* painter, NodeGeometry const& geom);
@@ -28,7 +30,8 @@ public:
   static
   void drawEntryLabels(QPainter* painter,
                        NodeGeometry const& geom,
-                       NodeState const& state);
+                       NodeState const& state,
+                       std::unique_ptr<NodeDataModel> const & model);
 
   static
   void drawConnectionPoints(QPainter* painter,
@@ -40,5 +43,3 @@ public:
                                   NodeGeometry const& geom,
                                   NodeState const& state);
 };
-
-#endif //  NODE_PAINTER_HPP

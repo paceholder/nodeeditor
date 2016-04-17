@@ -9,16 +9,18 @@
 #include "NodeState.hpp"
 #include "NodeGeometry.hpp"
 #include "NodeGraphicsObject.hpp"
+#include "NodeDataModel.hpp"
 
 #include "ConnectionGraphicsObject.hpp"
 #include "ConnectionState.hpp"
 
 struct Node::NodeImpl
 {
-  NodeImpl(Node &node)
+  NodeImpl(Node &node,
+           std::unique_ptr<NodeDataModel> &&dataModel)
     : _id(QUuid::createUuid())
-    , _nodeState(std::rand() % 4 + 2,
-                 std::rand() % 4 + 2)
+    , _nodeDataModel(std::move(dataModel))
+    , _nodeState(_nodeDataModel)
     , _nodeGraphicsObject(new NodeGraphicsObject(node,
                                                  _nodeState,
                                                  _nodeGeometry))
@@ -42,6 +44,10 @@ struct Node::NodeImpl
 
   QUuid _id;
 
+  // data
+
+  std::unique_ptr<NodeDataModel> _nodeDataModel;
+
   NodeState _nodeState;
 
   // painting
@@ -54,10 +60,10 @@ struct Node::NodeImpl
 //------------------------------------------------------------------------------
 
 Node::
-Node()
-  : _impl(new NodeImpl(*this))
+Node(std::unique_ptr<NodeDataModel> &&dataModel)
+  : _impl(new NodeImpl(*this, std::move(dataModel)))
 {
-//
+  //
 }
 
 
@@ -107,9 +113,9 @@ Node::
 canConnect(ConnectionState const& conState,
            QPointF const &scenePoint)
 {
-  auto &g   = _impl->_nodeGraphicsObject;
+  auto &g = _impl->_nodeGraphicsObject;
 
-  int  hit =
+  int hit =
     _impl->_nodeGeometry.checkHitScenePoint(conState.draggingEnd(),
                                             scenePoint,
                                             _impl->_nodeState,
@@ -150,7 +156,7 @@ connect(Connection const* connection,
   ConnectionState const& conState =
     connection->connectionState();
 
-  auto &g   = _impl->_nodeGraphicsObject;
+  auto &g  = _impl->_nodeGraphicsObject;
   int  hit =
     _impl->_nodeGeometry.checkHitScenePoint(conState.draggingEnd(),
                                             scenePoint,
@@ -185,6 +191,14 @@ nodeGraphicsObject() const
   return _impl->_nodeGraphicsObject;
 }
 
+std::unique_ptr<NodeGraphicsObject>&
+Node::
+nodeGraphicsObject()
+{
+  return _impl->_nodeGraphicsObject;
+}
+
+
 
 NodeGeometry&
 Node::
@@ -199,4 +213,20 @@ Node::
 nodeGeometry() const
 {
   return _impl->_nodeGeometry;
+}
+
+
+NodeState const &
+Node::
+nodeState() const
+{
+  return _impl->_nodeState;
+}
+
+
+std::unique_ptr<NodeDataModel> const &
+Node::
+nodeDataModel() const
+{
+  return _impl->_nodeDataModel;
 }

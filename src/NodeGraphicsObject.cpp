@@ -48,13 +48,6 @@ NodeGraphicsObject(Node& node,
   //embedQWidget();
 
   _nodeGeometry.recalculateSize();
-
-  {
-    constexpr int spread = 700;
-
-    moveBy(std::rand() % spread - spread / 2,
-           std::rand() % spread - spread / 2);
-  }
 }
 
 
@@ -97,7 +90,7 @@ paint(QPainter * painter,
 {
   painter->setClipRect(option->exposedRect);
 
-  NodePainter::paint(painter, _nodeGeometry, _nodeState);
+  NodePainter::paint(painter, _node);
 }
 
 

@@ -138,10 +138,8 @@ mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 
   if (draggingEnd != EndType::NONE)
   {
-    auto &endPoint = _connection.connectionGeometry().getEndPoint(draggingEnd);
-
-    _connection.connectionGeometry().setEndPoint(draggingEnd,
-                                                 endPoint + offset);
+    _connection.connectionGeometry().moveEndPoint(draggingEnd,
+                                                  offset);
   }
 
   //-------------------
@@ -159,7 +157,7 @@ mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
   ungrabMouse();
   event->accept();
 
-//---------------
+  //---------------
 
   std::shared_ptr<Node> node = ::locateNodeAt(event);
 

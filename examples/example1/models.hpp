@@ -19,6 +19,9 @@ public:
 
   QString type() const override
   { return "MyNodeData"; }
+
+  QString name() const override
+  { return "Data"; }
 };
 
 //------------------------------------------------------------------------------

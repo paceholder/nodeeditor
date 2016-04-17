@@ -42,19 +42,33 @@ deleteConnection(QUuid const & id)
 
 QUuid
 FlowScene::
-createNode()
+createNodes()
 {
-  for (auto i : {1, 2, 3, 4})
-  //for (auto i : {1})
-  {
-    (void)i; // unused variable
+  //for (auto i : {1, 2, 3, 4})
+  ////for (auto i : {1})
+  //{
+    //(void)i; // unused variable
 
-    auto node = std::make_shared<Node>();
+    //auto node = std::make_shared<Node>();
 
-    _nodes[node->id()] = node;
-  }
+    //_nodes[node->id()] = node;
+  //}
 
   return QUuid();
+}
+
+
+std::shared_ptr<Node>
+FlowScene::
+createNode(std::unique_ptr<NodeDataModel> &&dataModel)
+{
+  std::cout << "Create Node" << std::endl;
+
+  auto node = std::make_shared<Node>(std::move(dataModel));
+
+  _nodes[node->id()] = node;
+
+  return node;
 }
 
 

@@ -1,5 +1,7 @@
 #include "NodeState.hpp"
 
+#include "NodeDataModel.hpp"
+
 NodeState::
 NodeState(unsigned int nSources,
           unsigned int nSinks)
@@ -7,6 +9,14 @@ NodeState(unsigned int nSources,
   , _sinks(nSinks, QUuid())
   , _reaction(NOT_REACTING)
 {}
+
+NodeState::
+NodeState(std::unique_ptr<NodeDataModel> const &model)
+  : _sources(model->nSlots(EndType::SOURCE), QUuid())
+  , _sinks(model->nSlots(EndType::SOURCE), QUuid())
+  , _reaction(NOT_REACTING)
+{}
+
 
 std::vector<QUuid> const&
 NodeState::

@@ -1,5 +1,4 @@
-#ifndef NODE_HPP
-#define NODE_HPP
+#pragma once
 
 #include <memory>
 
@@ -12,6 +11,8 @@ class Connection;
 class ConnectionState;
 class NodeGeometry;
 class NodeGraphicsObject;
+class NodeDataModel;
+class NodeState;
 
 class Node : public QObject
 {
@@ -19,7 +20,8 @@ class Node : public QObject
 
 public:
 
-  Node();
+  Node(std::unique_ptr<NodeDataModel> &&dataModel);
+
   ~Node();
 
 public:
@@ -45,9 +47,15 @@ public:
 public:
 
   std::unique_ptr<NodeGraphicsObject> const &nodeGraphicsObject() const;
+  std::unique_ptr<NodeGraphicsObject> & nodeGraphicsObject();
 
   NodeGeometry& nodeGeometry();
   NodeGeometry const& nodeGeometry() const;
+
+  NodeState const & nodeState() const;
+
+  std::unique_ptr<NodeDataModel> const & nodeDataModel() const;
+
 
 private:
 
@@ -55,5 +63,3 @@ private:
 
   std::unique_ptr<NodeImpl> _impl;
 };
-
-#endif // NODE_HPP

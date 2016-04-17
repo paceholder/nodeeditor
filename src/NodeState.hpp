@@ -1,10 +1,13 @@
 #pragma once
 
+#include <memory>
 #include <vector>
 
 #include <QtCore/QUuid>
 
 #include "EndType.hpp"
+
+class NodeDataModel;
 
 /// Contains vectors of connected input and output connections.
 /// Stores bool for reacting on hovering connections
@@ -20,6 +23,8 @@ public:
 public:
   NodeState(unsigned int nSources,
             unsigned int nSinks);
+
+  NodeState(std::unique_ptr<NodeDataModel> const &model);
 
 public:
 

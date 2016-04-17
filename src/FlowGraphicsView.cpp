@@ -19,6 +19,9 @@
 
 #include "DataModelRegistry.hpp"
 
+#include "Node.hpp"
+#include "NodeGraphicsObject.hpp"
+
 FlowGraphicsView::
 FlowGraphicsView(QGraphicsScene *scene)
   : QGraphicsView(scene)
@@ -54,7 +57,29 @@ contextMenuEvent(QContextMenuEvent *event)
   {
     qDebug() << action->text();
 
-    FlowScene::instance().createNode();
+    QString modelName = action->text();
+
+    auto const &models =
+      DataModelRegistry::registeredModels();
+
+    auto it = models.find(modelName);
+
+    if (it != models.end())
+    {
+      auto node = FlowScene::instance().createNode(it->second->create() );
+
+      QPoint pos = event->pos();
+
+      pos = this->transform().map(pos);
+      QPointF posView = this->mapToScene(pos);
+
+      node->nodeGraphicsObject()->moveBy(posView.x(),
+                                         posView.y());
+    }
+    else
+    {
+      qDebug() << "Model not found";
+    }
   }
 }
 

@@ -41,7 +41,10 @@ public:
 
   void deleteConnection(QUuid const & id);
 
-  QUuid createNode();
+  QUuid createNodes();
+
+  std::shared_ptr<Node>
+  createNode(std::unique_ptr<NodeDataModel> &&dataModel);
 
 public:
 

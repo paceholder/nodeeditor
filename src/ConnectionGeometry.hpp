@@ -1,5 +1,4 @@
-#ifndef CONNECTION_GEOMETRY_H
-#define CONNECTION_GEOMETRY_H
+#pragma once
 
 #include "EndType.hpp"
 
@@ -19,6 +18,8 @@ public:
   QPointF const& getEndPoint(EndType endType) const;
 
   void setEndPoint(EndType endType, QPointF const& point);
+
+  void moveEndPoint(EndType endType, QPointF const &offset);
 
   QRectF boundingRect() const;
 
@@ -48,5 +49,3 @@ private:
 
   bool _hovered;
 };
-
-#endif //  CONNECTION_GEOMETRY_H

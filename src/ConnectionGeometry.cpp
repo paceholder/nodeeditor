@@ -42,6 +42,26 @@ setEndPoint(EndType endType, QPointF const& point)
 }
 
 
+void
+ConnectionGeometry::
+moveEndPoint(EndType endType, QPointF const &offset)
+{
+  switch (endType)
+  {
+    case EndType::SOURCE:
+      _source += offset;
+      break;
+
+    case EndType::SINK:
+      _sink += offset;
+      break;
+
+    default:
+      break;
+  }
+}
+
+
 QRectF
 ConnectionGeometry::
 boundingRect() const
@@ -85,7 +105,7 @@ pointsC1C2() const
 
   //double verticalOffset2 = verticalOffset;
   //if (xDistance <= 0)
-    //verticalOffset2 = qMin(defaultOffset, std::abs(yDistance));
+  //verticalOffset2 = qMin(defaultOffset, std::abs(yDistance));
   //auto sign = [](double d) { return d > 0.0 ? +1.0 : -1.0; };
   //verticalOffset2 = 0.0;
 
