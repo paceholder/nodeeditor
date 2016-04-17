@@ -126,7 +126,8 @@ drawConnectionPoints(QPainter* painter,
         QPointF p = geom.connectionPointScenePosition(i, end);
 
         double r = 1.0;
-        if (state.isReacting())
+        if (state.isReacting() &&
+            state.getEntries(end)[i].isNull())
         {
           auto   diff = geom.draggingPos() - p;
           double dist = std::sqrt(QPointF::dotProduct(diff, diff));
