@@ -1,19 +1,19 @@
 ### Purpose
 
-*NodeEditor* is conceived as a general-purpose Qt-based library aimed at graph-controlled data processind.  Nodes
+**NodeEditor** is conceived as a general-purpose Qt-based library aimed at graph-controlled data processing.  Nodes
 represent algorithms with certain inputs and outputs. Connections transfer data from the output (source) of the first
-node to the inputi (sink) of the second one.
+node to the input (sink) of the second one.
 
-*NodeEditor* is a model-driven framework. A library client defines models and registers them in the data model
+**NodeEditor** is a model-driven framework. A library client defines models and registers them in the data model
 registry. Further work is driven by notifications which are delivered to the user models. The notifications could be,
 for example, of several types: `DataConnected`, `DataDisconnected`, `InputDataUpdated` etc.
 
-The framework could be considered as a reactive programming tool. Each change in the source node is immediateli
+The framework could be considered as a reactive programming tool. Each change in the source node is immediately
 propagated through all the connections updating  the whole graph.
 
 ### Current state
 
-Currently library implemens the simplest GUI interaction between nodes. It is possible to define a dummy model,
+Currently library implements the simplest GUI interaction between nodes. It is possible to define a dummy model,
 register it and create nodes in the scene. No data transfer is yet possible.
 
 ### Roadmap
