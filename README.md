@@ -8,8 +8,8 @@ node to the input (sink) of the second one.
 registry. Further work is driven by notifications which are delivered to the user models. The notifications could be,
 for example, of several types: `DataConnected`, `DataDisconnected`, `InputDataUpdated` etc.
 
-The framework could be considered as a reactive programming tool. Each change in the source node is immediately
-propagated through all the connections updating  the whole graph.
+The framework is a Visual [Dataflow Programming](https://en.wikipedia.org/wiki/Dataflow_programming) tool.
+Each change in the source node is immediately propagated through all the connections updating  the whole graph.
 
 ### Current state
 
