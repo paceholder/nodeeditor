@@ -9,6 +9,7 @@
 
 #include "FlowItemInterface.hpp"
 #include "FlowGraphicsView.hpp"
+#include "DataModelRegistry.hpp"
 
 FlowScene&
 FlowScene::

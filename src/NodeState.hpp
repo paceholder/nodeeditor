@@ -21,8 +21,6 @@ public:
   };
 
 public:
-  NodeState(unsigned int nSources,
-            unsigned int nSinks);
 
   NodeState(std::unique_ptr<NodeDataModel> const &model);
 

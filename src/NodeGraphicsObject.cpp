@@ -27,8 +27,6 @@ NodeGraphicsObject(Node& node,
 
   setCacheMode( QGraphicsItem::DeviceCoordinateCache );
 
-  // TODO: Pass state to geometry
-
   {
     auto effect = new QGraphicsDropShadowEffect;
     effect->setOffset(4, 4);
@@ -47,7 +45,7 @@ NodeGraphicsObject(Node& node,
 
   //embedQWidget();
 
-  _nodeGeometry.recalculateSize();
+  //_nodeGeometry.recalculateSize();
 }
 
 

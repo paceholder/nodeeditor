@@ -5,23 +5,28 @@
 #include <nodes/NodeData>
 #include <nodes/NodeDataModel>
 
-
 /// The class can potentially incapsulate any user data which
 /// need to be transferred within the Node Editor graph
 class MyNodeData : public NodeData
 {
 public:
 
-  bool sameType(NodeData const &nodeData) const override
-  {
-    return this->type() == nodeData.type();
-  }
-
   QString type() const override
   { return "MyNodeData"; }
 
   QString name() const override
-  { return "Data"; }
+  { return "My Node Data"; }
+};
+
+class SimpleNodeData : public NodeData
+{
+public:
+
+  QString type() const override
+  { return "SimpleData"; }
+
+  QString name() const override
+  { return "Simple Data"; }
 };
 
 //------------------------------------------------------------------------------
@@ -38,14 +43,34 @@ public:
 
 public:
 
-  unsigned int nSlots(EndType) const override
+  unsigned int nSlots(EndType endType) const override
   {
-    return 3;
+    unsigned int result = 1;
+
+    switch (endType)
+    {
+      case EndType::SINK:
+        result = 2;
+        break;
+
+      case EndType::SOURCE:
+        result = 1;
+
+      default:
+        break;
+    }
+
+    return result;
   }
 
   std::shared_ptr<NodeData>
-  data(EndType, int) override
-  { return std::make_shared<MyNodeData>(); }
+  data(EndType, int slot) override
+  {
+    if (slot < 1)
+      return std::make_shared<MyNodeData>();
+
+    return std::make_shared<SimpleNodeData>();
+  }
 
   void setInputData(std::shared_ptr<NodeData>, int) override
   {

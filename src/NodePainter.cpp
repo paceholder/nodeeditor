@@ -12,11 +12,13 @@ NodePainter::
 paint(QPainter* painter,
       Node const &node)
 {
-  NodeGeometry const& geom =
-    node.nodeGeometry();
+  NodeGeometry& geom = node.nodeGeometry();
 
-  NodeState const& state =
-    node.nodeState();
+  NodeState const& state = node.nodeState();
+
+  geom.recalculateSize(painter->fontMetrics());
+
+  //--------------------------------------------
 
   drawNodeRect(painter, geom);
 
@@ -24,8 +26,7 @@ paint(QPainter* painter,
 
   drawFilledConnectionPoints(painter, geom, state);
 
-  auto const &model =
-    node.nodeDataModel();
+  auto const &model = node.nodeDataModel();
 
   drawEntryLabels(painter, geom, state, model);
 }

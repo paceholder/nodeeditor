@@ -1,28 +1,34 @@
 #include "NodeGeometry.hpp"
 
+#include <iostream>
+
+#include "EndType.hpp"
 #include "NodeState.hpp"
+#include "NodeDataModel.hpp"
 
 NodeGeometry::
-NodeGeometry()
+NodeGeometry(std::unique_ptr<NodeDataModel> const &dataModel)
   : _width(100)
   , _height(150)
-  , _entryWidth(70)
+  , _inputSlotWidth(70)
+  , _outputSlotWidth(70)
   , _entryHeight(20)
-  , _spacing(10)
+  , _spacing(20)
   , _connectionPointDiameter(8)
   , _hovered(false)
+  , _nSources(dataModel->nSlots(EndType::SOURCE))
+  , _nSinks(dataModel->nSlots(EndType::SINK))
   , _draggingPos(-1000, -1000)
   , _opacity(0.80)
-{
-  //
-}
-
+  , _dataModel(dataModel)
+  , _fontMetrics(QFont())
+{}
 
 QRectF
 NodeGeometry::
 entryBoundingRect() const
 {
-  double addon = 0;
+  double const addon = 0.0;
 
   return QRectF(0 - addon,
                 0 - addon,
@@ -48,15 +54,46 @@ void
 NodeGeometry::
 recalculateSize()
 {
-  _height = 0;
+  _entryHeight = _fontMetrics.height();
 
-  unsigned int maxNumOfEntries = qMax(_nSinks, _nSources);
+  {
+    unsigned int maxNumOfEntries = std::max(_nSinks, _nSources);
+    unsigned int step = _entryHeight + _spacing;
+    _height = step * maxNumOfEntries;
+  }
 
-  unsigned int step = _entryHeight + _spacing;
+  auto slotWidth =
+    [this](EndType endType, unsigned &width)
+    {
+      width = 0;
+      for (auto i = 0ul; i < _dataModel->nSlots(endType); ++i)
+      {
+        auto const &name = _dataModel->data(EndType::SINK, i)->name();
+        std::cout << "Name: " << name.toLocal8Bit().data() << std::endl;
+        width = std::max(unsigned(_fontMetrics.width(name)),
+                         width);
+      }
+    };
 
-  _height += step * maxNumOfEntries;
+  slotWidth(EndType::SINK, _inputSlotWidth);
+  slotWidth(EndType::SOURCE, _outputSlotWidth);
 
-  _width = 2 * _entryWidth + _spacing;
+  _width = _inputSlotWidth +
+           _outputSlotWidth +
+           2 * _spacing;
+}
+
+
+void
+NodeGeometry::
+recalculateSize(QFontMetrics const & fontMetrics)
+{
+  if (_fontMetrics != fontMetrics)
+  {
+    _fontMetrics = fontMetrics;
+
+    recalculateSize();
+  }
 }
 
 
@@ -114,7 +151,7 @@ PortNumber
 NodeGeometry::
 checkHitScenePoint(EndType endType,
                    QPointF const scenePoint,
-                   NodeState const& nodeState,
+                   NodeState const & nodeState,
                    QTransform sceneTransform) const
 {
   PortNumber result = PortNumber::INVALID;
@@ -129,7 +166,7 @@ checkHitScenePoint(EndType endType,
   for (size_t i = 0; i < nItems; ++i)
   {
     QPointF p = connectionPointScenePosition(i, endType, sceneTransform) - scenePoint;
-    auto distance = std::sqrt(QPointF::dotProduct(p, p));
+    auto    distance = std::sqrt(QPointF::dotProduct(p, p));
 
     if (distance < tolerance)
     {

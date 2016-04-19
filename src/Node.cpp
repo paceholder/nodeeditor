@@ -21,13 +21,11 @@ struct Node::NodeImpl
     : _id(QUuid::createUuid())
     , _nodeDataModel(std::move(dataModel))
     , _nodeState(_nodeDataModel)
+      , _nodeGeometry(_nodeDataModel)
     , _nodeGraphicsObject(new NodeGraphicsObject(node,
                                                  _nodeState,
                                                  _nodeGeometry))
   {
-    _nodeGeometry.setNSources(_nodeState.getEntries(EndType::SOURCE).size());
-    _nodeGeometry.setNSinks(_nodeState.getEntries(EndType::SINK).size());
-
     _nodeGeometry.recalculateSize();
   }
 
@@ -208,7 +206,7 @@ nodeGeometry()
 }
 
 
-NodeGeometry const&
+NodeGeometry&
 Node::
 nodeGeometry() const
 {

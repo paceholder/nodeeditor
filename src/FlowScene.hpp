@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "Connection.hpp"
-#include "DataModelRegistry.hpp"
 
 namespace std
 {
@@ -25,6 +24,7 @@ struct hash<QUuid>
 };
 }
 
+class NodeDataModel;
 class FlowItemInterface;
 class Node;
 

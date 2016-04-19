@@ -50,7 +50,7 @@ public:
   std::unique_ptr<NodeGraphicsObject> & nodeGraphicsObject();
 
   NodeGeometry& nodeGeometry();
-  NodeGeometry const& nodeGeometry() const;
+  NodeGeometry& nodeGeometry() const;
 
   NodeState const & nodeState() const;
 

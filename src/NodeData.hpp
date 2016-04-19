@@ -8,7 +8,10 @@
 class NodeData
 {
 public:
-  virtual bool sameType(NodeData const &nodeDataType) const = 0;
+  virtual bool sameType(NodeData const &nodeData) const
+  {
+    return (this->type() == nodeData.type());
+  }
 
   /// Type for inner use
   virtual QString type() const = 0;

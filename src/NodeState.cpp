@@ -3,17 +3,9 @@
 #include "NodeDataModel.hpp"
 
 NodeState::
-NodeState(unsigned int nSources,
-          unsigned int nSinks)
-  : _sources(nSources, QUuid())
-  , _sinks(nSinks, QUuid())
-  , _reaction(NOT_REACTING)
-{}
-
-NodeState::
 NodeState(std::unique_ptr<NodeDataModel> const &model)
   : _sources(model->nSlots(EndType::SOURCE), QUuid())
-  , _sinks(model->nSlots(EndType::SOURCE), QUuid())
+  , _sinks(model->nSlots(EndType::SINK), QUuid())
   , _reaction(NOT_REACTING)
 {}
 

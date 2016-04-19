@@ -1,18 +1,22 @@
 #pragma once
 
+#include <memory>
+
 #include <QtCore/QRectF>
 #include <QtCore/QPointF>
 #include <QtGui/QTransform>
+#include <QtGui/QFontMetrics>
 
 #include "EndType.hpp"
 
 class NodeState;
+class NodeDataModel;
 
 class NodeGeometry
 {
 public:
 
-  NodeGeometry();
+  NodeGeometry(std::unique_ptr<NodeDataModel> const &dataModel);
 
 public:
   unsigned int height() const { return _height; }
@@ -39,12 +43,12 @@ public:
   void setHovered(unsigned int h) { _hovered = h; }
 
   unsigned int nSources() const { return _nSources; }
-  void setNSources(unsigned int nSources)
-  { _nSources = nSources; }
+  //void setNSources(unsigned int nSources)
+  //{ _nSources = nSources; }
 
   unsigned int nSinks() const { return _nSinks; }
-  void setNSinks(unsigned int nSinks)
-  { _nSinks = nSinks; }
+  //void setNSinks(unsigned int nSinks)
+  //{ _nSinks = nSinks; }
 
   QPointF const& draggingPos() const
   { return _draggingPos; }
@@ -58,7 +62,11 @@ public:
 
   QRectF boundingRect() const;
 
+  /// Updates size unconditionally
   void recalculateSize();
+
+  /// Updates size if the QFontMetrics is changed
+  void recalculateSize(QFontMetrics const &fontMetrics);
 
   QPointF connectionPointScenePosition(int index,
                                        EndType endType,
@@ -73,6 +81,8 @@ private:
   unsigned int _width;
   unsigned int _height;
   unsigned int _entryWidth;
+  unsigned int _inputSlotWidth;
+  unsigned int _outputSlotWidth;
   unsigned int _entryHeight;
   unsigned int _spacing;
 
@@ -86,4 +96,8 @@ private:
   QPointF _draggingPos;
 
   double _opacity;
+
+  std::unique_ptr<NodeDataModel> const &_dataModel;
+
+  QFontMetrics _fontMetrics;
 };
