@@ -16,6 +16,10 @@ Each change in the source node is immediately propagated through all the connect
 Currently library implements the simplest GUI interaction between nodes. It is possible to define a dummy model,
 register it and create nodes in the scene. No data transfer is yet possible.
 
+### Dependencies
+
+The project uses Qt 5.5 and CMake 2.8.
+
 ### Roadmap
 
 1. Implement data transfer
