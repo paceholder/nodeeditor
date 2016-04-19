@@ -23,3 +23,6 @@ register it and create nodes in the scene. No data transfer is yet possible.
 3. Allow custom widget embedding
 
 ![Flow](https://bitbucket.org/paceholder/nodeeditor/raw/master/pictures/flow.png)
+
+Youtube video:
+[![Youtube demonstration](https://img.youtube.com/vi/PmJ1InmPMdE/0.jpg)](https://www.youtube.com/watch?v=PmJ1InmPMdE)
