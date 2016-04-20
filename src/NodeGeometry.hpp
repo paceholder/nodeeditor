@@ -7,7 +7,7 @@
 #include <QtGui/QTransform>
 #include <QtGui/QFontMetrics>
 
-#include "EndType.hpp"
+#include "PortType.hpp"
 
 class NodeState;
 class NodeDataModel;
@@ -69,13 +69,13 @@ public:
   void recalculateSize(QFontMetrics const &fontMetrics);
 
   QPointF connectionPointScenePosition(int index,
-                                       EndType endType,
+                                       PortType portType,
                                        QTransform t = QTransform()) const;
 
-  PortNumber checkHitScenePoint(EndType endType,
-                                QPointF const point,
-                                NodeState const& nodeState,
-                                QTransform t = QTransform()) const;
+  PortIndex checkHitScenePoint(PortType portType,
+                               QPointF const point,
+                               NodeState const& nodeState,
+                               QTransform t = QTransform()) const;
 
 private:
   unsigned int _width;

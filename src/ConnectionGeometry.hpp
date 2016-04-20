@@ -1,6 +1,6 @@
 #pragma once
 
-#include "EndType.hpp"
+#include "PortType.hpp"
 
 #include <QtCore/QPointF>
 #include <QtCore/QRectF>
@@ -15,19 +15,19 @@ public:
 
 public:
 
-  QPointF const& getEndPoint(EndType endType) const;
+  QPointF const& getEndPoint(PortType portType) const;
 
-  void setEndPoint(EndType endType, QPointF const& point);
+  void setEndPoint(PortType portType, QPointF const& point);
 
-  void moveEndPoint(EndType endType, QPointF const &offset);
+  void moveEndPoint(PortType portType, QPointF const &offset);
 
   QRectF boundingRect() const;
 
   std::pair<QPointF, QPointF>
   pointsC1C2() const;
 
-  QPointF source() const { return _source; }
-  QPointF sink() const { return _sink; }
+  QPointF source() const { return _out; }
+  QPointF sink() const { return _in; }
 
   double pointDiameter() const { return _pointDiameter; }
 
@@ -38,8 +38,8 @@ public:
 
 private:
   // local object coordinates
-  QPointF _source;
-  QPointF _sink;
+  QPointF _in;
+  QPointF _out;
 
   double _pointDiameter;
 

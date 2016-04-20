@@ -43,17 +43,17 @@ public:
 
 public:
 
-  unsigned int nSlots(EndType endType) const override
+  unsigned int nSlots(PortType portType) const override
   {
     unsigned int result = 1;
 
-    switch (endType)
+    switch (portType)
     {
-      case EndType::SINK:
+      case PortType::IN:
         result = 2;
         break;
 
-      case EndType::SOURCE:
+      case PortType::OUT:
         result = 1;
 
       default:
@@ -64,7 +64,7 @@ public:
   }
 
   std::shared_ptr<NodeData>
-  data(EndType, int slot) override
+  data(PortType, int slot) override
   {
     if (slot < 1)
       return std::make_shared<MyNodeData>();

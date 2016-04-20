@@ -83,18 +83,18 @@ drawConnectionPoints(QPainter* painter,
   auto reducedDiameter = diameter * 0.6;
 
   auto drawPoints =
-    [&](EndType end)
+    [&](PortType portType)
     {
-      size_t n = state.getEntries(end).size();
+      size_t n = state.getEntries(portType).size();
 
       for (size_t i = 0; i < n; ++i)
       {
 
-        QPointF p = geom.connectionPointScenePosition(i, end);
+        QPointF p = geom.connectionPointScenePosition(i, portType);
 
         double r = 1.0;
         if (state.isReacting() &&
-            state.getEntries(end)[i].isNull())
+            state.getEntries(portType)[i].isNull())
         {
           auto   diff = geom.draggingPos() - p;
           double dist = std::sqrt(QPointF::dotProduct(diff, diff));
@@ -112,8 +112,8 @@ drawConnectionPoints(QPainter* painter,
       }
     };
 
-  drawPoints(EndType::SOURCE);
-  drawPoints(EndType::SINK);
+  drawPoints(PortType::OUT);
+  drawPoints(PortType::IN);
 }
 
 
@@ -129,15 +129,15 @@ drawFilledConnectionPoints(QPainter* painter,
   auto diameter = geom.connectionPointDiameter();
 
   auto drawPoints =
-    [&](EndType end)
+    [&](PortType portType)
     {
-      size_t n = state.getEntries(end).size();
+      size_t n = state.getEntries(portType).size();
 
       for (size_t i = 0; i < n; ++i)
       {
-        QPointF p = geom.connectionPointScenePosition(i, end);
+        QPointF p = geom.connectionPointScenePosition(i, portType);
 
-        if (!state.connectionID(end, i).isNull())
+        if (!state.connectionID(portType, i).isNull())
         {
           painter->drawEllipse(p,
                                diameter * 0.4,
@@ -146,8 +146,8 @@ drawFilledConnectionPoints(QPainter* painter,
       }
     };
 
-  drawPoints(EndType::SOURCE);
-  drawPoints(EndType::SINK);
+  drawPoints(PortType::OUT);
+  drawPoints(PortType::IN);
 }
 
 
@@ -162,29 +162,29 @@ drawEntryLabels(QPainter* painter,
     painter->fontMetrics();
 
   auto drawPoints =
-    [&](EndType end)
+    [&](PortType portType)
     {
-      auto& entries = state.getEntries(end);
+      auto& entries = state.getEntries(portType);
 
       size_t n = entries.size();
 
       for (size_t i = 0; i < n; ++i)
       {
 
-        QPointF p = geom.connectionPointScenePosition(i, end);
+        QPointF p = geom.connectionPointScenePosition(i, portType);
 
         if (entries[i].isNull())
           painter->setPen(Qt::darkGray);
         else
           painter->setPen(QColor(Qt::lightGray).lighter());
 
-        QString s = model->data(end, i)->name();
+        QString s = model->data(portType, i)->name();
 
         auto rect = metrics.boundingRect(s);
 
         p.setY(p.y() + rect.height() / 4.0);
 
-        if (end == EndType::SINK)
+        if (portType == PortType::IN)
           p.setX(5.0);
         else
           p.setX(geom.width() - 5.0 - rect.width());
@@ -193,6 +193,6 @@ drawEntryLabels(QPainter* painter,
       }
     };
 
-  drawPoints(EndType::SOURCE);
-  drawPoints(EndType::SINK);
+  drawPoints(PortType::OUT);
+  drawPoints(PortType::IN);
 }

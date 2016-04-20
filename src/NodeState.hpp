@@ -5,7 +5,7 @@
 
 #include <QtCore/QUuid>
 
-#include "EndType.hpp"
+#include "PortType.hpp"
 
 class NodeDataModel;
 
@@ -28,14 +28,14 @@ public:
 
   /// Returns vector of connections ID.
   /// Some of them can be empty (null)
-  std::vector<QUuid> const& getEntries(EndType endType) const;
+  std::vector<QUuid> const& getEntries(PortType portType) const;
 
   /// Returns connection id for given endtype and
   /// given connection number
-  QUuid const connectionID(EndType endType, size_t nEntry) const;
+  QUuid const connectionID(PortType portType, size_t nEntry) const;
 
   /// Assign connection id to the given entry
-  void setConnectionId(EndType endType, size_t nEntry, QUuid id);
+  void setConnectionId(PortType portType, size_t nEntry, QUuid id);
 
   ReactToConnectionState reaction() const;
 

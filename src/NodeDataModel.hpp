@@ -5,7 +5,7 @@
 #include <QtCore/QObject>
 #include <QtWidgets/QWidget>
 
-#include "EndType.hpp"
+#include "PortType.hpp"
 
 #include "NodeData.hpp"
 
@@ -18,11 +18,11 @@ public:
 
 public:
 
-  virtual unsigned int nSlots(EndType end) const = 0;
+  virtual unsigned int nSlots(PortType portType) const = 0;
 
   virtual
   std::shared_ptr<NodeData>
-  data(EndType end, int slot) = 0;
+  data(PortType portType, int slot) = 0;
 
   /// Triggers the algorithm
   virtual void setInputData(std::shared_ptr<NodeData> nodeData, int slot) = 0;

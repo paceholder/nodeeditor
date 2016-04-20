@@ -97,9 +97,9 @@ NodeGraphicsObject::
 mousePressEvent(QGraphicsSceneMouseEvent * event)
 {
   auto clickEnd =
-    [&](EndType endToCheck)
+    [&](PortType portToCheck)
     {
-      int portNumber = _nodeGeometry.checkHitScenePoint(endToCheck,
+      int portNumber = _nodeGeometry.checkHitScenePoint(portToCheck,
                                                         event->scenePos(),
                                                         _nodeState,
                                                         sceneTransform());
@@ -108,7 +108,7 @@ mousePressEvent(QGraphicsSceneMouseEvent * event)
 
       if (portNumber != INVALID)
       {
-        QUuid const connectionId = _nodeState.connectionID(endToCheck, portNumber);
+        QUuid const connectionId = _nodeState.connectionID(portToCheck, portNumber);
 
         /// initialize new Connection
         if (connectionId.isNull())
@@ -116,30 +116,30 @@ mousePressEvent(QGraphicsSceneMouseEvent * event)
           // todo add to FlowScene
           auto connection = flowScene.createConnection();
 
-          connection->connectionState().setDraggingEnd(endToCheck);
+          connection->connectionState().setRequiredPort(portToCheck);
 
           _node.connect(connection.get(), portNumber);
 
           auto address = std::make_pair(_node.id(), portNumber);
 
-          connection->setDraggingEnd(endToCheck);
+          connection->setRequiredPort(portToCheck);
           connection->connectToNode(address);
 
-          connection->setDraggingEnd(oppositeEnd(endToCheck));
+          connection->setRequiredPort(oppositePort(portToCheck));
         }
         else
         {
           auto connection = flowScene.getConnection(connectionId);
 
-          _node.disconnect(connection.get(), endToCheck, portNumber);
+          _node.disconnect(connection.get(), portToCheck, portNumber);
 
-          connection->setDraggingEnd(endToCheck);
+          connection->setRequiredPort(portToCheck);
         }
       }
     };
 
-  clickEnd(EndType::SINK);
-  clickEnd(EndType::SOURCE);
+  clickEnd(PortType::IN);
+  clickEnd(PortType::OUT);
 
   event->accept();
 }

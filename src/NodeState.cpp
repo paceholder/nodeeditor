@@ -4,19 +4,19 @@
 
 NodeState::
 NodeState(std::unique_ptr<NodeDataModel> const &model)
-  : _sources(model->nSlots(EndType::SOURCE), QUuid())
-  , _sinks(model->nSlots(EndType::SINK), QUuid())
+  : _sources(model->nSlots(PortType::OUT), QUuid())
+  , _sinks(model->nSlots(PortType::IN), QUuid())
   , _reaction(NOT_REACTING)
 {}
 
 
 std::vector<QUuid> const&
 NodeState::
-getEntries(EndType endType) const
+getEntries(PortType portType) const
 {
-  Q_ASSERT(endType != EndType::NONE);
+  Q_ASSERT(portType != PortType::NONE);
 
-  if (endType == EndType::SOURCE)
+  if (portType == PortType::OUT)
     return _sources;
   else
     return _sinks;
@@ -25,10 +25,10 @@ getEntries(EndType endType) const
 
 QUuid const
 NodeState::
-connectionID(EndType endType, size_t nEntry) const
+connectionID(PortType portType, size_t nEntry) const
 {
   std::vector<QUuid> const& entries =
-    getEntries(endType);
+    getEntries(portType);
 
   if (nEntry >= entries.size())
     return QUuid();
@@ -39,10 +39,10 @@ connectionID(EndType endType, size_t nEntry) const
 
 void
 NodeState::
-setConnectionId(EndType endType, size_t nEntry, QUuid id)
+setConnectionId(PortType portType, size_t nEntry, QUuid id)
 {
   std::vector<QUuid> const& entries =
-    const_cast<NodeState const&>(*this).getEntries(endType);
+    const_cast<NodeState const&>(*this).getEntries(portType);
 
   const_cast<std::vector<QUuid>&>(entries)[nEntry] = id;
 }

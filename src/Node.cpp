@@ -82,7 +82,7 @@ id() const
 
 void
 Node::
-reactToPossibleConnection(EndType,
+reactToPossibleConnection(PortType,
                           QPointF const &scenePoint)
 {
   QTransform const t = _impl->_nodeGraphicsObject->sceneTransform();
@@ -114,13 +114,13 @@ canConnect(ConnectionState const& conState,
   auto &g = _impl->_nodeGraphicsObject;
 
   int hit =
-    _impl->_nodeGeometry.checkHitScenePoint(conState.draggingEnd(),
+    _impl->_nodeGeometry.checkHitScenePoint(conState.requiredPort(),
                                             scenePoint,
                                             _impl->_nodeState,
                                             g->sceneTransform());
 
   return ((hit != INVALID) &&
-          _impl->_nodeState.connectionID(conState.draggingEnd(), hit).isNull());
+          _impl->_nodeState.connectionID(conState.requiredPort(), hit).isNull());
 }
 
 
@@ -131,7 +131,7 @@ connect(Connection const* connection, int hit)
   ConnectionState const& conState =
     connection->connectionState();
 
-  _impl->_nodeState.setConnectionId(conState.draggingEnd(),
+  _impl->_nodeState.setConnectionId(conState.requiredPort(),
                                     hit,
                                     connection->id());
 
@@ -156,7 +156,7 @@ connect(Connection const* connection,
 
   auto &g  = _impl->_nodeGraphicsObject;
   int  hit =
-    _impl->_nodeGeometry.checkHitScenePoint(conState.draggingEnd(),
+    _impl->_nodeGeometry.checkHitScenePoint(conState.requiredPort(),
                                             scenePoint,
                                             _impl->_nodeState,
                                             g->sceneTransform());
@@ -168,7 +168,7 @@ connect(Connection const* connection,
 void
 Node::
 disconnect(Connection const* connection,
-           EndType endType,
+           PortType endType,
            int hit)
 {
   QObject::disconnect(_impl->_nodeGraphicsObject.get(),

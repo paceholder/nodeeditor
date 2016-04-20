@@ -5,7 +5,7 @@
 #include <QtCore/QObject>
 #include <QtCore/QUuid>
 
-#include "EndType.hpp"
+#include "PortType.hpp"
 
 class Node;
 class ConnectionGraphicsObject;
@@ -28,12 +28,12 @@ public:
   /// Remembers the end being dragged.
   /// Invalidates Node address.
   /// Grabs mouse.
-  void setDraggingEnd(EndType dragging);
-  EndType draggingEnd() const;
+  void setRequiredPort(PortType portType);
+  PortType requiredPort() const;
 
-  /// Returns address of Node for givend endType (NodeId, EndN)
-  std::pair<QUuid, int> getAddress(EndType endType) const;
-  void setAddress(EndType endType, std::pair<QUuid, int> address);
+  /// Returns address of Node for givend portType (NodeId, EndN)
+  std::pair<QUuid, int> getAddress(PortType portType) const;
+  void setAddress(PortType portType, PortAddress address);
 
 public:
 
@@ -41,7 +41,7 @@ public:
   bool tryConnectToNode(std::shared_ptr<Node> node, QPointF const& scenePoint);
 
   /// When Node initiates interaction
-  void connectToNode(std::pair<QUuid, int> const &address);
+  void connectToNode(PortAddress const &address);
 
 public:
 

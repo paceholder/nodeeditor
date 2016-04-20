@@ -106,7 +106,7 @@ paint(QPainter* painter,
     p.setWidth(lineWidth);
     p.setColor(QColor(Qt::cyan).darker(150));
 
-    if (state.isDragging())
+    if (state.requiresPort())
     {
       p.setWidth(2.0);
       p.setColor(QColor(Qt::gray));

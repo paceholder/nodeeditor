@@ -4,7 +4,7 @@
 
 #include <QtGui/QPainter>
 
-#include "EndType.hpp"
+#include "PortType.hpp"
 
 class NodeGeometry;
 class NodeState;

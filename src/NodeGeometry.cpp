@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include "EndType.hpp"
+#include "PortType.hpp"
 #include "NodeState.hpp"
 #include "NodeDataModel.hpp"
 
@@ -16,8 +16,8 @@ NodeGeometry(std::unique_ptr<NodeDataModel> const &dataModel)
   , _spacing(20)
   , _connectionPointDiameter(8)
   , _hovered(false)
-  , _nSources(dataModel->nSlots(EndType::SOURCE))
-  , _nSinks(dataModel->nSlots(EndType::SINK))
+  , _nSources(dataModel->nSlots(PortType::OUT))
+  , _nSinks(dataModel->nSlots(PortType::IN))
   , _draggingPos(-1000, -1000)
   , _opacity(0.80)
   , _dataModel(dataModel)
@@ -63,20 +63,20 @@ recalculateSize()
   }
 
   auto slotWidth =
-    [this](EndType endType, unsigned &width)
+    [this](PortType portType, unsigned &width)
     {
       width = 0;
-      for (auto i = 0ul; i < _dataModel->nSlots(endType); ++i)
+      for (auto i = 0ul; i < _dataModel->nSlots(portType); ++i)
       {
-        auto const &name = _dataModel->data(EndType::SINK, i)->name();
+        auto const &name = _dataModel->data(PortType::IN, i)->name();
         std::cout << "Name: " << name.toLocal8Bit().data() << std::endl;
         width = std::max(unsigned(_fontMetrics.width(name)),
                          width);
       }
     };
 
-  slotWidth(EndType::SINK, _inputSlotWidth);
-  slotWidth(EndType::SOURCE, _outputSlotWidth);
+  slotWidth(PortType::IN, _inputSlotWidth);
+  slotWidth(PortType::OUT, _outputSlotWidth);
 
   _width = _inputSlotWidth +
            _outputSlotWidth +
@@ -100,16 +100,16 @@ recalculateSize(QFontMetrics const & fontMetrics)
 QPointF
 NodeGeometry::
 connectionPointScenePosition(int index,
-                             EndType endType,
+                             PortType portType,
                              QTransform t) const
 {
   unsigned int step = _entryHeight + _spacing;
 
   QPointF result;
 
-  switch (endType)
+  switch (portType)
   {
-    case EndType::SOURCE:
+    case PortType::OUT:
     {
       double totalHeight = 0.0;
 
@@ -124,7 +124,7 @@ connectionPointScenePosition(int index,
       break;
     }
 
-    case EndType::SINK:
+    case PortType::IN:
     {
       double totalHeight = 0;
 
@@ -147,30 +147,30 @@ connectionPointScenePosition(int index,
 }
 
 
-PortNumber
+PortIndex
 NodeGeometry::
-checkHitScenePoint(EndType endType,
+checkHitScenePoint(PortType portType,
                    QPointF const scenePoint,
                    NodeState const & nodeState,
                    QTransform sceneTransform) const
 {
-  PortNumber result = PortNumber::INVALID;
+  PortIndex result = INVALID;
 
-  if (endType == EndType::NONE)
+  if (portType == PortType::NONE)
     return result;
 
   double const tolerance = 2.0 * _connectionPointDiameter;
 
-  size_t const nItems = nodeState.getEntries(endType).size();
+  size_t const nItems = nodeState.getEntries(portType).size();
 
   for (size_t i = 0; i < nItems; ++i)
   {
-    QPointF p = connectionPointScenePosition(i, endType, sceneTransform) - scenePoint;
+    QPointF p = connectionPointScenePosition(i, portType, sceneTransform) - scenePoint;
     auto    distance = std::sqrt(QPointF::dotProduct(p, p));
 
     if (distance < tolerance)
     {
-      result = PortNumber(i);
+      result = PortIndex(i);
       break;
     }
   }

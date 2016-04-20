@@ -5,7 +5,7 @@
 #include <QtCore/QObject>
 #include <QtCore/QUuid>
 
-#include "EndType.hpp"
+#include "PortType.hpp"
 
 class Connection;
 class ConnectionState;
@@ -20,6 +20,7 @@ class Node : public QObject
 
 public:
 
+  /// NodeDataModel should be an rvalue and is moved into the Node
   Node(std::unique_ptr<NodeDataModel> &&dataModel);
 
   ~Node();
@@ -28,7 +29,7 @@ public:
 
   QUuid id() const;
 
-  void reactToPossibleConnection(EndType,
+  void reactToPossibleConnection(PortType,
                                  QPointF const & scenePoint);
 
   void resetReactionToConnection();
@@ -42,7 +43,7 @@ public:
   std::pair<QUuid, int>
   connect(Connection const* connection, QPointF const& scenePoint);
 
-  void disconnect(Connection const* connection, EndType endType, int hit);
+  void disconnect(Connection const* connection, PortType endType, int hit);
 
 public:
 

@@ -46,20 +46,20 @@ onItemMoved(QUuid id, QPointF const &offset)
   prepareGeometryChange();
 
   auto moveEndPoint =
-    [&](EndType end)
+    [&](PortType port)
     {
-      auto address = _connection.getAddress(end);
+      auto address = _connection.getAddress(port);
 
       if (address.first == id)
       {
-        auto& p = _connection.connectionGeometry().getEndPoint(end);
+        auto& p = _connection.connectionGeometry().getEndPoint(port);
 
-        _connection.connectionGeometry().setEndPoint(end, p + offset);
+        _connection.connectionGeometry().setEndPoint(port, p + offset);
       }
     };
 
-  moveEndPoint(EndType::SINK);
-  moveEndPoint(EndType::SOURCE);
+  moveEndPoint(PortType::IN);
+  moveEndPoint(PortType::OUT);
 
   update();
 }
@@ -118,7 +118,7 @@ mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 
   if (node)
   {
-    node->reactToPossibleConnection(_connection.draggingEnd(),
+    node->reactToPossibleConnection(_connection.requiredPort(),
                                     event->scenePos());
 
     auto &state = _connection.connectionState();
@@ -133,12 +133,12 @@ mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 
   //-------------------
 
-  QPointF offset      = event->pos() - event->lastPos();
-  auto    draggingEnd = _connection.draggingEnd();
+  QPointF offset       = event->pos() - event->lastPos();
+  auto    requiredPort = _connection.requiredPort();
 
-  if (draggingEnd != EndType::NONE)
+  if (requiredPort != PortType::NONE)
   {
-    _connection.connectionGeometry().moveEndPoint(draggingEnd,
+    _connection.connectionGeometry().moveEndPoint(requiredPort,
                                                   offset);
   }
 

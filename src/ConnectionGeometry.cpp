@@ -2,8 +2,8 @@
 
 ConnectionGeometry::
 ConnectionGeometry()
-  : _source(10, 10)
-  , _sink(100, 100)
+  : _out(10, 10)
+  , _in(100, 100)
   , _pointDiameter(10)
   //, _animationPhase(0)
   , _lineWidth(3.0)
@@ -12,28 +12,28 @@ ConnectionGeometry()
 
 QPointF const&
 ConnectionGeometry::
-getEndPoint(EndType endType) const
+getEndPoint(PortType portType) const
 {
-  Q_ASSERT(endType != EndType::NONE);
+  Q_ASSERT(portType != PortType::NONE);
 
-  return (endType == EndType::SOURCE ?
-          _source :
-          _sink);
+  return (portType == PortType::OUT ?
+          _out :
+          _in);
 }
 
 
 void
 ConnectionGeometry::
-setEndPoint(EndType endType, QPointF const& point)
+setEndPoint(PortType portType, QPointF const& point)
 {
-  switch (endType)
+  switch (portType)
   {
-    case EndType::SOURCE:
-      _source = point;
+    case PortType::OUT:
+      _out = point;
       break;
 
-    case EndType::SINK:
-      _sink = point;
+    case PortType::IN:
+      _in = point;
       break;
 
     default:
@@ -44,16 +44,16 @@ setEndPoint(EndType endType, QPointF const& point)
 
 void
 ConnectionGeometry::
-moveEndPoint(EndType endType, QPointF const &offset)
+moveEndPoint(PortType portType, QPointF const &offset)
 {
-  switch (endType)
+  switch (portType)
   {
-    case EndType::SOURCE:
-      _source += offset;
+    case PortType::OUT:
+      _out += offset;
       break;
 
-    case EndType::SINK:
-      _sink += offset;
+    case PortType::IN:
+      _in += offset;
       break;
 
     default:
@@ -68,7 +68,7 @@ boundingRect() const
 {
   auto points = pointsC1C2();
 
-  QRectF basicRect(_source, _sink);
+  QRectF basicRect(_out, _in);
 
   QRectF c1c2Rect(points.first, points.second);
 
@@ -85,8 +85,8 @@ std::pair<QPointF, QPointF>
 ConnectionGeometry::
 pointsC1C2() const
 {
-  double xDistance = _sink.x() - _source.x();
-  //double yDistance = _sink.y() - _source.y() - 100;
+  double xDistance = _in.x() - _out.x();
+  //double yDistance = _in.y() - _out.y() - 100;
 
   double defaultOffset = 200;
 
@@ -109,11 +109,11 @@ pointsC1C2() const
   //auto sign = [](double d) { return d > 0.0 ? +1.0 : -1.0; };
   //verticalOffset2 = 0.0;
 
-  QPointF c1(_source.x() + minimum * ratio1,
-             _source.y() + verticalOffset);
+  QPointF c1(_out.x() + minimum * ratio1,
+             _out.y() + verticalOffset);
 
-  QPointF c2(_sink.x() - minimum * ratio1,
-             _sink.y() + verticalOffset);
+  QPointF c2(_in.x() - minimum * ratio1,
+             _in.y() + verticalOffset);
 
   return std::make_pair(c1, c2);
 }

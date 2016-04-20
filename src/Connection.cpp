@@ -16,15 +16,6 @@
 #include "ConnectionGeometry.hpp"
 #include "ConnectionGraphicsObject.hpp"
 
-namespace std {
-
-template<typename T, typename ... Args>
-std::unique_ptr<T> make_unique(Args&& ... args)
-{
-  return std::unique_ptr<T>(new T(std::forward<Args>(args) ...));
-}
-}
-
 struct
 Connection::ConnectionImpl
 {
@@ -75,9 +66,9 @@ Connection::
   auto &scene = FlowScene::instance();
 
   auto tryDisconnectNode =
-    [&](EndType endType)
+    [&](PortType portType)
     {
-      auto address = getAddress(endType);
+      auto address = getAddress(portType);
 
       if (!address.first.isNull())
       {
@@ -85,12 +76,12 @@ Connection::
 
 
         if (node)
-          node->disconnect(this, endType, address.second);
+          node->disconnect(this, portType, address.second);
       }
     };
 
-  tryDisconnectNode(EndType::SINK);
-  tryDisconnectNode(EndType::SOURCE);
+  tryDisconnectNode(PortType::IN);
+  tryDisconnectNode(PortType::OUT);
 }
 
 
@@ -104,19 +95,19 @@ id() const
 
 void
 Connection::
-setDraggingEnd(EndType dragging)
+setRequiredPort(PortType dragging)
 {
-  _impl->_connectionState.setDraggingEnd(dragging);
+  _impl->_connectionState.setRequiredPort(dragging);
 
   _impl->_connectionGraphicsObject->grabMouse();
 
   switch (dragging)
   {
-    case EndType::SOURCE:
+    case PortType::OUT:
       _impl->_sourceAddress = std::make_pair(QUuid(), -1);
       break;
 
-    case EndType::SINK:
+    case PortType::IN:
       _impl->_sinkAddress = std::make_pair(QUuid(), -1);
       break;
 
@@ -126,25 +117,25 @@ setDraggingEnd(EndType dragging)
 }
 
 
-EndType
+PortType
 Connection::
-draggingEnd() const
+requiredPort() const
 {
-  return _impl->_connectionState.draggingEnd();
+  return _impl->_connectionState.requiredPort();
 }
 
 
 std::pair<QUuid, int>
 Connection::
-getAddress(EndType endType) const
+getAddress(PortType portType) const
 {
-  switch (endType)
+  switch (portType)
   {
-    case EndType::SOURCE:
+    case PortType::OUT:
       return _impl->_sourceAddress;
       break;
 
-    case EndType::SINK:
+    case PortType::IN:
       return _impl->_sinkAddress;
       break;
 
@@ -157,15 +148,15 @@ getAddress(EndType endType) const
 
 void
 Connection::
-setAddress(EndType endType, std::pair<QUuid, int> address)
+setAddress(PortType portType, std::pair<QUuid, int> address)
 {
-  switch (endType)
+  switch (portType)
   {
-    case EndType::SOURCE:
+    case PortType::OUT:
       _impl->_sourceAddress = address;
       break;
 
-    case EndType::SINK:
+    case PortType::IN:
       _impl->_sinkAddress = address;
       break;
 
@@ -189,12 +180,12 @@ tryConnectToNode(std::shared_ptr<Node> node, QPointF const& scenePoint)
     if (!address.first.isNull())
     {
       //auto p = node->connectionPointScenePosition(address,
-      //_impl->_draggingEnd);
+      //_impl->_requiredPort);
 
       connectToNode(address);
 
       //------
-      _impl->_connectionState.clearDragging();
+      _impl->_connectionState.setNoRequiredPort();
     }
   }
 
@@ -206,7 +197,7 @@ void
 Connection::
 connectToNode(std::pair<QUuid, int> const &address)
 {
-  setAddress(_impl->_connectionState.draggingEnd(), address);
+  setAddress(_impl->_connectionState.requiredPort(), address);
 
   std::shared_ptr<Node> const node = FlowScene::instance().getNode(address.first);
 
@@ -215,16 +206,16 @@ connectToNode(std::pair<QUuid, int> const &address)
 
   QPointF const scenePoint =
     nodeGeometry.connectionPointScenePosition(address.second,
-                                              _impl->_connectionState.draggingEnd(),
+                                              _impl->_connectionState.requiredPort(),
                                               o->sceneTransform());
 
   auto p = _impl->_connectionGraphicsObject->mapFromScene(scenePoint);
 
-  _impl->_connectionGeometry.setEndPoint(_impl->_connectionState.draggingEnd(), p);
+  _impl->_connectionGeometry.setEndPoint(_impl->_connectionState.requiredPort(), p);
 
-  if (getAddress(oppositeEnd(_impl->_connectionState.draggingEnd())).first.isNull())
+  if (getAddress(oppositePort(_impl->_connectionState.requiredPort())).first.isNull())
   {
-    _impl->_connectionGeometry.setEndPoint(oppositeEnd(_impl->_connectionState.draggingEnd()), p);
+    _impl->_connectionGeometry.setEndPoint(oppositePort(_impl->_connectionState.requiredPort()), p);
   }
 
   _impl->_connectionGraphicsObject->update();

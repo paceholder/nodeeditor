@@ -2,7 +2,7 @@
 
 #include <QtCore/QUuid>
 
-#include "EndType.hpp"
+#include "PortType.hpp"
 
 
 /// Stores currently draggind end.
@@ -11,23 +11,23 @@ class ConnectionState
 {
 public:
 
-  ConnectionState(EndType end = EndType::NONE)
-    : _draggingEnd(end)
+  ConnectionState(PortType port = PortType::NONE)
+    : _requiredPort(port)
   {}
 
   ~ConnectionState();
 
-  void setDraggingEnd(EndType end)
-  { _draggingEnd = end; }
+  void setRequiredPort(PortType end)
+  { _requiredPort = end; }
 
-  EndType draggingEnd() const
-  { return _draggingEnd; }
+  PortType requiredPort() const
+  { return _requiredPort; }
 
-  bool isDragging() const
-  { return _draggingEnd != EndType::NONE; }
+  bool requiresPort() const
+  { return _requiredPort != PortType::NONE; }
 
-  void clearDragging()
-  { _draggingEnd = EndType::NONE; }
+  void setNoRequiredPort()
+  { _requiredPort = PortType::NONE; }
 
 public:
 
@@ -40,7 +40,7 @@ public:
 
 private:
 
-  EndType _draggingEnd;
+  PortType _requiredPort;
 
   QUuid _lastHoveredNodeId;
 };
