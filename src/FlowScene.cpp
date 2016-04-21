@@ -110,7 +110,8 @@ FlowScene()
 FlowScene::
 ~FlowScene()
 {
-  //
+  _connections.clear();
+  _nodes.clear();
 }
 
 
