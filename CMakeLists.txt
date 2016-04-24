@@ -49,3 +49,13 @@ add_executable(example1 ${EXAMPLE1_CPPS})
 
 target_link_libraries(example1
                       nodes)
+
+#############################################################
+
+file(GLOB_RECURSE EXAMPLE2_CPPS  ./examples/example2/*.cpp )
+
+
+add_executable(example2 ${EXAMPLE2_CPPS})
+
+target_link_libraries(example2
+                      nodes)
