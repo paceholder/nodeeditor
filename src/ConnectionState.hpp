@@ -1,9 +1,13 @@
 #pragma once
 
+#include <memory>
+
 #include <QtCore/QUuid>
 
 #include "PortType.hpp"
 
+class QPointF;
+class Node;
 
 /// Stores currently draggind end.
 /// Remembers last hovered Node.
@@ -16,6 +20,8 @@ public:
   {}
 
   ~ConnectionState();
+
+public:
 
   void setRequiredPort(PortType end)
   { _requiredPort = end; }
@@ -30,6 +36,8 @@ public:
   { _requiredPort = PortType::NONE; }
 
 public:
+
+  void interactWithNode(std::shared_ptr<Node> node, QPointF const& scenePos);
 
   void setLastHoveredNode(QUuid id);
 

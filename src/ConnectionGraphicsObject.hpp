@@ -25,6 +25,10 @@ public:
 
   QRectF boundingRect() const override;
 
+//signals:
+
+  //void connectionDraggedTo(PortType postType, QPointF const &scenePoint);
+
 public slots:
 
   void onItemMoved(QUuid id, QPointF const &offset);

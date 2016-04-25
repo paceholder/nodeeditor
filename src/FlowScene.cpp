@@ -124,6 +124,7 @@ locateNodeAt(QGraphicsSceneMouseEvent * event)
 
   auto& scene = FlowScene::instance();
 
+
   // items under cursor
   QList<QGraphicsItem*> items =
     scene.items(event->scenePos(),

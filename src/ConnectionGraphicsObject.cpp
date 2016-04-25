@@ -116,24 +116,13 @@ mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 
   auto node = ::locateNodeAt(event);
 
-  if (node)
-  {
-    node->reactToPossibleConnection(_connection.requiredPort(),
-                                    event->scenePos());
-
-    auto &state = _connection.connectionState();
-    state.setLastHoveredNode(node->id());
-  }
-  else
-  {
-    auto &state = _connection.connectionState();
-
-    state.resetLastHoveredNode();
-  }
+  auto &state = _connection.connectionState();
+  state.interactWithNode(node, event->scenePos());
 
   //-------------------
 
   QPointF offset       = event->pos() - event->lastPos();
+
   auto    requiredPort = _connection.requiredPort();
 
   if (requiredPort != PortType::NONE)
