@@ -63,27 +63,32 @@ public:
   QRectF boundingRect() const;
 
   /// Updates size unconditionally
-  void recalculateSize();
+  void recalculateSize() const;
 
   /// Updates size if the QFontMetrics is changed
-  void recalculateSize(QFontMetrics const &fontMetrics);
+  void recalculateSize(QFontMetrics const &fontMetrics) const;
 
-  QPointF connectionPointScenePosition(int index,
-                                       PortType portType,
-                                       QTransform t = QTransform()) const;
+  // TODO removed default QTransform()
+  QPointF portScenePosition(PortIndex index,
+                            PortType portType,
+                            QTransform t = QTransform()) const;
 
   PortIndex checkHitScenePoint(PortType portType,
                                QPointF const point,
-                               NodeState const& nodeState,
                                QTransform t = QTransform()) const;
 
 private:
-  unsigned int _width;
-  unsigned int _height;
+  // some variables are mutable because
+  // we need to change drawing metrics
+  // corresponding to fontMetrics
+  // but this doesn't change constness of Node
+
+  mutable unsigned int _width;
+  mutable unsigned int _height;
   unsigned int _entryWidth;
-  unsigned int _inputSlotWidth;
-  unsigned int _outputSlotWidth;
-  unsigned int _entryHeight;
+  mutable unsigned int _inputSlotWidth;
+  mutable unsigned int _outputSlotWidth;
+  mutable unsigned int _entryHeight;
   unsigned int _spacing;
 
   unsigned int _connectionPointDiameter;
@@ -99,5 +104,5 @@ private:
 
   std::unique_ptr<NodeDataModel> const &_dataModel;
 
-  QFontMetrics _fontMetrics;
+  mutable QFontMetrics _fontMetrics;
 };

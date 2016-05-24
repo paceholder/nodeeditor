@@ -11,9 +11,32 @@ enum class PortType
   OUT
 };
 
+
 static const int INVALID = -1;
 
 using PortIndex = int;
+
+struct Port
+{
+  PortType type;
+
+  PortIndex index;
+
+  Port()
+    : type(PortType::NONE)
+    , index(INVALID)
+  {}
+
+  Port(PortType t, PortIndex i)
+    : type(t)
+    , index(i)
+  {}
+
+  bool indexIsValid() { return index != INVALID; }
+
+  bool portTypeIsValid() { return type != PortType::NONE; }
+};
+
 
 using PortAddress = std::pair<QUuid, PortIndex>;
 

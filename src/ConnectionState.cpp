@@ -20,9 +20,10 @@ interactWithNode(std::shared_ptr<Node> node, QPointF const& scenePos)
 {
   if (node)
   {
-    node->reactToPossibleConnection(_requiredPort, scenePos);
+    node->reactToPossibleConnection(_requiredPort,
+                                    scenePos);
 
-    _lastHoveredNodeId = node->id();
+    _lastHoveredNode = node;
   }
   else
   {
@@ -33,9 +34,9 @@ interactWithNode(std::shared_ptr<Node> node, QPointF const& scenePos)
 
 void
 ConnectionState::
-setLastHoveredNode(QUuid id)
+setLastHoveredNode(std::shared_ptr<Node> node)
 {
-  _lastHoveredNodeId = id;
+  _lastHoveredNode = node;
 }
 
 
@@ -43,11 +44,10 @@ void
 ConnectionState::
 resetLastHoveredNode()
 {
-  auto &scene = FlowScene::instance();
-  std::shared_ptr<Node> n = scene.getNode(_lastHoveredNodeId);
+  auto node = _lastHoveredNode.lock();
 
-  if (n)
-    n->resetReactionToConnection();
+  if (node)
+    node->resetReactionToConnection();
 
-  _lastHoveredNodeId = QUuid();
+  _lastHoveredNode.reset();
 }

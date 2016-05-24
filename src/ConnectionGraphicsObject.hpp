@@ -8,8 +8,10 @@
 
 class QGraphicsSceneMouseEvent;
 
+class FlowScene;
 class Connection;
 class ConnectionGeometry;
+class Node;
 
 /// Graphic Object for connection. Adds itself to scene
 class ConnectionGraphicsObject
@@ -19,21 +21,18 @@ class ConnectionGraphicsObject
 
 public:
 
-  ConnectionGraphicsObject(Connection &connection);
+  ConnectionGraphicsObject(FlowScene &scene,
+                           std::shared_ptr<Connection> &connection);
+
+  virtual ~ConnectionGraphicsObject();
 
 public:
 
   QRectF boundingRect() const override;
 
-//signals:
-
-  //void connectionDraggedTo(PortType postType, QPointF const &scenePoint);
-
-public slots:
-
-  void onItemMoved(QUuid id, QPointF const &offset);
-
   QPainterPath shape() const override;
+
+  void setGeometryChanged();
 
 protected:
 
@@ -57,5 +56,7 @@ private:
 
 private:
 
-  Connection & _connection;
+  FlowScene & _scene;
+
+  std::weak_ptr<Connection> _connection;
 };

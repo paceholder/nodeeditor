@@ -16,45 +16,20 @@
 #include "ConnectionGeometry.hpp"
 #include "ConnectionGraphicsObject.hpp"
 
-struct
-Connection::ConnectionImpl
-{
-  ConnectionImpl(Connection &connection)
-    : _id(QUuid::createUuid())
-    , _connectionState()
-    , _connectionGraphicsObject(new ConnectionGraphicsObject(connection))
-  {
-    //
-  }
-
-  ~ConnectionImpl()
-  {
-    std::cout << "Remove ConnectionGraphicsObject from scene" << std::endl;
-    FlowScene &flowScene = FlowScene::instance();
-
-    flowScene.removeItem(_connectionGraphicsObject.get());
-  }
-
-  QUuid _id;
-
-  std::pair<QUuid, int> _sourceAddress; // ItemID, entry number
-  std::pair<QUuid, int> _sinkAddress;
-
-  ConnectionState _connectionState;
-  ConnectionGeometry _connectionGeometry;
-  std::unique_ptr<ConnectionGraphicsObject> _connectionGraphicsObject;
-};
-
-//----------------------------------------------------------
-//----------------------------------------------------------
-//----------------------------------------------------------
 //----------------------------------------------------------
 
 Connection::
-Connection()
-  : _impl(new ConnectionImpl(*this))
+Connection(PortType portType,
+           std::shared_ptr<Node> node,
+           PortIndex portIndex)
+  : _id(QUuid::createUuid())
+  , _outPortIndex(INVALID)
+  , _inPortIndex(INVALID)
+  , _connectionState()
 {
-  //
+  setNodeToPort(node, portType, portIndex);
+
+  setRequiredPort(oppositePort(portType));
 }
 
 
@@ -62,26 +37,6 @@ Connection::
 ~Connection()
 {
   std::cout << "Connection destructor" << std::endl;
-
-  auto &scene = FlowScene::instance();
-
-  auto tryDisconnectNode =
-    [&](PortType portType)
-    {
-      auto address = getAddress(portType);
-
-      if (!address.first.isNull())
-      {
-        std::shared_ptr<Node> node = scene.getNode(address.first);
-
-
-        if (node)
-          node->disconnect(this, portType, address.second);
-      }
-    };
-
-  tryDisconnectNode(PortType::IN);
-  tryDisconnectNode(PortType::OUT);
 }
 
 
@@ -89,7 +44,7 @@ QUuid
 Connection::
 id() const
 {
-  return _impl->_id;
+  return _id;
 }
 
 
@@ -97,18 +52,18 @@ void
 Connection::
 setRequiredPort(PortType dragging)
 {
-  _impl->_connectionState.setRequiredPort(dragging);
-
-  _impl->_connectionGraphicsObject->grabMouse();
+  _connectionState.setRequiredPort(dragging);
 
   switch (dragging)
   {
     case PortType::OUT:
-      _impl->_sourceAddress = std::make_pair(QUuid(), -1);
+      _outNode.reset();
+      _outPortIndex = INVALID;
       break;
 
     case PortType::IN:
-      _impl->_sinkAddress = std::make_pair(QUuid(), -1);
+      _inNode.reset();
+      _inPortIndex = INVALID;
       break;
 
     default:
@@ -121,112 +76,89 @@ PortType
 Connection::
 requiredPort() const
 {
-  return _impl->_connectionState.requiredPort();
-}
-
-
-std::pair<QUuid, int>
-Connection::
-getAddress(PortType portType) const
-{
-  switch (portType)
-  {
-    case PortType::OUT:
-      return _impl->_sourceAddress;
-      break;
-
-    case PortType::IN:
-      return _impl->_sinkAddress;
-      break;
-
-    default:
-      break;
-  }
-  return std::make_pair(QUuid(), 0);
+  return _connectionState.requiredPort();
 }
 
 
 void
 Connection::
-setAddress(PortType portType, std::pair<QUuid, int> address)
+setGraphicsObject(std::unique_ptr<ConnectionGraphicsObject>&& graphics)
 {
+  _connectionGraphicsObject = std::move(graphics);
+
+  // This function is only called when the ConnectionGraphicsObject
+  // is newly created. At this moment both end coordinates are (0, 0)
+  // in Connection G.O. coordinates. The position of the whole
+  // Connection G. O. in scene coordinate system is also (0, 0).
+  // By moving the whole object to the Node Port position
+  // we position both connection ends correctly.
+
+  PortType attachedPort = oppositePort(requiredPort());
+
+  PortIndex attachedPortIndex = getPortIndex(attachedPort);
+
+  std::shared_ptr<Node> node = getNode(attachedPort).lock();
+
+  QTransform nodeSceneTransform =
+    node->nodeGraphicsObject()->sceneTransform();
+
+  QPointF pos = node->nodeGeometry().portScenePosition(attachedPortIndex,
+                                                       attachedPort,
+                                                       nodeSceneTransform);
+
+  _connectionGraphicsObject->setPos(pos);
+}
+
+
+PortIndex
+Connection::
+getPortIndex(PortType portType) const
+{
+  PortIndex result = INVALID;
+
   switch (portType)
   {
-    case PortType::OUT:
-      _impl->_sourceAddress = address;
+    case PortType::IN:
+      result = _inPortIndex;
       break;
 
-    case PortType::IN:
-      _impl->_sinkAddress = address;
+    case PortType::OUT:
+      result = _outPortIndex;
+
       break;
 
     default:
       break;
   }
-}
 
-
-bool
-Connection::
-tryConnectToNode(std::shared_ptr<Node> node, QPointF const& scenePoint)
-{
-  bool ok = node->canConnect(_impl->_connectionState,
-                             scenePoint);
-
-  if (ok)
-  {
-    auto address = node->connect(this, scenePoint);
-
-    if (!address.first.isNull())
-    {
-      //auto p = node->connectionPointScenePosition(address,
-      //_impl->_requiredPort);
-
-      connectToNode(address);
-
-      //------
-      _impl->_connectionState.setNoRequiredPort();
-    }
-  }
-
-  return ok;
+  return result;
 }
 
 
 void
 Connection::
-connectToNode(std::pair<QUuid, int> const &address)
+setNodeToPort(std::shared_ptr<Node> node,
+              PortType portType,
+              PortIndex portIndex)
 {
-  setAddress(_impl->_connectionState.requiredPort(), address);
+  std::weak_ptr<Node> & nodeWeak = getNode(portType);
 
-  std::shared_ptr<Node> const node = FlowScene::instance().getNode(address.first);
+  nodeWeak = node;
 
-  std::unique_ptr<NodeGraphicsObject> const & o = node->nodeGraphicsObject();
-  NodeGeometry const & nodeGeometry = node->nodeGeometry();
+  if (portType == PortType::OUT)
+    _outPortIndex = portIndex;
+  else
+    _inPortIndex = portIndex;
 
-  QPointF const scenePoint =
-    nodeGeometry.connectionPointScenePosition(address.second,
-                                              _impl->_connectionState.requiredPort(),
-                                              o->sceneTransform());
-
-  auto p = _impl->_connectionGraphicsObject->mapFromScene(scenePoint);
-
-  _impl->_connectionGeometry.setEndPoint(_impl->_connectionState.requiredPort(), p);
-
-  if (getAddress(oppositePort(_impl->_connectionState.requiredPort())).first.isNull())
-  {
-    _impl->_connectionGeometry.setEndPoint(oppositePort(_impl->_connectionState.requiredPort()), p);
-  }
-
-  _impl->_connectionGraphicsObject->update();
+  _connectionState.setNoRequiredPort();
 }
 
 
-std::unique_ptr<ConnectionGraphicsObject> &
+std::unique_ptr<ConnectionGraphicsObject> const&
 Connection::
 getConnectionGraphicsObject() const
 {
-  return _impl->_connectionGraphicsObject;
+  return _connectionGraphicsObject;
 }
 
 
@@ -234,7 +166,7 @@ ConnectionState&
 Connection::
 connectionState()
 {
-  return _impl->_connectionState;
+  return _connectionState;
 }
 
 
@@ -242,7 +174,7 @@ ConnectionState const&
 Connection::
 connectionState() const
 {
-  return _impl->_connectionState;
+  return _connectionState;
 }
 
 
@@ -250,5 +182,60 @@ ConnectionGeometry&
 Connection::
 connectionGeometry()
 {
-  return _impl->_connectionGeometry;
+  return _connectionGeometry;
+}
+
+
+std::weak_ptr<Node> const &
+Connection::
+getNode(PortType portType) const
+{
+  switch (portType)
+  {
+    case PortType::IN:
+      return _inNode;
+      break;
+
+    case PortType::OUT:
+      return _outNode;
+      break;
+
+    default:
+      // not possible
+      break;
+  }
+}
+
+
+std::weak_ptr<Node> &
+Connection::
+getNode(PortType portType)
+{
+  switch (portType)
+  {
+    case PortType::IN:
+      return _inNode;
+      break;
+
+    case PortType::OUT:
+      return _outNode;
+      break;
+
+    default:
+      // not possible
+      break;
+  }
+}
+
+
+void
+Connection::
+clearNode(PortType portType)
+{
+  getNode(portType).reset();
+
+  if (portType == PortType::IN)
+    _inPortIndex = INVALID;
+  else
+    _outPortIndex = INVALID;
 }

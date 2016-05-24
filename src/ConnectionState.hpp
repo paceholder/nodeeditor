@@ -39,10 +39,11 @@ public:
 
   void interactWithNode(std::shared_ptr<Node> node, QPointF const& scenePos);
 
-  void setLastHoveredNode(QUuid id);
+  void setLastHoveredNode(std::shared_ptr<Node> node);
 
-  QUuid lastHoveredNode() const
-  { return _lastHoveredNodeId; }
+  std::shared_ptr<Node> const
+  lastHoveredNode() const
+  { return _lastHoveredNode.lock(); }
 
   void resetLastHoveredNode();
 
@@ -50,5 +51,5 @@ private:
 
   PortType _requiredPort;
 
-  QUuid _lastHoveredNodeId;
+  std::weak_ptr<Node> _lastHoveredNode;
 };

@@ -4,61 +4,88 @@
 
 NodeState::
 NodeState(std::unique_ptr<NodeDataModel> const &model)
-  : _sources(model->nSlots(PortType::OUT), QUuid())
-  , _sinks(model->nSlots(PortType::IN), QUuid())
+  : _outConnections(model->nSlots(PortType::OUT))
+  , _inConnections(model->nSlots(PortType::IN))
   , _reaction(NOT_REACTING)
 {}
 
-
-std::vector<QUuid> const&
+std::vector<std::weak_ptr<Connection> > const&
 NodeState::
 getEntries(PortType portType) const
 {
   Q_ASSERT(portType != PortType::NONE);
 
   if (portType == PortType::OUT)
-    return _sources;
+    return _outConnections;
   else
-    return _sinks;
+    return _inConnections;
 }
 
 
-QUuid const
+std::vector<std::weak_ptr<Connection> > &
 NodeState::
-connectionID(PortType portType, size_t nEntry) const
+getEntries(PortType portType)
 {
-  std::vector<QUuid> const& entries =
-    getEntries(portType);
+  Q_ASSERT(portType != PortType::NONE);
 
-  if (nEntry >= entries.size())
-    return QUuid();
+  if (portType == PortType::OUT)
+    return _outConnections;
+  else
+    return _inConnections;
+}
 
-  return entries[nEntry];
+
+std::shared_ptr<Connection>
+NodeState::
+connection(PortType portType, PortIndex portIndex) const
+{
+  auto const &connections = getEntries(portType);
+
+  return connections[portIndex].lock();
 }
 
 
 void
 NodeState::
-setConnectionId(PortType portType, size_t nEntry, QUuid id)
+setConnection(PortType portType,
+              PortIndex portIndex,
+              std::shared_ptr<Connection> connection)
 {
-  std::vector<QUuid> const& entries =
-    const_cast<NodeState const&>(*this).getEntries(portType);
+  auto &connections = getEntries(portType);
 
-  const_cast<std::vector<QUuid>&>(entries)[nEntry] = id;
+  connections[portIndex] = connection;
 }
 
+
+//void
+//NodeState::
+//setConnectionId(PortType portType, size_t nEntry, QUuid id)
+//{
+//std::vector<QUuid> const& entries =
+//const_cast<NodeState const&>(*this).getEntries(portType);
+
+//const_cast<std::vector<QUuid>&>(entries)[nEntry] = id;
+//}
 
 NodeState::ReactToConnectionState
 NodeState::
 reaction() const
-{ return _reaction; }
+{
+  return _reaction;
+}
+
 
 void
 NodeState::
 setReaction(ReactToConnectionState reaction)
-{ _reaction = reaction; }
+{
+  _reaction = reaction;
+}
+
 
 bool
 NodeState::
 isReacting() const
-{ return _reaction == REACTING; }
+{
+  return _reaction == REACTING;
+}

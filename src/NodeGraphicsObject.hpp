@@ -8,6 +8,7 @@
 #include "NodeGeometry.hpp"
 #include "NodeState.hpp"
 
+class FlowScene;
 class FlowItemEntry;
 
 /// Class reacts on GUI events, mouse clicks and
@@ -17,16 +18,17 @@ class NodeGraphicsObject : public QGraphicsObject
   Q_OBJECT
 
 public:
-  NodeGraphicsObject(Node& node,
-                     NodeState& nodeState,
-                     NodeGeometry& nodeGeometry);
+  NodeGraphicsObject(FlowScene &scene,
+                     std::shared_ptr<Node>& node);
 
-  Node& node();
+  std::weak_ptr<Node>& node();
 
   QRectF boundingRect() const override;
 
-signals:
-  void itemMoved(QUuid, QPointF const &);
+  /// Visits all attached connections and corrects
+  /// their corresponding end points.
+  void moveConnections() const;
+  //void moveConnections(QPointF d) const;
 
 protected:
   void paint(QPainter*                       painter,
@@ -37,6 +39,8 @@ protected:
 
   void mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
 
+  void mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
+
   void hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
 
   void hoverLeaveEvent(QGraphicsSceneHoverEvent* event) override;
@@ -45,13 +49,8 @@ private:
   void embedQWidget();
 
 private:
-  // addressing
 
-  Node& _node;
+  FlowScene & _scene;
 
-  NodeState& _nodeState;
-
-  // painting
-
-  NodeGeometry& _nodeGeometry;
+  std::weak_ptr<Node> _node;
 };

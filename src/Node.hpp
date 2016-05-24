@@ -7,12 +7,13 @@
 
 #include "PortType.hpp"
 
+#include "NodeState.hpp"
+#include "NodeGeometry.hpp"
+
 class Connection;
 class ConnectionState;
-class NodeGeometry;
 class NodeGraphicsObject;
 class NodeDataModel;
-class NodeState;
 
 class Node : public QObject
 {
@@ -34,33 +35,41 @@ public:
 
   void resetReactionToConnection();
 
-  bool canConnect(ConnectionState const& connectionState,
-                  QPointF const &scenePoint);
-
-  std::pair<QUuid, int>
-  connect(Connection const* connection, int hit);
-
-  std::pair<QUuid, int>
-  connect(Connection const* connection, QPointF const& scenePoint);
-
-  void disconnect(Connection const* connection, PortType endType, int hit);
-
 public:
 
-  std::unique_ptr<NodeGraphicsObject> const &nodeGraphicsObject() const;
-  std::unique_ptr<NodeGraphicsObject> & nodeGraphicsObject();
+  std::unique_ptr<NodeGraphicsObject> const& nodeGraphicsObject() const;
+  std::unique_ptr<NodeGraphicsObject>& nodeGraphicsObject();
+
+  void setGraphicsObject(std::unique_ptr<NodeGraphicsObject>&& graphics);
 
   NodeGeometry& nodeGeometry();
-  NodeGeometry& nodeGeometry() const;
+  NodeGeometry const& nodeGeometry() const;
 
   NodeState const & nodeState() const;
+  NodeState & nodeState();
 
   std::unique_ptr<NodeDataModel> const & nodeDataModel() const;
-
 
 private:
 
   struct NodeImpl;
 
-  std::unique_ptr<NodeImpl> _impl;
+  // addressing
+
+  QUuid _id;
+
+  // data
+
+  std::unique_ptr<NodeDataModel> _nodeDataModel;
+
+  NodeState _nodeState;
+
+  // painting
+
+  NodeGeometry _nodeGeometry;
+
+  std::unique_ptr<NodeGraphicsObject> _nodeGraphicsObject;
 };
+
+//Q_DECLARE_METATYPE(std::shared_ptr<Node>);
+//qRegisterMetaType<std::shared_ptr<Node>>();

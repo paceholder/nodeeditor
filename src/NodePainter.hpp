@@ -22,7 +22,7 @@ public:
 
   static
   void paint(QPainter* painter,
-             Node const &node);
+             std::shared_ptr<Node> const &node);
 
   static
   void drawNodeRect(QPainter* painter, NodeGeometry const& geom);

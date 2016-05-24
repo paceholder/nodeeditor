@@ -1,6 +1,5 @@
 #include <iostream>
 
-#include <nodes/Connection>
 #include <nodes/NodeData>
 #include <nodes/FlowScene>
 #include <nodes/FlowGraphicsView>
@@ -40,7 +39,9 @@ main(int argc, char* argv[])
 {
   QApplication app(argc, argv);
 
-  FlowGraphicsView view(&FlowScene::instance());
+  FlowScene scene;
+
+  FlowGraphicsView view(&scene);
 
   view.setWindowTitle(QT_TRANSLATE_NOOP(QGraphicsView,
                                         "Node-based flow editor"));

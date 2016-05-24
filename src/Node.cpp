@@ -6,69 +6,30 @@
 
 #include "FlowScene.hpp"
 
-#include "NodeState.hpp"
-#include "NodeGeometry.hpp"
 #include "NodeGraphicsObject.hpp"
 #include "NodeDataModel.hpp"
 
 #include "ConnectionGraphicsObject.hpp"
 #include "ConnectionState.hpp"
 
-struct Node::NodeImpl
-{
-  NodeImpl(Node &node,
-           std::unique_ptr<NodeDataModel> &&dataModel)
-    : _id(QUuid::createUuid())
-    , _nodeDataModel(std::move(dataModel))
-    , _nodeState(_nodeDataModel)
-      , _nodeGeometry(_nodeDataModel)
-    , _nodeGraphicsObject(new NodeGraphicsObject(node,
-                                                 _nodeState,
-                                                 _nodeGeometry))
-  {
-    _nodeGeometry.recalculateSize();
-  }
-
-  /// Destructor
-  ~NodeImpl()
-  {
-    std::cout << "Remove NodeGraphicsObject from scene" << std::endl;
-    FlowScene &flowScene = FlowScene::instance();
-
-    flowScene.removeItem(_nodeGraphicsObject.get());
-  }
-
-  // addressing
-
-  QUuid _id;
-
-  // data
-
-  std::unique_ptr<NodeDataModel> _nodeDataModel;
-
-  NodeState _nodeState;
-
-  // painting
-
-  NodeGeometry _nodeGeometry;
-
-  std::unique_ptr<NodeGraphicsObject> _nodeGraphicsObject;
-};
-
 //------------------------------------------------------------------------------
 
 Node::
 Node(std::unique_ptr<NodeDataModel> &&dataModel)
-  : _impl(new NodeImpl(*this, std::move(dataModel)))
+  : _id(QUuid::createUuid())
+  , _nodeDataModel(std::move(dataModel))
+  , _nodeState(_nodeDataModel)
+  , _nodeGeometry(_nodeDataModel)
+  , _nodeGraphicsObject(nullptr)
 {
-  //
+  _nodeGeometry.recalculateSize();
 }
 
 
 Node::
 ~Node()
 {
-  //
+  std::cout << "Node destructor" << std::endl;
 }
 
 
@@ -76,7 +37,7 @@ QUuid
 Node::
 id() const
 {
-  return _impl->_id;
+  return _id;
 }
 
 
@@ -85,15 +46,15 @@ Node::
 reactToPossibleConnection(PortType,
                           QPointF const &scenePoint)
 {
-  QTransform const t = _impl->_nodeGraphicsObject->sceneTransform();
+  QTransform const t = _nodeGraphicsObject->sceneTransform();
 
   QPointF p = t.inverted().map(scenePoint);
 
-  _impl->_nodeGeometry.setDraggingPosition(p);
+  _nodeGeometry.setDraggingPosition(p);
 
-  _impl->_nodeGraphicsObject->update();
+  _nodeGraphicsObject->update();
 
-  _impl->_nodeState.setReaction(NodeState::REACTING);
+  _nodeState.setReaction(NodeState::REACTING);
 }
 
 
@@ -101,84 +62,8 @@ void
 Node::
 resetReactionToConnection()
 {
-  _impl->_nodeState.setReaction(NodeState::NOT_REACTING);
-  _impl->_nodeGraphicsObject->update();
-}
-
-
-bool
-Node::
-canConnect(ConnectionState const& conState,
-           QPointF const &scenePoint)
-{
-  auto &g = _impl->_nodeGraphicsObject;
-
-  int hit =
-    _impl->_nodeGeometry.checkHitScenePoint(conState.requiredPort(),
-                                            scenePoint,
-                                            _impl->_nodeState,
-                                            g->sceneTransform());
-
-  return ((hit != INVALID) &&
-          _impl->_nodeState.connectionID(conState.requiredPort(), hit).isNull());
-}
-
-
-std::pair<QUuid, int>
-Node::
-connect(Connection const* connection, int hit)
-{
-  ConnectionState const& conState =
-    connection->connectionState();
-
-  _impl->_nodeState.setConnectionId(conState.requiredPort(),
-                                    hit,
-                                    connection->id());
-
-  QObject::connect(_impl->_nodeGraphicsObject.get(),
-                   &NodeGraphicsObject::itemMoved,
-                   connection->getConnectionGraphicsObject().get(),
-                   &ConnectionGraphicsObject::onItemMoved);
-
-  connection->getConnectionGraphicsObject()->setZValue(-1.0);
-
-  return std::make_pair(_impl->_id, hit);
-}
-
-
-std::pair<QUuid, int>
-Node::
-connect(Connection const* connection,
-        QPointF const & scenePoint)
-{
-  ConnectionState const& conState =
-    connection->connectionState();
-
-  auto &g  = _impl->_nodeGraphicsObject;
-  int  hit =
-    _impl->_nodeGeometry.checkHitScenePoint(conState.requiredPort(),
-                                            scenePoint,
-                                            _impl->_nodeState,
-                                            g->sceneTransform());
-
-  return connect(connection, hit);
-}
-
-
-void
-Node::
-disconnect(Connection const* connection,
-           PortType endType,
-           int hit)
-{
-  QObject::disconnect(_impl->_nodeGraphicsObject.get(),
-                      &NodeGraphicsObject::itemMoved,
-                      connection->getConnectionGraphicsObject().get(),
-                      &ConnectionGraphicsObject::onItemMoved);
-
-  _impl->_nodeState.setConnectionId(endType, hit, QUuid());
-
-  _impl->_nodeGraphicsObject->update();
+  _nodeState.setReaction(NodeState::NOT_REACTING);
+  _nodeGraphicsObject->update();
 }
 
 
@@ -186,31 +71,39 @@ std::unique_ptr<NodeGraphicsObject> const &
 Node::
 nodeGraphicsObject() const
 {
-  return _impl->_nodeGraphicsObject;
+  return _nodeGraphicsObject;
 }
 
-std::unique_ptr<NodeGraphicsObject>&
+
+std::unique_ptr<NodeGraphicsObject> &
 Node::
 nodeGraphicsObject()
 {
-  return _impl->_nodeGraphicsObject;
+  return _nodeGraphicsObject;
 }
 
+
+void
+Node::
+setGraphicsObject(std::unique_ptr<NodeGraphicsObject>&& graphics)
+{
+  _nodeGraphicsObject = std::move(graphics);
+}
 
 
 NodeGeometry&
 Node::
 nodeGeometry()
 {
-  return _impl->_nodeGeometry;
+  return _nodeGeometry;
 }
 
 
-NodeGeometry&
+NodeGeometry const&
 Node::
 nodeGeometry() const
 {
-  return _impl->_nodeGeometry;
+  return _nodeGeometry;
 }
 
 
@@ -218,7 +111,15 @@ NodeState const &
 Node::
 nodeState() const
 {
-  return _impl->_nodeState;
+  return _nodeState;
+}
+
+
+NodeState &
+Node::
+nodeState()
+{
+  return _nodeState;
 }
 
 
@@ -226,5 +127,5 @@ std::unique_ptr<NodeDataModel> const &
 Node::
 nodeDataModel() const
 {
-  return _impl->_nodeDataModel;
+  return _nodeDataModel;
 }

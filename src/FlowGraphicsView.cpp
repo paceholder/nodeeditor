@@ -4,7 +4,6 @@
 
 #include <QtGui/QPen>
 #include <QtGui/QBrush>
-#include <QtGui/QWheelEvent>
 #include <QtWidgets/QMenu>
 
 #include <QtCore/QRectF>
@@ -23,8 +22,9 @@
 #include "NodeGraphicsObject.hpp"
 
 FlowGraphicsView::
-FlowGraphicsView(QGraphicsScene *scene)
+FlowGraphicsView(FlowScene *scene)
   : QGraphicsView(scene)
+  , _scene(scene)
 {
   setDragMode(QGraphicsView::ScrollHandDrag);
   setRenderHint(QPainter::Antialiasing);
@@ -66,7 +66,7 @@ contextMenuEvent(QContextMenuEvent *event)
 
     if (it != models.end())
     {
-      auto node = FlowScene::instance().createNode(it->second->create() );
+      auto node = _scene->createNode(it->second->create() );
 
       QPoint pos = event->pos();
 

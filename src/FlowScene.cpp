@@ -7,25 +7,26 @@
 #include "Node.hpp"
 #include "NodeGraphicsObject.hpp"
 
+#include "ConnectionGraphicsObject.hpp"
+
 #include "FlowItemInterface.hpp"
 #include "FlowGraphicsView.hpp"
 #include "DataModelRegistry.hpp"
 
-FlowScene&
-FlowScene::
-instance()
-{
-  static FlowScene flowScene;
-
-  return flowScene;
-}
-
-
 std::shared_ptr<Connection>
 FlowScene::
-createConnection()
+createConnection(PortType connectedPort,
+                 std::shared_ptr<Node> node,
+                 PortIndex portIndex)
 {
-  auto connection = std::make_shared<Connection>();
+  auto connection = std::make_shared<Connection>(connectedPort, node, portIndex);
+
+  auto cgo = make_unique<ConnectionGraphicsObject>(*this, connection);
+
+  // after this function connection points are set to node port
+  connection->setGraphicsObject(std::move(cgo));
+
+  //connection->getConnectionGraphicsObject()->grabMouse();
 
   _connections[connection->id()] = connection;
 
@@ -41,49 +42,18 @@ deleteConnection(QUuid const & id)
 }
 
 
-QUuid
-FlowScene::
-createNodes()
-{
-  //for (auto i : {1, 2, 3, 4})
-  ////for (auto i : {1})
-  //{
-    //(void)i; // unused variable
-
-    //auto node = std::make_shared<Node>();
-
-    //_nodes[node->id()] = node;
-  //}
-
-  return QUuid();
-}
-
-
 std::shared_ptr<Node>
 FlowScene::
 createNode(std::unique_ptr<NodeDataModel> &&dataModel)
 {
-  std::cout << "Create Node" << std::endl;
-
   auto node = std::make_shared<Node>(std::move(dataModel));
+
+  auto ngo = make_unique<NodeGraphicsObject>(*this, node);
+  node->setGraphicsObject(std::move(ngo));
 
   _nodes[node->id()] = node;
 
   return node;
-}
-
-
-std::shared_ptr<Connection>
-FlowScene::
-getConnection(QUuid id) const
-{
-  auto it = _connections.find(id);
-
-  Q_ASSERT_X(it != _connections.end(),
-             "getConnection()",
-             "Connection with given ID does not exist");
-
-  return it->second;
 }
 
 
@@ -118,21 +88,16 @@ FlowScene::
 //------------------------------------------------------------------------------
 
 std::shared_ptr<Node>
-locateNodeAt(QGraphicsSceneMouseEvent * event)
+locateNodeAt(QPointF scenePoint, FlowScene &scene, QTransform viewTransform)
 {
-  auto view = static_cast<FlowGraphicsView*>(event->widget());
-
-  auto& scene = FlowScene::instance();
-
-
   // items under cursor
   QList<QGraphicsItem*> items =
-    scene.items(event->scenePos(),
+    scene.items(scenePoint,
                 Qt::IntersectsItemShape,
                 Qt::DescendingOrder,
-                view->transform());
+                viewTransform);
 
-  // items convertable to NodeGraphicsObject
+  //// items convertable to NodeGraphicsObject
   std::vector<QGraphicsItem*> filteredItems;
 
   std::copy_if(items.begin(),
@@ -150,7 +115,7 @@ locateNodeAt(QGraphicsSceneMouseEvent * event)
     QGraphicsItem* graphicsItem = filteredItems.front();
     auto ngo = dynamic_cast<NodeGraphicsObject*>(graphicsItem);
 
-    resultNode = scene.getNode(ngo->node().id());
+    resultNode = ngo->node().lock();
   }
 
   return resultNode;

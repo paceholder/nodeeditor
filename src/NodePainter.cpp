@@ -10,11 +10,11 @@
 void
 NodePainter::
 paint(QPainter* painter,
-      Node const &node)
+      std::shared_ptr<Node> const &node)
 {
-  NodeGeometry& geom = node.nodeGeometry();
+  NodeGeometry const& geom = node->nodeGeometry();
 
-  NodeState const& state = node.nodeState();
+  NodeState const& state = node->nodeState();
 
   geom.recalculateSize(painter->fontMetrics());
 
@@ -26,7 +26,7 @@ paint(QPainter* painter,
 
   drawFilledConnectionPoints(painter, geom, state);
 
-  auto const &model = node.nodeDataModel();
+  auto const &model = node->nodeDataModel();
 
   drawEntryLabels(painter, geom, state, model);
 }
@@ -90,11 +90,11 @@ drawConnectionPoints(QPainter* painter,
       for (size_t i = 0; i < n; ++i)
       {
 
-        QPointF p = geom.connectionPointScenePosition(i, portType);
+        QPointF p = geom.portScenePosition(i, portType);
 
         double r = 1.0;
         if (state.isReacting() &&
-            state.getEntries(portType)[i].isNull())
+            !state.getEntries(portType)[i].lock())
         {
           auto   diff = geom.draggingPos() - p;
           double dist = std::sqrt(QPointF::dotProduct(diff, diff));
@@ -135,9 +135,9 @@ drawFilledConnectionPoints(QPainter* painter,
 
       for (size_t i = 0; i < n; ++i)
       {
-        QPointF p = geom.connectionPointScenePosition(i, portType);
+        QPointF p = geom.portScenePosition(i, portType);
 
-        if (!state.connectionID(portType, i).isNull())
+        if (state.getEntries(portType)[i].lock())
         {
           painter->drawEllipse(p,
                                diameter * 0.4,
@@ -171,12 +171,12 @@ drawEntryLabels(QPainter* painter,
       for (size_t i = 0; i < n; ++i)
       {
 
-        QPointF p = geom.connectionPointScenePosition(i, portType);
+        QPointF p = geom.portScenePosition(i, portType);
 
-        if (entries[i].isNull())
-          painter->setPen(Qt::darkGray);
-        else
+        if (entries[i].lock())
           painter->setPen(QColor(Qt::lightGray).lighter());
+        else
+          painter->setPen(Qt::darkGray);
 
         QString s = model->data(portType, i)->name();
 

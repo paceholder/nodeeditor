@@ -52,7 +52,7 @@ boundingRect() const
 
 void
 NodeGeometry::
-recalculateSize()
+recalculateSize() const
 {
   _entryHeight = _fontMetrics.height();
 
@@ -63,20 +63,22 @@ recalculateSize()
   }
 
   auto slotWidth =
-    [this](PortType portType, unsigned &width)
+    [this](PortType portType)
     {
-      width = 0;
+      unsigned width = 0;
+
       for (auto i = 0ul; i < _dataModel->nSlots(portType); ++i)
       {
         auto const &name = _dataModel->data(PortType::IN, i)->name();
-        std::cout << "Name: " << name.toLocal8Bit().data() << std::endl;
         width = std::max(unsigned(_fontMetrics.width(name)),
                          width);
       }
+
+      return width;
     };
 
-  slotWidth(PortType::IN, _inputSlotWidth);
-  slotWidth(PortType::OUT, _outputSlotWidth);
+  _inputSlotWidth  = slotWidth(PortType::IN);
+  _outputSlotWidth = slotWidth(PortType::OUT);
 
   _width = _inputSlotWidth +
            _outputSlotWidth +
@@ -86,7 +88,7 @@ recalculateSize()
 
 void
 NodeGeometry::
-recalculateSize(QFontMetrics const & fontMetrics)
+recalculateSize(QFontMetrics const & fontMetrics) const
 {
   if (_fontMetrics != fontMetrics)
   {
@@ -99,9 +101,9 @@ recalculateSize(QFontMetrics const & fontMetrics)
 
 QPointF
 NodeGeometry::
-connectionPointScenePosition(int index,
-                             PortType portType,
-                             QTransform t) const
+portScenePosition(int index,
+                  PortType portType,
+                  QTransform t) const
 {
   unsigned int step = _entryHeight + _spacing;
 
@@ -151,7 +153,6 @@ PortIndex
 NodeGeometry::
 checkHitScenePoint(PortType portType,
                    QPointF const scenePoint,
-                   NodeState const & nodeState,
                    QTransform sceneTransform) const
 {
   PortIndex result = INVALID;
@@ -161,11 +162,13 @@ checkHitScenePoint(PortType portType,
 
   double const tolerance = 2.0 * _connectionPointDiameter;
 
-  size_t const nItems = nodeState.getEntries(portType).size();
+  size_t const nItems = _dataModel->nSlots(portType);
 
   for (size_t i = 0; i < nItems; ++i)
   {
-    QPointF p = connectionPointScenePosition(i, portType, sceneTransform) - scenePoint;
+    auto pp = portScenePosition(i, portType, sceneTransform);
+
+    QPointF p = pp - scenePoint;
     auto    distance = std::sqrt(QPointF::dotProduct(p, p));
 
     if (distance < tolerance)

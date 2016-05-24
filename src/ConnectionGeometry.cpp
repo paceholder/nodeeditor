@@ -2,8 +2,8 @@
 
 ConnectionGeometry::
 ConnectionGeometry()
-  : _out(10, 10)
-  , _in(100, 100)
+  : _out(0, 0)
+  , _in(0, 0)
   , _pointDiameter(10)
   //, _animationPhase(0)
   , _lineWidth(3.0)

@@ -2,11 +2,13 @@
 
 #include <QtWidgets/QGraphicsView>
 
+class FlowScene;
+
 class FlowGraphicsView : public QGraphicsView
 {
 public:
 
-  FlowGraphicsView(QGraphicsScene *scene);
+  FlowGraphicsView(FlowScene *scene);
 
 protected:
 
@@ -15,4 +17,8 @@ protected:
   void wheelEvent(QWheelEvent *event) override;
 
   void drawBackground(QPainter* painter, const QRectF& r) override;
+
+private:
+
+  FlowScene* _scene;
 };

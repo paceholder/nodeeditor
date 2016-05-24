@@ -32,30 +32,26 @@ class Node;
 class FlowScene : public QGraphicsScene
 {
 public:
-  static
-  FlowScene& instance();
+
+  FlowScene();
+
+  ~FlowScene();
 
 public:
 
-  std::shared_ptr<Connection> createConnection();
+  std::shared_ptr<Connection>
+  createConnection(PortType connectedPort,
+                   std::shared_ptr<Node> node,
+                   PortIndex portIndex);
 
   void deleteConnection(QUuid const & id);
-
-  QUuid createNodes();
 
   std::shared_ptr<Node>
   createNode(std::unique_ptr<NodeDataModel> &&dataModel);
 
 public:
 
-  std::shared_ptr<Connection> getConnection(QUuid id) const;
-
   std::shared_ptr<Node> getNode(QUuid id) const;
-
-private:
-
-  FlowScene();
-  ~FlowScene();
 
 private:
 
@@ -67,4 +63,4 @@ private:
 };
 
 std::shared_ptr<Node>
-locateNodeAt(QGraphicsSceneMouseEvent* event);
+locateNodeAt(QPointF scenePoint, FlowScene &scene, QTransform viewTransform);

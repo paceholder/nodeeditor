@@ -13,15 +13,16 @@
 #include "NodePainter.hpp"
 
 #include "Node.hpp"
+#include "NodeConnectionInteraction.hpp"
 
 NodeGraphicsObject::
-NodeGraphicsObject(Node& node,
-                   NodeState& nodeState,
-                   NodeGeometry& nodeGeometry)
-  : _node(node)
-  , _nodeState(nodeState)
-  , _nodeGeometry(nodeGeometry)
+NodeGraphicsObject(FlowScene &scene,
+                   std::shared_ptr<Node>& node)
+  : _scene(scene)
+  , _node(node)
 {
+  _scene.addItem(this);
+
   setFlag(QGraphicsItem::ItemIsMovable, true);
   setFlag(QGraphicsItem::ItemIsFocusable, true);
 
@@ -35,11 +36,8 @@ NodeGraphicsObject(Node& node,
 
     setGraphicsEffect(effect);
 
-    setOpacity(_nodeGeometry.opacity());
+    setOpacity(_node.lock()->nodeGeometry().opacity());
   }
-
-  FlowScene &flowScene = FlowScene::instance();
-  flowScene.addItem(this);
 
   setAcceptHoverEvents(true);
 
@@ -49,7 +47,7 @@ NodeGraphicsObject(Node& node,
 }
 
 
-Node&
+std::weak_ptr<Node>&
 NodeGraphicsObject::
 node()
 {
@@ -76,7 +74,59 @@ QRectF
 NodeGraphicsObject::
 boundingRect() const
 {
-  return _nodeGeometry.boundingRect();
+  return _node.lock()->nodeGeometry().boundingRect();
+}
+
+
+void
+NodeGraphicsObject::
+//moveConnections(QPointF d) const
+moveConnections() const
+{
+  std::shared_ptr<Node> node = _node.lock();
+
+  NodeState const & nodeState = node->nodeState();
+
+  auto moveConnections =
+    [&](PortType portType)
+    {
+      auto const & connectionsWeak = nodeState.getEntries(portType);
+
+      size_t portIndex = 0;
+
+      for (auto const & connection : connectionsWeak)
+      {
+        QPointF scenePos =
+          node->nodeGeometry().portScenePosition(portIndex,
+                                                 portType,
+                                                 sceneTransform());
+
+        std::shared_ptr<Connection> con = connection.lock();
+
+        if (con)
+        {
+          QTransform sceneTransform =
+            con->getConnectionGraphicsObject()->sceneTransform();
+
+          QPointF connectionPos = sceneTransform.inverted().map(scenePos);
+
+          //auto p = con->connectionGeometry().getEndPoint(portType);
+
+          con->connectionGeometry().setEndPoint(portType,
+              connectionPos);
+                                                //p + d);
+
+          con->getConnectionGraphicsObject()->setGeometryChanged();
+          con->getConnectionGraphicsObject()->update();
+        }
+
+        ++portIndex;
+      }
+    };
+
+  moveConnections(PortType::IN);
+
+  moveConnections(PortType::OUT);
 }
 
 
@@ -88,7 +138,7 @@ paint(QPainter * painter,
 {
   painter->setClipRect(option->exposedRect);
 
-  NodePainter::paint(painter, _node);
+  NodePainter::paint(painter, _node.lock());
 }
 
 
@@ -96,50 +146,49 @@ void
 NodeGraphicsObject::
 mousePressEvent(QGraphicsSceneMouseEvent * event)
 {
-  auto clickEnd =
+  auto clickPort =
     [&](PortType portToCheck)
     {
-      int portNumber = _nodeGeometry.checkHitScenePoint(portToCheck,
-                                                        event->scenePos(),
-                                                        _nodeState,
-                                                        sceneTransform());
+      NodeGeometry & nodeGeometry = _node.lock()->nodeGeometry();
 
-      FlowScene &flowScene = FlowScene::instance();
+      // TODO do not pass sceneTransform
+      int portIndex = nodeGeometry.checkHitScenePoint(portToCheck,
+                                                      event->scenePos(),
+                                                      sceneTransform());
 
-      if (portNumber != INVALID)
+      if (portIndex != INVALID)
       {
-        QUuid const connectionId = _nodeState.connectionID(portToCheck, portNumber);
+        NodeState const & nodeState = _node.lock()->nodeState();
 
-        /// initialize new Connection
-        if (connectionId.isNull())
+        std::shared_ptr<Connection> connection =
+          nodeState.connection(portToCheck, portIndex);
+
+        // start dragging existing connection
+        if (connection)
         {
-          // todo add to FlowScene
-          auto connection = flowScene.createConnection();
+          NodeConnectionInteraction interaction(_node.lock(), connection);
 
-          connection->connectionState().setRequiredPort(portToCheck);
-
-          _node.connect(connection.get(), portNumber);
-
-          auto address = std::make_pair(_node.id(), portNumber);
-
-          connection->setRequiredPort(portToCheck);
-          connection->connectToNode(address);
-
-          connection->setRequiredPort(oppositePort(portToCheck));
+          interaction.disconnect(portToCheck);
         }
+        // initialize new Connection
         else
         {
-          auto connection = flowScene.getConnection(connectionId);
+          // todo add to FlowScene
+          auto connection = _scene.createConnection(portToCheck,
+                                                    _node.lock(),
+                                                    portIndex);
 
-          _node.disconnect(connection.get(), portToCheck, portNumber);
+          _node.lock()->nodeState().setConnection(portToCheck,
+                                                  portIndex,
+                                                  connection);
 
-          connection->setRequiredPort(portToCheck);
+          connection->getConnectionGraphicsObject()->grabMouse();
         }
       }
     };
 
-  clickEnd(PortType::IN);
-  clickEnd(PortType::OUT);
+  clickPort(PortType::IN);
+  clickPort(PortType::OUT);
 
   event->accept();
 }
@@ -149,12 +198,27 @@ void
 NodeGraphicsObject::
 mouseMoveEvent(QGraphicsSceneMouseEvent * event)
 {
-  QPointF d = event->pos() - event->lastPos();
+  QGraphicsObject::mouseMoveEvent(event);
+  //QPointF d = event->pos() - event->lastPos();
 
   if (event->lastPos() != event->pos())
-    emit itemMoved(_node.id(), d);
+    //moveConnections(d);
+    moveConnections();
 
-  QGraphicsObject::mouseMoveEvent(event);
+  //event->accept();
+}
+
+
+void
+NodeGraphicsObject::
+mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
+{
+  QGraphicsObject::mouseReleaseEvent(event);
+  //QPointF d = event->pos() - event->lastPos();
+
+  // position connections precisely after fast node move
+  moveConnections();
+
 }
 
 
@@ -162,7 +226,7 @@ void
 NodeGraphicsObject::
 hoverEnterEvent(QGraphicsSceneHoverEvent * event)
 {
-  _nodeGeometry.setHovered(true);
+  _node.lock()->nodeGeometry().setHovered(true);
   update();
   event->accept();
 }
@@ -172,7 +236,7 @@ void
 NodeGraphicsObject::
 hoverLeaveEvent(QGraphicsSceneHoverEvent * event)
 {
-  _nodeGeometry.setHovered(false);
+  _node.lock()->nodeGeometry().setHovered(false);
   update();
   event->accept();
 }

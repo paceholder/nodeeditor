@@ -7,6 +7,7 @@
 
 #include "PortType.hpp"
 
+class Connection;
 class NodeDataModel;
 
 /// Contains vectors of connected input and output connections.
@@ -28,14 +29,15 @@ public:
 
   /// Returns vector of connections ID.
   /// Some of them can be empty (null)
-  std::vector<QUuid> const& getEntries(PortType portType) const;
+  std::vector<std::weak_ptr<Connection> > const& getEntries(PortType portType) const;
+  std::vector<std::weak_ptr<Connection> > & getEntries(PortType portType);
 
-  /// Returns connection id for given endtype and
-  /// given connection number
-  QUuid const connectionID(PortType portType, size_t nEntry) const;
+  std::shared_ptr<Connection> connection(PortType portType,
+                                         PortIndex portIndex) const;
 
-  /// Assign connection id to the given entry
-  void setConnectionId(PortType portType, size_t nEntry, QUuid id);
+  void setConnection(PortType portType,
+                     PortIndex portIndex,
+                     std::shared_ptr<Connection> connection);
 
   ReactToConnectionState reaction() const;
 
@@ -45,8 +47,11 @@ public:
 
 private:
 
-  std::vector<QUuid> _sources;
-  std::vector<QUuid> _sinks;
+  //std::vector<QUuid> _sources;
+  //std::vector<QUuid> _sinks;
+
+  std::vector < std::weak_ptr < Connection > > _inConnections;
+  std::vector < std::weak_ptr < Connection > > _outConnections;
 
   ReactToConnectionState _reaction;
 };
