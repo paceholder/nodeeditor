@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 2.8.11)
+cmake_minimum_required(VERSION 3.4)
 
-project(blocks)
+project(NodeEditor)
 
 # Find includes in corresponding build directories
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -8,10 +8,6 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 # Instruct CMake to run moc automatically when needed.
 set(CMAKE_AUTOMOC ON)
 ADD_DEFINITIONS(-std=c++11)
-
-
-set(QT_PATH "~/projects/geoqt5_thirdparty/Linux/Qt")
-set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${QT_PATH})
 
 # Find the QtWidgets library
 find_package(Qt5 COMPONENTS

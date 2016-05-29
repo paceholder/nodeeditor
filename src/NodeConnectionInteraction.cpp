@@ -3,14 +3,14 @@
 #include "ConnectionGraphicsObject.hpp"
 #include "NodeGraphicsObject.hpp"
 
-bool
-NodeConnectionInteraction::
-canConnect() const
-{
-  PortIndex portIndex = INVALID;
+//bool
+//NodeConnectionInteraction::
+//canConnect() const
+//{
+  //PortIndex portIndex = INVALID;
 
-  return canConnect(portIndex);
-}
+  //return canConnect(portIndex);
+//}
 
 
 bool

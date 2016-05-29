@@ -5,7 +5,9 @@
 #include "Node.hpp"
 #include "Connection.hpp"
 
-/// Class performs various operations on the Node and Connection pair
+/// Class performs various operations on the Node and Connection pair.
+/// An instance should be created on the stack and destroyed when
+/// the operation is completed
 class NodeConnectionInteraction
 {
 public:
@@ -20,8 +22,6 @@ public:
   /// 2) Connection's vacant end is above the node port
   /// 3) Node port is vacant
   /// 4) Connection type equals node port type
-  bool canConnect() const;
-
   bool canConnect(PortIndex &portIndex) const;
 
   /// 1) Check conditions from 'canConnect'
@@ -55,6 +55,4 @@ private:
   std::shared_ptr<Node> _node;
 
   std::shared_ptr<Connection> _connection;
-
-  static std::weak_ptr<Node> _lastHoveredNode;
 };
