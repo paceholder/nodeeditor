@@ -18,7 +18,7 @@ register it and create nodes in the scene. No data transfer is yet possible.
 
 ### Dependencies
 
-The project uses Qt 5.5 and CMake 2.8.
+The project uses Qt 5.5 and CMake 3.4
 
 ### Roadmap
 
