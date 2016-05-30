@@ -83,6 +83,11 @@ recalculateSize() const
   _width = _inputSlotWidth +
            _outputSlotWidth +
            2 * _spacing;
+
+  if (auto w = _dataModel->embeddedWidget())
+  {
+    _width += w->width();
+  }
 }
 
 

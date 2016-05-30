@@ -1,12 +1,9 @@
-#include <iostream>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QGraphicsView>
 
 #include <nodes/NodeData>
 #include <nodes/FlowScene>
 #include <nodes/FlowGraphicsView>
-
-#include <QtWidgets/QApplication>
-#include <QtWidgets/QGraphicsView>
-
 #include <nodes/DataModelRegistry>
 
 #include "models.hpp"
@@ -43,12 +40,9 @@ main(int argc, char* argv[])
 
   FlowGraphicsView view(&scene);
 
-  view.setWindowTitle(QT_TRANSLATE_NOOP(QGraphicsView,
-                                        "Node-based flow editor"));
+  view.setWindowTitle("Node-based flow editor");
   view.resize(800, 600);
   view.show();
-
-  //view.scale(0.5, 0.5);
 
   return app.exec();
 }

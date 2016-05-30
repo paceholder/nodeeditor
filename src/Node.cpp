@@ -88,6 +88,8 @@ Node::
 setGraphicsObject(std::unique_ptr<NodeGraphicsObject>&& graphics)
 {
   _nodeGraphicsObject = std::move(graphics);
+
+  _nodeGeometry.recalculateSize();
 }
 
 

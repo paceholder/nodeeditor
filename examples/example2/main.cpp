@@ -1,26 +1,37 @@
-#include <QtCore>
-#include <QtGui>
-#include <QtWidgets>
+#include <nodes/NodeData>
+#include <nodes/FlowScene>
+#include <nodes/FlowGraphicsView>
+
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QGraphicsView>
+
+#include <nodes/DataModelRegistry>
+
+#include "model.hpp"
+
+
+static bool
+registerDataModels()
+{
+  DataModelRegistry::registerModel<DataModelWithWidget>("DataModelWithWidget");
+
+  return true;
+}
+
+static bool registerOK = registerDataModels();
 
 int
 main(int argc, char *argv[])
 {
   QApplication app(argc, argv);
 
-  QGraphicsScene scene;
-  QGraphicsView  view(&scene);
+  FlowScene scene;
 
-  QGraphicsWidget* parentWidget = new QGraphicsWidget();
-  parentWidget->setMinimumSize(QSizeF(100, 30));
-  parentWidget->setFlags(QGraphicsItem::ItemIsMovable);
-  parentWidget->setAutoFillBackground(true);
-  scene.addItem(parentWidget);
+  FlowGraphicsView view(&scene);
 
-  QGraphicsProxyWidget *proxy =
-    scene.addWidget(new QPushButton("MOVE IT"));
-  proxy->setParentItem(parentWidget);
-
-  view.setFixedSize(QSize(600, 400));
+  view.setWindowTitle("Node-based flow editor");
+  view.resize(800, 600);
   view.show();
+
   return app.exec();
 }

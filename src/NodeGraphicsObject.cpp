@@ -13,6 +13,7 @@
 #include "NodePainter.hpp"
 
 #include "Node.hpp"
+#include "NodeDataModel.hpp"
 #include "NodeConnectionInteraction.hpp"
 
 NodeGraphicsObject::
@@ -20,6 +21,7 @@ NodeGraphicsObject(FlowScene &scene,
                    std::shared_ptr<Node>& node)
   : _scene(scene)
   , _node(node)
+  , _proxyWidget(nullptr)
 {
   _scene.addItem(this);
 
@@ -41,9 +43,7 @@ NodeGraphicsObject(FlowScene &scene,
 
   setAcceptHoverEvents(true);
 
-  //embedQWidget();
-
-  //_nodeGeometry.recalculateSize();
+  embedQWidget();
 }
 
 
@@ -59,14 +59,21 @@ void
 NodeGraphicsObject::
 embedQWidget()
 {
-  QPushButton* button = new QPushButton(QString("Hello"));
+  auto node = _node.lock();
 
-  QGraphicsProxyWidget* proxyWidget = new QGraphicsProxyWidget();
+  QWidget * w = node->nodeDataModel()->embeddedWidget();
 
-  proxyWidget->setWidget(button);
+  if (w)
+  {
+    _proxyWidget = new QGraphicsProxyWidget();
 
-  button->setVisible(true);
-  proxyWidget->setParentItem(this);
+    _proxyWidget->setWidget(w);
+
+    w->setVisible(true);
+    w->setMaximumSize(w->sizeHint());
+
+    _proxyWidget->setParentItem(this);
+  }
 }
 
 
@@ -80,7 +87,6 @@ boundingRect() const
 
 void
 NodeGraphicsObject::
-//moveConnections(QPointF d) const
 moveConnections() const
 {
   std::shared_ptr<Node> node = _node.lock();
@@ -113,8 +119,8 @@ moveConnections() const
           //auto p = con->connectionGeometry().getEndPoint(portType);
 
           con->connectionGeometry().setEndPoint(portType,
-              connectionPos);
-                                                //p + d);
+                                                connectionPos);
+          //p + d);
 
           con->getConnectionGraphicsObject()->setGeometryChanged();
           con->getConnectionGraphicsObject()->update();
@@ -138,7 +144,18 @@ paint(QPainter * painter,
 {
   painter->setClipRect(option->exposedRect);
 
-  NodePainter::paint(painter, _node.lock());
+  auto node = _node.lock();
+
+  NodeGeometry & geom = node->nodeGeometry();
+
+  if (_proxyWidget)
+  {
+    QWidget * w = _proxyWidget->widget();
+    _proxyWidget->setPos((geom.width() - w->width()) / 2.0,
+                         (geom.height() - w->height()) / 2.0);
+  }
+
+  NodePainter::paint(painter, node);
 }
 
 
@@ -199,6 +216,7 @@ NodeGraphicsObject::
 mouseMoveEvent(QGraphicsSceneMouseEvent * event)
 {
   QGraphicsObject::mouseMoveEvent(event);
+
   //QPointF d = event->pos() - event->lastPos();
 
   if (event->lastPos() != event->pos())
@@ -214,11 +232,11 @@ NodeGraphicsObject::
 mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 {
   QGraphicsObject::mouseReleaseEvent(event);
+
   //QPointF d = event->pos() - event->lastPos();
 
   // position connections precisely after fast node move
   moveConnections();
-
 }
 
 

@@ -11,6 +11,8 @@
 class FlowScene;
 class FlowItemEntry;
 
+class QGraphicsProxyWidget;
+
 /// Class reacts on GUI events, mouse clicks and
 /// forwards painting operation.
 class NodeGraphicsObject : public QGraphicsObject
@@ -53,4 +55,7 @@ private:
   FlowScene & _scene;
 
   std::weak_ptr<Node> _node;
+
+  // either nullptr or owned by parent QGraphicsItem
+  QGraphicsProxyWidget * _proxyWidget;
 };
