@@ -70,11 +70,9 @@ contextMenuEvent(QContextMenuEvent *event)
 
       QPoint pos = event->pos();
 
-      pos = this->transform().map(pos);
       QPointF posView = this->mapToScene(pos);
 
-      node->nodeGraphicsObject()->moveBy(posView.x(),
-                                         posView.y());
+      node->nodeGraphicsObject()->setPos(posView);
     }
     else
     {
