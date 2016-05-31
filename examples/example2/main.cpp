@@ -7,13 +7,16 @@
 
 #include <nodes/DataModelRegistry>
 
-#include "model.hpp"
+#include "TextSourceDataModel.hpp"
+#include "TextDisplayDataModel.hpp"
 
 
 static bool
 registerDataModels()
 {
   DataModelRegistry::registerModel<TextSourceDataModel>("TextSourceDataModel");
+
+  DataModelRegistry::registerModel<TextDisplayDataModel>("TextDisplayDataModel");
 
   return true;
 }
