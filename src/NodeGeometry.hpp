@@ -58,6 +58,7 @@ public:
   double opacity() const { return _opacity; }
 
 public:
+
   QRectF entryBoundingRect() const;
 
   QRectF boundingRect() const;
@@ -77,7 +78,15 @@ public:
                                QPointF const point,
                                QTransform t = QTransform()) const;
 
+  /// Returns the position of a widget on the Node surface
+  QPointF widgetPosition() const;
+
 private:
+
+  unsigned int portWidth(PortType portType) const;
+
+private:
+
   // some variables are mutable because
   // we need to change drawing metrics
   // corresponding to fontMetrics

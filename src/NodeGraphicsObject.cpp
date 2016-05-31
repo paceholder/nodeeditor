@@ -150,9 +150,7 @@ paint(QPainter * painter,
 
   if (_proxyWidget)
   {
-    QWidget * w = _proxyWidget->widget();
-    _proxyWidget->setPos((geom.width() - w->width()) / 2.0,
-                         (geom.height() - w->height()) / 2.0);
+    _proxyWidget->setPos(geom.widgetPosition());
   }
 
   NodePainter::paint(painter, node);

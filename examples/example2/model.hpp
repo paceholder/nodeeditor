@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QtCore/QObject>
-
 #include <QtWidgets/QLineEdit>
 
 #include <nodes/NodeData>
@@ -18,21 +17,21 @@ public:
   { return "MyNodeData"; }
 
   QString name() const override
-  { return "My Node Data"; }
+  { return "Text"; }
 };
 
 //------------------------------------------------------------------------------
 
 /// The model dictates the number of inputs and outputs for the Node.
 /// In this example it has no logic.
-class DataModelWithWidget : public NodeDataModel
+class TextSourceDataModel : public NodeDataModel
 {
   Q_OBJECT
 
 public:
-  DataModelWithWidget();
+  TextSourceDataModel();
 
-  virtual ~DataModelWithWidget() {}
+  virtual ~TextSourceDataModel() {}
 
 public:
 
@@ -43,11 +42,11 @@ public:
     switch (portType)
     {
       case PortType::IN:
-        result = 2;
+        result = 0;
         break;
 
       case PortType::OUT:
-        result = 3;
+        result = 1;
 
       default:
         break;

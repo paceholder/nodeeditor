@@ -13,7 +13,7 @@
 static bool
 registerDataModels()
 {
-  DataModelRegistry::registerModel<DataModelWithWidget>("DataModelWithWidget");
+  DataModelRegistry::registerModel<TextSourceDataModel>("TextSourceDataModel");
 
   return true;
 }

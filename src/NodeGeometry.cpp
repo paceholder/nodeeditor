@@ -62,23 +62,8 @@ recalculateSize() const
     _height = step * maxNumOfEntries;
   }
 
-  auto slotWidth =
-    [this](PortType portType)
-    {
-      unsigned width = 0;
-
-      for (auto i = 0ul; i < _dataModel->nSlots(portType); ++i)
-      {
-        auto const &name = _dataModel->data(PortType::IN, i)->name();
-        width = std::max(unsigned(_fontMetrics.width(name)),
-                         width);
-      }
-
-      return width;
-    };
-
-  _inputSlotWidth  = slotWidth(PortType::IN);
-  _outputSlotWidth = slotWidth(PortType::OUT);
+  _inputSlotWidth  = portWidth(PortType::IN);
+  _outputSlotWidth = portWidth(PortType::OUT);
 
   _width = _inputSlotWidth +
            _outputSlotWidth +
@@ -184,4 +169,35 @@ checkHitScenePoint(PortType portType,
   }
 
   return result;
+}
+
+
+QPointF
+NodeGeometry::
+widgetPosition() const
+{
+  if (auto w = _dataModel->embeddedWidget())
+  {
+    return QPointF(_spacing + portWidth(PortType::IN),
+                   (_height - w->height()) / 2.0);
+  }
+
+  return QPointF();
+}
+
+
+unsigned int
+NodeGeometry::
+portWidth(PortType portType) const
+{
+  unsigned width = 0;
+
+  for (auto i = 0ul; i < _dataModel->nSlots(portType); ++i)
+  {
+    auto const &name = _dataModel->data(PortType::IN, i)->name();
+    width = std::max(unsigned(_fontMetrics.width(name)),
+                     width);
+  }
+
+  return width;
 }
