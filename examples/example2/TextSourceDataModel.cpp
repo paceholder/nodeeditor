@@ -13,7 +13,7 @@ TextSourceDataModel()
 
 unsigned int
 TextSourceDataModel::
-nSlots(PortType portType) const
+nPorts(PortType portType) const
 {
   unsigned int result = 1;
 

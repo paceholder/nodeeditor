@@ -95,8 +95,8 @@ private:
   mutable unsigned int _width;
   mutable unsigned int _height;
   unsigned int _entryWidth;
-  mutable unsigned int _inputSlotWidth;
-  mutable unsigned int _outputSlotWidth;
+  mutable unsigned int _inputPortWidth;
+  mutable unsigned int _outputPortWidth;
   mutable unsigned int _entryHeight;
   unsigned int _spacing;
 

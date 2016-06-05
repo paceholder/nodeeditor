@@ -4,8 +4,8 @@
 
 NodeState::
 NodeState(std::unique_ptr<NodeDataModel> const &model)
-  : _outConnections(model->nSlots(PortType::OUT))
-  , _inConnections(model->nSlots(PortType::IN))
+  : _outConnections(model->nPorts(PortType::OUT))
+  , _inConnections(model->nPorts(PortType::IN))
   , _reaction(NOT_REACTING)
 {}
 

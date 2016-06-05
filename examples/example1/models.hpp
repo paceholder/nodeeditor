@@ -43,7 +43,7 @@ public:
 
 public:
 
-  unsigned int nSlots(PortType portType) const override
+  unsigned int nPorts(PortType portType) const override
   {
     unsigned int result = 1;
 

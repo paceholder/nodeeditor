@@ -18,14 +18,15 @@ public:
 
 public:
 
-  virtual unsigned int nSlots(PortType portType) const = 0;
+  virtual unsigned int nPorts(PortType portType) const = 0;
 
   virtual
   std::shared_ptr<NodeData>
-  data(PortType portType, int slot) = 0;
+  data(PortType portType, int port) = 0;
 
   /// Triggers the algorithm
-  virtual void setInputData(std::shared_ptr<NodeData> nodeData, int slot) = 0;
+  virtual void setInputData(std::shared_ptr<NodeData> nodeData,
+                            int port) = 0;
 
   virtual QWidget * embeddedWidget() = 0;
 

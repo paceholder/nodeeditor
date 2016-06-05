@@ -20,7 +20,7 @@ public:
 
 public:
 
-  unsigned int nSlots(PortType portType) const override;
+  unsigned int nPorts(PortType portType) const override;
 
   std::shared_ptr<NodeData>
   data(PortType, int slot) override;

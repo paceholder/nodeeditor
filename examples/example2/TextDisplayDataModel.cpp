@@ -13,7 +13,7 @@ TextDisplayDataModel()
 
 unsigned int
 TextDisplayDataModel::
-nSlots(PortType portType) const
+nPorts(PortType portType) const
 {
   unsigned int result = 1;
 

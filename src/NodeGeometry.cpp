@@ -10,14 +10,14 @@ NodeGeometry::
 NodeGeometry(std::unique_ptr<NodeDataModel> const &dataModel)
   : _width(100)
   , _height(150)
-  , _inputSlotWidth(70)
-  , _outputSlotWidth(70)
+  , _inputPortWidth(70)
+  , _outputPortWidth(70)
   , _entryHeight(20)
   , _spacing(20)
   , _connectionPointDiameter(8)
   , _hovered(false)
-  , _nSources(dataModel->nSlots(PortType::OUT))
-  , _nSinks(dataModel->nSlots(PortType::IN))
+  , _nSources(dataModel->nPorts(PortType::OUT))
+  , _nSinks(dataModel->nPorts(PortType::IN))
   , _draggingPos(-1000, -1000)
   , _opacity(0.80)
   , _dataModel(dataModel)
@@ -62,11 +62,11 @@ recalculateSize() const
     _height = step * maxNumOfEntries;
   }
 
-  _inputSlotWidth  = portWidth(PortType::IN);
-  _outputSlotWidth = portWidth(PortType::OUT);
+  _inputPortWidth  = portWidth(PortType::IN);
+  _outputPortWidth = portWidth(PortType::OUT);
 
-  _width = _inputSlotWidth +
-           _outputSlotWidth +
+  _width = _inputPortWidth +
+           _outputPortWidth +
            2 * _spacing;
 
   if (auto w = _dataModel->embeddedWidget())
@@ -152,7 +152,7 @@ checkHitScenePoint(PortType portType,
 
   double const tolerance = 2.0 * _connectionPointDiameter;
 
-  size_t const nItems = _dataModel->nSlots(portType);
+  size_t const nItems = _dataModel->nPorts(portType);
 
   for (size_t i = 0; i < nItems; ++i)
   {
@@ -192,7 +192,7 @@ portWidth(PortType portType) const
 {
   unsigned width = 0;
 
-  for (auto i = 0ul; i < _dataModel->nSlots(portType); ++i)
+  for (auto i = 0ul; i < _dataModel->nPorts(portType); ++i)
   {
     auto const &name = _dataModel->data(PortType::IN, i)->name();
     width = std::max(unsigned(_fontMetrics.width(name)),
