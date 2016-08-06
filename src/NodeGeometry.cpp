@@ -194,7 +194,7 @@ portWidth(PortType portType) const
 
   for (auto i = 0ul; i < _dataModel->nPorts(portType); ++i)
   {
-    auto const &name = _dataModel->data(PortType::IN, i)->name();
+    auto const &name = _dataModel->dataType(PortType::IN, i).name;
     width = std::max(unsigned(_fontMetrics.width(name)),
                      width);
   }

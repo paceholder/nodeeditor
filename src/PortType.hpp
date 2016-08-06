@@ -38,7 +38,7 @@ struct Port
 };
 
 
-using PortAddress = std::pair<QUuid, PortIndex>;
+//using PortAddress = std::pair<QUuid, PortIndex>;
 
 static
 PortType

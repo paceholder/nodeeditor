@@ -11,22 +11,16 @@ class MyNodeData : public NodeData
 {
 public:
 
-  QString type() const override
-  { return "MyNodeData"; }
-
-  QString name() const override
-  { return "My Node Data"; }
+  NodeDataType type() const override
+  { return NodeDataType {"MyNodeData", "My Node Data"}; }
 };
 
 class SimpleNodeData : public NodeData
 {
 public:
 
-  QString type() const override
-  { return "SimpleData"; }
-
-  QString name() const override
-  { return "Simple Data"; }
+  NodeDataType type() const override
+  { return NodeDataType {"SimpleData", "Simple Data"}; }
 };
 
 //------------------------------------------------------------------------------
@@ -63,16 +57,41 @@ public:
     return result;
   }
 
-  std::shared_ptr<NodeData>
-  data(PortType, int slot) override
+  NodeDataType dataType(PortType portType, PortIndex portIndex) const override
   {
-    if (slot < 1)
+    switch (portType)
+    {
+      case PortType::IN:
+        switch (portIndex)
+        {
+          case 0:
+            return MyNodeData().type();
+            break;
+
+          case 1:
+            return SimpleNodeData().type();
+            break;
+        }
+        break;
+
+      case PortType::OUT:
+        return MyNodeData().type();
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  std::shared_ptr<NodeData>outData(PortIndex port) override
+  {
+    if (port < 1)
       return std::make_shared<MyNodeData>();
 
     return std::make_shared<SimpleNodeData>();
   }
 
-  void setInputData(std::shared_ptr<NodeData>, int) override
+  void setInData(std::shared_ptr<NodeData>, int) override
   {
     //
   }

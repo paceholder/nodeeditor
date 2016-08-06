@@ -52,8 +52,6 @@ public:
 
 private:
 
-  struct NodeImpl;
-
   // addressing
 
   QUuid _id;

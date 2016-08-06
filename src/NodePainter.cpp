@@ -178,7 +178,7 @@ drawEntryLabels(QPainter* painter,
         else
           painter->setPen(Qt::darkGray);
 
-        QString s = model->data(portType, i)->name();
+        QString s = model->dataType(portType, i).name;
 
         auto rect = metrics.boundingRect(s);
 

@@ -34,11 +34,17 @@ nPorts(PortType portType) const
 }
 
 
+NodeDataType
+TextDisplayDataModel::
+dataType(PortType, PortIndex) const
+{
+  return TextData().type();
+}
+
+
 std::shared_ptr<NodeData>
 TextDisplayDataModel::
-data(PortType, int slot)
+outData(PortIndex)
 {
-  Q_UNUSED(slot);
-
   return std::make_shared<TextData>();
 }

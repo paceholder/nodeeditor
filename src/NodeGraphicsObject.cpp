@@ -107,7 +107,7 @@ moveConnections() const
                                                  portType,
                                                  sceneTransform());
 
-        std::shared_ptr<Connection> con = connection.lock();
+        auto con = connection.lock();
 
         if (con)
         {
@@ -116,11 +116,8 @@ moveConnections() const
 
           QPointF connectionPos = sceneTransform.inverted().map(scenePos);
 
-          //auto p = con->connectionGeometry().getEndPoint(portType);
-
           con->connectionGeometry().setEndPoint(portType,
                                                 connectionPos);
-          //p + d);
 
           con->getConnectionGraphicsObject()->setGeometryChanged();
           con->getConnectionGraphicsObject()->update();
@@ -164,7 +161,9 @@ mousePressEvent(QGraphicsSceneMouseEvent * event)
   auto clickPort =
     [&](PortType portToCheck)
     {
-      NodeGeometry & nodeGeometry = _node.lock()->nodeGeometry();
+      auto node = _node.lock();
+
+      NodeGeometry & nodeGeometry = node->nodeGeometry();
 
       // TODO do not pass sceneTransform
       int portIndex = nodeGeometry.checkHitScenePoint(portToCheck,
@@ -173,7 +172,7 @@ mousePressEvent(QGraphicsSceneMouseEvent * event)
 
       if (portIndex != INVALID)
       {
-        NodeState const & nodeState = _node.lock()->nodeState();
+        NodeState const & nodeState = node->nodeState();
 
         std::shared_ptr<Connection> connection =
           nodeState.connection(portToCheck, portIndex);
@@ -181,7 +180,7 @@ mousePressEvent(QGraphicsSceneMouseEvent * event)
         // start dragging existing connection
         if (connection)
         {
-          NodeConnectionInteraction interaction(_node.lock(), connection);
+          NodeConnectionInteraction interaction(node, connection);
 
           interaction.disconnect(portToCheck);
         }
@@ -190,10 +189,10 @@ mousePressEvent(QGraphicsSceneMouseEvent * event)
         {
           // todo add to FlowScene
           auto connection = _scene.createConnection(portToCheck,
-                                                    _node.lock(),
+                                                    node,
                                                     portIndex);
 
-          _node.lock()->nodeState().setConnection(portToCheck,
+          node->nodeState().setConnection(portToCheck,
                                                   portIndex,
                                                   connection);
 
@@ -230,8 +229,6 @@ NodeGraphicsObject::
 mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 {
   QGraphicsObject::mouseReleaseEvent(event);
-
-  //QPointF d = event->pos() - event->lastPos();
 
   // position connections precisely after fast node move
   moveConnections();

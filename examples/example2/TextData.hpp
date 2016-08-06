@@ -8,11 +8,8 @@ class TextData : public NodeData
 {
 public:
 
-  QString type() const override
-  { return "text"; }
-
-  QString name() const override
-  { return "Text"; }
+  NodeDataType type() const override
+  { return NodeDataType{"text", "Text"}; }
 
 private:
 

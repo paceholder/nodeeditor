@@ -22,10 +22,13 @@ public:
 
   unsigned int nPorts(PortType portType) const override;
 
-  std::shared_ptr<NodeData>
-  data(PortType, int slot) override;
+  NodeDataType
+  dataType(PortType portType, PortIndex portIndex) const override;
 
-  void setInputData(std::shared_ptr<NodeData>, int) override
+  std::shared_ptr<NodeData>
+  outData(PortIndex port) override;
+
+  void setInData(std::shared_ptr<NodeData>, int) override
   {
     //
   }
