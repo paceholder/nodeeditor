@@ -115,19 +115,20 @@ mouseMoveEvent(QGraphicsSceneMouseEvent* event)
                              _scene,
                              _scene.views()[0]->transform());
 
-  auto &state = _connection.lock()->connectionState();
+  auto con = _connection.lock();
+
+  auto &state = con->connectionState();
   state.interactWithNode(node, event->scenePos());
 
   //-------------------
 
   QPointF offset = event->pos() - event->lastPos();
 
-  auto requiredPort = _connection.lock()->requiredPort();
+  auto requiredPort = con->requiredPort();
 
   if (requiredPort != PortType::NONE)
   {
-    _connection.lock()->connectionGeometry().moveEndPoint(requiredPort,
-                                                          offset);
+    con->connectionGeometry().moveEndPoint(requiredPort, offset);
   }
 
   //-------------------
@@ -149,22 +150,17 @@ mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
   auto node = ::locateNodeAt(event->scenePos(), _scene,
                              _scene.views()[0]->transform());
 
-  if (node)
-  {
-    NodeConnectionInteraction interaction(node, _connection.lock());
+  auto connection = _connection.lock();
 
-    if (interaction.tryConnect())
-    {
-      node->resetReactionToConnection();
-    }
-    else
-    {
-      _scene.deleteConnection(_connection.lock()->id());
-    }
+  NodeConnectionInteraction interaction(node, connection);
+
+  if (node && interaction.tryConnect())
+  {
+    node->resetReactionToConnection();
   }
   else
   {
-    _scene.deleteConnection(_connection.lock()->id());
+    _scene.deleteConnection(connection);
   }
 }
 

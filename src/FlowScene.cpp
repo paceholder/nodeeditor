@@ -36,37 +36,25 @@ createConnection(PortType connectedPort,
 
 void
 FlowScene::
-deleteConnection(QUuid const & id)
+deleteConnection(std::shared_ptr<Connection> connection)
 {
-  _connections.erase(id);
+  _connections.erase(connection->id());
 }
 
 
 std::shared_ptr<Node>
 FlowScene::
-createNode(std::unique_ptr<NodeDataModel> &&dataModel)
+createNode(std::unique_ptr<NodeDataModel> && dataModel)
 {
   auto node = std::make_shared<Node>(std::move(dataModel));
 
   auto ngo = make_unique<NodeGraphicsObject>(*this, node);
+
   node->setGraphicsObject(std::move(ngo));
 
   _nodes[node->id()] = node;
 
   return node;
-}
-
-
-std::shared_ptr<Node>
-FlowScene::
-getNode(QUuid id) const
-{
-  auto it = _nodes.find(id);
-
-  if (it == _nodes.end())
-    return std::shared_ptr<Node>();
-
-  return it->second;
 }
 
 
@@ -103,7 +91,7 @@ locateNodeAt(QPointF scenePoint, FlowScene &scene, QTransform viewTransform)
   std::copy_if(items.begin(),
                items.end(),
                std::back_inserter(filteredItems),
-               [](QGraphicsItem * item)
+               [] (QGraphicsItem * item)
                {
                  return (dynamic_cast<NodeGraphicsObject*>(item) != nullptr);
                });

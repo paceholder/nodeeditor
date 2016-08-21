@@ -1,13 +1,11 @@
 #include "TextSourceDataModel.hpp"
 
-// For some reason CMake could not generate moc-files correctly
-// without having a cpp for an QObject from hpp.
-
 TextSourceDataModel::
 TextSourceDataModel()
   : _lineEdit(new QLineEdit("Default Text"))
 {
-  //
+  connect(_lineEdit, &QLineEdit::textEdited,
+          this, &TextSourceDataModel::onTextEdited);
 }
 
 
@@ -34,6 +32,16 @@ nPorts(PortType portType) const
 }
 
 
+void
+TextSourceDataModel::
+onTextEdited(QString const &string)
+{
+  Q_UNUSED(string);
+
+  emit dataUpdated(0);
+}
+
+
 NodeDataType
 TextSourceDataModel::
 dataType(PortType, PortIndex) const
@@ -46,5 +54,5 @@ std::shared_ptr<NodeData>
 TextSourceDataModel::
 outData(PortIndex)
 {
-  return std::make_shared<TextData>();
+  return std::make_shared<TextData>(_lineEdit->text());
 }

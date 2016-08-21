@@ -3,16 +3,6 @@
 #include "ConnectionGraphicsObject.hpp"
 #include "NodeGraphicsObject.hpp"
 
-//bool
-//NodeConnectionInteraction::
-//canConnect() const
-//{
-  //PortIndex portIndex = INVALID;
-
-  //return canConnect(portIndex);
-//}
-
-
 bool
 NodeConnectionInteraction::
 canConnect(PortIndex &portIndex) const
@@ -76,6 +66,15 @@ tryConnect() const
   // 4) Adjust Connection geometry
 
   _node->nodeGraphicsObject()->moveConnections();
+
+  // 5) Poke model to intiate data transfer
+
+  auto outNode = _connection->getNode(PortType::OUT).lock();
+  if (outNode)
+  {
+    PortIndex outPortIndex = _connection->getPortIndex(PortType::OUT);
+    outNode->onDataUpdated(outPortIndex);
+  }
 
   return true;
 }

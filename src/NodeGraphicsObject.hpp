@@ -27,6 +27,8 @@ public:
 
   QRectF boundingRect() const override;
 
+  void setGeometryChanged();
+
   /// Visits all attached connections and corrects
   /// their corresponding end points.
   void moveConnections() const;

@@ -9,6 +9,7 @@
 
 #include "NodeState.hpp"
 #include "NodeGeometry.hpp"
+#include "NodeData.hpp"
 
 class Connection;
 class ConnectionState;
@@ -22,7 +23,7 @@ class Node : public QObject
 public:
 
   /// NodeDataModel should be an rvalue and is moved into the Node
-  Node(std::unique_ptr<NodeDataModel> &&dataModel);
+  Node(std::unique_ptr<NodeDataModel> && dataModel);
 
   ~Node();
 
@@ -50,6 +51,16 @@ public:
 
   std::unique_ptr<NodeDataModel> const & nodeDataModel() const;
 
+public slots: // data propagation
+
+  // propagates incoming data to the underlying model
+  void propagateData(std::shared_ptr<NodeData> nodeData,
+                     PortIndex inPortIndex) const;
+
+  // fetches data from model's OUT #index port
+  // and propagates it to the connection
+  void onDataUpdated(PortIndex index);
+
 private:
 
   // addressing
@@ -68,6 +79,3 @@ private:
 
   std::unique_ptr<NodeGraphicsObject> _nodeGraphicsObject;
 };
-
-//Q_DECLARE_METATYPE(std::shared_ptr<Node>);
-//qRegisterMetaType<std::shared_ptr<Node>>();

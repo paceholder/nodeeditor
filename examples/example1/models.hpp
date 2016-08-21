@@ -97,9 +97,4 @@ public:
   }
 
   QWidget * embeddedWidget() override { return nullptr; }
-
-signals:
-
-  void computingStarted() override;
-  void computingFinished() override;
 };

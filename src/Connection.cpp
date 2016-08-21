@@ -6,6 +6,7 @@
 #include <QtWidgets/QtWidgets>
 
 #include "Node.hpp"
+#include "NodeData.hpp"
 #include "FlowScene.hpp"
 #include "FlowGraphicsView.hpp"
 
@@ -238,4 +239,17 @@ clearNode(PortType portType)
     _inPortIndex = INVALID;
   else
     _outPortIndex = INVALID;
+}
+
+
+void
+Connection::
+propagateData(std::shared_ptr<NodeData> nodeData) const
+{
+  auto inNode = _inNode.lock();
+
+  if (inNode)
+  {
+    inNode->propagateData(nodeData, _inPortIndex);
+  }
 }

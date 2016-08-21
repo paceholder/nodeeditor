@@ -28,6 +28,7 @@ public:
   /// 2) Assign node to required port in Connection
   /// 3) Assign Connection to empty port in NodeState
   /// 4) Adjust Connection geometry
+  /// 5) Poke model to intiate data transfer
   bool tryConnect() const;
 
 

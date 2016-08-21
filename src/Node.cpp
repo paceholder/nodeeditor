@@ -15,7 +15,7 @@
 //------------------------------------------------------------------------------
 
 Node::
-Node(std::unique_ptr<NodeDataModel> &&dataModel)
+Node(std::unique_ptr<NodeDataModel> && dataModel)
   : _id(QUuid::createUuid())
   , _nodeDataModel(std::move(dataModel))
   , _nodeState(_nodeDataModel)
@@ -23,6 +23,10 @@ Node(std::unique_ptr<NodeDataModel> &&dataModel)
   , _nodeGraphicsObject(nullptr)
 {
   _nodeGeometry.recalculateSize();
+
+  // propagate data: model => node
+  connect(_nodeDataModel.get(), &NodeDataModel::dataUpdated,
+          this, &Node::onDataUpdated);
 }
 
 
@@ -130,4 +134,30 @@ Node::
 nodeDataModel() const
 {
   return _nodeDataModel;
+}
+
+
+void
+Node::
+propagateData(std::shared_ptr<NodeData> nodeData,
+              PortIndex inPortIndex) const
+{
+  _nodeDataModel->setInData(nodeData, inPortIndex);
+
+  _nodeGeometry.recalculateSize();
+  _nodeGraphicsObject->setGeometryChanged();
+  _nodeGraphicsObject->update();
+}
+
+
+void
+Node::
+onDataUpdated(PortIndex index)
+{
+  auto nodeData = _nodeDataModel->outData(index);
+
+  auto connection = _nodeState.connection(PortType::OUT, index);
+
+  if (nodeData && connection)
+    connection->propagateData(nodeData);
 }

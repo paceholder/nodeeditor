@@ -68,9 +68,11 @@ embedQWidget()
     _proxyWidget = new QGraphicsProxyWidget();
 
     _proxyWidget->setWidget(w);
+    _proxyWidget->setPreferredWidth(5);
+    _proxyWidget->setSizePolicy(QSizePolicy::Preferred,
+                                QSizePolicy::Preferred);
 
     w->setVisible(true);
-    w->setMaximumSize(w->sizeHint());
 
     _proxyWidget->setParentItem(this);
   }
@@ -87,6 +89,14 @@ boundingRect() const
 
 void
 NodeGraphicsObject::
+setGeometryChanged()
+{
+  prepareGeometryChange();
+}
+
+
+void
+NodeGraphicsObject::
 moveConnections() const
 {
   std::shared_ptr<Node> node = _node.lock();
@@ -94,38 +104,38 @@ moveConnections() const
   NodeState const & nodeState = node->nodeState();
 
   auto moveConnections =
-    [&](PortType portType)
+  [&](PortType portType)
+  {
+    auto const & connectionsWeak = nodeState.getEntries(portType);
+
+    size_t portIndex = 0;
+
+    for (auto const & connection : connectionsWeak)
     {
-      auto const & connectionsWeak = nodeState.getEntries(portType);
+      QPointF scenePos =
+        node->nodeGeometry().portScenePosition(portIndex,
+                                               portType,
+                                               sceneTransform());
 
-      size_t portIndex = 0;
+      auto con = connection.lock();
 
-      for (auto const & connection : connectionsWeak)
+      if (con)
       {
-        QPointF scenePos =
-          node->nodeGeometry().portScenePosition(portIndex,
-                                                 portType,
-                                                 sceneTransform());
+        QTransform sceneTransform =
+          con->getConnectionGraphicsObject()->sceneTransform();
 
-        auto con = connection.lock();
+        QPointF connectionPos = sceneTransform.inverted().map(scenePos);
 
-        if (con)
-        {
-          QTransform sceneTransform =
-            con->getConnectionGraphicsObject()->sceneTransform();
+        con->connectionGeometry().setEndPoint(portType,
+                                              connectionPos);
 
-          QPointF connectionPos = sceneTransform.inverted().map(scenePos);
-
-          con->connectionGeometry().setEndPoint(portType,
-                                                connectionPos);
-
-          con->getConnectionGraphicsObject()->setGeometryChanged();
-          con->getConnectionGraphicsObject()->update();
-        }
-
-        ++portIndex;
+        con->getConnectionGraphicsObject()->setGeometryChanged();
+        con->getConnectionGraphicsObject()->update();
       }
-    };
+
+      ++portIndex;
+    }
+  };
 
   moveConnections(PortType::IN);
 
@@ -159,47 +169,47 @@ NodeGraphicsObject::
 mousePressEvent(QGraphicsSceneMouseEvent * event)
 {
   auto clickPort =
-    [&](PortType portToCheck)
+  [&](PortType portToCheck)
+  {
+    auto node = _node.lock();
+
+    NodeGeometry & nodeGeometry = node->nodeGeometry();
+
+    // TODO do not pass sceneTransform
+    int portIndex = nodeGeometry.checkHitScenePoint(portToCheck,
+                                                    event->scenePos(),
+                                                    sceneTransform());
+
+    if (portIndex != INVALID)
     {
-      auto node = _node.lock();
+      NodeState const & nodeState = node->nodeState();
 
-      NodeGeometry & nodeGeometry = node->nodeGeometry();
+      std::shared_ptr<Connection> connection =
+        nodeState.connection(portToCheck, portIndex);
 
-      // TODO do not pass sceneTransform
-      int portIndex = nodeGeometry.checkHitScenePoint(portToCheck,
-                                                      event->scenePos(),
-                                                      sceneTransform());
-
-      if (portIndex != INVALID)
+      // start dragging existing connection
+      if (connection)
       {
-        NodeState const & nodeState = node->nodeState();
+        NodeConnectionInteraction interaction(node, connection);
 
-        std::shared_ptr<Connection> connection =
-          nodeState.connection(portToCheck, portIndex);
-
-        // start dragging existing connection
-        if (connection)
-        {
-          NodeConnectionInteraction interaction(node, connection);
-
-          interaction.disconnect(portToCheck);
-        }
-        // initialize new Connection
-        else
-        {
-          // todo add to FlowScene
-          auto connection = _scene.createConnection(portToCheck,
-                                                    node,
-                                                    portIndex);
-
-          node->nodeState().setConnection(portToCheck,
-                                                  portIndex,
-                                                  connection);
-
-          connection->getConnectionGraphicsObject()->grabMouse();
-        }
+        interaction.disconnect(portToCheck);
       }
-    };
+      // initialize new Connection
+      else
+      {
+        // todo add to FlowScene
+        auto connection = _scene.createConnection(portToCheck,
+                                                  node,
+                                                  portIndex);
+
+        node->nodeState().setConnection(portToCheck,
+                                        portIndex,
+                                        connection);
+
+        connection->getConnectionGraphicsObject()->grabMouse();
+      }
+    }
+  };
 
   clickPort(PortType::IN);
   clickPort(PortType::OUT);
@@ -214,13 +224,10 @@ mouseMoveEvent(QGraphicsSceneMouseEvent * event)
 {
   QGraphicsObject::mouseMoveEvent(event);
 
-  //QPointF d = event->pos() - event->lastPos();
-
   if (event->lastPos() != event->pos())
-    //moveConnections(d);
     moveConnections();
 
-  //event->accept();
+  event->ignore();
 }
 
 

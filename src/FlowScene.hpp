@@ -44,14 +44,10 @@ public:
                    std::shared_ptr<Node> node,
                    PortIndex portIndex);
 
-  void deleteConnection(QUuid const & id);
+  void deleteConnection(std::shared_ptr<Connection> connection);
 
   std::shared_ptr<Node>
   createNode(std::unique_ptr<NodeDataModel> &&dataModel);
-
-public:
-
-  std::shared_ptr<Node> getNode(QUuid id) const;
 
 private:
 

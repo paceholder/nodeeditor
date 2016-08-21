@@ -1,13 +1,10 @@
 #include "TextDisplayDataModel.hpp"
 
-// For some reason CMake could not generate moc-files correctly
-// without having a cpp for an QObject from hpp.
-
 TextDisplayDataModel::
 TextDisplayDataModel()
-  : _label(new QLabel("Default Text"))
+  : _label(new QLabel("Resulting Text"))
 {
-  //
+  _label->setMargin(3);
 }
 
 
@@ -46,5 +43,6 @@ std::shared_ptr<NodeData>
 TextDisplayDataModel::
 outData(PortIndex)
 {
-  return std::make_shared<TextData>();
+  std::shared_ptr<NodeData> ptr;
+  return ptr;
 }

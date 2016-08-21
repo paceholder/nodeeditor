@@ -11,6 +11,7 @@
 #include "ConnectionGeometry.hpp"
 
 class Node;
+class NodeData;
 class ConnectionGraphicsObject;
 class QPointF;
 
@@ -60,6 +61,10 @@ public:
   PortIndex getPortIndex(PortType portType) const;
 
   void clearNode(PortType portType);
+
+public: // data propagation
+
+  void propagateData(std::shared_ptr<NodeData> nodeData) const;
 
 private:
 

@@ -57,16 +57,6 @@ setConnection(PortType portType,
 }
 
 
-//void
-//NodeState::
-//setConnectionId(PortType portType, size_t nEntry, QUuid id)
-//{
-//std::vector<QUuid> const& entries =
-//const_cast<NodeState const&>(*this).getEntries(portType);
-
-//const_cast<std::vector<QUuid>&>(entries)[nEntry] = id;
-//}
-
 NodeState::ReactToConnectionState
 NodeState::
 reaction() const

@@ -47,11 +47,8 @@ public:
 
 private:
 
-  //std::vector<QUuid> _sources;
-  //std::vector<QUuid> _sinks;
-
-  std::vector < std::weak_ptr < Connection > > _inConnections;
-  std::vector < std::weak_ptr < Connection > > _outConnections;
+  std::vector<std::weak_ptr<Connection> > _inConnections;
+  std::vector<std::weak_ptr<Connection> > _outConnections;
 
   ReactToConnectionState _reaction;
 };

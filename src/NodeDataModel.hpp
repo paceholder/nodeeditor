@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include <QtCore/QObject>
+//#include <QtCore/QObject>
 #include <QtWidgets/QWidget>
 
 #include "PortType.hpp"
@@ -11,6 +11,7 @@
 
 class NodeDataModel : public QObject
 {
+  Q_OBJECT
 
 public:
 
@@ -21,12 +22,10 @@ public:
   virtual unsigned int nPorts(PortType portType) const = 0;
 
   virtual
-  NodeDataType
-  dataType(PortType portType, PortIndex portIndex) const = 0;
+  NodeDataType dataType(PortType portType, PortIndex portIndex) const = 0;
 
   virtual
-  std::shared_ptr<NodeData>
-  outData(PortIndex port) = 0;
+  std::shared_ptr<NodeData>outData(PortIndex port) = 0;
 
   /// Triggers the algorithm
   virtual void setInData(std::shared_ptr<NodeData> nodeData,
@@ -36,6 +35,9 @@ public:
 
 signals:
 
-  virtual void computingStarted()  = 0;
-  virtual void computingFinished() = 0;
+  void dataUpdated(PortIndex index);
+  void dataInvalidated(PortIndex index);
+
+  void computingStarted();
+  void computingFinished();
 };
