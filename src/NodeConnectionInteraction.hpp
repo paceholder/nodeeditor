@@ -34,7 +34,8 @@ public:
 
   /// 1) Node and Connection should be already connected
   /// 2) If so, clear Connection entry in the NodeState
-  /// 3) Set Connection end to 'requiring a port'
+  /// 3) Propagate invalid data to IN node
+  /// 4) Set Connection end to 'requiring a port'
   bool disconnect(PortType portToDisconnect) const;
 
 private:

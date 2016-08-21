@@ -253,3 +253,13 @@ propagateData(std::shared_ptr<NodeData> nodeData) const
     inNode->propagateData(nodeData, _inPortIndex);
   }
 }
+
+
+void
+Connection::
+propagateEmptyData() const
+{
+  std::shared_ptr<NodeData> emptyData;
+
+  propagateData(emptyData);
+}

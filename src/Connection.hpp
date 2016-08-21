@@ -65,6 +65,7 @@ public:
 public: // data propagation
 
   void propagateData(std::shared_ptr<NodeData> nodeData) const;
+  void propagateEmptyData() const;
 
 private:
 

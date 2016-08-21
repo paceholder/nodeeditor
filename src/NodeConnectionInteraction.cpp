@@ -95,12 +95,16 @@ disconnect(PortType portToDisconnect) const
   // clear pointer to Connection in the NodeState
   state.getEntries(portToDisconnect)[portIndex].reset();
 
+  // 4) Propagate invalid data to IN node
+  _connection->propagateEmptyData();
+
   // clear Connection side
   _connection->clearNode(portToDisconnect);
 
   _connection->setRequiredPort(portToDisconnect);
 
   _connection->getConnectionGraphicsObject()->grabMouse();
+
 
   return true;
 }

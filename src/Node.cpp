@@ -158,6 +158,6 @@ onDataUpdated(PortIndex index)
 
   auto connection = _nodeState.connection(PortType::OUT, index);
 
-  if (nodeData && connection)
+  if (connection)
     connection->propagateData(nodeData);
 }
