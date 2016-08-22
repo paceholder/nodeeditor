@@ -4,17 +4,18 @@
 represent algorithms with certain inputs and outputs. Connections transfer data from the output (source) of the first
 node to the input (sink) of the second one.
 
-**NodeEditor** is a model-driven framework. A library client defines models and registers them in the data model
-registry. Further work is driven by notifications which are delivered to the user models. The notifications could be,
-for example, of several types: `DataConnected`, `DataDisconnected`, `InputDataUpdated` etc.
+**NodeEditor** framework is a Visual [Dataflow Programming](https://en.wikipedia.org/wiki/Dataflow_programming) tool.
+A library client defines models and registers them in the data model registry.
+Further work is driven by events taking place in DataModels and Nodes.
+The model computing is triggered upon arriving of any new input data. The computed result is propagated to the output
+connections. Each new connection fetches available data and propagates is further.
 
-The framework is a Visual [Dataflow Programming](https://en.wikipedia.org/wiki/Dataflow_programming) tool.
 Each change in the source node is immediately propagated through all the connections updating  the whole graph.
 
 ### Current state
 
-Currently library implements the simplest GUI interaction between nodes. It is possible to define a dummy model,
-register it and create nodes in the scene. No data transfer is yet possible.
+Currently library implements the simplest GUI interaction between nodes. It is possible to define a model, register it
+and create nodes in the scene. Data propagation works.
 
 ### Dependencies
 
@@ -22,9 +23,9 @@ The project uses Qt 5.5 and CMake 3.4
 
 ### Roadmap
 
-1. Implement data transfer
-2. Extend set of examples
-3. Allow custom widget embedding
+1. Extend set of examples
+2. Improve GUI: node names, resizing, node window scrolling and positioning
+3. Check Windows builds
 
 ![Flow](https://bitbucket.org/paceholder/nodeeditor/raw/master/pictures/flow.png)
 
