@@ -43,12 +43,8 @@ public:
   void setHovered(unsigned int h) { _hovered = h; }
 
   unsigned int nSources() const { return _nSources; }
-  //void setNSources(unsigned int nSources)
-  //{ _nSources = nSources; }
 
   unsigned int nSinks() const { return _nSinks; }
-  //void setNSinks(unsigned int nSinks)
-  //{ _nSinks = nSinks; }
 
   QPointF const& draggingPos() const
   { return _draggingPos; }
@@ -82,6 +78,8 @@ public:
   QPointF widgetPosition() const;
 
 private:
+
+  unsigned int nameHeight() const;
 
   unsigned int portWidth(PortType portType) const;
 

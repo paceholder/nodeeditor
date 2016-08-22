@@ -2,11 +2,9 @@
 
 #include <memory>
 
-//#include <QtCore/QObject>
 #include <QtWidgets/QWidget>
 
 #include "PortType.hpp"
-
 #include "NodeData.hpp"
 
 class NodeDataModel : public QObject
@@ -17,6 +15,8 @@ public:
 
   virtual ~NodeDataModel() {}
 
+  virtual QString modelName() const { return QString(); }
+
 public:
 
   virtual unsigned int nPorts(PortType portType) const = 0;
@@ -24,12 +24,14 @@ public:
   virtual
   NodeDataType dataType(PortType portType, PortIndex portIndex) const = 0;
 
-  virtual
-  std::shared_ptr<NodeData>outData(PortIndex port) = 0;
+public:
 
   /// Triggers the algorithm
   virtual void setInData(std::shared_ptr<NodeData> nodeData,
                          PortIndex port) = 0;
+
+  virtual
+  std::shared_ptr<NodeData> outData(PortIndex port) = 0;
 
   virtual QWidget * embeddedWidget() = 0;
 

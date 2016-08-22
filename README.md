@@ -28,6 +28,8 @@ The project uses Qt 5.5 and CMake 3.4
 
 ![Flow](https://bitbucket.org/paceholder/nodeeditor/raw/master/pictures/flow.png)
 
+![Calculator](https://bitbucket.org/paceholder/nodeeditor/raw/master/pictures/calculator.png)
+
 Youtube video:
 
 [![Youtube demonstration](https://img.youtube.com/vi/PmJ1InmPMdE/0.jpg)](https://www.youtube.com/watch?v=PmJ1InmPMdE)

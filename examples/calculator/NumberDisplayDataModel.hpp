@@ -18,6 +18,9 @@ public:
 
   virtual ~NumberDisplayDataModel() {}
 
+  QString modelName() const override
+  { return QString("Result"); }
+
 public:
 
   unsigned int nPorts(PortType portType) const override;

@@ -28,6 +28,12 @@ public:
   void drawNodeRect(QPainter* painter, NodeGeometry const& geom);
 
   static
+  void drawModelName(QPainter* painter,
+                     NodeGeometry const& geom,
+                     NodeState const& state,
+                     std::unique_ptr<NodeDataModel> const & model);
+
+  static
   void drawEntryLabels(QPainter* painter,
                        NodeGeometry const& geom,
                        NodeState const& state,

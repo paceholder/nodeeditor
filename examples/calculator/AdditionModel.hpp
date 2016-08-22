@@ -17,6 +17,9 @@ public:
 
   virtual ~AdditionModel() {}
 
+  QString modelName() const override
+  { return QString("Addition"); }
+
 private:
 
   void compute() override

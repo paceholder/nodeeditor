@@ -28,6 +28,8 @@ paint(QPainter* painter,
 
   auto const &model = node->nodeDataModel();
 
+  drawModelName(painter, geom, state, model);
+
   drawEntryLabels(painter, geom, state, model);
 }
 
@@ -83,34 +85,34 @@ drawConnectionPoints(QPainter* painter,
   auto reducedDiameter = diameter * 0.6;
 
   auto drawPoints =
-    [&](PortType portType)
+  [&](PortType portType)
+  {
+    size_t n = state.getEntries(portType).size();
+
+    for (size_t i = 0; i < n; ++i)
     {
-      size_t n = state.getEntries(portType).size();
 
-      for (size_t i = 0; i < n; ++i)
+      QPointF p = geom.portScenePosition(i, portType);
+
+      double r = 1.0;
+      if (state.isReacting() &&
+          !state.getEntries(portType)[i].lock())
       {
+        auto   diff = geom.draggingPos() - p;
+        double dist = std::sqrt(QPointF::dotProduct(diff, diff));
 
-        QPointF p = geom.portScenePosition(i, portType);
+        double const thres = 40.0;
 
-        double r = 1.0;
-        if (state.isReacting() &&
-            !state.getEntries(portType)[i].lock())
-        {
-          auto   diff = geom.draggingPos() - p;
-          double dist = std::sqrt(QPointF::dotProduct(diff, diff));
-
-          double const thres = 40.0;
-
-          r = (dist < thres) ?
-              (2.0 - dist / thres ) :
-              1.0;
-        }
-
-        painter->drawEllipse(p,
-                             reducedDiameter * r,
-                             reducedDiameter * r);
+        r = (dist < thres) ?
+            (2.0 - dist / thres ) :
+            1.0;
       }
-    };
+
+      painter->drawEllipse(p,
+                           reducedDiameter * r,
+                           reducedDiameter * r);
+    }
+  };
 
   drawPoints(PortType::OUT);
   drawPoints(PortType::IN);
@@ -129,25 +131,59 @@ drawFilledConnectionPoints(QPainter* painter,
   auto diameter = geom.connectionPointDiameter();
 
   auto drawPoints =
-    [&](PortType portType)
+  [&](PortType portType)
+  {
+    size_t n = state.getEntries(portType).size();
+
+    for (size_t i = 0; i < n; ++i)
     {
-      size_t n = state.getEntries(portType).size();
+      QPointF p = geom.portScenePosition(i, portType);
 
-      for (size_t i = 0; i < n; ++i)
+      if (state.getEntries(portType)[i].lock())
       {
-        QPointF p = geom.portScenePosition(i, portType);
-
-        if (state.getEntries(portType)[i].lock())
-        {
-          painter->drawEllipse(p,
-                               diameter * 0.4,
-                               diameter * 0.4);
-        }
+        painter->drawEllipse(p,
+                             diameter * 0.4,
+                             diameter * 0.4);
       }
-    };
+    }
+  };
 
   drawPoints(PortType::OUT);
   drawPoints(PortType::IN);
+}
+
+
+void
+NodePainter::
+drawModelName(QPainter* painter,
+              NodeGeometry const& geom,
+              NodeState const& state,
+              std::unique_ptr<NodeDataModel> const & model)
+{
+  Q_UNUSED(state);
+
+  QString const &name = model->modelName();
+
+  if (name.isEmpty())
+    return;
+
+  QFont f = painter->font();
+
+  f.setBold(true);
+
+  QFontMetrics metrics(f);
+
+  auto rect = metrics.boundingRect(name);
+
+  QPointF position((geom.width() - rect.width()) / 2.0,
+                   (geom.spacing() + geom.entryHeight()) / 3.0);
+
+  painter->setFont(f);
+  painter->setPen(QColor(Qt::lightGray).lighter());
+  painter->drawText(position, name);
+
+  f.setBold(false);
+  painter->setFont(f);
 }
 
 
@@ -162,37 +198,47 @@ drawEntryLabels(QPainter* painter,
     painter->fontMetrics();
 
   auto drawPoints =
-    [&](PortType portType)
+  [&](PortType portType)
+  {
+    auto& entries = state.getEntries(portType);
+
+    size_t n = entries.size();
+
+    for (size_t i = 0; i < n; ++i)
     {
-      auto& entries = state.getEntries(portType);
 
-      size_t n = entries.size();
+      QPointF p = geom.portScenePosition(i, portType);
 
-      for (size_t i = 0; i < n; ++i)
+      if (entries[i].expired())
+        painter->setPen(Qt::darkGray);
+      else
+        painter->setPen(QColor(Qt::lightGray).lighter());
+
+      QString s = model->dataType(portType, i).name;
+
+      auto rect = metrics.boundingRect(s);
+
+      p.setY(p.y() + rect.height() / 4.0);
+
+      switch (portType)
       {
-
-        QPointF p = geom.portScenePosition(i, portType);
-
-        if (entries[i].lock())
-          painter->setPen(QColor(Qt::lightGray).lighter());
-        else
-          painter->setPen(Qt::darkGray);
-
-        QString s = model->dataType(portType, i).name;
-
-        auto rect = metrics.boundingRect(s);
-
-        p.setY(p.y() + rect.height() / 4.0);
-
-        if (portType == PortType::IN)
+        case PortType::IN:
           p.setX(5.0);
-        else
-          p.setX(geom.width() - 5.0 - rect.width());
+          break;
 
-        painter->drawText(p, s);
+        case PortType::OUT:
+          p.setX(geom.width() - 5.0 - rect.width());
+          break;
+
+        default:
+          break;
       }
-    };
+
+      painter->drawText(p, s);
+    }
+  };
 
   drawPoints(PortType::OUT);
+
   drawPoints(PortType::IN);
 }

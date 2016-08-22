@@ -62,6 +62,8 @@ recalculateSize() const
     _height = step * maxNumOfEntries;
   }
 
+  _height += nameHeight();
+
   _inputPortWidth  = portWidth(PortType::IN);
   _outputPortWidth = portWidth(PortType::OUT);
 
@@ -99,17 +101,19 @@ portScenePosition(int index,
 
   QPointF result;
 
+  double totalHeight = 0.0;
+
+  totalHeight += nameHeight();
+
+  totalHeight += step * index;
+
+  // TODO: why?
+  totalHeight += step / 2.0;
+
   switch (portType)
   {
     case PortType::OUT:
     {
-      double totalHeight = 0.0;
-
-      totalHeight += step * index;
-
-      // TODO: why?
-      totalHeight += (_spacing + _entryHeight) / 2.0;
-
       double x = _width + _connectionPointDiameter;
 
       result = QPointF(x, totalHeight);
@@ -118,13 +122,6 @@ portScenePosition(int index,
 
     case PortType::IN:
     {
-      double totalHeight = 0;
-
-      totalHeight += step * index;
-
-      totalHeight += _spacing / 2 +
-                     _entryHeight / 2;
-
       double x = 0.0 - _connectionPointDiameter;
 
       result = QPointF(x, totalHeight);
@@ -179,10 +176,23 @@ widgetPosition() const
   if (auto w = _dataModel->embeddedWidget())
   {
     return QPointF(_spacing + portWidth(PortType::IN),
-                   (_height - w->height()) / 2.0);
+                   (nameHeight() + _height - w->height()) / 2.0);
   }
 
   return QPointF();
+}
+
+
+unsigned int
+NodeGeometry::
+nameHeight() const
+{
+  QString name = _dataModel->modelName();
+
+  if (name.isEmpty())
+    return 0;
+
+  return _fontMetrics.boundingRect(name).height();
 }
 
 

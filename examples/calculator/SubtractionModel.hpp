@@ -17,6 +17,9 @@ public:
 
   virtual ~SubtractionModel() {}
 
+  QString modelName() const override
+  { return QString("Subtraction"); }
+
 private:
 
   void compute() override
