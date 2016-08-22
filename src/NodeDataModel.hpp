@@ -2,7 +2,6 @@
 
 #include <memory>
 
-//#include <QtCore/QObject>
 #include <QtWidgets/QWidget>
 
 #include "PortType.hpp"
