@@ -11,6 +11,8 @@
 #include "NumberDisplayDataModel.hpp"
 #include "AdditionModel.hpp"
 #include "SubtractionModel.hpp"
+#include "MultiplicationModel.hpp"
+#include "DivisionModel.hpp"
 
 
 static bool
@@ -27,6 +29,12 @@ registerDataModels()
 
   DataModelRegistry::registerModel
     <SubtractionModel>("Subtraction");
+
+  DataModelRegistry::registerModel
+    <MultiplicationModel>("Multiplication");
+
+  DataModelRegistry::registerModel
+    <DivisionModel>("Division");
 
   return true;
 }
