@@ -87,6 +87,14 @@ FlowGraphicsView::
 wheelEvent(QWheelEvent *event)
 {
   QPoint delta   = event->angleDelta();
+
+  if (delta.y() == 0)
+  {
+    event->ignore();
+    return;
+  }
+
+
   double const d = delta.y() / std::abs(delta.y());
 
   double const step = 1.2;
