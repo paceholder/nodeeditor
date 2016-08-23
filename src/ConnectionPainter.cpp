@@ -78,7 +78,7 @@ paint(QPainter* painter,
 
     painter->setBrush(Qt::NoBrush);
 
-    painter->drawPath(cubicPath());
+    painter->drawPath(cubicPath(geom));
   }
 #endif
 
