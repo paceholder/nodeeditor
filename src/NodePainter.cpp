@@ -179,7 +179,7 @@ drawModelName(QPainter* painter,
                    (geom.spacing() + geom.entryHeight()) / 3.0);
 
   painter->setFont(f);
-  painter->setPen(QColor(Qt::lightGray).lighter());
+  painter->setPen(Qt::white);
   painter->drawText(position, name);
 
   f.setBold(false);
@@ -212,7 +212,7 @@ drawEntryLabels(QPainter* painter,
       if (entries[i].expired())
         painter->setPen(Qt::darkGray);
       else
-        painter->setPen(QColor(Qt::lightGray).lighter());
+        painter->setPen(Qt::white);
 
       QString s = model->dataType(portType, i).name;
 
