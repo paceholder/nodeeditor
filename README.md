@@ -27,10 +27,15 @@ The project uses Qt 5.5 and CMake 3.4
 2. Improve GUI: node names, resizing, node window scrolling and positioning
 3. Check Windows builds
 
+
+### Youtube video:
+
+[![Youtube demonstration](https://img.youtube.com/vi/pxMXjSvlOFw/0.jpg)](https://www.youtube.com/watch?v=pxMXjSvlOFw)
+
+[![Youtube demonstration](https://img.youtube.com/vi/PmJ1InmPMdE/0.jpg)](https://www.youtube.com/watch?v=PmJ1InmPMdE)
+
+
 ![Flow](https://bitbucket.org/paceholder/nodeeditor/raw/master/pictures/flow.png)
 
 ![Calculator](https://bitbucket.org/paceholder/nodeeditor/raw/master/pictures/calculator.png)
 
-Youtube video:
-
-[![Youtube demonstration](https://img.youtube.com/vi/PmJ1InmPMdE/0.jpg)](https://www.youtube.com/watch?v=PmJ1InmPMdE)
