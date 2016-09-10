@@ -2,6 +2,7 @@ age: cpp
 
 compiler:
   - gcc
+  - clang
 
 sudo: required
 dist: trusty
