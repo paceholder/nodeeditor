@@ -1,6 +1,6 @@
-### Purpose
-
 [![Build Status](https://travis-ci.org/paceholder/nodeeditor.svg?branch=master)](https://travis-ci.org/paceholder/nodeeditor)
+
+### Purpose
 
 **NodeEditor** is conceived as a general-purpose Qt-based library aimed at graph-controlled data processing.  Nodes
 represent algorithms with certain inputs and outputs. Connections transfer data from the output (source) of the first
@@ -17,17 +17,19 @@ Each change in the source node is immediately propagated through all the connect
 ### Current state
 
 Currently library implements the simplest GUI interaction between nodes. It is possible to define a model, register it
-and create nodes in the scene. Data propagation works.
+and create nodes in the scene. Data propagation works as well. 
 
 ### Dependencies
 
-The project uses Qt 5.5 and CMake 3.4
+The project uses Qt 5.5 and CMake 3.2
 
 ### Roadmap
 
 1. Extend set of examples
-2. Improve GUI: node names, resizing, node window scrolling and positioning
-3. Check Windows builds
+2. GUI: implement node resizing
+3. GUI: fix scrolling for scene view window scrolling
+4. Implement grouping nodes
+4. Make Windows builds
 
 
 ### Youtube video:
