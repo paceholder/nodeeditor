@@ -1,5 +1,7 @@
 ### Purpose
 
+[![Build Status](https://travis-ci.org/paceholder/nodeeditor.svg?branch=master)](https://travis-ci.org/paceholder/nodeeditor)
+
 **NodeEditor** is conceived as a general-purpose Qt-based library aimed at graph-controlled data processing.  Nodes
 represent algorithms with certain inputs and outputs. Connections transfer data from the output (source) of the first
 node to the input (sink) of the second one.
