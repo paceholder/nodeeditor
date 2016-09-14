@@ -2,6 +2,7 @@
 
 #include <QtCore/QString>
 
+#include "Export.hpp"
 
 struct NodeDataType
 {
@@ -12,7 +13,7 @@ struct NodeDataType
 /// Class represents data transferred between nodes.
 /// @param type is used for comparing the types
 /// The actual data is stored in subtypes
-class NodeData
+class NODE_EDITOR_PUBLIC NodeData
 {
 public:
   virtual bool sameType(NodeData const &nodeData) const

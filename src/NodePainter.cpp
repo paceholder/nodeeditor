@@ -114,8 +114,8 @@ drawConnectionPoints(QPainter* painter,
     }
   };
 
-  drawPoints(PortType::OUT);
-  drawPoints(PortType::IN);
+  drawPoints(PortType::Out);
+  drawPoints(PortType::In);
 }
 
 
@@ -148,8 +148,8 @@ drawFilledConnectionPoints(QPainter* painter,
     }
   };
 
-  drawPoints(PortType::OUT);
-  drawPoints(PortType::IN);
+  drawPoints(PortType::Out);
+  drawPoints(PortType::In);
 }
 
 
@@ -222,11 +222,11 @@ drawEntryLabels(QPainter* painter,
 
       switch (portType)
       {
-        case PortType::IN:
+        case PortType::In:
           p.setX(5.0);
           break;
 
-        case PortType::OUT:
+        case PortType::Out:
           p.setX(geom.width() - 5.0 - rect.width());
           break;
 
@@ -238,7 +238,7 @@ drawEntryLabels(QPainter* painter,
     }
   };
 
-  drawPoints(PortType::OUT);
+  drawPoints(PortType::Out);
 
-  drawPoints(PortType::IN);
+  drawPoints(PortType::In);
 }

@@ -17,11 +17,11 @@ nPorts(PortType portType) const
 
   switch (portType)
   {
-    case PortType::IN:
+    case PortType::In:
       result = 0;
       break;
 
-    case PortType::OUT:
+    case PortType::Out:
       result = 1;
 
     default:

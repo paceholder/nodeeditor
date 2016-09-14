@@ -15,7 +15,7 @@ class ConnectionState
 {
 public:
 
-  ConnectionState(PortType port = PortType::NONE)
+  ConnectionState(PortType port = PortType::None)
     : _requiredPort(port)
   {}
 
@@ -30,10 +30,10 @@ public:
   { return _requiredPort; }
 
   bool requiresPort() const
-  { return _requiredPort != PortType::NONE; }
+  { return _requiredPort != PortType::None; }
 
   void setNoRequiredPort()
-  { _requiredPort = PortType::NONE; }
+  { _requiredPort = PortType::None; }
 
 public:
 

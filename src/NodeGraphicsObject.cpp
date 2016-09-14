@@ -137,9 +137,9 @@ moveConnections() const
     }
   };
 
-  moveConnections(PortType::IN);
+  moveConnections(PortType::In);
 
-  moveConnections(PortType::OUT);
+  moveConnections(PortType::Out);
 }
 
 
@@ -211,8 +211,8 @@ mousePressEvent(QGraphicsSceneMouseEvent * event)
     }
   };
 
-  clickPort(PortType::IN);
-  clickPort(PortType::OUT);
+  clickPort(PortType::In);
+  clickPort(PortType::Out);
 
   event->accept();
 }

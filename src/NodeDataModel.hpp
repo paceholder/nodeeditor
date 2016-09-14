@@ -7,7 +7,10 @@
 #include "PortType.hpp"
 #include "NodeData.hpp"
 
-class NodeDataModel : public QObject
+#include "Export.hpp"
+
+class NODE_EDITOR_PUBLIC NodeDataModel
+    : public QObject
 {
   Q_OBJECT
 

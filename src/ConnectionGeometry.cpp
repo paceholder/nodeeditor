@@ -14,9 +14,9 @@ QPointF const&
 ConnectionGeometry::
 getEndPoint(PortType portType) const
 {
-  Q_ASSERT(portType != PortType::NONE);
+  Q_ASSERT(portType != PortType::None);
 
-  return (portType == PortType::OUT ?
+  return (portType == PortType::Out ?
           _out :
           _in);
 }
@@ -28,11 +28,11 @@ setEndPoint(PortType portType, QPointF const& point)
 {
   switch (portType)
   {
-    case PortType::OUT:
+    case PortType::Out:
       _out = point;
       break;
 
-    case PortType::IN:
+    case PortType::In:
       _in = point;
       break;
 
@@ -48,11 +48,11 @@ moveEndPoint(PortType portType, QPointF const &offset)
 {
   switch (portType)
   {
-    case PortType::OUT:
+    case PortType::Out:
       _out += offset;
       break;
 
-    case PortType::IN:
+    case PortType::In:
       _in += offset;
       break;
 

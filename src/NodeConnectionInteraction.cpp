@@ -11,7 +11,7 @@ canConnect(PortIndex &portIndex) const
 
   PortType requiredPort = connectionRequiredPort();
 
-  if (requiredPort == PortType::NONE)
+  if (requiredPort == PortType::None)
   {
     return false;
   }
@@ -69,10 +69,10 @@ tryConnect() const
 
   // 5) Poke model to intiate data transfer
 
-  auto outNode = _connection->getNode(PortType::OUT).lock();
+  auto outNode = _connection->getNode(PortType::Out).lock();
   if (outNode)
   {
-    PortIndex outPortIndex = _connection->getPortIndex(PortType::OUT);
+    PortIndex outPortIndex = _connection->getPortIndex(PortType::Out);
     outNode->onDataUpdated(outPortIndex);
   }
 

@@ -57,12 +57,12 @@ setRequiredPort(PortType dragging)
 
   switch (dragging)
   {
-    case PortType::OUT:
+    case PortType::Out:
       _outNode.reset();
       _outPortIndex = INVALID;
       break;
 
-    case PortType::IN:
+    case PortType::In:
       _inNode.reset();
       _inPortIndex = INVALID;
       break;
@@ -119,11 +119,11 @@ getPortIndex(PortType portType) const
 
   switch (portType)
   {
-    case PortType::IN:
+    case PortType::In:
       result = _inPortIndex;
       break;
 
-    case PortType::OUT:
+    case PortType::Out:
       result = _outPortIndex;
 
       break;
@@ -146,7 +146,7 @@ setNodeToPort(std::shared_ptr<Node> node,
 
   nodeWeak = node;
 
-  if (portType == PortType::OUT)
+  if (portType == PortType::Out)
     _outPortIndex = portIndex;
   else
     _inPortIndex = portIndex;
@@ -193,11 +193,11 @@ getNode(PortType portType) const
 {
   switch (portType)
   {
-    case PortType::IN:
+    case PortType::In:
       return _inNode;
       break;
 
-    case PortType::OUT:
+    case PortType::Out:
       return _outNode;
       break;
 
@@ -214,11 +214,11 @@ getNode(PortType portType)
 {
   switch (portType)
   {
-    case PortType::IN:
+    case PortType::In:
       return _inNode;
       break;
 
-    case PortType::OUT:
+    case PortType::Out:
       return _outNode;
       break;
 
@@ -235,7 +235,7 @@ clearNode(PortType portType)
 {
   getNode(portType).reset();
 
-  if (portType == PortType::IN)
+  if (portType == PortType::In)
     _inPortIndex = INVALID;
   else
     _outPortIndex = INVALID;

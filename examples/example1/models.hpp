@@ -43,11 +43,11 @@ public:
 
     switch (portType)
     {
-      case PortType::IN:
+      case PortType::In:
         result = 2;
         break;
 
-      case PortType::OUT:
+      case PortType::Out:
         result = 1;
 
       default:
@@ -61,7 +61,7 @@ public:
   {
     switch (portType)
     {
-      case PortType::IN:
+      case PortType::In:
         switch (portIndex)
         {
           case 0:
@@ -74,7 +74,7 @@ public:
         }
         break;
 
-      case PortType::OUT:
+      case PortType::Out:
         return MyNodeData().type();
         break;
 

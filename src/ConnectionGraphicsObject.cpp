@@ -126,7 +126,7 @@ mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 
   auto requiredPort = con->requiredPort();
 
-  if (requiredPort != PortType::NONE)
+  if (requiredPort != PortType::None)
   {
     con->connectionGeometry().moveEndPoint(requiredPort, offset);
   }

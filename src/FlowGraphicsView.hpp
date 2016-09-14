@@ -2,9 +2,12 @@
 
 #include <QtWidgets/QGraphicsView>
 
+#include "Export.hpp"
+
 class FlowScene;
 
-class FlowGraphicsView : public QGraphicsView
+class NODE_EDITOR_PUBLIC FlowGraphicsView
+  : public QGraphicsView
 {
 public:
 

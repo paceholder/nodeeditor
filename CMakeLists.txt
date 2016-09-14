@@ -30,6 +30,9 @@ add_library(nodes SHARED ${LIB_CPPS})
 
 target_include_directories(nodes INTERFACE "include")
 
+target_compile_definitions(nodes PUBLIC "-DNODE_EDITOR_SHARED")
+target_compile_definitions(nodes PRIVATE "-DNODE_EDITOR_EXPORTS")
+
 target_link_libraries(nodes
                       Qt5::Core
                       Qt5::Widgets

@@ -5,6 +5,8 @@
 #include <QtCore/QString>
 
 #include "NodeDataModel.hpp"
+#include "Export.hpp"
+#include "UniquePtr.hpp"
 
 /// Base abstract class for Model Registry items
 class RegistryItem
@@ -17,14 +19,6 @@ public:
   virtual std::unique_ptr<NodeDataModel> create() const = 0;
 };
 
-//------------------------------------------------------------------------------
-
-/// Not yet in C++11
-template<typename T, typename ... Args>
-std::unique_ptr<T> make_unique( Args&& ... args )
-{
-  return std::unique_ptr<T>( new T( std::forward<Args>(args) ... ) );
-}
 
 
 //------------------------------------------------------------------------------
@@ -38,7 +32,7 @@ public:
 
   /// Gives derived classes the ability to create instances of T
   std::unique_ptr<NodeDataModel> create() const override
-  { return make_unique<T>(); }
+  { return std::make_unique<T>(); }
 };
 
 //------------------------------------------------------------------------------
@@ -59,7 +53,7 @@ struct hash<QString>
 //------------------------------------------------------------------------------
 
 /// Class uses static map for storing models (name, model)
-class DataModelRegistry
+class NODE_EDITOR_PUBLIC DataModelRegistry
 {
 
 public:
@@ -76,7 +70,7 @@ public:
     if (_registeredModels.count(modelName) == 0)
     {
       _registeredModels[modelName] =
-        make_unique < RegistryItemImpl < ModelType >> ();
+        std::make_unique < RegistryItemImpl < ModelType >> ();
     }
   }
 

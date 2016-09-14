@@ -8,7 +8,7 @@ nPorts(PortType portType) const
 {
   unsigned int result;
 
-  if (portType == PortType::IN)
+  if (portType == PortType::In)
     result = 2;
   else
     result = 1;

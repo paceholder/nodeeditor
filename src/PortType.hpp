@@ -6,9 +6,9 @@
 
 enum class PortType
 {
-  NONE,
-  IN,
-  OUT
+  None,
+  In,
+  Out
 };
 
 
@@ -23,7 +23,7 @@ struct Port
   PortIndex index;
 
   Port()
-    : type(PortType::NONE)
+    : type(PortType::None)
     , index(INVALID)
   {}
 
@@ -34,7 +34,7 @@ struct Port
 
   bool indexIsValid() { return index != INVALID; }
 
-  bool portTypeIsValid() { return type != PortType::NONE; }
+  bool portTypeIsValid() { return type != PortType::None; }
 };
 
 
@@ -44,16 +44,16 @@ static
 PortType
 oppositePort(PortType port)
 {
-  PortType result = PortType::NONE;
+  PortType result = PortType::None;
 
   switch (port)
   {
-    case PortType::IN:
-      result = PortType::OUT;
+    case PortType::In:
+      result = PortType::Out;
       break;
 
-    case PortType::OUT:
-      result = PortType::IN;
+    case PortType::Out:
+      result = PortType::In;
       break;
 
     default:

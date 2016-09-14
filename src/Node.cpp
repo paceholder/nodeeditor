@@ -156,7 +156,7 @@ onDataUpdated(PortIndex index)
 {
   auto nodeData = _nodeDataModel->outData(index);
 
-  auto connection = _nodeState.connection(PortType::OUT, index);
+  auto connection = _nodeState.connection(PortType::Out, index);
 
   if (connection)
     connection->propagateData(nodeData);

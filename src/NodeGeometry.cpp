@@ -16,8 +16,8 @@ NodeGeometry(std::unique_ptr<NodeDataModel> const &dataModel)
   , _spacing(20)
   , _connectionPointDiameter(8)
   , _hovered(false)
-  , _nSources(dataModel->nPorts(PortType::OUT))
-  , _nSinks(dataModel->nPorts(PortType::IN))
+  , _nSources(dataModel->nPorts(PortType::Out))
+  , _nSinks(dataModel->nPorts(PortType::In))
   , _draggingPos(-1000, -1000)
   , _opacity(0.80)
   , _dataModel(dataModel)
@@ -64,8 +64,8 @@ recalculateSize() const
 
   _height += nameHeight();
 
-  _inputPortWidth  = portWidth(PortType::IN);
-  _outputPortWidth = portWidth(PortType::OUT);
+  _inputPortWidth  = portWidth(PortType::In);
+  _outputPortWidth = portWidth(PortType::Out);
 
   _width = _inputPortWidth +
            _outputPortWidth +
@@ -112,7 +112,7 @@ portScenePosition(int index,
 
   switch (portType)
   {
-    case PortType::OUT:
+    case PortType::Out:
     {
       double x = _width + _connectionPointDiameter;
 
@@ -120,7 +120,7 @@ portScenePosition(int index,
       break;
     }
 
-    case PortType::IN:
+    case PortType::In:
     {
       double x = 0.0 - _connectionPointDiameter;
 
@@ -144,7 +144,7 @@ checkHitScenePoint(PortType portType,
 {
   PortIndex result = INVALID;
 
-  if (portType == PortType::NONE)
+  if (portType == PortType::None)
     return result;
 
   double const tolerance = 2.0 * _connectionPointDiameter;
@@ -175,7 +175,7 @@ widgetPosition() const
 {
   if (auto w = _dataModel->embeddedWidget())
   {
-    return QPointF(_spacing + portWidth(PortType::IN),
+    return QPointF(_spacing + portWidth(PortType::In),
                    (nameHeight() + _height - w->height()) / 2.0);
   }
 
@@ -204,7 +204,7 @@ portWidth(PortType portType) const
 
   for (auto i = 0ul; i < _dataModel->nPorts(portType); ++i)
   {
-    auto const &name = _dataModel->dataType(PortType::IN, i).name;
+    auto const &name = _dataModel->dataType(PortType::In, i).name;
     width = std::max(unsigned(_fontMetrics.width(name)),
                      width);
   }

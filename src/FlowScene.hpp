@@ -1,15 +1,14 @@
 #pragma once
 
 #include <QtCore/QUuid>
-
-#include <unordered_map>
-
 #include <QtWidgets/QGraphicsScene>
 
+#include <unordered_map>
 #include <tuple>
 #include <memory>
 
 #include "Connection.hpp"
+#include "Export.hpp"
 
 namespace std
 {
@@ -29,7 +28,8 @@ class FlowItemInterface;
 class Node;
 
 /// Scene holds connections and nodes.
-class FlowScene : public QGraphicsScene
+class NODE_EDITOR_PUBLIC FlowScene
+  : public QGraphicsScene
 {
 public:
 

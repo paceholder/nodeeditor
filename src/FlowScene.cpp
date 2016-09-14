@@ -21,7 +21,7 @@ createConnection(PortType connectedPort,
 {
   auto connection = std::make_shared<Connection>(connectedPort, node, portIndex);
 
-  auto cgo = make_unique<ConnectionGraphicsObject>(*this, connection);
+  auto cgo = std::make_unique<ConnectionGraphicsObject>(*this, connection);
 
   // after this function connection points are set to node port
   connection->setGraphicsObject(std::move(cgo));
@@ -48,7 +48,7 @@ createNode(std::unique_ptr<NodeDataModel> && dataModel)
 {
   auto node = std::make_shared<Node>(std::move(dataModel));
 
-  auto ngo = make_unique<NodeGraphicsObject>(*this, node);
+  auto ngo = std::make_unique<NodeGraphicsObject>(*this, node);
 
   node->setGraphicsObject(std::move(ngo));
 
