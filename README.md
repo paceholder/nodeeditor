@@ -26,6 +26,7 @@ The project uses Qt 5.5 and CMake 3.2
 ### Platforms
 
 The code was compiled and tested in
+
 1. Ubuntu Linux 16.04 with GCC 5.3 and Qt 5.7
 2. Microsoft Windows 10 Pro with Visual Studio 2015 and Qt 5.7
 
