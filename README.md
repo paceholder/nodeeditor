@@ -17,11 +17,18 @@ Each change in the source node is immediately propagated through all the connect
 ### Current state
 
 Currently library implements the simplest GUI interaction between nodes. It is possible to define a model, register it
-and create nodes in the scene. Data propagation works as well. 
+and create nodes in the scene. Data propagation works as well.
 
 ### Dependencies
 
 The project uses Qt 5.5 and CMake 3.2
+
+### Platforms
+
+The code was compiled and tested in
+1. Ubuntu Linux 16.04 with GCC 5.3 and Qt 5.7
+2. Microsoft Windows 10 Pro with Visual Studio 2015 and Qt 5.7
+
 
 ### Roadmap
 
@@ -34,10 +41,9 @@ The project uses Qt 5.5 and CMake 3.2
 
 ### Youtube video:
 
-[![Youtube demonstration](https://img.youtube.com/vi/pxMXjSvlOFw/0.jpg)](https://www.youtube.com/watch?v=pxMXjSvlOFw)
+[![Youtube demonstration](https://bitbucket.org/paceholder/nodeeditor/raw/master/pictures/vid1.png)](https://www.youtube.com/watch?v=pxMXjSvlOFw)
 
 [![Youtube demonstration](https://img.youtube.com/vi/PmJ1InmPMdE/0.jpg)](https://www.youtube.com/watch?v=PmJ1InmPMdE)
-
 
 ![Flow](https://bitbucket.org/paceholder/nodeeditor/raw/master/pictures/flow.png)
 
