@@ -32,7 +32,6 @@ public:
   /// Visits all attached connections and corrects
   /// their corresponding end points.
   void moveConnections() const;
-  //void moveConnections(QPointF d) const;
 
 protected:
   void paint(QPainter*                       painter,

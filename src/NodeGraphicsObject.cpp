@@ -61,20 +61,18 @@ embedQWidget()
 {
   auto node = _node.lock();
 
-  QWidget * w = node->nodeDataModel()->embeddedWidget();
-
-  if (w)
+  if (auto w = node->nodeDataModel()->embeddedWidget())
   {
-    _proxyWidget = new QGraphicsProxyWidget();
+    _proxyWidget = new QGraphicsProxyWidget(this);
 
     _proxyWidget->setWidget(w);
+
     _proxyWidget->setPreferredWidth(5);
     _proxyWidget->setSizePolicy(QSizePolicy::Preferred,
                                 QSizePolicy::Preferred);
 
-    w->setVisible(true);
-
-    _proxyWidget->setParentItem(this);
+    _proxyWidget->setSizePolicy(QSizePolicy::Maximum,
+                                QSizePolicy::Maximum);
   }
 }
 
