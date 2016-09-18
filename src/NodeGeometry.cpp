@@ -174,6 +174,19 @@ checkHitScenePoint(PortType portType,
 }
 
 
+QRect
+NodeGeometry::
+resizeRect() const
+{
+  unsigned int rectSize = 7;
+
+  return QRect(_width - rectSize,
+               _height - rectSize,
+               rectSize,
+               rectSize);
+}
+
+
 QPointF
 NodeGeometry::
 widgetPosition() const

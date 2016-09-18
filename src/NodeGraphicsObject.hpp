@@ -23,33 +23,47 @@ public:
   NodeGraphicsObject(FlowScene &scene,
                      std::shared_ptr<Node>& node);
 
-  std::weak_ptr<Node>& node();
+  std::weak_ptr<Node>&
+  node();
 
-  QRectF boundingRect() const override;
+  QRectF
+  boundingRect() const override;
 
-  void setGeometryChanged();
+  void
+  setGeometryChanged();
 
   /// Visits all attached connections and corrects
   /// their corresponding end points.
-  void moveConnections() const;
+  void
+  moveConnections() const;
 
 protected:
-  void paint(QPainter*                       painter,
-             QStyleOptionGraphicsItem const* option,
-             QWidget*                        widget = 0) override;
+  void
+  paint(QPainter*                       painter,
+        QStyleOptionGraphicsItem const* option,
+        QWidget*                        widget = 0) override;
 
-  void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
+  void
+  mousePressEvent(QGraphicsSceneMouseEvent* event) override;
 
-  void mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
+  void
+  mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
 
-  void mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
+  void
+  mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
 
-  void hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
+  void
+  hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
 
-  void hoverLeaveEvent(QGraphicsSceneHoverEvent* event) override;
+  void
+  hoverLeaveEvent(QGraphicsSceneHoverEvent* event) override;
+
+  void
+  hoverMoveEvent(QGraphicsSceneHoverEvent *) override;
 
 private:
-  void embedQWidget();
+  void
+  embedQWidget();
 
 private:
 

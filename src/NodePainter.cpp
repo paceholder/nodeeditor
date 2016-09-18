@@ -31,6 +31,8 @@ paint(QPainter* painter,
   drawModelName(painter, geom, state, model);
 
   drawEntryLabels(painter, geom, state, model);
+
+  drawResizeRect(painter, geom, model);
 }
 
 
@@ -64,6 +66,7 @@ drawNodeRect(QPainter* painter,
   painter->setBrush(gradient);
 
   unsigned int diam = geom.connectionPointDiameter();
+
   QRectF   boundary(0.0, 0.0, geom.width(), geom.height());
   QMargins m(diam, diam, diam, diam);
 
@@ -241,4 +244,19 @@ drawEntryLabels(QPainter* painter,
   drawPoints(PortType::Out);
 
   drawPoints(PortType::In);
+}
+
+
+void
+NodePainter::
+drawResizeRect(QPainter* painter,
+               NodeGeometry const& geom,
+               std::unique_ptr<NodeDataModel> const & model)
+{
+  if (model->resizable())
+  {
+    painter->setBrush(Qt::gray);
+
+    painter->drawEllipse(geom.resizeRect());
+  }
 }

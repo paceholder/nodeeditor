@@ -29,26 +29,42 @@ public:
 
   /// Returns vector of connections ID.
   /// Some of them can be empty (null)
-  std::vector<std::weak_ptr<Connection> > const& getEntries(PortType portType) const;
-  std::vector<std::weak_ptr<Connection> > & getEntries(PortType portType);
+  std::vector<std::weak_ptr<Connection> > const&
+  getEntries(PortType portType) const;
 
-  std::shared_ptr<Connection> connection(PortType portType,
-                                         PortIndex portIndex) const;
+  std::vector<std::weak_ptr<Connection> > &
+  getEntries(PortType portType);
 
-  void setConnection(PortType portType,
-                     PortIndex portIndex,
-                     std::shared_ptr<Connection> connection);
+  std::shared_ptr<Connection>
+  connection(PortType portType,
+             PortIndex portIndex) const;
 
-  ReactToConnectionState reaction() const;
+  void
+  setConnection(PortType portType,
+                PortIndex portIndex,
+                std::shared_ptr<Connection> connection);
 
-  void setReaction(ReactToConnectionState reaction);
+  ReactToConnectionState
+  reaction() const;
 
-  bool isReacting() const;
+  void
+  setReaction(ReactToConnectionState reaction);
 
-private:
+  bool
+  isReacting() const;
 
-  std::vector<std::weak_ptr<Connection> > _inConnections;
+  void
+  setResizing(bool resizing);
+
+  bool
+  resizing() const;
+
+private :
+
+    std::vector<std::weak_ptr<Connection> > _inConnections;
   std::vector<std::weak_ptr<Connection> > _outConnections;
 
   ReactToConnectionState _reaction;
+
+  bool _resizing;
 };

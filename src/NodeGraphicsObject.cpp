@@ -25,6 +25,7 @@ NodeGraphicsObject(FlowScene &scene,
 {
   _scene.addItem(this);
 
+  setFlag(QGraphicsItem::ItemDoesntPropagateOpacityToChildren, true);
   setFlag(QGraphicsItem::ItemIsMovable, true);
   setFlag(QGraphicsItem::ItemIsFocusable, true);
 
@@ -37,9 +38,9 @@ NodeGraphicsObject(FlowScene &scene,
     effect->setColor(QColor(Qt::gray).darker(800));
 
     setGraphicsEffect(effect);
-
-    setOpacity(_node.lock()->nodeGeometry().opacity());
   }
+
+  setOpacity(_node.lock()->nodeGeometry().opacity());
 
   setAcceptHoverEvents(true);
 
@@ -60,6 +61,7 @@ NodeGraphicsObject::
 embedQWidget()
 {
   auto node = _node.lock();
+  NodeGeometry & geom = node->nodeGeometry();
 
   if (auto w = node->nodeDataModel()->embeddedWidget())
   {
@@ -68,11 +70,15 @@ embedQWidget()
     _proxyWidget->setWidget(w);
 
     _proxyWidget->setPreferredWidth(5);
-    _proxyWidget->setSizePolicy(QSizePolicy::Preferred,
-                                QSizePolicy::Preferred);
 
-    _proxyWidget->setSizePolicy(QSizePolicy::Maximum,
-                                QSizePolicy::Maximum);
+    geom.recalculateSize();
+
+    _proxyWidget->setPos(geom.widgetPosition());
+
+    update();
+
+    _proxyWidget->setOpacity(1.0);
+    _proxyWidget->setFlag(QGraphicsItem::ItemIgnoresParentOpacity);
   }
 }
 
@@ -151,13 +157,6 @@ paint(QPainter * painter,
 
   auto node = _node.lock();
 
-  NodeGeometry & geom = node->nodeGeometry();
-
-  if (_proxyWidget)
-  {
-    _proxyWidget->setPos(geom.widgetPosition());
-  }
-
   NodePainter::paint(painter, node);
 }
 
@@ -213,6 +212,19 @@ mousePressEvent(QGraphicsSceneMouseEvent * event)
   clickPort(PortType::Out);
 
   event->accept();
+
+//------
+
+  auto pos     = event->pos();
+  auto node    = _node.lock();
+  auto & geom  = node->nodeGeometry();
+  auto & state = node->nodeState();
+
+  if (geom.resizeRect().contains(QPoint(pos.x(),
+                                        pos.y())))
+  {
+    state.setResizing(true);
+  }
 }
 
 
@@ -220,12 +232,45 @@ void
 NodeGraphicsObject::
 mouseMoveEvent(QGraphicsSceneMouseEvent * event)
 {
-  QGraphicsObject::mouseMoveEvent(event);
+  auto node    = _node.lock();
+  auto & geom  = node->nodeGeometry();
+  auto & state = node->nodeState();
 
-  if (event->lastPos() != event->pos())
-    moveConnections();
+  if (state.resizing())
+  {
+    auto diff = event->pos() - event->lastPos();
 
-  event->ignore();
+    if (auto w = node->nodeDataModel()->embeddedWidget())
+    {
+      prepareGeometryChange();
+
+      auto oldSize = w->size();
+
+      oldSize += QSize(diff.x(), diff.y());
+
+      w->setFixedSize(oldSize);
+
+      _proxyWidget->setMinimumSize(oldSize);
+      _proxyWidget->setMaximumSize(oldSize);
+      _proxyWidget->setPos(geom.widgetPosition());
+
+      geom.recalculateSize();
+      update();
+
+      moveConnections();
+
+      event->accept();
+    }
+  }
+  else
+  {
+    QGraphicsObject::mouseMoveEvent(event);
+
+    if (event->lastPos() != event->pos())
+      moveConnections();
+
+    event->ignore();
+  }
 }
 
 
@@ -233,6 +278,11 @@ void
 NodeGraphicsObject::
 mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 {
+  auto node    = _node.lock();
+  auto & state = node->nodeState();
+
+  state.setResizing(false);
+
   QGraphicsObject::mouseReleaseEvent(event);
 
   // position connections precisely after fast node move
@@ -256,5 +306,27 @@ hoverLeaveEvent(QGraphicsSceneHoverEvent * event)
 {
   _node.lock()->nodeGeometry().setHovered(false);
   update();
+  event->accept();
+}
+
+
+void
+NodeGraphicsObject::
+hoverMoveEvent(QGraphicsSceneHoverEvent * event)
+{
+  auto pos    = event->pos();
+  auto node   = _node.lock();
+  auto & geom = node->nodeGeometry();
+
+  if (geom.resizeRect().contains(QPoint(pos.x(),
+                                        pos.y())))
+  {
+    setCursor(QCursor(Qt::SizeFDiagCursor));
+  }
+  else
+  {
+    setCursor(QCursor());
+  }
+
   event->accept();
 }
