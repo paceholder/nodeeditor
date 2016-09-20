@@ -1,0 +1,37 @@
+environment:
+  QTDIR32: C:\Qt\5.7\msvc2015
+  QTDIR64: C:\Qt\5.7\msvc2015_64
+  GENERATOR64: "Visual Studio 14 Win64"
+  GENERATOR32: "Visual Studio 14"
+  CONFIG: Release
+
+configuration:
+  - Release
+
+platform:
+  - x64
+  - Win32
+
+before_build:
+  - mkdir build
+  - cd build
+  - set PATH=%QTDIR%\bin;%PATH%
+  - cmd: if "%platform%"=="Win32" cmake "-G%GENERATOR32%" -DCMAKE_PREFIX_PATH="%QTDIR32%/lib/cmake/Qt5" ..
+  - cmd: if "%platform%"=="x64"   cmake "-G%GENERATOR64%" -DCMAKE_PREFIX_PATH="%QTDIR64%/lib/cmake/Qt5" ..
+
+build:
+  project: C:\projects\nodeeditor\build\NodeEditor.sln
+
+#build_script:
+  #- msbuild NodeEditor.sln /t:build /p:Configuration=Release
+
+#deploy:
+  #release: $(APPVEYOR_REPO_TAG_NAME)
+  #provider: GitHub
+  #artifact: /.*\.exe/
+  #auth_token:
+    #secure: j0nBV9xVItdG3j6d0gHoyvrzi7TOhAy9/QIeyCbFeP8PTqq7DPr1oYwL5WIkPaXe
+  #draft: false
+  #prerelease: false
+  #on:
+    #appveyor_repo_tag: true
