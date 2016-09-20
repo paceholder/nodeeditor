@@ -23,6 +23,9 @@ public:
   NodeGraphicsObject(FlowScene &scene,
                      std::shared_ptr<Node>& node);
 
+  virtual
+  ~NodeGraphicsObject();
+
   std::weak_ptr<Node>&
   node();
 

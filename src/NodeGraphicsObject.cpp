@@ -47,6 +47,12 @@ NodeGraphicsObject(FlowScene &scene,
   embedQWidget();
 }
 
+NodeGraphicsObject::
+~NodeGraphicsObject()
+{
+  _scene.removeItem(this);
+}
+
 
 std::weak_ptr<Node>&
 NodeGraphicsObject::
