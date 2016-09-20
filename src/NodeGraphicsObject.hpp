@@ -46,6 +46,9 @@ protected:
         QStyleOptionGraphicsItem const* option,
         QWidget*                        widget = 0) override;
 
+  QVariant
+  itemChange(GraphicsItemChange change, const QVariant &value) override;
+
   void
   mousePressEvent(QGraphicsSceneMouseEvent* event) override;
 

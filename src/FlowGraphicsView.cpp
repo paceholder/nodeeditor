@@ -109,6 +109,44 @@ wheelEvent(QWheelEvent *event)
   scale(factor, factor);
 }
 
+void
+FlowGraphicsView::
+keyPressEvent(QKeyEvent *event)
+{
+	switch (event->key())
+	{
+	case Qt::Key_Escape:
+		_scene->clearSelection();
+		break;
+	case Qt::Key_Delete:
+		foreach(QGraphicsItem* item, _scene->selectedItems()){
+			_scene->removeNode(item);
+		}
+		break;
+	case Qt::Key_Shift:
+		setDragMode(QGraphicsView::RubberBandDrag);
+		break;
+	default:
+		break;
+	}
+	QGraphicsView::keyPressEvent(event);
+}
+
+void
+FlowGraphicsView::
+keyReleaseEvent(QKeyEvent *event)
+{
+	switch (event->key())
+	{
+	case Qt::Key_Shift:
+		setDragMode(QGraphicsView::ScrollHandDrag);
+		break;
+	default:
+		break;
+	}
+	QGraphicsView::keyReleaseEvent(event);
+}
+
 
 void
 FlowGraphicsView::

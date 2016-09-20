@@ -28,6 +28,9 @@ NodeGraphicsObject(FlowScene &scene,
   setFlag(QGraphicsItem::ItemDoesntPropagateOpacityToChildren, true);
   setFlag(QGraphicsItem::ItemIsMovable, true);
   setFlag(QGraphicsItem::ItemIsFocusable, true);
+  setFlag(QGraphicsItem::ItemIsSelectable, true);
+  setFlag(QGraphicsItem::ItemSendsScenePositionChanges);
+
 
   setCacheMode( QGraphicsItem::DeviceCoordinateCache );
 
@@ -166,11 +169,24 @@ paint(QPainter * painter,
   NodePainter::paint(painter, node);
 }
 
+QVariant
+NodeGraphicsObject::
+itemChange(GraphicsItemChange change, const QVariant &value) {
+	if (change == ItemPositionChange && scene()) {
+		moveConnections();
+	}
+	return QGraphicsItem::itemChange(change, value);
+}
 
 void
 NodeGraphicsObject::
 mousePressEvent(QGraphicsSceneMouseEvent * event)
 {
+
+  if (!this->isSelected() && !(event->modifiers() & Qt::ControlModifier)) {
+		_scene.clearSelection();
+  }
+
   auto clickPort =
   [&](PortType portToCheck)
   {
@@ -216,11 +232,7 @@ mousePressEvent(QGraphicsSceneMouseEvent * event)
 
   clickPort(PortType::In);
   clickPort(PortType::Out);
-
-  event->accept();
-
-//------
-
+  
   auto pos     = event->pos();
   auto node    = _node.lock();
   auto & geom  = node->nodeGeometry();

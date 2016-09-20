@@ -49,6 +49,9 @@ public:
   std::shared_ptr<Node>
   createNode(std::unique_ptr<NodeDataModel> &&dataModel);
 
+  void
+  removeNode(QGraphicsItem* item);
+
 private:
 
   using SharedConnection = std::shared_ptr<Connection>;

@@ -2,6 +2,7 @@
 
 #include <QtCore/QMargins>
 
+#include "NodeGraphicsObject.hpp"
 #include "NodeGeometry.hpp"
 #include "NodeState.hpp"
 #include "NodeDataModel.hpp"
@@ -16,11 +17,13 @@ paint(QPainter* painter,
 
   NodeState const& state = node->nodeState();
 
+  std::unique_ptr<NodeGraphicsObject> const& graphicsObject = node->nodeGraphicsObject();
+
   geom.recalculateSize(painter->fontMetrics());
 
   //--------------------------------------------
 
-  drawNodeRect(painter, geom);
+  drawNodeRect(painter, geom, graphicsObject);
 
   drawConnectionPoints(painter, geom, state);
 
@@ -39,16 +42,19 @@ paint(QPainter* painter,
 void
 NodePainter::
 drawNodeRect(QPainter* painter,
-             NodeGeometry const& geom)
+             NodeGeometry const& geom,
+             std::unique_ptr<NodeGraphicsObject> const& graphicsObject)
 {
+  auto color = graphicsObject->isSelected() ? QColor(255, 150, 0) : Qt::white;
+
   if (geom.hovered())
   {
-    QPen p(Qt::white, 2.0);
+    QPen p(color, 2.0);
     painter->setPen(p);
   }
   else
   {
-    QPen p(Qt::white, 1.5);
+    QPen p(color, 1.5);
     painter->setPen(p);
   }
 

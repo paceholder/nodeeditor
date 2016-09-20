@@ -19,6 +19,10 @@ protected:
 
   void wheelEvent(QWheelEvent *event) override;
 
+  void keyPressEvent(QKeyEvent *event) override;
+
+  void keyReleaseEvent(QKeyEvent *event) override;
+
   void drawBackground(QPainter* painter, const QRectF& r) override;
 
 private:

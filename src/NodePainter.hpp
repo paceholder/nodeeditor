@@ -6,6 +6,7 @@
 
 #include "PortType.hpp"
 
+class NodeGraphicsObject;
 class NodeGeometry;
 class NodeState;
 class Node;
@@ -27,7 +28,8 @@ public:
 
   static
   void
-  drawNodeRect(QPainter* painter, NodeGeometry const& geom);
+  drawNodeRect(QPainter* painter, NodeGeometry const& geom,
+               std::unique_ptr<NodeGraphicsObject> const& graphicsObject);
 
   static
   void
