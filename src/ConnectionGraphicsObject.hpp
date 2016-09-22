@@ -34,6 +34,9 @@ public:
 
   void setGeometryChanged();
 
+  /// Updates the position of both ends
+  void move();
+
 protected:
 
   void paint(QPainter* painter,

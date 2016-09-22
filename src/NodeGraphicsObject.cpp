@@ -31,7 +31,6 @@ NodeGraphicsObject(FlowScene &scene,
   setFlag(QGraphicsItem::ItemIsSelectable, true);
   setFlag(QGraphicsItem::ItemSendsScenePositionChanges);
 
-
   setCacheMode( QGraphicsItem::DeviceCoordinateCache );
 
   {
@@ -49,6 +48,7 @@ NodeGraphicsObject(FlowScene &scene,
 
   embedQWidget();
 }
+
 
 NodeGraphicsObject::
 ~NodeGraphicsObject()
@@ -121,32 +121,10 @@ moveConnections() const
   {
     auto const & connectionsWeak = nodeState.getEntries(portType);
 
-    size_t portIndex = 0;
-
     for (auto const & connection : connectionsWeak)
     {
-      QPointF scenePos =
-        node->nodeGeometry().portScenePosition(portIndex,
-                                               portType,
-                                               sceneTransform());
-
-      auto con = connection.lock();
-
-      if (con)
-      {
-        QTransform sceneTransform =
-          con->getConnectionGraphicsObject()->sceneTransform();
-
-        QPointF connectionPos = sceneTransform.inverted().map(scenePos);
-
-        con->connectionGeometry().setEndPoint(portType,
-                                              connectionPos);
-
-        con->getConnectionGraphicsObject()->setGeometryChanged();
-        con->getConnectionGraphicsObject()->update();
-      }
-
-      ++portIndex;
+      if (auto con = connection.lock())
+        con->getConnectionGraphicsObject()->move();
     }
   };
 
@@ -169,22 +147,28 @@ paint(QPainter * painter,
   NodePainter::paint(painter, node);
 }
 
+
 QVariant
 NodeGraphicsObject::
-itemChange(GraphicsItemChange change, const QVariant &value) {
-	if (change == ItemPositionChange && scene()) {
-		moveConnections();
-	}
-	return QGraphicsItem::itemChange(change, value);
+itemChange(GraphicsItemChange change, const QVariant &value)
+{
+  if (change == ItemPositionChange && scene())
+  {
+    moveConnections();
+  }
+
+  return QGraphicsItem::itemChange(change, value);
 }
+
 
 void
 NodeGraphicsObject::
 mousePressEvent(QGraphicsSceneMouseEvent * event)
 {
 
-  if (!this->isSelected() && !(event->modifiers() & Qt::ControlModifier)) {
-		_scene.clearSelection();
+  if (!this->isSelected() && !(event->modifiers() & Qt::ControlModifier))
+  {
+    _scene.clearSelection();
   }
 
   auto clickPort =
@@ -232,7 +216,7 @@ mousePressEvent(QGraphicsSceneMouseEvent * event)
 
   clickPort(PortType::In);
   clickPort(PortType::Out);
-  
+
   auto pos     = event->pos();
   auto node    = _node.lock();
   auto & geom  = node->nodeGeometry();

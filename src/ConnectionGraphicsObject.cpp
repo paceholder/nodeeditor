@@ -85,6 +85,48 @@ setGeometryChanged()
 
 void
 ConnectionGraphicsObject::
+move()
+{
+  auto con = _connection.lock();
+
+  if (!con)
+    return;
+
+  auto moveEndPoint =
+  [&con, this] (PortType portType)
+  {
+    if (auto node = con->getNode(portType).lock())
+    {
+      auto const &nodeGraphics = node->nodeGraphicsObject();
+
+      auto const &nodeGeom = node->nodeGeometry();
+
+      QPointF scenePos =
+        nodeGeom.portScenePosition(con->getPortIndex(portType),
+                                   portType,
+                                   nodeGraphics->sceneTransform());
+
+      {
+        QTransform sceneTransform = this->sceneTransform();
+
+        QPointF connectionPos = sceneTransform.inverted().map(scenePos);
+
+        con->connectionGeometry().setEndPoint(portType,
+                                              connectionPos);
+
+        con->getConnectionGraphicsObject()->setGeometryChanged();
+        con->getConnectionGraphicsObject()->update();
+      }
+    }
+  };
+
+  moveEndPoint(PortType::In);
+  moveEndPoint(PortType::Out);
+}
+
+
+void
+ConnectionGraphicsObject::
 paint(QPainter* painter,
       QStyleOptionGraphicsItem const* option,
       QWidget*)
