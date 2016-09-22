@@ -12,25 +12,20 @@ connections. Each new connection fetches available data and propagates is furthe
 
 Each change in the source node is immediately propagated through all the connections updating  the whole graph.
 
-### Dependencies
-
-The project uses Qt 5.x and CMake 3.2
+### Platforms
 
 * Linux (x64, gcc, clang): [![Build Status](https://travis-ci.org/paceholder/nodeeditor.svg?branch=master)](https://travis-ci.org/paceholder/nodeeditor)
 * Windows (Win32, x64, msvc2015): [![Build status](https://ci.appveyor.com/api/projects/status/wxp47wv3uyyiujjw?svg=true)](https://ci.appveyor.com/project/paceholder/nodeeditor)
+
+### Dependencies
+
+* Qt 5.x
+* CMake 3.2
 
 ### Current state
 
 Currently library implements the simplest GUI interaction between nodes. It is possible to define a model, register it
 and create nodes in the scene. Data propagation works as well.
-
-### Platforms
-
-The code was compiled and tested in
-
-1. Ubuntu Linux 16.04 with GCC 5.3 and Qt 5.7
-2. Microsoft Windows 10 Pro with Visual Studio 2015 and Qt 5.7
-
 
 ### Roadmap
 
