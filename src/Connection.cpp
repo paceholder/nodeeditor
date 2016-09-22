@@ -37,6 +37,15 @@ Connection(PortType portType,
 Connection::
 ~Connection()
 {
+  if (auto in = _inNode.lock())
+  {
+	in->nodeGraphicsObject()->update();
+  }
+  if (auto out = _outNode.lock())
+  {
+	out->nodeGraphicsObject()->update();
+  }
+
   std::cout << "Connection destructor" << std::endl;
 }
 
