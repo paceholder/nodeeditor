@@ -16,7 +16,8 @@ template<>
 struct hash<QUuid>
 {
   inline
-  size_t operator()(QUuid const& uid) const
+  size_t
+  operator()(QUuid const& uid) const
   {
     return qHash(uid);
   }
@@ -44,10 +45,11 @@ public:
                    std::shared_ptr<Node> node,
                    PortIndex portIndex);
 
-  void deleteConnection(std::shared_ptr<Connection> connection);
+  void
+  deleteConnection(std::shared_ptr<Connection> connection);
 
   std::shared_ptr<Node>
-  createNode(std::unique_ptr<NodeDataModel> &&dataModel);
+  createNode(std::unique_ptr<NodeDataModel> && dataModel);
 
   void
   removeNode(QGraphicsItem* item);

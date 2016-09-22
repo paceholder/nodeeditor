@@ -86,14 +86,13 @@ void
 FlowGraphicsView::
 wheelEvent(QWheelEvent *event)
 {
-  QPoint delta   = event->angleDelta();
+  QPoint delta = event->angleDelta();
 
   if (delta.y() == 0)
   {
     event->ignore();
     return;
   }
-
 
   double const d = delta.y() / std::abs(delta.y());
 
@@ -109,42 +108,48 @@ wheelEvent(QWheelEvent *event)
   scale(factor, factor);
 }
 
+
 void
 FlowGraphicsView::
 keyPressEvent(QKeyEvent *event)
 {
-	switch (event->key())
-	{
-	case Qt::Key_Escape:
-		_scene->clearSelection();
-		break;
-	case Qt::Key_Delete:
-		foreach(QGraphicsItem* item, _scene->selectedItems()){
-			_scene->removeNode(item);
-		}
-		break;
-	case Qt::Key_Shift:
-		setDragMode(QGraphicsView::RubberBandDrag);
-		break;
-	default:
-		break;
-	}
-	QGraphicsView::keyPressEvent(event);
+  switch (event->key())
+  {
+    case Qt::Key_Escape:
+      _scene->clearSelection();
+      break;
+
+    case Qt::Key_Delete:
+      foreach(QGraphicsItem * item, _scene->selectedItems()){
+        _scene->removeNode(item);
+      }
+      break;
+
+    case Qt::Key_Shift:
+      setDragMode(QGraphicsView::RubberBandDrag);
+      break;
+
+    default:
+      break;
+  }
+  QGraphicsView::keyPressEvent(event);
 }
+
 
 void
 FlowGraphicsView::
 keyReleaseEvent(QKeyEvent *event)
 {
-	switch (event->key())
-	{
-	case Qt::Key_Shift:
-		setDragMode(QGraphicsView::ScrollHandDrag);
-		break;
-	default:
-		break;
-	}
-	QGraphicsView::keyReleaseEvent(event);
+  switch (event->key())
+  {
+    case Qt::Key_Shift:
+      setDragMode(QGraphicsView::ScrollHandDrag);
+      break;
+
+    default:
+      break;
+  }
+  QGraphicsView::keyReleaseEvent(event);
 }
 
 
@@ -155,34 +160,34 @@ drawBackground(QPainter* painter, const QRectF& r)
   QGraphicsView::drawBackground(painter, r);
 
   auto drawGrid =
-    [&](double gridStep)
+  [&](double gridStep)
+  {
+    QRect   windowRect = rect();
+    QPointF tl = mapToScene(windowRect.topLeft());
+    QPointF br = mapToScene(windowRect.bottomRight());
+
+    double left   = std::floor(tl.x() / gridStep - 0.5);
+    double right  = std::floor(br.x() / gridStep + 1.0);
+    double bottom = std::floor(tl.y() / gridStep - 0.5);
+    double top    = std::floor (br.y() / gridStep + 1.0);
+
+    // vertical lines
+    for (int xi = int(left); xi <= int(right); ++xi)
     {
-      QRect   windowRect = rect();
-      QPointF tl = mapToScene(windowRect.topLeft());
-      QPointF br = mapToScene(windowRect.bottomRight());
+      QLineF line(xi * gridStep, bottom * gridStep,
+                  xi * gridStep, top * gridStep );
 
-      double left   = std::floor(tl.x() / gridStep - 0.5);
-      double right  = std::floor(br.x() / gridStep + 1.0);
-      double bottom = std::floor(tl.y() / gridStep - 0.5);
-      double top    = std::floor (br.y() / gridStep + 1.0);
+      painter->drawLine(line);
+    }
 
-      // vertical lines
-      for (int xi = int(left); xi <= int(right); ++xi)
-      {
-        QLineF line(xi * gridStep, bottom * gridStep,
-                    xi * gridStep, top * gridStep );
-
-        painter->drawLine(line);
-      }
-
-      // horizontal lines
-      for (int yi = int(bottom); yi <= int(top); ++yi)
-      {
-        QLineF line(left * gridStep, yi * gridStep,
-                    right * gridStep, yi * gridStep );
-        painter->drawLine(line);
-      }
-    };
+    // horizontal lines
+    for (int yi = int(bottom); yi <= int(top); ++yi)
+    {
+      QLineF line(left * gridStep, yi * gridStep,
+                  right * gridStep, yi * gridStep );
+      painter->drawLine(line);
+    }
+  };
 
   QBrush bBrush    = backgroundBrush();
   QColor gridColor = bBrush.color().lighter(120);

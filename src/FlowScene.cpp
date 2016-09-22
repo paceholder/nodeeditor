@@ -57,24 +57,31 @@ createNode(std::unique_ptr<NodeDataModel> && dataModel)
   return node;
 }
 
+
 void
 FlowScene::
 removeNode(QGraphicsItem* item)
 {
-	auto ngo = dynamic_cast<NodeGraphicsObject*>(item);
-	std::shared_ptr<Node> const& node = ngo->node().lock();
+  auto ngo = dynamic_cast<NodeGraphicsObject*>(item);
 
-	auto nodeState = node->nodeState();
-	for (std::weak_ptr<Connection> conn : nodeState.getEntries(PortType::In)) {
-		if(!conn.expired())
-			this->deleteConnection(conn.lock());
-	}
-	for (std::weak_ptr<Connection> conn : nodeState.getEntries(PortType::Out)) {
-		if (!conn.expired())
-			this->deleteConnection(conn.lock());
-	}
+  std::shared_ptr<Node> const& node = ngo->node().lock();
 
-	_nodes.erase(node->id());
+  auto deleteConnections = [&node, this] (PortType portType)
+  {
+    auto nodeState = node->nodeState();
+    auto const & nodeEntries = nodeState.getEntries(portType);
+
+    for (std::weak_ptr<Connection> conn : nodeEntries)
+    {
+      if (auto c = conn.lock())
+        this->deleteConnection(c);
+    }
+  };
+
+  deleteConnections(PortType::In);
+  deleteConnections(PortType::Out);
+
+  _nodes.erase(node->id());
 }
 
 
