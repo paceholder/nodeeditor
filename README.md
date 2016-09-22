@@ -35,10 +35,9 @@ The code was compiled and tested in
 ### Roadmap
 
 1. Extend set of examples
-2. GUI: implement node resizing
+2. Implement graph save/restore
 3. GUI: fix scrolling for scene view window scrolling
 4. Implement grouping nodes
-4. Make Windows builds
 
 
 ### Youtube video:
