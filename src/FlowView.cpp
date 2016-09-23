@@ -1,4 +1,4 @@
-#include "FlowGraphicsView.hpp"
+#include "FlowView.hpp"
 
 #include <QtWidgets/QGraphicsScene>
 
@@ -21,8 +21,8 @@
 #include "Node.hpp"
 #include "NodeGraphicsObject.hpp"
 
-FlowGraphicsView::
-FlowGraphicsView(FlowScene *scene)
+FlowView::
+FlowView(FlowScene *scene)
   : QGraphicsView(scene)
   , _scene(scene)
 {
@@ -42,7 +42,7 @@ FlowGraphicsView(FlowScene *scene)
 
 
 void
-FlowGraphicsView::
+FlowView::
 contextMenuEvent(QContextMenuEvent *event)
 {
   QMenu modelMenu;
@@ -83,7 +83,7 @@ contextMenuEvent(QContextMenuEvent *event)
 
 
 void
-FlowGraphicsView::
+FlowView::
 wheelEvent(QWheelEvent *event)
 {
   QPoint delta = event->angleDelta();
@@ -104,7 +104,7 @@ wheelEvent(QWheelEvent *event)
 
 
 void
-FlowGraphicsView::
+FlowView::
 scaleUp()
 {
   double const step = 1.2;
@@ -119,7 +119,7 @@ scaleUp()
 
 
 void
-FlowGraphicsView::
+FlowView::
 scaleDown()
 {
   double const step = 1.2;
@@ -130,7 +130,7 @@ scaleDown()
 
 
 void
-FlowGraphicsView::
+FlowView::
 keyPressEvent(QKeyEvent *event)
 {
   switch (event->key())
@@ -140,9 +140,11 @@ keyPressEvent(QKeyEvent *event)
       break;
 
     case Qt::Key_Delete:
-      foreach(QGraphicsItem * item, _scene->selectedItems()){
+      for (QGraphicsItem * item : _scene->selectedItems())
+      {
         _scene->removeNode(item);
       }
+
       break;
 
     case Qt::Key_Shift:
@@ -152,12 +154,13 @@ keyPressEvent(QKeyEvent *event)
     default:
       break;
   }
+
   QGraphicsView::keyPressEvent(event);
 }
 
 
 void
-FlowGraphicsView::
+FlowView::
 keyReleaseEvent(QKeyEvent *event)
 {
   switch (event->key())
@@ -174,7 +177,7 @@ keyReleaseEvent(QKeyEvent *event)
 
 
 void
-FlowGraphicsView::
+FlowView::
 drawBackground(QPainter* painter, const QRectF& r)
 {
   QGraphicsView::drawBackground(painter, r);

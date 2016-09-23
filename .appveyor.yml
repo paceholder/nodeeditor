@@ -14,9 +14,9 @@ platform:
   - x64
   - Win32
 
-branches:
-  only:
-    - master
+#branches:
+  #only:
+    #- master
 
 before_build:
   - mkdir build

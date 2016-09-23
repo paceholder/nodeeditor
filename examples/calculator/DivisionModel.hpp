@@ -17,9 +17,21 @@ public:
 
   virtual ~DivisionModel() {}
 
-  QString modelName() const override
+public:
+  QString caption() const override
   { return QString("Division"); }
 
+  static QString name()
+  { return QString("Division"); }
+
+
+public:
+
+  void
+  save(Properties &p) const override
+  {
+    p.put("model_name", DivisionModel::name());
+  }
 private:
 
   void compute() override

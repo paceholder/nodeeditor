@@ -24,6 +24,23 @@ public:
 
 public:
 
+  QString
+  caption() const override
+  { return QString("Image Source"); }
+
+  static QString
+  name() { return QString("ImageLoaderModel"); }
+
+public:
+
+  void
+  save(Properties &p) const override
+  {
+    p.put("model_name", ImageLoaderModel::name());
+  }
+
+public:
+
   virtual QString
   modelName() const
   { return QString("Source Image"); }
@@ -58,15 +75,3 @@ private:
 
   QPixmap _pixmap;
 };
-
-
-static bool
-registerDataModel()
-{
-  DataModelRegistry::registerModel<ImageLoaderModel>("Image Loader");
-  return true;
-}
-
-static bool registerOK = registerDataModel();
-
-

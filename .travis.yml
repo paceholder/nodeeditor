@@ -7,9 +7,9 @@ compiler:
 sudo: required
 dist: trusty
 
-branches:
-  only:
-    - master
+#branches:
+  #only:
+    #- master
 
 env:
   #- QT_BASE=51

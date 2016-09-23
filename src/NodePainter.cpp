@@ -183,10 +183,10 @@ drawModelName(QPainter * painter,
 {
   Q_UNUSED(state);
 
-  QString const &name = model->modelName();
-
-  if (name.isEmpty())
+  if (!model->captionVisible())
     return;
+
+  QString const &name = model->caption();
 
   QFont f = painter->font();
 

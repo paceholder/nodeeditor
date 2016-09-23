@@ -26,7 +26,6 @@ ImageShowModel()
   _label->installEventFilter(this);
 }
 
-
 unsigned int
 ImageShowModel::
 nPorts(PortType portType) const

@@ -19,6 +19,31 @@ NumberSourceDataModel()
 }
 
 
+void
+NumberSourceDataModel::
+save(Properties &p) const
+{
+  p.put("model_name", NumberSourceDataModel::name());
+
+  if (_number)
+    p.put("number", _number->number());
+}
+
+
+void
+NumberSourceDataModel::
+restore(Properties const &p)
+{
+  double number;
+
+  if (bool ok = p.get("number", &number))
+  {
+    _number = std::make_shared<NumberData>(number);
+    _lineEdit->setText(QString::number(number));
+  }
+}
+
+
 unsigned int
 NumberSourceDataModel::
 nPorts(PortType portType) const

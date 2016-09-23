@@ -17,8 +17,22 @@ public:
 
   virtual ~SubtractionModel() {}
 
-  QString modelName() const override
+public:
+
+
+  QString caption() const override
   { return QString("Subtraction"); }
+
+  static QString name()
+  { return QString("Subtraction"); }
+
+public:
+
+  void
+  save(Properties &p) const override
+  {
+    p.put("model_name", SubtractionModel::name());
+  }
 
 private:
 

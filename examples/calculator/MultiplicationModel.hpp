@@ -15,14 +15,31 @@ class MultiplicationModel : public MathOperationDataModel
 {
 public:
 
-  virtual ~MultiplicationModel() {}
+  virtual
+  ~MultiplicationModel() {}
 
-  QString modelName() const override
+public:
+
+  QString
+  caption() const override
   { return QString("Multiplication"); }
+
+  static QString
+  name()
+  { return QString("Multiplication"); }
+
+public:
+
+  void
+  save(Properties &p) const override
+  {
+    p.put("model_name", MultiplicationModel::name());
+  }
 
 private:
 
-  void compute() override
+  void
+  compute() override
   {
     PortIndex const outPortIndex = 0;
 

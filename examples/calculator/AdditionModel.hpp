@@ -15,14 +15,31 @@ class AdditionModel : public MathOperationDataModel
 {
 public:
 
-  virtual ~AdditionModel() {}
+  virtual
+  ~AdditionModel() {}
 
-  QString modelName() const override
+public:
+
+  QString
+  caption() const override
   { return QString("Addition"); }
+
+  static QString
+  name()
+  { return QString("Addition"); }
+
+public:
+
+  void
+  save(Properties &p) const override
+  {
+    p.put("model_name", AdditionModel::name());
+  }
 
 private:
 
-  void compute() override
+  void
+  compute() override
   {
     PortIndex const outPortIndex = 0;
 

@@ -6,12 +6,12 @@
 
 class FlowScene;
 
-class NODE_EDITOR_PUBLIC FlowGraphicsView
+class NODE_EDITOR_PUBLIC FlowView
   : public QGraphicsView
 {
 public:
 
-  FlowGraphicsView(FlowScene *scene);
+  FlowView(FlowScene *scene);
 
 public slots:
 

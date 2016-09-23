@@ -22,6 +22,23 @@ public:
 
 public:
 
+  QString
+  caption() const override
+  { return QString("Image Display"); }
+
+  static QString
+  name() { return QString("ImageShowModel"); }
+
+public:
+
+  void
+  save(Properties &p) const override
+  {
+    p.put("model_name", ImageShowModel::name());
+  }
+
+public:
+
   virtual QString
   modelName() const
   { return QString("Resulting Image"); }
@@ -55,13 +72,3 @@ private:
 
   std::shared_ptr<NodeData> _nodeData;
 };
-
-static bool
-registerImageShowModel()
-{
-  DataModelRegistry::registerModel<ImageShowModel>("Image");
-  return true;
-}
-
-
-static bool registeredImageShowModel = registerImageShowModel();

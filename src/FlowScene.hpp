@@ -45,14 +45,26 @@ public:
                    std::shared_ptr<Node> node,
                    PortIndex portIndex);
 
+  std::shared_ptr<Connection>
+  restoreConnection(Properties const &p);
+
   void
   deleteConnection(std::shared_ptr<Connection> connection);
 
   std::shared_ptr<Node>
   createNode(std::unique_ptr<NodeDataModel> && dataModel);
 
+  std::shared_ptr<Node>
+  restoreNode(Properties const &p);
+
   void
   removeNode(QGraphicsItem* item);
+
+  void
+  save() const;
+
+  void
+  load();
 
 private:
 

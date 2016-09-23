@@ -1,8 +1,16 @@
 #include "FlowScene.hpp"
 
 #include <iostream>
+#include <stdexcept>
 
 #include <QtWidgets/QGraphicsSceneMoveEvent>
+#include <QtWidgets/QFileDialog>
+#include <QtCore/QByteArray>
+#include <QtCore/QBuffer>
+#include <QtCore/QDataStream>
+#include <QtCore/QFile>
+
+#include <QDebug>
 
 #include "Node.hpp"
 #include "NodeGraphicsObject.hpp"
@@ -10,7 +18,7 @@
 #include "ConnectionGraphicsObject.hpp"
 
 #include "FlowItemInterface.hpp"
-#include "FlowGraphicsView.hpp"
+#include "FlowView.hpp"
 #include "DataModelRegistry.hpp"
 
 std::shared_ptr<Connection>
@@ -26,7 +34,48 @@ createConnection(PortType connectedPort,
   // after this function connection points are set to node port
   connection->setGraphicsObject(std::move(cgo));
 
-  //connection->getConnectionGraphicsObject()->grabMouse();
+  _connections[connection->id()] = connection;
+
+  return connection;
+}
+
+
+std::shared_ptr<Connection>
+FlowScene::
+restoreConnection(Properties const &p)
+{
+
+  QUuid nodeInId;
+  QUuid nodeOutId;
+
+  p.get("in_id", &nodeInId);
+  p.get("out_id", &nodeOutId);
+
+  PortIndex portIndexIn;
+  PortIndex portIndexOut;
+
+  p.get("in_index", &portIndexIn);
+  p.get("out_index", &portIndexOut);
+
+  auto nodeIn  = _nodes[nodeInId];
+  auto nodeOut = _nodes[nodeOutId];
+
+  auto connection =
+    std::make_shared<Connection>(nodeIn,
+                                 portIndexIn,
+                                 nodeOut,
+                                 portIndexOut);
+
+  auto cgo = std::make_unique<ConnectionGraphicsObject>(*this, connection);
+
+  nodeIn->nodeState().setConnection(PortType::In, portIndexIn, connection);
+  nodeOut->nodeState().setConnection(PortType::Out, portIndexOut, connection);
+
+  // trigger data propagation
+  nodeOut->onDataUpdated(portIndexOut);
+
+  // after this function connection points are set to node port
+  connection->setGraphicsObject(std::move(cgo));
 
   _connections[connection->id()] = connection;
 
@@ -47,13 +96,39 @@ FlowScene::
 createNode(std::unique_ptr<NodeDataModel> && dataModel)
 {
   auto node = std::make_shared<Node>(std::move(dataModel));
-
-  auto ngo = std::make_unique<NodeGraphicsObject>(*this, node);
+  auto ngo  = std::make_unique<NodeGraphicsObject>(*this, node);
 
   node->setGraphicsObject(std::move(ngo));
 
   _nodes[node->id()] = node;
 
+  return node;
+}
+
+
+std::shared_ptr<Node>
+FlowScene::
+restoreNode(Properties const &p)
+{
+  QString modelName;
+
+  p.get("model_name", &modelName);
+
+  auto const &models = DataModelRegistry::registeredModels();
+  auto it = models.find(modelName);
+
+  if (it == models.end())
+    throw std::logic_error(std::string("No registered model with name ") +
+                           modelName.toLocal8Bit().data());
+
+  auto dataModel = it->second->create();
+  auto node      = std::make_shared<Node>(std::move(dataModel));
+  auto ngo       = std::make_unique<NodeGraphicsObject>(*this, node);
+  node->setGraphicsObject(std::move(ngo));
+
+  node->restore(p);
+
+  _nodes[node->id()] = node;
   return node;
 }
 
@@ -82,6 +157,117 @@ removeNode(QGraphicsItem* item)
   deleteConnections(PortType::Out);
 
   _nodes.erase(node->id());
+}
+
+
+void
+FlowScene::
+save() const
+{
+  QByteArray byteArray;
+  QBuffer    writeBuffer(&byteArray);
+
+  writeBuffer.open(QIODevice::WriteOnly);
+  QDataStream out(&writeBuffer);
+
+  out << static_cast<quint64>(_nodes.size());
+
+  for (auto const & pair : _nodes)
+  {
+    auto const &node = pair.second;
+
+    Properties p;
+
+    node->save(p);
+
+    QVariantMap const &m = p.values();
+
+    out << m;
+  }
+
+  out << static_cast<quint64>(_connections.size());
+
+  for (auto const & pair : _connections)
+  {
+    auto const &connection = pair.second;
+
+    Properties p;
+
+    connection->save(p);
+
+    QVariantMap const &m = p.values();
+
+    out << m;
+  }
+
+  //qDebug() << byteArray;
+
+  QString fileName =
+    QFileDialog::getSaveFileName(nullptr,
+                                 tr("Open Flow Scene"),
+                                 QDir::homePath(),
+                                 tr("Flow Scene Files (*.flow)"));
+
+  if (!fileName.isEmpty())
+  {
+    if (!fileName.endsWith("flow", Qt::CaseInsensitive))
+      fileName += ".flow";
+
+    QFile file(fileName);
+    file.open(QIODevice::WriteOnly);
+    file.write(byteArray);
+  }
+}
+
+
+void
+FlowScene::
+load()
+{
+  _connections.clear();
+  _nodes.clear();
+
+  //-------------
+
+  QString fileName =
+    QFileDialog::getOpenFileName(nullptr,
+                                 tr("Open Flow Scene"),
+                                 QDir::homePath(),
+                                 tr("Flow Scene Files (*.flow)"));
+
+  if (!QFileInfo::exists(fileName))
+    return;
+
+  QFile file(fileName);
+
+  if (!file.open(QIODevice::ReadOnly))
+    return;
+
+  QDataStream in(&file);
+
+  qint64 nNodes;
+  in >> nNodes;
+
+  for (unsigned int i = 0; i < nNodes; ++i)
+  {
+    Properties p;
+    auto &values = p.values();
+    in >> values;
+
+    restoreNode(p);
+  }
+
+  qint64 nConnections;
+  in >> nConnections;
+
+  for (unsigned int i = 0; i < nConnections; ++i)
+  {
+    Properties p;
+    auto &values = p.values();
+    in >> values;
+
+    restoreConnection(p);
+  }
 }
 
 

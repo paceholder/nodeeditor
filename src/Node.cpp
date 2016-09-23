@@ -37,6 +37,35 @@ Node::
 }
 
 
+void
+Node::
+save(Properties &p) const
+{
+  // save unique objec id
+  p.put("id", _id);
+
+  // save data model name
+  _nodeDataModel->save(p);
+
+  // save node graphics position
+  p.put("position", _nodeGraphicsObject->pos());
+}
+
+
+void
+Node::
+restore(Properties const &p)
+{
+  p.get("id", &_id);
+
+  QPointF point;
+  p.get("position", &point);
+  _nodeGraphicsObject->setPos(point );
+
+  _nodeDataModel->restore(p);
+}
+
+
 QUuid
 Node::
 id() const

@@ -206,10 +206,10 @@ unsigned int
 NodeGeometry::
 nameHeight() const
 {
-  QString name = _dataModel->modelName();
-
-  if (name.isEmpty())
+  if (!_dataModel->captionVisible())
     return 0;
+
+  QString name = _dataModel->caption();
 
   return _fontMetrics.boundingRect(name).height();
 }

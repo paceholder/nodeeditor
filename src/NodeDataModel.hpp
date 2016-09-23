@@ -6,11 +6,13 @@
 
 #include "PortType.hpp"
 #include "NodeData.hpp"
+#include "Serializable.hpp"
 
 #include "Export.hpp"
 
 class NODE_EDITOR_PUBLIC NodeDataModel
   : public QObject
+  , public Serializable
 {
   Q_OBJECT
 
@@ -19,8 +21,13 @@ public:
   virtual
   ~NodeDataModel() {}
 
+  /// Caption is used in GUI
   virtual QString
-  modelName() const { return QString(); }
+  caption() const = 0;
+
+  /// It is possible to hide caption in GUI
+  virtual bool
+  captionVisible() const { return true; }
 
 public:
 
@@ -62,6 +69,7 @@ signals:
 
   void
   computingStarted();
+
   void
   computingFinished();
 };

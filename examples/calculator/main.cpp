@@ -1,9 +1,10 @@
 #include <nodes/NodeData>
 #include <nodes/FlowScene>
-#include <nodes/FlowGraphicsView>
+#include <nodes/FlowView>
 
 #include <QtWidgets/QApplication>
-#include <QtWidgets/QGraphicsView>
+#include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QMenuBar>
 
 #include <nodes/DataModelRegistry>
 
@@ -14,30 +15,24 @@
 #include "MultiplicationModel.hpp"
 #include "DivisionModel.hpp"
 
-
 static bool
 registerDataModels()
 {
-  DataModelRegistry::registerModel
-    <NumberSourceDataModel>("Number Source");
+  DataModelRegistry::registerModel<NumberSourceDataModel>();
 
-  DataModelRegistry::registerModel
-    <NumberDisplayDataModel>("Number Display");
+  DataModelRegistry::registerModel<NumberDisplayDataModel>();
 
-  DataModelRegistry::registerModel
-    <AdditionModel>("Addition");
+  DataModelRegistry::registerModel<AdditionModel>();
 
-  DataModelRegistry::registerModel
-    <SubtractionModel>("Subtraction");
+  DataModelRegistry::registerModel<SubtractionModel>();
 
-  DataModelRegistry::registerModel
-    <MultiplicationModel>("Multiplication");
+  DataModelRegistry::registerModel<MultiplicationModel>();
 
-  DataModelRegistry::registerModel
-    <DivisionModel>("Division");
+  DataModelRegistry::registerModel<DivisionModel>();
 
   return true;
 }
+
 
 static bool registerOK = registerDataModels();
 
@@ -46,13 +41,29 @@ main(int argc, char *argv[])
 {
   QApplication app(argc, argv);
 
-  FlowScene scene;
+  QWidget mainWidget;
 
-  FlowGraphicsView view(&scene);
+  auto menuBar    = new QMenuBar();
+  auto saveAction = menuBar->addAction("Save..");
+  auto loadAction = menuBar->addAction("Load..");
 
-  view.setWindowTitle("Dataflow tools: simplest calculator");
-  view.resize(800, 600);
-  view.show();
+  QVBoxLayout *l = new QVBoxLayout(&mainWidget);
+
+  l->addWidget(menuBar);
+  auto scene = new FlowScene;
+  l->addWidget(new FlowView(scene));
+  l->setContentsMargins(0, 0, 0, 0);
+  l->setSpacing(0);
+
+  QObject::connect(saveAction, &QAction::triggered,
+                   scene, &FlowScene::save);
+
+  QObject::connect(loadAction, &QAction::triggered,
+                   scene, &FlowScene::load);
+
+  mainWidget.setWindowTitle("Dataflow tools: simplest calculator");
+  mainWidget.resize(800, 600);
+  mainWidget.showNormal();
 
   return app.exec();
 }

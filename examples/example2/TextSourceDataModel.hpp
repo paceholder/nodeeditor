@@ -18,24 +18,51 @@ class TextSourceDataModel : public NodeDataModel
 public:
   TextSourceDataModel();
 
-  virtual ~TextSourceDataModel() {}
+  virtual
+  ~TextSourceDataModel() {}
 
 public:
 
-  unsigned int nPorts(PortType portType) const override;
+  QString
+  caption() const override
+  { return QString("Text Source"); }
 
-  NodeDataType dataType(PortType portType, PortIndex portIndex) const override;
+  bool captionVisible() const { return false; }
 
-  std::shared_ptr<NodeData>outData(PortIndex port) override;
+  static QString
+  name()
+  { return QString("TextSourceDataModel"); }
 
-  void setInData(std::shared_ptr<NodeData>, int) override
+public:
+
+  void
+  save(Properties &p) const override
+  {
+    p.put("model_name", TextSourceDataModel::name());
+  }
+
+public:
+
+  unsigned int
+  nPorts(PortType portType) const override;
+
+  NodeDataType
+  dataType(PortType portType, PortIndex portIndex) const override;
+
+  std::shared_ptr<NodeData>
+  outData(PortIndex port) override;
+
+  void
+  setInData(std::shared_ptr<NodeData>, int) override
   { }
 
-  QWidget * embeddedWidget() override { return _lineEdit; }
+  QWidget *
+  embeddedWidget() override { return _lineEdit; }
 
 private slots:
 
-  void onTextEdited(QString const &string);
+  void
+  onTextEdited(QString const &string);
 
 private:
 

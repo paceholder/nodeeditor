@@ -1,10 +1,24 @@
 #include <nodes/NodeData>
 #include <nodes/FlowScene>
-#include <nodes/FlowGraphicsView>
+#include <nodes/FlowView>
 
 #include <QtWidgets/QApplication>
-#include <QtWidgets/QGraphicsView>
 
+#include "ImageShowModel.hpp"
+#include "ImageLoaderModel.hpp"
+
+static bool
+registerDataModels()
+{
+  DataModelRegistry::registerModel<ImageShowModel>();
+
+  DataModelRegistry::registerModel<ImageLoaderModel>();
+
+  return true;
+}
+
+
+static bool registerOK = registerDataModels();
 
 int
 main(int argc, char *argv[])
@@ -13,7 +27,7 @@ main(int argc, char *argv[])
 
   FlowScene scene;
 
-  FlowGraphicsView view(&scene);
+  FlowView view(&scene);
 
   view.setWindowTitle("Node-based flow editor");
   view.resize(800, 600);

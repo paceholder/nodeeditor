@@ -10,13 +10,16 @@
 #include "NodeState.hpp"
 #include "NodeGeometry.hpp"
 #include "NodeData.hpp"
+#include "Serializable.hpp"
 
 class Connection;
 class ConnectionState;
 class NodeGraphicsObject;
 class NodeDataModel;
 
-class Node : public QObject
+class Node
+  : public QObject
+  , public Serializable
 {
   Q_OBJECT
 
@@ -26,6 +29,14 @@ public:
   Node(std::unique_ptr<NodeDataModel> && dataModel);
 
   ~Node();
+
+public:
+
+  void
+  save(Properties &p) const override;
+
+  void
+  restore(Properties const &p);
 
 public:
 
@@ -43,6 +54,7 @@ public:
 
   std::unique_ptr<NodeGraphicsObject> const&
   nodeGraphicsObject() const;
+
   std::unique_ptr<NodeGraphicsObject>&
   nodeGraphicsObject();
 
@@ -51,11 +63,13 @@ public:
 
   NodeGeometry&
   nodeGeometry();
+
   NodeGeometry const&
   nodeGeometry() const;
 
   NodeState const &
   nodeState() const;
+
   NodeState &
   nodeState();
 

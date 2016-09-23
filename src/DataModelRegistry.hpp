@@ -7,6 +7,7 @@
 #include "NodeDataModel.hpp"
 #include "Export.hpp"
 #include "UniquePtr.hpp"
+#include "QStringStdHash.hpp"
 
 /// Base abstract class for Model Registry items
 class RegistryItem
@@ -14,12 +15,15 @@ class RegistryItem
 public:
   RegistryItem() {}
 
-  virtual ~RegistryItem() {}
+  virtual
+  ~RegistryItem() {}
 
-  virtual std::unique_ptr<NodeDataModel> create() const = 0;
+  virtual std::unique_ptr<NodeDataModel>
+  create() const = 0;
+
+  virtual QString
+  name() const = 0;
 };
-
-
 
 //------------------------------------------------------------------------------
 
@@ -31,24 +35,14 @@ class RegistryItemImpl : public RegistryItem
 public:
 
   /// Gives derived classes the ability to create instances of T
-  std::unique_ptr<NodeDataModel> create() const override
+  std::unique_ptr<NodeDataModel>
+  create() const override
   { return std::make_unique<T>(); }
-};
 
-//------------------------------------------------------------------------------
-
-namespace std
-{
-template<>
-struct hash<QString>
-{
-  inline
-  size_t operator()(QString const& s) const
-  {
-    return qHash(s);
-  }
+  QString
+  name() const override
+  { return T::name(); }
 };
-}
 
 //------------------------------------------------------------------------------
 
@@ -65,19 +59,25 @@ public:
 public:
 
   template<typename ModelType>
-  static void registerModel(QString const &modelName)
+  static void
+  registerModel(QString menuName = QString())
   {
-    if (_registeredModels.count(modelName) == 0)
+    QString const name = ModelType::name();
+
+    if (_registeredModels.count(name) == 0)
     {
-      _registeredModels[modelName] =
-        std::make_unique < RegistryItemImpl < ModelType >> ();
+      auto uniqueModel =
+        std::make_unique<RegistryItemImpl<ModelType> > ();
+
+      _registeredModels[uniqueModel->name()] = std::move(uniqueModel);
     }
   }
 
   static std::unique_ptr<NodeDataModel>
   create(QString const &modelName);
 
-  static RegisteredModelsMap const &registeredModels();
+  static RegisteredModelsMap const &
+  registeredModels();
 
 private:
 

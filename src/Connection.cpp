@@ -7,7 +7,7 @@
 
 #include "Node.hpp"
 #include "FlowScene.hpp"
-#include "FlowGraphicsView.hpp"
+#include "FlowView.hpp"
 
 #include "NodeGeometry.hpp"
 #include "NodeGraphicsObject.hpp"
@@ -35,8 +35,27 @@ Connection(PortType portType,
 
 
 Connection::
+Connection(std::shared_ptr<Node> nodeIn,
+           PortIndex portIndexIn,
+           std::shared_ptr<Node> nodeOut,
+           PortIndex portIndexOut)
+  : _id(QUuid::createUuid())
+  , _outNode(nodeOut)
+  , _inNode(nodeIn)
+  , _outPortIndex(portIndexOut)
+  , _inPortIndex(portIndexIn)
+  , _connectionState()
+{
+  setNodeToPort(nodeIn, PortType::In, portIndexIn);
+  setNodeToPort(nodeOut, PortType::Out, portIndexOut);
+}
+
+
+Connection::
 ~Connection()
 {
+  propagateEmptyData();
+
   if (auto in = _inNode.lock())
   {
     in->nodeGraphicsObject()->update();
@@ -48,6 +67,24 @@ Connection::
   }
 
   std::cout << "Connection destructor" << std::endl;
+}
+
+
+void
+Connection::
+save(Properties &p) const
+{
+  auto in  = _inNode.lock();
+  auto out = _outNode.lock();
+
+  if (in && out)
+  {
+    p.put("in_id", in->id());
+    p.put("out_id", out->id());
+
+    p.put("in_index", _inPortIndex);
+    p.put("out_index", _outPortIndex);
+  }
 }
 
 
@@ -104,20 +141,26 @@ setGraphicsObject(std::unique_ptr<ConnectionGraphicsObject>&& graphics)
   // By moving the whole object to the Node Port position
   // we position both connection ends correctly.
 
-  PortType attachedPort = oppositePort(requiredPort());
+  if (requiredPort() != PortType::None)
+  {
 
-  PortIndex attachedPortIndex = getPortIndex(attachedPort);
+    PortType attachedPort = oppositePort(requiredPort());
 
-  std::shared_ptr<Node> node = getNode(attachedPort).lock();
+    PortIndex attachedPortIndex = getPortIndex(attachedPort);
 
-  QTransform nodeSceneTransform =
-    node->nodeGraphicsObject()->sceneTransform();
+    std::shared_ptr<Node> node = getNode(attachedPort).lock();
 
-  QPointF pos = node->nodeGeometry().portScenePosition(attachedPortIndex,
-                                                       attachedPort,
-                                                       nodeSceneTransform);
+    QTransform nodeSceneTransform =
+      node->nodeGraphicsObject()->sceneTransform();
 
-  _connectionGraphicsObject->setPos(pos);
+    QPointF pos = node->nodeGeometry().portScenePosition(attachedPortIndex,
+                                                         attachedPort,
+                                                         nodeSceneTransform);
+
+    _connectionGraphicsObject->setPos(pos);
+  }
+
+  _connectionGraphicsObject->move();
 }
 
 
@@ -262,12 +305,12 @@ dataType() const
 
   if ((validNode = _inNode.lock()))
   {
-    index = _inPortIndex;
+    index    = _inPortIndex;
     portType = PortType::In;
   }
   else if ((validNode = _outNode.lock()))
   {
-    index = _outPortIndex;
+    index    = _outPortIndex;
     portType = PortType::Out;
   }
 

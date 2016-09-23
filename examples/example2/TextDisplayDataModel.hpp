@@ -22,6 +22,28 @@ public:
 
 public:
 
+  QString
+  caption() const override
+  { return QString("Text Display"); }
+
+  bool captionVisible() const { return false; }
+
+  static QString
+  name()
+  { return QString("TextDisplayDataModel"); }
+
+
+public:
+
+  void
+  save(Properties &p) const override
+  {
+    p.put("model_name", TextDisplayDataModel::name());
+  }
+
+
+public:
+
   unsigned int nPorts(PortType portType) const override;
 
   NodeDataType dataType(PortType portType, PortIndex portIndex) const override;

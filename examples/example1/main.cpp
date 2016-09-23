@@ -1,9 +1,8 @@
 #include <QtWidgets/QApplication>
-#include <QtWidgets/QGraphicsView>
 
 #include <nodes/NodeData>
 #include <nodes/FlowScene>
-#include <nodes/FlowGraphicsView>
+#include <nodes/FlowView>
 #include <nodes/DataModelRegistry>
 
 #include "models.hpp"
@@ -12,14 +11,14 @@
 static bool
 registerDataModels()
 {
-  DataModelRegistry::registerModel<NaiveDataModel>("NaiveDataModel");
+  DataModelRegistry::registerModel<NaiveDataModel>();
 
   /*
    We could have more models registered.
    All of them become items in the context meny of the scene.
 
-  DataModelRegistry::registerModel<AnotherDataModel>("AnotherDataModel");
-  DataModelRegistry::registerModel<OneMoreDataModel>("OneMoreDataModel");
+  DataModelRegistry::registerModel<AnotherDataModel>();
+  DataModelRegistry::registerModel<OneMoreDataModel>();
 
   */
 
@@ -38,7 +37,7 @@ main(int argc, char* argv[])
 
   FlowScene scene;
 
-  FlowGraphicsView view(&scene);
+  FlowView view(&scene);
 
   view.setWindowTitle("Node-based flow editor");
   view.resize(800, 600);

@@ -16,23 +16,44 @@ class NumberDisplayDataModel : public NodeDataModel
 public:
   NumberDisplayDataModel();
 
-  virtual ~NumberDisplayDataModel() {}
+  virtual
+  ~NumberDisplayDataModel() {}
 
-  QString modelName() const override
+public:
+
+  QString
+  caption() const override
+  { return QString("Result"); }
+
+  static QString
+  name()
   { return QString("Result"); }
 
 public:
 
-  unsigned int nPorts(PortType portType) const override;
+  void
+  save(Properties &p) const override
+  {
+    p.put("model_name", NumberDisplayDataModel::name());
+  }
 
-  NodeDataType dataType(PortType portType,
-                        PortIndex portIndex) const override;
+public:
 
-  std::shared_ptr<NodeData> outData(PortIndex port) override;
+  unsigned int
+  nPorts(PortType portType) const override;
 
-  void setInData(std::shared_ptr<NodeData> data, int) override;
+  NodeDataType
+  dataType(PortType portType,
+           PortIndex portIndex) const override;
 
-  QWidget * embeddedWidget() override { return _label; }
+  std::shared_ptr<NodeData>
+  outData(PortIndex port) override;
+
+  void
+  setInData(std::shared_ptr<NodeData> data, int) override;
+
+  QWidget *
+  embeddedWidget() override { return _label; }
 
 private:
 

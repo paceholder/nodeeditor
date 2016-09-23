@@ -1,9 +1,8 @@
 #include <nodes/NodeData>
 #include <nodes/FlowScene>
-#include <nodes/FlowGraphicsView>
+#include <nodes/FlowView>
 
 #include <QtWidgets/QApplication>
-#include <QtWidgets/QGraphicsView>
 
 #include <nodes/DataModelRegistry>
 
@@ -14,9 +13,9 @@
 static bool
 registerDataModels()
 {
-  DataModelRegistry::registerModel<TextSourceDataModel>("TextSourceDataModel");
+  DataModelRegistry::registerModel<TextSourceDataModel>();
 
-  DataModelRegistry::registerModel<TextDisplayDataModel>("TextDisplayDataModel");
+  DataModelRegistry::registerModel<TextDisplayDataModel>();
 
   return true;
 }
@@ -30,7 +29,7 @@ main(int argc, char *argv[])
 
   FlowScene scene;
 
-  FlowGraphicsView view(&scene);
+  FlowView view(&scene);
 
   view.setWindowTitle("Node-based flow editor");
   view.resize(800, 600);
