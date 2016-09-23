@@ -14,6 +14,10 @@ platform:
   - x64
   - Win32
 
+branches:
+  only:
+    - master
+
 before_build:
   - mkdir build
   - cd build
