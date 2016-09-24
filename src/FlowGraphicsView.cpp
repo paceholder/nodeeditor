@@ -96,14 +96,34 @@ wheelEvent(QWheelEvent *event)
 
   double const d = delta.y() / std::abs(delta.y());
 
-  double const step = 1.2;
+  if (d > 0.0)
+    scaleUp();
+  else
+    scaleDown();
+}
 
-  double const factor = std::pow(step, d);
+
+void
+FlowGraphicsView::
+scaleUp()
+{
+  double const step = 1.2;
+  double const factor = std::pow(step, 1.0);
 
   QTransform t = transform();
-
-  if (t.m11() > 2.0 && factor > 1.0)
+  if (t.m11() > 2.0)
     return;
+
+  scale(factor, factor);
+}
+
+
+void
+FlowGraphicsView::
+scaleDown()
+{
+  double const step = 1.2;
+  double const factor = std::pow(step, -1.0);
 
   scale(factor, factor);
 }

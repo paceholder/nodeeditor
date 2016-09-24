@@ -2,6 +2,7 @@
 
 #include "ConnectionGraphicsObject.hpp"
 #include "NodeGraphicsObject.hpp"
+#include "NodeDataModel.hpp"
 
 bool
 NodeConnectionInteraction::
@@ -35,6 +36,19 @@ canConnect(PortIndex &portIndex) const
     return false;
 
   // 4) Connection type == node port type (not implemented yet)
+
+  auto opposite = oppositePort(requiredPort);
+
+  auto const weakNode = _connection->getNode(opposite);
+  auto node = weakNode.lock();
+  auto const &model       = node->nodeDataModel();
+  NodeDataType connectionDataType = model->dataType(opposite, _connection->getPortIndex(opposite));
+
+  auto const &modelTarget = _node->nodeDataModel();
+  NodeDataType candidateNodeDataType = modelTarget->dataType(requiredPort, portIndex);
+
+  if (connectionDataType.id != candidateNodeDataType.id)
+    return false;
 
   return true;
 }
@@ -104,7 +118,6 @@ disconnect(PortType portToDisconnect) const
   _connection->setRequiredPort(portToDisconnect);
 
   _connection->getConnectionGraphicsObject()->grabMouse();
-
 
   return true;
 }
