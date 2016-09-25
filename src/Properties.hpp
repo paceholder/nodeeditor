@@ -4,7 +4,9 @@
 
 #include <QtCore/QVariantMap>
 
-class Properties
+#include "Export.hpp"
+
+class NODE_EDITOR_PUBLIC Properties
 {
 public:
 
