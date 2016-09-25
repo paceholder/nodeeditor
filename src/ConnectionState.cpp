@@ -16,13 +16,10 @@ ConnectionState::
 
 void
 ConnectionState::
-interactWithNode(std::shared_ptr<Node> node, QPointF const& scenePos)
+interactWithNode(std::shared_ptr<Node> node)
 {
   if (node)
   {
-    node->reactToPossibleConnection(_requiredPort,
-                                    scenePos);
-
     _lastHoveredNode = node;
   }
   else

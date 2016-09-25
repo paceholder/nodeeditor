@@ -37,12 +37,7 @@ canConnect(PortIndex &portIndex) const
 
   // 4) Connection type == node port type (not implemented yet)
 
-  auto opposite = oppositePort(requiredPort);
-
-  auto const weakNode = _connection->getNode(opposite);
-  auto node = weakNode.lock();
-  auto const &model       = node->nodeDataModel();
-  NodeDataType connectionDataType = model->dataType(opposite, _connection->getPortIndex(opposite));
+  NodeDataType connectionDataType = _connection->dataType();
 
   auto const &modelTarget = _node->nodeDataModel();
   NodeDataType candidateNodeDataType = modelTarget->dataType(requiredPort, portIndex);

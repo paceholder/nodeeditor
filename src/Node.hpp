@@ -29,37 +29,50 @@ public:
 
 public:
 
-  QUuid id() const;
+  QUuid
+  id() const;
 
   void reactToPossibleConnection(PortType,
+                                 NodeDataType,
                                  QPointF const & scenePoint);
 
-  void resetReactionToConnection();
+  void
+  resetReactionToConnection();
 
 public:
 
-  std::unique_ptr<NodeGraphicsObject> const& nodeGraphicsObject() const;
-  std::unique_ptr<NodeGraphicsObject>& nodeGraphicsObject();
+  std::unique_ptr<NodeGraphicsObject> const&
+  nodeGraphicsObject() const;
+  std::unique_ptr<NodeGraphicsObject>&
+  nodeGraphicsObject();
 
-  void setGraphicsObject(std::unique_ptr<NodeGraphicsObject>&& graphics);
+  void
+  setGraphicsObject(std::unique_ptr<NodeGraphicsObject>&& graphics);
 
-  NodeGeometry& nodeGeometry();
-  NodeGeometry const& nodeGeometry() const;
+  NodeGeometry&
+  nodeGeometry();
+  NodeGeometry const&
+  nodeGeometry() const;
 
-  NodeState const & nodeState() const;
-  NodeState & nodeState();
+  NodeState const &
+  nodeState() const;
+  NodeState &
+  nodeState();
 
-  std::unique_ptr<NodeDataModel> const & nodeDataModel() const;
+  std::unique_ptr<NodeDataModel> const &
+  nodeDataModel() const;
 
 public slots: // data propagation
 
   // propagates incoming data to the underlying model
-  void propagateData(std::shared_ptr<NodeData> nodeData,
-                     PortIndex inPortIndex) const;
+  void
+  propagateData(std::shared_ptr<NodeData> nodeData,
+                PortIndex inPortIndex) const;
 
   // fetches data from model's OUT #index port
   // and propagates it to the connection
-  void onDataUpdated(PortIndex index);
+  void
+  onDataUpdated(PortIndex index);
 
 private:
 

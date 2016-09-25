@@ -49,7 +49,8 @@ public:
   void
   drawConnectionPoints(QPainter* painter,
                        NodeGeometry const& geom,
-                       NodeState const& state);
+                       NodeState const& state,
+                       std::unique_ptr<NodeDataModel> const & model);
 
   static
   void

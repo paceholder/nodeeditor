@@ -6,6 +6,7 @@
 #include <QtCore/QUuid>
 
 #include "PortType.hpp"
+#include "NodeData.hpp"
 
 #include "ConnectionState.hpp"
 #include "ConnectionGeometry.hpp"
@@ -61,6 +62,8 @@ public:
   PortIndex getPortIndex(PortType portType) const;
 
   void clearNode(PortType portType);
+
+  NodeDataType dataType() const;
 
 public: // data propagation
 

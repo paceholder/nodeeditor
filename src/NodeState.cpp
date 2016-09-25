@@ -7,6 +7,7 @@ NodeState(std::unique_ptr<NodeDataModel> const &model)
   : _outConnections(model->nPorts(PortType::Out))
   , _inConnections(model->nPorts(PortType::In))
   , _reaction(NOT_REACTING)
+  , _reactingPortType(PortType::None)
   , _resizing(false)
 {}
 
@@ -66,11 +67,33 @@ reaction() const
 }
 
 
+PortType
+NodeState::
+reactingPortType() const
+{
+  return _reactingPortType;
+}
+
+
+NodeDataType
+NodeState::
+reactingDataType() const
+{
+  return _reactingDataType;
+}
+
+
 void
 NodeState::
-setReaction(ReactToConnectionState reaction)
+setReaction(ReactToConnectionState reaction,
+            PortType reactingPortType,
+            NodeDataType reactingDataType)
 {
   _reaction = reaction;
+
+  _reactingPortType = reactingPortType;
+
+  _reactingDataType = reactingDataType;
 }
 
 

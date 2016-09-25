@@ -153,14 +153,21 @@ mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 {
   prepareGeometryChange();
 
+  auto view = static_cast<QGraphicsView*>(event->widget());
   auto node = ::locateNodeAt(event->scenePos(),
                              _scene,
-                             _scene.views()[0]->transform());
+                             view->transform());
 
-  auto con = _connection.lock();
-
+  auto con    = _connection.lock();
   auto &state = con->connectionState();
-  state.interactWithNode(node, event->scenePos());
+
+  state.interactWithNode(node);
+  if (node)
+  {
+    node->reactToPossibleConnection(state.requiredPort(),
+                                    con->dataType(),
+                                    event->scenePos());
+  }
 
   //-------------------
 
@@ -188,7 +195,6 @@ mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
   ungrabMouse();
   event->accept();
 
-  //std::shared_ptr<Node> node = ::locateNodeAt(event);
   auto node = ::locateNodeAt(event->scenePos(), _scene,
                              _scene.views()[0]->transform());
 

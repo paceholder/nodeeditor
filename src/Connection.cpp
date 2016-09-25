@@ -6,12 +6,12 @@
 #include <QtWidgets/QtWidgets>
 
 #include "Node.hpp"
-#include "NodeData.hpp"
 #include "FlowScene.hpp"
 #include "FlowGraphicsView.hpp"
 
 #include "NodeGeometry.hpp"
 #include "NodeGraphicsObject.hpp"
+#include "NodeDataModel.hpp"
 
 #include "ConnectionState.hpp"
 #include "ConnectionGeometry.hpp"
@@ -249,6 +249,34 @@ clearNode(PortType portType)
     _inPortIndex = INVALID;
   else
     _outPortIndex = INVALID;
+}
+
+
+NodeDataType
+Connection::
+dataType() const
+{
+  std::shared_ptr<Node> validNode;
+  PortIndex index    = INVALID;
+  PortType  portType = PortType::None;
+
+  if ((validNode = _inNode.lock()))
+  {
+    index = _inPortIndex;
+    portType = PortType::In;
+  }
+  else if ((validNode = _outNode.lock()))
+  {
+    index = _outPortIndex;
+    portType = PortType::Out;
+  }
+
+  if (validNode)
+  {
+    auto const &model = validNode->nodeDataModel();
+
+    return model->dataType(portType, index);
+  }
 }
 
 

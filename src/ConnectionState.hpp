@@ -37,7 +37,7 @@ public:
 
 public:
 
-  void interactWithNode(std::shared_ptr<Node> node, QPointF const& scenePos);
+  void interactWithNode(std::shared_ptr<Node> node);
 
   void setLastHoveredNode(std::shared_ptr<Node> node);
 

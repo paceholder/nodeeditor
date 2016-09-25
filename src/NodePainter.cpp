@@ -25,11 +25,11 @@ paint(QPainter* painter,
 
   drawNodeRect(painter, geom, graphicsObject);
 
-  drawConnectionPoints(painter, geom, state);
+  auto const &model = node->nodeDataModel();
+
+  drawConnectionPoints(painter, geom, state, model);
 
   drawFilledConnectionPoints(painter, geom, state);
-
-  auto const &model = node->nodeDataModel();
 
   drawModelName(painter, geom, state, model);
 
@@ -86,7 +86,8 @@ void
 NodePainter::
 drawConnectionPoints(QPainter* painter,
                      NodeGeometry const& geom,
-                     NodeState const& state)
+                     NodeState const& state,
+                     std::unique_ptr<NodeDataModel> const & model)
 {
   painter->setBrush(QColor(Qt::darkGray));
 
@@ -105,16 +106,27 @@ drawConnectionPoints(QPainter* painter,
 
       double r = 1.0;
       if (state.isReacting() &&
-          !state.getEntries(portType)[i].lock())
+          !state.getEntries(portType)[i].lock() &&
+          portType == state.reactingPortType())
       {
+
         auto   diff = geom.draggingPos() - p;
         double dist = std::sqrt(QPointF::dotProduct(diff, diff));
 
-        double const thres = 40.0;
-
-        r = (dist < thres) ?
-            (2.0 - dist / thres ) :
-            1.0;
+        if (state.reactingDataType().id == model->dataType(portType, i).id)
+        {
+          double const thres = 40.0;
+          r = (dist < thres) ?
+              (2.0 - dist / thres ) :
+              1.0;
+        }
+        else
+        {
+          double const thres = 80.0;
+          r = (dist < thres) ?
+              (dist / thres) :
+              1.0;
+        }
       }
 
       painter->drawEllipse(p,
@@ -130,9 +142,9 @@ drawConnectionPoints(QPainter* painter,
 
 void
 NodePainter::
-drawFilledConnectionPoints(QPainter* painter,
-                           NodeGeometry const& geom,
-                           NodeState const& state)
+drawFilledConnectionPoints(QPainter * painter,
+                           NodeGeometry const & geom,
+                           NodeState const & state)
 {
   painter->setPen(Qt::cyan);
   painter->setBrush(Qt::cyan);
@@ -164,9 +176,9 @@ drawFilledConnectionPoints(QPainter* painter,
 
 void
 NodePainter::
-drawModelName(QPainter* painter,
-              NodeGeometry const& geom,
-              NodeState const& state,
+drawModelName(QPainter * painter,
+              NodeGeometry const & geom,
+              NodeState const & state,
               std::unique_ptr<NodeDataModel> const & model)
 {
   Q_UNUSED(state);
@@ -198,9 +210,9 @@ drawModelName(QPainter* painter,
 
 void
 NodePainter::
-drawEntryLabels(QPainter* painter,
-                NodeGeometry const& geom,
-                NodeState const& state,
+drawEntryLabels(QPainter * painter,
+                NodeGeometry const & geom,
+                NodeState const & state,
                 std::unique_ptr<NodeDataModel> const & model)
 {
   QFontMetrics const & metrics =
@@ -255,8 +267,8 @@ drawEntryLabels(QPainter* painter,
 
 void
 NodePainter::
-drawResizeRect(QPainter* painter,
-               NodeGeometry const& geom,
+drawResizeRect(QPainter * painter,
+               NodeGeometry const & geom,
                std::unique_ptr<NodeDataModel> const & model)
 {
   if (model->resizable())

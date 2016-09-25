@@ -47,7 +47,9 @@ id() const
 
 void
 Node::
-reactToPossibleConnection(PortType,
+reactToPossibleConnection(PortType reactingPortType,
+
+                          NodeDataType reactingDataType,
                           QPointF const &scenePoint)
 {
   QTransform const t = _nodeGraphicsObject->sceneTransform();
@@ -58,7 +60,9 @@ reactToPossibleConnection(PortType,
 
   _nodeGraphicsObject->update();
 
-  _nodeState.setReaction(NodeState::REACTING);
+  _nodeState.setReaction(NodeState::REACTING,
+                         reactingPortType,
+                         reactingDataType);
 }
 
 

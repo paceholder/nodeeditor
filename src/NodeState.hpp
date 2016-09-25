@@ -6,6 +6,7 @@
 #include <QtCore/QUuid>
 
 #include "PortType.hpp"
+#include "NodeData.hpp"
 
 class Connection;
 class NodeDataModel;
@@ -47,8 +48,18 @@ public:
   ReactToConnectionState
   reaction() const;
 
+  PortType
+  reactingPortType() const;
+
+  NodeDataType
+  reactingDataType() const;
+
   void
-  setReaction(ReactToConnectionState reaction);
+  setReaction(ReactToConnectionState reaction,
+              PortType reactingPortType = PortType::None,
+
+              NodeDataType reactingDataType =
+                NodeDataType());
 
   bool
   isReacting() const;
@@ -59,12 +70,14 @@ public:
   bool
   resizing() const;
 
-private :
+private:
 
-    std::vector<std::weak_ptr<Connection> > _inConnections;
+  std::vector<std::weak_ptr<Connection> > _inConnections;
   std::vector<std::weak_ptr<Connection> > _outConnections;
 
   ReactToConnectionState _reaction;
+  PortType     _reactingPortType;
+  NodeDataType _reactingDataType;
 
   bool _resizing;
 };
