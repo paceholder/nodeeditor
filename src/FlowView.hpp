@@ -15,9 +15,11 @@ public:
 
 public slots:
 
-  void scaleUp();
+  void
+  scaleUp();
 
-  void scaleDown();
+  void
+  scaleDown();
 
 protected:
 
@@ -36,7 +38,19 @@ protected:
   void
   drawBackground(QPainter* painter, const QRectF& r) override;
 
+  void
+  showEvent(QShowEvent *event) override;
+
+  void
+  mouseMoveEvent(QMouseEvent* event) override;
+
+  void
+  mousePressEvent(QMouseEvent* event) override;
+
 private:
 
   FlowScene* _scene;
+
+  //bool _dragging;
+  //QPoint _lastPos;
 };

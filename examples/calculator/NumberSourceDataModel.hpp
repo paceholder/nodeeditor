@@ -28,6 +28,10 @@ public:
   caption() const override
   { return QString("Number Source"); }
 
+  bool
+  captionVisible() const override
+  { return false; }
+
   static QString
   name() { return QString("NumberSource"); }
 

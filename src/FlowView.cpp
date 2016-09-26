@@ -32,6 +32,8 @@ FlowView(FlowScene *scene)
 
   //setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
   //setViewportUpdateMode(QGraphicsView::MinimalViewportUpdate);
+  setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+  setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 
   setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
 
@@ -55,7 +57,7 @@ contextMenuEvent(QContextMenuEvent *event)
 
   if (QAction * action = modelMenu.exec(event->globalPos()))
   {
-    qDebug() << action->text();
+    //qDebug() << action->text();
 
     QString modelName = action->text();
 
@@ -107,10 +109,11 @@ void
 FlowView::
 scaleUp()
 {
-  double const step = 1.2;
+  double const step   = 1.2;
   double const factor = std::pow(step, 1.0);
 
   QTransform t = transform();
+
   if (t.m11() > 2.0)
     return;
 
@@ -122,7 +125,7 @@ void
 FlowView::
 scaleDown()
 {
-  double const step = 1.2;
+  double const step   = 1.2;
   double const factor = std::pow(step, -1.0);
 
   scale(factor, factor);
@@ -225,4 +228,29 @@ drawBackground(QPainter* painter, const QRectF& r)
 
   painter->setPen(p);
   drawGrid(150);
+}
+
+
+void
+FlowView::
+showEvent(QShowEvent *event)
+{
+  _scene->setSceneRect(this->rect());
+  QGraphicsView::showEvent(event);
+}
+
+
+void
+FlowView::
+mousePressEvent(QMouseEvent* event)
+{
+  QGraphicsView::mousePressEvent(event);
+}
+
+
+void
+FlowView::
+mouseMoveEvent(QMouseEvent* event)
+{
+  QGraphicsView::mouseMoveEvent(event);
 }

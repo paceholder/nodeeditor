@@ -25,6 +25,10 @@ public:
   caption() const override
   { return QString("Result"); }
 
+  bool
+  captionVisible() const override
+  { return false; }
+
   static QString
   name()
   { return QString("Result"); }
