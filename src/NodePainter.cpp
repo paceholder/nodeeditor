@@ -1,6 +1,7 @@
 #include "NodePainter.hpp"
 
 #include <QtCore/QMargins>
+#include <cmath>
 
 #include "NodeGraphicsObject.hpp"
 #include "NodeGeometry.hpp"

@@ -1,6 +1,7 @@
 #include "NodeGeometry.hpp"
 
 #include <iostream>
+#include <cmath>
 
 #include "PortType.hpp"
 #include "NodeState.hpp"
