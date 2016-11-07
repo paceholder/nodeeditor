@@ -43,5 +43,5 @@ and create nodes in the scene. Data propagation works as well.
 
 ### Buy me a beer
 
-[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](www.paypal.me/DmitryPinaev)
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://paypal.me/DmitryPinaev)
 
