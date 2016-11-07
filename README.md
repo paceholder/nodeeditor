@@ -41,7 +41,7 @@ and create nodes in the scene. Data propagation works as well.
 
 [![Youtube demonstration](https://img.youtube.com/vi/PmJ1InmPMdE/0.jpg)](https://www.youtube.com/watch?v=PmJ1InmPMdE)
 
-![Flow](https://bitbucket.org/paceholder/nodeeditor/raw/master/pictures/flow.png)
+### Buy me a beer
 
-![Calculator](https://bitbucket.org/paceholder/nodeeditor/raw/master/pictures/calculator.png)
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](paypal.me/DmitryPinaev)
 
