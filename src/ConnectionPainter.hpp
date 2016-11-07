@@ -1,10 +1,11 @@
-#ifndef CONNECTION_PAINTER_HPP
-#define CONNECTION_PAINTER_HPP
+#pragma once
 
+#include <memory>
 #include <QtGui/QPainter>
 
 class ConnectionGeometry;
 class ConnectionState;
+class Connection;
 
 class ConnectionPainter
 {
@@ -15,15 +16,15 @@ public:
 public:
 
   static
-  QPainterPath cubicPath(ConnectionGeometry const& geom);
+  QPainterPath
+  cubicPath(ConnectionGeometry const& geom);
 
   static
-  QPainterPath getPainterStroke(ConnectionGeometry const& geom);
+  QPainterPath
+  getPainterStroke(ConnectionGeometry const& geom);
 
   static
-  void paint(QPainter* painter,
-             ConnectionGeometry const& geom,
-             ConnectionState const& state);
+  void
+  paint(QPainter* painter,
+        std::shared_ptr<Connection> const &connection);
 };
-
-#endif //  CONNECTION_PAINTER_HPP

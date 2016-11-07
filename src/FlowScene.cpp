@@ -15,6 +15,7 @@
 #include "Node.hpp"
 #include "NodeGraphicsObject.hpp"
 
+#include "NodeGraphicsObject.hpp"
 #include "ConnectionGraphicsObject.hpp"
 
 #include "FlowItemInterface.hpp"
@@ -135,11 +136,9 @@ restoreNode(Properties const &p)
 
 void
 FlowScene::
-removeNode(QGraphicsItem* item)
+removeNode(NodeGraphicsObject* ngo)
 {
-  auto ngo = dynamic_cast<NodeGraphicsObject*>(item);
-
-  std::shared_ptr<Node> const& node = ngo->node().lock();
+  std::shared_ptr<Node> const node = ngo->node().lock();
 
   auto deleteConnections = [&node, this] (PortType portType)
   {
@@ -157,6 +156,16 @@ removeNode(QGraphicsItem* item)
   deleteConnections(PortType::Out);
 
   _nodes.erase(node->id());
+}
+
+
+void
+FlowScene::
+removeConnection(ConnectionGraphicsObject* cgo)
+{
+  std::shared_ptr<Connection> const conn = cgo->connection().lock();
+
+  _connections.erase(conn->id());
 }
 
 

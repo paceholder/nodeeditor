@@ -30,6 +30,7 @@ ConnectionGraphicsObject(FlowScene &scene,
 
   setFlag(QGraphicsItem::ItemIsMovable, true);
   setFlag(QGraphicsItem::ItemIsFocusable, true);
+  setFlag(QGraphicsItem::ItemIsSelectable, true);
 
   setAcceptHoverEvents(true);
 
@@ -45,6 +46,14 @@ ConnectionGraphicsObject::
   std::cout << "Remove ConnectionGraphicsObject from scene" << std::endl;
 
   _scene.removeItem(this);
+}
+
+
+std::weak_ptr<Connection>&
+ConnectionGraphicsObject::
+connection()
+{
+  return _connection;
 }
 
 
@@ -68,8 +77,10 @@ shape() const
   //return path;
 
 #else
+  auto const &geom =
+    _connection.lock()->connectionGeometry();
 
-  return ConnectionPainter::getPainterStroke(_connection.lock()->connectionGeometry());
+  return ConnectionPainter::getPainterStroke(geom);
 
 #endif
 }
@@ -134,8 +145,7 @@ paint(QPainter* painter,
   painter->setClipRect(option->exposedRect);
 
   ConnectionPainter::paint(painter,
-                           _connection.lock()->connectionGeometry(),
-                           _connection.lock()->connectionState());
+                           _connection.lock());
 }
 
 
@@ -143,7 +153,9 @@ void
 ConnectionGraphicsObject::
 mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
-  event->ignore();
+
+  QGraphicsItem::mousePressEvent(event);
+  //event->ignore();
 }
 
 
@@ -206,7 +218,7 @@ mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
   {
     node->resetReactionToConnection();
   }
-  else
+  else if (connection->connectionState().requiresPort())
   {
     _scene.deleteConnection(connection);
   }

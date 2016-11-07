@@ -45,7 +45,9 @@ drawNodeRect(QPainter* painter,
              NodeGeometry const& geom,
              std::unique_ptr<NodeGraphicsObject> const& graphicsObject)
 {
-  auto color = graphicsObject->isSelected() ? QColor(255, 150, 0) : Qt::white;
+  auto color = graphicsObject->isSelected()
+               ? QColor("orange")
+               : Qt::white;
 
   if (geom.hovered())
   {

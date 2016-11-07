@@ -27,6 +27,8 @@ struct hash<QUuid>
 class NodeDataModel;
 class FlowItemInterface;
 class Node;
+class NodeGraphicsObject;
+class ConnectionGraphicsObject;
 
 /// Scene holds connections and nodes.
 class NODE_EDITOR_PUBLIC FlowScene
@@ -58,7 +60,10 @@ public:
   restoreNode(Properties const &p);
 
   void
-  removeNode(QGraphicsItem* item);
+  removeNode(NodeGraphicsObject* item);
+
+  void
+  removeConnection(ConnectionGraphicsObject* item);
 
   void
   save() const;

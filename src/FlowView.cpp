@@ -21,6 +21,8 @@
 #include "Node.hpp"
 #include "NodeGraphicsObject.hpp"
 
+#include "ConnectionGraphicsObject.hpp"
+
 FlowView::
 FlowView(FlowScene *scene)
   : QGraphicsView(scene)
@@ -145,7 +147,10 @@ keyPressEvent(QKeyEvent *event)
     case Qt::Key_Delete:
       for (QGraphicsItem * item : _scene->selectedItems())
       {
-        _scene->removeNode(item);
+        if (auto n = dynamic_cast<NodeGraphicsObject*>(item))
+          _scene->removeNode(n);
+        else if (auto n = dynamic_cast<ConnectionGraphicsObject*>(item))
+          _scene->removeConnection(n);
       }
 
       break;

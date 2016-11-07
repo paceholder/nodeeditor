@@ -24,38 +24,53 @@ public:
   ConnectionGraphicsObject(FlowScene &scene,
                            std::shared_ptr<Connection> &connection);
 
-  virtual ~ConnectionGraphicsObject();
+  virtual
+  ~ConnectionGraphicsObject();
 
 public:
 
-  QRectF boundingRect() const override;
+  std::weak_ptr<Connection>&
+  connection();
 
-  QPainterPath shape() const override;
+  QRectF
+  boundingRect() const override;
 
-  void setGeometryChanged();
+  QPainterPath
+  shape() const override;
+
+  void
+  setGeometryChanged();
 
   /// Updates the position of both ends
-  void move();
+  void
+  move();
 
 protected:
 
-  void paint(QPainter* painter,
-             QStyleOptionGraphicsItem const* option,
-             QWidget* widget = 0) override;
+  void
+  paint(QPainter* painter,
+        QStyleOptionGraphicsItem const* option,
+        QWidget* widget = 0) override;
 
-  void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
+  void
+  mousePressEvent(QGraphicsSceneMouseEvent* event) override;
 
-  void mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
+  void
+  mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
 
-  void mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
+  void
+  mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
 
-  void hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
+  void
+  hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
 
-  void hoverLeaveEvent(QGraphicsSceneHoverEvent* event) override;
+  void
+  hoverLeaveEvent(QGraphicsSceneHoverEvent* event) override;
 
 private:
 
-  void addGraphicsEffect();
+  void
+  addGraphicsEffect();
 
 private:
 

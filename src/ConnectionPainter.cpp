@@ -4,6 +4,8 @@
 
 #include "ConnectionGeometry.hpp"
 #include "ConnectionState.hpp"
+#include "ConnectionGraphicsObject.hpp"
+#include "Connection.hpp"
 
 ConnectionPainter::
 ConnectionPainter()
@@ -53,9 +55,14 @@ getPainterStroke(ConnectionGeometry const& geom)
 void
 ConnectionPainter::
 paint(QPainter* painter,
-      ConnectionGeometry const& geom,
-      ConnectionState const& state)
+      std::shared_ptr<Connection> const &connection)
 {
+  ConnectionGeometry const& geom =
+    connection->connectionGeometry();
+
+  ConnectionState const& state =
+    connection->connectionState();
+
   double const lineWidth     = geom.lineWidth();
   double const pointDiameter = geom.pointDiameter();
 
@@ -85,12 +92,20 @@ paint(QPainter* painter,
   auto cubic = cubicPath(geom);
 
   bool const hovered = geom.hovered();
-  if (hovered)
+
+  auto const& graphicsObject =
+    connection->getConnectionGraphicsObject();
+
+  bool const selected = graphicsObject->isSelected();
+
+  if (hovered || selected)
   {
     QPen p;
 
     p.setWidth(2 * lineWidth);
-    p.setColor(QColor(Qt::cyan).lighter());
+    p.setColor(selected ?
+               QColor("orange") :
+               QColor(Qt::cyan).lighter());
     painter->setPen(p);
     painter->setBrush(Qt::NoBrush);
 
@@ -104,7 +119,11 @@ paint(QPainter* painter,
     QPen p;
 
     p.setWidth(lineWidth);
-    p.setColor(QColor(Qt::cyan).darker(150));
+
+    if (selected)
+      p.setColor(QColor(Qt::gray).darker(150));
+    else
+      p.setColor(QColor(Qt::cyan).darker(150));
 
     if (state.requiresPort())
     {

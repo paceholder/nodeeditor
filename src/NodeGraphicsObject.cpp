@@ -29,7 +29,7 @@ NodeGraphicsObject(FlowScene &scene,
   setFlag(QGraphicsItem::ItemIsMovable, true);
   setFlag(QGraphicsItem::ItemIsFocusable, true);
   setFlag(QGraphicsItem::ItemIsSelectable, true);
-  setFlag(QGraphicsItem::ItemSendsScenePositionChanges);
+  setFlag(QGraphicsItem::ItemSendsScenePositionChanges, true);
 
   setCacheMode( QGraphicsItem::DeviceCoordinateCache );
 
@@ -165,8 +165,9 @@ void
 NodeGraphicsObject::
 mousePressEvent(QGraphicsSceneMouseEvent * event)
 {
-
-  if (!this->isSelected() && !(event->modifiers() & Qt::ControlModifier))
+  // deselect all other items after this one is selected
+  if (!isSelected() &&
+      !(event->modifiers() & Qt::ControlModifier))
   {
     _scene.clearSelection();
   }
