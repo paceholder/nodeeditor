@@ -1,5 +1,7 @@
 #include "FlowView.hpp"
 
+#include <cmath>
+
 #include <QtWidgets/QGraphicsScene>
 
 #include <QtGui/QPen>
