@@ -18,8 +18,7 @@ class TextDisplayDataModel : public NodeDataModel
 public:
   TextDisplayDataModel();
 
-  virtual
-  ~TextDisplayDataModel() {}
+  virtual ~TextDisplayDataModel() {}
 
 public:
 
@@ -27,16 +26,15 @@ public:
   caption() const override
   { return QString("Text Display"); }
 
-  bool
-  captionVisible() const { return false; }
+  bool captionVisible() const { return false; }
 
-  QString
-  name() const override
+  static QString
+  name()
   { return QString("TextDisplayDataModel"); }
 
   std::unique_ptr<NodeDataModel>
   clone() const override
-  { return std::make_unique<TextDisplayDataModel>(); }
+  { return std::unique_ptr<NodeDataModel>(new TextDisplayDataModel); }
 
 public:
 
@@ -46,19 +44,16 @@ public:
     p.put("model_name", TextDisplayDataModel::name());
   }
 
+
 public:
 
-  unsigned int
-  nPorts(PortType portType) const override;
+  unsigned int nPorts(PortType portType) const override;
 
-  NodeDataType
-  dataType(PortType portType, PortIndex portIndex) const override;
+  NodeDataType dataType(PortType portType, PortIndex portIndex) const override;
 
-  std::shared_ptr<NodeData>
-  outData(PortIndex port) override;
+  std::shared_ptr<NodeData>outData(PortIndex port) override;
 
-  void
-  setInData(std::shared_ptr<NodeData> data, int) override
+  void setInData(std::shared_ptr<NodeData> data, int) override
   {
     auto textData = std::dynamic_pointer_cast<TextData>(data);
 
@@ -74,8 +69,7 @@ public:
     _label->adjustSize();
   }
 
-  QWidget *
-  embeddedWidget() override { return _label; }
+  QWidget * embeddedWidget() override { return _label; }
 
 private:
 

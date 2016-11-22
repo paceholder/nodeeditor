@@ -48,14 +48,15 @@ public:
     return QString("Naive Data Model");
   }
 
-  QString
-  name() const override
+  static QString
+  name()
   { return QString("NaiveDataModel"); }
 
-  std::unique_ptr<NodeDataModel>
-  clone() const override
-  { return std::make_unique<NaiveDataModel>(); }
-
+  std::unique_ptr<NodeDataModel> 
+  clone() const override {
+    return std::unique_ptr<NaiveDataModel>(new NaiveDataModel);
+  }
+  
 public:
 
   void

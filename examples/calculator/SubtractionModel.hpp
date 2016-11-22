@@ -15,23 +15,22 @@ class SubtractionModel : public MathOperationDataModel
 {
 public:
 
-  virtual
-  ~SubtractionModel() {}
+  virtual ~SubtractionModel() {}
 
 public:
 
-  QString
-  caption() const override
+
+  QString caption() const override
   { return QString("Subtraction"); }
 
-  QString
-  name() const override
+  static QString name()
   { return QString("Subtraction"); }
 
-  std::unique_ptr<NodeDataModel>
-  clone() const override
-  { return std::make_unique<SubtractionModel>(); }
-
+  std::unique_ptr<NodeDataModel> 
+  clone() const override {
+    return std::unique_ptr<SubtractionModel>(new SubtractionModel);
+  }
+  
 public:
 
   void
@@ -42,8 +41,7 @@ public:
 
 private:
 
-  void
-  compute() override
+  void compute() override
   {
     PortIndex const outPortIndex = 0;
 

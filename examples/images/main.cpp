@@ -10,9 +10,9 @@
 static bool
 registerDataModels()
 {
-  DataModelRegistry::registerModel(std::make_unique<ImageShowModel>());
+  DataModelRegistry::registerModel(std::unique_ptr<ImageShowModel>(new ImageShowModel));
 
-  DataModelRegistry::registerModel(std::make_unique<ImageLoaderModel>());
+  DataModelRegistry::registerModel(std::unique_ptr<ImageLoaderModel>(new ImageLoaderModel));
 
   return true;
 }

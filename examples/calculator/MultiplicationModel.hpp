@@ -24,14 +24,15 @@ public:
   caption() const override
   { return QString("Multiplication"); }
 
-  QString
-  name() const override
+  static QString
+  name()
   { return QString("Multiplication"); }
 
-  std::unique_ptr<NodeDataModel>
-  clone() const override
-  { return std::make_unique<MultiplicationModel>(); }
-
+  std::unique_ptr<NodeDataModel> 
+  clone() const override {
+    return std::unique_ptr<MultiplicationModel>(new MultiplicationModel);
+  }
+  
 public:
 
   void

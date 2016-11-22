@@ -27,17 +27,17 @@ public:
   caption() const override
   { return QString("Text Source"); }
 
-  bool
-  captionVisible() const { return false; }
+  bool captionVisible() const { return false; }
 
-  QString
-  name() const override
+  static QString
+  name()
   { return QString("TextSourceDataModel"); }
 
-  std::unique_ptr<NodeDataModel>
-  clone() const override
-  { return std::make_unique<TextSourceDataModel>(); }
-
+  std::unique_ptr<NodeDataModel> 
+  clone() const override {
+    return std::unique_ptr<TextSourceDataModel>(new TextSourceDataModel);
+  }
+  
 public:
 
   void

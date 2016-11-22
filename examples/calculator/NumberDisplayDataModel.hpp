@@ -29,14 +29,15 @@ public:
   captionVisible() const override
   { return false; }
 
-  QString
-  name() const override
+  static QString
+  name()
   { return QString("Result"); }
 
-  std::unique_ptr<NodeDataModel>
-  clone() const override
-  { return std::make_unique<NumberDisplayDataModel>(); }
-
+  std::unique_ptr<NodeDataModel> 
+  clone() const override {
+    return std::unique_ptr<NumberDisplayDataModel>(new NumberDisplayDataModel);
+  }
+  
 public:
 
   void

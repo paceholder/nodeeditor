@@ -1,13 +1,12 @@
 #pragma once
 
 #include <unordered_map>
-#include <memory>
 
 #include <QtCore/QString>
 
 #include "NodeDataModel.hpp"
 #include "Export.hpp"
-//#include "UniquePtr.hpp"
+#include "UniquePtr.hpp"
 #include "QStringStdHash.hpp"
 
 /// Class uses static map for storing models (name, model)
@@ -26,13 +25,13 @@ public:
   static void
   registerModel(std::unique_ptr<ModelType> type)
   {
-    static_assert(std::is_base_of<NodeDataModel, ModelType>::value,
-                  "Must pass a subclass of NodeDataModel to registerModel");
+    static_assert(std::is_base_of<NodeDataModel, ModelType>::value, "Must pass a subclass of NodeDataModel to registerModel");
 
     QString const name = type->name();
 
     if (_registeredModels.count(name) == 0)
     {
+
       _registeredModels[name] = std::move(type);
     }
   }
