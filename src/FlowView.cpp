@@ -51,7 +51,7 @@ contextMenuEvent(QContextMenuEvent *event)
 {
   QMenu modelMenu;
 
-  for (auto const &modelRegistry : DataModelRegistry::registeredModels())
+  for (auto const &modelRegistry : _scene->registry().registeredModels())
   {
     QString const &modelName = modelRegistry.first;
     modelMenu.addAction(modelName);
@@ -63,7 +63,7 @@ contextMenuEvent(QContextMenuEvent *event)
 
     QString modelName = action->text();
 
-    auto type = DataModelRegistry::create(modelName);
+    auto type = _scene->registry().create(modelName);
 
     if (type)
     {
