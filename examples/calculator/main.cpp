@@ -19,17 +19,17 @@ static DataModelRegistry
 registerDataModels()
 {
   DataModelRegistry ret;
-  ret.registerModel(std::unique_ptr<NumberSourceDataModel>(new NumberSourceDataModel));
+  ret.registerModel(std::make_unique<NumberSourceDataModel>());
 
-  ret.registerModel(std::unique_ptr<NumberDisplayDataModel>(new NumberDisplayDataModel));
+  ret.registerModel(std::make_unique<NumberDisplayDataModel>());
 
-  ret.registerModel(std::unique_ptr<AdditionModel>(new AdditionModel));
+  ret.registerModel(std::make_unique<AdditionModel>());
 
-  ret.registerModel(std::unique_ptr<SubtractionModel>(new SubtractionModel));
+  ret.registerModel(std::make_unique<SubtractionModel>());
 
-  ret.registerModel(std::unique_ptr<MultiplicationModel>(new MultiplicationModel));
+  ret.registerModel(std::make_unique<MultiplicationModel>());
 
-  ret.registerModel(std::unique_ptr<DivisionModel>(new DivisionModel));
+  ret.registerModel(std::make_unique<DivisionModel>());
 
   return ret;
 }

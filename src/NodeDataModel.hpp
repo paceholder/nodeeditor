@@ -25,11 +25,14 @@ public:
   virtual QString
   caption() const = 0;
 
+  virtual QString
+  name() const = 0;
+
   /// It is possible to hide caption in GUI
   virtual bool
   captionVisible() const { return true; }
-  
-  virtual std::unique_ptr<NodeDataModel> 
+
+  virtual std::unique_ptr<NodeDataModel>
   clone() const = 0;
 
 public:

@@ -14,9 +14,9 @@ static DataModelRegistry
 registerDataModels()
 {
   DataModelRegistry ret;
-  ret.registerModel(std::unique_ptr<TextSourceDataModel>(new TextSourceDataModel));
+  ret.registerModel(std::make_unique<TextSourceDataModel>());
 
-  ret.registerModel(std::unique_ptr<TextDisplayDataModel>(new TextDisplayDataModel));
+  ret.registerModel(std::make_unique<TextDisplayDataModel>());
 
   return ret;
 }
