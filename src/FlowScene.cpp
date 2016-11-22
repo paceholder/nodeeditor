@@ -115,14 +115,12 @@ restoreNode(Properties const &p)
 
   p.get("model_name", &modelName);
 
-  auto const &models = DataModelRegistry::registeredModels();
-  auto it = models.find(modelName);
-
-  if (it == models.end())
+  auto dataModel = DataModelRegistry::create(modelName);
+  
+  if (!dataModel)
     throw std::logic_error(std::string("No registered model with name ") +
                            modelName.toLocal8Bit().data());
 
-  auto dataModel = it->second->create();
   auto node      = std::make_shared<Node>(std::move(dataModel));
   auto ngo       = std::make_unique<NodeGraphicsObject>(*this, node);
   node->setGraphicsObject(std::move(ngo));

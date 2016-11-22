@@ -32,6 +32,9 @@ public:
   name()
   { return QString("TextDisplayDataModel"); }
 
+  std::unique_ptr<NodeDataModel>
+  clone() const override
+  { return std::unique_ptr<NodeDataModel>(new TextDisplayDataModel); }
 
 public:
 

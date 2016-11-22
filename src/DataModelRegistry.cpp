@@ -11,10 +11,10 @@ create(QString const &modelName)
 
   if (it != _registeredModels.end())
   {
-    return it->second->create();
+    return it->second->clone();
   }
 
-  return std::unique_ptr<NodeDataModel>();
+  return nullptr;
 }
 
 

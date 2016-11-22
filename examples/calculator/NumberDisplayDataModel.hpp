@@ -33,6 +33,11 @@ public:
   name()
   { return QString("Result"); }
 
+  std::unique_ptr<NodeDataModel> 
+  clone() const override {
+    return std::unique_ptr<NumberDisplayDataModel>(new NumberDisplayDataModel);
+  }
+  
 public:
 
   void

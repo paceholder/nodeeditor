@@ -9,50 +9,13 @@
 #include "UniquePtr.hpp"
 #include "QStringStdHash.hpp"
 
-/// Base abstract class for Model Registry items
-class RegistryItem
-{
-public:
-  RegistryItem() {}
-
-  virtual
-  ~RegistryItem() {}
-
-  virtual std::unique_ptr<NodeDataModel>
-  create() const = 0;
-
-  virtual QString
-  name() const = 0;
-};
-
-//------------------------------------------------------------------------------
-
-/// Encapsulate templated concrete Model type T
-template<typename T>
-class RegistryItemImpl : public RegistryItem
-{
-
-public:
-
-  /// Gives derived classes the ability to create instances of T
-  std::unique_ptr<NodeDataModel>
-  create() const override
-  { return std::make_unique<T>(); }
-
-  QString
-  name() const override
-  { return T::name(); }
-};
-
-//------------------------------------------------------------------------------
-
 /// Class uses static map for storing models (name, model)
 class NODE_EDITOR_PUBLIC DataModelRegistry
 {
 
 public:
 
-  using RegistryItemPtr     = std::unique_ptr<RegistryItem>;
+  using RegistryItemPtr     = std::unique_ptr<NodeDataModel>;
   using RegisteredModelsMap =
           std::unordered_map<QString, RegistryItemPtr>;
 
@@ -60,16 +23,16 @@ public:
 
   template<typename ModelType>
   static void
-  registerModel(QString menuName = QString())
+  registerModel(std::unique_ptr<ModelType> type)
   {
-    QString const name = ModelType::name();
+    static_assert(std::is_base_of<NodeDataModel, ModelType>::value, "Must pass a subclass of NodeDataModel to registerModel");
+
+    QString const name = type->name();
 
     if (_registeredModels.count(name) == 0)
     {
-      auto uniqueModel =
-        std::make_unique<RegistryItemImpl<ModelType> > ();
 
-      _registeredModels[uniqueModel->name()] = std::move(uniqueModel);
+      _registeredModels[name] = std::move(type);
     }
   }
 

@@ -63,14 +63,11 @@ contextMenuEvent(QContextMenuEvent *event)
 
     QString modelName = action->text();
 
-    auto const &models =
-      DataModelRegistry::registeredModels();
+    auto type = DataModelRegistry::create(modelName);
 
-    auto it = models.find(modelName);
-
-    if (it != models.end())
+    if (type)
     {
-      auto node = _scene->createNode(it->second->create() );
+      auto node = _scene->createNode(std::move(type));
 
       QPoint pos = event->pos();
 

@@ -18,29 +18,29 @@
 static bool
 registerDataModels()
 {
-  DataModelRegistry::registerModel<NumberSourceDataModel>();
+  DataModelRegistry::registerModel(std::unique_ptr<NumberSourceDataModel>(new NumberSourceDataModel));
 
-  DataModelRegistry::registerModel<NumberDisplayDataModel>();
+  DataModelRegistry::registerModel(std::unique_ptr<NumberDisplayDataModel>(new NumberDisplayDataModel));
 
-  DataModelRegistry::registerModel<AdditionModel>();
+  DataModelRegistry::registerModel(std::unique_ptr<AdditionModel>(new AdditionModel));
 
-  DataModelRegistry::registerModel<SubtractionModel>();
+  DataModelRegistry::registerModel(std::unique_ptr<SubtractionModel>(new SubtractionModel));
 
-  DataModelRegistry::registerModel<MultiplicationModel>();
+  DataModelRegistry::registerModel(std::unique_ptr<MultiplicationModel>(new MultiplicationModel));
 
-  DataModelRegistry::registerModel<DivisionModel>();
+  DataModelRegistry::registerModel(std::unique_ptr<DivisionModel>(new DivisionModel));
 
   return true;
 }
-
-
-static bool registerOK = registerDataModels();
 
 int
 main(int argc, char *argv[])
 {
   QApplication app(argc, argv);
-
+  
+  bool success = registerDataModels();
+  Q_ASSERT(success);
+  
   QWidget mainWidget;
 
   auto menuBar    = new QMenuBar();
