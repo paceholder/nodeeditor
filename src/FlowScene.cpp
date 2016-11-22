@@ -116,7 +116,7 @@ restoreNode(Properties const &p)
 
   p.get("model_name", &modelName);
 
-  auto dataModel = DataModelRegistry::create(modelName);
+  auto dataModel = registry().create(modelName);
   
   if (!dataModel)
     throw std::logic_error(std::string("No registered model with name ") +
@@ -280,7 +280,7 @@ load()
 
 
 FlowScene::
-FlowScene()
+FlowScene(DataModelRegistry&& registry) : _registry{std::move(registry)}
 {
   setItemIndexMethod(QGraphicsScene::NoIndex);
 }

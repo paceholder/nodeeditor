@@ -7,21 +7,23 @@
 
 #include "models.hpp"
 
-static bool
+
+static DataModelRegistry
 registerDataModels()
 {
-  DataModelRegistry::registerModel(std::make_unique<NaiveDataModel>());
+  DataModelRegistry ret;
+  ret.registerModel(std::make_unique<NaiveDataModel>());
 
   /*
-     We could have more models registered.
-     All of them become items in the context meny of the scene.
+   We could have more models registered.
+   All of them become items in the context meny of the scene.
 
-     DataModelRegistry::registerModel(std::make_unique<AnotherDataModel>());
-     DataModelRegistry::registerModel(std::make_unique<OneMoreDataModel>());
+  ret.registerModel(std::make_unique<AnotherDataModel>());
+  ret.registerModel(std::make_unique<OneMoreDataModel>());
 
-   */
+  */
 
-  return true;
+  return ret;
 }
 
 
@@ -31,12 +33,8 @@ int
 main(int argc, char* argv[])
 {
   QApplication app(argc, argv);
-
-  bool success = registerDataModels();
-
-  Q_ASSERT(success);
-
-  FlowScene scene;
+  
+  FlowScene scene(registerDataModels());
 
   FlowView view(&scene);
 

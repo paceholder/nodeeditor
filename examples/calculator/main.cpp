@@ -15,34 +15,30 @@
 #include "MultiplicationModel.hpp"
 #include "DivisionModel.hpp"
 
-static bool
+static DataModelRegistry
 registerDataModels()
 {
-  DataModelRegistry::registerModel(std::make_unique<NumberSourceDataModel>());
+  DataModelRegistry ret;
+  ret.registerModel(std::make_unique<NumberSourceDataModel>());
 
-  DataModelRegistry::registerModel(std::make_unique<NumberDisplayDataModel>());
+  ret.registerModel(std::make_unique<NumberDisplayDataModel>());
 
-  DataModelRegistry::registerModel(std::make_unique<AdditionModel>());
+  ret.registerModel(std::make_unique<AdditionModel>());
 
-  DataModelRegistry::registerModel(std::make_unique<SubtractionModel>());
+  ret.registerModel(std::make_unique<SubtractionModel>());
 
-  DataModelRegistry::registerModel(std::make_unique<MultiplicationModel>());
+  ret.registerModel(std::make_unique<MultiplicationModel>());
 
-  DataModelRegistry::registerModel(std::make_unique<DivisionModel>());
+  ret.registerModel(std::make_unique<DivisionModel>());
 
-  return true;
+  return ret;
 }
-
 
 int
 main(int argc, char *argv[])
 {
   QApplication app(argc, argv);
-
-  bool success = registerDataModels();
-
-  Q_ASSERT(success);
-
+  
   QWidget mainWidget;
 
   auto menuBar    = new QMenuBar();
@@ -52,7 +48,7 @@ main(int argc, char *argv[])
   QVBoxLayout *l = new QVBoxLayout(&mainWidget);
 
   l->addWidget(menuBar);
-  auto scene = new FlowScene;
+  auto scene = new FlowScene(registerDataModels());
   l->addWidget(new FlowView(scene));
   l->setContentsMargins(0, 0, 0, 0);
   l->setSpacing(0);

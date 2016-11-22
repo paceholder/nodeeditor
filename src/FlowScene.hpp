@@ -9,6 +9,7 @@
 
 #include "Connection.hpp"
 #include "Export.hpp"
+#include "DataModelRegistry.hpp"
 
 namespace std
 {
@@ -36,7 +37,8 @@ class NODE_EDITOR_PUBLIC FlowScene
 {
 public:
 
-  FlowScene();
+  // Use && to assure that a rvalue reference is passed and the caller has to use std::move() or an rvalue
+  FlowScene(DataModelRegistry&& registry = {});
 
   ~FlowScene();
 
@@ -70,7 +72,17 @@ public:
 
   void
   load();
-
+  
+  DataModelRegistry&
+  registry() {
+    return _registry;
+  }
+  
+  void
+  setRegistry(DataModelRegistry&& registry) {
+    _registry = std::move(registry);
+  }
+  
 private:
 
   using SharedConnection = std::shared_ptr<Connection>;
@@ -78,6 +90,7 @@ private:
 
   std::unordered_map<QUuid, SharedConnection> _connections;
   std::unordered_map<QUuid, SharedNode>       _nodes;
+  DataModelRegistry                           _registry;
 };
 
 std::shared_ptr<Node>
