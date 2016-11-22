@@ -10,14 +10,15 @@
 #include "TextDisplayDataModel.hpp"
 
 
-static bool
+static DataModelRegistry
 registerDataModels()
 {
-  DataModelRegistry::registerModel(std::unique_ptr<TextSourceDataModel>(new TextSourceDataModel));
+  DataModelRegistry ret;
+  ret.registerModel(std::unique_ptr<TextSourceDataModel>(new TextSourceDataModel));
 
-  DataModelRegistry::registerModel(std::unique_ptr<TextDisplayDataModel>(new TextDisplayDataModel));
+  ret.registerModel(std::unique_ptr<TextDisplayDataModel>(new TextDisplayDataModel));
 
-  return true;
+  return ret;
 }
 
 int
@@ -25,9 +26,7 @@ main(int argc, char *argv[])
 {
   QApplication app(argc, argv);
 
-  bool success = registerDataModels();
-  Q_ASSERT(success);
-  FlowScene scene;
+  FlowScene scene(registerDataModels());
 
   FlowView view(&scene);
 

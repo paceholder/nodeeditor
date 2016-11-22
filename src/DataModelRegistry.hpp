@@ -9,7 +9,7 @@
 #include "UniquePtr.hpp"
 #include "QStringStdHash.hpp"
 
-/// Class uses static map for storing models (name, model)
+/// Class uses map for storing models (name, model)
 class NODE_EDITOR_PUBLIC DataModelRegistry
 {
 
@@ -18,11 +18,20 @@ public:
   using RegistryItemPtr     = std::unique_ptr<NodeDataModel>;
   using RegisteredModelsMap =
           std::unordered_map<QString, RegistryItemPtr>;
-
+  
+  DataModelRegistry() = default;
+  ~DataModelRegistry() = default;
+  
+  DataModelRegistry(DataModelRegistry const &) = delete;
+  DataModelRegistry(DataModelRegistry&&) = default;
+ 
+  DataModelRegistry& operator=(DataModelRegistry const &) = delete;
+  DataModelRegistry& operator=(DataModelRegistry&&) = default;
+  
 public:
 
   template<typename ModelType>
-  static void
+  void
   registerModel(std::unique_ptr<ModelType> type)
   {
     static_assert(std::is_base_of<NodeDataModel, ModelType>::value, "Must pass a subclass of NodeDataModel to registerModel");
@@ -36,13 +45,13 @@ public:
     }
   }
 
-  static std::unique_ptr<NodeDataModel>
+  std::unique_ptr<NodeDataModel>
   create(QString const &modelName);
 
-  static RegisteredModelsMap const &
+  RegisteredModelsMap const &
   registeredModels();
 
 private:
 
-  static RegisteredModelsMap _registeredModels;
+  RegisteredModelsMap _registeredModels;
 };

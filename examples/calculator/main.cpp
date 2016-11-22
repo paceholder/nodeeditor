@@ -15,31 +15,29 @@
 #include "MultiplicationModel.hpp"
 #include "DivisionModel.hpp"
 
-static bool
+static DataModelRegistry
 registerDataModels()
 {
-  DataModelRegistry::registerModel(std::unique_ptr<NumberSourceDataModel>(new NumberSourceDataModel));
+  DataModelRegistry ret;
+  ret.registerModel(std::unique_ptr<NumberSourceDataModel>(new NumberSourceDataModel));
 
-  DataModelRegistry::registerModel(std::unique_ptr<NumberDisplayDataModel>(new NumberDisplayDataModel));
+  ret.registerModel(std::unique_ptr<NumberDisplayDataModel>(new NumberDisplayDataModel));
 
-  DataModelRegistry::registerModel(std::unique_ptr<AdditionModel>(new AdditionModel));
+  ret.registerModel(std::unique_ptr<AdditionModel>(new AdditionModel));
 
-  DataModelRegistry::registerModel(std::unique_ptr<SubtractionModel>(new SubtractionModel));
+  ret.registerModel(std::unique_ptr<SubtractionModel>(new SubtractionModel));
 
-  DataModelRegistry::registerModel(std::unique_ptr<MultiplicationModel>(new MultiplicationModel));
+  ret.registerModel(std::unique_ptr<MultiplicationModel>(new MultiplicationModel));
 
-  DataModelRegistry::registerModel(std::unique_ptr<DivisionModel>(new DivisionModel));
+  ret.registerModel(std::unique_ptr<DivisionModel>(new DivisionModel));
 
-  return true;
+  return ret;
 }
 
 int
 main(int argc, char *argv[])
 {
   QApplication app(argc, argv);
-  
-  bool success = registerDataModels();
-  Q_ASSERT(success);
   
   QWidget mainWidget;
 
@@ -50,7 +48,7 @@ main(int argc, char *argv[])
   QVBoxLayout *l = new QVBoxLayout(&mainWidget);
 
   l->addWidget(menuBar);
-  auto scene = new FlowScene;
+  auto scene = new FlowScene(registerDataModels());
   l->addWidget(new FlowView(scene));
   l->setContentsMargins(0, 0, 0, 0);
   l->setSpacing(0);
