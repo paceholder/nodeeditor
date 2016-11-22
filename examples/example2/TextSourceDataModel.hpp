@@ -33,6 +33,11 @@ public:
   name()
   { return QString("TextSourceDataModel"); }
 
+  std::unique_ptr<NodeDataModel> 
+  clone() const override {
+    return std::unique_ptr<TextSourceDataModel>(new TextSourceDataModel);
+  }
+  
 public:
 
   void

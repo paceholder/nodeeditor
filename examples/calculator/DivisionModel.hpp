@@ -24,7 +24,11 @@ public:
   static QString name()
   { return QString("Division"); }
 
-
+  std::unique_ptr<NodeDataModel> 
+  clone() const override {
+    return std::unique_ptr<DivisionModel>(new DivisionModel);
+  }
+  
 public:
 
   void

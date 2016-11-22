@@ -28,6 +28,11 @@ public:
   name()
   { return QString("Addition"); }
 
+  std::unique_ptr<NodeDataModel> 
+  clone() const override {
+    return std::unique_ptr<AdditionModel>(new AdditionModel);
+  }
+  
 public:
 
   void

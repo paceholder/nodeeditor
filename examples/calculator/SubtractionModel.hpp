@@ -26,6 +26,11 @@ public:
   static QString name()
   { return QString("Subtraction"); }
 
+  std::unique_ptr<NodeDataModel> 
+  clone() const override {
+    return std::unique_ptr<SubtractionModel>(new SubtractionModel);
+  }
+  
 public:
 
   void

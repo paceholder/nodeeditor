@@ -28,6 +28,9 @@ public:
   /// It is possible to hide caption in GUI
   virtual bool
   captionVisible() const { return true; }
+  
+  virtual std::unique_ptr<NodeDataModel> 
+  clone() const = 0;
 
 public:
 

@@ -13,20 +13,20 @@
 static bool
 registerDataModels()
 {
-  DataModelRegistry::registerModel<TextSourceDataModel>();
+  DataModelRegistry::registerModel(std::unique_ptr<TextSourceDataModel>(new TextSourceDataModel));
 
-  DataModelRegistry::registerModel<TextDisplayDataModel>();
+  DataModelRegistry::registerModel(std::unique_ptr<TextDisplayDataModel>(new TextDisplayDataModel));
 
   return true;
 }
-
-static bool registerOK = registerDataModels();
 
 int
 main(int argc, char *argv[])
 {
   QApplication app(argc, argv);
 
+  bool success = registerDataModels();
+  Q_ASSERT(success);
   FlowScene scene;
 
   FlowView view(&scene);

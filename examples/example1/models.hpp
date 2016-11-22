@@ -5,6 +5,8 @@
 #include <nodes/NodeData>
 #include <nodes/NodeDataModel>
 
+#include <memory>
+
 /// The class can potentially incapsulate any user data which
 /// need to be transferred within the Node Editor graph
 class MyNodeData : public NodeData
@@ -50,6 +52,11 @@ public:
   name()
   { return QString("NaiveDataModel"); }
 
+  std::unique_ptr<NodeDataModel> 
+  clone() const override {
+    return std::unique_ptr<NaiveDataModel>(new NaiveDataModel);
+  }
+  
 public:
 
   void

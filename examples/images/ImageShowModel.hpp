@@ -28,7 +28,12 @@ public:
 
   static QString
   name() { return QString("ImageShowModel"); }
-
+  
+  std::unique_ptr<NodeDataModel> 
+  clone() const override {
+    return std::unique_ptr<ImageShowModel>(new ImageShowModel);
+  }
+  
 public:
 
   void
