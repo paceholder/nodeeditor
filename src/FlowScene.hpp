@@ -37,6 +37,7 @@ class NODE_EDITOR_PUBLIC FlowScene
 {
 public:
 
+  // Use && to assure that a rvalue reference is passed and the caller has to use std::move() or an rvalue
   FlowScene(DataModelRegistry&& registry = {});
 
   ~FlowScene();
