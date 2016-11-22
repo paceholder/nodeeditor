@@ -11,9 +11,9 @@ static DataModelRegistry
 registerDataModels()
 {
   DataModelRegistry ret;
-  ret.registerModel(std::unique_ptr<ImageShowModel>(new ImageShowModel));
+  ret.registerModel(std::make_unique<ImageShowModel>());
 
-  ret.registerModel(std::unique_ptr<ImageLoaderModel>(new ImageLoaderModel));
+  ret.registerModel(std::make_unique<ImageLoaderModel>());
 
   return ret;
 }

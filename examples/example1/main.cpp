@@ -12,16 +12,16 @@ static DataModelRegistry
 registerDataModels()
 {
   DataModelRegistry ret;
-  ret.registerModel(std::unique_ptr<NaiveDataModel>(new NaiveDataModel));
+  ret.registerModel(std::make_unique<NaiveDataModel>());
 
   /*
-   We could have more models registered.
-   All of them become items in the context meny of the scene.
+     We could have more models registered.
+     All of them become items in the context meny of the scene.
 
-  ret.registerModel(std::unique_ptr<AnotherDataModel>(new AnotherDataModel));
-  ret.registerModel(std::unique_ptr<OneMoreDataModel>(new OneMoreDataModel));
+  ret.registerModel(std::make_unique<AnotherDataModel>());
+  ret.registerModel(std::make_unique<OneMoreDataModel>());
 
-  */
+   */
 
   return ret;
 }
@@ -33,7 +33,7 @@ int
 main(int argc, char* argv[])
 {
   QApplication app(argc, argv);
-  
+
   FlowScene scene(registerDataModels());
 
   FlowView view(&scene);

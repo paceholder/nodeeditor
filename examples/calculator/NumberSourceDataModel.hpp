@@ -32,14 +32,14 @@ public:
   captionVisible() const override
   { return false; }
 
-  static QString
-  name() { return QString("NumberSource"); }
+  QString
+  name() const override
+  { return QString("NumberSource"); }
 
-  std::unique_ptr<NodeDataModel> 
-  clone() const override {
-    return std::unique_ptr<NumberSourceDataModel>(new NumberSourceDataModel);
-  }
-  
+  std::unique_ptr<NodeDataModel>
+  clone() const override
+  { return std::make_unique<NumberSourceDataModel>(); }
+
 public:
 
   void

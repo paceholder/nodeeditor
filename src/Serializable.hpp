@@ -5,9 +5,10 @@
 class Serializable
 {
 public:
-  
-  virtual ~Serializable() = default;
-  
+
+  virtual
+  ~Serializable() = default;
+
   virtual void
   save(Properties & p) const = 0;
 

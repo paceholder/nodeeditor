@@ -28,14 +28,13 @@ public:
   caption() const override
   { return QString("Image Source"); }
 
-  static QString
-  name() { return QString("ImageLoaderModel"); }
+  QString
+  name() const override { return QString("ImageLoaderModel"); }
 
-  std::unique_ptr<NodeDataModel> 
-  clone() const override {
-    return std::unique_ptr<ImageLoaderModel>(new ImageLoaderModel);
-  }
-  
+  std::unique_ptr<NodeDataModel>
+  clone() const override
+  { return std::make_unique<ImageLoaderModel>(); }
+
 public:
 
   void
