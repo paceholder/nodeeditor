@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <stdexcept>
+#include <memory>
 
 #include <QtWidgets/QGraphicsSceneMoveEvent>
 #include <QtWidgets/QFileDialog>

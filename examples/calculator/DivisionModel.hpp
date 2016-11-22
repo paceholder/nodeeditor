@@ -15,20 +15,22 @@ class DivisionModel : public MathOperationDataModel
 {
 public:
 
-  virtual ~DivisionModel() {}
+  virtual
+  ~DivisionModel() {}
 
 public:
-  QString caption() const override
+  QString
+  caption() const override
   { return QString("Division"); }
 
-  static QString name()
+  QString
+  name() const override
   { return QString("Division"); }
 
-  std::unique_ptr<NodeDataModel> 
-  clone() const override {
-    return std::unique_ptr<DivisionModel>(new DivisionModel);
-  }
-  
+  std::unique_ptr<NodeDataModel>
+  clone() const override
+  { return std::make_unique<DivisionModel>(); }
+
 public:
 
   void
@@ -36,9 +38,11 @@ public:
   {
     p.put("model_name", DivisionModel::name());
   }
+
 private:
 
-  void compute() override
+  void
+  compute() override
   {
     PortIndex const outPortIndex = 0;
 
