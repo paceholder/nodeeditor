@@ -6,7 +6,6 @@
 
 #include "NodeDataModel.hpp"
 #include "Export.hpp"
-#include "UniquePtr.hpp"
 #include "QStringStdHash.hpp"
 
 /// Class uses map for storing models (name, model)

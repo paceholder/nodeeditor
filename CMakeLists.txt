@@ -11,7 +11,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 # Instruct CMake to run moc automatically when needed.
 set(CMAKE_AUTOMOC ON)
-ADD_DEFINITIONS(-std=c++11)
 
 # Find the QtWidgets library
 find_package(Qt5 COMPONENTS
@@ -28,6 +27,9 @@ IF (MSVC)
 ENDIF (MSVC)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 #############################################################
 
