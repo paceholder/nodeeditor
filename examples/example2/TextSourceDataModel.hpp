@@ -28,7 +28,7 @@ public:
   { return QString("Text Source"); }
 
   bool
-  captionVisible() const { return false; }
+  captionVisible() const override { return false; }
 
   QString
   name() const override
