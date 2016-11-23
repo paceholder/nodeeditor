@@ -36,7 +36,7 @@ public:
   save(Properties &p) const override;
 
   void
-  restore(Properties const &p);
+  restore(Properties const &p) override;
 
 public:
 
