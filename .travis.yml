@@ -42,7 +42,7 @@ install:
 script:
   - mkdir build
   - cd build
-  - cmake .. && make
+  - cmake .. && make -j 4
 
 notifications:
   email: false
