@@ -28,7 +28,7 @@ public:
   /// NodeDataModel should be an rvalue and is moved into the Node
   Node(std::unique_ptr<NodeDataModel> && dataModel);
 
-  ~Node();
+  virtual ~Node();
 
 public:
 
@@ -78,13 +78,13 @@ public:
 
 public slots: // data propagation
 
-  // propagates incoming data to the underlying model
+  /// Propagates incoming data to the underlying model.
   void
   propagateData(std::shared_ptr<NodeData> nodeData,
                 PortIndex inPortIndex) const;
 
-  // fetches data from model's OUT #index port
-  // and propagates it to the connection
+  /// Fetches data from model's OUT #index port
+  /// and propagates it to the connection
   void
   onDataUpdated(PortIndex index);
 

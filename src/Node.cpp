@@ -41,7 +41,7 @@ void
 Node::
 save(Properties &p) const
 {
-  // save unique objec id
+  // save unique object id
   p.put("id", _id);
 
   // save data model name
@@ -189,8 +189,9 @@ onDataUpdated(PortIndex index)
 {
   auto nodeData = _nodeDataModel->outData(index);
 
-  auto connection = _nodeState.connection(PortType::Out, index);
+  auto connections =
+    _nodeState.connections(PortType::Out, index);
 
-  if (connection)
-    connection->propagateData(nodeData);
+  for (auto const & c : connections)
+    c.second->propagateData(nodeData);
 }

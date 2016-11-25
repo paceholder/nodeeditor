@@ -39,7 +39,7 @@ canConnect(PortIndex &portIndex) const
 
   NodeDataType connectionDataType = _connection->dataType();
 
-  auto const &modelTarget = _node->nodeDataModel();
+  auto const   &modelTarget = _node->nodeDataModel();
   NodeDataType candidateNodeDataType = modelTarget->dataType(requiredPort, portIndex);
 
   if (connectionDataType.id != candidateNodeDataType.id)
@@ -102,7 +102,7 @@ disconnect(PortType portToDisconnect) const
   NodeState &state = _node->nodeState();
 
   // clear pointer to Connection in the NodeState
-  state.getEntries(portToDisconnect)[portIndex].reset();
+  state.getEntries(portToDisconnect)[portIndex].clear();
 
   // 4) Propagate invalid data to IN node
   _connection->propagateEmptyData();
@@ -186,5 +186,6 @@ nodePortIsEmpty(PortType portType, PortIndex portIndex) const
 
   auto const & entries = nodeState.getEntries(portType);
 
-  return (!entries[portIndex].lock());
+  return (portType == PortType::Out) ||
+         (entries[portIndex].empty());
 }

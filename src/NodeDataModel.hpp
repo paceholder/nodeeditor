@@ -25,13 +25,15 @@ public:
   virtual QString
   caption() const = 0;
 
-  virtual QString
-  name() const = 0;
-
   /// It is possible to hide caption in GUI
   virtual bool
   captionVisible() const { return true; }
 
+  /// Name makes this model unique
+  virtual QString
+  name() const = 0;
+
+  /// Function creates instances of a model stored in DataModelRegistry
   virtual std::unique_ptr<NodeDataModel>
   clone() const = 0;
 

@@ -153,7 +153,6 @@ void
 ConnectionGraphicsObject::
 mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
-
   QGraphicsItem::mousePressEvent(event);
   //event->ignore();
 }

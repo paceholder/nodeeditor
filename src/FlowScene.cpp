@@ -89,6 +89,7 @@ void
 FlowScene::
 deleteConnection(std::shared_ptr<Connection> connection)
 {
+  connection->removeFromNodes();
   _connections.erase(connection->id());
 }
 
@@ -117,13 +118,13 @@ restoreNode(Properties const &p)
   p.get("model_name", &modelName);
 
   auto dataModel = registry().create(modelName);
-  
+
   if (!dataModel)
     throw std::logic_error(std::string("No registered model with name ") +
                            modelName.toLocal8Bit().data());
 
-  auto node      = std::make_shared<Node>(std::move(dataModel));
-  auto ngo       = std::make_unique<NodeGraphicsObject>(*this, node);
+  auto node = std::make_shared<Node>(std::move(dataModel));
+  auto ngo  = std::make_unique<NodeGraphicsObject>(*this, node);
   node->setGraphicsObject(std::move(ngo));
 
   node->restore(p);
@@ -144,10 +145,10 @@ removeNode(NodeGraphicsObject* ngo)
     auto nodeState = node->nodeState();
     auto const & nodeEntries = nodeState.getEntries(portType);
 
-    for (std::weak_ptr<Connection> conn : nodeEntries)
+    for (auto &connections : nodeEntries)
     {
-      if (auto c = conn.lock())
-        this->deleteConnection(c);
+      for (auto const &pair : connections)
+        deleteConnection(pair.second);
     }
   };
 
@@ -164,7 +165,7 @@ removeConnection(ConnectionGraphicsObject* cgo)
 {
   std::shared_ptr<Connection> const conn = cgo->connection().lock();
 
-  _connections.erase(conn->id());
+  deleteConnection(conn);
 }
 
 
@@ -276,15 +277,25 @@ load()
 
     restoreConnection(p);
   }
+
+  //QRectF  r = itemsBoundingRect();
+  ////QPointF c = r.center();
+
+  //for (auto &view : views())
+  //{
+    //qDebug() << "center";
+
+    //view->setSceneRect(r);
+    //view->ensureVisible(r);
+  //}
 }
 
 
 FlowScene::
-FlowScene(DataModelRegistry&& registry) : _registry{std::move(registry)}
+FlowScene(DataModelRegistry && registry) : _registry {std::move(registry)}
 {
   setItemIndexMethod(QGraphicsScene::NoIndex);
 }
-
 
 FlowScene::
 ~FlowScene()

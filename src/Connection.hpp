@@ -17,6 +17,20 @@ class NodeData;
 class ConnectionGraphicsObject;
 class QPointF;
 
+namespace std
+{
+template<>
+struct hash<QUuid>
+{
+  inline
+  std::size_t
+  operator()(QUuid const& uid) const
+  {
+    return qHash(uid);
+  }
+};
+}
+
 //------------------------------------------------------------------------------
 
 ///
@@ -65,6 +79,9 @@ public:
   setNodeToPort(std::shared_ptr<Node> node,
                 PortType portType,
                 PortIndex portIndex);
+
+  void
+  removeFromNodes() const;
 
 public:
 

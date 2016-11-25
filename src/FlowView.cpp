@@ -59,8 +59,6 @@ contextMenuEvent(QContextMenuEvent *event)
 
   if (QAction * action = modelMenu.exec(event->globalPos()))
   {
-    //qDebug() << action->text();
-
     QString modelName = action->text();
 
     auto type = _scene->registry().create(modelName);
@@ -101,6 +99,8 @@ wheelEvent(QWheelEvent *event)
     scaleUp();
   else
     scaleDown();
+
+  //_scene->setSceneRect(_scene->itemsBoundingRect());
 }
 
 

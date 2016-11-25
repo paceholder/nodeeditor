@@ -208,6 +208,18 @@ setNodeToPort(std::shared_ptr<Node> node,
 }
 
 
+void
+Connection::
+removeFromNodes() const
+{
+  if (auto n = _inNode.lock())
+    n->nodeState().eraseConnection(PortType::In, _inPortIndex, id());
+
+  if (auto n = _outNode.lock())
+    n->nodeState().eraseConnection(PortType::Out, _outPortIndex, id());
+}
+
+
 std::unique_ptr<ConnectionGraphicsObject> const&
 Connection::
 getConnectionGraphicsObject() const

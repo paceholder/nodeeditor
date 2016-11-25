@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <vector>
+#include <unordered_map>
 
 #include <QtCore/QUuid>
 
@@ -28,22 +29,29 @@ public:
 
 public:
 
+  using ConnectionPtrSet =
+          std::unordered_map<QUuid, std::shared_ptr<Connection> >;
+
   /// Returns vector of connections ID.
   /// Some of them can be empty (null)
-  std::vector<std::weak_ptr<Connection> > const&
-  getEntries(PortType portType) const;
+  std::vector<ConnectionPtrSet> const&
+  getEntries(PortType) const;
 
-  std::vector<std::weak_ptr<Connection> > &
-  getEntries(PortType portType);
+  std::vector<ConnectionPtrSet> &
+  getEntries(PortType);
 
-  std::shared_ptr<Connection>
-  connection(PortType portType,
-             PortIndex portIndex) const;
+  ConnectionPtrSet
+  connections(PortType portType, PortIndex portIndex) const;
 
   void
   setConnection(PortType portType,
                 PortIndex portIndex,
                 std::shared_ptr<Connection> connection);
+
+  void
+  eraseConnection(PortType portType,
+                  PortIndex portIndex,
+                  QUuid id);
 
   ReactToConnectionState
   reaction() const;
@@ -72,8 +80,8 @@ public:
 
 private:
 
-  std::vector<std::weak_ptr<Connection> > _inConnections;
-  std::vector<std::weak_ptr<Connection> > _outConnections;
+  std::vector<ConnectionPtrSet> _inConnections;
+  std::vector<ConnectionPtrSet> _outConnections;
 
   ReactToConnectionState _reaction;
   PortType     _reactingPortType;

@@ -119,12 +119,13 @@ moveConnections() const
   auto moveConnections =
   [&](PortType portType)
   {
-    auto const & connectionsWeak = nodeState.getEntries(portType);
+    auto const & connectionEntries =
+      nodeState.getEntries(portType);
 
-    for (auto const & connection : connectionsWeak)
+    for (auto const & connections : connectionEntries)
     {
-      if (auto con = connection.lock())
-        con->getConnectionGraphicsObject()->move();
+      for (auto & con : connections)
+        con.second->getConnectionGraphicsObject()->move();
     }
   };
 
@@ -188,13 +189,16 @@ mousePressEvent(QGraphicsSceneMouseEvent * event)
     {
       NodeState const & nodeState = node->nodeState();
 
-      std::shared_ptr<Connection> connection =
-        nodeState.connection(portToCheck, portIndex);
+      std::unordered_map<QUuid, std::shared_ptr<Connection> > connections =
+        nodeState.connections(portToCheck, portIndex);
 
       // start dragging existing connection
-      if (connection)
+      if (!connections.empty() && portToCheck == PortType::In)
       {
-        NodeConnectionInteraction interaction(node, connection);
+        std::shared_ptr<Connection> con =
+          connections.begin()->second;
+
+        NodeConnectionInteraction interaction(node, con);
 
         interaction.disconnect(portToCheck);
       }

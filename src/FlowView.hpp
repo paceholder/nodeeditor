@@ -50,7 +50,4 @@ protected:
 private:
 
   FlowScene* _scene;
-
-  //bool _dragging;
-  //QPoint _lastPos;
 };

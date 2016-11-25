@@ -2,6 +2,8 @@
 
 #include "NodeDataModel.hpp"
 
+#include "Connection.hpp"
+
 NodeState::
 NodeState(std::unique_ptr<NodeDataModel> const &model)
   : _outConnections(model->nPorts(PortType::Out))
@@ -9,41 +11,39 @@ NodeState(std::unique_ptr<NodeDataModel> const &model)
   , _reaction(NOT_REACTING)
   , _reactingPortType(PortType::None)
   , _resizing(false)
-{}
+{
+}
 
-std::vector<std::weak_ptr<Connection> > const&
+
+std::vector<NodeState::ConnectionPtrSet> const &
 NodeState::
 getEntries(PortType portType) const
 {
-  Q_ASSERT(portType != PortType::None);
-
-  if (portType == PortType::Out)
-    return _outConnections;
-  else
+  if (portType == PortType::In)
     return _inConnections;
+  else
+    return _outConnections;
 }
 
 
-std::vector<std::weak_ptr<Connection> > &
+std::vector<NodeState::ConnectionPtrSet> &
 NodeState::
 getEntries(PortType portType)
 {
-  Q_ASSERT(portType != PortType::None);
-
-  if (portType == PortType::Out)
-    return _outConnections;
-  else
+  if (portType == PortType::In)
     return _inConnections;
+  else
+    return _outConnections;
 }
 
 
-std::shared_ptr<Connection>
+NodeState::ConnectionPtrSet
 NodeState::
-connection(PortType portType, PortIndex portIndex) const
+connections(PortType portType, PortIndex portIndex) const
 {
   auto const &connections = getEntries(portType);
 
-  return connections[portIndex].lock();
+  return connections[portIndex];
 }
 
 
@@ -55,7 +55,18 @@ setConnection(PortType portType,
 {
   auto &connections = getEntries(portType);
 
-  connections[portIndex] = connection;
+  connections[portIndex].insert(std::make_pair(connection->id(),
+                                               connection));
+}
+
+
+void
+NodeState::
+eraseConnection(PortType portType,
+                PortIndex portIndex,
+                QUuid id)
+{
+  getEntries(portType)[portIndex].erase(id);
 }
 
 
