@@ -7,6 +7,8 @@
 
 #include <iostream>
 
+#include "ConnectionStyle.hpp"
+
 class ConnectionGeometry
 {
 public:
@@ -35,6 +37,10 @@ public:
 
   bool hovered() const { return _hovered; }
   void setHovered(bool hovered) { _hovered = hovered; }
+
+public:
+
+  static ConnectionStyle connectionStyle;
 
 private:
   // local object coordinates

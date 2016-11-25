@@ -16,6 +16,7 @@ class FlowItemInterface;
 class Node;
 class NodeGraphicsObject;
 class ConnectionGraphicsObject;
+class NodeStyle;
 
 /// Scene holds connections and nodes.
 class NODE_EDITOR_PUBLIC FlowScene

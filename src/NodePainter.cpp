@@ -1,13 +1,17 @@
 #include "NodePainter.hpp"
 
-#include <QtCore/QMargins>
 #include <cmath>
 
+#include <QtCore/QMargins>
+
+#include "PortType.hpp"
 #include "NodeGraphicsObject.hpp"
 #include "NodeGeometry.hpp"
 #include "NodeState.hpp"
 #include "NodeDataModel.hpp"
 #include "Node.hpp"
+
+NodeStyle NodePainter::nodeStyle;
 
 void
 NodePainter::
@@ -47,37 +51,34 @@ drawNodeRect(QPainter* painter,
              std::unique_ptr<NodeGraphicsObject> const& graphicsObject)
 {
   auto color = graphicsObject->isSelected()
-               ? QColor("orange")
-               : Qt::white;
+               ? nodeStyle.SelectedBoundaryColor
+               : nodeStyle.NormalBoundaryColor;
 
   if (geom.hovered())
   {
-    QPen p(color, 2.0);
+    QPen p(color, nodeStyle.HoveredPenWidth);
     painter->setPen(p);
   }
   else
   {
-    QPen p(color, 1.5);
+    QPen p(color, nodeStyle.PenWidth);
     painter->setPen(p);
   }
 
   QLinearGradient gradient(QPointF(0.0, 0.0),
                            QPointF(2.0, geom.height()));
 
-  QColor darkGray1 = QColor(Qt::gray).darker(200);
-  QColor darkGray2 = QColor(Qt::gray).darker(250);
-
-  gradient.setColorAt(0.0,  Qt::darkGray);
-  gradient.setColorAt(0.03, darkGray1);
-  gradient.setColorAt(0.97, darkGray2);
-  gradient.setColorAt(1.0,  darkGray2.darker(110));
+  gradient.setColorAt(0.0,  nodeStyle.GradientColor0);
+  gradient.setColorAt(0.03, nodeStyle.GradientColor1);
+  gradient.setColorAt(0.97, nodeStyle.GradientColor2);
+  gradient.setColorAt(1.0,  nodeStyle.GradientColor3);
 
   painter->setBrush(gradient);
 
-  unsigned int diam = geom.connectionPointDiameter();
+  float diam = nodeStyle.ConnectionPointDiameter;
 
-  QRectF   boundary(0.0, 0.0, geom.width(), geom.height());
-  QMargins m(diam, diam, diam, diam);
+  QRectF    boundary(0.0, 0.0, geom.width(), geom.height());
+  QMarginsF m(diam, diam, diam, diam);
 
   double const radius = 3.0;
 
@@ -92,10 +93,11 @@ drawConnectionPoints(QPainter* painter,
                      NodeState const& state,
                      std::unique_ptr<NodeDataModel> const & model)
 {
-  painter->setBrush(QColor(Qt::darkGray));
+  // TODO make specific color name
+  painter->setBrush(nodeStyle.ConnectionPointColor);
 
-  auto diameter = geom.connectionPointDiameter();
-  auto reducedDiameter = diameter * 0.6;
+  float diameter = nodeStyle.ConnectionPointDiameter;
+  auto  reducedDiameter = diameter * 0.6;
 
   auto drawPoints =
   [&](PortType portType)
@@ -150,10 +152,10 @@ drawFilledConnectionPoints(QPainter * painter,
                            NodeGeometry const & geom,
                            NodeState const & state)
 {
-  painter->setPen(Qt::cyan);
-  painter->setBrush(Qt::cyan);
+  painter->setPen(nodeStyle.FilledConnectionPointColor);
+  painter->setBrush(nodeStyle.FilledConnectionPointColor);
 
-  auto diameter = geom.connectionPointDiameter();
+  auto diameter = nodeStyle.ConnectionPointDiameter;
 
   auto drawPoints =
   [&](PortType portType)
@@ -204,7 +206,7 @@ drawModelName(QPainter * painter,
                    (geom.spacing() + geom.entryHeight()) / 3.0);
 
   painter->setFont(f);
-  painter->setPen(Qt::white);
+  painter->setPen(nodeStyle.FontColor);
   painter->drawText(position, name);
 
   f.setBold(false);
@@ -235,9 +237,9 @@ drawEntryLabels(QPainter * painter,
       QPointF p = geom.portScenePosition(i, portType);
 
       if (entries[i].empty())
-        painter->setPen(Qt::darkGray);
+        painter->setPen(nodeStyle.FontColorFaded);
       else
-        painter->setPen(Qt::white);
+        painter->setPen(nodeStyle.FontColor);
 
       QString s = model->dataType(portType, i).name;
 

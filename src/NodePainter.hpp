@@ -4,7 +4,7 @@
 
 #include <QtGui/QPainter>
 
-#include "PortType.hpp"
+#include "NodeStyle.hpp"
 
 class NodeGraphicsObject;
 class NodeGeometry;
@@ -63,4 +63,6 @@ public:
   drawResizeRect(QPainter* painter,
                  NodeGeometry const& geom,
                  std::unique_ptr<NodeDataModel> const & model);
+
+  static NodeStyle nodeStyle;
 };
