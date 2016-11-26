@@ -14,9 +14,9 @@ registerDataModels()
 {
   auto ret = std::make_shared<DataModelRegistry>();
 
-  ret->registerModel(std::make_unique<TextSourceDataModel>());
+  ret->registerModel<TextSourceDataModel>();
 
-  ret->registerModel(std::make_unique<TextDisplayDataModel>());
+  ret->registerModel<TextDisplayDataModel>();
 
   return ret;
 }

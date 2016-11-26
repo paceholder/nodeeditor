@@ -23,7 +23,8 @@ class NODE_EDITOR_PUBLIC FlowScene
 {
 public:
 
-  FlowScene(std::shared_ptr<DataModelRegistry> registry = std::make_shared<DataModelRegistry>());
+  FlowScene(std::shared_ptr<DataModelRegistry> registry =
+              std::make_shared<DataModelRegistry>());
 
   ~FlowScene();
 
@@ -52,21 +53,19 @@ public:
   void
   removeConnection(ConnectionGraphicsObject* item);
 
+  DataModelRegistry&
+  registry();
+
+  void
+  setRegistry(std::shared_ptr<DataModelRegistry> registry);
+
+public:
+
   void
   save() const;
 
   void
   load();
-
-  DataModelRegistry&
-  registry() {
-    return *_registry;
-  }
-
-  void
-  setRegistry(std::shared_ptr<DataModelRegistry> registry) {
-    if(registry) _registry = std::move(registry); // make sure _registry cannot be null
-  }
 
 private:
 
@@ -79,4 +78,5 @@ private:
 };
 
 std::shared_ptr<Node>
-locateNodeAt(QPointF scenePoint, FlowScene &scene, QTransform viewTransform);
+locateNodeAt(QPointF scenePoint, FlowScene &scene,
+             QTransform viewTransform);

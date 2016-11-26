@@ -19,17 +19,17 @@ static std::shared_ptr<DataModelRegistry>
 registerDataModels()
 {
   auto ret = std::make_shared<DataModelRegistry>();
-  ret->registerModel(std::make_unique<NumberSourceDataModel>());
+  ret->registerModel<NumberSourceDataModel>();
 
-  ret->registerModel(std::make_unique<NumberDisplayDataModel>());
+  ret->registerModel<NumberDisplayDataModel>();
 
-  ret->registerModel(std::make_unique<AdditionModel>());
+  ret->registerModel<AdditionModel>();
 
-  ret->registerModel(std::make_unique<SubtractionModel>());
+  ret->registerModel<SubtractionModel>();
 
-  ret->registerModel(std::make_unique<MultiplicationModel>());
+  ret->registerModel<MultiplicationModel>();
 
-  ret->registerModel(std::make_unique<DivisionModel>());
+  ret->registerModel<DivisionModel>();
 
   return ret;
 }

@@ -12,14 +12,14 @@ static std::shared_ptr<DataModelRegistry>
 registerDataModels()
 {
   auto ret = std::make_shared<DataModelRegistry>();
-  ret->registerModel(std::make_unique<NaiveDataModel>());
+  ret->registerModel<NaiveDataModel>();
 
   /*
      We could have more models registered.
      All of them become items in the context meny of the scene.
 
-  ret->registerModel(std::make_unique<AnotherDataModel>());
-  ret->registerModel(std::make_unique<OneMoreDataModel>());
+  ret->registerModel<AnotherDataModel>();
+  ret->registerModel<OneMoreDataModel>();
 
    */
 

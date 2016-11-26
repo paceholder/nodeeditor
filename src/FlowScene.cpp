@@ -22,6 +22,26 @@
 #include "FlowView.hpp"
 #include "DataModelRegistry.hpp"
 
+//------------------------------------------------------------------------------
+
+FlowScene::
+FlowScene(std::shared_ptr<DataModelRegistry> registry)
+  : _registry(std::move(registry))
+{
+  setItemIndexMethod(QGraphicsScene::NoIndex);
+}
+
+
+FlowScene::
+~FlowScene()
+{
+  _connections.clear();
+  _nodes.clear();
+}
+
+
+//------------------------------------------------------------------------------
+
 std::shared_ptr<Connection>
 FlowScene::
 createConnection(PortType connectedPort,
@@ -168,6 +188,24 @@ removeConnection(ConnectionGraphicsObject* cgo)
 }
 
 
+DataModelRegistry&
+FlowScene::
+registry()
+{
+  return *_registry;
+}
+
+
+void
+FlowScene::
+setRegistry(std::shared_ptr<DataModelRegistry> registry)
+{
+  _registry = registry;
+}
+
+
+//------------------------------------------------------------------------------
+
 void
 FlowScene::
 save() const
@@ -282,33 +320,19 @@ load()
 
   //for (auto &view : views())
   //{
-    //qDebug() << "center";
+  //qDebug() << "center";
 
-    //view->setSceneRect(r);
-    //view->ensureVisible(r);
+  //view->setSceneRect(r);
+  //view->ensureVisible(r);
   //}
-}
-
-
-FlowScene::
-FlowScene(std::shared_ptr<DataModelRegistry> registry) : _registry{std::move(registry)}
-{
-  setItemIndexMethod(QGraphicsScene::NoIndex);
-}
-
-
-FlowScene::
-~FlowScene()
-{
-  _connections.clear();
-  _nodes.clear();
 }
 
 
 //------------------------------------------------------------------------------
 
 std::shared_ptr<Node>
-locateNodeAt(QPointF scenePoint, FlowScene &scene, QTransform viewTransform)
+locateNodeAt(QPointF scenePoint, FlowScene &scene,
+             QTransform viewTransform)
 {
   // items under cursor
   QList<QGraphicsItem*> items =
