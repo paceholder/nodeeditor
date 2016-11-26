@@ -2,7 +2,6 @@
 
 #include <iostream>
 #include <stdexcept>
-#include <memory>
 
 #include <QtWidgets/QGraphicsSceneMoveEvent>
 #include <QtWidgets/QFileDialog>
@@ -292,10 +291,11 @@ load()
 
 
 FlowScene::
-FlowScene(DataModelRegistry && registry) : _registry {std::move(registry)}
+FlowScene(std::shared_ptr<DataModelRegistry> registry) : _registry{std::move(registry)}
 {
   setItemIndexMethod(QGraphicsScene::NoIndex);
 }
+
 
 FlowScene::
 ~FlowScene()

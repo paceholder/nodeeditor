@@ -8,18 +8,18 @@
 #include "models.hpp"
 
 
-static DataModelRegistry
+static std::shared_ptr<DataModelRegistry>
 registerDataModels()
 {
-  DataModelRegistry ret;
-  ret.registerModel(std::make_unique<NaiveDataModel>());
+  auto ret = std::make_shared<DataModelRegistry>();
+  ret->registerModel(std::make_unique<NaiveDataModel>());
 
   /*
      We could have more models registered.
      All of them become items in the context meny of the scene.
 
-  ret.registerModel(std::make_unique<AnotherDataModel>());
-  ret.registerModel(std::make_unique<OneMoreDataModel>());
+  ret->registerModel(std::make_unique<AnotherDataModel>());
+  ret->registerModel(std::make_unique<OneMoreDataModel>());
 
    */
 

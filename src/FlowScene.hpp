@@ -23,8 +23,7 @@ class NODE_EDITOR_PUBLIC FlowScene
 {
 public:
 
-  // Use && to assure that a rvalue reference is passed and the caller has to use std::move() or an rvalue
-  FlowScene(DataModelRegistry && registry = {});
+  FlowScene(std::shared_ptr<DataModelRegistry> registry = std::make_shared<DataModelRegistry>());
 
   ~FlowScene();
 
@@ -60,15 +59,13 @@ public:
   load();
 
   DataModelRegistry&
-  registry()
-  {
-    return _registry;
+  registry() {
+    return *_registry;
   }
 
   void
-  setRegistry(DataModelRegistry && registry)
-  {
-    _registry = std::move(registry);
+  setRegistry(std::shared_ptr<DataModelRegistry> registry) {
+    if(registry) _registry = std::move(registry); // make sure _registry cannot be null
   }
 
 private:
@@ -78,7 +75,7 @@ private:
 
   std::unordered_map<QUuid, SharedConnection> _connections;
   std::unordered_map<QUuid, SharedNode>       _nodes;
-  DataModelRegistry _registry;
+  std::shared_ptr<DataModelRegistry>          _registry;
 };
 
 std::shared_ptr<Node>

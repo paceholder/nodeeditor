@@ -9,14 +9,14 @@
 #include "TextSourceDataModel.hpp"
 #include "TextDisplayDataModel.hpp"
 
-static DataModelRegistry
+static std::shared_ptr<DataModelRegistry>
 registerDataModels()
 {
-  DataModelRegistry ret;
+  auto ret = std::make_shared<DataModelRegistry>();
 
-  ret.registerModel(std::make_unique<TextSourceDataModel>());
+  ret->registerModel(std::make_unique<TextSourceDataModel>());
 
-  ret.registerModel(std::make_unique<TextDisplayDataModel>());
+  ret->registerModel(std::make_unique<TextDisplayDataModel>());
 
   return ret;
 }
