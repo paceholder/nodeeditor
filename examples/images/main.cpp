@@ -7,13 +7,13 @@
 #include "ImageShowModel.hpp"
 #include "ImageLoaderModel.hpp"
 
-static DataModelRegistry
+static std::shared_ptr<DataModelRegistry>
 registerDataModels()
 {
-  DataModelRegistry ret;
-  ret.registerModel(std::make_unique<ImageShowModel>());
+  auto ret = std::make_shared<DataModelRegistry>();
+  ret->registerModel(std::make_unique<ImageShowModel>());
 
-  ret.registerModel(std::make_unique<ImageLoaderModel>());
+  ret->registerModel(std::make_unique<ImageLoaderModel>());
 
   return ret;
 }

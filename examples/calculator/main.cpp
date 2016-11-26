@@ -15,21 +15,21 @@
 #include "MultiplicationModel.hpp"
 #include "DivisionModel.hpp"
 
-static DataModelRegistry
+static std::shared_ptr<DataModelRegistry>
 registerDataModels()
 {
-  DataModelRegistry ret;
-  ret.registerModel(std::make_unique<NumberSourceDataModel>());
+  auto ret = std::make_shared<DataModelRegistry>();
+  ret->registerModel(std::make_unique<NumberSourceDataModel>());
 
-  ret.registerModel(std::make_unique<NumberDisplayDataModel>());
+  ret->registerModel(std::make_unique<NumberDisplayDataModel>());
 
-  ret.registerModel(std::make_unique<AdditionModel>());
+  ret->registerModel(std::make_unique<AdditionModel>());
 
-  ret.registerModel(std::make_unique<SubtractionModel>());
+  ret->registerModel(std::make_unique<SubtractionModel>());
 
-  ret.registerModel(std::make_unique<MultiplicationModel>());
+  ret->registerModel(std::make_unique<MultiplicationModel>());
 
-  ret.registerModel(std::make_unique<DivisionModel>());
+  ret->registerModel(std::make_unique<DivisionModel>());
 
   return ret;
 }
