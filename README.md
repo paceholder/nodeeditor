@@ -32,9 +32,6 @@ Each change in the source node is immediately propagated through all the connect
 * JSON-based interface styles
 * Saving scenes to binary files (Will be changed to JSON soon)
 
-Currently library implements the simplest GUI interaction between nodes. It is possible to define a model, register it
-and create nodes in the scene. Data propagation works as well.
-
 ### Roadmap
 
 1. Extend set of examples
