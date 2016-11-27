@@ -37,12 +37,12 @@ NodeGraphicsObject(FlowScene &scene,
     auto effect = new QGraphicsDropShadowEffect;
     effect->setOffset(4, 4);
     effect->setBlurRadius(20);
-    effect->setColor(QColor(Qt::gray).darker(800));
+    effect->setColor(NodePainter::nodeStyle.ShadowColor);
 
     setGraphicsEffect(effect);
   }
 
-  setOpacity(_node.lock()->nodeGeometry().opacity());
+  setOpacity(NodePainter::nodeStyle.Opacity);
 
   setAcceptHoverEvents(true);
 

@@ -35,8 +35,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 file(GLOB_RECURSE LIB_CPPS  ./src/*.cpp )
 
+qt5_add_resources(RESOURCES ./resources/resources.qrc)
+
 # Tell CMake to create the helloworld executable
-add_library(nodes SHARED ${LIB_CPPS})
+add_library(nodes SHARED ${LIB_CPPS} ${RESOURCES})
 
 target_include_directories(nodes INTERFACE "include")
 

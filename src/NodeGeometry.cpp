@@ -7,6 +7,8 @@
 #include "NodeState.hpp"
 #include "NodeDataModel.hpp"
 
+NodeStyle NodeGeometry::nodeStyle;
+
 NodeGeometry::
 NodeGeometry(std::unique_ptr<NodeDataModel> const &dataModel)
   : _width(100)
@@ -15,12 +17,10 @@ NodeGeometry(std::unique_ptr<NodeDataModel> const &dataModel)
   , _outputPortWidth(70)
   , _entryHeight(20)
   , _spacing(20)
-  , _connectionPointDiameter(8)
   , _hovered(false)
   , _nSources(dataModel->nPorts(PortType::Out))
   , _nSinks(dataModel->nPorts(PortType::In))
   , _draggingPos(-1000, -1000)
-  , _opacity(0.80)
   , _dataModel(dataModel)
   , _fontMetrics(QFont())
 {}
@@ -42,7 +42,7 @@ QRectF
 NodeGeometry::
 boundingRect() const
 {
-  double addon = 4 * _connectionPointDiameter;
+  double addon = 4 * nodeStyle.ConnectionPointDiameter;
 
   return QRectF(0 - addon,
                 0 - addon,
@@ -120,7 +120,7 @@ portScenePosition(int index,
   {
     case PortType::Out:
     {
-      double x = _width + _connectionPointDiameter;
+      double x = _width + nodeStyle.ConnectionPointDiameter;
 
       result = QPointF(x, totalHeight);
       break;
@@ -128,7 +128,7 @@ portScenePosition(int index,
 
     case PortType::In:
     {
-      double x = 0.0 - _connectionPointDiameter;
+      double x = 0.0 - nodeStyle.ConnectionPointDiameter;
 
       result = QPointF(x, totalHeight);
       break;
@@ -153,7 +153,7 @@ checkHitScenePoint(PortType portType,
   if (portType == PortType::None)
     return result;
 
-  double const tolerance = 2.0 * _connectionPointDiameter;
+  double const tolerance = 2.0 * nodeStyle.ConnectionPointDiameter;
 
   size_t const nItems = _dataModel->nPorts(portType);
 

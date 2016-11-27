@@ -1,5 +1,8 @@
 #include "ConnectionGeometry.hpp"
+
 #include <cmath>
+
+ConnectionStyle ConnectionGeometry::connectionStyle;
 
 ConnectionGeometry::
 ConnectionGeometry()

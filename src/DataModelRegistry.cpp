@@ -1,5 +1,8 @@
 #include "DataModelRegistry.hpp"
 
+#include <QtCore/QFile>
+#include <QtWidgets/QMessageBox>
+
 std::unique_ptr<NodeDataModel>
 DataModelRegistry::
 create(QString const &modelName)

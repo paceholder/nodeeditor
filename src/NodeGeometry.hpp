@@ -8,6 +8,7 @@
 #include <QtGui/QFontMetrics>
 
 #include "PortType.hpp"
+#include "NodeStyle.hpp"
 
 class NodeState;
 class NodeDataModel;
@@ -48,14 +49,6 @@ public:
   void
   setSpacing(unsigned int s) { _spacing = s; }
 
-  unsigned int
-  connectionPointDiameter() const
-  { return _connectionPointDiameter; }
-
-  void
-  setconnectionPointDiameter(unsigned int d)
-  { _connectionPointDiameter = d; }
-
   bool
   hovered() const { return _hovered; }
 
@@ -75,9 +68,6 @@ public:
   void
   setDraggingPosition(QPointF const& pos)
   { _draggingPos = pos; }
-
-  double
-  opacity() const { return _opacity; }
 
 public:
 
@@ -121,6 +111,10 @@ private:
   unsigned int
   portWidth(PortType portType) const;
 
+public:
+
+  static NodeStyle nodeStyle;
+
 private:
 
   // some variables are mutable because
@@ -136,16 +130,12 @@ private:
   mutable unsigned int _entryHeight;
   unsigned int _spacing;
 
-  unsigned int _connectionPointDiameter;
-
   bool _hovered;
 
   unsigned int _nSources;
   unsigned int _nSinks;
 
   QPointF _draggingPos;
-
-  double _opacity;
 
   std::unique_ptr<NodeDataModel> const &_dataModel;
 

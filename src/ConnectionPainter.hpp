@@ -1,7 +1,10 @@
 #pragma once
 
 #include <memory>
+
 #include <QtGui/QPainter>
+
+#include "ConnectionStyle.hpp"
 
 class ConnectionGeometry;
 class ConnectionState;
@@ -27,4 +30,8 @@ public:
   void
   paint(QPainter* painter,
         std::shared_ptr<Connection> const &connection);
+
+public:
+
+  static ConnectionStyle connectionStyle;
 };

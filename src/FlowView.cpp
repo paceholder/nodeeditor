@@ -23,6 +23,8 @@
 
 #include "ConnectionGraphicsObject.hpp"
 
+FlowViewStyle FlowView::flowViewStyle;
+
 FlowView::
 FlowView(FlowScene *scene)
   : QGraphicsView(scene)
@@ -30,7 +32,8 @@ FlowView(FlowScene *scene)
 {
   setDragMode(QGraphicsView::ScrollHandDrag);
   setRenderHint(QPainter::Antialiasing);
-  setBackgroundBrush(QColor(Qt::gray).darker(300));
+
+  setBackgroundBrush(flowViewStyle.BackgroundColor);
 
   //setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
   //setViewportUpdateMode(QGraphicsView::MinimalViewportUpdate);
@@ -99,8 +102,6 @@ wheelEvent(QWheelEvent *event)
     scaleUp();
   else
     scaleDown();
-
-  //_scene->setSceneRect(_scene->itemsBoundingRect());
 }
 
 
@@ -217,16 +218,14 @@ drawBackground(QPainter* painter, const QRectF& r)
     }
   };
 
-  QBrush bBrush    = backgroundBrush();
-  QColor gridColor = bBrush.color().lighter(120);
+  QBrush bBrush = backgroundBrush();
 
-  QPen pfine(gridColor, 1.0);
+  QPen pfine(flowViewStyle.FineGridColor, 1.0);
 
   painter->setPen(pfine);
   drawGrid(15);
 
-  gridColor = bBrush.color().darker(200);
-  QPen p(gridColor, 1.0);
+  QPen p(flowViewStyle.CoarseGridColor, 1.0);
 
   painter->setPen(p);
   drawGrid(150);
@@ -255,4 +254,13 @@ FlowView::
 mouseMoveEvent(QMouseEvent* event)
 {
   QGraphicsView::mouseMoveEvent(event);
+}
+
+
+void
+FlowView::
+setStyle(FlowViewStyle ns)
+{
+  flowViewStyle = ns;
+  setBackgroundBrush(flowViewStyle.BackgroundColor);
 }
