@@ -24,6 +24,14 @@ Each change in the source node is immediately propagated through all the connect
 
 ### Current state
 
+* Model-based nodes
+* Automatic data propagation
+* Datatype-aware connections
+* Embedded Qt widgets
+* One-output to many-input connections
+* JSON-based interface styles
+* Saving scenes to binary files (Will be changed to JSON soon)
+
 Currently library implements the simplest GUI interaction between nodes. It is possible to define a model, register it
 and create nodes in the scene. Data propagation works as well.
 
