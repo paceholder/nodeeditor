@@ -39,7 +39,10 @@ and create nodes in the scene. Data propagation works as well.
 
 [![Youtube demonstration](https://bitbucket.org/paceholder/nodeeditor/raw/master/pictures/vid1.png)](https://www.youtube.com/watch?v=pxMXjSvlOFw)
 
-[![Youtube demonstration](https://img.youtube.com/vi/PmJ1InmPMdE/0.jpg)](https://www.youtube.com/watch?v=PmJ1InmPMdE)
+### Now with styles
+
+![Styles](https://bitbucket.org/paceholder/nodeeditor/raw/master/pictures/style_example.png)
+
 
 ### Buy me a beer
 
