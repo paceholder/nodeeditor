@@ -58,12 +58,12 @@ Connection::
 
   if (auto in = _inNode.lock())
   {
-    in->nodeGraphicsObject()->update();
+    in->nodeGraphicsObject().update();
   }
 
   if (auto out = _outNode.lock())
   {
-    out->nodeGraphicsObject()->update();
+    out->nodeGraphicsObject().update();
   }
 
   std::cout << "Connection destructor" << std::endl;
@@ -151,7 +151,7 @@ setGraphicsObject(std::unique_ptr<ConnectionGraphicsObject>&& graphics)
     std::shared_ptr<Node> node = getNode(attachedPort).lock();
 
     QTransform nodeSceneTransform =
-      node->nodeGraphicsObject()->sceneTransform();
+      node->nodeGraphicsObject().sceneTransform();
 
     QPointF pos = node->nodeGeometry().portScenePosition(attachedPortIndex,
                                                          attachedPort,

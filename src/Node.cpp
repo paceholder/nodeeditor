@@ -104,19 +104,19 @@ resetReactionToConnection()
 }
 
 
-NodeGraphicsObject const *
+NodeGraphicsObject const &
 Node::
 nodeGraphicsObject() const
 {
-  return _nodeGraphicsObject.get();
+  return *_nodeGraphicsObject.get();
 }
 
 
-NodeGraphicsObject *
+NodeGraphicsObject &
 Node::
 nodeGraphicsObject()
 {
-  return _nodeGraphicsObject.get();
+  return *_nodeGraphicsObject.get();
 }
 
 

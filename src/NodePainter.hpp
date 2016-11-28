@@ -29,7 +29,7 @@ public:
   static
   void
   drawNodeRect(QPainter* painter, NodeGeometry const& geom,
-               NodeGraphicsObject* const graphicsObject);
+               NodeGraphicsObject const & graphicsObject);
 
   static
   void

@@ -22,7 +22,7 @@ paint(QPainter* painter,
 
   NodeState const& state = node->nodeState();
 
-  NodeGraphicsObject* const graphicsObject = node->nodeGraphicsObject();
+  NodeGraphicsObject const & graphicsObject = node->nodeGraphicsObject();
 
   geom.recalculateSize(painter->fontMetrics());
 
@@ -48,9 +48,9 @@ void
 NodePainter::
 drawNodeRect(QPainter* painter,
              NodeGeometry const& geom,
-             NodeGraphicsObject* const graphicsObject)
+             NodeGraphicsObject const & graphicsObject)
 {
-  auto color = graphicsObject->isSelected()
+  auto color = graphicsObject.isSelected()
                ? nodeStyle.SelectedBoundaryColor
                : nodeStyle.NormalBoundaryColor;
 

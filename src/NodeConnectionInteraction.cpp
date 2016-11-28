@@ -74,7 +74,7 @@ tryConnect() const
 
   // 4) Adjust Connection geometry
 
-  _node->nodeGraphicsObject()->moveConnections();
+  _node->nodeGraphicsObject().moveConnections();
 
   // 5) Poke model to intiate data transfer
 
@@ -153,10 +153,9 @@ nodePortScenePosition(PortType portType, PortIndex portIndex) const
 
   QPointF p = geom.portScenePosition(portIndex, portType);
 
-  NodeGraphicsObject* ngo =
-    _node->nodeGraphicsObject();
+  NodeGraphicsObject& ngo = _node->nodeGraphicsObject();
 
-  return ngo->sceneTransform().map(p);
+  return ngo.sceneTransform().map(p);
 }
 
 
@@ -168,7 +167,7 @@ nodePortIndexUnderScenePoint(PortType portType,
   NodeGeometry const &nodeGeom = _node->nodeGeometry();
 
   QTransform sceneTransform =
-    _node->nodeGraphicsObject()->sceneTransform();
+    _node->nodeGraphicsObject().sceneTransform();
 
   PortIndex portIndex = nodeGeom.checkHitScenePoint(portType,
                                                     scenePoint,

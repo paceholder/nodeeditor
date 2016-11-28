@@ -115,7 +115,7 @@ move()
       QPointF scenePos =
         nodeGeom.portScenePosition(con->getPortIndex(portType),
                                    portType,
-                                   nodeGraphics->sceneTransform());
+                                   nodeGraphics.sceneTransform());
 
       {
         QTransform sceneTransform = this->sceneTransform();

@@ -53,10 +53,10 @@ public:
 
 public:
 
-  NodeGraphicsObject const*
+  NodeGraphicsObject const &
   nodeGraphicsObject() const;
 
-  NodeGraphicsObject*
+  NodeGraphicsObject &
   nodeGraphicsObject();
 
   void
