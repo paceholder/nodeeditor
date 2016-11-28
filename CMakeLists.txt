@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.2)
 
 project(NodeEditor)
 
+option(BUILD_EXAMPLES ON)
+
 # Find includes in corresponding build directories
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -51,5 +53,6 @@ target_link_libraries(nodes
                       Qt5::Gui
                       Qt5::OpenGL)
 
-
-add_subdirectory(examples)
+if(BUILD_EXAMPLES)
+  add_subdirectory(examples)
+endif()
