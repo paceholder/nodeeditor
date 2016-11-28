@@ -153,7 +153,7 @@ nodePortScenePosition(PortType portType, PortIndex portIndex) const
 
   QPointF p = geom.portScenePosition(portIndex, portType);
 
-  std::unique_ptr<NodeGraphicsObject> const & ngo =
+  NodeGraphicsObject* ngo =
     _node->nodeGraphicsObject();
 
   return ngo->sceneTransform().map(p);

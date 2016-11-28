@@ -53,10 +53,10 @@ public:
 
 public:
 
-  std::unique_ptr<NodeGraphicsObject> const&
+  NodeGraphicsObject const*
   nodeGraphicsObject() const;
 
-  std::unique_ptr<NodeGraphicsObject>&
+  NodeGraphicsObject*
   nodeGraphicsObject();
 
   void
@@ -74,7 +74,7 @@ public:
   NodeState &
   nodeState();
 
-  std::unique_ptr<NodeDataModel> const &
+  NodeDataModel* const
   nodeDataModel() const;
 
 public slots: // data propagation
