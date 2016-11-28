@@ -104,19 +104,19 @@ resetReactionToConnection()
 }
 
 
-std::unique_ptr<NodeGraphicsObject> const &
+NodeGraphicsObject const *
 Node::
 nodeGraphicsObject() const
 {
-  return _nodeGraphicsObject;
+  return _nodeGraphicsObject.get();
 }
 
 
-std::unique_ptr<NodeGraphicsObject> &
+NodeGraphicsObject *
 Node::
 nodeGraphicsObject()
 {
-  return _nodeGraphicsObject;
+  return _nodeGraphicsObject.get();
 }
 
 
@@ -162,11 +162,11 @@ nodeState()
 }
 
 
-std::unique_ptr<NodeDataModel> const &
+NodeDataModel* const
 Node::
 nodeDataModel() const
 {
-  return _nodeDataModel;
+  return _nodeDataModel.get();
 }
 
 

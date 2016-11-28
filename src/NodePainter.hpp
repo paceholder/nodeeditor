@@ -29,28 +29,28 @@ public:
   static
   void
   drawNodeRect(QPainter* painter, NodeGeometry const& geom,
-               std::unique_ptr<NodeGraphicsObject> const& graphicsObject);
+               NodeGraphicsObject* const graphicsObject);
 
   static
   void
   drawModelName(QPainter* painter,
                 NodeGeometry const& geom,
                 NodeState const& state,
-                std::unique_ptr<NodeDataModel> const & model);
+                NodeDataModel* const model);
 
   static
   void
   drawEntryLabels(QPainter* painter,
                   NodeGeometry const& geom,
                   NodeState const& state,
-                  std::unique_ptr<NodeDataModel> const & model);
+                  NodeDataModel* const model);
 
   static
   void
   drawConnectionPoints(QPainter* painter,
                        NodeGeometry const& geom,
                        NodeState const& state,
-                       std::unique_ptr<NodeDataModel> const & model);
+                       NodeDataModel* const model);
 
   static
   void
@@ -62,7 +62,7 @@ public:
   void
   drawResizeRect(QPainter* painter,
                  NodeGeometry const& geom,
-                 std::unique_ptr<NodeDataModel> const & model);
+                 NodeDataModel* const model);
 
   static NodeStyle nodeStyle;
 };

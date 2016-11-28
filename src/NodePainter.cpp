@@ -22,7 +22,7 @@ paint(QPainter* painter,
 
   NodeState const& state = node->nodeState();
 
-  std::unique_ptr<NodeGraphicsObject> const& graphicsObject = node->nodeGraphicsObject();
+  NodeGraphicsObject* const graphicsObject = node->nodeGraphicsObject();
 
   geom.recalculateSize(painter->fontMetrics());
 
@@ -48,7 +48,7 @@ void
 NodePainter::
 drawNodeRect(QPainter* painter,
              NodeGeometry const& geom,
-             std::unique_ptr<NodeGraphicsObject> const& graphicsObject)
+             NodeGraphicsObject* const graphicsObject)
 {
   auto color = graphicsObject->isSelected()
                ? nodeStyle.SelectedBoundaryColor
@@ -91,7 +91,7 @@ NodePainter::
 drawConnectionPoints(QPainter* painter,
                      NodeGeometry const& geom,
                      NodeState const& state,
-                     std::unique_ptr<NodeDataModel> const & model)
+                     NodeDataModel* const model)
 {
   // TODO make specific color name
   painter->setBrush(nodeStyle.ConnectionPointColor);
@@ -185,7 +185,7 @@ NodePainter::
 drawModelName(QPainter * painter,
               NodeGeometry const & geom,
               NodeState const & state,
-              std::unique_ptr<NodeDataModel> const & model)
+              NodeDataModel* const model)
 {
   Q_UNUSED(state);
 
@@ -219,7 +219,7 @@ NodePainter::
 drawEntryLabels(QPainter * painter,
                 NodeGeometry const & geom,
                 NodeState const & state,
-                std::unique_ptr<NodeDataModel> const & model)
+                NodeDataModel* const model)
 {
   QFontMetrics const & metrics =
     painter->fontMetrics();
@@ -275,7 +275,7 @@ void
 NodePainter::
 drawResizeRect(QPainter * painter,
                NodeGeometry const & geom,
-               std::unique_ptr<NodeDataModel> const & model)
+               NodeDataModel* const model)
 {
   if (model->resizable())
   {
