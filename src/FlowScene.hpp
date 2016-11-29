@@ -35,7 +35,13 @@ public:
   createConnection(PortType connectedPort,
                    std::shared_ptr<Node> node,
                    PortIndex portIndex);
-
+  
+  std::shared_ptr<Connection>
+  createConnection(std::shared_ptr<Node> nodeIn,
+                   PortIndex portIndexIn,
+                   std::shared_ptr<Node> nodeOut,
+                   PortIndex portIndexOut);
+  
   std::shared_ptr<Connection>
   restoreConnection(Properties const &p);
 

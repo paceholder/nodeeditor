@@ -63,6 +63,39 @@ createConnection(PortType connectedPort,
 
 std::shared_ptr<Connection>
 FlowScene::
+createConnection(std::shared_ptr<Node> nodeIn,
+                 PortIndex portIndexIn,
+                 std::shared_ptr<Node> nodeOut,
+                 PortIndex portIndexOut)
+{
+  
+  auto connection = 
+    std::make_shared<Connection>(nodeIn, 
+                                 portIndexIn,
+                                 nodeOut,
+                                 portIndexOut);
+  
+  
+  auto cgo = std::make_unique<ConnectionGraphicsObject>(*this, connection);
+
+  nodeIn->nodeState().setConnection(PortType::In, portIndexIn, connection);
+  nodeOut->nodeState().setConnection(PortType::Out, portIndexOut, connection);
+
+  // trigger data propagation
+  nodeOut->onDataUpdated(portIndexOut);
+
+  // after this function connection points are set to node port
+  connection->setGraphicsObject(std::move(cgo));
+
+  _connections[connection->id()] = connection;
+  
+  return connection;
+  
+}
+
+
+std::shared_ptr<Connection>
+FlowScene::
 restoreConnection(Properties const &p)
 {
 
@@ -81,26 +114,7 @@ restoreConnection(Properties const &p)
   auto nodeIn  = _nodes[nodeInId];
   auto nodeOut = _nodes[nodeOutId];
 
-  auto connection =
-    std::make_shared<Connection>(nodeIn,
-                                 portIndexIn,
-                                 nodeOut,
-                                 portIndexOut);
-
-  auto cgo = std::make_unique<ConnectionGraphicsObject>(*this, connection);
-
-  nodeIn->nodeState().setConnection(PortType::In, portIndexIn, connection);
-  nodeOut->nodeState().setConnection(PortType::Out, portIndexOut, connection);
-
-  // trigger data propagation
-  nodeOut->onDataUpdated(portIndexOut);
-
-  // after this function connection points are set to node port
-  connection->setGraphicsObject(std::move(cgo));
-
-  _connections[connection->id()] = connection;
-
-  return connection;
+  return createConnection(nodeIn, portIndexIn, nodeOut, portIndexOut);
 }
 
 
