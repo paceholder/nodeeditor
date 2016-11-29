@@ -4,9 +4,13 @@
 
 class Style
 {
+public:
+
+  virtual 
+  ~Style() = default;
 
 private:
-
+  
   virtual void
   loadJsonText(QString jsonText) = 0;
 
