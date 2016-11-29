@@ -22,6 +22,7 @@ class NodeStyle;
 class NODE_EDITOR_PUBLIC FlowScene
   : public QGraphicsScene
 {
+  Q_OBJECT
 public:
 
   FlowScene(std::shared_ptr<DataModelRegistry> registry =
@@ -68,6 +69,13 @@ public:
   void
   load();
 
+signals:
+  void nodeCreated(Node& n);
+  void nodeDeleted(Node& n);
+  
+  void connectionCreated(Connection& c);
+  void connectionDeleted(Connection& c);
+  
 private:
 
   using SharedConnection = std::shared_ptr<Connection>;
