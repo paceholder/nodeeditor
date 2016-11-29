@@ -34,12 +34,10 @@ public:
 
   template<typename ModelType>
   void
-  registerModel()
+  registerModel(std::unique_ptr<ModelType> uniqueModel = std::make_unique<ModelType>())
   {
     static_assert(std::is_base_of<NodeDataModel, ModelType>::value,
                   "Must pass a subclass of NodeDataModel to registerModel");
-
-    auto uniqueModel = std::make_unique<ModelType>();
 
     QString const name = uniqueModel->name();
 
