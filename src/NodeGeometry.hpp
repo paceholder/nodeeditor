@@ -8,7 +8,6 @@
 #include <QtGui/QFontMetrics>
 
 #include "PortType.hpp"
-#include "NodeStyle.hpp"
 
 class NodeState;
 class NodeDataModel;
@@ -110,10 +109,6 @@ private:
 
   unsigned int
   portWidth(PortType portType) const;
-
-public:
-
-  static NodeStyle nodeStyle;
 
 private:
 

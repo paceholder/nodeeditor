@@ -6,11 +6,11 @@ class Style
 {
 public:
 
-  virtual 
+  virtual
   ~Style() = default;
 
 private:
-  
+
   virtual void
   loadJsonText(QString jsonText) = 0;
 
@@ -19,5 +19,4 @@ private:
 
   virtual void
   loadJsonFromByteArray(QByteArray const &byteArray) = 0;
-
 };

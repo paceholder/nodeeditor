@@ -70,7 +70,9 @@ setStyle()
 
       "LineWidth": 3.0,
       "ConstructionLineWidth": 2.0,
-      "PointDiameter": 10.0
+      "PointDiameter": 10.0,
+
+      "UseDataDefinedColors": false
     }
   }
   )");

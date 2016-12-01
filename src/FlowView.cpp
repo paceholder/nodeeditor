@@ -23,7 +23,8 @@
 
 #include "ConnectionGraphicsObject.hpp"
 
-FlowViewStyle FlowView::flowViewStyle;
+#include "StyleCollection.hpp"
+
 
 FlowView::
 FlowView(FlowScene *scene)
@@ -32,6 +33,8 @@ FlowView(FlowScene *scene)
 {
   setDragMode(QGraphicsView::ScrollHandDrag);
   setRenderHint(QPainter::Antialiasing);
+
+  auto const &flowViewStyle = StyleCollection::flowViewStyle();
 
   setBackgroundBrush(flowViewStyle.BackgroundColor);
 
@@ -218,6 +221,8 @@ drawBackground(QPainter* painter, const QRectF& r)
     }
   };
 
+  auto const &flowViewStyle = StyleCollection::flowViewStyle();
+
   QBrush bBrush = backgroundBrush();
 
   QPen pfine(flowViewStyle.FineGridColor, 1.0);
@@ -257,10 +262,10 @@ mouseMoveEvent(QMouseEvent* event)
 }
 
 
-void
-FlowView::
-setStyle(FlowViewStyle ns)
-{
-  flowViewStyle = ns;
-  setBackgroundBrush(flowViewStyle.BackgroundColor);
-}
+//void
+//FlowView::
+//setStyle(FlowViewStyle ns)
+//{
+  //flowViewStyle = ns;
+  //setBackgroundBrush(flowViewStyle.BackgroundColor);
+//}

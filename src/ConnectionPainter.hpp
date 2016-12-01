@@ -4,8 +4,6 @@
 
 #include <QtGui/QPainter>
 
-#include "ConnectionStyle.hpp"
-
 class ConnectionGeometry;
 class ConnectionState;
 class Connection;
@@ -30,8 +28,4 @@ public:
   void
   paint(QPainter* painter,
         std::shared_ptr<Connection> const &connection);
-
-public:
-
-  static ConnectionStyle connectionStyle;
 };

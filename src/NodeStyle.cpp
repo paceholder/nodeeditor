@@ -10,8 +10,7 @@
 
 #include <QDebug>
 
-#include "NodePainter.hpp"
-#include "NodeGeometry.hpp"
+#include "StyleCollection.hpp"
 
 NodeStyle::
 NodeStyle()
@@ -38,8 +37,8 @@ setNodeStyle(QString jsonText)
 {
   NodeStyle style(jsonText);
 
-  NodePainter::nodeStyle = style;
-  NodeGeometry::nodeStyle = style;
+
+  StyleCollection::setNodeStyle(style);
 }
 
 

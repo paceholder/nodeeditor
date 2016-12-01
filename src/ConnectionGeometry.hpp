@@ -7,8 +7,6 @@
 
 #include <iostream>
 
-#include "ConnectionStyle.hpp"
-
 class ConnectionGeometry
 {
 public:
@@ -31,23 +29,15 @@ public:
   QPointF source() const { return _out; }
   QPointF sink() const { return _in; }
 
-  double pointDiameter() const { return _pointDiameter; }
-
   double lineWidth() const { return _lineWidth; }
 
   bool hovered() const { return _hovered; }
   void setHovered(bool hovered) { _hovered = hovered; }
 
-public:
-
-  static ConnectionStyle connectionStyle;
-
 private:
   // local object coordinates
   QPointF _in;
   QPointF _out;
-
-  double _pointDiameter;
 
   //int _animationPhase;
 

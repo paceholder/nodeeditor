@@ -2,13 +2,12 @@
 
 #include <cmath>
 
-ConnectionStyle ConnectionGeometry::connectionStyle;
+#include "StyleCollection.hpp"
 
 ConnectionGeometry::
 ConnectionGeometry()
   : _in(0, 0)
   , _out(0, 0)
-  , _pointDiameter(10)
   //, _animationPhase(0)
   , _lineWidth(3.0)
   , _hovered(false)
@@ -76,10 +75,15 @@ boundingRect() const
 
   QRectF c1c2Rect(points.first, points.second);
 
-  QMargins margins(_pointDiameter,
-                   _pointDiameter,
-                   _pointDiameter,
-                   _pointDiameter);
+  auto const &connectionStyle =
+    StyleCollection::connectionStyle();
+
+  float const pointDiameter = connectionStyle.pointDiameter();
+
+  QMargins margins(pointDiameter,
+                   pointDiameter,
+                   pointDiameter,
+                   pointDiameter);
 
   return basicRect.united(c1c2Rect).marginsAdded(margins);
 }

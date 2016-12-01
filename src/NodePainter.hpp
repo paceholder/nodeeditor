@@ -4,8 +4,6 @@
 
 #include <QtGui/QPainter>
 
-#include "NodeStyle.hpp"
-
 class NodeGraphicsObject;
 class NodeGeometry;
 class NodeState;
@@ -56,13 +54,12 @@ public:
   void
   drawFilledConnectionPoints(QPainter* painter,
                              NodeGeometry const& geom,
-                             NodeState const& state);
+                             NodeState const& state,
+                             NodeDataModel* const model);
 
   static
   void
   drawResizeRect(QPainter* painter,
                  NodeGeometry const& geom,
                  NodeDataModel* const model);
-
-  static NodeStyle nodeStyle;
 };

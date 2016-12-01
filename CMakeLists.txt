@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.2)
 
 project(NodeEditor)
 
-option(BUILD_EXAMPLES ON)
+option(BUILD_EXAMPLES "ON" ON)
 
 # Find includes in corresponding build directories
 set(CMAKE_INCLUDE_CURRENT_DIR ON)

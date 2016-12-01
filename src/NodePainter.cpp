@@ -4,14 +4,13 @@
 
 #include <QtCore/QMargins>
 
+#include "StyleCollection.hpp"
 #include "PortType.hpp"
 #include "NodeGraphicsObject.hpp"
 #include "NodeGeometry.hpp"
 #include "NodeState.hpp"
 #include "NodeDataModel.hpp"
 #include "Node.hpp"
-
-NodeStyle NodePainter::nodeStyle;
 
 void
 NodePainter::
@@ -34,7 +33,7 @@ paint(QPainter* painter,
 
   drawConnectionPoints(painter, geom, state, model);
 
-  drawFilledConnectionPoints(painter, geom, state);
+  drawFilledConnectionPoints(painter, geom, state, model);
 
   drawModelName(painter, geom, state, model);
 
@@ -50,6 +49,8 @@ drawNodeRect(QPainter* painter,
              NodeGeometry const& geom,
              NodeGraphicsObject const & graphicsObject)
 {
+  NodeStyle const& nodeStyle = StyleCollection::nodeStyle();
+
   auto color = graphicsObject.isSelected()
                ? nodeStyle.SelectedBoundaryColor
                : nodeStyle.NormalBoundaryColor;
@@ -93,8 +94,8 @@ drawConnectionPoints(QPainter* painter,
                      NodeState const& state,
                      NodeDataModel* const model)
 {
-  // TODO make specific color name
-  painter->setBrush(nodeStyle.ConnectionPointColor);
+  NodeStyle const& nodeStyle      = StyleCollection::nodeStyle();
+  auto const     &connectionStyle = StyleCollection::connectionStyle();
 
   float diameter = nodeStyle.ConnectionPointDiameter;
   auto  reducedDiameter = diameter * 0.6;
@@ -109,6 +110,8 @@ drawConnectionPoints(QPainter* painter,
 
       QPointF p = geom.portScenePosition(i, portType);
 
+      auto const & dataType = model->dataType(portType, i);
+
       double r = 1.0;
       if (state.isReacting() &&
           (state.getEntries(portType)[i].empty() ||
@@ -119,7 +122,7 @@ drawConnectionPoints(QPainter* painter,
         auto   diff = geom.draggingPos() - p;
         double dist = std::sqrt(QPointF::dotProduct(diff, diff));
 
-        if (state.reactingDataType().id == model->dataType(portType, i).id)
+        if (state.reactingDataType().id == dataType.id)
         {
           double const thres = 40.0;
           r = (dist < thres) ?
@@ -133,6 +136,15 @@ drawConnectionPoints(QPainter* painter,
               (dist / thres) :
               1.0;
         }
+      }
+
+      if (connectionStyle.useDataDefinedColors())
+      {
+        painter->setBrush(connectionStyle.normalColor(dataType.id));
+      }
+      else
+      {
+        painter->setBrush(nodeStyle.ConnectionPointColor);
       }
 
       painter->drawEllipse(p,
@@ -150,10 +162,11 @@ void
 NodePainter::
 drawFilledConnectionPoints(QPainter * painter,
                            NodeGeometry const & geom,
-                           NodeState const & state)
+                           NodeState const & state,
+                           NodeDataModel* const model)
 {
-  painter->setPen(nodeStyle.FilledConnectionPointColor);
-  painter->setBrush(nodeStyle.FilledConnectionPointColor);
+  NodeStyle const& nodeStyle       = StyleCollection::nodeStyle();
+  auto const     & connectionStyle = StyleCollection::connectionStyle();
 
   auto diameter = nodeStyle.ConnectionPointDiameter;
 
@@ -168,6 +181,20 @@ drawFilledConnectionPoints(QPainter * painter,
 
       if (!state.getEntries(portType)[i].empty())
       {
+        auto const & dataType = model->dataType(portType, i);
+
+        if (connectionStyle.useDataDefinedColors())
+        {
+          QColor const c = connectionStyle.normalColor(dataType.id);
+          painter->setPen(c);
+          painter->setBrush(c);
+        }
+        else
+        {
+          painter->setPen(nodeStyle.FilledConnectionPointColor);
+          painter->setBrush(nodeStyle.FilledConnectionPointColor);
+        }
+
         painter->drawEllipse(p,
                              diameter * 0.4,
                              diameter * 0.4);
@@ -187,6 +214,8 @@ drawModelName(QPainter * painter,
               NodeState const & state,
               NodeDataModel* const model)
 {
+  NodeStyle const& nodeStyle = StyleCollection::nodeStyle();
+
   Q_UNUSED(state);
 
   if (!model->captionVisible())
@@ -227,13 +256,14 @@ drawEntryLabels(QPainter * painter,
   auto drawPoints =
   [&](PortType portType)
   {
+    auto const &nodeStyle = StyleCollection::nodeStyle();
+
     auto& entries = state.getEntries(portType);
 
     size_t n = entries.size();
 
     for (size_t i = 0; i < n; ++i)
     {
-
       QPointF p = geom.portScenePosition(i, portType);
 
       if (entries[i].empty())

@@ -7,7 +7,7 @@
 #include "NodeState.hpp"
 #include "NodeDataModel.hpp"
 
-NodeStyle NodeGeometry::nodeStyle;
+#include "StyleCollection.hpp"
 
 NodeGeometry::
 NodeGeometry(std::unique_ptr<NodeDataModel> const &dataModel)
@@ -42,6 +42,8 @@ QRectF
 NodeGeometry::
 boundingRect() const
 {
+  auto const &nodeStyle = StyleCollection::nodeStyle();
+
   double addon = 4 * nodeStyle.ConnectionPointDiameter;
 
   return QRectF(0 - addon,
@@ -103,6 +105,8 @@ portScenePosition(int index,
                   PortType portType,
                   QTransform t) const
 {
+  auto const &nodeStyle = StyleCollection::nodeStyle();
+
   unsigned int step = _entryHeight + _spacing;
 
   QPointF result;
@@ -148,6 +152,8 @@ checkHitScenePoint(PortType portType,
                    QPointF const scenePoint,
                    QTransform sceneTransform) const
 {
+  auto const &nodeStyle = StyleCollection::nodeStyle();
+
   PortIndex result = INVALID;
 
   if (portType == PortType::None)
