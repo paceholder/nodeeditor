@@ -7,7 +7,9 @@
 #include "ConnectionGraphicsObject.hpp"
 #include "Connection.hpp"
 
-ConnectionStyle ConnectionPainter::connectionStyle;
+#include "NodeData.hpp"
+
+#include "StyleCollection.hpp"
 
 ConnectionPainter::
 ConnectionPainter()
@@ -54,19 +56,39 @@ getPainterStroke(ConnectionGeometry const& geom)
 }
 
 
+#include <limits>
+
+#include <QDebug>
+
 void
 ConnectionPainter::
 paint(QPainter* painter,
       std::shared_ptr<Connection> const &connection)
 {
+  auto const &connectionStyle =
+    StyleCollection::connectionStyle();
+
+  NodeDataType dataType = connection->dataType();
+
+  QColor normalColor   = connectionStyle.normalColor();
+  QColor hoverColor    = connectionStyle.hoveredColor();
+  QColor selectedColor = connectionStyle.selectedColor();
+
+  if (connectionStyle.useDataDefinedColors())
+  {
+    normalColor = connectionStyle.normalColor(dataType.id);
+    hoverColor    = normalColor.lighter(200);
+    selectedColor = normalColor.darker(200);
+  }
+
   ConnectionGeometry const& geom =
     connection->connectionGeometry();
 
   ConnectionState const& state =
     connection->connectionState();
 
-  double const lineWidth     = connectionStyle.LineWidth;
-  double const pointDiameter = connectionStyle.PointDiameter;
+  double const lineWidth     = connectionStyle.lineWidth();
+  double const pointDiameter = connectionStyle.pointDiameter();
 
 #ifdef DEBUG_DRAWING
 
@@ -106,8 +128,8 @@ paint(QPainter* painter,
 
     p.setWidth(2 * lineWidth);
     p.setColor(selected ?
-               connectionStyle.SelectedHaloColor :
-               connectionStyle.HoveredColor);
+               connectionStyle.selectedHaloColor() :
+               hoverColor);
 
     painter->setPen(p);
     painter->setBrush(Qt::NoBrush);
@@ -124,14 +146,14 @@ paint(QPainter* painter,
     p.setWidth(lineWidth);
 
     if (selected)
-      p.setColor(connectionStyle.SelectedColor);
+      p.setColor(selectedColor);
     else
-      p.setColor(connectionStyle.NormalColor);
+      p.setColor(normalColor);
 
     if (state.requiresPort())
     {
-      p.setWidth(connectionStyle.ConstructionLineWidth);
-      p.setColor(connectionStyle.ConstructionColor);
+      p.setWidth(connectionStyle.constructionLineWidth());
+      p.setColor(connectionStyle.constructionColor());
       p.setStyle(Qt::DashLine);
     }
 
@@ -145,8 +167,8 @@ paint(QPainter* painter,
   QPointF const& source = geom.source();
   QPointF const& sink   = geom.sink();
 
-  painter->setPen(connectionStyle.ConstructionColor);
-  painter->setBrush(connectionStyle.ConstructionColor);
+  painter->setPen(connectionStyle.constructionColor());
+  painter->setBrush(connectionStyle.constructionColor());
   double const pointRadius = pointDiameter / 2.0;
   painter->drawEllipse(source, pointRadius, pointRadius);
   painter->drawEllipse(sink, pointRadius, pointRadius);

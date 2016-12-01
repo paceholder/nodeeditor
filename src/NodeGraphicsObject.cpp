@@ -16,6 +16,8 @@
 #include "NodeDataModel.hpp"
 #include "NodeConnectionInteraction.hpp"
 
+#include "StyleCollection.hpp"
+
 NodeGraphicsObject::
 NodeGraphicsObject(FlowScene &scene,
                    std::shared_ptr<Node>& node)
@@ -33,16 +35,18 @@ NodeGraphicsObject(FlowScene &scene,
 
   setCacheMode( QGraphicsItem::DeviceCoordinateCache );
 
+  auto const &nodeStyle = StyleCollection::nodeStyle();
+
   {
     auto effect = new QGraphicsDropShadowEffect;
     effect->setOffset(4, 4);
     effect->setBlurRadius(20);
-    effect->setColor(NodePainter::nodeStyle.ShadowColor);
+    effect->setColor(nodeStyle.ShadowColor);
 
     setGraphicsEffect(effect);
   }
 
-  setOpacity(NodePainter::nodeStyle.Opacity);
+  setOpacity(nodeStyle.Opacity);
 
   setAcceptHoverEvents(true);
 

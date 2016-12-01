@@ -8,7 +8,7 @@
 
 #include <QDebug>
 
-#include "FlowView.hpp"
+#include "StyleCollection.hpp"
 
 FlowViewStyle::
 FlowViewStyle()
@@ -35,7 +35,7 @@ setStyle(QString jsonText)
 {
   FlowViewStyle style(jsonText);
 
-  FlowView::flowViewStyle = style;
+  StyleCollection::setFlowViewStyle(style);
 }
 
 

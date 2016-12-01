@@ -3,7 +3,6 @@
 #include <QtWidgets/QGraphicsView>
 
 #include "Export.hpp"
-#include "FlowViewStyle.hpp"
 
 class FlowScene;
 
@@ -47,12 +46,6 @@ protected:
 
   void
   mousePressEvent(QMouseEvent* event) override;
-
-public:
-
-  void setStyle(FlowViewStyle ns);
-
-  static FlowViewStyle flowViewStyle;
 
 private:
 

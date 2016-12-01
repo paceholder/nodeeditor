@@ -4,6 +4,7 @@
 #include <nodes/FlowScene>
 #include <nodes/FlowView>
 #include <nodes/DataModelRegistry>
+#include <nodes/ConnectionStyle>
 
 #include "models.hpp"
 
@@ -27,12 +28,30 @@ registerDataModels()
 }
 
 
+
+static
+void
+setStyle()
+{
+  ConnectionStyle::setConnectionStyle(
+  R"(
+  {
+    "ConnectionStyle": {
+      "UseDataDefinedColors": true
+    }
+  }
+  )");
+}
+
+
 //------------------------------------------------------------------------------
 
 int
 main(int argc, char* argv[])
 {
   QApplication app(argc, argv);
+
+  setStyle();
 
   FlowScene scene(registerDataModels());
 
