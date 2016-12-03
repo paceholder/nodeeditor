@@ -7,7 +7,7 @@ language: none
 matrix:
   include:
     - compiler: gcc
-      env: CXX=g++-5 CC=gcc-5 QT_BASE=56
+      env: CXX=g++-5 CC=gcc-5 QT_BASE=57
       addons:
         apt:
           sources:
@@ -15,7 +15,7 @@ matrix:
           packages:
             - g++-5
     - compiler: clang
-      env: CXX=clang++-3.7 CC=clang-3.7 QT_BASE=56
+      env: CXX=clang++-3.7 CC=clang-3.7 QT_BASE=57
       addons:
         apt:
           sources:
@@ -31,18 +31,18 @@ matrix:
 
 
 before_install:
-  - if [ "$QT_BASE" = "54" ]; then sudo add-apt-repository ppa:beineri/opt-qt542-trusty -y; fi
-  - if [ "$QT_BASE" = "56" ]; then sudo add-apt-repository ppa:beineri/opt-qt561-trusty -y; fi
+  #- if [ "$QT_BASE" = "54" ]; then sudo add-apt-repository ppa:beineri/opt-qt542-trusty -y; fi
+  - if [ "$QT_BASE" = "57" ]; then sudo add-apt-repository ppa:beineri/opt-qt57-trusty -y; fi
   - sudo apt-get update -qq
 
 install:
-  - if [ "$QT_BASE" = "54" ]; then sudo apt-get install -qq qt54base; source /opt/qt54/bin/qt54-env.sh; fi
-  - if [ "$QT_BASE" = "56" ]; then sudo apt-get install -qq qt56base; source /opt/qt56/bin/qt56-env.sh; fi
+  #- if [ "$QT_BASE" = "54" ]; then sudo apt-get install -qq qt54base; source /opt/qt54/bin/qt54-env.sh; fi
+  - if [ "$QT_BASE" = "57" ]; then sudo apt-get install -qq qt57base; source /opt/qt57/bin/qt57-env.sh; fi
 
 script:
   - mkdir build
   - cd build
-  - cmake .. && make -j 4
+  - cmake .. && make -j
 
 notifications:
   email: false
