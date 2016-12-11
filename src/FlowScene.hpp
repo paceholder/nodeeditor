@@ -36,13 +36,13 @@ public:
   createConnection(PortType connectedPort,
                    std::shared_ptr<Node> node,
                    PortIndex portIndex);
-  
+
   std::shared_ptr<Connection>
   createConnection(std::shared_ptr<Node> nodeIn,
                    PortIndex portIndexIn,
                    std::shared_ptr<Node> nodeOut,
                    PortIndex portIndexOut);
-  
+
   std::shared_ptr<Connection>
   restoreConnection(Properties const &p);
 
@@ -56,10 +56,10 @@ public:
   restoreNode(Properties const &p);
 
   void
-  removeNode(NodeGraphicsObject* item);
+  removeNode(std::shared_ptr<Node> node);
 
   void
-  removeConnection(ConnectionGraphicsObject* item);
+  removeConnection(std::shared_ptr<Connection> connection);
 
   DataModelRegistry&
   registry();
@@ -76,12 +76,16 @@ public:
   load();
 
 signals:
-  void nodeCreated(Node& n);
-  void nodeDeleted(Node& n);
-  
-  void connectionCreated(Connection& c);
-  void connectionDeleted(Connection& c);
-  
+  void
+  nodeCreated(Node& n);
+  void
+  nodeDeleted(Node& n);
+
+  void
+  connectionCreated(Connection& c);
+  void
+  connectionDeleted(Connection& c);
+
 private:
 
   using SharedConnection = std::shared_ptr<Connection>;

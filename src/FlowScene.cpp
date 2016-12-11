@@ -172,9 +172,8 @@ restoreNode(Properties const &p)
 
 void
 FlowScene::
-removeNode(NodeGraphicsObject* ngo)
+removeNode(std::shared_ptr<Node> node)
 {
-  std::shared_ptr<Node> const node = ngo->node().lock();
   nodeDeleted(*node);
 
   auto deleteConnections = [&node, this] (PortType portType)
@@ -198,9 +197,8 @@ removeNode(NodeGraphicsObject* ngo)
 
 void
 FlowScene::
-removeConnection(ConnectionGraphicsObject* cgo)
+removeConnection(std::shared_ptr<Connection> conn)
 {
-  std::shared_ptr<Connection> const conn = cgo->connection().lock();
   connectionDeleted(*conn);
 
   deleteConnection(conn);

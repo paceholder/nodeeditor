@@ -25,7 +25,6 @@
 
 #include "StyleCollection.hpp"
 
-
 FlowView::
 FlowView(FlowScene *scene)
   : QGraphicsView(scene)
@@ -146,15 +145,27 @@ keyPressEvent(QKeyEvent *event)
       break;
 
     case Qt::Key_Delete:
+    {
+      std::vector<std::shared_ptr<Node>> nodesToDelete;
+      std::vector<std::shared_ptr<Connection>> connectionsToDelete;
       for (QGraphicsItem * item : _scene->selectedItems())
       {
         if (auto n = dynamic_cast<NodeGraphicsObject*>(item))
-          _scene->removeNode(n);
-        else if (auto n = dynamic_cast<ConnectionGraphicsObject*>(item))
-          _scene->removeConnection(n);
+          nodesToDelete.push_back(n->node().lock());
+
+        if (auto c = dynamic_cast<ConnectionGraphicsObject*>(item))
+          connectionsToDelete.push_back(c->connection().lock());
       }
 
-      break;
+      for( auto & n : nodesToDelete )
+        _scene->removeNode(n);
+
+      for( auto & c : connectionsToDelete )
+        _scene->removeConnection(c);
+
+    }
+
+    break;
 
     case Qt::Key_Shift:
       setDragMode(QGraphicsView::RubberBandDrag);
@@ -260,12 +271,3 @@ mouseMoveEvent(QMouseEvent* event)
 {
   QGraphicsView::mouseMoveEvent(event);
 }
-
-
-//void
-//FlowView::
-//setStyle(FlowViewStyle ns)
-//{
-  //flowViewStyle = ns;
-  //setBackgroundBrush(flowViewStyle.BackgroundColor);
-//}
