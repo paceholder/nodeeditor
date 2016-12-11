@@ -69,14 +69,13 @@ createConnection(std::shared_ptr<Node> nodeIn,
                  std::shared_ptr<Node> nodeOut,
                  PortIndex portIndexOut)
 {
-  
-  auto connection = 
-    std::make_shared<Connection>(nodeIn, 
+
+  auto connection =
+    std::make_shared<Connection>(nodeIn,
                                  portIndexIn,
                                  nodeOut,
                                  portIndexOut);
-  
-  
+
   auto cgo = std::make_unique<ConnectionGraphicsObject>(*this, connection);
 
   nodeIn->nodeState().setConnection(PortType::In, portIndexIn, connection);
@@ -89,9 +88,8 @@ createConnection(std::shared_ptr<Node> nodeIn,
   connection->setGraphicsObject(std::move(cgo));
 
   _connections[connection->id()] = connection;
-  
+
   return connection;
-  
 }
 
 
@@ -166,7 +164,7 @@ restoreNode(Properties const &p)
   node->restore(p);
 
   _nodes[node->id()] = node;
-  
+
   nodeCreated(*node);
   return node;
 }
@@ -178,7 +176,7 @@ removeNode(NodeGraphicsObject* ngo)
 {
   std::shared_ptr<Node> const node = ngo->node().lock();
   nodeDeleted(*node);
-  
+
   auto deleteConnections = [&node, this] (PortType portType)
   {
     auto nodeState = node->nodeState();
@@ -204,7 +202,7 @@ removeConnection(ConnectionGraphicsObject* cgo)
 {
   std::shared_ptr<Connection> const conn = cgo->connection().lock();
   connectionDeleted(*conn);
-  
+
   deleteConnection(conn);
 }
 

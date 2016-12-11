@@ -35,7 +35,7 @@ Each change in the source node is immediately propagated through all the connect
 ### Roadmap
 
 1. Extend set of examples
-2. Implement graph save/restore
+2. Implement graph save/restore with JSON
 3. GUI: fix scrolling for scene view window scrolling
 4. Implement grouping nodes
 
@@ -46,7 +46,8 @@ Each change in the source node is immediately propagated through all the connect
 
 ### Now with styles
 
-![Styles](https://bitbucket.org/paceholder/nodeeditor/raw/master/pictures/style_example.png)
+
+[![Styles](https://bitbucket.org/paceholder/nodeeditor/raw/master/pictures/style_example.png)](https://www.youtube.com/watch?v=i_pB-Y0hCYQ)
 
 
 ### Buy me a beer
