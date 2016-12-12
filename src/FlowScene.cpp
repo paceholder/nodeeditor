@@ -89,6 +89,8 @@ createConnection(std::shared_ptr<Node> nodeIn,
 
   _connections[connection->id()] = connection;
 
+  connectionCreated(*connection);
+  
   return connection;
 }
 
@@ -199,8 +201,6 @@ void
 FlowScene::
 removeConnection(std::shared_ptr<Connection> conn)
 {
-  connectionDeleted(*conn);
-
   deleteConnection(conn);
 }
 
