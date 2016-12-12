@@ -205,6 +205,8 @@ setNodeToPort(std::shared_ptr<Node> node,
     _inPortIndex = portIndex;
 
   _connectionState.setNoRequiredPort();
+  
+  updated(*this);
 }
 
 
@@ -217,6 +219,8 @@ removeFromNodes() const
 
   if (auto n = _outNode.lock())
     n->nodeState().eraseConnection(PortType::Out, _outPortIndex, id());
+  
+  updated(*this);
 }
 
 

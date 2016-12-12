@@ -34,7 +34,7 @@ struct hash<QUuid>
 //------------------------------------------------------------------------------
 
 ///
-class Connection : public Serializable
+class Connection : public QObject, public Serializable
 {
 public:
 
@@ -135,4 +135,7 @@ private:
   ConnectionGeometry _connectionGeometry;
 
   std::unique_ptr<ConnectionGraphicsObject> _connectionGraphicsObject;
+  
+signals:
+  void updated(const Connection& conn) const;
 };
