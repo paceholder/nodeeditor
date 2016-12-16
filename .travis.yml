@@ -36,6 +36,7 @@ before_install:
   - sudo apt-get update -qq
 
 install:
+  - sudo apt-get install build-essential libgl1-mesa-dev
   #- if [ "$QT_BASE" = "54" ]; then sudo apt-get install -qq qt54base; source /opt/qt54/bin/qt54-env.sh; fi
   - if [ "$QT_BASE" = "57" ]; then sudo apt-get install -qq qt57base; source /opt/qt57/bin/qt57-env.sh; fi
 
