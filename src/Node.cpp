@@ -162,7 +162,7 @@ nodeState()
 }
 
 
-NodeDataModel* const
+NodeDataModel*
 Node::
 nodeDataModel() const
 {

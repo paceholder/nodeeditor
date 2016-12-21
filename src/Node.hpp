@@ -74,7 +74,7 @@ public:
   NodeState &
   nodeState();
 
-  NodeDataModel* const
+  NodeDataModel*
   nodeDataModel() const;
 
 public slots: // data propagation
