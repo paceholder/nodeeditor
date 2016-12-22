@@ -82,7 +82,7 @@ public:
 
   /// Updates size if the QFontMetrics is changed
   void
-  recalculateSize(QFontMetrics const &fontMetrics) const;
+  recalculateSize(QFont const &font) const;
 
   // TODO removed default QTransform()
   QPointF
@@ -105,7 +105,10 @@ public:
 private:
 
   unsigned int
-  nameHeight() const;
+  captionHeight() const;
+
+  unsigned int
+  captionWidth() const;
 
   unsigned int
   portWidth(PortType portType) const;
@@ -135,4 +138,5 @@ private:
   std::unique_ptr<NodeDataModel> const &_dataModel;
 
   mutable QFontMetrics _fontMetrics;
+  mutable QFontMetrics _boldFontMetrics;
 };

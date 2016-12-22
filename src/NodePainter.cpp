@@ -23,7 +23,7 @@ paint(QPainter* painter,
 
   NodeGraphicsObject const & graphicsObject = node->nodeGraphicsObject();
 
-  geom.recalculateSize(painter->fontMetrics());
+  geom.recalculateSize(painter->font());
 
   //--------------------------------------------
 

@@ -23,7 +23,11 @@ NodeGeometry(std::unique_ptr<NodeDataModel> const &dataModel)
   , _draggingPos(-1000, -1000)
   , _dataModel(dataModel)
   , _fontMetrics(QFont())
-{}
+  , _boldFontMetrics(QFont())
+{
+  QFont f; f.setBold(true);
+  _boldFontMetrics = QFontMetrics(f);
+}
 
 QRectF
 NodeGeometry::
@@ -70,7 +74,7 @@ recalculateSize() const
     _height = std::max(_height, static_cast<unsigned>(w->height()));
   }
 
-  _height += nameHeight();
+  _height += captionHeight();
 
   _inputPortWidth  = portWidth(PortType::In);
   _outputPortWidth = portWidth(PortType::Out);
@@ -83,16 +87,25 @@ recalculateSize() const
   {
     _width += w->width();
   }
+
+  _width = std::max(_width, captionWidth());
 }
 
 
 void
 NodeGeometry::
-recalculateSize(QFontMetrics const & fontMetrics) const
+recalculateSize(QFont const & font) const
 {
-  if (_fontMetrics != fontMetrics)
+  QFontMetrics fontMetrics(font);
+  QFont boldFont = font;
+  boldFont.setBold(true);
+
+  QFontMetrics boldFontMetrics(boldFont);
+
+  if (_boldFontMetrics != boldFontMetrics)
   {
     _fontMetrics = fontMetrics;
+    _boldFontMetrics = boldFontMetrics;
 
     recalculateSize();
   }
@@ -113,7 +126,7 @@ portScenePosition(int index,
 
   double totalHeight = 0.0;
 
-  totalHeight += nameHeight();
+  totalHeight += captionHeight();
 
   totalHeight += step * index;
 
@@ -202,7 +215,7 @@ widgetPosition() const
   {
 
     return QPointF(_spacing + portWidth(PortType::In),
-                   (nameHeight() + _height - w->height()) / 2.0);
+                   (captionHeight() + _height - w->height()) / 2.0);
   }
 
   return QPointF();
@@ -211,14 +224,27 @@ widgetPosition() const
 
 unsigned int
 NodeGeometry::
-nameHeight() const
+captionHeight() const
 {
   if (!_dataModel->captionVisible())
     return 0;
 
   QString name = _dataModel->caption();
 
-  return _fontMetrics.boundingRect(name).height();
+  return _boldFontMetrics.boundingRect(name).height();
+}
+
+
+unsigned int
+NodeGeometry::
+captionWidth() const
+{
+  if (!_dataModel->captionVisible())
+    return 0;
+
+  QString name = _dataModel->caption();
+
+  return _boldFontMetrics.boundingRect(name).width();
 }
 
 
