@@ -77,9 +77,9 @@ public:
 
 signals:
   void
-  nodeCreated(Node& n);
+  nodeCreated(const std::shared_ptr<Node>& n);
   void
-  nodeDeleted(Node& n);
+  nodeDeleted(const std::shared_ptr<Node>& n);
 
   void
   connectionCreated(Connection& c);

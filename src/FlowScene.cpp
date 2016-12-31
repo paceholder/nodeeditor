@@ -140,7 +140,7 @@ createNode(std::unique_ptr<NodeDataModel> && dataModel)
 
   _nodes[node->id()] = node;
 
-  nodeCreated(*node);
+  nodeCreated(node);
   return node;
 }
 
@@ -167,7 +167,7 @@ restoreNode(Properties const &p)
 
   _nodes[node->id()] = node;
 
-  nodeCreated(*node);
+  nodeCreated(node);
   return node;
 }
 
@@ -176,7 +176,7 @@ void
 FlowScene::
 removeNode(std::shared_ptr<Node> node)
 {
-  nodeDeleted(*node);
+  nodeDeleted(node);
 
   auto deleteConnections = [&node, this] (PortType portType)
   {
