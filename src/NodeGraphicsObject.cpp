@@ -20,7 +20,7 @@
 
 NodeGraphicsObject::
 NodeGraphicsObject(FlowScene &scene,
-                   std::shared_ptr<Node>& node)
+                   const std::shared_ptr<Node>& node)
   : _scene(scene)
   , _node(node)
   , _proxyWidget(nullptr)

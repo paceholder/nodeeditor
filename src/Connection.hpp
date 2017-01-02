@@ -138,5 +138,5 @@ private:
   std::unique_ptr<ConnectionGraphicsObject> _connectionGraphicsObject;
   
 signals:
-  void updated(const Connection& conn) const;
+  void updated(Connection& conn) const;
 };

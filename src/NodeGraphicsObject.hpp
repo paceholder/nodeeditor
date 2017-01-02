@@ -21,7 +21,7 @@ class NodeGraphicsObject : public QGraphicsObject
 
 public:
   NodeGraphicsObject(FlowScene &scene,
-                     std::shared_ptr<Node>& node);
+                     const std::shared_ptr<Node>& node);
 
   virtual
   ~NodeGraphicsObject();

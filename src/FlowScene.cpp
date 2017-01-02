@@ -121,11 +121,11 @@ restoreConnection(Properties const &p)
 
 void
 FlowScene::
-deleteConnection(std::shared_ptr<Connection> connection)
+deleteConnection(Connection& connection)
 {
-  connectionDeleted(*connection);
-  connection->removeFromNodes();
-  _connections.erase(connection->id());
+  connectionDeleted(connection);
+  connection.removeFromNodes();
+  _connections.erase(connection.id());
 }
 
 
@@ -186,7 +186,7 @@ removeNode(std::shared_ptr<Node> node)
     for (auto &connections : nodeEntries)
     {
       for (auto const &pair : connections)
-        deleteConnection(pair.second);
+        deleteConnection(*pair.second);
     }
   };
 
@@ -201,7 +201,7 @@ void
 FlowScene::
 removeConnection(std::shared_ptr<Connection> conn)
 {
-  deleteConnection(conn);
+  deleteConnection(*conn);
 }
 
 
