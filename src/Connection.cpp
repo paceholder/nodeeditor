@@ -4,6 +4,7 @@
 #include <math.h>
 
 #include <QtWidgets/QtWidgets>
+#include <qcompilerdetection.h>
 
 #include "Node.hpp"
 #include "FlowScene.hpp"
@@ -21,7 +22,7 @@
 
 Connection::
 Connection(PortType portType,
-           std::shared_ptr<Node> node,
+           Node& node,
            PortIndex portIndex)
   : _id(QUuid::createUuid())
   , _outPortIndex(INVALID)
@@ -35,13 +36,13 @@ Connection(PortType portType,
 
 
 Connection::
-Connection(std::shared_ptr<Node> nodeIn,
+Connection(Node& nodeIn,
            PortIndex portIndexIn,
-           std::shared_ptr<Node> nodeOut,
+           Node& nodeOut,
            PortIndex portIndexOut)
   : _id(QUuid::createUuid())
-  , _outNode(nodeOut)
-  , _inNode(nodeIn)
+  , _outNode(&nodeOut)
+  , _inNode(&nodeIn)
   , _outPortIndex(portIndexOut)
   , _inPortIndex(portIndexIn)
   , _connectionState()
@@ -56,14 +57,14 @@ Connection::
 {
   propagateEmptyData();
 
-  if (auto in = _inNode.lock())
+  if (_inNode)
   {
-    in->nodeGraphicsObject().update();
+    _inNode->nodeGraphicsObject().update();
   }
 
-  if (auto out = _outNode.lock())
+  if (_outNode)
   {
-    out->nodeGraphicsObject().update();
+    _outNode->nodeGraphicsObject().update();
   }
 
   std::cout << "Connection destructor" << std::endl;
@@ -74,13 +75,10 @@ void
 Connection::
 save(Properties &p) const
 {
-  auto in  = _inNode.lock();
-  auto out = _outNode.lock();
-
-  if (in && out)
+  if (_inNode && _outNode)
   {
-    p.put("in_id", in->id());
-    p.put("out_id", out->id());
+    p.put("in_id", _inNode->id());
+    p.put("out_id", _outNode->id());
 
     p.put("in_index", _inPortIndex);
     p.put("out_index", _outPortIndex);
@@ -105,12 +103,12 @@ setRequiredPort(PortType dragging)
   switch (dragging)
   {
     case PortType::Out:
-      _outNode.reset();
+      _outNode = nullptr;
       _outPortIndex = INVALID;
       break;
 
     case PortType::In:
-      _inNode.reset();
+      _inNode = nullptr;
       _inPortIndex = INVALID;
       break;
 
@@ -148,7 +146,7 @@ setGraphicsObject(std::unique_ptr<ConnectionGraphicsObject>&& graphics)
 
     PortIndex attachedPortIndex = getPortIndex(attachedPort);
 
-    std::shared_ptr<Node> node = getNode(attachedPort).lock();
+    auto node = getNode(attachedPort);
 
     QTransform nodeSceneTransform =
       node->nodeGraphicsObject().sceneTransform();
@@ -191,13 +189,13 @@ getPortIndex(PortType portType) const
 
 void
 Connection::
-setNodeToPort(std::shared_ptr<Node> node,
+setNodeToPort(Node& node,
               PortType portType,
               PortIndex portIndex)
 {
-  std::weak_ptr<Node> & nodeWeak = getNode(portType);
+  auto& nodeWeak = getNode(portType);
 
-  nodeWeak = node;
+  nodeWeak = &node;
 
   if (portType == PortType::Out)
     _outPortIndex = portIndex;
@@ -214,20 +212,20 @@ void
 Connection::
 removeFromNodes() const
 {
-  if (auto n = _inNode.lock())
-    n->nodeState().eraseConnection(PortType::In, _inPortIndex, id());
+  if (_inNode)
+    _inNode->nodeState().eraseConnection(PortType::In, _inPortIndex, id());
 
-  if (auto n = _outNode.lock())
-    n->nodeState().eraseConnection(PortType::Out, _outPortIndex, id());
+  if (_outNode)
+    _outNode->nodeState().eraseConnection(PortType::Out, _outPortIndex, id());
   
 }
 
 
-std::unique_ptr<ConnectionGraphicsObject> const&
+ConnectionGraphicsObject&
 Connection::
 getConnectionGraphicsObject() const
 {
-  return _connectionGraphicsObject;
+  return *_connectionGraphicsObject;
 }
 
 
@@ -254,8 +252,15 @@ connectionGeometry()
   return _connectionGeometry;
 }
 
+ConnectionGeometry const&
+Connection::
+connectionGeometry() const
+{
+  return _connectionGeometry;
+}
 
-std::weak_ptr<Node> const &
+
+Node*
 Connection::
 getNode(PortType portType) const
 {
@@ -273,10 +278,11 @@ getNode(PortType portType) const
       // not possible
       break;
   }
+  return nullptr;
 }
 
 
-std::weak_ptr<Node> &
+Node*&
 Connection::
 getNode(PortType portType)
 {
@@ -294,6 +300,7 @@ getNode(PortType portType)
       // not possible
       break;
   }
+  Q_UNREACHABLE();
 }
 
 
@@ -301,7 +308,7 @@ void
 Connection::
 clearNode(PortType portType)
 {
-  getNode(portType).reset();
+  getNode(portType) = nullptr;
 
   if (portType == PortType::In)
     _inPortIndex = INVALID;
@@ -314,16 +321,16 @@ NodeDataType
 Connection::
 dataType() const
 {
-  std::shared_ptr<Node> validNode;
+  Node* validNode;
   PortIndex index    = INVALID;
   PortType  portType = PortType::None;
 
-  if ((validNode = _inNode.lock()))
+  if ((validNode = _inNode))
   {
     index    = _inPortIndex;
     portType = PortType::In;
   }
-  else if ((validNode = _outNode.lock()))
+  else if ((validNode = _outNode))
   {
     index    = _outPortIndex;
     portType = PortType::Out;
@@ -335,6 +342,8 @@ dataType() const
 
     return model->dataType(portType, index);
   }
+
+  Q_UNREACHABLE();
 }
 
 
@@ -342,11 +351,9 @@ void
 Connection::
 propagateData(std::shared_ptr<NodeData> nodeData) const
 {
-  auto inNode = _inNode.lock();
-
-  if (inNode)
+  if (_inNode)
   {
-    inNode->propagateData(nodeData, _inPortIndex);
+    _inNode->propagateData(nodeData, _inPortIndex);
   }
 }
 

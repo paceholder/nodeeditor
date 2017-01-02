@@ -4,6 +4,7 @@
 
 #include <QtCore/QObject>
 #include <QtCore/QUuid>
+#include <QVariant>
 
 #include "PortType.hpp"
 #include "NodeData.hpp"
@@ -43,12 +44,12 @@ public:
   /// The port has parameters (portType, portIndex).
   /// The opposite connection end will require anothre port.
   Connection(PortType portType,
-             std::shared_ptr<Node> node,
+             Node& node,
              PortIndex portIndex);
 
-  Connection(std::shared_ptr<Node> nodeIn,
+  Connection(Node& nodeIn,
              PortIndex portIndexIn,
-             std::shared_ptr<Node> nodeOut,
+             Node& nodeOut,
              PortIndex portIndexOut);
 
   ~Connection();
@@ -77,7 +78,7 @@ public:
   /// Assigns a node to the required port.
   /// It is assumed that there is a required port, no extra checks
   void
-  setNodeToPort(std::shared_ptr<Node> node,
+  setNodeToPort(Node& node,
                 PortType portType,
                 PortIndex portIndex);
 
@@ -86,7 +87,7 @@ public:
 
 public:
 
-  std::unique_ptr<ConnectionGraphicsObject> const&
+  ConnectionGraphicsObject&
   getConnectionGraphicsObject() const;
 
   ConnectionState const &
@@ -96,10 +97,14 @@ public:
 
   ConnectionGeometry&
   connectionGeometry();
+  
+  ConnectionGeometry const&
+  connectionGeometry() const;
 
-  std::weak_ptr<Node> const &
+  Node*
   getNode(PortType portType) const;
-  std::weak_ptr<Node> &
+  
+  Node*&
   getNode(PortType portType);
 
   PortIndex
@@ -124,8 +129,8 @@ private:
 
 private:
 
-  std::weak_ptr<Node> _outNode;
-  std::weak_ptr<Node> _inNode;
+  Node* _outNode = nullptr;
+  Node* _inNode = nullptr;
 
   PortIndex _outPortIndex;
   PortIndex _inPortIndex;

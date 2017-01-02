@@ -51,12 +51,12 @@ void
 NodeState::
 setConnection(PortType portType,
               PortIndex portIndex,
-              std::shared_ptr<Connection> connection)
+              Connection& connection)
 {
   auto &connections = getEntries(portType);
 
-  connections[portIndex].insert(std::make_pair(connection->id(),
-                                               connection));
+  connections[portIndex].insert(std::make_pair(connection.id(),
+                                               &connection));
 }
 
 

@@ -70,13 +70,13 @@ contextMenuEvent(QContextMenuEvent *event)
 
     if (type)
     {
-      auto node = _scene->createNode(std::move(type));
+      auto& node = _scene->createNode(std::move(type));
 
       QPoint pos = event->pos();
 
       QPointF posView = this->mapToScene(pos);
 
-      node->nodeGraphicsObject().setPos(posView);
+      node.nodeGraphicsObject().setPos(posView);
     }
     else
     {
@@ -146,22 +146,22 @@ keyPressEvent(QKeyEvent *event)
 
     case Qt::Key_Delete:
     {
-      std::vector<std::shared_ptr<Node>> nodesToDelete;
-      std::vector<std::shared_ptr<Connection>> connectionsToDelete;
+      std::vector<Node*> nodesToDelete;
+      std::vector<Connection*> connectionsToDelete;
       for (QGraphicsItem * item : _scene->selectedItems())
       {
         if (auto n = dynamic_cast<NodeGraphicsObject*>(item))
-          nodesToDelete.push_back(n->node().lock());
+          nodesToDelete.push_back(&n->node());
 
         if (auto c = dynamic_cast<ConnectionGraphicsObject*>(item))
-          connectionsToDelete.push_back(c->connection().lock());
+          connectionsToDelete.push_back(&c->connection());
       }
 
       for( auto & n : nodesToDelete )
-        _scene->removeNode(n);
+        _scene->removeNode(*n);
 
       for( auto & c : connectionsToDelete )
-        _scene->removeConnection(c);
+        _scene->deleteConnection(*c);
 
     }
 

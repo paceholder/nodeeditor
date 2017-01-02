@@ -37,13 +37,13 @@ public:
 
 public:
 
-  void interactWithNode(std::shared_ptr<Node> node);
+  void interactWithNode(Node* node);
 
-  void setLastHoveredNode(std::shared_ptr<Node> node);
+  void setLastHoveredNode(Node* node);
 
-  std::shared_ptr<Node> const
+  Node* const
   lastHoveredNode() const
-  { return _lastHoveredNode.lock(); }
+  { return _lastHoveredNode; }
 
   void resetLastHoveredNode();
 
@@ -51,5 +51,5 @@ private:
 
   PortType _requiredPort;
 
-  std::weak_ptr<Node> _lastHoveredNode;
+  Node* _lastHoveredNode = nullptr;
 };

@@ -27,5 +27,5 @@ public:
   static
   void
   paint(QPainter* painter,
-        std::shared_ptr<Connection> const &connection);
+        Connection const& connection);
 };

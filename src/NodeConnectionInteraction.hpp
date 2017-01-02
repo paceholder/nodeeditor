@@ -11,10 +11,10 @@
 class NodeConnectionInteraction
 {
 public:
-  NodeConnectionInteraction(std::shared_ptr<Node> node,
-                            std::shared_ptr<Connection> connection)
-    : _node(node)
-    , _connection(connection)
+  NodeConnectionInteraction(Node& node,
+                            Connection& connection)
+    : _node(&node)
+    , _connection(&connection)
   {}
 
   /// Can connect when following conditions are met:
@@ -54,7 +54,7 @@ private:
 
 private:
 
-  std::shared_ptr<Node> _node;
+  Node* _node;
 
-  std::shared_ptr<Connection> _connection;
+  Connection* _connection;
 };

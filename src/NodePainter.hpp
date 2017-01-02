@@ -22,7 +22,7 @@ public:
   static
   void
   paint(QPainter* painter,
-        std::shared_ptr<Node> const &node);
+        Node& node);
 
   static
   void

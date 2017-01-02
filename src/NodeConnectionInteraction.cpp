@@ -37,7 +37,7 @@ canConnect(PortIndex &portIndex) const
 
   // 4) Connection type == node port type (not implemented yet)
 
-  NodeDataType connectionDataType = _connection->dataType();
+  auto connectionDataType = _connection->dataType();
 
   auto const   &modelTarget = _node->nodeDataModel();
   NodeDataType candidateNodeDataType = modelTarget->dataType(requiredPort, portIndex);
@@ -66,11 +66,11 @@ tryConnect() const
   PortType requiredPort = connectionRequiredPort();
   _node->nodeState().setConnection(requiredPort,
                                    portIndex,
-                                   _connection);
+                                   *_connection);
 
   // 3) Assign Connection to empty port in NodeState
   // The port is not longer required after this function
-  _connection->setNodeToPort(_node, requiredPort, portIndex);
+  _connection->setNodeToPort(*_node, requiredPort, portIndex);
 
   // 4) Adjust Connection geometry
 
@@ -78,7 +78,7 @@ tryConnect() const
 
   // 5) Poke model to intiate data transfer
 
-  auto outNode = _connection->getNode(PortType::Out).lock();
+  auto outNode = _connection->getNode(PortType::Out);
   if (outNode)
   {
     PortIndex outPortIndex = _connection->getPortIndex(PortType::Out);
@@ -112,7 +112,7 @@ disconnect(PortType portToDisconnect) const
 
   _connection->setRequiredPort(portToDisconnect);
 
-  _connection->getConnectionGraphicsObject()->grabMouse();
+  _connection->getConnectionGraphicsObject().grabMouse();
 
   return true;
 }
@@ -134,14 +134,14 @@ QPointF
 NodeConnectionInteraction::
 connectionEndScenePosition(PortType portType) const
 {
-  std::unique_ptr<ConnectionGraphicsObject> const &go =
+  auto &go =
     _connection->getConnectionGraphicsObject();
 
   ConnectionGeometry& geometry = _connection->connectionGeometry();
 
   QPointF endPoint = geometry.getEndPoint(portType);
 
-  return go->mapToScene(endPoint);
+  return go.mapToScene(endPoint);
 }
 
 

@@ -15,13 +15,13 @@
 void
 NodePainter::
 paint(QPainter* painter,
-      std::shared_ptr<Node> const &node)
+      Node& node)
 {
-  NodeGeometry const& geom = node->nodeGeometry();
+  NodeGeometry const& geom = node.nodeGeometry();
 
-  NodeState const& state = node->nodeState();
+  NodeState const& state = node.nodeState();
 
-  NodeGraphicsObject const & graphicsObject = node->nodeGraphicsObject();
+  NodeGraphicsObject const & graphicsObject = node.nodeGraphicsObject();
 
   geom.recalculateSize(painter->font());
 
@@ -29,7 +29,7 @@ paint(QPainter* painter,
 
   drawNodeRect(painter, geom, graphicsObject);
 
-  auto const &model = node->nodeDataModel();
+  auto const &model = node.nodeDataModel();
 
   drawConnectionPoints(painter, geom, state, model);
 

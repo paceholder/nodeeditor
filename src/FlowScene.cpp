@@ -45,12 +45,12 @@ FlowScene::
 std::shared_ptr<Connection>
 FlowScene::
 createConnection(PortType connectedPort,
-                 std::shared_ptr<Node> node,
+                 Node& node,
                  PortIndex portIndex)
 {
   auto connection = std::make_shared<Connection>(connectedPort, node, portIndex);
 
-  auto cgo = std::make_unique<ConnectionGraphicsObject>(*this, connection);
+  auto cgo = std::make_unique<ConnectionGraphicsObject>(*this, *connection);
 
   // after this function connection points are set to node port
   connection->setGraphicsObject(std::move(cgo));
@@ -64,9 +64,9 @@ createConnection(PortType connectedPort,
 
 std::shared_ptr<Connection>
 FlowScene::
-createConnection(std::shared_ptr<Node> nodeIn,
+createConnection(Node& nodeIn,
                  PortIndex portIndexIn,
-                 std::shared_ptr<Node> nodeOut,
+                 Node& nodeOut,
                  PortIndex portIndexOut)
 {
 
@@ -76,13 +76,13 @@ createConnection(std::shared_ptr<Node> nodeIn,
                                  nodeOut,
                                  portIndexOut);
 
-  auto cgo = std::make_unique<ConnectionGraphicsObject>(*this, connection);
+  auto cgo = std::make_unique<ConnectionGraphicsObject>(*this, *connection);
 
-  nodeIn->nodeState().setConnection(PortType::In, portIndexIn, connection);
-  nodeOut->nodeState().setConnection(PortType::Out, portIndexOut, connection);
+  nodeIn.nodeState().setConnection(PortType::In, portIndexIn, *connection);
+  nodeOut.nodeState().setConnection(PortType::Out, portIndexOut, *connection);
 
   // trigger data propagation
-  nodeOut->onDataUpdated(portIndexOut);
+  nodeOut.onDataUpdated(portIndexOut);
 
   // after this function connection points are set to node port
   connection->setGraphicsObject(std::move(cgo));
@@ -112,40 +112,41 @@ restoreConnection(Properties const &p)
   p.get("in_index", &portIndexIn);
   p.get("out_index", &portIndexOut);
 
-  auto nodeIn  = _nodes[nodeInId];
-  auto nodeOut = _nodes[nodeOutId];
+  auto nodeIn  = _nodes[nodeInId].get();
+  auto nodeOut = _nodes[nodeOutId].get();
 
-  return createConnection(nodeIn, portIndexIn, nodeOut, portIndexOut);
+  return createConnection(*nodeIn, portIndexIn, *nodeOut, portIndexOut);
 }
 
 
 void
 FlowScene::
-deleteConnection(std::shared_ptr<Connection> connection)
+deleteConnection(Connection& connection)
 {
-  connectionDeleted(*connection);
-  connection->removeFromNodes();
-  _connections.erase(connection->id());
+  connectionDeleted(connection);
+  connection.removeFromNodes();
+  _connections.erase(connection.id());
 }
 
 
-std::shared_ptr<Node>
+Node&
 FlowScene::
 createNode(std::unique_ptr<NodeDataModel> && dataModel)
 {
-  auto node = std::make_shared<Node>(std::move(dataModel));
-  auto ngo  = std::make_unique<NodeGraphicsObject>(*this, node);
+  auto node = std::make_unique<Node>(std::move(dataModel));
+  auto ngo  = std::make_unique<NodeGraphicsObject>(*this, *node);
 
   node->setGraphicsObject(std::move(ngo));
 
-  _nodes[node->id()] = node;
+  auto nodePtr = node.get();
+  _nodes[node->id()] = std::move(node);
 
-  nodeCreated(node);
-  return node;
+  nodeCreated(*nodePtr);
+  return *nodePtr;
 }
 
 
-std::shared_ptr<Node>
+Node&
 FlowScene::
 restoreNode(Properties const &p)
 {
@@ -159,51 +160,44 @@ restoreNode(Properties const &p)
     throw std::logic_error(std::string("No registered model with name ") +
                            modelName.toLocal8Bit().data());
 
-  auto node = std::make_shared<Node>(std::move(dataModel));
-  auto ngo  = std::make_unique<NodeGraphicsObject>(*this, node);
+  auto node = std::make_unique<Node>(std::move(dataModel));
+  auto ngo  = std::make_unique<NodeGraphicsObject>(*this, *node);
   node->setGraphicsObject(std::move(ngo));
 
   node->restore(p);
 
-  _nodes[node->id()] = node;
+  auto nodePtr = node.get();
+  _nodes[node->id()] = std::move(node);
 
-  nodeCreated(node);
-  return node;
+  nodeCreated(*nodePtr);
+  return *nodePtr;
 }
 
 
 void
 FlowScene::
-removeNode(std::shared_ptr<Node> node)
+removeNode(Node& node)
 {
+  // call signal
   nodeDeleted(node);
 
   auto deleteConnections = [&node, this] (PortType portType)
   {
-    auto nodeState = node->nodeState();
+    auto nodeState = node.nodeState();
     auto const & nodeEntries = nodeState.getEntries(portType);
 
     for (auto &connections : nodeEntries)
     {
       for (auto const &pair : connections)
-        deleteConnection(pair.second);
+        deleteConnection(*pair.second);
     }
   };
 
   deleteConnections(PortType::In);
   deleteConnections(PortType::Out);
 
-  _nodes.erase(node->id());
+  _nodes.erase(node.id());
 }
-
-
-void
-FlowScene::
-removeConnection(std::shared_ptr<Connection> conn)
-{
-  deleteConnection(conn);
-}
-
 
 DataModelRegistry&
 FlowScene::
@@ -347,7 +341,7 @@ load()
 
 //------------------------------------------------------------------------------
 
-std::shared_ptr<Node>
+Node*
 locateNodeAt(QPointF scenePoint, FlowScene &scene,
              QTransform viewTransform)
 {
@@ -369,14 +363,14 @@ locateNodeAt(QPointF scenePoint, FlowScene &scene,
                  return (dynamic_cast<NodeGraphicsObject*>(item) != nullptr);
                });
 
-  std::shared_ptr<Node> resultNode;
+  Node* resultNode = nullptr;
 
   if (!filteredItems.empty())
   {
     QGraphicsItem* graphicsItem = filteredItems.front();
     auto ngo = dynamic_cast<NodeGraphicsObject*>(graphicsItem);
 
-    resultNode = ngo->node().lock();
+    resultNode = &ngo->node();
   }
 
   return resultNode;
