@@ -16,7 +16,7 @@ ConnectionState::
 
 void
 ConnectionState::
-interactWithNode(std::shared_ptr<Node> node)
+interactWithNode(Node* node)
 {
   if (node)
   {
@@ -31,7 +31,7 @@ interactWithNode(std::shared_ptr<Node> node)
 
 void
 ConnectionState::
-setLastHoveredNode(std::shared_ptr<Node> node)
+setLastHoveredNode(Node* node)
 {
   _lastHoveredNode = node;
 }
@@ -41,10 +41,8 @@ void
 ConnectionState::
 resetLastHoveredNode()
 {
-  auto node = _lastHoveredNode.lock();
+  if (_lastHoveredNode)
+    _lastHoveredNode->resetReactionToConnection();
 
-  if (node)
-    node->resetReactionToConnection();
-
-  _lastHoveredNode.reset();
+  _lastHoveredNode = nullptr;
 }

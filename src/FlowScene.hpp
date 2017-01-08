@@ -34,32 +34,29 @@ public:
 
   std::shared_ptr<Connection>
   createConnection(PortType connectedPort,
-                   std::shared_ptr<Node> node,
+                   Node& node,
                    PortIndex portIndex);
 
   std::shared_ptr<Connection>
-  createConnection(std::shared_ptr<Node> nodeIn,
+  createConnection(Node& nodeIn,
                    PortIndex portIndexIn,
-                   std::shared_ptr<Node> nodeOut,
+                   Node& nodeOut,
                    PortIndex portIndexOut);
 
   std::shared_ptr<Connection>
   restoreConnection(Properties const &p);
 
   void
-  deleteConnection(std::shared_ptr<Connection> connection);
+  deleteConnection(Connection& connection);
 
-  std::shared_ptr<Node>
+  Node&
   createNode(std::unique_ptr<NodeDataModel> && dataModel);
 
-  std::shared_ptr<Node>
+  Node&
   restoreNode(Properties const &p);
 
   void
-  removeNode(std::shared_ptr<Node> node);
-
-  void
-  removeConnection(std::shared_ptr<Connection> connection);
+  removeNode(Node& node);
 
   DataModelRegistry&
   registry();
@@ -77,25 +74,25 @@ public:
 
 signals:
   void
-  nodeCreated(const std::shared_ptr<Node>& n);
+  nodeCreated(Node &n);
   void
-  nodeDeleted(const std::shared_ptr<Node>& n);
+  nodeDeleted(Node &n);
 
   void
-  connectionCreated(Connection& c);
+  connectionCreated(Connection &c);
   void
-  connectionDeleted(Connection& c);
+  connectionDeleted(Connection &c);
 
 private:
 
   using SharedConnection = std::shared_ptr<Connection>;
-  using SharedNode       = std::shared_ptr<Node>;
+  using UniqueNode       = std::unique_ptr<Node>;
 
   std::unordered_map<QUuid, SharedConnection> _connections;
-  std::unordered_map<QUuid, SharedNode>       _nodes;
+  std::unordered_map<QUuid, UniqueNode>       _nodes;
   std::shared_ptr<DataModelRegistry>          _registry;
 };
 
-std::shared_ptr<Node>
+Node*
 locateNodeAt(QPointF scenePoint, FlowScene &scene,
              QTransform viewTransform);

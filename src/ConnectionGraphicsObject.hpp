@@ -22,14 +22,14 @@ class ConnectionGraphicsObject
 public:
 
   ConnectionGraphicsObject(FlowScene &scene,
-                           std::shared_ptr<Connection> &connection);
+                           Connection &connection);
 
   virtual
   ~ConnectionGraphicsObject();
 
 public:
 
-  std::weak_ptr<Connection>&
+  Connection&
   connection();
 
   QRectF
@@ -76,5 +76,5 @@ private:
 
   FlowScene & _scene;
 
-  std::weak_ptr<Connection> _connection;
+  Connection& _connection;
 };
