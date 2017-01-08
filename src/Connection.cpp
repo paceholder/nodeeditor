@@ -4,7 +4,7 @@
 #include <math.h>
 
 #include <QtWidgets/QtWidgets>
-#include <qcompilerdetection.h>
+#include <QtGlobal>
 
 #include "Node.hpp"
 #include "FlowScene.hpp"
