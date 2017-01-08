@@ -41,7 +41,7 @@ public:
 
   void setLastHoveredNode(Node* node);
 
-  Node* const
+  Node*
   lastHoveredNode() const
   { return _lastHoveredNode; }
 
