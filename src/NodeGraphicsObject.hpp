@@ -21,12 +21,13 @@ class NodeGraphicsObject : public QGraphicsObject
 
 public:
   NodeGraphicsObject(FlowScene &scene,
-                     const std::shared_ptr<Node>& node);
+                     Node& node);
+
 
   virtual
   ~NodeGraphicsObject();
 
-  std::weak_ptr<Node>&
+  Node&
   node();
 
   QRectF
@@ -75,7 +76,7 @@ private:
 
   FlowScene & _scene;
 
-  std::weak_ptr<Node> _node;
+  Node& _node;
 
   // either nullptr or owned by parent QGraphicsItem
   QGraphicsProxyWidget * _proxyWidget;

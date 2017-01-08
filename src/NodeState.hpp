@@ -30,7 +30,7 @@ public:
 public:
 
   using ConnectionPtrSet =
-          std::unordered_map<QUuid, std::shared_ptr<Connection> >;
+          std::unordered_map<QUuid, Connection*>;
 
   /// Returns vector of connections ID.
   /// Some of them can be empty (null)
@@ -46,7 +46,7 @@ public:
   void
   setConnection(PortType portType,
                 PortIndex portIndex,
-                std::shared_ptr<Connection> connection);
+                Connection& connection);
 
   void
   eraseConnection(PortType portType,
