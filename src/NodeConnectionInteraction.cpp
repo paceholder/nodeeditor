@@ -29,13 +29,7 @@ canConnect(PortIndex &portIndex) const
     return false;
   }
 
-  // 3) Node port is vacant
-
-  // port should be empty
-  if (!nodePortIsEmpty(requiredPort, portIndex))
-    return false;
-
-  // 4) Connection type == node port type (not implemented yet)
+  // 3) Connection type == node port type (not implemented yet)
 
   auto connectionDataType = _connection->dataType();
 
