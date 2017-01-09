@@ -31,8 +31,9 @@ canConnect(PortIndex &portIndex) const
 
   // 3) Node port is vacant
 
-  // port should be empty
-  if (!nodePortIsEmpty(requiredPort, portIndex))
+  // port should be empty --depending on the policy
+  auto nodePolicy = _node->nodeDataModel()->nodeConnectionPolicy(requiredPort, portIndex);
+  if (nodePolicy == NodeDataModel::One && !nodePortIsEmpty(requiredPort, portIndex))
     return false;
 
   // 4) Connection type == node port type (not implemented yet)

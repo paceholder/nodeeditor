@@ -115,7 +115,7 @@ drawConnectionPoints(QPainter* painter,
       double r = 1.0;
       if (state.isReacting() &&
           (state.getEntries(portType)[i].empty() ||
-           portType == PortType::Out) &&
+           model->nodeConnectionPolicy(portType, i) == NodeDataModel::Many) &&
           portType == state.reactingPortType())
       {
 
