@@ -114,6 +114,8 @@ drawConnectionPoints(QPainter* painter,
 
       double r = 1.0;
       if (state.isReacting() &&
+          (state.getEntries(portType)[i].empty() ||
+           portType == PortType::Out) &&
           portType == state.reactingPortType())
       {
 

@@ -20,7 +20,8 @@ public:
   /// Can connect when following conditions are met:
   /// 1) Connection 'requires' a port
   /// 2) Connection's vacant end is above the node port
-  /// 3) Connection type equals node port type
+  /// 3) Node port is vacant
+  /// 4) Connection type equals node port type
   bool canConnect(PortIndex &portIndex) const;
 
   /// 1) Check conditions from 'canConnect'
