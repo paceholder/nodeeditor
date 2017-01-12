@@ -34,18 +34,18 @@ public:
     {
       case PortType::In:
         if (portIndex == 0)
-          return "Dividend";
+          return QString("Dividend");
         else if (portIndex == 1)
-          return "Divisor";
+          return QString("Divisor");
         break;
 
       case PortType::Out:
-        return "Result";
+        return QString("Result");
 
       default:
         break;
     }
-  return "";
+	return QString("");
   }
   
   QString

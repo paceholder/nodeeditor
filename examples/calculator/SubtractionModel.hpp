@@ -35,18 +35,18 @@ public:
     {
     case PortType::In:
       if (portIndex == 0)
-        return "Minuend";
+        return QString("Minuend");
       else if (portIndex == 1)
-        return "Subtrahend";
+        return QString("Subtrahend");
       break;
 
     case PortType::Out:
-      return "Result";
+      return QString("Result");
 
     default:
       break;
     }
-    return "";
+	return QString("");
   }
 
   QString
