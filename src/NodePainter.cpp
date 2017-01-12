@@ -271,7 +271,12 @@ drawEntryLabels(QPainter * painter,
       else
         painter->setPen(nodeStyle.FontColor);
 
-      QString s = model->dataType(portType, i).name;
+      QString s;
+
+      if (model->portCaptionVisible(portType, i))
+        s = model->portCaption(portType, i);
+      else
+        s = model->dataType(portType, i).name;
 
       auto rect = metrics.boundingRect(s);
 

@@ -24,6 +24,31 @@ public:
   caption() const override
   { return QString("Subtraction"); }
 
+  virtual bool
+  portCaptionVisible(PortType portType, PortIndex portIndex) const override
+  { return true; }
+
+  virtual QString
+  portCaption(PortType portType, PortIndex portIndex) const override
+  {
+    switch (portType)
+    {
+    case PortType::In:
+      if (portIndex == 0)
+        return QString("Minuend");
+      else if (portIndex == 1)
+        return QString("Subtrahend");
+      break;
+
+    case PortType::Out:
+      return QString("Result");
+
+    default:
+      break;
+    }
+	return QString("");
+  }
+
   QString
   name() const override
   { return QString("Subtraction"); }

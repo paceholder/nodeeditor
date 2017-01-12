@@ -22,7 +22,32 @@ public:
   QString
   caption() const override
   { return QString("Division"); }
+  
+  virtual bool
+  portCaptionVisible(PortType portType, PortIndex portIndex) const override
+  { return true; }
 
+  virtual QString
+  portCaption(PortType portType, PortIndex portIndex) const override
+  {
+    switch (portType)
+    {
+      case PortType::In:
+        if (portIndex == 0)
+          return QString("Dividend");
+        else if (portIndex == 1)
+          return QString("Divisor");
+        break;
+
+      case PortType::Out:
+        return QString("Result");
+
+      default:
+        break;
+    }
+	return QString("");
+  }
+  
   QString
   name() const override
   { return QString("Division"); }
