@@ -175,8 +175,19 @@ Node::
 propagateData(std::shared_ptr<NodeData> nodeData,
               PortIndex inPortIndex) const
 {
+  bool validBefore = _nodeDataModel->isValid();
+
   _nodeDataModel->setInData(nodeData, inPortIndex);
 
+  bool validAfter = _nodeDataModel->isValid();
+
+  if (validBefore != validAfter)
+  {
+    _nodeGraphicsObject->setGeometryChanged();
+    _nodeGeometry.recalculateSize();
+    _nodeGraphicsObject->update();
+    _nodeGraphicsObject->moveConnections();
+  }
 }
 
 

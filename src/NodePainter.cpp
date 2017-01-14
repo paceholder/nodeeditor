@@ -40,6 +40,8 @@ paint(QPainter* painter,
   drawEntryLabels(painter, geom, state, model);
 
   drawResizeRect(painter, geom, model);
+
+  drawErrorRect(painter, geom, model);
 }
 
 
@@ -274,9 +276,13 @@ drawEntryLabels(QPainter * painter,
       QString s;
 
       if (model->portCaptionVisible(portType, i))
+      {
         s = model->portCaption(portType, i);
+      }
       else
+      {
         s = model->dataType(portType, i).name;
+      }
 
       auto rect = metrics.boundingRect(s);
 
@@ -317,5 +323,45 @@ drawResizeRect(QPainter * painter,
     painter->setBrush(Qt::gray);
 
     painter->drawEllipse(geom.resizeRect());
+  }
+}
+
+void
+NodePainter::
+drawErrorRect(QPainter * painter,
+               NodeGeometry const & geom,
+               NodeDataModel* const model)
+{
+  if (!model->isValid())
+  {
+    //Drawing the red background
+    painter->setBrush(Qt::red);
+
+    double const radius = 3.0;
+
+    NodeStyle const& nodeStyle = StyleCollection::nodeStyle();
+
+    float diam = nodeStyle.ConnectionPointDiameter;
+
+    QRectF    boundary(0.0, geom.height() - geom.errorHeight(), geom.width(), geom.errorHeight());
+    QMarginsF m(diam, diam, diam, diam);
+    
+    painter->drawRoundedRect(boundary.marginsAdded(m), radius, radius);
+
+    //Drawing the error message itself
+    QString const &errorMsg = model->errorMessage();
+
+    QFont f = painter->font();
+    
+    QFontMetrics metrics(f);
+
+    auto rect = metrics.boundingRect(errorMsg);
+
+    QPointF position((geom.width() - rect.width()) / 2.0,
+      geom.height() - (geom.errorHeight() - diam) / 2.0);
+
+    painter->setFont(f);
+    painter->setPen(nodeStyle.FontColor);
+    painter->drawText(position, errorMsg);
   }
 }

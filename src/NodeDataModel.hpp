@@ -74,6 +74,14 @@ public:
   virtual
   bool
   resizable() const { return false; }
+  
+  virtual
+  bool
+  isValid() const { return true; }
+
+  virtual
+  QString
+  errorMessage() const { return QString(""); }
 
 signals:
 

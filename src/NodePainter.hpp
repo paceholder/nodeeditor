@@ -62,4 +62,10 @@ public:
   drawResizeRect(QPainter* painter,
                  NodeGeometry const& geom,
                  NodeDataModel* const model);
+  
+  static
+  void
+  drawErrorRect(QPainter * painter,
+                NodeGeometry const & geom,
+                NodeDataModel* const model);
 };

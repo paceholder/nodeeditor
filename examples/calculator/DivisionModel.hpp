@@ -13,6 +13,9 @@
 /// In this example it has no logic.
 class DivisionModel : public MathOperationDataModel
 {
+private:
+  bool isModelValid = true;
+  QString modelValidationError = QString("");
 public:
 
   virtual
@@ -45,7 +48,7 @@ public:
       default:
         break;
     }
-	return QString("");
+	  return QString("");
   }
   
   QString
@@ -56,6 +59,14 @@ public:
   clone() const override
   { return std::make_unique<DivisionModel>(); }
 
+  virtual
+  bool
+  isValid() const { return isModelValid; }
+
+  virtual
+  QString
+  errorMessage() const { return modelValidationError; }
+
 public:
 
   void
@@ -65,7 +76,13 @@ public:
   }
 
 private:
-
+  void
+  setValidationState(bool isValid, const QString &msg)
+  {
+    isModelValid = isValid;
+    modelValidationError = msg;
+  }
+  
   void
   compute() override
   {
@@ -74,14 +91,24 @@ private:
     auto n1 = _number1.lock();
     auto n2 = _number2.lock();
 
-    if (n1 && n2 && (n2->number() != 0.0))
+    if (n2 && (n2->number() == 0.0))
     {
-      _result = std::make_shared<NumberData>(n1->number() /
-                                             n2->number());
+      setValidationState(false, 
+        QString("Division by zero error"));
     }
     else
     {
-      _result.reset();
+      setValidationState(true,
+        QString(""));
+      if (n1 && n2 && (n2->number() != 0.0))
+      {
+        _result = std::make_shared<NumberData>(n1->number() /
+          n2->number());
+      }
+      else
+      {
+        _result.reset();
+      }
     }
 
     emit dataUpdated(outPortIndex);
