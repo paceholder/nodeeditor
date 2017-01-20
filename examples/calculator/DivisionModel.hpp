@@ -48,7 +48,7 @@ public:
       default:
         break;
     }
-	  return QString("");
+    return QString("");
   }
   
   QString
@@ -59,13 +59,13 @@ public:
   clone() const override
   { return std::make_unique<DivisionModel>(); }
 
-  virtual
   bool
-  isValid() const { return isModelValid; }
+  isValid() const override 
+  { return isModelValid; }
 
-  virtual
   QString
-  errorMessage() const { return modelValidationError; }
+  errorMessage() const override
+  { return modelValidationError; }
 
 public:
 
@@ -76,13 +76,7 @@ public:
   }
 
 private:
-  void
-  setValidationState(bool isValid, const QString &msg)
-  {
-    isModelValid = isValid;
-    modelValidationError = msg;
-  }
-  
+
   void
   compute() override
   {
@@ -93,14 +87,14 @@ private:
 
     if (n2 && (n2->number() == 0.0))
     {
-      setValidationState(false, 
-        QString("Division by zero error"));
+      isModelValid = false;
+      modelValidationError = QString("Division by zero error");
     }
     else
     {
-      setValidationState(true,
-        QString(""));
-      if (n1 && n2 && (n2->number() != 0.0))
+      isModelValid = true;
+      modelValidationError = QString("");
+      if (n1 && n2)
       {
         _result = std::make_shared<NumberData>(n1->number() /
           n2->number());
