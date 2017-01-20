@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <tuple>
 #include <memory>
+#include <functional>
 
 #include "Connection.hpp"
 #include "Export.hpp"
@@ -63,6 +64,9 @@ public:
 
   void
   setRegistry(std::shared_ptr<DataModelRegistry> registry);
+
+  void
+  iterateOverNodes(std::function<void(Node*)> visitor);
 
 public:
 
