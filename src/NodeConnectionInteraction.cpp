@@ -186,6 +186,7 @@ nodePortIsEmpty(PortType portType, PortIndex portIndex) const
 
   auto const & entries = nodeState.getEntries(portType);
 
-  return (portType == PortType::Out) ||
+  auto ncp = _node->nodeDataModel()->nodeConnectionPolicy(portType, portIndex);
+  return (ncp == NodeDataModel::Many) ||
          (entries[portIndex].empty());
 }

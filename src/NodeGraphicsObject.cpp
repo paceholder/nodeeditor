@@ -191,7 +191,8 @@ mousePressEvent(QGraphicsSceneMouseEvent * event)
         nodeState.connections(portToCheck, portIndex);
 
       // start dragging existing connection
-      if (!connections.empty() && portToCheck == PortType::In)
+      auto ncp = _node.nodeDataModel()->nodeConnectionPolicy(portToCheck, portIndex);
+      if (!connections.empty() && ncp == NodeDataModel::One)
       {
         auto con = connections.begin()->second;
 
