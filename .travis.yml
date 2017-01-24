@@ -32,7 +32,7 @@ matrix:
 
 before_install:
   #- if [ "$QT_BASE" = "54" ]; then sudo add-apt-repository ppa:beineri/opt-qt542-trusty -y; fi
-  - if [ "$QT_BASE" = "57" ]; then sudo add-apt-repository ppa:beineri/opt-qt57-trusty -y; fi
+  - if [ "$QT_BASE" = "57" ]; then sudo add-apt-repository ppa:beineri/opt-qt571-trusty -y; fi
   - sudo apt-get update -qq
 
 install:
