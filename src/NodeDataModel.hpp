@@ -10,6 +10,13 @@
 
 #include "Export.hpp"
 
+enum class NodeValidationState
+{
+  Valid,
+  Warning,
+  Error
+};
+
 class NODE_EDITOR_PUBLIC NodeDataModel
   : public QObject
   , public Serializable
@@ -76,12 +83,12 @@ public:
   resizable() const { return false; }
   
   virtual
-  bool
-  isValid() const { return true; }
+  NodeValidationState
+  validationState() const { return NodeValidationState::Valid; }
 
   virtual
   QString
-  errorMessage() const { return QString(""); }
+  validationMessage() const { return QString(""); }
 
 signals:
 

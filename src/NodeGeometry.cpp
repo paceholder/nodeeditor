@@ -90,10 +90,10 @@ recalculateSize() const
 
   _width = std::max(_width, captionWidth());
 
-  if (!_dataModel->isValid())
+  if (_dataModel->validationState() != NodeValidationState::Valid)
   {
-    _width = std::max(_width, errorWidth());
-    _height += errorHeight() + _spacing;
+    _width = std::max(_width, validationWidth());
+    _height += validationHeight() + _spacing;
   }
 }
 
@@ -219,7 +219,11 @@ widgetPosition() const
 {
   if (auto w = _dataModel->embeddedWidget())
   {
-
+    if (_dataModel->validationState() != NodeValidationState::Valid)
+    {
+      return QPointF(_spacing + portWidth(PortType::In),
+                     (captionHeight() + _height - validationHeight() - _spacing - w->height()) / 2.0);
+    }
     return QPointF(_spacing + portWidth(PortType::In),
                    (captionHeight() + _height - w->height()) / 2.0);
   }
@@ -256,9 +260,9 @@ captionWidth() const
 
 unsigned int
 NodeGeometry::
-errorHeight() const
+validationHeight() const
 {
-  QString msg = _dataModel->errorMessage();
+  QString msg = _dataModel->validationMessage();
 
   return _boldFontMetrics.boundingRect(msg).height();
 }
@@ -266,9 +270,9 @@ errorHeight() const
 
 unsigned int
 NodeGeometry::
-errorWidth() const
+validationWidth() const
 {
-  QString msg = _dataModel->errorMessage();
+  QString msg = _dataModel->validationMessage();
 
   return _boldFontMetrics.boundingRect(msg).width();
 }

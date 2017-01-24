@@ -53,3 +53,17 @@ setInData(std::shared_ptr<NodeData> data, PortIndex portIndex)
 }
 
 
+NodeValidationState
+MathOperationDataModel::
+validationState() const
+{
+  return modelValidationState;
+}
+
+
+QString
+MathOperationDataModel::
+validationMessage() const
+{
+  return modelValidationError;
+}

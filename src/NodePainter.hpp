@@ -65,7 +65,8 @@ public:
   
   static
   void
-  drawErrorRect(QPainter * painter,
-                NodeGeometry const & geom,
-                NodeDataModel* const model);
+  drawValidationRect(QPainter * painter,
+                     NodeGeometry const & geom,
+                     NodeDataModel* const model,
+                     NodeGraphicsObject const & graphicsObject);
 };

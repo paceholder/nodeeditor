@@ -77,11 +77,15 @@ private:
 
     if (n1 && n2)
     {
+      modelValidationState = NodeValidationState::Valid;
+      modelValidationError = QString("");
       _result = std::make_shared<NumberData>(n1->number() -
                                              n2->number());
     }
     else
     {
+      modelValidationState = NodeValidationState::Warning;
+      modelValidationError = QString("Missing or incorrect inputs");
       _result.reset();
     }
 

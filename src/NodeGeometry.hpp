@@ -103,10 +103,10 @@ public:
   widgetPosition() const;
 
   unsigned int
-  errorHeight() const;
+  validationHeight() const;
 
   unsigned int
-  errorWidth() const;
+  validationWidth() const;
 
 private:
 

@@ -13,9 +13,6 @@
 /// In this example it has no logic.
 class DivisionModel : public MathOperationDataModel
 {
-private:
-  bool isModelValid = true;
-  QString modelValidationError = QString("");
 public:
 
   virtual
@@ -59,14 +56,6 @@ public:
   clone() const override
   { return std::make_unique<DivisionModel>(); }
 
-  bool
-  isValid() const override 
-  { return isModelValid; }
-
-  QString
-  errorMessage() const override
-  { return modelValidationError; }
-
 public:
 
   void
@@ -87,24 +76,24 @@ private:
 
     if (n2 && (n2->number() == 0.0))
     {
-      isModelValid = false;
+      modelValidationState = NodeValidationState::Error;
       modelValidationError = QString("Division by zero error");
+      _result.reset();
+    }
+    else if (n1 && n2)
+    {
+      modelValidationState = NodeValidationState::Valid;
+      modelValidationError = QString("");
+      _result = std::make_shared<NumberData>(n1->number() /
+        n2->number());
     }
     else
     {
-      isModelValid = true;
-      modelValidationError = QString("");
-      if (n1 && n2)
-      {
-        _result = std::make_shared<NumberData>(n1->number() /
-          n2->number());
-      }
-      else
-      {
-        _result.reset();
-      }
+      modelValidationState = NodeValidationState::Warning;
+      modelValidationError = QString("Missing or incorrect inputs");
+      _result.reset();
     }
-
+    
     emit dataUpdated(outPortIndex);
   }
 };
