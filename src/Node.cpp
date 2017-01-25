@@ -176,7 +176,12 @@ propagateData(std::shared_ptr<NodeData> nodeData,
               PortIndex inPortIndex) const
 {
   _nodeDataModel->setInData(nodeData, inPortIndex);
-
+  
+  //Recalculate the nodes visuals. A data change can result in the node taking more space than before, so this forces a recalculate+repaint on the affected node
+  _nodeGraphicsObject->setGeometryChanged();
+  _nodeGeometry.recalculateSize();
+  _nodeGraphicsObject->update();
+  _nodeGraphicsObject->moveConnections();
 }
 
 

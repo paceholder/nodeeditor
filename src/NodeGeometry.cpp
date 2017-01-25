@@ -89,6 +89,12 @@ recalculateSize() const
   }
 
   _width = std::max(_width, captionWidth());
+
+  if (_dataModel->validationState() != NodeValidationState::Valid)
+  {
+    _width = std::max(_width, validationWidth());
+    _height += validationHeight() + _spacing;
+  }
 }
 
 
@@ -213,7 +219,11 @@ widgetPosition() const
 {
   if (auto w = _dataModel->embeddedWidget())
   {
-
+    if (_dataModel->validationState() != NodeValidationState::Valid)
+    {
+      return QPointF(_spacing + portWidth(PortType::In),
+                     (captionHeight() + _height - validationHeight() - _spacing - w->height()) / 2.0);
+    }
     return QPointF(_spacing + portWidth(PortType::In),
                    (captionHeight() + _height - w->height()) / 2.0);
   }
@@ -250,6 +260,26 @@ captionWidth() const
 
 unsigned int
 NodeGeometry::
+validationHeight() const
+{
+  QString msg = _dataModel->validationMessage();
+
+  return _boldFontMetrics.boundingRect(msg).height();
+}
+
+
+unsigned int
+NodeGeometry::
+validationWidth() const
+{
+  QString msg = _dataModel->validationMessage();
+
+  return _boldFontMetrics.boundingRect(msg).width();
+}
+
+
+unsigned int
+NodeGeometry::
 portWidth(PortType portType) const
 {
   unsigned width = 0;
@@ -259,9 +289,13 @@ portWidth(PortType portType) const
     QString name;
 	
     if (_dataModel->portCaptionVisible(portType, i))
+    {
       name = _dataModel->portCaption(portType, i);
+    }
     else
+    {
       name = _dataModel->dataType(portType, i).name;
+    }
 
     width = std::max(unsigned(_fontMetrics.width(name)),
                      width);

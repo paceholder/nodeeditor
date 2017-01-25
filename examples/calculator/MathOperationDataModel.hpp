@@ -32,6 +32,10 @@ public:
 
   QWidget * embeddedWidget() override { return nullptr; }
 
+  NodeValidationState validationState() const override;
+
+  QString validationMessage() const override;
+
 protected:
 
   virtual void compute() = 0;
@@ -42,4 +46,7 @@ protected:
   std::weak_ptr<NumberData> _number2;
 
   std::shared_ptr<NumberData> _result;
+
+  NodeValidationState modelValidationState = NodeValidationState::Warning;
+  QString modelValidationError = QString("Missing or incorrect inputs");
 };

@@ -62,4 +62,11 @@ public:
   drawResizeRect(QPainter* painter,
                  NodeGeometry const& geom,
                  NodeDataModel* const model);
+  
+  static
+  void
+  drawValidationRect(QPainter * painter,
+                     NodeGeometry const & geom,
+                     NodeDataModel* const model,
+                     NodeGraphicsObject const & graphicsObject);
 };

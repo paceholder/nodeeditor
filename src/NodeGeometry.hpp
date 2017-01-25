@@ -102,6 +102,12 @@ public:
   QPointF
   widgetPosition() const;
 
+  unsigned int
+  validationHeight() const;
+
+  unsigned int
+  validationWidth() const;
+
 private:
 
   unsigned int

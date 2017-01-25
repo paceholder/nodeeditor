@@ -58,12 +58,32 @@ setInData(std::shared_ptr<NodeData> data, int)
 
   if (numberData)
   {
+    modelValidationState = NodeValidationState::Valid;
+    modelValidationError = QString("");
     _label->setText(numberData->numberAsText());
   }
   else
   {
+    modelValidationState = NodeValidationState::Warning;
+    modelValidationError = QString("Missing or incorrect inputs");
     _label->clear();
   }
 
   _label->adjustSize();
+}
+
+
+NodeValidationState
+NumberDisplayDataModel::
+validationState() const
+{
+  return modelValidationState;
+}
+
+
+QString
+NumberDisplayDataModel::
+validationMessage() const
+{
+  return modelValidationError;
 }

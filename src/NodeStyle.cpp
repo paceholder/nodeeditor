@@ -117,6 +117,8 @@ loadJsonFromByteArray(QByteArray const &byteArray)
   NODE_STYLE_READ_COLOR(obj, FontColorFaded);
   NODE_STYLE_READ_COLOR(obj, ConnectionPointColor);
   NODE_STYLE_READ_COLOR(obj, FilledConnectionPointColor);
+  NODE_STYLE_READ_COLOR(obj, WarningColor);
+  NODE_STYLE_READ_COLOR(obj, ErrorColor);
 
   NODE_STYLE_READ_FLOAT(obj, PenWidth);
   NODE_STYLE_READ_FLOAT(obj, HoveredPenWidth);

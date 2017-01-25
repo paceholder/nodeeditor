@@ -40,6 +40,8 @@ paint(QPainter* painter,
   drawEntryLabels(painter, geom, state, model);
 
   drawResizeRect(painter, geom, model);
+
+  drawValidationRect(painter, geom, model, graphicsObject);
 }
 
 
@@ -274,9 +276,13 @@ drawEntryLabels(QPainter * painter,
       QString s;
 
       if (model->portCaptionVisible(portType, i))
+      {
         s = model->portCaption(portType, i);
+      }
       else
+      {
         s = model->dataType(portType, i).name;
+      }
 
       auto rect = metrics.boundingRect(s);
 
@@ -317,5 +323,71 @@ drawResizeRect(QPainter * painter,
     painter->setBrush(Qt::gray);
 
     painter->drawEllipse(geom.resizeRect());
+  }
+}
+
+void
+NodePainter::
+drawValidationRect(QPainter * painter,
+                   NodeGeometry const & geom,
+                   NodeDataModel* const model,
+                   NodeGraphicsObject const & graphicsObject)
+{
+  auto modelValidationState = model->validationState();
+  if (modelValidationState != NodeValidationState::Valid)
+  {
+    NodeStyle const& nodeStyle = StyleCollection::nodeStyle();
+
+    auto color = graphicsObject.isSelected()
+      ? nodeStyle.SelectedBoundaryColor
+      : nodeStyle.NormalBoundaryColor;
+
+    if (geom.hovered())
+    {
+      QPen p(color, nodeStyle.HoveredPenWidth);
+      painter->setPen(p);
+    }
+    else
+    {
+      QPen p(color, nodeStyle.PenWidth);
+      painter->setPen(p);
+    }
+
+    //Drawing the validation message background
+    if (modelValidationState == NodeValidationState::Error)
+    {
+      painter->setBrush(nodeStyle.ErrorColor);
+    }
+    else
+    {
+      painter->setBrush(nodeStyle.WarningColor);
+    }
+
+    double const radius = 3.0;
+    
+    float diam = nodeStyle.ConnectionPointDiameter;
+
+    QRectF    boundary(0.0, geom.height() - geom.validationHeight(), geom.width(), geom.validationHeight());
+    QMarginsF m(diam, diam, diam, diam);
+    
+    painter->drawRoundedRect(boundary.marginsAdded(m), radius, radius);
+
+    painter->setBrush(Qt::gray);
+
+    //Drawing the validation message itself
+    QString const &errorMsg = model->validationMessage();
+
+    QFont f = painter->font();
+    
+    QFontMetrics metrics(f);
+
+    auto rect = metrics.boundingRect(errorMsg);
+
+    QPointF position((geom.width() - rect.width()) / 2.0,
+      geom.height() - (geom.validationHeight() - diam) / 2.0);
+
+    painter->setFont(f);
+    painter->setPen(nodeStyle.FontColor);
+    painter->drawText(position, errorMsg);
   }
 }

@@ -44,6 +44,9 @@ public:
   QColor ConnectionPointColor;
   QColor FilledConnectionPointColor;
 
+  QColor WarningColor;
+  QColor ErrorColor;
+
   float PenWidth;
   float HoveredPenWidth;
 

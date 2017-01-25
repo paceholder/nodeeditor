@@ -63,7 +63,16 @@ public:
   QWidget *
   embeddedWidget() override { return _label; }
 
+  NodeValidationState 
+  validationState() const override;
+
+  QString 
+  validationMessage() const override;
+
 private:
+
+  NodeValidationState modelValidationState = NodeValidationState::Warning;
+  QString modelValidationError = QString("Missing or incorrect inputs");
 
   QLabel * _label;
 };

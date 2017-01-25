@@ -45,7 +45,7 @@ public:
       default:
         break;
     }
-	return QString("");
+    return QString("");
   }
   
   QString
@@ -74,16 +74,26 @@ private:
     auto n1 = _number1.lock();
     auto n2 = _number2.lock();
 
-    if (n1 && n2 && (n2->number() != 0.0))
+    if (n2 && (n2->number() == 0.0))
     {
+      modelValidationState = NodeValidationState::Error;
+      modelValidationError = QString("Division by zero error");
+      _result.reset();
+    }
+    else if (n1 && n2)
+    {
+      modelValidationState = NodeValidationState::Valid;
+      modelValidationError = QString("");
       _result = std::make_shared<NumberData>(n1->number() /
-                                             n2->number());
+        n2->number());
     }
     else
     {
+      modelValidationState = NodeValidationState::Warning;
+      modelValidationError = QString("Missing or incorrect inputs");
       _result.reset();
     }
-
+    
     emit dataUpdated(outPortIndex);
   }
 };
