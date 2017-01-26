@@ -56,13 +56,15 @@ contextMenuEvent(QContextMenuEvent *event)
 {
   QMenu modelMenu;
 
+  auto filterActionText = QString("skip me");
+
   auto *txtBox = new QLineEdit(&modelMenu);
   txtBox->setPlaceholderText(QString("Filter"));
   txtBox->setClearButtonEnabled(true);
 
   auto *txtBoxAction = new QWidgetAction(&modelMenu);
   txtBoxAction->setDefaultWidget(txtBox);
-  txtBoxAction->setText(QString("skip me"));
+  txtBoxAction->setText(filterActionText);
 
   modelMenu.addAction(txtBoxAction);
 
@@ -70,7 +72,8 @@ contextMenuEvent(QContextMenuEvent *event)
   {
     for (auto action : modelMenu.actions())
     {
-      if (action->text() != QString("skip me") && !action->text().contains(text, Qt::CaseInsensitive))
+      auto actionText = action->text();
+      if (actionText != filterActionText && !actionText.contains(text, Qt::CaseInsensitive))
       {
         action->setVisible(false);
       }
