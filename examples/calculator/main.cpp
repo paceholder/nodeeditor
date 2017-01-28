@@ -1,6 +1,7 @@
 #include <nodes/NodeData>
 #include <nodes/FlowScene>
 #include <nodes/FlowView>
+#include <nodes/ConnectionStyle>
 
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QVBoxLayout>
@@ -16,6 +17,7 @@
 #include "DivisionModel.hpp"
 #include "ModuloModel.hpp"
 #include "DecimalToIntegerModel.hpp"
+#include "IntegerToDecimalModel.hpp"
 
 static std::shared_ptr<DataModelRegistry>
 registerDataModels()
@@ -37,7 +39,24 @@ registerDataModels()
 
   ret->registerModel<DecimalToIntegerModel, true>();
 
+  ret->registerModel<IntegerToDecimalModel, true>();
+
   return ret;
+}
+
+
+static
+void
+setStyle()
+{
+  ConnectionStyle::setConnectionStyle(
+  R"(
+  {
+    "ConnectionStyle": {
+      "UseDataDefinedColors": true
+    }
+  }
+  )");
 }
 
 
@@ -45,6 +64,8 @@ int
 main(int argc, char *argv[])
 {
   QApplication app(argc, argv);
+
+  setStyle();
 
   QWidget mainWidget;
 

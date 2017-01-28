@@ -60,7 +60,7 @@ public:
   removeNode(Node& node);
 
   DataModelRegistry&
-  registry();
+  registry() const;
 
   void
   setRegistry(std::shared_ptr<DataModelRegistry> registry);

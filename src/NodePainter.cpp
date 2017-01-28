@@ -11,11 +11,13 @@
 #include "NodeState.hpp"
 #include "NodeDataModel.hpp"
 #include "Node.hpp"
+#include "FlowScene.hpp"
 
 void
 NodePainter::
 paint(QPainter* painter,
-      Node& node)
+      Node & node, 
+      FlowScene const& _scene)
 {
   NodeGeometry const& geom = node.nodeGeometry();
 
@@ -31,7 +33,7 @@ paint(QPainter* painter,
 
   auto const &model = node.nodeDataModel();
 
-  drawConnectionPoints(painter, geom, state, model);
+  drawConnectionPoints(painter, geom, state, model, _scene);
 
   drawFilledConnectionPoints(painter, geom, state, model);
 
@@ -94,7 +96,8 @@ NodePainter::
 drawConnectionPoints(QPainter* painter,
                      NodeGeometry const& geom,
                      NodeState const& state,
-                     NodeDataModel* const model)
+                     NodeDataModel* const model,
+                     FlowScene const & _scene)
 {
   NodeStyle const& nodeStyle      = StyleCollection::nodeStyle();
   auto const     &connectionStyle = StyleCollection::connectionStyle();
@@ -118,13 +121,26 @@ drawConnectionPoints(QPainter* painter,
       if (state.isReacting() &&
           (state.getEntries(portType)[i].empty() ||
            portType == PortType::Out) &&
-          portType == state.reactingPortType())
+           portType == state.reactingPortType())
       {
 
         auto   diff = geom.draggingPos() - p;
         double dist = std::sqrt(QPointF::dotProduct(diff, diff));
+        bool   typeConvertable = false;
 
-        if (state.reactingDataType().id == dataType.id)
+        {
+          std::unique_ptr<NodeDataModel> converterModel;
+          if (portType == PortType::In)
+          {
+            typeConvertable = _scene.registry().getTypeConverter(state.reactingDataType().id, dataType.id, converterModel);
+          }
+          else
+          {
+            typeConvertable = _scene.registry().getTypeConverter(dataType.id, state.reactingDataType().id, converterModel);
+          }
+        }
+
+        if (state.reactingDataType().id == dataType.id || typeConvertable)
         {
           double const thres = 40.0;
           r = (dist < thres) ?

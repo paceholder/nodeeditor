@@ -10,6 +10,7 @@ class NodeState;
 class Node;
 class NodeDataModel;
 class FlowItemEntry;
+class FlowScene;
 
 class NodePainter
 {
@@ -22,7 +23,8 @@ public:
   static
   void
   paint(QPainter* painter,
-        Node& node);
+        Node & node,
+        FlowScene const& _scene);
 
   static
   void
@@ -48,7 +50,8 @@ public:
   drawConnectionPoints(QPainter* painter,
                        NodeGeometry const& geom,
                        NodeState const& state,
-                       NodeDataModel* const model);
+                       NodeDataModel* const model,
+                       FlowScene const& _scene);
 
   static
   void
