@@ -7,10 +7,9 @@
 #include "FlowScene.hpp"
 
 NodeConnectionInteraction::
-NodeConnectionInteraction(Node& node, Connection& connection, DataModelRegistry& dataRegistry, FlowScene& scene)
+NodeConnectionInteraction(Node& node, Connection& connection, FlowScene& scene)
   : _node(&node)
   , _connection(&connection)
-  , _dataRegistry(&dataRegistry)
   , _scene(&scene)
 {}
 
@@ -58,9 +57,9 @@ canConnect(PortIndex &portIndex, bool& typeConversionNeeded, std::unique_ptr<Nod
   {
     if (requiredPort == PortType::In)
     {
-      return typeConversionNeeded = _dataRegistry->getTypeConverter(connectionDataType.id, candidateNodeDataType.id, converterModel);
+      return typeConversionNeeded = _scene->registry().getTypeConverter(connectionDataType.id, candidateNodeDataType.id, converterModel);
     }
-    return typeConversionNeeded = _dataRegistry->getTypeConverter(candidateNodeDataType.id, connectionDataType.id, converterModel);
+    return typeConversionNeeded = _scene->registry().getTypeConverter(candidateNodeDataType.id, connectionDataType.id, converterModel);
   }
 
   return true;
@@ -84,18 +83,29 @@ tryConnect() const
   /// 1.5) If the connection is possible but a type conversion is needed, add a converter node to the scene, and connect it properly
   if (typeConversionNeeded)
   {
+    //Determining port types
     PortType requiredPort = connectionRequiredPort();
     PortType connectedPort = requiredPort == PortType::Out ? PortType::In : PortType::Out;
+
+    //Get the node and port from where the connection starts
     auto outNode = _connection->getNode(connectedPort);
     auto outNodePortIndex = _connection->getPortIndex(connectedPort);
+
+    //Creating the converter node
     Node& converterNode = _scene->createNode(std::move(typeConverterModel));
     
+    //Calculating the converter nodes position in the scene. It'll be positioned half way between the two ports that it connects. 
+    //The first line calculates the halfway point between the ports (node position + port position on the node for both nodes averaged).
+    //The second line offsets this coordinate with the size of the converter node, so that the converter nodes center falls on the originally
+    //calculated coordinate, instead of it's upper left corner.
     auto converterNodePos = (outNode->nodeGraphicsObject().pos() + outNode->nodeGeometry().portScenePosition(outNodePortIndex, connectedPort) +
       _node->nodeGraphicsObject().pos() + _node->nodeGeometry().portScenePosition(portIndex, requiredPort)) / 2.0f;
     converterNodePos.setX(converterNodePos.x() - converterNode.nodeGeometry().width() / 2.0f);
     converterNodePos.setY(converterNodePos.y() - converterNode.nodeGeometry().height() / 2.0f);
     converterNode.nodeGraphicsObject().setPos(converterNodePos);
     
+    //Connecting the converter node to the two nodes trhat originally supposed to be connected.
+    //The connection order is different based on if the users connection was started from an input port, or an output port.
     if (requiredPort == PortType::In)
     {
       _scene->createConnection(converterNode, 0, *outNode, outNodePortIndex);
@@ -107,6 +117,7 @@ tryConnect() const
       _scene->createConnection(*outNode, outNodePortIndex, converterNode, 0);
     }
 
+    //Delete the users connection, we already replaced it.
     _scene->deleteConnection(*_connection);
 
     return true;

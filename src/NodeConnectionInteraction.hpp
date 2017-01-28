@@ -16,7 +16,6 @@ class NodeConnectionInteraction
 public:
   NodeConnectionInteraction(Node& node,
                             Connection& connection,
-                            DataModelRegistry& dataRegistry,
                             FlowScene& scene);
 
   /// Can connect when following conditions are met:
@@ -62,8 +61,6 @@ private:
   Node* _node;
 
   Connection* _connection;
-
-  DataModelRegistry* _dataRegistry;
-
+  
   FlowScene* _scene;
 };

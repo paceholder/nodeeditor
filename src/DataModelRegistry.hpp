@@ -41,11 +41,9 @@ public:
 
 public:
 
-  // TODO rewrite the TypeConverter hack to use a constexpr if once C++17 is supported enough. 
-  // (This probably could be done with enable_if, but that would be more redundant, and ugly.)
   template<typename ModelType, bool TypeConverter = false>
   void
-  registerModel(std::unique_ptr<ModelType> uniqueModel = std::make_unique<ModelType>(), bool isTypeConverter = TypeConverter)
+  registerModel(std::unique_ptr<ModelType> uniqueModel = std::make_unique<ModelType>())
   {
     static_assert(std::is_base_of<NodeDataModel, ModelType>::value,
                   "Must pass a subclass of NodeDataModel to registerModel");
@@ -57,12 +55,19 @@ public:
       _registeredModels[name] = std::move(uniqueModel);
     }
 
-    if (isTypeConverter && _registeredTypeConverters.count(name) == 0)
+    if (TypeConverter && _registeredTypeConverters.count(name) == 0)
     {
+      std::unique_ptr<NodeDataModel>& registeredModelRef = _registeredModels[name];
+
+      //Type converter node should have exactly one input and output ports, if thats not the case, we skip the registration
+      if (registeredModelRef->nPorts(PortType::In) != 1 || registeredModelRef->nPorts(PortType::Out) != 1)
+        return;
+
       TypeConverterItemPtr converter = std::make_unique<TypeConverterItem>();
-      converter->Model = _registeredModels[name]->clone();
+      converter->Model = registeredModelRef->clone();
       converter->SourceType = converter->Model->dataType(PortType::In, 0);
       converter->DestinationType = converter->Model->dataType(PortType::Out, 0);
+
       _registeredTypeConverters[name] = std::move(converter);
     }
   }

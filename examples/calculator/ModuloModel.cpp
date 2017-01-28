@@ -56,6 +56,7 @@ outData(PortIndex)
   return _result;
 }
 
+
 void
 ModuloModel::
 setInData(std::shared_ptr<NodeData> data, PortIndex portIndex)

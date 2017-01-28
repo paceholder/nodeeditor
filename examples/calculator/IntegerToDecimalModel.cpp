@@ -59,6 +59,7 @@ outData(PortIndex)
   return _decimal;
 }
 
+
 void
 IntegerToDecimalModel::
 setInData(std::shared_ptr<NodeData> data, PortIndex portIndex)
