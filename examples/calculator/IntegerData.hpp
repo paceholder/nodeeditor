@@ -4,31 +4,31 @@
 
 /// The class can potentially incapsulate any user data which
 /// need to be transferred within the Node Editor graph
-class NumberData : public NodeData
+class IntegerData : public NodeData
 {
 public:
 
-  NumberData()
+  IntegerData()
     : _number(0.0)
   {}
 
-  NumberData(double const number)
+  IntegerData(int const number)
     : _number(number)
   {}
 
   NodeDataType type() const override
   {
-    return NodeDataType {"number",
-                         "Number"};
+    return NodeDataType {"integer",
+                         "Integer"};
   }
 
-  double number() const
+  int number() const
   { return _number; }
 
   QString numberAsText() const
-  { return QString::number(_number, 'f'); }
+  { return QString::number(_number); }
 
 private:
 
-  double _number;
+  int _number;
 };

@@ -8,25 +8,24 @@
 #include <iostream>
 
 class DecimalData;
+class IntegerData;
 
-/// The model dictates the number of inputs and outputs for the Node.
-/// In this example it has no logic.
-class NumberSourceDataModel
+class DecimalToIntegerModel
   : public NodeDataModel
 {
   Q_OBJECT
 
 public:
-  NumberSourceDataModel();
+  DecimalToIntegerModel();
 
   virtual
-  ~NumberSourceDataModel() {}
+  ~DecimalToIntegerModel() {}
 
 public:
 
   QString
   caption() const override
-  { return QString("Number Source"); }
+  { return QString("Decimal to integer"); }
 
   bool
   captionVisible() const override
@@ -34,20 +33,17 @@ public:
 
   QString
   name() const override
-  { return QString("NumberSource"); }
+  { return QString("DecimalToInteger"); }
 
   std::unique_ptr<NodeDataModel>
   clone() const override
-  { return std::make_unique<NumberSourceDataModel>(); }
+  { return std::make_unique<DecimalToIntegerModel>(); }
 
 public:
 
   void
   save(Properties &p) const override;
-
-  void
-  restore(Properties const &p) override;
-
+  
 public:
 
   unsigned int
@@ -60,20 +56,14 @@ public:
   outData(PortIndex port) override;
 
   void
-  setInData(std::shared_ptr<NodeData>, int) override
-  { }
+  setInData(std::shared_ptr<NodeData>, int) override;
 
   QWidget *
-  embeddedWidget() override { return _lineEdit; }
-
-private slots:
-
-  void
-  onTextEdited(QString const &string);
+  embeddedWidget() override { return nullptr; }
 
 private:
 
-  std::shared_ptr<DecimalData> _number;
+  std::shared_ptr<DecimalData> _decimal;
+  std::shared_ptr<IntegerData> _integer;
 
-  QLineEdit * _lineEdit;
 };

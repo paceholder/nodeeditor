@@ -2,7 +2,7 @@
 
 #include <QtGui/QDoubleValidator>
 
-#include "NumberData.hpp"
+#include "DecimalData.hpp"
 
 NumberSourceDataModel::
 NumberSourceDataModel()
@@ -38,7 +38,7 @@ restore(Properties const &p)
 
   if (bool ok = p.get("number", &number))
   {
-    _number = std::make_shared<NumberData>(number);
+    _number = std::make_shared<DecimalData>(number);
     _lineEdit->setText(QString::number(number));
   }
 }
@@ -79,7 +79,7 @@ onTextEdited(QString const &string)
 
   if (ok)
   {
-    _number = std::make_shared<NumberData>(number);
+    _number = std::make_shared<DecimalData>(number);
 
     emit dataUpdated(0);
   }
@@ -94,7 +94,7 @@ NodeDataType
 NumberSourceDataModel::
 dataType(PortType, PortIndex) const
 {
-  return NumberData().type();
+  return DecimalData().type();
 }
 
 

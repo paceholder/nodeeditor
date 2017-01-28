@@ -7,7 +7,7 @@
 
 #include "MathOperationDataModel.hpp"
 
-#include "NumberData.hpp"
+#include "DecimalData.hpp"
 
 /// The model dictates the number of inputs and outputs for the Node.
 /// In this example it has no logic.
@@ -23,11 +23,11 @@ public:
   caption() const override
   { return QString("Division"); }
   
-  virtual bool
+  bool
   portCaptionVisible(PortType portType, PortIndex portIndex) const override
   { return true; }
 
-  virtual QString
+  QString
   portCaption(PortType portType, PortIndex portIndex) const override
   {
     switch (portType)
@@ -84,8 +84,8 @@ private:
     {
       modelValidationState = NodeValidationState::Valid;
       modelValidationError = QString("");
-      _result = std::make_shared<NumberData>(n1->number() /
-        n2->number());
+      _result = std::make_shared<DecimalData>(n1->number() /
+                                              n2->number());
     }
     else
     {

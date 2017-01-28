@@ -195,7 +195,7 @@ mousePressEvent(QGraphicsSceneMouseEvent * event)
       {
         auto con = connections.begin()->second;
 
-        NodeConnectionInteraction interaction(_node, *con);
+        NodeConnectionInteraction interaction(_node, *con, _scene.registry(), _scene);
 
         interaction.disconnect(portToCheck);
       }

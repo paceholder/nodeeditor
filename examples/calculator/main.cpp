@@ -14,6 +14,8 @@
 #include "SubtractionModel.hpp"
 #include "MultiplicationModel.hpp"
 #include "DivisionModel.hpp"
+#include "ModuloModel.hpp"
+#include "DecimalToIntegerModel.hpp"
 
 static std::shared_ptr<DataModelRegistry>
 registerDataModels()
@@ -30,6 +32,10 @@ registerDataModels()
   ret->registerModel<MultiplicationModel>();
 
   ret->registerModel<DivisionModel>();
+
+  ret->registerModel<ModuloModel>();
+
+  ret->registerModel<DecimalToIntegerModel, true>();
 
   return ret;
 }

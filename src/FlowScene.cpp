@@ -80,14 +80,14 @@ createConnection(Node& nodeIn,
 
   nodeIn.nodeState().setConnection(PortType::In, portIndexIn, *connection);
   nodeOut.nodeState().setConnection(PortType::Out, portIndexOut, *connection);
-
-  // trigger data propagation
-  nodeOut.onDataUpdated(portIndexOut);
-
+  
   // after this function connection points are set to node port
   connection->setGraphicsObject(std::move(cgo));
 
   _connections[connection->id()] = connection;
+  
+  // trigger data propagation
+  nodeOut.onDataUpdated(portIndexOut);
 
   connectionCreated(*connection);
   

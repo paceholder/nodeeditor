@@ -7,7 +7,7 @@
 
 #include <iostream>
 
-class NumberData;
+class DecimalData;
 
 /// The model dictates the number of inputs and outputs for the Node.
 /// In this example it has no logic.
@@ -42,10 +42,10 @@ protected:
 
 protected:
 
-  std::weak_ptr<NumberData> _number1;
-  std::weak_ptr<NumberData> _number2;
+  std::weak_ptr<DecimalData> _number1;
+  std::weak_ptr<DecimalData> _number2;
 
-  std::shared_ptr<NumberData> _result;
+  std::shared_ptr<DecimalData> _result;
 
   NodeValidationState modelValidationState = NodeValidationState::Warning;
   QString modelValidationError = QString("Missing or incorrect inputs");
