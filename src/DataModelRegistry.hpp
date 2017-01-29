@@ -59,9 +59,13 @@ public:
     {
       std::unique_ptr<NodeDataModel>& registeredModelRef = _registeredModels[name];
 
-      //Type converter node should have exactly one input and output ports, if thats not the case, we skip the registration
-      if (registeredModelRef->nPorts(PortType::In) != 1 || registeredModelRef->nPorts(PortType::Out) != 1)
+      //Type converter node should have exactly one input and output ports, if thats not the case, we skip the registration.
+      //If the input and output type is the same, we also skip registration, because thats not a typecast node.
+      if (registeredModelRef->nPorts(PortType::In) != 1 || registeredModelRef->nPorts(PortType::Out) != 1 ||
+        registeredModelRef->dataType(PortType::In, 0).id == registeredModelRef->dataType(PortType::Out, 0).id)
+      {
         return;
+      }
 
       TypeConverterItemPtr converter = std::make_unique<TypeConverterItem>();
       converter->Model = registeredModelRef->clone();
