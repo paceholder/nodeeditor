@@ -18,7 +18,7 @@ public:
   ModuloModel();
 
   virtual
-    ~ModuloModel() {}
+  ~ModuloModel() {}
 
 public:
 

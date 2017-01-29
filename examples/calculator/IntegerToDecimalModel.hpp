@@ -19,7 +19,7 @@ public:
   IntegerToDecimalModel();
 
   virtual
-    ~IntegerToDecimalModel() {}
+  ~IntegerToDecimalModel() {}
 
 public:
 
