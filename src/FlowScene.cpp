@@ -80,7 +80,7 @@ createConnection(Node& nodeIn,
 
   nodeIn.nodeState().setConnection(PortType::In, portIndexIn, *connection);
   nodeOut.nodeState().setConnection(PortType::Out, portIndexOut, *connection);
-  
+
   // after this function connection points are set to node port
   connection->setGraphicsObject(std::move(cgo));
   
@@ -88,7 +88,7 @@ createConnection(Node& nodeIn,
   nodeOut.onDataUpdated(portIndexOut);
 
   _connections[connection->id()] = connection;
-  
+
   connectionCreated(*connection);
   
   return connection;
