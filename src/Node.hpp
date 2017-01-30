@@ -5,12 +5,18 @@
 #include <QtCore/QObject>
 #include <QtCore/QUuid>
 
+#include <QtCore/QJsonObject>
+
 #include "PortType.hpp"
 
+#include "Export.hpp"
 #include "NodeState.hpp"
 #include "NodeGeometry.hpp"
 #include "NodeData.hpp"
 #include "Serializable.hpp"
+
+namespace QtNodes
+{
 
 class Connection;
 class ConnectionState;
@@ -107,3 +113,5 @@ private:
 
   std::unique_ptr<NodeGraphicsObject> _nodeGraphicsObject;
 };
+
+}

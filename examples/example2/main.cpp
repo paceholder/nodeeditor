@@ -9,6 +9,10 @@
 #include "TextSourceDataModel.hpp"
 #include "TextDisplayDataModel.hpp"
 
+using QtNodes::DataModelRegistry;
+using QtNodes::FlowView;
+using QtNodes::FlowScene;
+
 static std::shared_ptr<DataModelRegistry>
 registerDataModels()
 {

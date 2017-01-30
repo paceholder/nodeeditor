@@ -7,6 +7,15 @@
 
 #include <memory>
 
+
+using QtNodes::PortType;
+using QtNodes::PortIndex;
+using QtNodes::NodeData;
+using QtNodes::NodeDataType;
+using QtNodes::NodeDataModel;
+using QtNodes::Properties;
+using QtNodes::NodeValidationState;
+
 /// The class can potentially incapsulate any user data which
 /// need to be transferred within the Node Editor graph
 class MyNodeData : public NodeData

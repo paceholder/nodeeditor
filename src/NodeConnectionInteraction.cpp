@@ -6,12 +6,22 @@
 #include "DataModelRegistry.hpp"
 #include "FlowScene.hpp"
 
+using QtNodes::NodeConnectionInteraction;
+using QtNodes::PortType;
+using QtNodes::PortIndex;
+using QtNodes::FlowScene;
+using QtNodes::Node;
+using QtNodes::Connection;
+using QtNodes::NodeDataModel;
+
+
 NodeConnectionInteraction::
 NodeConnectionInteraction(Node& node, Connection& connection, FlowScene& scene)
   : _node(&node)
   , _connection(&connection)
   , _scene(&scene)
 {}
+
 
 bool
 NodeConnectionInteraction::
@@ -46,7 +56,7 @@ canConnect(PortIndex &portIndex, bool& typeConversionNeeded, std::unique_ptr<Nod
   if (!nodePortIsEmpty(requiredPort, portIndex))
     return false;
 
-  // 4) Connection type == node port type, or there is a registered type conversion that can translate between the two
+  // 4) Connection type equals node port type, or there is a registered type conversion that can translate between the two
 
   auto connectionDataType = _connection->dataType();
 

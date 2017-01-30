@@ -4,6 +4,13 @@
 
 #include "Connection.hpp"
 
+using QtNodes::NodeState;
+using QtNodes::NodeDataType;
+using QtNodes::NodeDataModel;
+using QtNodes::PortType;
+using QtNodes::PortIndex;
+using QtNodes::Connection;
+
 NodeState::
 NodeState(std::unique_ptr<NodeDataModel> const &model)
   : _outConnections(model->nPorts(PortType::Out))
@@ -11,8 +18,7 @@ NodeState(std::unique_ptr<NodeDataModel> const &model)
   , _reaction(NOT_REACTING)
   , _reactingPortType(PortType::None)
   , _resizing(false)
-{
-}
+{}
 
 
 std::vector<NodeState::ConnectionPtrSet> const &

@@ -10,6 +10,13 @@
 
 #include "models.hpp"
 
+using QtNodes::DataModelRegistry;
+using QtNodes::FlowScene;
+using QtNodes::FlowView;
+using QtNodes::FlowViewStyle;
+using QtNodes::NodeStyle;
+using QtNodes::ConnectionStyle;
+
 static std::shared_ptr<DataModelRegistry>
 registerDataModels()
 {

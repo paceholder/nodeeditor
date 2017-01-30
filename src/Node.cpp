@@ -12,7 +12,16 @@
 #include "ConnectionGraphicsObject.hpp"
 #include "ConnectionState.hpp"
 
-//------------------------------------------------------------------------------
+using QtNodes::Node;
+using QtNodes::NodeGeometry;
+using QtNodes::NodeState;
+using QtNodes::NodeData;
+using QtNodes::NodeDataType;
+using QtNodes::NodeDataModel;
+using QtNodes::NodeGraphicsObject;
+using QtNodes::Properties;
+using QtNodes::PortIndex;
+using QtNodes::PortType;
 
 Node::
 Node(std::unique_ptr<NodeDataModel> && dataModel)
@@ -176,7 +185,7 @@ propagateData(std::shared_ptr<NodeData> nodeData,
               PortIndex inPortIndex) const
 {
   _nodeDataModel->setInData(nodeData, inPortIndex);
-  
+
   //Recalculate the nodes visuals. A data change can result in the node taking more space than before, so this forces a recalculate+repaint on the affected node
   _nodeGraphicsObject->setGeometryChanged();
   _nodeGeometry.recalculateSize();

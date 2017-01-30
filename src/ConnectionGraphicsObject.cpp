@@ -20,6 +20,10 @@
 
 #include "Node.hpp"
 
+using QtNodes::ConnectionGraphicsObject;
+using QtNodes::Connection;
+using QtNodes::FlowScene;
+
 ConnectionGraphicsObject::
 ConnectionGraphicsObject(FlowScene &scene,
                          Connection &connection)
@@ -49,7 +53,7 @@ ConnectionGraphicsObject::
 }
 
 
-Connection&
+QtNodes::Connection&
 ConnectionGraphicsObject::
 connection()
 {
@@ -99,7 +103,6 @@ ConnectionGraphicsObject::
 move()
 {
 
-
   auto moveEndPoint =
   [this] (PortType portType)
   {
@@ -120,7 +123,7 @@ move()
         QPointF connectionPos = sceneTransform.inverted().map(scenePos);
 
         _connection.connectionGeometry().setEndPoint(portType,
-                                              connectionPos);
+                                                     connectionPos);
 
         _connection.getConnectionGraphicsObject().setGeometryChanged();
         _connection.getConnectionGraphicsObject().update();
@@ -162,9 +165,9 @@ mouseMoveEvent(QGraphicsSceneMouseEvent* event)
   prepareGeometryChange();
 
   auto view = static_cast<QGraphicsView*>(event->widget());
-  auto node = ::locateNodeAt(event->scenePos(),
-                             _scene,
-                             view->transform());
+  auto node = locateNodeAt(event->scenePos(),
+                           _scene,
+                           view->transform());
 
   auto &state = _connection.connectionState();
 
@@ -174,7 +177,6 @@ mouseMoveEvent(QGraphicsSceneMouseEvent* event)
     node->reactToPossibleConnection(state.requiredPort(),
                                     _connection.dataType(),
                                     event->scenePos());
-
   }
 
   //-------------------
@@ -203,8 +205,8 @@ mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
   ungrabMouse();
   event->accept();
 
-  auto node = ::locateNodeAt(event->scenePos(), _scene,
-                             _scene.views()[0]->transform());
+  auto node = locateNodeAt(event->scenePos(), _scene,
+                           _scene.views()[0]->transform());
 
   NodeConnectionInteraction interaction(*node, _connection, _scene);
 

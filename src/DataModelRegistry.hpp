@@ -9,6 +9,9 @@
 #include "Export.hpp"
 #include "QStringStdHash.hpp"
 
+namespace QtNodes
+{
+
 /// Class uses map for storing models (name, model)
 class NODE_EDITOR_PUBLIC DataModelRegistry
 {
@@ -91,3 +94,4 @@ private:
   RegisteredModelsMap _registeredModels;
   RegisteredTypeConvertersMap _registeredTypeConverters;
 };
+}

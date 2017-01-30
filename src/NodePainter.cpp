@@ -13,11 +13,19 @@
 #include "Node.hpp"
 #include "FlowScene.hpp"
 
+using QtNodes::NodePainter;
+using QtNodes::NodeGeometry;
+using QtNodes::NodeGraphicsObject;
+using QtNodes::Node;
+using QtNodes::NodeState;
+using QtNodes::NodeDataModel;
+using QtNodes::FlowScene;
+
 void
 NodePainter::
 paint(QPainter* painter,
       Node & node, 
-      FlowScene const& _scene)
+      FlowScene const& scene)
 {
   NodeGeometry const& geom = node.nodeGeometry();
 
@@ -33,7 +41,7 @@ paint(QPainter* painter,
 
   auto const &model = node.nodeDataModel();
 
-  drawConnectionPoints(painter, geom, state, model, _scene);
+  drawConnectionPoints(painter, geom, state, model, scene);
 
   drawFilledConnectionPoints(painter, geom, state, model);
 
@@ -97,7 +105,7 @@ drawConnectionPoints(QPainter* painter,
                      NodeGeometry const& geom,
                      NodeState const& state,
                      NodeDataModel* const model,
-                     FlowScene const & _scene)
+                     FlowScene const & scene)
 {
   NodeStyle const& nodeStyle      = StyleCollection::nodeStyle();
   auto const     &connectionStyle = StyleCollection::connectionStyle();
@@ -131,11 +139,11 @@ drawConnectionPoints(QPainter* painter,
         {
           if (portType == PortType::In)
           {
-            typeConvertable = _scene.registry().getTypeConverter(state.reactingDataType().id, dataType.id) != nullptr;
+            typeConvertable = scene.registry().getTypeConverter(state.reactingDataType().id, dataType.id) != nullptr;
           }
           else
           {
-            typeConvertable = _scene.registry().getTypeConverter(dataType.id, state.reactingDataType().id) != nullptr;
+            typeConvertable = scene.registry().getTypeConverter(dataType.id, state.reactingDataType().id) != nullptr;
           }
         }
 

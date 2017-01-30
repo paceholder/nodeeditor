@@ -9,6 +9,9 @@
 
 #include "PortType.hpp"
 
+namespace QtNodes
+{
+
 class NodeState;
 class NodeDataModel;
 
@@ -146,3 +149,4 @@ private:
   mutable QFontMetrics _fontMetrics;
   mutable QFontMetrics _boldFontMetrics;
 };
+}

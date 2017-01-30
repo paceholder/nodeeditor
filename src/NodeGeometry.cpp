@@ -9,6 +9,11 @@
 
 #include "StyleCollection.hpp"
 
+using QtNodes::NodeGeometry;
+using QtNodes::NodeDataModel;
+using QtNodes::PortIndex;
+using QtNodes::PortType;
+
 NodeGeometry::
 NodeGeometry(std::unique_ptr<NodeDataModel> const &dataModel)
   : _width(100)
@@ -26,8 +31,10 @@ NodeGeometry(std::unique_ptr<NodeDataModel> const &dataModel)
   , _boldFontMetrics(QFont())
 {
   QFont f; f.setBold(true);
+
   _boldFontMetrics = QFontMetrics(f);
 }
+
 
 QRectF
 NodeGeometry::
@@ -92,7 +99,7 @@ recalculateSize() const
 
   if (_dataModel->validationState() != NodeValidationState::Valid)
   {
-    _width = std::max(_width, validationWidth());
+    _width   = std::max(_width, validationWidth());
     _height += validationHeight() + _spacing;
   }
 }
@@ -104,13 +111,14 @@ recalculateSize(QFont const & font) const
 {
   QFontMetrics fontMetrics(font);
   QFont boldFont = font;
+
   boldFont.setBold(true);
 
   QFontMetrics boldFontMetrics(boldFont);
 
   if (_boldFontMetrics != boldFontMetrics)
   {
-    _fontMetrics = fontMetrics;
+    _fontMetrics     = fontMetrics;
     _boldFontMetrics = boldFontMetrics;
 
     recalculateSize();
@@ -224,6 +232,7 @@ widgetPosition() const
       return QPointF(_spacing + portWidth(PortType::In),
                      (captionHeight() + _height - validationHeight() - _spacing - w->height()) / 2.0);
     }
+
     return QPointF(_spacing + portWidth(PortType::In),
                    (captionHeight() + _height - w->height()) / 2.0);
   }
@@ -287,7 +296,7 @@ portWidth(PortType portType) const
   for (auto i = 0ul; i < _dataModel->nPorts(portType); ++i)
   {
     QString name;
-	
+
     if (_dataModel->portCaptionVisible(portType, i))
     {
       name = _dataModel->portCaption(portType, i);

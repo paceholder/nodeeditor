@@ -10,6 +10,9 @@
 #include <QtCore/QDataStream>
 #include <QtCore/QFile>
 
+#include <QtCore/QJsonObject>
+#include <QtCore/QJsonArray>
+
 #include <QDebug>
 
 #include "Node.hpp"
@@ -22,11 +25,19 @@
 #include "FlowView.hpp"
 #include "DataModelRegistry.hpp"
 
-//------------------------------------------------------------------------------
+using QtNodes::FlowScene;
+using QtNodes::Node;
+using QtNodes::NodeGraphicsObject;
+using QtNodes::Connection;
+using QtNodes::DataModelRegistry;
+using QtNodes::NodeDataModel;
+using QtNodes::Properties;
+using QtNodes::PortType;
+using QtNodes::PortIndex;
 
 FlowScene::
 FlowScene(std::shared_ptr<DataModelRegistry> registry)
-  : _registry(std::move(registry))
+  : _registry(registry)
 {
   setItemIndexMethod(QGraphicsScene::NoIndex);
 }
@@ -83,14 +94,14 @@ createConnection(Node& nodeIn,
 
   // after this function connection points are set to node port
   connection->setGraphicsObject(std::move(cgo));
-  
+
   // trigger data propagation
   nodeOut.onDataUpdated(portIndexOut);
 
   _connections[connection->id()] = connection;
 
   connectionCreated(*connection);
-  
+
   return connection;
 }
 
@@ -182,22 +193,23 @@ removeNode(Node& node)
   nodeDeleted(node);
 
   auto deleteConnections = [&node, this] (PortType portType)
-  {
-    auto nodeState = node.nodeState();
-    auto const & nodeEntries = nodeState.getEntries(portType);
+                           {
+                             auto nodeState = node.nodeState();
+                             auto const & nodeEntries = nodeState.getEntries(portType);
 
-    for (auto &connections : nodeEntries)
-    {
-      for (auto const &pair : connections)
-        deleteConnection(*pair.second);
-    }
-  };
+                             for (auto &connections : nodeEntries)
+                             {
+                               for (auto const &pair : connections)
+                                 deleteConnection(*pair.second);
+                             }
+                           };
 
   deleteConnections(PortType::In);
   deleteConnections(PortType::Out);
 
   _nodes.erase(node.id());
 }
+
 
 DataModelRegistry&
 FlowScene::
@@ -223,6 +235,22 @@ iterateOverNodes(std::function<void(Node*)> visitor)
   {
     visitor(_node.second.get());
   }
+}
+
+
+std::unordered_map<QUuid, std::unique_ptr<Node> > const &
+FlowScene::
+nodes() const
+{
+  return _nodes;
+}
+
+
+std::unordered_map<QUuid, std::shared_ptr<Connection> > const &
+FlowScene::
+connections() const
+{
+  return _connections;
 }
 
 
@@ -352,6 +380,9 @@ load()
 
 //------------------------------------------------------------------------------
 
+namespace QtNodes
+{
+
 Node*
 locateNodeAt(QPointF scenePoint, FlowScene &scene,
              QTransform viewTransform)
@@ -370,9 +401,9 @@ locateNodeAt(QPointF scenePoint, FlowScene &scene,
                items.end(),
                std::back_inserter(filteredItems),
                [] (QGraphicsItem * item)
-               {
-                 return (dynamic_cast<NodeGraphicsObject*>(item) != nullptr);
-               });
+    {
+      return (dynamic_cast<NodeGraphicsObject*>(item) != nullptr);
+    });
 
   Node* resultNode = nullptr;
 
@@ -385,4 +416,5 @@ locateNodeAt(QPointF scenePoint, FlowScene &scene,
   }
 
   return resultNode;
+}
 }

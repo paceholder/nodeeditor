@@ -8,10 +8,13 @@
 #include "NodeGeometry.hpp"
 #include "NodeState.hpp"
 
+class QGraphicsProxyWidget;
+
+namespace QtNodes
+{
+
 class FlowScene;
 class FlowItemEntry;
-
-class QGraphicsProxyWidget;
 
 /// Class reacts on GUI events, mouse clicks and
 /// forwards painting operation.
@@ -80,3 +83,4 @@ private:
   // either nullptr or owned by parent QGraphicsItem
   QGraphicsProxyWidget * _proxyWidget;
 };
+}

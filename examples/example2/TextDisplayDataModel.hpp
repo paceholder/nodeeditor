@@ -9,6 +9,12 @@
 
 #include <iostream>
 
+using QtNodes::PortType;
+using QtNodes::PortIndex;
+using QtNodes::NodeData;
+using QtNodes::NodeDataModel;
+using QtNodes::Properties;
+
 /// The model dictates the number of inputs and outputs for the Node.
 /// In this example it has no logic.
 class TextDisplayDataModel : public NodeDataModel
