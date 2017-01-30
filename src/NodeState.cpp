@@ -6,8 +6,10 @@
 
 using QtNodes::NodeState;
 using QtNodes::NodeDataType;
+using QtNodes::NodeDataModel;
 using QtNodes::PortType;
 using QtNodes::PortIndex;
+using QtNodes::Connection;
 
 NodeState::
 NodeState(std::unique_ptr<NodeDataModel> const &model)

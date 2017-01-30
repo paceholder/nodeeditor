@@ -8,6 +8,7 @@
 #include "Node.hpp"
 
 using QtNodes::ConnectionState;
+using QtNodes::Node;
 
 ConnectionState::
 ~ConnectionState()

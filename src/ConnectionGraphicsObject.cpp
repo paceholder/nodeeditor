@@ -21,6 +21,8 @@
 #include "Node.hpp"
 
 using QtNodes::ConnectionGraphicsObject;
+using QtNodes::Connection;
+using QtNodes::FlowScene;
 
 ConnectionGraphicsObject::
 ConnectionGraphicsObject(FlowScene &scene,

@@ -16,8 +16,12 @@ using QtNodes::Node;
 using QtNodes::NodeGeometry;
 using QtNodes::NodeState;
 using QtNodes::NodeData;
+using QtNodes::NodeDataType;
 using QtNodes::NodeDataModel;
 using QtNodes::NodeGraphicsObject;
+using QtNodes::Properties;
+using QtNodes::PortIndex;
+using QtNodes::PortType;
 
 Node::
 Node(std::unique_ptr<NodeDataModel> && dataModel)

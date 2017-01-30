@@ -23,9 +23,11 @@ using QtNodes::PortType;
 using QtNodes::PortIndex;
 using QtNodes::ConnectionState;
 using QtNodes::Node;
+using QtNodes::NodeData;
 using QtNodes::NodeDataType;
 using QtNodes::ConnectionGraphicsObject;
 using QtNodes::ConnectionGeometry;
+using QtNodes::Properties;
 
 Connection::
 Connection(PortType portType,

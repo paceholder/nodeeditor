@@ -22,6 +22,7 @@
 #include "StyleCollection.hpp"
 
 using QtNodes::FlowView;
+using QtNodes::FlowScene;
 
 FlowView::
 FlowView(FlowScene *scene)

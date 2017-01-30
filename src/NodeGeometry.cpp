@@ -10,7 +10,9 @@
 #include "StyleCollection.hpp"
 
 using QtNodes::NodeGeometry;
+using QtNodes::NodeDataModel;
 using QtNodes::PortIndex;
+using QtNodes::PortType;
 
 NodeGeometry::
 NodeGeometry(std::unique_ptr<NodeDataModel> const &dataModel)

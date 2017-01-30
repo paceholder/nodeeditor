@@ -12,6 +12,8 @@
 #include "StyleCollection.hpp"
 
 using QtNodes::ConnectionPainter;
+using QtNodes::ConnectionGeometry;
+using QtNodes::Connection;
 
 ConnectionPainter::
 ConnectionPainter()

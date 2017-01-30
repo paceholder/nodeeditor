@@ -30,7 +30,10 @@ using QtNodes::Node;
 using QtNodes::NodeGraphicsObject;
 using QtNodes::Connection;
 using QtNodes::DataModelRegistry;
+using QtNodes::NodeDataModel;
 using QtNodes::Properties;
+using QtNodes::PortType;
+using QtNodes::PortIndex;
 
 FlowScene::
 FlowScene(std::shared_ptr<DataModelRegistry> registry)

@@ -4,6 +4,7 @@
 #include "ConnectionPainter.hpp"
 
 using QtNodes::ConnectionBlurEffect;
+using QtNodes::ConnectionGraphicsObject;
 
 ConnectionBlurEffect::
 ConnectionBlurEffect(ConnectionGraphicsObject* object)

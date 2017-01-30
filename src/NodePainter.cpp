@@ -13,6 +13,11 @@
 #include "Node.hpp"
 
 using QtNodes::NodePainter;
+using QtNodes::NodeGeometry;
+using QtNodes::NodeGraphicsObject;
+using QtNodes::Node;
+using QtNodes::NodeState;
+using QtNodes::NodeDataModel;
 
 void
 NodePainter::
