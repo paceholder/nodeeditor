@@ -5,8 +5,12 @@
 #include "Node.hpp"
 #include "Connection.hpp"
 
+namespace QtNodes
+{
+
 class DataModelRegistry;
 class FlowScene;
+class NodeDataModel;
 
 /// Class performs various operations on the Node and Connection pair.
 /// An instance should be created on the stack and destroyed when
@@ -64,3 +68,4 @@ private:
   
   FlowScene* _scene;
 };
+}

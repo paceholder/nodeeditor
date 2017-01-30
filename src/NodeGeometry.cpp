@@ -15,6 +15,7 @@ using QtNodes::NodeGeometry;
 using QtNodes::NodeDataModel;
 using QtNodes::PortIndex;
 using QtNodes::PortType;
+using QtNodes::Node;
 
 NodeGeometry::
 NodeGeometry(std::unique_ptr<NodeDataModel> const &dataModel)
