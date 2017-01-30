@@ -94,16 +94,10 @@ tryConnect() const
     //Creating the converter node
     Node& converterNode = _scene->createNode(std::move(typeConverterModel));
     
-    //Calculating the converter nodes position in the scene. It'll be positioned half way between the two ports that it connects. 
-    //The first line calculates the halfway point between the ports (node position + port position on the node for both nodes averaged).
-    //The second line offsets this coordinate with the size of the converter node, so that the converter nodes center falls on the originally
-    //calculated coordinate, instead of it's upper left corner.
-    auto converterNodePos = (outNode->nodeGraphicsObject().pos() + outNode->nodeGeometry().portScenePosition(outNodePortIndex, connectedPort) +
-      _node->nodeGraphicsObject().pos() + _node->nodeGeometry().portScenePosition(portIndex, requiredPort)) / 2.0f;
-    converterNodePos.setX(converterNodePos.x() - converterNode.nodeGeometry().width() / 2.0f);
-    converterNodePos.setY(converterNodePos.y() - converterNode.nodeGeometry().height() / 2.0f);
+    //Calculate and set the converter node's position
+    auto converterNodePos = NodeGeometry::calculateNodePositionBetweenNodePorts(portIndex, requiredPort, _node, outNodePortIndex, connectedPort, outNode, converterNode);
     converterNode.nodeGraphicsObject().setPos(converterNodePos);
-    
+
     //Connecting the converter node to the two nodes trhat originally supposed to be connected.
     //The connection order is different based on if the users connection was started from an input port, or an output port.
     if (requiredPort == PortType::In)

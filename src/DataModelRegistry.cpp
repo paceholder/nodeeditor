@@ -30,13 +30,12 @@ std::unique_ptr<NodeDataModel>
 DataModelRegistry::
 getTypeConverter(const QString & sourceTypeID, const QString & destTypeID) const
 {
-  for (const auto& m : _registeredTypeConverters)
+  auto typeConverterKey = std::make_pair(sourceTypeID, destTypeID);
+  auto converter = _registeredTypeConverters.find(typeConverterKey);
+
+  if (converter != _registeredTypeConverters.end())
   {
-    if (m.second->SourceType.id == sourceTypeID && m.second->DestinationType.id == destTypeID)
-    {
-      return m.second->Model->clone();
-    }
+    return converter->second->Model->clone();
   }
-  
   return nullptr;
 }

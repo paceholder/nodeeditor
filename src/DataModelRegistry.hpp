@@ -25,8 +25,9 @@ public:
     NodeDataType    DestinationType;
   };
 
+  using ConvertingTypesPair = std::pair<QString, QString>; //Source type ID, Destination type ID in this order
   using TypeConverterItemPtr = std::unique_ptr<TypeConverterItem>;
-  using RegisteredTypeConvertersMap = std::unordered_map<QString, TypeConverterItemPtr>;
+  using RegisteredTypeConvertersMap = std::map<ConvertingTypesPair, TypeConverterItemPtr>;
 
   DataModelRegistry()  = default;
   ~DataModelRegistry() = default;
@@ -55,7 +56,7 @@ public:
       _registeredModels[name] = std::move(uniqueModel);
     }
 
-    if (TypeConverter && _registeredTypeConverters.count(name) == 0)
+    if (TypeConverter)
     {
       std::unique_ptr<NodeDataModel>& registeredModelRef = _registeredModels[name];
 
@@ -72,7 +73,8 @@ public:
       converter->SourceType = converter->Model->dataType(PortType::In, 0);
       converter->DestinationType = converter->Model->dataType(PortType::Out, 0);
 
-      _registeredTypeConverters[name] = std::move(converter);
+      auto typeConverterKey = std::make_pair(converter->SourceType.id, converter->DestinationType.id);
+	  _registeredTypeConverters[typeConverterKey] = std::move(converter);
     }
   }
 

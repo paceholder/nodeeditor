@@ -55,7 +55,7 @@ private:
                                          QPointF const &p) const;
 
   bool nodePortIsEmpty(PortType portType, PortIndex portIndex) const;
-
+  
 private:
 
   Node* _node;

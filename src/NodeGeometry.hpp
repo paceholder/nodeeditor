@@ -11,6 +11,7 @@
 
 class NodeState;
 class NodeDataModel;
+class Node;
 
 class NodeGeometry
 {
@@ -107,7 +108,12 @@ public:
 
   unsigned int
   validationWidth() const;
-
+  
+  static 
+  QPointF 
+  calculateNodePositionBetweenNodePorts(PortIndex targetPortIndex, PortType targetPort, Node* targetNode,
+                                        PortIndex sourcePortIndex, PortType sourcePort, Node* sourceNode,
+                                        Node& newNode);
 private:
 
   unsigned int
