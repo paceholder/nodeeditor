@@ -9,6 +9,9 @@
 #include "Export.hpp"
 #include "QStringStdHash.hpp"
 
+namespace QtNodes
+{
+
 /// Class uses map for storing models (name, model)
 class NODE_EDITOR_PUBLIC DataModelRegistry
 {
@@ -34,7 +37,8 @@ public:
 
   template<typename ModelType>
   void
-  registerModel(std::unique_ptr<ModelType> uniqueModel = std::make_unique<ModelType>())
+  registerModel(std::unique_ptr<ModelType> uniqueModel =
+                  std::make_unique<ModelType>())
   {
     static_assert(std::is_base_of<NodeDataModel, ModelType>::value,
                   "Must pass a subclass of NodeDataModel to registerModel");
@@ -57,3 +61,4 @@ private:
 
   RegisteredModelsMap _registeredModels;
 };
+}

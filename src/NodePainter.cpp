@@ -12,6 +12,8 @@
 #include "NodeDataModel.hpp"
 #include "Node.hpp"
 
+using QtNodes::NodePainter;
+
 void
 NodePainter::
 paint(QPainter* painter,

@@ -12,12 +12,16 @@
 
 #include "StyleCollection.hpp"
 
+using QtNodes::ConnectionStyle;
+
+inline void initResources() { Q_INIT_RESOURCE(resources); }
+
 ConnectionStyle::
 ConnectionStyle()
 {
   // Explicit resources inialization for preventing the static initialization
   // order fiasco: https://isocpp.org/wiki/faq/ctors#static-init-order
-  Q_INIT_RESOURCE(resources);
+  initResources();
 
   // This configuration is stored inside the compiled unit and is loaded statically
   loadJsonFile(":DefaultStyle.json");

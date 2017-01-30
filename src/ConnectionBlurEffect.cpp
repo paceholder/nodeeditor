@@ -3,6 +3,8 @@
 #include "ConnectionGraphicsObject.hpp"
 #include "ConnectionPainter.hpp"
 
+using QtNodes::ConnectionBlurEffect;
+
 ConnectionBlurEffect::
 ConnectionBlurEffect(ConnectionGraphicsObject* object)
   : _object(object)
@@ -18,8 +20,8 @@ draw(QPainter* painter)
   QGraphicsBlurEffect::draw(painter);
 
   //ConnectionPainter::paint(painter,
-                            //_object->connectionGeometry(),
-                            //_object->connectionState());
+  //_object->connectionGeometry(),
+  //_object->connectionState());
 
   //_item->paint(painter, nullptr, nullptr);
 }

@@ -3,6 +3,9 @@
 #include <QtCore/QFile>
 #include <QtWidgets/QMessageBox>
 
+using QtNodes::DataModelRegistry;
+using QtNodes::NodeDataModel;
+
 std::unique_ptr<NodeDataModel>
 DataModelRegistry::
 create(QString const &modelName)

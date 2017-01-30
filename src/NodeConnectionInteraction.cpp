@@ -4,6 +4,10 @@
 #include "NodeGraphicsObject.hpp"
 #include "NodeDataModel.hpp"
 
+using QtNodes::NodeConnectionInteraction;
+using QtNodes::PortType;
+using QtNodes::PortIndex;
+
 bool
 NodeConnectionInteraction::
 canConnect(PortIndex &portIndex) const

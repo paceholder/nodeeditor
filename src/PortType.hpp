@@ -4,13 +4,15 @@
 
 #include <QtCore/QUuid>
 
+namespace QtNodes
+{
+
 enum class PortType
 {
   None,
   In,
   Out
 };
-
 
 static const int INVALID = -1;
 
@@ -32,11 +34,12 @@ struct Port
     , index(i)
   {}
 
-  bool indexIsValid() { return index != INVALID; }
+  bool
+  indexIsValid() { return index != INVALID; }
 
-  bool portTypeIsValid() { return type != PortType::None; }
+  bool
+  portTypeIsValid() { return type != PortType::None; }
 };
-
 
 //using PortAddress = std::pair<QUuid, PortIndex>;
 
@@ -62,4 +65,4 @@ oppositePort(PortType port)
 
   return result;
 }
-
+}

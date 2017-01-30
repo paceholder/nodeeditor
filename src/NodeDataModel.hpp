@@ -10,6 +10,9 @@
 
 #include "Export.hpp"
 
+namespace QtNodes
+{
+
 enum class NodeValidationState
 {
   Valid,
@@ -81,7 +84,7 @@ public:
   virtual
   bool
   resizable() const { return false; }
-  
+
   virtual
   NodeValidationState
   validationState() const { return NodeValidationState::Valid; }
@@ -104,3 +107,4 @@ signals:
   void
   computingFinished();
 };
+}

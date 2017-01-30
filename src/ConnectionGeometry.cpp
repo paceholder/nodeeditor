@@ -4,6 +4,8 @@
 
 #include "StyleCollection.hpp"
 
+using QtNodes::ConnectionGeometry;
+
 ConnectionGeometry::
 ConnectionGeometry()
   : _in(0, 0)

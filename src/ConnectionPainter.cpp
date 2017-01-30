@@ -11,6 +11,8 @@
 
 #include "StyleCollection.hpp"
 
+using QtNodes::ConnectionPainter;
+
 ConnectionPainter::
 ConnectionPainter()
 {}
@@ -73,11 +75,11 @@ paint(QPainter* painter,
   QColor selectedColor = connectionStyle.selectedColor();
 
   auto dataType = connection.dataType();
-  
+
   if (connectionStyle.useDataDefinedColors())
   {
-    
-    normalColor = connectionStyle.normalColor(dataType.id);
+
+    normalColor   = connectionStyle.normalColor(dataType.id);
     hoverColor    = normalColor.lighter(200);
     selectedColor = normalColor.darker(200);
   }

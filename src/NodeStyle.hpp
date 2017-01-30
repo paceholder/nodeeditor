@@ -5,6 +5,9 @@
 #include "Export.hpp"
 #include "Style.hpp"
 
+namespace QtNodes
+{
+
 class NODE_EDITOR_PUBLIC NodeStyle : public Style
 {
 public:
@@ -19,15 +22,11 @@ public:
 
 private:
 
-  void
-  loadJsonText(QString jsonText) override;
+  void loadJsonText(QString jsonText) override;
 
+  void loadJsonFile(QString fileName) override;
 
-  void
-  loadJsonFile(QString fileName) override;
-
-  void
-  loadJsonFromByteArray(QByteArray const &byteArray) override;
+  void loadJsonFromByteArray(QByteArray const &byteArray) override;
 
 public:
 
@@ -54,3 +53,4 @@ public:
 
   float Opacity;
 };
+}

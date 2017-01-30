@@ -18,7 +18,14 @@
 #include "ConnectionGeometry.hpp"
 #include "ConnectionGraphicsObject.hpp"
 
-//----------------------------------------------------------
+using QtNodes::Connection;
+using QtNodes::PortType;
+using QtNodes::PortIndex;
+using QtNodes::ConnectionState;
+using QtNodes::Node;
+using QtNodes::NodeDataType;
+using QtNodes::ConnectionGraphicsObject;
+using QtNodes::ConnectionGeometry;
 
 Connection::
 Connection(PortType portType,
@@ -103,12 +110,12 @@ setRequiredPort(PortType dragging)
   switch (dragging)
   {
     case PortType::Out:
-      _outNode = nullptr;
+      _outNode      = nullptr;
       _outPortIndex = INVALID;
       break;
 
     case PortType::In:
-      _inNode = nullptr;
+      _inNode      = nullptr;
       _inPortIndex = INVALID;
       break;
 
@@ -203,7 +210,7 @@ setNodeToPort(Node& node,
     _inPortIndex = portIndex;
 
   _connectionState.setNoRequiredPort();
-  
+
   updated(*this);
 }
 
@@ -217,7 +224,6 @@ removeFromNodes() const
 
   if (_outNode)
     _outNode->nodeState().eraseConnection(PortType::Out, _outPortIndex, id());
-  
 }
 
 
@@ -251,6 +257,7 @@ connectionGeometry()
 {
   return _connectionGeometry;
 }
+
 
 ConnectionGeometry const&
 Connection::

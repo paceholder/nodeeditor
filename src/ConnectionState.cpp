@@ -7,6 +7,8 @@
 #include "FlowScene.hpp"
 #include "Node.hpp"
 
+using QtNodes::ConnectionState;
+
 ConnectionState::
 ~ConnectionState()
 {

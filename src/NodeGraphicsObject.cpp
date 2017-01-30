@@ -18,6 +18,9 @@
 
 #include "StyleCollection.hpp"
 
+using QtNodes::NodeGraphicsObject;
+using QtNodes::Node;
+
 NodeGraphicsObject::
 NodeGraphicsObject(FlowScene &scene,
                    Node& node)

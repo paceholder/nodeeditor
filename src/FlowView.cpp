@@ -15,15 +15,13 @@
 #include <iostream>
 
 #include "FlowScene.hpp"
-
 #include "DataModelRegistry.hpp"
-
 #include "Node.hpp"
 #include "NodeGraphicsObject.hpp"
-
 #include "ConnectionGraphicsObject.hpp"
-
 #include "StyleCollection.hpp"
+
+using QtNodes::FlowView;
 
 FlowView::
 FlowView(FlowScene *scene)

@@ -5,6 +5,9 @@
 #include "Export.hpp"
 #include "Style.hpp"
 
+namespace QtNodes
+{
+
 class NODE_EDITOR_PUBLIC ConnectionStyle : public Style
 {
 public:
@@ -15,19 +18,15 @@ public:
 
 public:
 
-  static void
-  setConnectionStyle(QString jsonText);
+  static void setConnectionStyle(QString jsonText);
 
 private:
 
-  void
-  loadJsonText(QString jsonText) override;
+  void loadJsonText(QString jsonText) override;
 
-  void
-  loadJsonFile(QString fileName) override;
+  void loadJsonFile(QString fileName) override;
 
-  void
-  loadJsonFromByteArray(QByteArray const &byteArray) override;
+  void loadJsonFromByteArray(QByteArray const &byteArray) override;
 
 public:
 
@@ -58,3 +57,4 @@ private:
 
   bool UseDataDefinedColors;
 };
+}

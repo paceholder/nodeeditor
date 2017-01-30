@@ -13,9 +13,6 @@
 #include "ConnectionState.hpp"
 #include "ConnectionGeometry.hpp"
 
-class Node;
-class NodeData;
-class ConnectionGraphicsObject;
 class QPointF;
 
 namespace std
@@ -32,12 +29,21 @@ struct hash<QUuid>
 };
 }
 
-//------------------------------------------------------------------------------
+namespace QtNodes
+{
+
+class Node;
+class NodeData;
+class ConnectionGraphicsObject;
 
 ///
-class Connection : public QObject, public Serializable
+class Connection
+  : public QObject
+  , public Serializable
 {
+
   Q_OBJECT
+
 public:
 
   /// New Connection is attached to the port of the given Node.
@@ -97,13 +103,13 @@ public:
 
   ConnectionGeometry&
   connectionGeometry();
-  
+
   ConnectionGeometry const&
   connectionGeometry() const;
 
   Node*
   getNode(PortType portType) const;
-  
+
   Node*&
   getNode(PortType portType);
 
@@ -130,7 +136,7 @@ private:
 private:
 
   Node* _outNode = nullptr;
-  Node* _inNode = nullptr;
+  Node* _inNode  = nullptr;
 
   PortIndex _outPortIndex;
   PortIndex _inPortIndex;
@@ -141,7 +147,9 @@ private:
   ConnectionGeometry _connectionGeometry;
 
   std::unique_ptr<ConnectionGraphicsObject> _connectionGraphicsObject;
-  
+
 signals:
-  void updated(Connection& conn) const;
+  void
+  updated(Connection& conn) const;
 };
+}
