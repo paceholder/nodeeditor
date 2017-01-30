@@ -27,7 +27,6 @@ using QtNodes::NodeData;
 using QtNodes::NodeDataType;
 using QtNodes::ConnectionGraphicsObject;
 using QtNodes::ConnectionGeometry;
-using QtNodes::Properties;
 
 Connection::
 Connection(PortType portType,
@@ -80,18 +79,22 @@ Connection::
 }
 
 
-void
+QJsonObject
 Connection::
-save(Properties &p) const
+save() const
 {
+  QJsonObject connectionJson;
+
   if (_inNode && _outNode)
   {
-    p.put("in_id", _inNode->id());
-    p.put("out_id", _outNode->id());
+    connectionJson["in_id"] = _inNode->id().toString();
+    connectionJson["in_index"] = _inPortIndex;
 
-    p.put("in_index", _inPortIndex);
-    p.put("out_index", _outPortIndex);
+    connectionJson["out_id"] = _outNode->id().toString();
+    connectionJson["out_index"] = _outPortIndex;
   }
+
+  return connectionJson;
 }
 
 

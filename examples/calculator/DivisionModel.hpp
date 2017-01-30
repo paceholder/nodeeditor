@@ -22,7 +22,7 @@ public:
   QString
   caption() const override
   { return QStringLiteral("Division"); }
-  
+
   bool
   portCaptionVisible(PortType portType, PortIndex portIndex) const override
   { return true; }
@@ -37,6 +37,7 @@ public:
           return QStringLiteral("Dividend");
         else if (portIndex == 1)
           return QStringLiteral("Divisor");
+
         break;
 
       case PortType::Out:
@@ -47,7 +48,7 @@ public:
     }
     return QString();
   }
-  
+
   QString
   name() const override
   { return QStringLiteral("Division"); }
@@ -55,14 +56,6 @@ public:
   std::unique_ptr<NodeDataModel>
   clone() const override
   { return std::make_unique<DivisionModel>(); }
-
-public:
-
-  void
-  save(Properties &p) const override
-  {
-    p.put("model_name", DivisionModel::name());
-  }
 
 private:
 
@@ -93,7 +86,7 @@ private:
       modelValidationError = QStringLiteral("Missing or incorrect inputs");
       _result.reset();
     }
-    
+
     emit dataUpdated(outPortIndex);
   }
 };

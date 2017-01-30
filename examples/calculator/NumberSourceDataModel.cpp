@@ -1,5 +1,6 @@
 #include "NumberSourceDataModel.hpp"
 
+#include <QtCore/QJsonValue>
 #include <QtGui/QDoubleValidator>
 
 #include "DecimalData.hpp"
@@ -19,27 +20,36 @@ NumberSourceDataModel()
 }
 
 
-void
+QJsonObject
 NumberSourceDataModel::
-save(Properties &p) const
+save() const
 {
-  p.put("model_name", name());
+  QJsonObject modelJson = NodeDataModel::save();
 
   if (_number)
-    p.put("number", _number->number());
+    modelJson["number"] = QString::number(_number->number());
+
+  return modelJson;
 }
 
 
 void
 NumberSourceDataModel::
-restore(Properties const &p)
+restore(QJsonObject const &p)
 {
-  double number;
+  QJsonValue v = p["number"];
 
-  if (bool ok = p.get("number", &number))
+  if (!v.isUndefined())
   {
-    _number = std::make_shared<DecimalData>(number);
-    _lineEdit->setText(QString::number(number));
+    QString strNum = v.toString();
+
+    bool   ok;
+    double d = strNum.toDouble(&ok);
+    if (ok)
+    {
+      _number = std::make_shared<DecimalData>(d);
+      _lineEdit->setText(strNum);
+    }
   }
 }
 

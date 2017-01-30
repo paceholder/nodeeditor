@@ -7,13 +7,11 @@
 
 #include <memory>
 
-
 using QtNodes::PortType;
 using QtNodes::PortIndex;
 using QtNodes::NodeData;
 using QtNodes::NodeDataType;
 using QtNodes::NodeDataModel;
-using QtNodes::Properties;
 using QtNodes::NodeValidationState;
 
 /// The class can potentially incapsulate any user data which
@@ -62,10 +60,14 @@ public:
 
 public:
 
-  void
-  save(Properties &p) const override
+  QJsonObject
+  save() const override
   {
-    p.put("model_name", MyDataModel::name());
+    QJsonObject modelJson;
+
+    modelJson["name"] = name();
+
+    return modelJson;
   }
 
 public:

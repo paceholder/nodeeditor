@@ -4,12 +4,15 @@
 
 #include "IntegerData.hpp"
 
-
-void
+QJsonObject
 ModuloModel::
-save(Properties &p) const
+save() const
 {
-  p.put("model_name", name());
+  QJsonObject modelJson;
+
+  modelJson["name"] = name();
+
+  return modelJson;
 }
 
 

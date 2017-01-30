@@ -36,51 +36,69 @@ public:
 
 public:
 
-  std::shared_ptr<Connection>createConnection(PortType connectedPort,
-                                              Node& node,
-                                              PortIndex portIndex);
+  std::shared_ptr<Connection>
+  createConnection(PortType connectedPort,
+                   Node& node,
+                   PortIndex portIndex);
 
-  std::shared_ptr<Connection>createConnection(Node& nodeIn,
-                                              PortIndex portIndexIn,
-                                              Node& nodeOut,
-                                              PortIndex portIndexOut);
+  std::shared_ptr<Connection>
+  createConnection(Node& nodeIn,
+                   PortIndex portIndexIn,
+                   Node& nodeOut,
+                   PortIndex portIndexOut);
 
-  std::shared_ptr<Connection>restoreConnection(Properties const &p);
+  std::shared_ptr<Connection>
+  restoreConnection(QJsonObject const &connectionJson);
 
-  void deleteConnection(Connection& connection);
+  void
+  deleteConnection(Connection& connection);
 
-  Node&createNode(std::unique_ptr<NodeDataModel> && dataModel);
+  Node&
+  createNode(std::unique_ptr<NodeDataModel> && dataModel);
 
-  Node&restoreNode(Properties const &p);
+  Node&
+  restoreNode(QJsonObject const& nodeJson);
 
-  void removeNode(Node& node);
+  void
+  removeNode(Node& node);
 
-  DataModelRegistry& registry() const;
+  DataModelRegistry&
+  registry() const;
 
-  void setRegistry(std::shared_ptr<DataModelRegistry> registry);
+  void
+  setRegistry(std::shared_ptr<DataModelRegistry> registry);
 
-  void iterateOverNodes(std::function<void(Node*)> visitor);
+  void
+  iterateOverNodes(std::function<void(Node*)> visitor);
 
 public:
 
-  std::unordered_map<QUuid, std::unique_ptr<Node> > const &nodes() const;
+  std::unordered_map<QUuid, std::unique_ptr<Node> > const &
+  nodes() const;
 
-  std::unordered_map<QUuid, std::shared_ptr<Connection> > const &connections() const;
+  std::unordered_map<QUuid, std::shared_ptr<Connection> > const &
+  connections() const;
 
 public:
 
-  void save() const;
+  void
+  save() const;
 
-  void load();
+  void
+  load();
 
 signals:
 
-  void nodeCreated(Node &n);
+  void
+  nodeCreated(Node &n);
 
-  void nodeDeleted(Node &n);
+  void
+  nodeDeleted(Node &n);
 
-  void connectionCreated(Connection &c);
-  void connectionDeleted(Connection &c);
+  void
+  connectionCreated(Connection &c);
+  void
+  connectionDeleted(Connection &c);
 
 private:
 

@@ -12,7 +12,6 @@ using QtNodes::PortIndex;
 using QtNodes::NodeData;
 using QtNodes::NodeDataType;
 using QtNodes::NodeDataModel;
-using QtNodes::Properties;
 using QtNodes::NodeValidationState;
 
 /// The model dictates the number of inputs and outputs for the Node.
@@ -47,14 +46,6 @@ public:
 
 public:
 
-  void
-  save(Properties &p) const override
-  {
-    p.put("model_name", name());
-  }
-
-public:
-
   unsigned int
   nPorts(PortType portType) const override;
 
@@ -71,10 +62,10 @@ public:
   QWidget *
   embeddedWidget() override { return _label; }
 
-  NodeValidationState 
+  NodeValidationState
   validationState() const override;
 
-  QString 
+  QString
   validationMessage() const override;
 
 private:

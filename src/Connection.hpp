@@ -62,8 +62,8 @@ public:
 
 public:
 
-  void
-  save(Properties &p) const override;
+  QJsonObject
+  save() const override;
 
 public:
 

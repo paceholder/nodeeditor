@@ -32,14 +32,6 @@ public:
   clone() const override
   { return std::make_unique<MultiplicationModel>(); }
 
-public:
-
-  void
-  save(Properties &p) const override
-  {
-    p.put("model_name", MultiplicationModel::name());
-  }
-
 private:
 
   void
