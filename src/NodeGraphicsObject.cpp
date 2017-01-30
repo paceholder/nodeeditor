@@ -149,7 +149,7 @@ paint(QPainter * painter,
 {
   painter->setClipRect(option->exposedRect);
 
-  NodePainter::paint(painter, _node);
+  NodePainter::paint(painter, _node, _scene);
 }
 
 
@@ -199,7 +199,7 @@ mousePressEvent(QGraphicsSceneMouseEvent * event)
       {
         auto con = connections.begin()->second;
 
-        NodeConnectionInteraction interaction(_node, *con);
+        NodeConnectionInteraction interaction(_node, *con, _scene);
 
         interaction.disconnect(portToCheck);
       }

@@ -31,7 +31,7 @@ public:
 
   QString
   caption() const override
-  { return QString("Result"); }
+  { return QStringLiteral("Result"); }
 
   bool
   captionVisible() const override
@@ -39,7 +39,7 @@ public:
 
   QString
   name() const override
-  { return QString("Result"); }
+  { return QStringLiteral("Result"); }
 
   std::unique_ptr<NodeDataModel>
   clone() const override
@@ -50,7 +50,7 @@ public:
   void
   save(Properties &p) const override
   {
-    p.put("model_name", NumberDisplayDataModel::name());
+    p.put("model_name", name());
   }
 
 public:
@@ -80,7 +80,7 @@ public:
 private:
 
   NodeValidationState modelValidationState = NodeValidationState::Warning;
-  QString modelValidationError = QString("Missing or incorrect inputs");
+  QString modelValidationError = QStringLiteral("Missing or incorrect inputs");
 
   QLabel * _label;
 };

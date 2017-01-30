@@ -13,6 +13,7 @@ class NodeGeometry;
 class NodeGraphicsObject;
 class NodeDataModel;
 class FlowItemEntry;
+class FlowScene;
 
 class NodePainter
 {
@@ -24,7 +25,8 @@ public:
 
   static
   void paint(QPainter* painter,
-             Node& node);
+             Node& node, 
+             FlowScene const& scene);
 
   static
   void drawNodeRect(QPainter* painter, NodeGeometry const& geom,
@@ -46,7 +48,8 @@ public:
   void drawConnectionPoints(QPainter* painter,
                             NodeGeometry const& geom,
                             NodeState const& state,
-                            NodeDataModel* const model);
+                            NodeDataModel* const model,
+                            FlowScene const & scene);
 
   static
   void drawFilledConnectionPoints(QPainter* painter,

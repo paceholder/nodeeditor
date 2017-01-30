@@ -213,7 +213,7 @@ removeNode(Node& node)
 
 DataModelRegistry&
 FlowScene::
-registry()
+registry() const
 {
   return *_registry;
 }
