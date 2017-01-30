@@ -57,9 +57,9 @@ canConnect(PortIndex &portIndex, bool& typeConversionNeeded, std::unique_ptr<Nod
   {
     if (requiredPort == PortType::In)
     {
-      return typeConversionNeeded = _scene->registry().getTypeConverter(connectionDataType.id, candidateNodeDataType.id, converterModel);
+      return typeConversionNeeded = static_cast<bool>(converterModel = _scene->registry().getTypeConverter(connectionDataType.id, candidateNodeDataType.id));
     }
-    return typeConversionNeeded = _scene->registry().getTypeConverter(candidateNodeDataType.id, connectionDataType.id, converterModel);
+    return typeConversionNeeded = static_cast<bool>(converterModel = _scene->registry().getTypeConverter(candidateNodeDataType.id, connectionDataType.id));
   }
 
   return true;

@@ -15,16 +15,16 @@ class ModuloModel
   Q_OBJECT
 
 public:
-  ModuloModel();
+  ModuloModel() = default;
 
   virtual
-  ~ModuloModel() {}
+  ~ModuloModel() = default;
 
 public:
 
   QString
   caption() const override
-  { return QString("Modulo"); }
+  { return QStringLiteral("Modulo"); }
 
   bool
   captionVisible() const override
@@ -32,9 +32,7 @@ public:
 
   bool
   portCaptionVisible(PortType portType, PortIndex portIndex) const override
-  {
-    return true;
-  }
+  { return true; }
 
   QString
   portCaption(PortType portType, PortIndex portIndex) const override
@@ -43,23 +41,23 @@ public:
     {
     case PortType::In:
       if (portIndex == 0)
-        return QString("Dividend");
+        return QStringLiteral("Dividend");
       else if (portIndex == 1)
-        return QString("Divisor");
+        return QStringLiteral("Divisor");
       break;
 
     case PortType::Out:
-      return QString("Result");
+      return QStringLiteral("Result");
 
     default:
       break;
     }
-    return QString("");
+    return QString();
   }
 
   QString
   name() const override
-  { return QString("Modulo"); }
+  { return QStringLiteral("Modulo"); }
 
   std::unique_ptr<NodeDataModel>
   clone() const override
@@ -98,5 +96,5 @@ private:
   std::shared_ptr<IntegerData> _result;
 
   NodeValidationState modelValidationState = NodeValidationState::Warning;
-  QString modelValidationError = QString("Missing or incorrect inputs");
+  QString modelValidationError = QStringLiteral("Missing or incorrect inputs");
 };

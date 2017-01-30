@@ -4,17 +4,12 @@
 
 #include "IntegerData.hpp"
 
-ModuloModel::
-ModuloModel()
-{
-}
-
 
 void
 ModuloModel::
 save(Properties &p) const
 {
-  p.put("model_name", ModuloModel::name());
+  p.put("model_name", name());
 }
 
 
@@ -82,20 +77,20 @@ setInData(std::shared_ptr<NodeData> data, PortIndex portIndex)
     if (n2 && (n2->number() == 0.0))
     {
       modelValidationState = NodeValidationState::Error;
-      modelValidationError = QString("Division by zero error");
+      modelValidationError = QStringLiteral("Division by zero error");
       _result.reset();
     }
     else if (n1 && n2)
     {
       modelValidationState = NodeValidationState::Valid;
-      modelValidationError = QString("");
+      modelValidationError = QString();
       _result = std::make_shared<IntegerData>(n1->number() %
                                               n2->number());
     }
     else
     {
       modelValidationState = NodeValidationState::Warning;
-      modelValidationError = QString("Missing or incorrect inputs");
+      modelValidationError = QStringLiteral("Missing or incorrect inputs");
       _result.reset();
     }
 

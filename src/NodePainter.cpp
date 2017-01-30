@@ -129,14 +129,13 @@ drawConnectionPoints(QPainter* painter,
         bool   typeConvertable = false;
 
         {
-          std::unique_ptr<NodeDataModel> converterModel;
           if (portType == PortType::In)
           {
-            typeConvertable = _scene.registry().getTypeConverter(state.reactingDataType().id, dataType.id, converterModel);
+            typeConvertable = static_cast<bool>(_scene.registry().getTypeConverter(state.reactingDataType().id, dataType.id));
           }
           else
           {
-            typeConvertable = _scene.registry().getTypeConverter(dataType.id, state.reactingDataType().id, converterModel);
+            typeConvertable = static_cast<bool>(_scene.registry().getTypeConverter(dataType.id, state.reactingDataType().id));
           }
         }
 

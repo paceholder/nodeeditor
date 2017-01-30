@@ -82,10 +82,9 @@ public:
   RegisteredModelsMap const &
   registeredModels() const;
 
-  bool 
+  std::unique_ptr<NodeDataModel>
   getTypeConverter(const QString & sourceTypeID, 
-                   const QString & destTypeID,
-                   std::unique_ptr<NodeDataModel> & converterModel) const;
+                   const QString & destTypeID) const;
 
 private:
 

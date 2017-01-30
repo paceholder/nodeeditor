@@ -26,22 +26,17 @@ registeredModels() const
 }
 
 
-bool
+std::unique_ptr<NodeDataModel>
 DataModelRegistry::
-getTypeConverter(const QString & sourceTypeID, const QString & destTypeID, std::unique_ptr<NodeDataModel> & converterModel) const
+getTypeConverter(const QString & sourceTypeID, const QString & destTypeID) const
 {
-  auto converter = std::find_if(_registeredTypeConverters.begin(), _registeredTypeConverters.end(),
-    [&](const RegisteredTypeConvertersMap::value_type & m)
-    {
-      return m.second->SourceType.id == sourceTypeID && m.second->DestinationType.id == destTypeID;
-    });
-
-  if (converter == _registeredTypeConverters.end())
+  for (const auto& m : _registeredTypeConverters)
   {
-    return false;
+    if (m.second->SourceType.id == sourceTypeID && m.second->DestinationType.id == destTypeID)
+    {
+      return m.second->Model->clone();
+    }
   }
   
-  converterModel = converter->second->Model->clone();
-  
-  return true;
+  return nullptr;
 }

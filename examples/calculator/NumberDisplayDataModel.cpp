@@ -59,13 +59,13 @@ setInData(std::shared_ptr<NodeData> data, int)
   if (numberData)
   {
     modelValidationState = NodeValidationState::Valid;
-    modelValidationError = QString("");
+    modelValidationError = QString();
     _label->setText(numberData->numberAsText());
   }
   else
   {
     modelValidationState = NodeValidationState::Warning;
-    modelValidationError = QString("Missing or incorrect inputs");
+    modelValidationError = QStringLiteral("Missing or incorrect inputs");
     _label->clear();
   }
 

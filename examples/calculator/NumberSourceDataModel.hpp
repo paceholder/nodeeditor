@@ -26,7 +26,7 @@ public:
 
   QString
   caption() const override
-  { return QString("Number Source"); }
+  { return QStringLiteral("Number Source"); }
 
   bool
   captionVisible() const override
@@ -34,7 +34,7 @@ public:
 
   QString
   name() const override
-  { return QString("NumberSource"); }
+  { return QStringLiteral("NumberSource"); }
 
   std::unique_ptr<NodeDataModel>
   clone() const override

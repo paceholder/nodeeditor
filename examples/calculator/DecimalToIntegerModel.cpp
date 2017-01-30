@@ -5,11 +5,6 @@
 #include "DecimalData.hpp"
 #include "IntegerData.hpp"
 
-DecimalToIntegerModel::
-DecimalToIntegerModel()
-{
-}
-
 
 void
 DecimalToIntegerModel::

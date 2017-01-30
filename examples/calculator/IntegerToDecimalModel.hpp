@@ -16,16 +16,16 @@ class IntegerToDecimalModel
   Q_OBJECT
 
 public:
-  IntegerToDecimalModel();
+  IntegerToDecimalModel() = default;
 
   virtual
-  ~IntegerToDecimalModel() {}
+  ~IntegerToDecimalModel() = default;
 
 public:
 
   QString
   caption() const override
-  { return QString("Integer to decimal"); }
+  { return QStringLiteral("Integer to decimal"); }
 
   bool
   captionVisible() const override
@@ -33,7 +33,7 @@ public:
 
   QString
   name() const override
-  { return QString("IntegerToDecimal"); }
+  { return QStringLiteral("IntegerToDecimal"); }
 
   std::unique_ptr<NodeDataModel>
   clone() const override

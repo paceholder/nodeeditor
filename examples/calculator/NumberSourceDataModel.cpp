@@ -23,7 +23,7 @@ void
 NumberSourceDataModel::
 save(Properties &p) const
 {
-  p.put("model_name", NumberSourceDataModel::name());
+  p.put("model_name", name());
 
   if (_number)
     p.put("number", _number->number());

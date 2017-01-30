@@ -56,10 +56,10 @@ contextMenuEvent(QContextMenuEvent *event)
 {
   QMenu modelMenu;
 
-  auto filterActionText = QString("skip me");
+  auto filterActionText = QStringLiteral("skip me");
 
   auto *txtBox = new QLineEdit(&modelMenu);
-  txtBox->setPlaceholderText(QString("Filter"));
+  txtBox->setPlaceholderText(QStringLiteral("Filter"));
   txtBox->setClearButtonEnabled(true);
 
   auto *txtBoxAction = new QWidgetAction(&modelMenu);
