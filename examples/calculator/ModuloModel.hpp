@@ -12,7 +12,6 @@ using QtNodes::PortIndex;
 using QtNodes::NodeData;
 using QtNodes::NodeDataType;
 using QtNodes::NodeDataModel;
-using QtNodes::Properties;
 using QtNodes::NodeValidationState;
 
 class IntegerData;
@@ -39,7 +38,7 @@ public:
   { return true; }
 
   bool
-  portCaptionVisible(PortType portType, PortIndex portIndex) const override
+  portCaptionVisible(PortType, PortIndex ) const override
   { return true; }
 
   QString
@@ -47,18 +46,19 @@ public:
   {
     switch (portType)
     {
-    case PortType::In:
-      if (portIndex == 0)
-        return QStringLiteral("Dividend");
-      else if (portIndex == 1)
-        return QStringLiteral("Divisor");
-      break;
+      case PortType::In:
+        if (portIndex == 0)
+          return QStringLiteral("Dividend");
+        else if (portIndex == 1)
+          return QStringLiteral("Divisor");
 
-    case PortType::Out:
-      return QStringLiteral("Result");
+        break;
 
-    default:
-      break;
+      case PortType::Out:
+        return QStringLiteral("Result");
+
+      default:
+        break;
     }
     return QString();
   }
@@ -73,8 +73,8 @@ public:
 
 public:
 
-  void
-  save(Properties &p) const override;
+  QJsonObject
+  save() const override;
 
 public:
 
@@ -90,11 +90,14 @@ public:
   void
   setInData(std::shared_ptr<NodeData>, int) override;
 
-  QWidget * embeddedWidget() override { return nullptr; }
+  QWidget *
+  embeddedWidget() override { return nullptr; }
 
-  NodeValidationState validationState() const override;
+  NodeValidationState
+  validationState() const override;
 
-  QString validationMessage() const override;
+  QString
+  validationMessage() const override;
 
 private:
 

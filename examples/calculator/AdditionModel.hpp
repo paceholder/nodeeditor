@@ -1,12 +1,12 @@
 #pragma once
 
 #include <QtCore/QObject>
+
 #include <QtWidgets/QLabel>
 
 #include <nodes/NodeDataModel>
 
 #include "MathOperationDataModel.hpp"
-
 #include "DecimalData.hpp"
 
 /// The model dictates the number of inputs and outputs for the Node.
@@ -31,14 +31,6 @@ public:
   std::unique_ptr<NodeDataModel>
   clone() const override
   { return std::make_unique<AdditionModel>(); }
-
-public:
-
-  void
-  save(Properties &p) const override
-  {
-    p.put("model_name", AdditionModel::name());
-  }
 
 private:
 

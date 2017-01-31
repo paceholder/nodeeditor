@@ -5,12 +5,15 @@
 #include "DecimalData.hpp"
 #include "IntegerData.hpp"
 
-
-void
+QJsonObject
 DecimalToIntegerModel::
-save(Properties &p) const
+save() const
 {
-  p.put("model_name", DecimalToIntegerModel::name());
+  QJsonObject modelJson;
+
+  modelJson["name"] = name();
+
+  return modelJson;
 }
 
 
@@ -43,6 +46,7 @@ dataType(PortType portType, PortIndex) const
 {
   if (portType == PortType::In)
     return DecimalData().type();
+
   return IntegerData().type();
 }
 

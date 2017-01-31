@@ -12,7 +12,6 @@ using QtNodes::PortIndex;
 using QtNodes::NodeData;
 using QtNodes::NodeDataType;
 using QtNodes::NodeDataModel;
-using QtNodes::Properties;
 
 class DecimalData;
 class IntegerData;
@@ -48,9 +47,9 @@ public:
 
 public:
 
-  void
-  save(Properties &p) const override;
-  
+  QJsonObject
+  save() const override;
+
 public:
 
   unsigned int
@@ -72,5 +71,4 @@ private:
 
   std::shared_ptr<DecimalData> _decimal;
   std::shared_ptr<IntegerData> _integer;
-
 };

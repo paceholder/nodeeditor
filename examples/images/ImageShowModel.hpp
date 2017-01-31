@@ -13,7 +13,6 @@ using QtNodes::PortIndex;
 using QtNodes::NodeData;
 using QtNodes::NodeDataType;
 using QtNodes::NodeDataModel;
-using QtNodes::Properties;
 using QtNodes::NodeValidationState;
 
 /// The model dictates the number of inputs and outputs for the Node.
@@ -41,14 +40,6 @@ public:
   std::unique_ptr<NodeDataModel>
   clone() const override
   { return std::make_unique<ImageShowModel>(); }
-
-public:
-
-  void
-  save(Properties &p) const override
-  {
-    p.put("model_name", ImageShowModel::name());
-  }
 
 public:
 

@@ -33,20 +33,21 @@ public:
   {
     switch (portType)
     {
-    case PortType::In:
-      if (portIndex == 0)
-        return QStringLiteral("Minuend");
-      else if (portIndex == 1)
-        return QStringLiteral("Subtrahend");
-      break;
+      case PortType::In:
+        if (portIndex == 0)
+          return QStringLiteral("Minuend");
+        else if (portIndex == 1)
+          return QStringLiteral("Subtrahend");
 
-    case PortType::Out:
-      return QStringLiteral("Result");
+        break;
 
-    default:
-      break;
+      case PortType::Out:
+        return QStringLiteral("Result");
+
+      default:
+        break;
     }
-	return QString();
+    return QString();
   }
 
   QString
@@ -56,14 +57,6 @@ public:
   std::unique_ptr<NodeDataModel>
   clone() const override
   { return std::make_unique<SubtractionModel>(); }
-
-public:
-
-  void
-  save(Properties &p) const override
-  {
-    p.put("model_name", SubtractionModel::name());
-  }
 
 private:
 

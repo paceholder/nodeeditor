@@ -39,11 +39,11 @@ public:
 
 public:
 
-  void
-  save(Properties &p) const override;
+  QJsonObject
+  save() const override;
 
   void
-  restore(Properties const &p) override;
+  restore(QJsonObject const &json) override;
 
 public:
 
@@ -113,5 +113,4 @@ private:
 
   std::unique_ptr<NodeGraphicsObject> _nodeGraphicsObject;
 };
-
 }

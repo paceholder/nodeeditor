@@ -10,6 +10,7 @@
 #include <QtCore/QDataStream>
 #include <QtCore/QFile>
 
+#include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
 #include <QtCore/QJsonArray>
 
@@ -31,7 +32,7 @@ using QtNodes::NodeGraphicsObject;
 using QtNodes::Connection;
 using QtNodes::DataModelRegistry;
 using QtNodes::NodeDataModel;
-using QtNodes::Properties;
+//using QtNodes::Properties;
 using QtNodes::PortType;
 using QtNodes::PortIndex;
 
@@ -108,20 +109,13 @@ createConnection(Node& nodeIn,
 
 std::shared_ptr<Connection>
 FlowScene::
-restoreConnection(Properties const &p)
+restoreConnection(QJsonObject const &connectionJson)
 {
+  QUuid nodeInId  = QUuid(connectionJson["in_id"].toString());
+  QUuid nodeOutId = QUuid(connectionJson["out_id"].toString());
 
-  QUuid nodeInId;
-  QUuid nodeOutId;
-
-  p.get("in_id", &nodeInId);
-  p.get("out_id", &nodeOutId);
-
-  PortIndex portIndexIn;
-  PortIndex portIndexOut;
-
-  p.get("in_index", &portIndexIn);
-  p.get("out_index", &portIndexOut);
+  PortIndex portIndexIn  = connectionJson["in_index"].toInt();
+  PortIndex portIndexOut = connectionJson["out_index"].toInt();
 
   auto nodeIn  = _nodes[nodeInId].get();
   auto nodeOut = _nodes[nodeOutId].get();
@@ -159,11 +153,9 @@ createNode(std::unique_ptr<NodeDataModel> && dataModel)
 
 Node&
 FlowScene::
-restoreNode(Properties const &p)
+restoreNode(QJsonObject const& nodeJson)
 {
-  QString modelName;
-
-  p.get("model_name", &modelName);
+  QString modelName = nodeJson["model"].toObject()["name"].toString();
 
   auto dataModel = registry().create(modelName);
 
@@ -175,7 +167,7 @@ restoreNode(Properties const &p)
   auto ngo  = std::make_unique<NodeGraphicsObject>(*this, *node);
   node->setGraphicsObject(std::move(ngo));
 
-  node->restore(p);
+  node->restore(nodeJson);
 
   auto nodePtr = node.get();
   _nodes[node->id()] = std::move(node);
@@ -193,16 +185,16 @@ removeNode(Node& node)
   nodeDeleted(node);
 
   auto deleteConnections = [&node, this] (PortType portType)
-                           {
-                             auto nodeState = node.nodeState();
-                             auto const & nodeEntries = nodeState.getEntries(portType);
+  {
+    auto nodeState = node.nodeState();
+    auto const & nodeEntries = nodeState.getEntries(portType);
 
-                             for (auto &connections : nodeEntries)
-                             {
-                               for (auto const &pair : connections)
-                                 deleteConnection(*pair.second);
-                             }
-                           };
+    for (auto &connections : nodeEntries)
+    {
+      for (auto const &pair : connections)
+        deleteConnection(*pair.second);
+    }
+  };
 
   deleteConnections(PortType::In);
   deleteConnections(PortType::Out);
@@ -260,43 +252,31 @@ void
 FlowScene::
 save() const
 {
-  QByteArray byteArray;
-  QBuffer    writeBuffer(&byteArray);
+  QJsonObject sceneJson;
 
-  writeBuffer.open(QIODevice::WriteOnly);
-  QDataStream out(&writeBuffer);
-
-  out << static_cast<quint64>(_nodes.size());
+  QJsonArray nodesJsonArray;
 
   for (auto const & pair : _nodes)
   {
     auto const &node = pair.second;
 
-    Properties p;
-
-    node->save(p);
-
-    QVariantMap const &m = p.values();
-
-    out << m;
+    nodesJsonArray.append(node->save());
   }
 
-  out << static_cast<quint64>(_connections.size());
+  sceneJson["nodes"] = nodesJsonArray;
 
+  QJsonArray connectionJsonArray;
   for (auto const & pair : _connections)
   {
     auto const &connection = pair.second;
 
-    Properties p;
+    QJsonObject connectionJson = connection->save();
 
-    connection->save(p);
-
-    QVariantMap const &m = p.values();
-
-    out << m;
+    if (!connectionJson.isEmpty())
+      connectionJsonArray.append(connectionJson);
   }
 
-  //qDebug() << byteArray;
+  sceneJson["connections"] = connectionJsonArray;
 
   QString fileName =
     QFileDialog::getSaveFileName(nullptr,
@@ -310,8 +290,11 @@ save() const
       fileName += ".flow";
 
     QFile file(fileName);
-    file.open(QIODevice::WriteOnly);
-    file.write(byteArray);
+    if (file.open(QIODevice::WriteOnly))
+    {
+      QJsonDocument document(sceneJson);
+      file.write(document.toJson());
+    }
   }
 }
 
@@ -339,30 +322,22 @@ load()
   if (!file.open(QIODevice::ReadOnly))
     return;
 
-  QDataStream in(&file);
+  QByteArray wholeFile = file.readAll();
 
-  qint64 nNodes;
-  in >> nNodes;
+  QJsonObject const jsonDocument = QJsonDocument::fromJson(wholeFile).object();
 
-  for (unsigned int i = 0; i < nNodes; ++i)
+  QJsonArray nodesJsonArray = jsonDocument["nodes"].toArray();
+
+  for (int i = 0; i < nodesJsonArray.size(); ++i)
   {
-    Properties p;
-    auto &values = p.values();
-    in >> values;
-
-    restoreNode(p);
+    restoreNode(nodesJsonArray[i].toObject());
   }
 
-  qint64 nConnections;
-  in >> nConnections;
+  QJsonArray connectionJsonArray = jsonDocument["connections"].toArray();
 
-  for (unsigned int i = 0; i < nConnections; ++i)
+  for (int i = 0; i < connectionJsonArray.size(); ++i)
   {
-    Properties p;
-    auto &values = p.values();
-    in >> values;
-
-    restoreConnection(p);
+    restoreConnection(connectionJsonArray[i].toObject());
   }
 
   //QRectF  r = itemsBoundingRect();
@@ -401,9 +376,9 @@ locateNodeAt(QPointF scenePoint, FlowScene &scene,
                items.end(),
                std::back_inserter(filteredItems),
                [] (QGraphicsItem * item)
-    {
-      return (dynamic_cast<NodeGraphicsObject*>(item) != nullptr);
-    });
+               {
+                 return (dynamic_cast<NodeGraphicsObject*>(item) != nullptr);
+               });
 
   Node* resultNode = nullptr;
 

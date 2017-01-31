@@ -57,6 +57,18 @@ public:
 
 public:
 
+  QJsonObject
+  save() const override
+  {
+    QJsonObject modelJson;
+
+    modelJson["name"] = name();
+
+    return modelJson;
+  }
+
+public:
+
   virtual
   unsigned int
   nPorts(PortType portType) const = 0;

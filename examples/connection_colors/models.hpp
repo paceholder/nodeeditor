@@ -12,7 +12,6 @@ using QtNodes::NodeDataType;
 using QtNodes::NodeDataModel;
 using QtNodes::PortType;
 using QtNodes::PortIndex;
-using QtNodes::Properties;
 
 /// The class can potentially incapsulate any user data which
 /// need to be transferred within the Node Editor graph
@@ -20,7 +19,8 @@ class MyNodeData : public NodeData
 {
 public:
 
-  NodeDataType type() const override
+  NodeDataType
+  type() const override
   {
     return NodeDataType {"MyNodeData",
                          "My Node Data"};
@@ -31,7 +31,8 @@ class SimpleNodeData : public NodeData
 {
 public:
 
-  NodeDataType type() const override
+  NodeDataType
+  type() const override
   {
     return NodeDataType {"SimpleData",
                          "Simple Data"};
@@ -53,27 +54,24 @@ public:
 
 public:
 
-  QString caption() const override
+  QString
+  caption() const override
   {
     return QString("Naive Data Model");
   }
 
-  QString name() const override
+  QString
+  name() const override
   { return QString("NaiveDataModel"); }
 
-  std::unique_ptr<NodeDataModel>clone() const override
+  std::unique_ptr<NodeDataModel>
+  clone() const override
   { return std::make_unique<NaiveDataModel>(); }
 
 public:
 
-  void save(Properties &p) const override
-  {
-    p.put("model_name", NaiveDataModel::name());
-  }
-
-public:
-
-  unsigned int nPorts(PortType portType) const override
+  unsigned int
+  nPorts(PortType portType) const override
   {
     unsigned int result = 1;
 
@@ -93,8 +91,9 @@ public:
     return result;
   }
 
-  NodeDataType dataType(PortType portType,
-                        PortIndex portIndex) const override
+  NodeDataType
+  dataType(PortType portType,
+           PortIndex portIndex) const override
   {
     switch (portType)
     {
@@ -129,7 +128,8 @@ public:
     }
   }
 
-  std::shared_ptr<NodeData> outData(PortIndex port) override
+  std::shared_ptr<NodeData>
+  outData(PortIndex port) override
   {
     if (port < 1)
       return std::make_shared<MyNodeData>();
@@ -137,10 +137,12 @@ public:
     return std::make_shared<SimpleNodeData>();
   }
 
-  void setInData(std::shared_ptr<NodeData>, int) override
+  void
+  setInData(std::shared_ptr<NodeData>, int) override
   {
     //
   }
 
-  QWidget *embeddedWidget() override { return nullptr; }
+  QWidget *
+  embeddedWidget() override { return nullptr; }
 };

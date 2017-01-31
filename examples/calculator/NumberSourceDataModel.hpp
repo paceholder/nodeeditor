@@ -14,7 +14,6 @@ using QtNodes::PortIndex;
 using QtNodes::NodeData;
 using QtNodes::NodeDataType;
 using QtNodes::NodeDataModel;
-using QtNodes::Properties;
 using QtNodes::NodeValidationState;
 
 /// The model dictates the number of inputs and outputs for the Node.
@@ -50,11 +49,11 @@ public:
 
 public:
 
-  void
-  save(Properties &p) const override;
+  QJsonObject
+  save() const override;
 
   void
-  restore(Properties const &p) override;
+  restore(QJsonObject const &p) override;
 
 public:
 
