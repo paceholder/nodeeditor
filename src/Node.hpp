@@ -11,13 +11,14 @@
 #include "NodeGeometry.hpp"
 #include "NodeData.hpp"
 #include "Serializable.hpp"
+#include "Export.hpp"
 
 class Connection;
 class ConnectionState;
 class NodeGraphicsObject;
 class NodeDataModel;
 
-class Node
+class NODE_EDITOR_PUBLIC Node
   : public QObject
   , public Serializable
 {

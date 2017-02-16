@@ -12,6 +12,7 @@
 #include "Serializable.hpp"
 #include "ConnectionState.hpp"
 #include "ConnectionGeometry.hpp"
+#include "Export.hpp"
 
 class Node;
 class NodeData;
@@ -35,7 +36,7 @@ struct hash<QUuid>
 //------------------------------------------------------------------------------
 
 ///
-class Connection : public QObject, public Serializable
+class NODE_EDITOR_PUBLIC Connection : public QObject, public Serializable
 {
   Q_OBJECT
 public:
