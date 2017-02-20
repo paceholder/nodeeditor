@@ -181,9 +181,6 @@ void
 FlowScene::
 removeNode(Node& node)
 {
-  // call signal
-  nodeDeleted(node);
-
   auto deleteConnections = [&node, this] (PortType portType)
   {
     auto nodeState = node.nodeState();
@@ -198,6 +195,9 @@ removeNode(Node& node)
 
   deleteConnections(PortType::In);
   deleteConnections(PortType::Out);
+
+  // call signal
+  nodeDeleted(node);
 
   _nodes.erase(node.id());
 }

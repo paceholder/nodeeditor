@@ -23,7 +23,7 @@ class ConnectionState;
 class NodeGraphicsObject;
 class NodeDataModel;
 
-class Node
+class NODE_EDITOR_PUBLIC Node
   : public QObject
   , public Serializable
 {

@@ -12,6 +12,7 @@
 #include "Serializable.hpp"
 #include "ConnectionState.hpp"
 #include "ConnectionGeometry.hpp"
+#include "Export.hpp"
 
 class QPointF;
 
@@ -37,7 +38,7 @@ class NodeData;
 class ConnectionGraphicsObject;
 
 ///
-class Connection
+class NODE_EDITOR_PUBLIC Connection
   : public QObject
   , public Serializable
 {

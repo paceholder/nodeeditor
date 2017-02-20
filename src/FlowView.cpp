@@ -89,6 +89,7 @@ contextMenuEvent(QContextMenuEvent *event)
     modelMenu.addAction(modelName);
   }
   
+  txtBox->setFocus();
   if (QAction * action = modelMenu.exec(event->globalPos()))
   {
     QString modelName = action->text();
