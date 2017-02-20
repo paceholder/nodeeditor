@@ -89,6 +89,9 @@ contextMenuEvent(QContextMenuEvent *event)
     modelMenu.addAction(modelName);
   }
   
+  // make sure the text box gets focus so the user doesn't have to click on it
+  txtBox->setFocus();
+  
   if (QAction * action = modelMenu.exec(event->globalPos()))
   {
     QString modelName = action->text();
