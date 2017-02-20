@@ -55,6 +55,13 @@ NodeGraphicsObject(FlowScene &scene,
   setAcceptHoverEvents(true);
 
   embedQWidget();
+
+  // connect to the move signals to emit the move signals in FlowScene
+  auto onMoveSlot = [this] {
+    _scene.nodeMoved(_node, pos());
+  };
+  connect(this, &QGraphicsObject::xChanged, this, onMoveSlot);
+  connect(this, &QGraphicsObject::yChanged, this, onMoveSlot);
 }
 
 

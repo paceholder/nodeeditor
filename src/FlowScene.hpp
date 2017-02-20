@@ -100,6 +100,9 @@ signals:
   void
   connectionDeleted(Connection &c);
 
+  void
+  nodeMoved(Node& n, const QPointF& newLocation);
+
 private:
 
   using SharedConnection = std::shared_ptr<Connection>;
