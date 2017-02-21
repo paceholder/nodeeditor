@@ -103,6 +103,9 @@ signals:
   void
   nodeMoved(Node& n, const QPointF& newLocation);
 
+  void
+  nodeDoubleClicked(Node& n);
+
 private:
 
   using SharedConnection = std::shared_ptr<Connection>;
