@@ -70,6 +70,9 @@ protected:
   void
   hoverMoveEvent(QGraphicsSceneHoverEvent *) override;
 
+  void
+  mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
+
 private:
   void
   embedQWidget();

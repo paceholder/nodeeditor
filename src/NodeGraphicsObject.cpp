@@ -347,3 +347,12 @@ hoverMoveEvent(QGraphicsSceneHoverEvent * event)
 
   event->accept();
 }
+
+
+void
+NodeGraphicsObject::
+mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) {
+  QGraphicsItem::mouseDoubleClickEvent(event);
+
+  _scene.nodeDoubleClicked(node());
+}
