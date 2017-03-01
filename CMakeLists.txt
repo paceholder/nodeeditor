@@ -56,3 +56,10 @@ target_link_libraries(nodes
 if(BUILD_EXAMPLES)
   add_subdirectory(examples)
 endif()
+
+
+install(TARGETS nodes 
+	RUNTIME DESTINATION bin
+	LIBRARY DESTINATION lib
+	ARCHIVE DESTINATION lib
+)
