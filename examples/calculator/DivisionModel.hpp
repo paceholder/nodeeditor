@@ -7,7 +7,7 @@
 
 #include "MathOperationDataModel.hpp"
 
-#include "NumberData.hpp"
+#include "DecimalData.hpp"
 
 /// The model dictates the number of inputs and outputs for the Node.
 /// In this example it has no logic.
@@ -21,48 +21,41 @@ public:
 public:
   QString
   caption() const override
-  { return QString("Division"); }
-  
-  virtual bool
+  { return QStringLiteral("Division"); }
+
+  bool
   portCaptionVisible(PortType portType, PortIndex portIndex) const override
   { return true; }
 
-  virtual QString
+  QString
   portCaption(PortType portType, PortIndex portIndex) const override
   {
     switch (portType)
     {
       case PortType::In:
         if (portIndex == 0)
-          return QString("Dividend");
+          return QStringLiteral("Dividend");
         else if (portIndex == 1)
-          return QString("Divisor");
+          return QStringLiteral("Divisor");
+
         break;
 
       case PortType::Out:
-        return QString("Result");
+        return QStringLiteral("Result");
 
       default:
         break;
     }
-    return QString("");
+    return QString();
   }
-  
+
   QString
   name() const override
-  { return QString("Division"); }
+  { return QStringLiteral("Division"); }
 
   std::unique_ptr<NodeDataModel>
   clone() const override
   { return std::make_unique<DivisionModel>(); }
-
-public:
-
-  void
-  save(Properties &p) const override
-  {
-    p.put("model_name", DivisionModel::name());
-  }
 
 private:
 
@@ -77,23 +70,23 @@ private:
     if (n2 && (n2->number() == 0.0))
     {
       modelValidationState = NodeValidationState::Error;
-      modelValidationError = QString("Division by zero error");
+      modelValidationError = QStringLiteral("Division by zero error");
       _result.reset();
     }
     else if (n1 && n2)
     {
       modelValidationState = NodeValidationState::Valid;
-      modelValidationError = QString("");
-      _result = std::make_shared<NumberData>(n1->number() /
-        n2->number());
+      modelValidationError = QString();
+      _result = std::make_shared<DecimalData>(n1->number() /
+                                              n2->number());
     }
     else
     {
       modelValidationState = NodeValidationState::Warning;
-      modelValidationError = QString("Missing or incorrect inputs");
+      modelValidationError = QStringLiteral("Missing or incorrect inputs");
       _result.reset();
     }
-    
+
     emit dataUpdated(outPortIndex);
   }
 };

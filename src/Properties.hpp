@@ -6,6 +6,9 @@
 
 #include "Export.hpp"
 
+namespace QtNodes
+{
+
 class NODE_EDITOR_PUBLIC Properties
 {
 public:
@@ -41,3 +44,4 @@ private:
 
   QVariantMap _values;
 };
+}

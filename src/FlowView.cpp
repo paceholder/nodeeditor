@@ -15,15 +15,14 @@
 #include <iostream>
 
 #include "FlowScene.hpp"
-
 #include "DataModelRegistry.hpp"
-
 #include "Node.hpp"
 #include "NodeGraphicsObject.hpp"
-
 #include "ConnectionGraphicsObject.hpp"
-
 #include "StyleCollection.hpp"
+
+using QtNodes::FlowView;
+using QtNodes::FlowScene;
 
 FlowView::
 FlowView(FlowScene *scene)
@@ -56,10 +55,10 @@ contextMenuEvent(QContextMenuEvent *event)
 {
   QMenu modelMenu;
 
-  auto filterActionText = QString("skip me");
+  auto filterActionText = QStringLiteral("skip me");
 
   auto *txtBox = new QLineEdit(&modelMenu);
-  txtBox->setPlaceholderText(QString("Filter"));
+  txtBox->setPlaceholderText(QStringLiteral("Filter"));
   txtBox->setClearButtonEnabled(true);
 
   auto *txtBoxAction = new QWidgetAction(&modelMenu);
@@ -90,6 +89,7 @@ contextMenuEvent(QContextMenuEvent *event)
     modelMenu.addAction(modelName);
   }
   
+  txtBox->setFocus();
   if (QAction * action = modelMenu.exec(event->globalPos()))
   {
     QString modelName = action->text();

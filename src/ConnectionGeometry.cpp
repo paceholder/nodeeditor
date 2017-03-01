@@ -4,6 +4,9 @@
 
 #include "StyleCollection.hpp"
 
+using QtNodes::ConnectionGeometry;
+using QtNodes::PortType;
+
 ConnectionGeometry::
 ConnectionGeometry()
   : _in(0, 0)

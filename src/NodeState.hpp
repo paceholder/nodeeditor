@@ -9,6 +9,9 @@
 #include "PortType.hpp"
 #include "NodeData.hpp"
 
+namespace QtNodes
+{
+
 class Connection;
 class NodeDataModel;
 
@@ -89,3 +92,4 @@ private:
 
   bool _resizing;
 };
+}

@@ -12,7 +12,15 @@
 #include "ConnectionGraphicsObject.hpp"
 #include "ConnectionState.hpp"
 
-//------------------------------------------------------------------------------
+using QtNodes::Node;
+using QtNodes::NodeGeometry;
+using QtNodes::NodeState;
+using QtNodes::NodeData;
+using QtNodes::NodeDataType;
+using QtNodes::NodeDataModel;
+using QtNodes::NodeGraphicsObject;
+using QtNodes::PortIndex;
+using QtNodes::PortType;
 
 Node::
 Node(std::unique_ptr<NodeDataModel> && dataModel)
@@ -37,32 +45,38 @@ Node::
 }
 
 
-void
+QJsonObject
 Node::
-save(Properties &p) const
+save() const
 {
-  // save unique object id
-  p.put("id", _id);
+  QJsonObject nodeJson;
 
-  // save data model name
-  _nodeDataModel->save(p);
+  nodeJson["id"] = _id.toString();
 
-  // save node graphics position
-  p.put("position", _nodeGraphicsObject->pos());
+  nodeJson["model"] = _nodeDataModel->save();
+
+  nodeJson["position"] = QJsonObject
+  {
+    { "x" , _nodeGraphicsObject->pos().x() },
+    { "y" , _nodeGraphicsObject->pos().y() }
+  };
+
+  return nodeJson;
 }
 
 
 void
 Node::
-restore(Properties const &p)
+restore(QJsonObject const& json)
 {
-  p.get("id", &_id);
+  _id = QUuid(json["id"].toString());
 
-  QPointF point;
-  p.get("position", &point);
-  _nodeGraphicsObject->setPos(point );
+  QJsonObject positionJson = json["position"].toObject();
+  QPointF     point(positionJson["x"].toDouble(),
+                    positionJson["y"].toDouble());
+  _nodeGraphicsObject->setPos(point);
 
-  _nodeDataModel->restore(p);
+  _nodeDataModel->restore(json["model"].toObject());
 }
 
 
@@ -176,7 +190,7 @@ propagateData(std::shared_ptr<NodeData> nodeData,
               PortIndex inPortIndex) const
 {
   _nodeDataModel->setInData(nodeData, inPortIndex);
-  
+
   //Recalculate the nodes visuals. A data change can result in the node taking more space than before, so this forces a recalculate+repaint on the affected node
   _nodeGraphicsObject->setGeometryChanged();
   _nodeGeometry.recalculateSize();

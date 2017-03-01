@@ -4,6 +4,8 @@
 
 #include <iostream>
 
+using QtNodes::Properties;
+
 void
 Properties::
 put(QString const &name, QVariant const &v)

@@ -11,11 +11,21 @@
 #include "NodeState.hpp"
 #include "NodeDataModel.hpp"
 #include "Node.hpp"
+#include "FlowScene.hpp"
+
+using QtNodes::NodePainter;
+using QtNodes::NodeGeometry;
+using QtNodes::NodeGraphicsObject;
+using QtNodes::Node;
+using QtNodes::NodeState;
+using QtNodes::NodeDataModel;
+using QtNodes::FlowScene;
 
 void
 NodePainter::
 paint(QPainter* painter,
-      Node& node)
+      Node & node, 
+      FlowScene const& scene)
 {
   NodeGeometry const& geom = node.nodeGeometry();
 
@@ -31,7 +41,7 @@ paint(QPainter* painter,
 
   auto const &model = node.nodeDataModel();
 
-  drawConnectionPoints(painter, geom, state, model);
+  drawConnectionPoints(painter, geom, state, model, scene);
 
   drawFilledConnectionPoints(painter, geom, state, model);
 
@@ -94,7 +104,8 @@ NodePainter::
 drawConnectionPoints(QPainter* painter,
                      NodeGeometry const& geom,
                      NodeState const& state,
-                     NodeDataModel* const model)
+                     NodeDataModel* const model,
+                     FlowScene const & scene)
 {
   NodeStyle const& nodeStyle      = StyleCollection::nodeStyle();
   auto const     &connectionStyle = StyleCollection::connectionStyle();
@@ -118,13 +129,25 @@ drawConnectionPoints(QPainter* painter,
       if (state.isReacting() &&
           (state.getEntries(portType)[i].empty() ||
            portType == PortType::Out) &&
-          portType == state.reactingPortType())
+           portType == state.reactingPortType())
       {
 
         auto   diff = geom.draggingPos() - p;
         double dist = std::sqrt(QPointF::dotProduct(diff, diff));
+        bool   typeConvertable = false;
 
-        if (state.reactingDataType().id == dataType.id)
+        {
+          if (portType == PortType::In)
+          {
+            typeConvertable = scene.registry().getTypeConverter(state.reactingDataType().id, dataType.id) != nullptr;
+          }
+          else
+          {
+            typeConvertable = scene.registry().getTypeConverter(dataType.id, state.reactingDataType().id) != nullptr;
+          }
+        }
+
+        if (state.reactingDataType().id == dataType.id || typeConvertable)
         {
           double const thres = 40.0;
           r = (dist < thres) ?

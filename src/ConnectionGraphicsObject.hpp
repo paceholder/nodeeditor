@@ -8,6 +8,9 @@
 
 class QGraphicsSceneMouseEvent;
 
+namespace QtNodes
+{
+
 class FlowScene;
 class Connection;
 class ConnectionGeometry;
@@ -78,3 +81,4 @@ private:
 
   Connection& _connection;
 };
+}

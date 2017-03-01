@@ -7,7 +7,7 @@
 
 #include "MathOperationDataModel.hpp"
 
-#include "NumberData.hpp"
+#include "DecimalData.hpp"
 
 /// The model dictates the number of inputs and outputs for the Node.
 /// In this example it has no logic.
@@ -22,23 +22,15 @@ public:
 
   QString
   caption() const override
-  { return QString("Multiplication"); }
+  { return QStringLiteral("Multiplication"); }
 
   QString
   name() const override
-  { return QString("Multiplication"); }
+  { return QStringLiteral("Multiplication"); }
 
   std::unique_ptr<NodeDataModel>
   clone() const override
   { return std::make_unique<MultiplicationModel>(); }
-
-public:
-
-  void
-  save(Properties &p) const override
-  {
-    p.put("model_name", MultiplicationModel::name());
-  }
 
 private:
 
@@ -53,14 +45,14 @@ private:
     if (n1 && n2)
     {
       modelValidationState = NodeValidationState::Valid;
-      modelValidationError = QString("");
-      _result = std::make_shared<NumberData>(n1->number() *
-                                             n2->number());
+      modelValidationError = QString();
+      _result = std::make_shared<DecimalData>(n1->number() *
+                                              n2->number());
     }
     else
     {
       modelValidationState = NodeValidationState::Warning;
-      modelValidationError = QString("Missing or incorrect inputs");
+      modelValidationError = QStringLiteral("Missing or incorrect inputs");
       _result.reset();
     }
 

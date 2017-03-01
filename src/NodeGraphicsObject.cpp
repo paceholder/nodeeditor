@@ -18,6 +18,10 @@
 
 #include "StyleCollection.hpp"
 
+using QtNodes::NodeGraphicsObject;
+using QtNodes::Node;
+using QtNodes::FlowScene;
+
 NodeGraphicsObject::
 NodeGraphicsObject(FlowScene &scene,
                    Node& node)
@@ -51,6 +55,13 @@ NodeGraphicsObject(FlowScene &scene,
   setAcceptHoverEvents(true);
 
   embedQWidget();
+
+  // connect to the move signals to emit the move signals in FlowScene
+  auto onMoveSlot = [this] {
+    _scene.nodeMoved(_node, pos());
+  };
+  connect(this, &QGraphicsObject::xChanged, this, onMoveSlot);
+  connect(this, &QGraphicsObject::yChanged, this, onMoveSlot);
 }
 
 
@@ -145,7 +156,7 @@ paint(QPainter * painter,
 {
   painter->setClipRect(option->exposedRect);
 
-  NodePainter::paint(painter, _node);
+  NodePainter::paint(painter, _node, _scene);
 }
 
 
@@ -195,7 +206,7 @@ mousePressEvent(QGraphicsSceneMouseEvent * event)
       {
         auto con = connections.begin()->second;
 
-        NodeConnectionInteraction interaction(_node, *con);
+        NodeConnectionInteraction interaction(_node, *con, _scene);
 
         interaction.disconnect(portToCheck);
       }
@@ -335,4 +346,13 @@ hoverMoveEvent(QGraphicsSceneHoverEvent * event)
   }
 
   event->accept();
+}
+
+
+void
+NodeGraphicsObject::
+mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) {
+  QGraphicsItem::mouseDoubleClickEvent(event);
+
+  _scene.nodeDoubleClicked(node());
 }

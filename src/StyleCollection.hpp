@@ -4,6 +4,9 @@
 #include "ConnectionStyle.hpp"
 #include "FlowViewStyle.hpp"
 
+namespace QtNodes
+{
+
 class StyleCollection
 {
 public:
@@ -55,3 +58,4 @@ private:
 
   FlowViewStyle _flowViewStyle;
 };
+}

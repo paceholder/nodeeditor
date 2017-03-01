@@ -9,10 +9,13 @@
 #include "NodeState.hpp"
 #include "Export.hpp"
 
+class QGraphicsProxyWidget;
+
+namespace QtNodes
+{
+
 class FlowScene;
 class FlowItemEntry;
-
-class QGraphicsProxyWidget;
 
 /// Class reacts on GUI events, mouse clicks and
 /// forwards painting operation.
@@ -68,6 +71,9 @@ protected:
   void
   hoverMoveEvent(QGraphicsSceneHoverEvent *) override;
 
+  void
+  mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
+
 private:
   void
   embedQWidget();
@@ -81,3 +87,4 @@ private:
   // either nullptr or owned by parent QGraphicsItem
   QGraphicsProxyWidget * _proxyWidget;
 };
+}

@@ -1,5 +1,10 @@
 #include "StyleCollection.hpp"
 
+using QtNodes::StyleCollection;
+using QtNodes::NodeStyle;
+using QtNodes::ConnectionStyle;
+using QtNodes::FlowViewStyle;
+
 NodeStyle const&
 StyleCollection::
 nodeStyle()

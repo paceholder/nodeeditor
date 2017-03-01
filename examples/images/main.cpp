@@ -7,6 +7,10 @@
 #include "ImageShowModel.hpp"
 #include "ImageLoaderModel.hpp"
 
+using QtNodes::DataModelRegistry;
+using QtNodes::FlowScene;
+using QtNodes::FlowView;
+
 static std::shared_ptr<DataModelRegistry>
 registerDataModels()
 {

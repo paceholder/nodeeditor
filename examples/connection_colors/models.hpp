@@ -7,6 +7,12 @@
 
 #include <memory>
 
+using QtNodes::NodeData;
+using QtNodes::NodeDataType;
+using QtNodes::NodeDataModel;
+using QtNodes::PortType;
+using QtNodes::PortIndex;
+
 /// The class can potentially incapsulate any user data which
 /// need to be transferred within the Node Editor graph
 class MyNodeData : public NodeData
@@ -15,7 +21,10 @@ public:
 
   NodeDataType
   type() const override
-  { return NodeDataType {"MyNodeData", "My Node Data"}; }
+  {
+    return NodeDataType {"MyNodeData",
+                         "My Node Data"};
+  }
 };
 
 class SimpleNodeData : public NodeData
@@ -24,7 +33,10 @@ public:
 
   NodeDataType
   type() const override
-  { return NodeDataType {"SimpleData", "Simple Data"}; }
+  {
+    return NodeDataType {"SimpleData",
+                         "Simple Data"};
+  }
 };
 
 //------------------------------------------------------------------------------
@@ -58,14 +70,6 @@ public:
 
 public:
 
-  void
-  save(Properties &p) const override
-  {
-    p.put("model_name", NaiveDataModel::name());
-  }
-
-public:
-
   unsigned int
   nPorts(PortType portType) const override
   {
@@ -88,7 +92,8 @@ public:
   }
 
   NodeDataType
-  dataType(PortType portType, PortIndex portIndex) const override
+  dataType(PortType portType,
+           PortIndex portIndex) const override
   {
     switch (portType)
     {

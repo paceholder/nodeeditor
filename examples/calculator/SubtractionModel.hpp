@@ -7,7 +7,7 @@
 
 #include "MathOperationDataModel.hpp"
 
-#include "NumberData.hpp"
+#include "DecimalData.hpp"
 
 /// The model dictates the number of inputs and outputs for the Node.
 /// In this example it has no logic.
@@ -22,7 +22,7 @@ public:
 
   QString
   caption() const override
-  { return QString("Subtraction"); }
+  { return QStringLiteral("Subtraction"); }
 
   virtual bool
   portCaptionVisible(PortType portType, PortIndex portIndex) const override
@@ -33,37 +33,30 @@ public:
   {
     switch (portType)
     {
-    case PortType::In:
-      if (portIndex == 0)
-        return QString("Minuend");
-      else if (portIndex == 1)
-        return QString("Subtrahend");
-      break;
+      case PortType::In:
+        if (portIndex == 0)
+          return QStringLiteral("Minuend");
+        else if (portIndex == 1)
+          return QStringLiteral("Subtrahend");
 
-    case PortType::Out:
-      return QString("Result");
+        break;
 
-    default:
-      break;
+      case PortType::Out:
+        return QStringLiteral("Result");
+
+      default:
+        break;
     }
-	return QString("");
+    return QString();
   }
 
   QString
   name() const override
-  { return QString("Subtraction"); }
+  { return QStringLiteral("Subtraction"); }
 
   std::unique_ptr<NodeDataModel>
   clone() const override
   { return std::make_unique<SubtractionModel>(); }
-
-public:
-
-  void
-  save(Properties &p) const override
-  {
-    p.put("model_name", SubtractionModel::name());
-  }
 
 private:
 
@@ -78,14 +71,14 @@ private:
     if (n1 && n2)
     {
       modelValidationState = NodeValidationState::Valid;
-      modelValidationError = QString("");
-      _result = std::make_shared<NumberData>(n1->number() -
-                                             n2->number());
+      modelValidationError = QString();
+      _result = std::make_shared<DecimalData>(n1->number() -
+                                              n2->number());
     }
     else
     {
       modelValidationState = NodeValidationState::Warning;
-      modelValidationError = QString("Missing or incorrect inputs");
+      modelValidationError = QStringLiteral("Missing or incorrect inputs");
       _result.reset();
     }
 

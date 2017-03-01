@@ -10,6 +10,9 @@
 
 #include "Export.hpp"
 
+namespace QtNodes
+{
+
 enum class NodeValidationState
 {
   Valid,
@@ -54,6 +57,18 @@ public:
 
 public:
 
+  QJsonObject
+  save() const override
+  {
+    QJsonObject modelJson;
+
+    modelJson["name"] = name();
+
+    return modelJson;
+  }
+
+public:
+
   virtual
   unsigned int
   nPorts(PortType portType) const = 0;
@@ -81,7 +96,7 @@ public:
   virtual
   bool
   resizable() const { return false; }
-  
+
   virtual
   NodeValidationState
   validationState() const { return NodeValidationState::Valid; }
@@ -104,3 +119,4 @@ signals:
   void
   computingFinished();
 };
+}

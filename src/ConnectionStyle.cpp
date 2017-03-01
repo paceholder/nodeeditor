@@ -12,12 +12,16 @@
 
 #include "StyleCollection.hpp"
 
+using QtNodes::ConnectionStyle;
+
+inline void initResources() { Q_INIT_RESOURCE(resources); }
+
 ConnectionStyle::
 ConnectionStyle()
 {
   // Explicit resources inialization for preventing the static initialization
   // order fiasco: https://isocpp.org/wiki/faq/ctors#static-init-order
-  Q_INIT_RESOURCE(resources);
+  initResources();
 
   // This configuration is stored inside the compiled unit and is loaded statically
   loadJsonFile(":DefaultStyle.json");
@@ -55,7 +59,7 @@ setConnectionStyle(QString jsonText)
 #define CONNECTION_STYLE_READ_COLOR(values, variable)  { \
     auto valueRef = values[#variable]; \
     CONNECTION_STYLE_CHECK_UNDEFINED_VALUE(valueRef, variable) \
-    if (CONNECTION_VALUE_EXISTS(valueRef)) \
+    if (CONNECTION_VALUE_EXISTS(valueRef)) {\
       if (valueRef.isArray()) { \
         auto colorArray = valueRef.toArray(); \
         std::vector<int> rgb; rgb.reserve(3); \
@@ -66,6 +70,7 @@ setConnectionStyle(QString jsonText)
       } else { \
         variable = QColor(valueRef.toString()); \
       } \
+    } \
 }
 
 #define CONNECTION_STYLE_READ_FLOAT(values, variable)  { \
