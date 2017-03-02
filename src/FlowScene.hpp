@@ -72,7 +72,7 @@ public:
   iterateOverNodes(std::function<void(Node*)> visitor);
 
   void
-  iterateOverNodes(std::function<void(NodeDataModel*)> visitor);
+  iterateOverNodeData(std::function<void(NodeDataModel*)> visitor);
 public:
 
   std::unordered_map<QUuid, std::unique_ptr<Node> > const &

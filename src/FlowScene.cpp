@@ -232,7 +232,7 @@ iterateOverNodes(std::function<void(Node*)> visitor)
 
 void
 FlowScene::
-iterateOverNodes(std::function<void(NodeDataModel*)> visitor)
+iterateOverNodeData(std::function<void(NodeDataModel*)> visitor)
 {
   for (const auto& _node : _nodes)
   {
