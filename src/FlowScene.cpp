@@ -230,6 +230,17 @@ iterateOverNodes(std::function<void(Node*)> visitor)
 }
 
 
+void
+FlowScene::
+iterateOverNodes(std::function<void(NodeDataModel*)> visitor)
+{
+  for (const auto& _node : _nodes)
+  {
+    visitor(_node.second->nodeDataModel());
+  }
+}
+
+
 std::unordered_map<QUuid, std::unique_ptr<Node> > const &
 FlowScene::
 nodes() const
