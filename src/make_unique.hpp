@@ -2,7 +2,10 @@
 
 #include <memory>
 
-#if __cplusplus < 201300 //c++14
+
+#if (!defined(_MSC_VER) && (__cplusplus < 201300)) || \		
+    ( defined(_MSC_VER) && (_MSC_VER < 1900))
+
 namespace std
 {
     template<typename T, typename... Args>
