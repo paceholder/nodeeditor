@@ -73,6 +73,9 @@ public:
 
   void
   iterateOverNodeData(std::function<void(NodeDataModel*)> visitor);
+
+  void
+  iterateOverNodeDataDependentOrder(std::function<void(NodeDataModel*)> visitor);
 public:
 
   std::unordered_map<QUuid, std::unique_ptr<Node> > const &

@@ -241,6 +241,62 @@ iterateOverNodeData(std::function<void(NodeDataModel*)> visitor)
 }
 
 
+void
+FlowScene::
+iterateOverNodeDataDependentOrder(std::function<void(NodeDataModel*)> visitor)
+{
+  size_t nodeIndex = 0;
+  std::unordered_map<QUuid, size_t> nodeIndexMap;
+
+  //Iterate over "leaf" nodes
+  for (const auto& _node : _nodes)
+  {
+    auto model = _node.second->nodeDataModel();
+    for (size_t i = 0; i < model->nPorts(PortType::In); ++i)
+    {
+      auto connections = _node.second->nodeState().connections(PortType::In, i);
+      if (!connections.empty())
+      {
+        goto skip_node_leaf;
+      }
+    }
+    nodeIndexMap[_node.second->id()] = nodeIndex;
+    ++nodeIndex;
+    visitor(model);
+  skip_node_leaf:
+    ;
+  }
+
+  //Iterate over dependent nodes
+  while (_nodes.size() != nodeIndexMap.size())
+  {
+    for (const auto& _node : _nodes)
+    {
+      if (nodeIndexMap.find(_node.second->id()) != nodeIndexMap.end())
+        continue;
+      auto model = _node.second->nodeDataModel();
+      for (size_t i = 0; i < model->nPorts(PortType::In); ++i)
+      {
+        auto connections = _node.second->nodeState().connections(PortType::In, i);
+
+        for (auto& conn : connections)
+        {
+          if (nodeIndexMap.find(conn.second->getNode(PortType::Out)->id()) == nodeIndexMap.end())
+          {
+            goto skip_node_dep;
+          }
+        }
+      }
+      nodeIndexMap[_node.second->id()] = nodeIndex;
+      ++nodeIndex;
+      visitor(model);
+    skip_node_dep:
+      ;
+    }
+  }
+}
+
+
 std::unordered_map<QUuid, std::unique_ptr<Node> > const &
 FlowScene::
 nodes() const
