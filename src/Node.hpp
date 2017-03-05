@@ -14,6 +14,7 @@
 #include "NodeGeometry.hpp"
 #include "NodeData.hpp"
 #include "Serializable.hpp"
+#include "Export.hpp"
 
 namespace QtNodes
 {
