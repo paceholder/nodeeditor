@@ -90,12 +90,11 @@ drawNodeRect(QPainter* painter,
 
   float diam = nodeStyle.ConnectionPointDiameter;
 
-  QRectF    boundary(0.0, 0.0, geom.width(), geom.height());
-  QMarginsF m(diam, diam, diam, diam);
+  QRectF    boundary( -diam, -diam, 2.0*diam + geom.width(), 2.0*diam + geom.height());
 
   double const radius = 3.0;
 
-  painter->drawRoundedRect(boundary.marginsAdded(m), radius, radius);
+  painter->drawRoundedRect(boundary, radius, radius);
 }
 
 
@@ -390,10 +389,12 @@ drawValidationRect(QPainter * painter,
     
     float diam = nodeStyle.ConnectionPointDiameter;
 
-    QRectF    boundary(0.0, geom.height() - geom.validationHeight(), geom.width(), geom.validationHeight());
-    QMarginsF m(diam, diam, diam, diam);
-    
-    painter->drawRoundedRect(boundary.marginsAdded(m), radius, radius);
+    QRectF    boundary(-diam,
+                       -diam + geom.height() - geom.validationHeight(),
+                       2.0*diam + geom.width(),
+                       2.0*diam + geom.validationHeight());
+
+    painter->drawRoundedRect(boundary, radius, radius);
 
     painter->setBrush(Qt::gray);
 
