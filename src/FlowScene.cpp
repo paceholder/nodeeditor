@@ -297,6 +297,30 @@ iterateOverNodeDataDependentOrder(std::function<void(NodeDataModel*)> visitor)
 }
 
 
+QPointF
+FlowScene::
+getNodePosition(const Node& node) const
+{
+  return node.nodeGraphicsObject().pos();
+}
+
+
+void
+FlowScene::
+getNodePosition(Node& node, const QPointF& pos) const
+{
+  node.nodeGraphicsObject().setPos(pos);
+}
+
+
+QSizeF
+FlowScene::
+getNodeSize(const Node& node) const
+{
+  return QSizeF(node.nodeGeometry().width(), node.nodeGeometry().height());
+}
+
+
 std::unordered_map<QUuid, std::unique_ptr<Node> > const &
 FlowScene::
 nodes() const

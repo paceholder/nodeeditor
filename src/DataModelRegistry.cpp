@@ -29,6 +29,22 @@ registeredModels() const
 }
 
 
+DataModelRegistry::RegisteredModelsCategoryMap const &
+DataModelRegistry::
+registeredModelsCategoryAssociation() const
+{
+  return _registeredModelsCategory;
+}
+
+
+DataModelRegistry::CategoriesSet const &
+DataModelRegistry::
+categories() const
+{
+  return _categories;
+}
+
+
 std::unique_ptr<NodeDataModel>
 DataModelRegistry::
 getTypeConverter(const QString & sourceTypeID, const QString & destTypeID) const

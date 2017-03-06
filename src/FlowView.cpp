@@ -55,46 +55,54 @@ contextMenuEvent(QContextMenuEvent *event)
 {
   QMenu modelMenu;
 
-  auto filterActionText = QStringLiteral("skip me");
+  auto skipText = QStringLiteral("skip me");
 
+  //Add filterbox to the context menu
   auto *txtBox = new QLineEdit(&modelMenu);
   txtBox->setPlaceholderText(QStringLiteral("Filter"));
   txtBox->setClearButtonEnabled(true);
 
   auto *txtBoxAction = new QWidgetAction(&modelMenu);
   txtBoxAction->setDefaultWidget(txtBox);
-  txtBoxAction->setText(filterActionText);
 
   modelMenu.addAction(txtBoxAction);
 
-  connect(txtBox, &QLineEdit::textChanged, [&](const QString &text) 
-  {
-    for (auto action : modelMenu.actions())
-    {
-      auto actionText = action->text();
-      if (actionText != filterActionText && !actionText.contains(text, Qt::CaseInsensitive))
-      {
-        action->setVisible(false);
-      }
-      else
-      {
-        action->setVisible(true);
-      }
-    }
-  });
+  //Add result treeview to the context menu
+  auto *treeView = new QTreeWidget(&modelMenu); 
+  treeView->header()->close();
 
-  for (auto const &modelRegistry : _scene->registry().registeredModels())
+  auto *treeViewAction = new QWidgetAction(&modelMenu);
+  treeViewAction->setDefaultWidget(treeView);
+
+  modelMenu.addAction(treeViewAction);
+
+  QMap<QString, QTreeWidgetItem*> topLevelItems;
+  for (auto const &cat : _scene->registry().categories())
   {
-    QString const &modelName = modelRegistry.first;
-    modelMenu.addAction(modelName);
+    auto item = new QTreeWidgetItem(treeView);
+    item->setText(0, cat);
+    item->setData(0, Qt::UserRole, skipText);
+    topLevelItems[cat] = item;
   }
-  
-  // make sure the text box gets focus so the user doesn't have to click on it
-  txtBox->setFocus();
-  
-  if (QAction * action = modelMenu.exec(event->globalPos()))
+
+  for (auto const &assoc : _scene->registry().registeredModelsCategoryAssociation())
   {
-    QString modelName = action->text();
+    auto parent = topLevelItems[assoc.second];
+    auto item = new QTreeWidgetItem(parent);
+    item->setText(0, assoc.first);
+    item->setData(0, Qt::UserRole, assoc.first);
+  }
+
+  treeView->expandAll();
+  
+  connect(treeView, &QTreeWidget::itemActivated, [&](QTreeWidgetItem *item, int column)
+  {
+    QString modelName = item->data(0, Qt::UserRole).toString();
+
+    if (modelName == skipText)
+    {
+      return;
+    }
 
     auto type = _scene->registry().create(modelName);
 
@@ -112,7 +120,34 @@ contextMenuEvent(QContextMenuEvent *event)
     {
       qDebug() << "Model not found";
     }
-  }
+    modelMenu.close();
+  });
+  
+  //Setup filtering
+  connect(txtBox, &QLineEdit::textChanged, [&](const QString &text)
+  {
+    for (auto& topLvlItem : topLevelItems)
+    {
+      for (int i = 0; i < topLvlItem->childCount(); ++i)
+      {
+        auto child = topLvlItem->child(i);
+        auto modelName = child->data(0, Qt::UserRole).toString();
+        if (modelName.contains(text, Qt::CaseInsensitive))
+        {
+          child->setHidden(false);
+        }
+        else
+        {
+          child->setHidden(true);
+        }
+      }
+    }
+  });
+
+  // make sure the text box gets focus so the user doesn't have to click on it
+  txtBox->setFocus();
+  
+  modelMenu.exec(event->globalPos());
 }
 
 

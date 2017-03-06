@@ -76,6 +76,15 @@ public:
 
   void
   iterateOverNodeDataDependentOrder(std::function<void(NodeDataModel*)> visitor);
+
+  QPointF
+  getNodePosition(const Node& node) const;
+
+  void
+  getNodePosition(Node& node, const QPointF& pos) const;
+  
+  QSizeF
+  getNodeSize(const Node& node) const;
 public:
 
   std::unordered_map<QUuid, std::unique_ptr<Node> > const &
