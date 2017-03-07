@@ -81,7 +81,7 @@ public:
   getNodePosition(const Node& node) const;
 
   void
-  getNodePosition(Node& node, const QPointF& pos) const;
+  setNodePosition(Node& node, const QPointF& pos) const;
   
   QSizeF
   getNodeSize(const Node& node) const;

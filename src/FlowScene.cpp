@@ -307,9 +307,10 @@ getNodePosition(const Node& node) const
 
 void
 FlowScene::
-getNodePosition(Node& node, const QPointF& pos) const
+setNodePosition(Node& node, const QPointF& pos) const
 {
   node.nodeGraphicsObject().setPos(pos);
+  node.nodeGraphicsObject().moveConnections();
 }
 
 
