@@ -221,12 +221,12 @@ keyPressEvent(QKeyEvent *event)
         if (auto c = dynamic_cast<ConnectionGraphicsObject*>(item))
           connectionsToDelete.push_back(&c->connection());
       }
+	  
+	  for (auto & c : connectionsToDelete)
+		  _scene->deleteConnection(*c);
 
       for( auto & n : nodesToDelete )
         _scene->removeNode(*n);
-
-      for( auto & c : connectionsToDelete )
-        _scene->deleteConnection(*c);
 
     }
 
