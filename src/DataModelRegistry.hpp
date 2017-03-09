@@ -50,7 +50,7 @@ public:
 
   template<typename ModelType, bool TypeConverter = false>
   void
-  registerModel(std::unique_ptr<ModelType> uniqueModel = std::make_unique<ModelType>(), const QString& category = "Nodes")
+  registerModel(std::unique_ptr<ModelType> uniqueModel = std::make_unique<ModelType>(), QString const &category = "Nodes")
   {
     static_assert(std::is_base_of<NodeDataModel, ModelType>::value,
                   "Must pass a subclass of NodeDataModel to registerModel");
@@ -89,7 +89,7 @@ public:
   //Parameter order alias, so a category can be set without forcing to manually pass a model instance
   template<typename ModelType, bool TypeConverter = false>
   void
-  registerModel(const QString& category, std::unique_ptr<ModelType> uniqueModel = std::make_unique<ModelType>())
+  registerModel(QString const &category, std::unique_ptr<ModelType> uniqueModel = std::make_unique<ModelType>())
   {
     registerModel<ModelType, TypeConverter>(std::move(uniqueModel), category);
   }
@@ -107,8 +107,8 @@ public:
   categories() const;
 
   std::unique_ptr<NodeDataModel>
-  getTypeConverter(const QString & sourceTypeID, 
-                   const QString & destTypeID) const;
+  getTypeConverter(QString const &sourceTypeID,
+                   QString const &destTypeID) const;
 
 private:
 

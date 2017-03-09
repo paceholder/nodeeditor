@@ -47,7 +47,7 @@ categories() const
 
 std::unique_ptr<NodeDataModel>
 DataModelRegistry::
-getTypeConverter(const QString & sourceTypeID, const QString & destTypeID) const
+getTypeConverter(QString const &sourceTypeID, QString const &destTypeID) const
 {
   auto typeConverterKey = std::make_pair(sourceTypeID, destTypeID);
   auto converter = _registeredTypeConverters.find(typeConverterKey);
