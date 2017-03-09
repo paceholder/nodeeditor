@@ -1,6 +1,7 @@
 #pragma once
 
 #include <unordered_map>
+#include <set>
 #include <memory>
 
 #include <QtCore/QString>
@@ -18,8 +19,10 @@ class NODE_EDITOR_PUBLIC DataModelRegistry
 
 public:
   
-  using RegistryItemPtr     = std::unique_ptr<NodeDataModel>;
-  using RegisteredModelsMap = std::unordered_map<QString, RegistryItemPtr>;
+  using RegistryItemPtr             = std::unique_ptr<NodeDataModel>;
+  using RegisteredModelsMap         = std::unordered_map<QString, RegistryItemPtr>;
+  using RegisteredModelsCategoryMap = std::unordered_map<QString, QString>;
+  using CategoriesSet               = std::set<QString>;
 
   struct TypeConverterItem
   {
@@ -47,7 +50,7 @@ public:
 
   template<typename ModelType, bool TypeConverter = false>
   void
-  registerModel(std::unique_ptr<ModelType> uniqueModel = std::make_unique<ModelType>())
+  registerModel(std::unique_ptr<ModelType> uniqueModel = std::make_unique<ModelType>(), QString const &category = "Nodes")
   {
     static_assert(std::is_base_of<NodeDataModel, ModelType>::value,
                   "Must pass a subclass of NodeDataModel to registerModel");
@@ -57,6 +60,8 @@ public:
     if (_registeredModels.count(name) == 0)
     {
       _registeredModels[name] = std::move(uniqueModel);
+      _categories.insert(category);
+      _registeredModelsCategory[name] = category;
     }
 
     if (TypeConverter)
@@ -81,18 +86,34 @@ public:
     }
   }
 
+  //Parameter order alias, so a category can be set without forcing to manually pass a model instance
+  template<typename ModelType, bool TypeConverter = false>
+  void
+  registerModel(QString const &category, std::unique_ptr<ModelType> uniqueModel = std::make_unique<ModelType>())
+  {
+    registerModel<ModelType, TypeConverter>(std::move(uniqueModel), category);
+  }
+
   std::unique_ptr<NodeDataModel>
   create(QString const &modelName);
 
   RegisteredModelsMap const &
   registeredModels() const;
+  
+  RegisteredModelsCategoryMap const &
+  registeredModelsCategoryAssociation() const;
+  
+  CategoriesSet const &
+  categories() const;
 
   std::unique_ptr<NodeDataModel>
-  getTypeConverter(const QString & sourceTypeID, 
-                   const QString & destTypeID) const;
+  getTypeConverter(QString const &sourceTypeID,
+                   QString const &destTypeID) const;
 
 private:
 
+  RegisteredModelsCategoryMap _registeredModelsCategory;
+  CategoriesSet _categories;
   RegisteredModelsMap _registeredModels;
   RegisteredTypeConvertersMap _registeredTypeConverters;
 };

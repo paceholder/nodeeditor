@@ -230,6 +230,112 @@ iterateOverNodes(std::function<void(Node*)> visitor)
 }
 
 
+void
+FlowScene::
+iterateOverNodeData(std::function<void(NodeDataModel*)> visitor)
+{
+  for (const auto& _node : _nodes)
+  {
+    visitor(_node.second->nodeDataModel());
+  }
+}
+
+
+void
+FlowScene::
+iterateOverNodeDataDependentOrder(std::function<void(NodeDataModel*)> visitor)
+{
+  std::set<QUuid> visitedNodesSet;
+
+  //A leaf node is a node with no input ports, or all possible input ports empty
+  auto isNodeLeaf = [](Node const &node, NodeDataModel const &model)
+  {
+    for (size_t i = 0; i < model.nPorts(PortType::In); ++i)
+    {
+      auto connections = node.nodeState().connections(PortType::In, i);
+      if (!connections.empty())
+      {
+        return false;
+      }
+    }
+    return true;
+  };
+
+  //Iterate over "leaf" nodes
+  for (auto const &_node : _nodes)
+  {
+    auto const &node = _node.second;
+    auto model = node->nodeDataModel();
+
+    if (isNodeLeaf(*node, *model))
+    {
+      visitor(model);
+      visitedNodesSet.insert(node->id());
+    }
+  }
+
+  auto areNodeInputsVisitedBefore = [&](Node const &node, NodeDataModel const &model)
+  {
+    for (size_t i = 0; i < model.nPorts(PortType::In); ++i)
+    {
+      auto connections = node.nodeState().connections(PortType::In, i);
+
+      for (auto& conn : connections)
+      {
+        if (visitedNodesSet.find(conn.second->getNode(PortType::Out)->id()) == visitedNodesSet.end())
+        {
+          return false;
+        }
+      }
+    }
+    return true;
+  };
+
+  //Iterate over dependent nodes
+  while (_nodes.size() != visitedNodesSet.size())
+  {
+    for (auto const &_node : _nodes)
+    {
+      auto const &node = _node.second;
+      if (visitedNodesSet.find(node->id()) != visitedNodesSet.end())
+        continue;
+      auto model = node->nodeDataModel();
+
+      if (areNodeInputsVisitedBefore(*node, *model))
+      {
+        visitor(model);
+        visitedNodesSet.insert(node->id());
+      }
+    }
+  }
+}
+
+
+QPointF
+FlowScene::
+getNodePosition(const Node& node) const
+{
+  return node.nodeGraphicsObject().pos();
+}
+
+
+void
+FlowScene::
+setNodePosition(Node& node, const QPointF& pos) const
+{
+  node.nodeGraphicsObject().setPos(pos);
+  node.nodeGraphicsObject().moveConnections();
+}
+
+
+QSizeF
+FlowScene::
+getNodeSize(const Node& node) const
+{
+  return QSizeF(node.nodeGeometry().width(), node.nodeGeometry().height());
+}
+
+
 std::unordered_map<QUuid, std::unique_ptr<Node> > const &
 FlowScene::
 nodes() const
@@ -303,8 +409,18 @@ void
 FlowScene::
 load()
 {
-  _connections.clear();
-  _nodes.clear();
+  //Manual node cleanup. Simply clearing the holding datastructures doesn't work, the code crashes when
+  // there are both nodes and connections in the scene. (The data propagation internal logic tries to propagate 
+  // data through already freed connections.)
+  std::vector<Node*> nodesToDelete;
+  for (auto& node : _nodes)
+  {
+    nodesToDelete.push_back(node.second.get());
+  }
+  for (auto& node : nodesToDelete)
+  {
+    removeNode(*node);
+  }
 
   //-------------
 
