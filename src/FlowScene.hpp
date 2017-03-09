@@ -101,7 +101,13 @@ public:
   void
   load();
 
-signals:
+  QByteArray 
+  saveToMemory() const;
+
+  void 
+  loadFromMemory(const QByteArray& data);
+
+  signals:
 
   void
   nodeCreated(Node &n);
