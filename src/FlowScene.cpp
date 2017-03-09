@@ -245,53 +245,67 @@ void
 FlowScene::
 iterateOverNodeDataDependentOrder(std::function<void(NodeDataModel*)> visitor)
 {
-  size_t nodeIndex = 0;
-  std::unordered_map<QUuid, size_t> nodeIndexMap;
+  std::set<QUuid> visitedNodesSet;
 
-  //Iterate over "leaf" nodes
-  for (const auto& _node : _nodes)
+  //A leaf node is a node with no input ports, or all possible input ports empty
+  auto isNodeLeaf = [](Node const &node, NodeDataModel const &model)
   {
-    auto model = _node.second->nodeDataModel();
-    for (size_t i = 0; i < model->nPorts(PortType::In); ++i)
+    for (size_t i = 0; i < model.nPorts(PortType::In); ++i)
     {
-      auto connections = _node.second->nodeState().connections(PortType::In, i);
+      auto connections = node.nodeState().connections(PortType::In, i);
       if (!connections.empty())
       {
-        goto skip_node_leaf;
+        return false;
       }
     }
-    nodeIndexMap[_node.second->id()] = nodeIndex;
-    ++nodeIndex;
-    visitor(model);
-  skip_node_leaf:
-    ;
+    return true;
+  };
+
+  //Iterate over "leaf" nodes
+  for (auto const &_node : _nodes)
+  {
+    auto const &node = _node.second;
+    auto model = node->nodeDataModel();
+
+    if (isNodeLeaf(*node, *model))
+    {
+      visitor(model);
+      visitedNodesSet.insert(node->id());
+    }
   }
 
-  //Iterate over dependent nodes
-  while (_nodes.size() != nodeIndexMap.size())
+  auto areNodeInputsVisitedBefore = [&](Node const &node, NodeDataModel const &model)
   {
-    for (const auto& _node : _nodes)
+    for (size_t i = 0; i < model.nPorts(PortType::In); ++i)
     {
-      if (nodeIndexMap.find(_node.second->id()) != nodeIndexMap.end())
-        continue;
-      auto model = _node.second->nodeDataModel();
-      for (size_t i = 0; i < model->nPorts(PortType::In); ++i)
-      {
-        auto connections = _node.second->nodeState().connections(PortType::In, i);
+      auto connections = node.nodeState().connections(PortType::In, i);
 
-        for (auto& conn : connections)
+      for (auto& conn : connections)
+      {
+        if (visitedNodesSet.find(conn.second->getNode(PortType::Out)->id()) == visitedNodesSet.end())
         {
-          if (nodeIndexMap.find(conn.second->getNode(PortType::Out)->id()) == nodeIndexMap.end())
-          {
-            goto skip_node_dep;
-          }
+          return false;
         }
       }
-      nodeIndexMap[_node.second->id()] = nodeIndex;
-      ++nodeIndex;
-      visitor(model);
-    skip_node_dep:
-      ;
+    }
+    return true;
+  };
+
+  //Iterate over dependent nodes
+  while (_nodes.size() != visitedNodesSet.size())
+  {
+    for (auto const &_node : _nodes)
+    {
+      auto const &node = _node.second;
+      if (visitedNodesSet.find(node->id()) != visitedNodesSet.end())
+        continue;
+      auto model = node->nodeDataModel();
+
+      if (areNodeInputsVisitedBefore(*node, *model))
+      {
+        visitor(model);
+        visitedNodesSet.insert(node->id());
+      }
     }
   }
 }
