@@ -43,6 +43,10 @@ public:
   void
   moveConnections() const;
 
+  enum { Type = UserType + 1 };
+  int
+  type() const override { return Type; }
+
 protected:
   void
   paint(QPainter*                       painter,
@@ -76,6 +80,7 @@ protected:
 private:
   void
   embedQWidget();
+
 
 private:
 

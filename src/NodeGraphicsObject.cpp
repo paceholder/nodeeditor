@@ -105,7 +105,6 @@ embedQWidget()
   }
 }
 
-
 QRectF
 NodeGraphicsObject::
 boundingRect() const
