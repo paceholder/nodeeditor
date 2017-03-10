@@ -354,6 +354,24 @@ connections() const
   return _connections;
 }
 
+std::vector<Node*>
+FlowScene::selectedNodes() const {
+  QList<QGraphicsItem*> graphicsItems = selectedItems();
+
+  std::vector<Node*> ret;
+  ret.reserve(graphicsItems.size());
+
+  for (QGraphicsItem* item : graphicsItems) {
+    auto ngo = qgraphicsitem_cast<NodeGraphicsObject*>(item);
+
+    if (ngo != nullptr) {
+      ret.push_back(&ngo->node());
+    }
+  }
+
+  return ret;
+}
+
 
 //------------------------------------------------------------------------------
 
