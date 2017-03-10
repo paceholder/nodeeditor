@@ -81,7 +81,6 @@ private:
   void
   embedQWidget();
 
-
 private:
 
   FlowScene & _scene;
