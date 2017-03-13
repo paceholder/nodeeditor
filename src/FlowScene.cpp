@@ -358,32 +358,6 @@ void
 FlowScene::
 save() const
 {
-  QJsonObject sceneJson;
-
-  QJsonArray nodesJsonArray;
-
-  for (auto const & pair : _nodes)
-  {
-    auto const &node = pair.second;
-
-    nodesJsonArray.append(node->save());
-  }
-
-  sceneJson["nodes"] = nodesJsonArray;
-
-  QJsonArray connectionJsonArray;
-  for (auto const & pair : _connections)
-  {
-    auto const &connection = pair.second;
-
-    QJsonObject connectionJson = connection->save();
-
-    if (!connectionJson.isEmpty())
-      connectionJsonArray.append(connectionJson);
-  }
-
-  sceneJson["connections"] = connectionJsonArray;
-
   QString fileName =
     QFileDialog::getSaveFileName(nullptr,
                                  tr("Open Flow Scene"),
@@ -398,8 +372,7 @@ save() const
     QFile file(fileName);
     if (file.open(QIODevice::WriteOnly))
     {
-      QJsonDocument document(sceneJson);
-      file.write(document.toJson());
+      file.write(saveToMemory());
     }
   }
 }
@@ -440,7 +413,51 @@ load()
 
   QByteArray wholeFile = file.readAll();
 
-  QJsonObject const jsonDocument = QJsonDocument::fromJson(wholeFile).object();
+  loadFromMemory(wholeFile);
+}
+
+
+QByteArray
+FlowScene::
+saveToMemory() const
+{
+  QJsonObject sceneJson;
+
+  QJsonArray nodesJsonArray;
+
+  for (auto const & pair : _nodes)
+  {
+    auto const &node = pair.second;
+
+    nodesJsonArray.append(node->save());
+  }
+
+  sceneJson["nodes"] = nodesJsonArray;
+
+  QJsonArray connectionJsonArray;
+  for (auto const & pair : _connections)
+  {
+    auto const &connection = pair.second;
+
+    QJsonObject connectionJson = connection->save();
+
+    if (!connectionJson.isEmpty())
+      connectionJsonArray.append(connectionJson);
+  }
+
+  sceneJson["connections"] = connectionJsonArray;
+
+  QJsonDocument document(sceneJson);
+
+  return document.toJson();
+}
+
+
+void
+FlowScene::
+loadFromMemory(const QByteArray& data)
+{
+  QJsonObject const jsonDocument = QJsonDocument::fromJson(data).object();
 
   QJsonArray nodesJsonArray = jsonDocument["nodes"].toArray();
 
@@ -455,22 +472,10 @@ load()
   {
     restoreConnection(connectionJsonArray[i].toObject());
   }
-
-  //QRectF  r = itemsBoundingRect();
-  ////QPointF c = r.center();
-
-  //for (auto &view : views())
-  //{
-  //qDebug() << "center";
-
-  //view->setSceneRect(r);
-  //view->ensureVisible(r);
-  //}
 }
 
 
 //------------------------------------------------------------------------------
-
 namespace QtNodes
 {
 
