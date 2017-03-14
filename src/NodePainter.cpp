@@ -52,6 +52,8 @@ paint(QPainter* painter,
   drawResizeRect(painter, geom, model);
 
   drawValidationRect(painter, geom, model, graphicsObject);
+
+  model->onPaint(painter, geom);
 }
 
 
