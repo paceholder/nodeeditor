@@ -56,7 +56,7 @@ setStyle(QString jsonText)
       auto colorArray = valueRef.toArray(); \
       std::vector<int> rgb; rgb.reserve(3); \
       for (auto it = colorArray.begin(); it != colorArray.end(); ++it) { \
-        rgb.push_back(it->toInt()); \
+        rgb.push_back((*it).toInt()); \
       } \
       variable = QColor(rgb[0], rgb[1], rgb[2]); \
     } else { \
