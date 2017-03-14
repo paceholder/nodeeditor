@@ -43,6 +43,8 @@ paint(QPainter* painter,
 
   drawConnectionPoints(painter, geom, state, model, scene);
 
+  drawNodeDecorators(painter, geom, model);
+
   drawFilledConnectionPoints(painter, geom, state, model);
 
   drawModelName(painter, geom, state, model);
@@ -97,6 +99,38 @@ drawNodeRect(QPainter* painter,
   painter->drawRoundedRect(boundary, radius, radius);
 }
 
+void
+NodePainter::
+drawNodeDecorators(QPainter* painter,
+                          NodeGeometry const& location,
+                          NodeDataModel* const model) {
+
+  QSize size(16, 16);
+
+  // draw upper left
+  QIcon upperLeftIcon = model->cornerDecorator(Qt::TopLeftCorner);
+  if (!upperLeftIcon.isNull()) {
+    upperLeftIcon.paint(painter, QRect(QPoint(-size.width(), -size.height()), size));
+  }
+
+  // draw upper right
+  QIcon upperRightIcon = model->cornerDecorator(Qt::TopRightCorner);
+  if (!upperRightIcon.isNull()) {
+    upperRightIcon.paint(painter, QRect(QPoint(location.width(), -size.height()), size));
+  }
+
+  // draw lower left
+  QIcon lowerLeftIcon = model->cornerDecorator(Qt::BottomLeftCorner);
+  if (!lowerLeftIcon.isNull()) {
+    lowerLeftIcon.paint(painter, QRect(QPoint(-size.width(), location.height()), size));
+  }
+
+  // draw lower right
+  QIcon lowerRightIcon = model->cornerDecorator(Qt::BottomRightCorner);
+  if (!lowerRightIcon.isNull()) {
+    lowerRightIcon.paint(painter, QRect(QPoint(location.width(), location.height()), size));
+  }
+}
 
 void
 NodePainter::
