@@ -30,6 +30,10 @@ public:
   virtual
   ~ConnectionGraphicsObject();
 
+  enum { Type = UserType + 2 };
+  int
+  type() const override { return Type; }
+
 public:
 
   Connection&

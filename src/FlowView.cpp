@@ -214,14 +214,14 @@ keyPressEvent(QKeyEvent *event)
       // delete the nodes, this will delete many of the connections
       for (QGraphicsItem * item : _scene->selectedItems())
       {
-        if (auto n = dynamic_cast<NodeGraphicsObject*>(item))
+        if (auto n = qgraphicsitem_cast<NodeGraphicsObject*>(item))
           _scene->removeNode(n->node());
 
       }
 
       for (QGraphicsItem * item : _scene->selectedItems())
       {
-        if (auto c = dynamic_cast<ConnectionGraphicsObject*>(item))
+        if (auto c = qgraphicsitem_cast<ConnectionGraphicsObject*>(item))
           _scene->deleteConnection(c->connection());
       }
 
