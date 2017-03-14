@@ -126,6 +126,18 @@ public:
   void
   nodeDoubleClicked(Node& n);
 
+  void
+  connectionHovered(Connection& c, QPoint screenPos);
+
+  void
+  nodeHovered(Node& n, QPoint screenPos);
+
+  void
+  connectionHoverLeft(Connection& c);
+
+  void
+  nodeHoverLeft(Node& n);
+
 private:
 
   using SharedConnection = std::shared_ptr<Connection>;
