@@ -96,6 +96,9 @@ public:
 public:
 
   void
+  clearScene();
+
+  void
   save() const;
 
   void

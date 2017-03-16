@@ -47,8 +47,7 @@ FlowScene(std::shared_ptr<DataModelRegistry> registry)
 FlowScene::
 ~FlowScene()
 {
-  _connections.clear();
-  _nodes.clear();
+  clearScene();
 }
 
 
@@ -356,6 +355,24 @@ connections() const
 
 void
 FlowScene::
+clearScene()
+{
+  //Manual node cleanup. Simply clearing the holding datastructures doesn't work, the code crashes when
+  // there are both nodes and connections in the scene. (The data propagation internal logic tries to propagate 
+  // data through already freed connections.)
+  std::vector<Node*> nodesToDelete;
+  for (auto& node : _nodes)
+  {
+      nodesToDelete.push_back(node.second.get());
+  }
+  for (auto& node : nodesToDelete)
+  {
+      removeNode(*node);
+  }
+}
+
+void
+FlowScene::
 save() const
 {
   QString fileName =
@@ -382,18 +399,7 @@ void
 FlowScene::
 load()
 {
-  //Manual node cleanup. Simply clearing the holding datastructures doesn't work, the code crashes when
-  // there are both nodes and connections in the scene. (The data propagation internal logic tries to propagate 
-  // data through already freed connections.)
-  std::vector<Node*> nodesToDelete;
-  for (auto& node : _nodes)
-  {
-    nodesToDelete.push_back(node.second.get());
-  }
-  for (auto& node : nodesToDelete)
-  {
-    removeNode(*node);
-  }
+  clearScene();
 
   //-------------
 
