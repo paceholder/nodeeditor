@@ -1,8 +1,9 @@
 #pragma once
 
 #include <utility>
-
 #include <QtCore/QUuid>
+#include "make_unique.hpp"
+
 
 namespace QtNodes
 {

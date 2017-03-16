@@ -28,23 +28,23 @@ static std::shared_ptr<DataModelRegistry>
 registerDataModels()
 {
   auto ret = std::make_shared<DataModelRegistry>();
-  ret->registerModel<NumberSourceDataModel>();
+  ret->registerModel<NumberSourceDataModel>("Sources");
 
-  ret->registerModel<NumberDisplayDataModel>();
+  ret->registerModel<NumberDisplayDataModel>("Displays");
 
-  ret->registerModel<AdditionModel>();
+  ret->registerModel<AdditionModel>("Operators");
 
-  ret->registerModel<SubtractionModel>();
+  ret->registerModel<SubtractionModel>("Operators");
 
-  ret->registerModel<MultiplicationModel>();
+  ret->registerModel<MultiplicationModel>("Operators");
 
-  ret->registerModel<DivisionModel>();
+  ret->registerModel<DivisionModel>("Operators");
 
-  ret->registerModel<ModuloModel>();
+  ret->registerModel<ModuloModel>("Operators");
 
-  ret->registerModel<DecimalToIntegerModel, true>();
+  ret->registerModel<DecimalToIntegerModel, true>("Type converters");
 
-  ret->registerModel<IntegerToDecimalModel, true>();
+  ret->registerModel<IntegerToDecimalModel, true>("Type converters");
 
   return ret;
 }

@@ -55,11 +55,10 @@ save() const
 
   nodeJson["model"] = _nodeDataModel->save();
 
-  nodeJson["position"] = QJsonObject
-  {
-    { "x" , _nodeGraphicsObject->pos().x() },
-    { "y" , _nodeGraphicsObject->pos().y() }
-  };
+  QJsonObject obj;
+  obj["x"] = _nodeGraphicsObject->pos().x();
+  obj["y"] = _nodeGraphicsObject->pos().y();
+  nodeJson["position"] = obj;
 
   return nodeJson;
 }
