@@ -93,6 +93,9 @@ public:
   std::unordered_map<QUuid, std::shared_ptr<Connection> > const &
   connections() const;
 
+  std::vector<Node*>
+  selectedNodes() const;
+
 public:
 
   void
