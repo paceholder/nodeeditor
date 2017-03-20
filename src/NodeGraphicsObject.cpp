@@ -313,6 +313,7 @@ hoverEnterEvent(QGraphicsSceneHoverEvent * event)
 {
   _node.nodeGeometry().setHovered(true);
   update();
+  _scene.nodeHovered(node(), event->screenPos());
   event->accept();
 }
 
@@ -323,6 +324,7 @@ hoverLeaveEvent(QGraphicsSceneHoverEvent * event)
 {
   _node.nodeGeometry().setHovered(false);
   update();
+  _scene.nodeHoverLeft(node());
   event->accept();
 }
 

@@ -211,22 +211,19 @@ keyPressEvent(QKeyEvent *event)
 
     case Qt::Key_Delete:
     {
-      std::vector<Node*> nodesToDelete;
-      std::vector<Connection*> connectionsToDelete;
+      // delete the nodes, this will delete many of the connections
       for (QGraphicsItem * item : _scene->selectedItems())
       {
-        if (auto n = dynamic_cast<NodeGraphicsObject*>(item))
-          nodesToDelete.push_back(&n->node());
+        if (auto n = qgraphicsitem_cast<NodeGraphicsObject*>(item))
+          _scene->removeNode(n->node());
 
-        if (auto c = dynamic_cast<ConnectionGraphicsObject*>(item))
-          connectionsToDelete.push_back(&c->connection());
       }
-	  
-	  for (auto & c : connectionsToDelete)
-		  _scene->deleteConnection(*c);
 
-      for( auto & n : nodesToDelete )
-        _scene->removeNode(*n);
+      for (QGraphicsItem * item : _scene->selectedItems())
+      {
+        if (auto c = qgraphicsitem_cast<ConnectionGraphicsObject*>(item))
+          _scene->deleteConnection(c->connection());
+      }
 
     }
 

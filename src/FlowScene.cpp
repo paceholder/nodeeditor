@@ -47,8 +47,7 @@ FlowScene(std::shared_ptr<DataModelRegistry> registry)
 FlowScene::
 ~FlowScene()
 {
-  _connections.clear();
-  _nodes.clear();
+  clearScene();
 }
 
 
@@ -377,7 +376,77 @@ FlowScene::selectedNodes() const {
 
 void
 FlowScene::
+clearScene()
+{
+  //Manual node cleanup. Simply clearing the holding datastructures doesn't work, the code crashes when
+  // there are both nodes and connections in the scene. (The data propagation internal logic tries to propagate 
+  // data through already freed connections.)
+  std::vector<Node*> nodesToDelete;
+  for (auto& node : _nodes)
+  {
+      nodesToDelete.push_back(node.second.get());
+  }
+  for (auto& node : nodesToDelete)
+  {
+      removeNode(*node);
+  }
+}
+
+void
+FlowScene::
 save() const
+{
+  QString fileName =
+    QFileDialog::getSaveFileName(nullptr,
+                                 tr("Open Flow Scene"),
+                                 QDir::homePath(),
+                                 tr("Flow Scene Files (*.flow)"));
+
+  if (!fileName.isEmpty())
+  {
+    if (!fileName.endsWith("flow", Qt::CaseInsensitive))
+      fileName += ".flow";
+
+    QFile file(fileName);
+    if (file.open(QIODevice::WriteOnly))
+    {
+      file.write(saveToMemory());
+    }
+  }
+}
+
+
+void
+FlowScene::
+load()
+{
+  clearScene();
+
+  //-------------
+
+  QString fileName =
+    QFileDialog::getOpenFileName(nullptr,
+                                 tr("Open Flow Scene"),
+                                 QDir::homePath(),
+                                 tr("Flow Scene Files (*.flow)"));
+
+  if (!QFileInfo::exists(fileName))
+    return;
+
+  QFile file(fileName);
+
+  if (!file.open(QIODevice::ReadOnly))
+    return;
+
+  QByteArray wholeFile = file.readAll();
+
+  loadFromMemory(wholeFile);
+}
+
+
+QByteArray
+FlowScene::
+saveToMemory() const
 {
   QJsonObject sceneJson;
 
@@ -405,63 +474,17 @@ save() const
 
   sceneJson["connections"] = connectionJsonArray;
 
-  QString fileName =
-    QFileDialog::getSaveFileName(nullptr,
-                                 tr("Open Flow Scene"),
-                                 QDir::homePath(),
-                                 tr("Flow Scene Files (*.flow)"));
+  QJsonDocument document(sceneJson);
 
-  if (!fileName.isEmpty())
-  {
-    if (!fileName.endsWith("flow", Qt::CaseInsensitive))
-      fileName += ".flow";
-
-    QFile file(fileName);
-    if (file.open(QIODevice::WriteOnly))
-    {
-      QJsonDocument document(sceneJson);
-      file.write(document.toJson());
-    }
-  }
+  return document.toJson();
 }
 
 
 void
 FlowScene::
-load()
+loadFromMemory(const QByteArray& data)
 {
-  //Manual node cleanup. Simply clearing the holding datastructures doesn't work, the code crashes when
-  // there are both nodes and connections in the scene. (The data propagation internal logic tries to propagate 
-  // data through already freed connections.)
-  std::vector<Node*> nodesToDelete;
-  for (auto& node : _nodes)
-  {
-    nodesToDelete.push_back(node.second.get());
-  }
-  for (auto& node : nodesToDelete)
-  {
-    removeNode(*node);
-  }
-
-  //-------------
-
-  QString fileName =
-    QFileDialog::getOpenFileName(nullptr,
-                                 tr("Open Flow Scene"),
-                                 QDir::homePath(),
-                                 tr("Flow Scene Files (*.flow)"));
-
-  if (!QFileInfo::exists(fileName))
-    return;
-
-  QFile file(fileName);
-
-  if (!file.open(QIODevice::ReadOnly))
-    return;
-
-  QByteArray wholeFile = file.readAll();
-
-  QJsonObject const jsonDocument = QJsonDocument::fromJson(wholeFile).object();
+  QJsonObject const jsonDocument = QJsonDocument::fromJson(data).object();
 
   QJsonArray nodesJsonArray = jsonDocument["nodes"].toArray();
 
@@ -476,22 +499,10 @@ load()
   {
     restoreConnection(connectionJsonArray[i].toObject());
   }
-
-  //QRectF  r = itemsBoundingRect();
-  ////QPointF c = r.center();
-
-  //for (auto &view : views())
-  //{
-  //qDebug() << "center";
-
-  //view->setSceneRect(r);
-  //view->ensureVisible(r);
-  //}
 }
 
 
 //------------------------------------------------------------------------------
-
 namespace QtNodes
 {
 

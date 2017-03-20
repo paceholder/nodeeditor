@@ -99,12 +99,21 @@ public:
 public:
 
   void
+  clearScene();
+
+  void
   save() const;
 
   void
   load();
 
-signals:
+  QByteArray 
+  saveToMemory() const;
+
+  void 
+  loadFromMemory(const QByteArray& data);
+
+  signals:
 
   void
   nodeCreated(Node &n);
@@ -122,6 +131,18 @@ signals:
 
   void
   nodeDoubleClicked(Node& n);
+
+  void
+  connectionHovered(Connection& c, QPoint screenPos);
+
+  void
+  nodeHovered(Node& n, QPoint screenPos);
+
+  void
+  connectionHoverLeft(Connection& c);
+
+  void
+  nodeHoverLeft(Node& n);
 
 private:
 
