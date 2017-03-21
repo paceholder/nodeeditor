@@ -47,8 +47,7 @@ FlowScene(std::shared_ptr<DataModelRegistry> registry)
 FlowScene::
 ~FlowScene()
 {
-  _connections.clear();
-  _nodes.clear();
+  clearScene();
 }
 
 
@@ -351,8 +350,44 @@ connections() const
   return _connections;
 }
 
+std::vector<Node*>
+FlowScene::selectedNodes() const {
+  QList<QGraphicsItem*> graphicsItems = selectedItems();
+
+  std::vector<Node*> ret;
+  ret.reserve(graphicsItems.size());
+
+  for (QGraphicsItem* item : graphicsItems) {
+    auto ngo = qgraphicsitem_cast<NodeGraphicsObject*>(item);
+
+    if (ngo != nullptr) {
+      ret.push_back(&ngo->node());
+    }
+  }
+
+  return ret;
+}
+
 
 //------------------------------------------------------------------------------
+
+void
+FlowScene::
+clearScene()
+{
+  //Manual node cleanup. Simply clearing the holding datastructures doesn't work, the code crashes when
+  // there are both nodes and connections in the scene. (The data propagation internal logic tries to propagate 
+  // data through already freed connections.)
+  std::vector<Node*> nodesToDelete;
+  for (auto& node : _nodes)
+  {
+      nodesToDelete.push_back(node.second.get());
+  }
+  for (auto& node : nodesToDelete)
+  {
+      removeNode(*node);
+  }
+}
 
 void
 FlowScene::
@@ -382,18 +417,7 @@ void
 FlowScene::
 load()
 {
-  //Manual node cleanup. Simply clearing the holding datastructures doesn't work, the code crashes when
-  // there are both nodes and connections in the scene. (The data propagation internal logic tries to propagate 
-  // data through already freed connections.)
-  std::vector<Node*> nodesToDelete;
-  for (auto& node : _nodes)
-  {
-    nodesToDelete.push_back(node.second.get());
-  }
-  for (auto& node : nodesToDelete)
-  {
-    removeNode(*node);
-  }
+  clearScene();
 
   //-------------
 
