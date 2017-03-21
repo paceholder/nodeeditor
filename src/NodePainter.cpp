@@ -56,7 +56,7 @@ paint(QPainter* painter,
   /// call custom painter
   auto painterDelegate = model->painterDelegate();
   if (painterDelegate != nullptr) {
-    painterDelegate->paint(painter, geom, state, model);
+    painterDelegate->paint(painter, geom, model);
   }
 }
 
