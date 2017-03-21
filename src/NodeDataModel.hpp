@@ -8,6 +8,7 @@
 #include "NodeData.hpp"
 #include "Serializable.hpp"
 #include "NodeGeometry.hpp"
+#include "NodePainterDelegate.hpp"
 
 #include "Export.hpp"
 
@@ -107,7 +108,7 @@ public:
   validationMessage() const { return QString(""); }
 
   virtual
-  void onPaint(QPainter* painter, const NodeGeometry& geometry) const {}
+  NodePainterDelegate* painterDelegate() const { return  nullptr; }
 
 signals:
 

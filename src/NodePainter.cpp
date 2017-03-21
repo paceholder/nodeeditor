@@ -53,7 +53,11 @@ paint(QPainter* painter,
 
   drawValidationRect(painter, geom, model, graphicsObject);
 
-  model->onPaint(painter, geom);
+  /// call custom painter
+  auto painterDelegate = model->painterDelegate();
+  if (painterDelegate != nullptr) {
+    painterDelegate->paint(painter, geom, state, model);
+  }
 }
 
 
