@@ -330,19 +330,3 @@ showEvent(QShowEvent *event)
   _scene->setSceneRect(this->rect());
   QGraphicsView::showEvent(event);
 }
-
-
-void
-FlowView::
-mousePressEvent(QMouseEvent* event)
-{
-  QGraphicsView::mousePressEvent(event);
-}
-
-
-void
-FlowView::
-mouseMoveEvent(QMouseEvent* event)
-{
-  QGraphicsView::mouseMoveEvent(event);
-}
