@@ -48,12 +48,14 @@ FlowView(FlowScene *scene)
   //setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
 
   // setup actions
-  _clearSelectionAction = new QAction(QStringLiteral("Clear Selection"));
+  _clearSelectionAction = new QAction;
+  _clearSelectionAction->setText(QStringLiteral("Clear Selection"));
   _clearSelectionAction->setShortcut(Qt::Key_Escape);
   connect(_clearSelectionAction, &QAction::triggered, _scene, &QGraphicsScene::clearSelection);
   addAction(_clearSelectionAction);
 
-  _deleteSelectionAction = new QAction(QStringLiteral("Delete Selection"));
+  _deleteSelectionAction = new QAction;
+  _deleteSelectionAction->setText(QStringLiteral("Delete Selection"));
   _deleteSelectionAction->setShortcut(Qt::Key_Delete);
   connect(_deleteSelectionAction, &QAction::triggered, this, &FlowView::deleteSelectedNodes);
   addAction(_deleteSelectionAction);
