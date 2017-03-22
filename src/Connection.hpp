@@ -37,7 +37,7 @@ class NodeData;
 class ConnectionGraphicsObject;
 
 ///
-class Connection
+class NODE_EDITOR_PUBLIC  Connection
   : public QObject
   , public Serializable
 {
