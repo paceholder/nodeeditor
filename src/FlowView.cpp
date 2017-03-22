@@ -46,6 +46,25 @@ FlowView(FlowScene *scene)
   setCacheMode(QGraphicsView::CacheBackground);
 
   //setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
+
+  // setup actions
+  _clearSelectionAction = new QAction(QStringLiteral("Clear Selection"), this);
+  _clearSelectionAction->setShortcut(Qt::Key_Escape);
+  connect(_clearSelectionAction, &QAction::triggered, _scene, &QGraphicsScene::clearSelection);
+  addAction(_clearSelectionAction);
+
+  _deleteSelectionAction = new QAction(QStringLiteral("Delete Selection"), this);
+  _deleteSelectionAction->setShortcut(Qt::Key_Delete);
+  connect(_deleteSelectionAction, &QAction::triggered, this, &FlowView::deleteSelectedNodes);
+  addAction(_deleteSelectionAction);
+}
+
+QAction* FlowView::clearSelectionAction() const {
+  return _clearSelectionAction;
+}
+
+QAction* FlowView::deleteSelectionAction() const {
+  return _deleteSelectionAction;
 }
 
 
@@ -198,6 +217,24 @@ scaleDown()
   scale(factor, factor);
 }
 
+void
+FlowView::
+deleteSelectedNodes()
+{
+  // delete the nodes, this will delete many of the connections
+  for (QGraphicsItem * item : _scene->selectedItems())
+  {
+    if (auto n = qgraphicsitem_cast<NodeGraphicsObject*>(item))
+      _scene->removeNode(n->node());
+
+  }
+
+  for (QGraphicsItem * item : _scene->selectedItems())
+  {
+    if (auto c = qgraphicsitem_cast<ConnectionGraphicsObject*>(item))
+      _scene->deleteConnection(c->connection());
+  }
+}
 
 void
 FlowView::
@@ -205,33 +242,6 @@ keyPressEvent(QKeyEvent *event)
 {
   switch (event->key())
   {
-    case Qt::Key_Escape:
-      _scene->clearSelection();
-      break;
-
-    case Qt::Key_Delete:
-    {
-      std::vector<Node*> nodesToDelete;
-      std::vector<Connection*> connectionsToDelete;
-      for (QGraphicsItem * item : _scene->selectedItems())
-      {
-        if (auto n = dynamic_cast<NodeGraphicsObject*>(item))
-          nodesToDelete.push_back(&n->node());
-
-        if (auto c = dynamic_cast<ConnectionGraphicsObject*>(item))
-          connectionsToDelete.push_back(&c->connection());
-      }
-	  
-	  for (auto & c : connectionsToDelete)
-		  _scene->deleteConnection(*c);
-
-      for( auto & n : nodesToDelete )
-        _scene->removeNode(*n);
-
-    }
-
-    break;
-
     case Qt::Key_Shift:
       setDragMode(QGraphicsView::RubberBandDrag);
       break;
@@ -319,20 +329,4 @@ showEvent(QShowEvent *event)
 {
   _scene->setSceneRect(this->rect());
   QGraphicsView::showEvent(event);
-}
-
-
-void
-FlowView::
-mousePressEvent(QMouseEvent* event)
-{
-  QGraphicsView::mousePressEvent(event);
-}
-
-
-void
-FlowView::
-mouseMoveEvent(QMouseEvent* event)
-{
-  QGraphicsView::mouseMoveEvent(event);
 }

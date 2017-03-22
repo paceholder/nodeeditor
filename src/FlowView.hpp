@@ -16,11 +16,17 @@ public:
 
   FlowView(FlowScene *scene);
 
+  QAction* clearSelectionAction() const;
+
+  QAction* deleteSelectionAction() const;
+
 public slots:
 
   void scaleUp();
 
   void scaleDown();
+
+  void deleteSelectedNodes();
 
 protected:
 
@@ -36,11 +42,10 @@ protected:
 
   void showEvent(QShowEvent *event) override;
 
-  void mouseMoveEvent(QMouseEvent* event) override;
-
-  void mousePressEvent(QMouseEvent* event) override;
-
 private:
+
+  QAction* _clearSelectionAction;
+  QAction* _deleteSelectionAction;
 
   FlowScene* _scene;
 };
