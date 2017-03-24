@@ -11,11 +11,21 @@
 #include "NodeState.hpp"
 #include "NodeDataModel.hpp"
 #include "Node.hpp"
+#include "FlowScene.hpp"
+
+using QtNodes::NodePainter;
+using QtNodes::NodeGeometry;
+using QtNodes::NodeGraphicsObject;
+using QtNodes::Node;
+using QtNodes::NodeState;
+using QtNodes::NodeDataModel;
+using QtNodes::FlowScene;
 
 void
 NodePainter::
 paint(QPainter* painter,
-      Node& node)
+      Node & node, 
+      FlowScene const& scene)
 {
   NodeGeometry const& geom = node.nodeGeometry();
 
@@ -31,7 +41,7 @@ paint(QPainter* painter,
 
   auto const &model = node.nodeDataModel();
 
-  drawConnectionPoints(painter, geom, state, model);
+  drawConnectionPoints(painter, geom, state, model, scene);
 
   drawFilledConnectionPoints(painter, geom, state, model);
 
@@ -40,6 +50,8 @@ paint(QPainter* painter,
   drawEntryLabels(painter, geom, state, model);
 
   drawResizeRect(painter, geom, model);
+
+  drawValidationRect(painter, geom, model, graphicsObject);
 }
 
 
@@ -78,12 +90,11 @@ drawNodeRect(QPainter* painter,
 
   float diam = nodeStyle.ConnectionPointDiameter;
 
-  QRectF    boundary(0.0, 0.0, geom.width(), geom.height());
-  QMarginsF m(diam, diam, diam, diam);
+  QRectF    boundary( -diam, -diam, 2.0*diam + geom.width(), 2.0*diam + geom.height());
 
   double const radius = 3.0;
 
-  painter->drawRoundedRect(boundary.marginsAdded(m), radius, radius);
+  painter->drawRoundedRect(boundary, radius, radius);
 }
 
 
@@ -92,7 +103,8 @@ NodePainter::
 drawConnectionPoints(QPainter* painter,
                      NodeGeometry const& geom,
                      NodeState const& state,
-                     NodeDataModel* const model)
+                     NodeDataModel* const model,
+                     FlowScene const & scene)
 {
   NodeStyle const& nodeStyle      = StyleCollection::nodeStyle();
   auto const     &connectionStyle = StyleCollection::connectionStyle();
@@ -116,13 +128,25 @@ drawConnectionPoints(QPainter* painter,
       if (state.isReacting() &&
           (state.getEntries(portType)[i].empty() ||
            model->nodeConnectionPolicy(portType, i) == NodeDataModel::Many) &&
-          portType == state.reactingPortType())
+           portType == state.reactingPortType())
       {
 
         auto   diff = geom.draggingPos() - p;
         double dist = std::sqrt(QPointF::dotProduct(diff, diff));
+        bool   typeConvertable = false;
 
-        if (state.reactingDataType().id == dataType.id)
+        {
+          if (portType == PortType::In)
+          {
+            typeConvertable = scene.registry().getTypeConverter(state.reactingDataType().id, dataType.id) != nullptr;
+          }
+          else
+          {
+            typeConvertable = scene.registry().getTypeConverter(dataType.id, state.reactingDataType().id) != nullptr;
+          }
+        }
+
+        if (state.reactingDataType().id == dataType.id || typeConvertable)
         {
           double const thres = 40.0;
           r = (dist < thres) ?
@@ -274,9 +298,13 @@ drawEntryLabels(QPainter * painter,
       QString s;
 
       if (model->portCaptionVisible(portType, i))
+      {
         s = model->portCaption(portType, i);
+      }
       else
+      {
         s = model->dataType(portType, i).name;
+      }
 
       auto rect = metrics.boundingRect(s);
 
@@ -317,5 +345,73 @@ drawResizeRect(QPainter * painter,
     painter->setBrush(Qt::gray);
 
     painter->drawEllipse(geom.resizeRect());
+  }
+}
+
+void
+NodePainter::
+drawValidationRect(QPainter * painter,
+                   NodeGeometry const & geom,
+                   NodeDataModel* const model,
+                   NodeGraphicsObject const & graphicsObject)
+{
+  auto modelValidationState = model->validationState();
+  if (modelValidationState != NodeValidationState::Valid)
+  {
+    NodeStyle const& nodeStyle = StyleCollection::nodeStyle();
+
+    auto color = graphicsObject.isSelected()
+      ? nodeStyle.SelectedBoundaryColor
+      : nodeStyle.NormalBoundaryColor;
+
+    if (geom.hovered())
+    {
+      QPen p(color, nodeStyle.HoveredPenWidth);
+      painter->setPen(p);
+    }
+    else
+    {
+      QPen p(color, nodeStyle.PenWidth);
+      painter->setPen(p);
+    }
+
+    //Drawing the validation message background
+    if (modelValidationState == NodeValidationState::Error)
+    {
+      painter->setBrush(nodeStyle.ErrorColor);
+    }
+    else
+    {
+      painter->setBrush(nodeStyle.WarningColor);
+    }
+
+    double const radius = 3.0;
+    
+    float diam = nodeStyle.ConnectionPointDiameter;
+
+    QRectF    boundary(-diam,
+                       -diam + geom.height() - geom.validationHeight(),
+                       2.0*diam + geom.width(),
+                       2.0*diam + geom.validationHeight());
+
+    painter->drawRoundedRect(boundary, radius, radius);
+
+    painter->setBrush(Qt::gray);
+
+    //Drawing the validation message itself
+    QString const &errorMsg = model->validationMessage();
+
+    QFont f = painter->font();
+    
+    QFontMetrics metrics(f);
+
+    auto rect = metrics.boundingRect(errorMsg);
+
+    QPointF position((geom.width() - rect.width()) / 2.0,
+      geom.height() - (geom.validationHeight() - diam) / 2.0);
+
+    painter->setFont(f);
+    painter->setPen(nodeStyle.FontColor);
+    painter->drawText(position, errorMsg);
   }
 }

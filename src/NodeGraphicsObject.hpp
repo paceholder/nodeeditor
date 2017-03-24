@@ -8,10 +8,13 @@
 #include "NodeGeometry.hpp"
 #include "NodeState.hpp"
 
+class QGraphicsProxyWidget;
+
+namespace QtNodes
+{
+
 class FlowScene;
 class FlowItemEntry;
-
-class QGraphicsProxyWidget;
 
 /// Class reacts on GUI events, mouse clicks and
 /// forwards painting operation.
@@ -40,6 +43,10 @@ public:
   void
   moveConnections() const;
 
+  enum { Type = UserType + 1 };
+  int
+  type() const override { return Type; }
+
 protected:
   void
   paint(QPainter*                       painter,
@@ -67,6 +74,9 @@ protected:
   void
   hoverMoveEvent(QGraphicsSceneHoverEvent *) override;
 
+  void
+  mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
+
 private:
   void
   embedQWidget();
@@ -80,3 +90,4 @@ private:
   // either nullptr or owned by parent QGraphicsItem
   QGraphicsProxyWidget * _proxyWidget;
 };
+}

@@ -4,6 +4,9 @@
 
 #include <QtGui/QPainter>
 
+namespace QtNodes
+{
+
 class ConnectionGeometry;
 class ConnectionState;
 class Connection;
@@ -29,3 +32,4 @@ public:
   paint(QPainter* painter,
         Connection const& connection);
 };
+}

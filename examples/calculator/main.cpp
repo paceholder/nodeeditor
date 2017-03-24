@@ -1,6 +1,7 @@
 #include <nodes/NodeData>
 #include <nodes/FlowScene>
 #include <nodes/FlowView>
+#include <nodes/ConnectionStyle>
 
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QVBoxLayout>
@@ -14,24 +15,53 @@
 #include "SubtractionModel.hpp"
 #include "MultiplicationModel.hpp"
 #include "DivisionModel.hpp"
+#include "ModuloModel.hpp"
+#include "DecimalToIntegerModel.hpp"
+#include "IntegerToDecimalModel.hpp"
+
+using QtNodes::DataModelRegistry;
+using QtNodes::FlowScene;
+using QtNodes::FlowView;
+using QtNodes::ConnectionStyle;
 
 static std::shared_ptr<DataModelRegistry>
 registerDataModels()
 {
   auto ret = std::make_shared<DataModelRegistry>();
-  ret->registerModel<NumberSourceDataModel>();
+  ret->registerModel<NumberSourceDataModel>("Sources");
 
-  ret->registerModel<NumberDisplayDataModel>();
+  ret->registerModel<NumberDisplayDataModel>("Displays");
 
-  ret->registerModel<AdditionModel>();
+  ret->registerModel<AdditionModel>("Operators");
 
-  ret->registerModel<SubtractionModel>();
+  ret->registerModel<SubtractionModel>("Operators");
 
-  ret->registerModel<MultiplicationModel>();
+  ret->registerModel<MultiplicationModel>("Operators");
 
-  ret->registerModel<DivisionModel>();
+  ret->registerModel<DivisionModel>("Operators");
+
+  ret->registerModel<ModuloModel>("Operators");
+
+  ret->registerModel<DecimalToIntegerModel, true>("Type converters");
+
+  ret->registerModel<IntegerToDecimalModel, true>("Type converters");
 
   return ret;
+}
+
+
+static
+void
+setStyle()
+{
+  ConnectionStyle::setConnectionStyle(
+  R"(
+  {
+    "ConnectionStyle": {
+      "UseDataDefinedColors": true
+    }
+  }
+  )");
 }
 
 
@@ -39,6 +69,8 @@ int
 main(int argc, char *argv[])
 {
   QApplication app(argc, argv);
+
+  setStyle();
 
   QWidget mainWidget;
 

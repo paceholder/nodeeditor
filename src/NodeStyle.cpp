@@ -12,12 +12,16 @@
 
 #include "StyleCollection.hpp"
 
+using QtNodes::NodeStyle;
+
+inline void initResources() { Q_INIT_RESOURCE(resources); }
+
 NodeStyle::
 NodeStyle()
 {
   // Explicit resources inialization for preventing the static initialization
   // order fiasco: https://isocpp.org/wiki/faq/ctors#static-init-order
-  Q_INIT_RESOURCE(resources);
+  initResources();
 
   // This configuration is stored inside the compiled unit and is loaded statically
   loadJsonFile(":DefaultStyle.json");
@@ -55,7 +59,7 @@ setNodeStyle(QString jsonText)
       auto colorArray = valueRef.toArray(); \
       std::vector<int> rgb; rgb.reserve(3); \
       for (auto it = colorArray.begin(); it != colorArray.end(); ++it) { \
-        rgb.push_back(it->toInt()); \
+        rgb.push_back((*it).toInt()); \
       } \
       variable = QColor(rgb[0], rgb[1], rgb[2]); \
     } else { \
@@ -117,6 +121,8 @@ loadJsonFromByteArray(QByteArray const &byteArray)
   NODE_STYLE_READ_COLOR(obj, FontColorFaded);
   NODE_STYLE_READ_COLOR(obj, ConnectionPointColor);
   NODE_STYLE_READ_COLOR(obj, FilledConnectionPointColor);
+  NODE_STYLE_READ_COLOR(obj, WarningColor);
+  NODE_STYLE_READ_COLOR(obj, ErrorColor);
 
   NODE_STYLE_READ_FLOAT(obj, PenWidth);
   NODE_STYLE_READ_FLOAT(obj, HoveredPenWidth);

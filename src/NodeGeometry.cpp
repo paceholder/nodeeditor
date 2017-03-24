@@ -6,8 +6,16 @@
 #include "PortType.hpp"
 #include "NodeState.hpp"
 #include "NodeDataModel.hpp"
+#include "Node.hpp"
+#include "NodeGraphicsObject.hpp"
 
 #include "StyleCollection.hpp"
+
+using QtNodes::NodeGeometry;
+using QtNodes::NodeDataModel;
+using QtNodes::PortIndex;
+using QtNodes::PortType;
+using QtNodes::Node;
 
 NodeGeometry::
 NodeGeometry(std::unique_ptr<NodeDataModel> const &dataModel)
@@ -26,8 +34,10 @@ NodeGeometry(std::unique_ptr<NodeDataModel> const &dataModel)
   , _boldFontMetrics(QFont())
 {
   QFont f; f.setBold(true);
+
   _boldFontMetrics = QFontMetrics(f);
 }
+
 
 QRectF
 NodeGeometry::
@@ -89,6 +99,12 @@ recalculateSize() const
   }
 
   _width = std::max(_width, captionWidth());
+
+  if (_dataModel->validationState() != NodeValidationState::Valid)
+  {
+    _width   = std::max(_width, validationWidth());
+    _height += validationHeight() + _spacing;
+  }
 }
 
 
@@ -98,13 +114,14 @@ recalculateSize(QFont const & font) const
 {
   QFontMetrics fontMetrics(font);
   QFont boldFont = font;
+
   boldFont.setBold(true);
 
   QFontMetrics boldFontMetrics(boldFont);
 
   if (_boldFontMetrics != boldFontMetrics)
   {
-    _fontMetrics = fontMetrics;
+    _fontMetrics     = fontMetrics;
     _boldFontMetrics = boldFontMetrics;
 
     recalculateSize();
@@ -213,6 +230,11 @@ widgetPosition() const
 {
   if (auto w = _dataModel->embeddedWidget())
   {
+    if (_dataModel->validationState() != NodeValidationState::Valid)
+    {
+      return QPointF(_spacing + portWidth(PortType::In),
+                     (captionHeight() + _height - validationHeight() - _spacing - w->height()) / 2.0);
+    }
 
     return QPointF(_spacing + portWidth(PortType::In),
                    (captionHeight() + _height - w->height()) / 2.0);
@@ -250,6 +272,44 @@ captionWidth() const
 
 unsigned int
 NodeGeometry::
+validationHeight() const
+{
+  QString msg = _dataModel->validationMessage();
+
+  return _boldFontMetrics.boundingRect(msg).height();
+}
+
+
+unsigned int
+NodeGeometry::
+validationWidth() const
+{
+  QString msg = _dataModel->validationMessage();
+
+  return _boldFontMetrics.boundingRect(msg).width();
+}
+
+
+QPointF
+NodeGeometry::
+calculateNodePositionBetweenNodePorts(PortIndex targetPortIndex, PortType targetPort, Node* targetNode, 
+                                      PortIndex sourcePortIndex, PortType sourcePort, Node* sourceNode, 
+                                      Node& newNode)
+{
+  //Calculating the nodes position in the scene. It'll be positioned half way between the two ports that it "connects". 
+  //The first line calculates the halfway point between the ports (node position + port position on the node for both nodes averaged).
+  //The second line offsets this coordinate with the size of the new node, so that the new nodes center falls on the originally
+  //calculated coordinate, instead of it's upper left corner.
+  auto converterNodePos = (sourceNode->nodeGraphicsObject().pos() + sourceNode->nodeGeometry().portScenePosition(sourcePortIndex, sourcePort) +
+    targetNode->nodeGraphicsObject().pos() + targetNode->nodeGeometry().portScenePosition(targetPortIndex, targetPort)) / 2.0f;
+  converterNodePos.setX(converterNodePos.x() - newNode.nodeGeometry().width() / 2.0f);
+  converterNodePos.setY(converterNodePos.y() - newNode.nodeGeometry().height() / 2.0f);
+  return converterNodePos;
+}
+
+
+unsigned int
+NodeGeometry::
 portWidth(PortType portType) const
 {
   unsigned width = 0;
@@ -257,11 +317,15 @@ portWidth(PortType portType) const
   for (auto i = 0ul; i < _dataModel->nPorts(portType); ++i)
   {
     QString name;
-	
+
     if (_dataModel->portCaptionVisible(portType, i))
+    {
       name = _dataModel->portCaption(portType, i);
+    }
     else
+    {
       name = _dataModel->dataType(portType, i).name;
+    }
 
     width = std::max(unsigned(_fontMetrics.width(name)),
                      width);

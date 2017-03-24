@@ -6,10 +6,14 @@
 #include <unordered_map>
 #include <tuple>
 #include <memory>
+#include <functional>
 
 #include "Connection.hpp"
 #include "Export.hpp"
 #include "DataModelRegistry.hpp"
+
+namespace QtNodes
+{
 
 class NodeDataModel;
 class FlowItemInterface;
@@ -44,7 +48,7 @@ public:
                    PortIndex portIndexOut);
 
   std::shared_ptr<Connection>
-  restoreConnection(Properties const &p);
+  restoreConnection(QJsonObject const &connectionJson);
 
   void
   deleteConnection(Connection& connection);
@@ -53,18 +57,49 @@ public:
   createNode(std::unique_ptr<NodeDataModel> && dataModel);
 
   Node&
-  restoreNode(Properties const &p);
+  restoreNode(QJsonObject const& nodeJson);
 
   void
   removeNode(Node& node);
 
   DataModelRegistry&
-  registry();
+  registry() const;
 
   void
   setRegistry(std::shared_ptr<DataModelRegistry> registry);
 
+  void
+  iterateOverNodes(std::function<void(Node*)> visitor);
+
+  void
+  iterateOverNodeData(std::function<void(NodeDataModel*)> visitor);
+
+  void
+  iterateOverNodeDataDependentOrder(std::function<void(NodeDataModel*)> visitor);
+
+  QPointF
+  getNodePosition(const Node& node) const;
+
+  void
+  setNodePosition(Node& node, const QPointF& pos) const;
+  
+  QSizeF
+  getNodeSize(const Node& node) const;
 public:
+
+  std::unordered_map<QUuid, std::unique_ptr<Node> > const &
+  nodes() const;
+
+  std::unordered_map<QUuid, std::shared_ptr<Connection> > const &
+  connections() const;
+
+  std::vector<Node*>
+  selectedNodes() const;
+
+public:
+
+  void
+  clearScene();
 
   void
   save() const;
@@ -72,9 +107,17 @@ public:
   void
   load();
 
-signals:
+  QByteArray 
+  saveToMemory() const;
+
+  void 
+  loadFromMemory(const QByteArray& data);
+
+  signals:
+
   void
   nodeCreated(Node &n);
+
   void
   nodeDeleted(Node &n);
 
@@ -82,6 +125,24 @@ signals:
   connectionCreated(Connection &c);
   void
   connectionDeleted(Connection &c);
+
+  void
+  nodeMoved(Node& n, const QPointF& newLocation);
+
+  void
+  nodeDoubleClicked(Node& n);
+
+  void
+  connectionHovered(Connection& c, QPoint screenPos);
+
+  void
+  nodeHovered(Node& n, QPoint screenPos);
+
+  void
+  connectionHoverLeft(Connection& c);
+
+  void
+  nodeHoverLeft(Node& n);
 
 private:
 
@@ -96,3 +157,4 @@ private:
 Node*
 locateNodeAt(QPointF scenePoint, FlowScene &scene,
              QTransform viewTransform);
+}

@@ -4,6 +4,9 @@
 
 #include "StyleCollection.hpp"
 
+using QtNodes::ConnectionGeometry;
+using QtNodes::PortType;
+
 ConnectionGeometry::
 ConnectionGeometry()
   : _in(0, 0)
@@ -78,14 +81,14 @@ boundingRect() const
   auto const &connectionStyle =
     StyleCollection::connectionStyle();
 
-  float const pointDiameter = connectionStyle.pointDiameter();
+  float const diam = connectionStyle.pointDiameter();
 
-  QMargins margins(pointDiameter,
-                   pointDiameter,
-                   pointDiameter,
-                   pointDiameter);
+  c1c2Rect.setTop(  -diam + c1c2Rect.top());
+  c1c2Rect.setLeft( -diam + c1c2Rect.left());
+  c1c2Rect.setBottom( 2.0*diam + c1c2Rect.bottom());
+  c1c2Rect.setRight(  2.0*diam + c1c2Rect.right());
 
-  return basicRect.united(c1c2Rect).marginsAdded(margins);
+  return basicRect.united(c1c2Rect);
 }
 
 

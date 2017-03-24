@@ -1,13 +1,13 @@
 #pragma once
 
 #include <QtCore/QObject>
+
 #include <QtWidgets/QLabel>
 
 #include <nodes/NodeDataModel>
 
 #include "MathOperationDataModel.hpp"
-
-#include "NumberData.hpp"
+#include "DecimalData.hpp"
 
 /// The model dictates the number of inputs and outputs for the Node.
 /// In this example it has no logic.
@@ -22,23 +22,15 @@ public:
 
   QString
   caption() const override
-  { return QString("Addition"); }
+  { return QStringLiteral("Addition"); }
 
   QString
   name() const override
-  { return QString("Addition"); }
+  { return QStringLiteral("Addition"); }
 
   std::unique_ptr<NodeDataModel>
   clone() const override
   { return std::make_unique<AdditionModel>(); }
-
-public:
-
-  void
-  save(Properties &p) const override
-  {
-    p.put("model_name", AdditionModel::name());
-  }
 
 private:
 
@@ -52,11 +44,15 @@ private:
 
     if (n1 && n2)
     {
-      _result = std::make_shared<NumberData>(n1->number() +
-                                             n2->number());
+      modelValidationState = NodeValidationState::Valid;
+      modelValidationError = QString();
+      _result = std::make_shared<DecimalData>(n1->number() +
+                                              n2->number());
     }
     else
     {
+      modelValidationState = NodeValidationState::Warning;
+      modelValidationError = QStringLiteral("Missing or incorrect inputs");
       _result.reset();
     }
 

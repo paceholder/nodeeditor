@@ -8,6 +8,9 @@
 
 class QGraphicsSceneMouseEvent;
 
+namespace QtNodes
+{
+
 class FlowScene;
 class Connection;
 class ConnectionGeometry;
@@ -26,6 +29,10 @@ public:
 
   virtual
   ~ConnectionGraphicsObject();
+
+  enum { Type = UserType + 2 };
+  int
+  type() const override { return Type; }
 
 public:
 
@@ -78,3 +85,4 @@ private:
 
   Connection& _connection;
 };
+}

@@ -14,12 +14,12 @@ Each change in the source node is immediately propagated through all the connect
 
 ### Platforms
 
-* Linux (x64, gcc-5.4, clang-3.7): [![Build Status](https://travis-ci.org/paceholder/nodeeditor.svg?branch=master)](https://travis-ci.org/paceholder/nodeeditor)
+* Linux (x64, gcc-4.8, clang-3.6): [![Build Status](https://travis-ci.org/paceholder/nodeeditor.svg?branch=master)](https://travis-ci.org/paceholder/nodeeditor)
 * Windows (Win32, x64, msvc2015): [![Build status](https://ci.appveyor.com/api/projects/status/wxp47wv3uyyiujjw?svg=true)](https://ci.appveyor.com/project/paceholder/nodeeditor)
 
 ### Dependencies
 
-* Qt 5.x
+* Qt >5.2
 * CMake 3.2
 
 ### Current state
@@ -54,3 +54,12 @@ Each change in the source node is immediately propagated through all the connect
 
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://paypal.me/DmitryPinaev)
 
+### Showcase
+
+#### [Chigraph](https://github.com/chigraph/chigraph)
+
+Chigraph is a programming language for beginners that is unique in that it is an intuitive flow graph:
+
+![chigraph screenshot](pictures/chigraph.png)
+
+It features easy bindings to C/C++, package management, and a cool interface.

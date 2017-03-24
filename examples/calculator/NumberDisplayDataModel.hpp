@@ -7,6 +7,13 @@
 
 #include <iostream>
 
+using QtNodes::PortType;
+using QtNodes::PortIndex;
+using QtNodes::NodeData;
+using QtNodes::NodeDataType;
+using QtNodes::NodeDataModel;
+using QtNodes::NodeValidationState;
+
 /// The model dictates the number of inputs and outputs for the Node.
 /// In this example it has no logic.
 class NumberDisplayDataModel : public NodeDataModel
@@ -23,7 +30,7 @@ public:
 
   QString
   caption() const override
-  { return QString("Result"); }
+  { return QStringLiteral("Result"); }
 
   bool
   captionVisible() const override
@@ -31,19 +38,11 @@ public:
 
   QString
   name() const override
-  { return QString("Result"); }
+  { return QStringLiteral("Result"); }
 
   std::unique_ptr<NodeDataModel>
   clone() const override
   { return std::make_unique<NumberDisplayDataModel>(); }
-
-public:
-
-  void
-  save(Properties &p) const override
-  {
-    p.put("model_name", NumberDisplayDataModel::name());
-  }
 
 public:
 
@@ -63,7 +62,16 @@ public:
   QWidget *
   embeddedWidget() override { return _label; }
 
+  NodeValidationState
+  validationState() const override;
+
+  QString
+  validationMessage() const override;
+
 private:
+
+  NodeValidationState modelValidationState = NodeValidationState::Warning;
+  QString modelValidationError = QStringLiteral("Missing or incorrect inputs");
 
   QLabel * _label;
 };

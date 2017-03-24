@@ -10,6 +10,16 @@
 
 #include "Export.hpp"
 
+namespace QtNodes
+{
+
+enum class NodeValidationState
+{
+  Valid,
+  Warning,
+  Error
+};
+
 class NODE_EDITOR_PUBLIC NodeDataModel
   : public QObject
   , public Serializable
@@ -44,6 +54,18 @@ public:
   /// Function creates instances of a model stored in DataModelRegistry
   virtual std::unique_ptr<NodeDataModel>
   clone() const = 0;
+
+public:
+
+  QJsonObject
+  save() const override
+  {
+    QJsonObject modelJson;
+
+    modelJson["name"] = name();
+
+    return modelJson;
+  }
 
 public:
 
@@ -88,6 +110,14 @@ public:
   bool
   resizable() const { return false; }
 
+  virtual
+  NodeValidationState
+  validationState() const { return NodeValidationState::Valid; }
+
+  virtual
+  QString
+  validationMessage() const { return QString(""); }
+
 signals:
 
   void
@@ -102,3 +132,4 @@ signals:
   void
   computingFinished();
 };
+}

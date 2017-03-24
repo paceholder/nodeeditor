@@ -1,6 +1,6 @@
 #include "MathOperationDataModel.hpp"
 
-#include "NumberData.hpp"
+#include "DecimalData.hpp"
 
 unsigned int
 MathOperationDataModel::
@@ -21,7 +21,7 @@ NodeDataType
 MathOperationDataModel::
 dataType(PortType, PortIndex) const
 {
-  return NumberData().type();
+  return DecimalData().type();
 }
 
 
@@ -38,7 +38,7 @@ MathOperationDataModel::
 setInData(std::shared_ptr<NodeData> data, PortIndex portIndex)
 {
   auto numberData =
-    std::dynamic_pointer_cast<NumberData>(data);
+    std::dynamic_pointer_cast<DecimalData>(data);
 
   if (portIndex == 0)
   {
@@ -53,3 +53,17 @@ setInData(std::shared_ptr<NodeData> data, PortIndex portIndex)
 }
 
 
+NodeValidationState
+MathOperationDataModel::
+validationState() const
+{
+  return modelValidationState;
+}
+
+
+QString
+MathOperationDataModel::
+validationMessage() const
+{
+  return modelValidationError;
+}

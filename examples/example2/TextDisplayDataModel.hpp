@@ -9,6 +9,11 @@
 
 #include <iostream>
 
+using QtNodes::PortType;
+using QtNodes::PortIndex;
+using QtNodes::NodeData;
+using QtNodes::NodeDataModel;
+
 /// The model dictates the number of inputs and outputs for the Node.
 /// In this example it has no logic.
 class TextDisplayDataModel : public NodeDataModel
@@ -37,14 +42,6 @@ public:
   std::unique_ptr<NodeDataModel>
   clone() const override
   { return std::make_unique<TextDisplayDataModel>(); }
-
-public:
-
-  void
-  save(Properties &p) const override
-  {
-    p.put("model_name", TextDisplayDataModel::name());
-  }
 
 public:
 

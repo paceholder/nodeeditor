@@ -7,6 +7,10 @@
 #include "PortType.hpp"
 
 class QPointF;
+
+namespace QtNodes
+{
+
 class Node;
 
 /// Stores currently draggind end.
@@ -53,3 +57,4 @@ private:
 
   Node* _lastHoveredNode = nullptr;
 };
+}

@@ -10,12 +10,16 @@
 
 #include "StyleCollection.hpp"
 
+using QtNodes::FlowViewStyle;
+
+inline void initResources() { Q_INIT_RESOURCE(resources); }
+
 FlowViewStyle::
 FlowViewStyle()
 {
   // Explicit resources inialization for preventing the static initialization
   // order fiasco: https://isocpp.org/wiki/faq/ctors#static-init-order
-  Q_INIT_RESOURCE(resources);
+  initResources();
 
   // This configuration is stored inside the compiled unit and is loaded statically
   loadJsonFile(":DefaultStyle.json");
@@ -52,7 +56,7 @@ setStyle(QString jsonText)
       auto colorArray = valueRef.toArray(); \
       std::vector<int> rgb; rgb.reserve(3); \
       for (auto it = colorArray.begin(); it != colorArray.end(); ++it) { \
-        rgb.push_back(it->toInt()); \
+        rgb.push_back((*it).toInt()); \
       } \
       variable = QColor(rgb[0], rgb[1], rgb[2]); \
     } else { \
