@@ -74,9 +74,9 @@ boundingRect() const
 {
   auto points = pointsC1C2();
 
-  QRectF basicRect(_out, _in);
+  QRectF basicRect = QRectF(_out, _in).normalized();
 
-  QRectF c1c2Rect(points.first, points.second);
+  QRectF c1c2Rect = QRectF(points.first, points.second).normalized();
 
   auto const &connectionStyle =
     StyleCollection::connectionStyle();

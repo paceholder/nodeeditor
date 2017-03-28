@@ -54,3 +54,12 @@ Each change in the source node is immediately propagated through all the connect
 
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://paypal.me/DmitryPinaev)
 
+### Showcase
+
+#### [Chigraph](https://github.com/chigraph/chigraph)
+
+Chigraph is a programming language for beginners that is unique in that it is an intuitive flow graph:
+
+![chigraph screenshot](pictures/chigraph.png)
+
+It features easy bindings to C/C++, package management, and a cool interface.
