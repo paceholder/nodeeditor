@@ -39,6 +39,22 @@ Each change in the source node is immediately propagated through all the connect
 3. GUI: fix scrolling for scene view window scrolling
 4. Implement grouping nodes
 
+### Citing
+
+    Dmitry Pinaev et al, Qt5 Node Editor, (2017), GitHub repository, https://github.com/paceholder/nodeeditor
+
+BibTeX
+
+    @misc{Pinaev2017,
+      author = {Dmitry Pinaev et al},
+      title = {Qt5 Node Editor},
+      year = {2017},
+      publisher = {GitHub},
+      journal = {GitHub repository},
+      howpublished = {\url{https://github.com/paceholder/nodeeditor}},
+      commit = {9f15ddf38c435eb3bc009ff68b18b2fec49d9795}
+    }
+
 
 ### Youtube video:
 
