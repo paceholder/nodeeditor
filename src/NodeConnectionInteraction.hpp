@@ -25,7 +25,7 @@ public:
   /// Can connect when following conditions are met:
   /// 1) Connection 'requires' a port
   /// 2) Connection's vacant end is above the node port
-  /// 3) Node port is vacant
+  /// 3) Node port is vacant (depending on the policy)
   /// 4) Connection type equals node port type, or there is a registered type conversion that can translate between the two
   bool canConnect(PortIndex &portIndex, 
                   bool& typeConversionNeeded,
