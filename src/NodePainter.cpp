@@ -52,6 +52,12 @@ paint(QPainter* painter,
   drawResizeRect(painter, geom, model);
 
   drawValidationRect(painter, geom, model, graphicsObject);
+
+  /// call custom painter
+  if (auto painterDelegate = model->painterDelegate())
+  {
+    painterDelegate->paint(painter, geom, model);
+  }
 }
 
 

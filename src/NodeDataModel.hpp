@@ -7,6 +7,8 @@
 #include "PortType.hpp"
 #include "NodeData.hpp"
 #include "Serializable.hpp"
+#include "NodeGeometry.hpp"
+#include "NodePainterDelegate.hpp"
 
 #include "Export.hpp"
 
@@ -117,6 +119,9 @@ public:
   virtual
   QString
   validationMessage() const { return QString(""); }
+
+  virtual
+  NodePainterDelegate* painterDelegate() const { return  nullptr; }
 
 signals:
 
