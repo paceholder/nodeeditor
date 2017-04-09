@@ -3,7 +3,6 @@
 #include <memory>
 
 #include <QtWidgets/QWidget>
-#include <QIcon>
 
 #include "PortType.hpp"
 #include "NodeData.hpp"
@@ -55,10 +54,6 @@ public:
   /// Function creates instances of a model stored in DataModelRegistry
   virtual std::unique_ptr<NodeDataModel>
   clone() const = 0;
-
-  /// Set the decorator icon for that corner
-  virtual QIcon
-  cornerDecorator(Qt::Corner corner) const { return QIcon(); }
 
 public:
 

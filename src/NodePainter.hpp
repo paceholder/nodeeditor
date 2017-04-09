@@ -33,11 +33,6 @@ public:
                     NodeGraphicsObject const & graphicsObject);
 
   static
-  void drawNodeDecorators(QPainter* painter,
-                          NodeGeometry const& location,
-                          NodeDataModel* const model);
-
-  static
   void drawModelName(QPainter* painter,
                      NodeGeometry const& geom,
                      NodeState const& state,
