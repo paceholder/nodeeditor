@@ -54,6 +54,8 @@ NodeGraphicsObject(FlowScene &scene,
 
   setAcceptHoverEvents(true);
 
+  setZValue(0);
+
   embedQWidget();
 
   // connect to the move signals to emit the move signals in FlowScene
@@ -312,6 +314,15 @@ void
 NodeGraphicsObject::
 hoverEnterEvent(QGraphicsSceneHoverEvent * event)
 {
+  // bring all the nodes to background
+  for(auto& it: _scene.nodes() )
+  {
+      Node* node = it.second.get();
+      node->nodeGraphicsObject().setZValue(0.0);
+  }
+  // bring this node to front
+  setZValue(1.0);
+
   _node.nodeGeometry().setHovered(true);
   update();
   _scene.nodeHovered(node(), event->screenPos());
