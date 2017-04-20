@@ -238,7 +238,6 @@ nodePortIndexUnderScenePoint(PortType portType,
   PortIndex portIndex = nodeGeom.checkHitScenePoint(portType,
                                                     scenePoint,
                                                     sceneTransform);
-
   return portIndex;
 }
 
@@ -251,6 +250,8 @@ nodePortIsEmpty(PortType portType, PortIndex portIndex) const
 
   auto const & entries = nodeState.getEntries(portType);
 
-  return (portType == PortType::Out) ||
-         (entries[portIndex].empty());
+  if (entries[portIndex].empty()) return true;
+
+  const auto outPolicy = _node->nodeDataModel()->portOutConnectionPolicy(portIndex);
+  return ( portType == PortType::Out && outPolicy == NodeDataModel::Many);
 }

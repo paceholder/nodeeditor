@@ -77,6 +77,15 @@ public:
   NodeDataType
   dataType(PortType portType, PortIndex portIndex) const = 0;
 
+  enum NodeConnectionPolicy {
+      One,
+      Many,
+  };
+
+  virtual NodeConnectionPolicy portOutConnectionPolicy(PortIndex /*portIndex*/) const {
+      return NodeConnectionPolicy::Many;
+  }
+
 public:
 
   /// Triggers the algorithm
