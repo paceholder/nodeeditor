@@ -201,28 +201,34 @@ mousePressEvent(QGraphicsSceneMouseEvent * event)
       std::unordered_map<QUuid, Connection*> connections =
         nodeState.connections(portToCheck, portIndex);
 
+
       // start dragging existing connection
-      if (!connections.empty() && portToCheck == PortType::In)
+      if ( !connections.empty() && portToCheck == PortType::In )
       {
-        auto con = connections.begin()->second;
+          auto con = connections.begin()->second;
 
-        NodeConnectionInteraction interaction(_node, *con, _scene);
+          NodeConnectionInteraction interaction(_node, *con, _scene);
 
-        interaction.disconnect(portToCheck);
+          interaction.disconnect(portToCheck);
       }
-      // initialize new Connection
-      else
+      else  // initialize new Connection
       {
-        // todo add to FlowScene
-        auto connection = _scene.createConnection(portToCheck,
-                                                  _node,
-                                                  portIndex);
+          const auto outPolicy = _node.nodeDataModel()->portOutConnectionPolicy(portIndex);
+          if ( !connections.empty() && (portToCheck == PortType::Out && outPolicy == NodeDataModel::One) )
+          {
+              _scene.deleteConnection( *connections.begin()->second );
+          }
 
-        _node.nodeState().setConnection(portToCheck,
-                                        portIndex,
-                                        *connection);
+          // todo add to FlowScene
+          auto connection = _scene.createConnection(portToCheck,
+                                                    _node,
+                                                    portIndex);
 
-        connection->getConnectionGraphicsObject().grabMouse();
+          _node.nodeState().setConnection(portToCheck,
+                                          portIndex,
+                                          *connection);
+
+          connection->getConnectionGraphicsObject().grabMouse();
       }
     }
   };
