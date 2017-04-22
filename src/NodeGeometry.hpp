@@ -8,6 +8,7 @@
 #include <QtGui/QFontMetrics>
 
 #include "PortType.hpp"
+#include "Export.hpp"
 
 namespace QtNodes
 {
@@ -16,7 +17,7 @@ class NodeState;
 class NodeDataModel;
 class Node;
 
-class NodeGeometry
+class NODE_EDITOR_PUBLIC NodeGeometry
 {
 public:
 
