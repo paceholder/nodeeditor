@@ -31,7 +31,11 @@ class NODE_EDITOR_PUBLIC NodeDataModel
 
 public:
 
-  NodeDataModel(): _nodeStyle(StyleCollection::nodeStyle()) {}
+  NodeDataModel()
+    : _nodeStyle(StyleCollection::nodeStyle())
+  {
+    // Derived classes can initialize specific style here
+  }
 
   virtual
   ~NodeDataModel() {}
@@ -82,13 +86,19 @@ public:
   NodeDataType
   dataType(PortType portType, PortIndex portIndex) const = 0;
 
-  enum NodeConnectionPolicy {
-      One,
-      Many,
+public:
+
+  enum class ConnectionPolicy
+  {
+    One,
+    Many,
   };
 
-  virtual NodeConnectionPolicy portOutConnectionPolicy(PortIndex /*portIndex*/) const {
-      return NodeConnectionPolicy::Many;
+  virtual
+  ConnectionPolicy
+  portOutConnectionPolicy(PortIndex) const
+  {
+    return ConnectionPolicy::Many;
   }
 
   NodeStyle const&
@@ -126,7 +136,8 @@ public:
   validationMessage() const { return QString(""); }
 
   virtual
-  NodePainterDelegate* painterDelegate() const { return  nullptr; }
+  NodePainterDelegate*
+  painterDelegate() const { return nullptr; }
 
 signals:
 

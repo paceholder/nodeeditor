@@ -32,9 +32,6 @@ public:
   Node&
   node();
 
-  Node const&
-  node() const;
-
   QRectF
   boundingRect() const override;
 

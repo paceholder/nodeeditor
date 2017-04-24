@@ -80,13 +80,6 @@ node()
 }
 
 
-Node const&
-NodeGraphicsObject::
-node() const
-{
-  return _node;
-}
-
 void
 NodeGraphicsObject::
 embedQWidget()
@@ -220,7 +213,9 @@ mousePressEvent(QGraphicsSceneMouseEvent * event)
         else // initialize new Connection
         {
           const auto outPolicy = _node.nodeDataModel()->portOutConnectionPolicy(portIndex);
-          if (!connections.empty() && (portToCheck == PortType::Out && outPolicy == NodeDataModel::One) )
+          if (!connections.empty() &&
+              portToCheck == PortType::Out &&
+              outPolicy == NodeDataModel::ConnectionPolicy::One)
           {
             _scene.deleteConnection( *connections.begin()->second );
           }
