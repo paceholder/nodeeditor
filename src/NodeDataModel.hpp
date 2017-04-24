@@ -9,7 +9,8 @@
 #include "Serializable.hpp"
 #include "NodeGeometry.hpp"
 #include "NodePainterDelegate.hpp"
-
+#include "NodeStyle.hpp"
+#include "StyleCollection.hpp"
 #include "Export.hpp"
 
 namespace QtNodes
@@ -29,6 +30,8 @@ class NODE_EDITOR_PUBLIC NodeDataModel
   Q_OBJECT
 
 public:
+
+  NodeDataModel(): _nodeStyle(StyleCollection::nodeStyle()) {}
 
   virtual
   ~NodeDataModel() {}
@@ -88,6 +91,12 @@ public:
       return NodeConnectionPolicy::Many;
   }
 
+  NodeStyle const&
+  nodeStyle() const { return _nodeStyle; }
+
+  void
+  setNodeStyle(NodeStyle const& style) { _nodeStyle = style; }
+
 public:
 
   /// Triggers the algorithm
@@ -132,5 +141,9 @@ signals:
 
   void
   computingFinished();
+
+private:
+
+  NodeStyle _nodeStyle;
 };
 }

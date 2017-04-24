@@ -80,6 +80,13 @@ node()
 }
 
 
+Node const&
+NodeGraphicsObject::
+node() const
+{
+  return _node;
+}
+
 void
 NodeGraphicsObject::
 embedQWidget()
