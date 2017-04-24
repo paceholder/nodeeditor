@@ -67,7 +67,7 @@ drawNodeRect(QPainter* painter,
              NodeGeometry const& geom,
              NodeGraphicsObject const & graphicsObject)
 {
-  NodeStyle const& nodeStyle = StyleCollection::nodeStyle();
+  NodeStyle const& nodeStyle = graphicsObject.node().nodeDataModel()->nodeStyle();
 
   auto color = graphicsObject.isSelected()
                ? nodeStyle.SelectedBoundaryColor
