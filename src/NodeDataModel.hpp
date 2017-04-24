@@ -7,6 +7,8 @@
 #include "PortType.hpp"
 #include "NodeData.hpp"
 #include "Serializable.hpp"
+#include "NodeGeometry.hpp"
+#include "NodePainterDelegate.hpp"
 
 #include "Export.hpp"
 
@@ -77,6 +79,15 @@ public:
   NodeDataType
   dataType(PortType portType, PortIndex portIndex) const = 0;
 
+  enum NodeConnectionPolicy {
+      One,
+      Many,
+  };
+
+  virtual NodeConnectionPolicy portOutConnectionPolicy(PortIndex /*portIndex*/) const {
+      return NodeConnectionPolicy::Many;
+  }
+
 public:
 
   /// Triggers the algorithm
@@ -104,6 +115,9 @@ public:
   virtual
   QString
   validationMessage() const { return QString(""); }
+
+  virtual
+  NodePainterDelegate* painterDelegate() const { return  nullptr; }
 
 signals:
 

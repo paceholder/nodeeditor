@@ -44,6 +44,7 @@ public:
   moveConnections() const;
 
   enum { Type = UserType + 1 };
+
   int
   type() const override { return Type; }
 
