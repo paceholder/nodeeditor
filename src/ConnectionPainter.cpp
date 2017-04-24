@@ -109,12 +109,18 @@ paint(QPainter* painter,
     painter->drawLine(QLineF(source, points.first));
     painter->drawLine(QLineF(points.first, points.second));
     painter->drawLine(QLineF(points.second, sink));
-    painter->drawEllipse(points.first, 4, 4);
-    painter->drawEllipse(points.second, 4, 4);
+    painter->drawEllipse(points.first, 3, 3);
+    painter->drawEllipse(points.second, 3, 3);
 
     painter->setBrush(Qt::NoBrush);
 
     painter->drawPath(cubicPath(geom));
+  }
+
+  {
+    painter->setPen(Qt::yellow);
+
+    painter->drawRect(geom.boundingRect());
   }
 #endif
 
