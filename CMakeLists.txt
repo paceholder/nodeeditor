@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.2)
 
-project(NodeEditor)
+project(NodeEditor CXX)
 
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 set(CMAKE_DISABLE_SOURCE_CHANGES  ON)
