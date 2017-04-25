@@ -325,7 +325,7 @@ hoverEnterEvent(QGraphicsSceneHoverEvent * event)
       }
   }
   // bring this node forward
-  this->setZValue(1.0);
+  setZValue(1.0);
 
   _node.nodeGeometry().setHovered(true);
   update();
