@@ -8,9 +8,8 @@
 #include "NodeData.hpp"
 #include "Serializable.hpp"
 #include "NodeGeometry.hpp"
-#include "NodePainterDelegate.hpp"
 #include "NodeStyle.hpp"
-#include "StyleCollection.hpp"
+#include "NodePainterDelegate.hpp"
 #include "Export.hpp"
 
 namespace QtNodes
@@ -23,6 +22,8 @@ enum class NodeValidationState
   Error
 };
 
+class StyleCollection;
+
 class NODE_EDITOR_PUBLIC NodeDataModel
   : public QObject
   , public Serializable
@@ -31,14 +32,10 @@ class NODE_EDITOR_PUBLIC NodeDataModel
 
 public:
 
-  NodeDataModel()
-    : _nodeStyle(StyleCollection::nodeStyle())
-  {
-    // Derived classes can initialize specific style here
-  }
+  NodeDataModel();
 
   virtual
-  ~NodeDataModel() {}
+  ~NodeDataModel() = default;
 
   /// Caption is used in GUI
   virtual QString
@@ -67,24 +64,15 @@ public:
 public:
 
   QJsonObject
-  save() const override
-  {
-    QJsonObject modelJson;
-
-    modelJson["name"] = name();
-
-    return modelJson;
-  }
+  save() const override;
 
 public:
 
   virtual
-  unsigned int
-  nPorts(PortType portType) const = 0;
+  unsigned int nPorts(PortType portType) const = 0;
 
   virtual
-  NodeDataType
-  dataType(PortType portType, PortIndex portIndex) const = 0;
+  NodeDataType dataType(PortType portType, PortIndex portIndex) const = 0;
 
 public:
 
@@ -102,10 +90,10 @@ public:
   }
 
   NodeStyle const&
-  nodeStyle() const { return _nodeStyle; }
+  nodeStyle() const;
 
   void
-  setNodeStyle(NodeStyle const& style) { _nodeStyle = style; }
+  setNodeStyle(NodeStyle const& style);
 
 public:
 
@@ -136,8 +124,7 @@ public:
   validationMessage() const { return QString(""); }
 
   virtual
-  NodePainterDelegate*
-  painterDelegate() const { return nullptr; }
+  NodePainterDelegate* painterDelegate() const { return nullptr; }
 
 signals:
 
