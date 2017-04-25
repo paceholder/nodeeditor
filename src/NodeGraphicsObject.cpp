@@ -54,6 +54,8 @@ NodeGraphicsObject(FlowScene &scene,
 
   setAcceptHoverEvents(true);
 
+  setZValue(0);
+
   embedQWidget();
 
   // connect to the move signals to emit the move signals in FlowScene
@@ -319,6 +321,19 @@ void
 NodeGraphicsObject::
 hoverEnterEvent(QGraphicsSceneHoverEvent * event)
 {
+  // bring all the colliding nodes to background
+  QList<QGraphicsItem *> overlapItems = collidingItems();
+
+  for (QGraphicsItem *item : overlapItems)
+  {
+    if (item->zValue() > 0.0)
+    {
+      item->setZValue(0.0);
+    }
+  }
+  // bring this node forward
+  setZValue(1.0);
+
   _node.nodeGeometry().setHovered(true);
   update();
   _scene.nodeHovered(node(), event->screenPos());
