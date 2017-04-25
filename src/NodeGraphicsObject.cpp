@@ -314,14 +314,18 @@ void
 NodeGraphicsObject::
 hoverEnterEvent(QGraphicsSceneHoverEvent * event)
 {
-  // bring all the nodes to background
-  for(auto& it: _scene.nodes() )
+  // bring all the colliding nodes to background
+  QList<QGraphicsItem *> overlapItems = this->collidingItems();
+
+  foreach (QGraphicsItem *item, overlapItems)
   {
-      Node* node = it.second.get();
-      node->nodeGraphicsObject().setZValue(0.0);
+      if (item->zValue() > 0.0 )
+      {
+          item->setZValue(0.0);
+      }
   }
-  // bring this node to front
-  setZValue(1.0);
+  // bring this node forward
+  this->setZValue(1.0);
 
   _node.nodeGeometry().setHovered(true);
   update();
