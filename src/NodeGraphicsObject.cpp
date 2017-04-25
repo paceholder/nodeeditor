@@ -28,6 +28,7 @@ NodeGraphicsObject(FlowScene &scene,
   : _scene(scene)
   , _node(node)
   , _proxyWidget(nullptr)
+  , _locked(false)
 {
   _scene.addItem(this);
 
@@ -81,6 +82,13 @@ node()
   return _node;
 }
 
+
+Node const&
+NodeGraphicsObject::
+node() const
+{
+  return _node;
+}
 
 void
 NodeGraphicsObject::
@@ -149,6 +157,14 @@ moveConnections() const
   moveConnections(PortType::Out);
 }
 
+void NodeGraphicsObject::lock(bool locked)
+{
+  _locked = locked;
+  setFlag(QGraphicsItem::ItemIsMovable, !locked);
+  setFlag(QGraphicsItem::ItemIsFocusable, !locked);
+  setFlag(QGraphicsItem::ItemIsSelectable, !locked);
+}
+
 
 void
 NodeGraphicsObject::
@@ -179,6 +195,8 @@ void
 NodeGraphicsObject::
 mousePressEvent(QGraphicsSceneMouseEvent * event)
 {
+  if(_locked) return;
+
   // deselect all other items after this one is selected
   if (!isSelected() &&
       !(event->modifiers() & Qt::ControlModifier))
