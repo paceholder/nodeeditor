@@ -9,7 +9,8 @@
 #include "Serializable.hpp"
 #include "NodeGeometry.hpp"
 #include "NodePainterDelegate.hpp"
-
+#include "NodeStyle.hpp"
+#include "NodePainterDelegate.hpp"
 #include "Export.hpp"
 
 namespace QtNodes
@@ -22,6 +23,8 @@ enum class NodeValidationState
   Error
 };
 
+class StyleCollection;
+
 class NODE_EDITOR_PUBLIC NodeDataModel
   : public QObject
   , public Serializable
@@ -30,8 +33,10 @@ class NODE_EDITOR_PUBLIC NodeDataModel
 
 public:
 
+  NodeDataModel();
+
   virtual
-  ~NodeDataModel() {}
+  ~NodeDataModel() = default;
 
   /// Caption is used in GUI
   virtual QString
@@ -60,24 +65,36 @@ public:
 public:
 
   QJsonObject
-  save() const override
-  {
-    QJsonObject modelJson;
-
-    modelJson["name"] = name();
-
-    return modelJson;
-  }
+  save() const override;
 
 public:
 
   virtual
-  unsigned int
-  nPorts(PortType portType) const = 0;
+  unsigned int nPorts(PortType portType) const = 0;
 
   virtual
-  NodeDataType
-  dataType(PortType portType, PortIndex portIndex) const = 0;
+  NodeDataType dataType(PortType portType, PortIndex portIndex) const = 0;
+
+public:
+
+  enum class ConnectionPolicy
+  {
+    One,
+    Many,
+  };
+
+  virtual
+  ConnectionPolicy
+  portOutConnectionPolicy(PortIndex) const
+  {
+    return ConnectionPolicy::Many;
+  }
+
+  NodeStyle const&
+  nodeStyle() const;
+
+  void
+  setNodeStyle(NodeStyle const& style);
 
   enum NodeConnectionPolicy {
     One,
@@ -123,6 +140,9 @@ public:
   virtual
   NodePainterDelegate* painterDelegate() const { return  nullptr; }
 
+  virtual
+  NodePainterDelegate* painterDelegate() const { return nullptr; }
+
 signals:
 
   void
@@ -136,5 +156,9 @@ signals:
 
   void
   computingFinished();
+
+private:
+
+  NodeStyle _nodeStyle;
 };
 }

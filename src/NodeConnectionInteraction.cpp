@@ -239,7 +239,6 @@ nodePortIndexUnderScenePoint(PortType portType,
   PortIndex portIndex = nodeGeom.checkHitScenePoint(portType,
                                                     scenePoint,
                                                     sceneTransform);
-
   return portIndex;
 }
 

@@ -54,6 +54,8 @@ NodeGraphicsObject(FlowScene &scene,
 
   setAcceptHoverEvents(true);
 
+  setZValue(0);
+
   embedQWidget();
 
   // connect to the move signals to emit the move signals in FlowScene
@@ -129,17 +131,17 @@ moveConnections() const
   NodeState const & nodeState = _node.nodeState();
 
   auto moveConnections =
-  [&](PortType portType)
-  {
-    auto const & connectionEntries =
-      nodeState.getEntries(portType);
-
-    for (auto const & connections : connectionEntries)
+    [&](PortType portType)
     {
-      for (auto & con : connections)
-        con.second->getConnectionGraphicsObject().move();
-    }
-  };
+      auto const & connectionEntries =
+        nodeState.getEntries(portType);
+
+      for (auto const & connections : connectionEntries)
+      {
+        for (auto & con : connections)
+          con.second->getConnectionGraphicsObject().move();
+      }
+    };
 
   moveConnections(PortType::In);
 
@@ -184,29 +186,29 @@ mousePressEvent(QGraphicsSceneMouseEvent * event)
   }
 
   auto clickPort =
-  [&](PortType portToCheck)
-  {
-    NodeGeometry & nodeGeometry = _node.nodeGeometry();
-
-    // TODO do not pass sceneTransform
-    int portIndex = nodeGeometry.checkHitScenePoint(portToCheck,
-                                                    event->scenePos(),
-                                                    sceneTransform());
-
-    if (portIndex != INVALID)
+    [&](PortType portToCheck)
     {
-      NodeState const & nodeState = _node.nodeState();
+      NodeGeometry & nodeGeometry = _node.nodeGeometry();
 
-      std::unordered_map<QUuid, Connection*> connections =
-        nodeState.connections(portToCheck, portIndex);
+      // TODO do not pass sceneTransform
+      int portIndex = nodeGeometry.checkHitScenePoint(portToCheck,
+                                                      event->scenePos(),
+                                                      sceneTransform());
 
-      // start dragging existing connection
+      if (portIndex != INVALID)
+      {
+        NodeState const & nodeState = _node.nodeState();
+
+        std::unordered_map<QUuid, Connection*> connections =
+          nodeState.connections(portToCheck, portIndex);
+
+        // start dragging existing connection
       auto ncp = _node.nodeDataModel()->nodeConnectionPolicy(portToCheck, portIndex);
       if (!connections.empty() && ncp == NodeDataModel::One)
-      {
-        auto con = connections.begin()->second;
+        {
+          auto con = connections.begin()->second;
 
-        NodeConnectionInteraction interaction(_node, *con, _scene);
+          NodeConnectionInteraction interaction(_node, *con, _scene);
 
         interaction.disconnect(portToCheck);
       }
@@ -218,14 +220,14 @@ mousePressEvent(QGraphicsSceneMouseEvent * event)
                                                   _node,
                                                   portIndex);
 
-        _node.nodeState().setConnection(portToCheck,
-                                        portIndex,
-                                        *connection);
+          _node.nodeState().setConnection(portToCheck,
+                                          portIndex,
+                                          *connection);
 
-        connection->getConnectionGraphicsObject().grabMouse();
+          connection->getConnectionGraphicsObject().grabMouse();
+        }
       }
-    }
-  };
+    };
 
   clickPort(PortType::In);
   clickPort(PortType::Out);
@@ -312,6 +314,19 @@ void
 NodeGraphicsObject::
 hoverEnterEvent(QGraphicsSceneHoverEvent * event)
 {
+  // bring all the colliding nodes to background
+  QList<QGraphicsItem *> overlapItems = collidingItems();
+
+  for (QGraphicsItem *item : overlapItems)
+  {
+    if (item->zValue() > 0.0)
+    {
+      item->setZValue(0.0);
+    }
+  }
+  // bring this node forward
+  setZValue(1.0);
+
   _node.nodeGeometry().setHovered(true);
   update();
   _scene.nodeHovered(node(), event->screenPos());
@@ -353,7 +368,8 @@ hoverMoveEvent(QGraphicsSceneHoverEvent * event)
 
 void
 NodeGraphicsObject::
-mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) {
+mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
+{
   QGraphicsItem::mouseDoubleClickEvent(event);
 
   _scene.nodeDoubleClicked(node());
