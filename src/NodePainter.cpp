@@ -36,10 +36,10 @@ paint(QPainter* painter,
   geom.recalculateSize(painter->font());
 
   //--------------------------------------------
-
-  drawNodeRect(painter, geom, graphicsObject);
-
   auto const &model = node.nodeDataModel();
+
+  drawNodeRect(painter, geom, model, graphicsObject);
+
 
   drawConnectionPoints(painter, geom, state, model, scene);
 
@@ -65,6 +65,7 @@ void
 NodePainter::
 drawNodeRect(QPainter* painter,
              NodeGeometry const& geom,
+			 NodeDataModel const* model,
              NodeGraphicsObject const & graphicsObject)
 {
   NodeStyle const& nodeStyle = StyleCollection::nodeStyle();
@@ -109,7 +110,7 @@ NodePainter::
 drawConnectionPoints(QPainter* painter,
                      NodeGeometry const& geom,
                      NodeState const& state,
-                     NodeDataModel* const model,
+                     NodeDataModel const* model,
                      FlowScene const & scene)
 {
   NodeStyle const& nodeStyle      = StyleCollection::nodeStyle();
@@ -193,7 +194,7 @@ NodePainter::
 drawFilledConnectionPoints(QPainter * painter,
                            NodeGeometry const & geom,
                            NodeState const & state,
-                           NodeDataModel* const model)
+                           NodeDataModel const* model)
 {
   NodeStyle const& nodeStyle       = StyleCollection::nodeStyle();
   auto const     & connectionStyle = StyleCollection::connectionStyle();
@@ -242,7 +243,7 @@ NodePainter::
 drawModelName(QPainter * painter,
               NodeGeometry const & geom,
               NodeState const & state,
-              NodeDataModel* const model)
+              NodeDataModel const* model)
 {
   NodeStyle const& nodeStyle = StyleCollection::nodeStyle();
 
@@ -278,7 +279,7 @@ NodePainter::
 drawEntryLabels(QPainter * painter,
                 NodeGeometry const & geom,
                 NodeState const & state,
-                NodeDataModel* const model)
+                NodeDataModel const* model)
 {
   QFontMetrics const & metrics =
     painter->fontMetrics();
@@ -344,7 +345,7 @@ void
 NodePainter::
 drawResizeRect(QPainter * painter,
                NodeGeometry const & geom,
-               NodeDataModel* const model)
+               NodeDataModel const* model)
 {
   if (model->resizable())
   {
@@ -358,7 +359,7 @@ void
 NodePainter::
 drawValidationRect(QPainter * painter,
                    NodeGeometry const & geom,
-                   NodeDataModel* const model,
+                   NodeDataModel const* model,
                    NodeGraphicsObject const & graphicsObject)
 {
   auto modelValidationState = model->validationState();

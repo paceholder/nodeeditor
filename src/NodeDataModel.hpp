@@ -140,9 +140,6 @@ public:
   virtual
   NodePainterDelegate* painterDelegate() const { return  nullptr; }
 
-  virtual
-  NodePainterDelegate* painterDelegate() const { return nullptr; }
-
 signals:
 
   void
