@@ -1,8 +1,9 @@
 cmake_minimum_required(VERSION 3.2)
 
-project(NodeEditor)
+project(NodeEditor CXX)
 
-option(BUILD_EXAMPLES "Build Examples" ON)
+set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
+set(CMAKE_DISABLE_SOURCE_CHANGES  ON)
 
 # Find includes in corresponding build directories
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -13,6 +14,9 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 # Instruct CMake to run moc automatically when needed.
 set(CMAKE_AUTOMOC ON)
+
+option(BUILD_EXAMPLES "Build Examples" ON)
+
 
 # Find the QtWidgets library
 find_package(Qt5 COMPONENTS

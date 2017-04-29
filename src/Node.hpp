@@ -13,6 +13,7 @@
 #include "NodeState.hpp"
 #include "NodeGeometry.hpp"
 #include "NodeData.hpp"
+#include "NodeGraphicsObject.hpp"
 #include "Serializable.hpp"
 
 namespace QtNodes

@@ -15,7 +15,8 @@ Each change in the source node is immediately propagated through all the connect
 ### Platforms
 
 * Linux (x64, gcc-4.8, clang-3.6): [![Build Status](https://travis-ci.org/paceholder/nodeeditor.svg?branch=master)](https://travis-ci.org/paceholder/nodeeditor)
-* Windows (Win32, x64, msvc2015): [![Build status](https://ci.appveyor.com/api/projects/status/wxp47wv3uyyiujjw?svg=true)](https://ci.appveyor.com/project/paceholder/nodeeditor)
+* Windows (Win32, x64, msvc2015, MinGW 5.3): [![Build status](https://ci.appveyor.com/api/projects/status/wxp47wv3uyyiujjw/branch/master?svg=true)](https://ci.appveyor.com/project/paceholder/nodeeditor/branch/master)
+
 
 ### Dependencies
 
