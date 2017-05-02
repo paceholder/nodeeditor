@@ -1,40 +1,48 @@
-sudo: required
-dist: trusty
-
-# to avoid exporting gcc4.8
 language: none
 
 matrix:
   include:
-    - compiler: gcc
-      env: CXX=g++-4.8 CC=gcc-4.8
+    - os: linux
+      dist: trusty
+      compiler: clang
+      env: CXX=clang++-3.8 CC=clang-3.8
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.8
+          packages:
+            - clang-3.8
+              # VERY IMPORTANT TO INSTALL g++5! Otherwise will not compile with clang
+              # clang somehow uses std lib of g++, we should have fresh stdlib for using C++14
+            - g++-5 
+
+    - os: linux
+      dist: trusty
+      compiler: gcc
+      env: CXX=g++-5 CC=gcc-5 QT=5
       addons:
         apt:
           sources:
             - ubuntu-toolchain-r-test
           packages:
-            - g++-4.8
-    - compiler: clang
-      env: CXX=clang++-3.6 CC=clang-3.6
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-            - llvm-toolchain-precise-3.6
-          packages:
-            - clang-3.6
+            - g++-5
 
+    - os: osx
+      osx_image: xcode6.4
+      compiler: clang
+      env: CMAKE_PREFIX_PATH=/usr/local/Cellar/qt/5.8.0_2:$CMAKE_PREFIX_PATH
 
-#branches:
-  #only:
-    #- master
-
+git:
+  depth: 10
 
 before_install:
-  - sudo apt-get update -qq
+   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update    ; fi
+   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install qt; fi
+   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get update -qq ; fi
+   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install build-essential libgl1-mesa-dev ; fi
+   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get -yy install qtbase5-dev ; fi
 
-install:
-  - sudo apt-get install build-essential libgl1-mesa-dev qtbase5-dev
 
 script:
   - mkdir build

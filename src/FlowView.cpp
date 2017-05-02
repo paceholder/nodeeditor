@@ -13,6 +13,7 @@
 
 #include <QDebug>
 #include <iostream>
+#include <cmath>
 
 #include "FlowScene.hpp"
 #include "DataModelRegistry.hpp"
