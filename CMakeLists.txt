@@ -46,12 +46,12 @@ qt5_add_resources(RESOURCES ./resources/resources.qrc)
 # Tell CMake to create the helloworld executable
 add_library(chigraphnodes SHARED ${LIB_CPPS} ${RESOURCES})
 
-target_include_directories(nodes INTERFACE "include")
+target_include_directories(chigraphnodes INTERFACE "include")
 
-target_compile_definitions(nodes PUBLIC "-DNODE_EDITOR_SHARED")
-target_compile_definitions(nodes PRIVATE "-DNODE_EDITOR_EXPORTS")
+target_compile_definitions(chigraphnodes PUBLIC "-DNODE_EDITOR_SHARED")
+target_compile_definitions(chigraphnodes PRIVATE "-DNODE_EDITOR_EXPORTS")
 
-target_link_libraries(nodes
+target_link_libraries(chigraphnodes
                       Qt5::Core
                       Qt5::Widgets
                       Qt5::Gui
@@ -62,7 +62,7 @@ if(BUILD_EXAMPLES)
 endif()
 
 
-install(TARGETS nodes 
+install(TARGETS chigraphnodes 
 	RUNTIME DESTINATION bin
 	LIBRARY DESTINATION lib
 	ARCHIVE DESTINATION lib
