@@ -23,6 +23,9 @@ public:
     : _requiredPort(port)
   {}
 
+  ConnectionState(const ConnectionState&) = delete;
+  ConnectionState operator=(const ConnectionState&) = delete;
+
   ~ConnectionState();
 
 public:
