@@ -42,8 +42,6 @@ class Connection
   , public Serializable
 {
 
-  Q_OBJECT
-
 public:
 
   /// New Connection is attached to the port of the given Node.
