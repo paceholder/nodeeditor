@@ -83,8 +83,8 @@ public:
 
       case PortType::Out:
         result = 2;
-
-      default:
+        break;
+      case PortType::None:
         break;
     }
 
@@ -117,7 +117,7 @@ public:
         }
         break;
 
-      default:
+      case PortType::None:
         break;
     }
   }
