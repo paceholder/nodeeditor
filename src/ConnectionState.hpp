@@ -55,6 +55,6 @@ private:
 
   PortType _requiredPort;
 
-  Node* _lastHoveredNode = nullptr;
+  Node* _lastHoveredNode{nullptr};
 };
 }
