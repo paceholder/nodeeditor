@@ -102,11 +102,8 @@ public:
         {
           case 0:
             return MyNodeData().type();
-            break;
-
           case 1:
             return SimpleNodeData().type();
-            break;
         }
         break;
 
@@ -115,11 +112,8 @@ public:
         {
           case 0:
             return MyNodeData().type();
-            break;
-
           case 1:
             return SimpleNodeData().type();
-            break;
         }
         break;
 
