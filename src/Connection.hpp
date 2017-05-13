@@ -58,6 +58,9 @@ public:
              Node& nodeOut,
              PortIndex portIndexOut);
 
+  Connection(const Connection&) = delete;
+  Connection operator=(const Connection&) = delete;
+
   ~Connection();
 
 public:

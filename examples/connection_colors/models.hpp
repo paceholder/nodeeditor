@@ -83,8 +83,8 @@ public:
 
       case PortType::Out:
         result = 2;
-
-      default:
+        break;
+      case PortType::None:
         break;
     }
 
@@ -102,11 +102,8 @@ public:
         {
           case 0:
             return MyNodeData().type();
-            break;
-
           case 1:
             return SimpleNodeData().type();
-            break;
         }
         break;
 
@@ -115,17 +112,16 @@ public:
         {
           case 0:
             return MyNodeData().type();
-            break;
-
           case 1:
             return SimpleNodeData().type();
-            break;
         }
         break;
 
-      default:
+      case PortType::None:
         break;
     }
+    // FIXME: control may reach end of non-void function [-Wreturn-type]
+    return NodeDataType();
   }
 
   std::shared_ptr<NodeData>
