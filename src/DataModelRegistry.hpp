@@ -26,9 +26,9 @@ public:
 
   struct TypeConverterItem
   {
-    RegistryItemPtr Model;
-    NodeDataType    SourceType;
-    NodeDataType    DestinationType;
+    RegistryItemPtr Model{};
+    NodeDataType    SourceType{};
+    NodeDataType    DestinationType{};
   };
 
   using ConvertingTypesPair = std::pair<QString, QString>; //Source type ID, Destination type ID in this order
@@ -112,9 +112,9 @@ public:
 
 private:
 
-  RegisteredModelsCategoryMap _registeredModelsCategory;
-  CategoriesSet _categories;
-  RegisteredModelsMap _registeredModels;
-  RegisteredTypeConvertersMap _registeredTypeConverters;
+  RegisteredModelsCategoryMap _registeredModelsCategory{};
+  CategoriesSet _categories{};
+  RegisteredModelsMap _registeredModels{};
+  RegisteredTypeConvertersMap _registeredTypeConverters{};
 };
 }

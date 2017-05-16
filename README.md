@@ -14,7 +14,7 @@ Each change in the source node is immediately propagated through all the connect
 
 ### Platforms
 
-* Linux (x64, gcc-4.8, clang-3.6): [![Build Status](https://travis-ci.org/paceholder/nodeeditor.svg?branch=master)](https://travis-ci.org/paceholder/nodeeditor)
+* OSX (Apple Clang - LLVM 3.6), Linux (x64, gcc-5.0, clang-3.8): [![Build Status](https://travis-ci.org/paceholder/nodeeditor.svg?branch=master)](https://travis-ci.org/paceholder/nodeeditor)
 * Windows (Win32, x64, msvc2015, MinGW 5.3): [![Build status](https://ci.appveyor.com/api/projects/status/wxp47wv3uyyiujjw/branch/master?svg=true)](https://ci.appveyor.com/project/paceholder/nodeeditor/branch/master)
 
 
@@ -31,14 +31,15 @@ Each change in the source node is immediately propagated through all the connect
 * Embedded Qt widgets
 * One-output to many-input connections
 * JSON-based interface styles
-* Saving scenes to binary files (Will be changed to JSON soon)
+* Saving scenes to JSON files
 
 ### Roadmap
 
 1. Extend set of examples
-2. Implement graph save/restore with JSON
-3. GUI: fix scrolling for scene view window scrolling
-4. Implement grouping nodes
+2. GUI: fix scrolling for scene view window scrolling
+3. Implement grouping nodes
+4. Split graph and GUI parts
+5. Build data propagation on top of the graph code
 
 ### Citing
 
@@ -53,7 +54,7 @@ BibTeX
       publisher = {GitHub},
       journal = {GitHub repository},
       howpublished = {\url{https://github.com/paceholder/nodeeditor}},
-      commit = {9f15ddf38c435eb3bc009ff68b18b2fec49d9795}
+      commit = {e89ff3ffbdd8c6245c4c1f7e9f73276bf15c3e88}
     }
 
 

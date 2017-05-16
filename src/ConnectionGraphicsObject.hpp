@@ -52,6 +52,9 @@ public:
   void
   move();
 
+  void
+  lock(bool locked);
+
 protected:
 
   void

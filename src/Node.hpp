@@ -14,6 +14,7 @@
 #include "NodeGeometry.hpp"
 #include "NodeData.hpp"
 #include "NodeGraphicsObject.hpp"
+#include "ConnectionGraphicsObject.hpp"
 #include "Serializable.hpp"
 
 namespace QtNodes

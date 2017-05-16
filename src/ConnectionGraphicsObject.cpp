@@ -135,6 +135,13 @@ move()
   moveEndPoint(PortType::Out);
 }
 
+void ConnectionGraphicsObject::lock(bool locked)
+{
+  setFlag(QGraphicsItem::ItemIsMovable, !locked);
+  setFlag(QGraphicsItem::ItemIsFocusable, !locked);
+  setFlag(QGraphicsItem::ItemIsSelectable, !locked);
+}
+
 
 void
 ConnectionGraphicsObject::

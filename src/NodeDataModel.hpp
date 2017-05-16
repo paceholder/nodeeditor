@@ -47,11 +47,11 @@ public:
 
   /// Port caption is used in GUI to label individual ports
   virtual QString
-  portCaption(PortType portType, PortIndex portIndex) const { return QString(""); }
+  portCaption(PortType, PortIndex) const { return QString(); }
 
   /// It is possible to hide port caption in GUI
   virtual bool
-  portCaptionVisible(PortType portType, PortIndex portIndex) const { return false; }
+  portCaptionVisible(PortType, PortIndex) const { return false; }
 
   /// Name makes this model unique
   virtual QString
