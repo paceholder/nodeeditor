@@ -60,11 +60,19 @@ FlowView(FlowScene *scene)
   addAction(_deleteSelectionAction);
 }
 
-QAction* FlowView::clearSelectionAction() const {
+
+QAction*
+FlowView::
+clearSelectionAction() const
+{
   return _clearSelectionAction;
 }
 
-QAction* FlowView::deleteSelectionAction() const {
+
+QAction*
+FlowView::
+deleteSelectionAction() const
+{
   return _deleteSelectionAction;
 }
 
@@ -79,6 +87,7 @@ contextMenuEvent(QContextMenuEvent *event)
 
   //Add filterbox to the context menu
   auto *txtBox = new QLineEdit(&modelMenu);
+
   txtBox->setPlaceholderText(QStringLiteral("Filter"));
   txtBox->setClearButtonEnabled(true);
 
@@ -88,7 +97,7 @@ contextMenuEvent(QContextMenuEvent *event)
   modelMenu.addAction(txtBoxAction);
 
   //Add result treeview to the context menu
-  auto *treeView = new QTreeWidget(&modelMenu); 
+  auto *treeView = new QTreeWidget(&modelMenu);
   treeView->header()->close();
 
   auto *treeViewAction = new QWidgetAction(&modelMenu);
@@ -108,13 +117,13 @@ contextMenuEvent(QContextMenuEvent *event)
   for (auto const &assoc : _scene->registry().registeredModelsCategoryAssociation())
   {
     auto parent = topLevelItems[assoc.second];
-    auto item = new QTreeWidgetItem(parent);
+    auto item   = new QTreeWidgetItem(parent);
     item->setText(0, assoc.first);
     item->setData(0, Qt::UserRole, assoc.first);
   }
 
   treeView->expandAll();
-  
+
   connect(treeView, &QTreeWidget::itemActivated, [&](QTreeWidgetItem *item, int column)
   {
     QString modelName = item->data(0, Qt::UserRole).toString();
@@ -140,9 +149,10 @@ contextMenuEvent(QContextMenuEvent *event)
     {
       qDebug() << "Model not found";
     }
+
     modelMenu.close();
   });
-  
+
   //Setup filtering
   connect(txtBox, &QLineEdit::textChanged, [&](const QString &text)
   {
@@ -166,7 +176,7 @@ contextMenuEvent(QContextMenuEvent *event)
 
   // make sure the text box gets focus so the user doesn't have to click on it
   txtBox->setFocus();
-  
+
   modelMenu.exec(event->globalPos());
 }
 
@@ -218,6 +228,7 @@ scaleDown()
   scale(factor, factor);
 }
 
+
 void
 FlowView::
 deleteSelectedNodes()
@@ -227,7 +238,6 @@ deleteSelectedNodes()
   {
     if (auto n = qgraphicsitem_cast<NodeGraphicsObject*>(item))
       _scene->removeNode(n->node());
-
   }
 
   for (QGraphicsItem * item : _scene->selectedItems())
@@ -236,6 +246,7 @@ deleteSelectedNodes()
       _scene->deleteConnection(c->connection());
   }
 }
+
 
 void
 FlowView::
@@ -279,34 +290,34 @@ drawBackground(QPainter* painter, const QRectF& r)
   QGraphicsView::drawBackground(painter, r);
 
   auto drawGrid =
-  [&](double gridStep)
-  {
-    QRect   windowRect = rect();
-    QPointF tl = mapToScene(windowRect.topLeft());
-    QPointF br = mapToScene(windowRect.bottomRight());
-
-    double left   = std::floor(tl.x() / gridStep - 0.5);
-    double right  = std::floor(br.x() / gridStep + 1.0);
-    double bottom = std::floor(tl.y() / gridStep - 0.5);
-    double top    = std::floor (br.y() / gridStep + 1.0);
-
-    // vertical lines
-    for (int xi = int(left); xi <= int(right); ++xi)
+    [&](double gridStep)
     {
-      QLineF line(xi * gridStep, bottom * gridStep,
-                  xi * gridStep, top * gridStep );
+      QRect   windowRect = rect();
+      QPointF tl = mapToScene(windowRect.topLeft());
+      QPointF br = mapToScene(windowRect.bottomRight());
 
-      painter->drawLine(line);
-    }
+      double left   = std::floor(tl.x() / gridStep - 0.5);
+      double right  = std::floor(br.x() / gridStep + 1.0);
+      double bottom = std::floor(tl.y() / gridStep - 0.5);
+      double top    = std::floor (br.y() / gridStep + 1.0);
 
-    // horizontal lines
-    for (int yi = int(bottom); yi <= int(top); ++yi)
-    {
-      QLineF line(left * gridStep, yi * gridStep,
-                  right * gridStep, yi * gridStep );
-      painter->drawLine(line);
-    }
-  };
+      // vertical lines
+      for (int xi = int(left); xi <= int(right); ++xi)
+      {
+        QLineF line(xi * gridStep, bottom * gridStep,
+                    xi * gridStep, top * gridStep );
+
+        painter->drawLine(line);
+      }
+
+      // horizontal lines
+      for (int yi = int(bottom); yi <= int(top); ++yi)
+      {
+        QLineF line(left * gridStep, yi * gridStep,
+                    right * gridStep, yi * gridStep );
+        painter->drawLine(line);
+      }
+    };
 
   auto const &flowViewStyle = StyleCollection::flowViewStyle();
 
