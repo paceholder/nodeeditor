@@ -8,7 +8,7 @@
 #include <memory>
 #include <functional>
 
-#include "Connection.hpp"
+#include "QUuidStdHash.hpp"
 #include "Export.hpp"
 #include "DataModelRegistry.hpp"
 
@@ -19,6 +19,7 @@ class NodeDataModel;
 class FlowItemInterface;
 class Node;
 class NodeGraphicsObject;
+class Connection;
 class ConnectionGraphicsObject;
 class NodeStyle;
 
@@ -36,113 +37,80 @@ public:
 
 public:
 
-  std::shared_ptr<Connection>
-  createConnection(PortType connectedPort,
-                   Node& node,
-                   PortIndex portIndex);
+  std::shared_ptr<Connection>createConnection(PortType connectedPort,
+                                              Node& node,
+                                              PortIndex portIndex);
 
-  std::shared_ptr<Connection>
-  createConnection(Node& nodeIn,
-                   PortIndex portIndexIn,
-                   Node& nodeOut,
-                   PortIndex portIndexOut);
+  std::shared_ptr<Connection>createConnection(Node& nodeIn,
+                                              PortIndex portIndexIn,
+                                              Node& nodeOut,
+                                              PortIndex portIndexOut);
 
-  std::shared_ptr<Connection>
-  restoreConnection(QJsonObject const &connectionJson);
+  std::shared_ptr<Connection>restoreConnection(QJsonObject const &connectionJson);
 
-  void
-  deleteConnection(Connection& connection);
+  void deleteConnection(Connection& connection);
 
-  Node&
-  createNode(std::unique_ptr<NodeDataModel> && dataModel);
+  Node&createNode(std::unique_ptr<NodeDataModel> && dataModel);
 
-  Node&
-  restoreNode(QJsonObject const& nodeJson);
+  Node&restoreNode(QJsonObject const& nodeJson);
 
-  void
-  removeNode(Node& node);
+  void removeNode(Node& node);
 
-  DataModelRegistry&
-  registry() const;
+  DataModelRegistry&registry() const;
 
-  void
-  setRegistry(std::shared_ptr<DataModelRegistry> registry);
+  void setRegistry(std::shared_ptr<DataModelRegistry> registry);
 
-  void
-  iterateOverNodes(std::function<void(Node*)> visitor);
+  void iterateOverNodes(std::function<void(Node*)> visitor);
 
-  void
-  iterateOverNodeData(std::function<void(NodeDataModel*)> visitor);
+  void iterateOverNodeData(std::function<void(NodeDataModel*)> visitor);
 
-  void
-  iterateOverNodeDataDependentOrder(std::function<void(NodeDataModel*)> visitor);
+  void iterateOverNodeDataDependentOrder(std::function<void(NodeDataModel*)> visitor);
 
-  QPointF
-  getNodePosition(const Node& node) const;
+  QPointF getNodePosition(const Node& node) const;
 
-  void
-  setNodePosition(Node& node, const QPointF& pos) const;
-  
-  QSizeF
-  getNodeSize(const Node& node) const;
+  void setNodePosition(Node& node, const QPointF& pos) const;
+
+  QSizeF getNodeSize(const Node& node) const;
 public:
 
-  std::unordered_map<QUuid, std::unique_ptr<Node> > const &
-  nodes() const;
+  std::unordered_map<QUuid, std::unique_ptr<Node> > const &nodes() const;
 
-  std::unordered_map<QUuid, std::shared_ptr<Connection> > const &
-  connections() const;
+  std::unordered_map<QUuid, std::shared_ptr<Connection> > const &connections() const;
 
-  std::vector<Node*>
-  selectedNodes() const;
+  std::vector<Node*>selectedNodes() const;
 
 public:
 
-  void
-  clearScene();
+  void clearScene();
 
-  void
-  save() const;
+  void save() const;
 
-  void
-  load();
+  void load();
 
-  QByteArray 
-  saveToMemory() const;
+  QByteArray saveToMemory() const;
 
-  void 
-  loadFromMemory(const QByteArray& data);
+  void loadFromMemory(const QByteArray& data);
 
-  signals:
+signals:
 
-  void
-  nodeCreated(Node &n);
+  void nodeCreated(Node &n);
 
-  void
-  nodeDeleted(Node &n);
+  void nodeDeleted(Node &n);
 
-  void
-  connectionCreated(Connection &c);
-  void
-  connectionDeleted(Connection &c);
+  void connectionCreated(Connection &c);
+  void connectionDeleted(Connection &c);
 
-  void
-  nodeMoved(Node& n, const QPointF& newLocation);
+  void nodeMoved(Node& n, const QPointF& newLocation);
 
-  void
-  nodeDoubleClicked(Node& n);
+  void nodeDoubleClicked(Node& n);
 
-  void
-  connectionHovered(Connection& c, QPoint screenPos);
+  void connectionHovered(Connection& c, QPoint screenPos);
 
-  void
-  nodeHovered(Node& n, QPoint screenPos);
+  void nodeHovered(Node& n, QPoint screenPos);
 
-  void
-  connectionHoverLeft(Connection& c);
+  void connectionHoverLeft(Connection& c);
 
-  void
-  nodeHoverLeft(Node& n);
+  void nodeHoverLeft(Node& n);
 
 private:
 
