@@ -47,8 +47,6 @@ ConnectionGraphicsObject(FlowScene &scene,
 ConnectionGraphicsObject::
 ~ConnectionGraphicsObject()
 {
-  std::cout << "Remove ConnectionGraphicsObject from scene" << std::endl;
-
   _scene.removeItem(this);
 }
 
