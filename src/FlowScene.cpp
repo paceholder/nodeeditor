@@ -22,6 +22,8 @@
 #include "NodeGraphicsObject.hpp"
 #include "ConnectionGraphicsObject.hpp"
 
+#include "Connection.hpp"
+
 #include "FlowItemInterface.hpp"
 #include "FlowView.hpp"
 #include "DataModelRegistry.hpp"
@@ -183,17 +185,18 @@ removeNode(Node& node)
   // call signal
   nodeDeleted(node);
 
-  auto deleteConnections = [&node, this] (PortType portType)
-  {
-    auto nodeState = node.nodeState();
-    auto const & nodeEntries = nodeState.getEntries(portType);
-
-    for (auto &connections : nodeEntries)
+  auto deleteConnections =
+    [&node, this] (PortType portType)
     {
-      for (auto const &pair : connections)
-        deleteConnection(*pair.second);
-    }
-  };
+      auto nodeState = node.nodeState();
+      auto const & nodeEntries = nodeState.getEntries(portType);
+
+      for (auto &connections : nodeEntries)
+      {
+        for (auto const &pair : connections)
+          deleteConnection(*pair.second);
+      }
+    };
 
   deleteConnections(PortType::In);
   deleteConnections(PortType::Out);
@@ -247,24 +250,26 @@ iterateOverNodeDataDependentOrder(std::function<void(NodeDataModel*)> visitor)
   std::set<QUuid> visitedNodesSet;
 
   //A leaf node is a node with no input ports, or all possible input ports empty
-  auto isNodeLeaf = [](Node const &node, NodeDataModel const &model)
-  {
-    for (size_t i = 0; i < model.nPorts(PortType::In); ++i)
+  auto isNodeLeaf =
+    [](Node const &node, NodeDataModel const &model)
     {
-      auto connections = node.nodeState().connections(PortType::In, i);
-      if (!connections.empty())
+      for (size_t i = 0; i < model.nPorts(PortType::In); ++i)
       {
-        return false;
+        auto connections = node.nodeState().connections(PortType::In, i);
+        if (!connections.empty())
+        {
+          return false;
+        }
       }
-    }
-    return true;
-  };
+
+      return true;
+    };
 
   //Iterate over "leaf" nodes
   for (auto const &_node : _nodes)
   {
     auto const &node = _node.second;
-    auto model = node->nodeDataModel();
+    auto model       = node->nodeDataModel();
 
     if (isNodeLeaf(*node, *model))
     {
@@ -273,22 +278,24 @@ iterateOverNodeDataDependentOrder(std::function<void(NodeDataModel*)> visitor)
     }
   }
 
-  auto areNodeInputsVisitedBefore = [&](Node const &node, NodeDataModel const &model)
-  {
-    for (size_t i = 0; i < model.nPorts(PortType::In); ++i)
+  auto areNodeInputsVisitedBefore =
+    [&](Node const &node, NodeDataModel const &model)
     {
-      auto connections = node.nodeState().connections(PortType::In, i);
-
-      for (auto& conn : connections)
+      for (size_t i = 0; i < model.nPorts(PortType::In); ++i)
       {
-        if (visitedNodesSet.find(conn.second->getNode(PortType::Out)->id()) == visitedNodesSet.end())
+        auto connections = node.nodeState().connections(PortType::In, i);
+
+        for (auto& conn : connections)
         {
-          return false;
+          if (visitedNodesSet.find(conn.second->getNode(PortType::Out)->id()) == visitedNodesSet.end())
+          {
+            return false;
+          }
         }
       }
-    }
-    return true;
-  };
+
+      return true;
+    };
 
   //Iterate over dependent nodes
   while (_nodes.size() != visitedNodesSet.size())
@@ -298,6 +305,7 @@ iterateOverNodeDataDependentOrder(std::function<void(NodeDataModel*)> visitor)
       auto const &node = _node.second;
       if (visitedNodesSet.find(node->id()) != visitedNodesSet.end())
         continue;
+
       auto model = node->nodeDataModel();
 
       if (areNodeInputsVisitedBefore(*node, *model))
@@ -350,17 +358,22 @@ connections() const
   return _connections;
 }
 
+
 std::vector<Node*>
-FlowScene::selectedNodes() const {
+FlowScene::
+selectedNodes() const
+{
   QList<QGraphicsItem*> graphicsItems = selectedItems();
 
   std::vector<Node*> ret;
   ret.reserve(graphicsItems.size());
 
-  for (QGraphicsItem* item : graphicsItems) {
+  for (QGraphicsItem* item : graphicsItems)
+  {
     auto ngo = qgraphicsitem_cast<NodeGraphicsObject*>(item);
 
-    if (ngo != nullptr) {
+    if (ngo != nullptr)
+    {
       ret.push_back(&ngo->node());
     }
   }
@@ -376,18 +389,20 @@ FlowScene::
 clearScene()
 {
   //Manual node cleanup. Simply clearing the holding datastructures doesn't work, the code crashes when
-  // there are both nodes and connections in the scene. (The data propagation internal logic tries to propagate 
+  // there are both nodes and connections in the scene. (The data propagation internal logic tries to propagate
   // data through already freed connections.)
   std::vector<Node*> nodesToDelete;
   for (auto& node : _nodes)
   {
-      nodesToDelete.push_back(node.second.get());
+    nodesToDelete.push_back(node.second.get());
   }
+
   for (auto& node : nodesToDelete)
   {
-      removeNode(*node);
+    removeNode(*node);
   }
 }
+
 
 void
 FlowScene::
@@ -521,9 +536,9 @@ locateNodeAt(QPointF scenePoint, FlowScene &scene,
                items.end(),
                std::back_inserter(filteredItems),
                [] (QGraphicsItem * item)
-               {
-                 return (dynamic_cast<NodeGraphicsObject*>(item) != nullptr);
-               });
+    {
+      return (dynamic_cast<NodeGraphicsObject*>(item) != nullptr);
+    });
 
   Node* resultNode = nullptr;
 

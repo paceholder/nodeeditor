@@ -18,7 +18,7 @@ class NODE_EDITOR_PUBLIC DataModelRegistry
 {
 
 public:
-  
+
   using RegistryItemPtr             = std::unique_ptr<NodeDataModel>;
   using RegisteredModelsMap         = std::unordered_map<QString, RegistryItemPtr>;
   using RegisteredModelsCategoryMap = std::unordered_map<QString, QString>;

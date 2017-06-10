@@ -12,22 +12,10 @@
 #include "Serializable.hpp"
 #include "ConnectionState.hpp"
 #include "ConnectionGeometry.hpp"
+#include "QUuidStdHash.hpp"
+#include "Export.hpp"
 
 class QPointF;
-
-namespace std
-{
-template<>
-struct hash<QUuid>
-{
-  inline
-  std::size_t
-  operator()(QUuid const& uid) const
-  {
-    return qHash(uid);
-  }
-};
-}
 
 namespace QtNodes
 {
@@ -37,7 +25,7 @@ class NodeData;
 class ConnectionGraphicsObject;
 
 ///
-class NODE_EDITOR_PUBLIC  Connection
+class NODE_EDITOR_PUBLIC Connection
   : public QObject
   , public Serializable
 {
