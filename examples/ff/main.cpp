@@ -9,7 +9,7 @@
 
 #include <nodes/DataModelRegistry>
 
-//#include "NumberSourceDataModel.hpp"
+#include "ExpressionSourceModel.hpp"
 //#include "NumberDisplayDataModel.hpp"
 //#include "AdditionModel.hpp"
 //#include "SubtractionModel.hpp"
@@ -27,26 +27,10 @@ using QtNodes::ConnectionStyle;
 static std::shared_ptr<DataModelRegistry>
 registerDataModels()
 {
-  //auto ret = std::make_shared<DataModelRegistry>();
-  //ret->registerModel<NumberSourceDataModel>("Sources");
+  auto ret = std::make_shared<DataModelRegistry>();
+  ret->registerModel<ExpressionSourceModel>("Sources");
 
-  //ret->registerModel<NumberDisplayDataModel>("Displays");
-
-  //ret->registerModel<AdditionModel>("Operators");
-
-  //ret->registerModel<SubtractionModel>("Operators");
-
-  //ret->registerModel<MultiplicationModel>("Operators");
-
-  //ret->registerModel<DivisionModel>("Operators");
-
-  //ret->registerModel<ModuloModel>("Operators");
-
-  //ret->registerModel<DecimalToIntegerModel, true>("Type converters");
-
-  //ret->registerModel<IntegerToDecimalModel, true>("Type converters");
-
-  //return ret;
+  return ret;
 }
 
 
