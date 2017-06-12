@@ -9,7 +9,7 @@
 class ExpressionRangeData;
 
 class QWidget;
-class QLineEdit;
+class QLabel;
 
 using QtNodes::PortType;
 using QtNodes::PortIndex;
@@ -20,22 +20,22 @@ using QtNodes::NodeValidationState;
 
 /// The model dictates the number of inputs and outputs for the Node.
 /// In this example it has no logic.
-class ExpressionSourceModel
+class ExpressionDisplayModel
   : public NodeDataModel
 {
   Q_OBJECT
 
 public:
-  ExpressionSourceModel();
+  ExpressionDisplayModel();
 
   virtual
-  ~ExpressionSourceModel() {}
+  ~ExpressionDisplayModel() {}
 
 public:
 
   QString
   caption() const override
-  { return QStringLiteral("Expression Source"); }
+  { return QStringLiteral("Expression Display"); }
 
   bool
   captionVisible() const override
@@ -43,11 +43,11 @@ public:
 
   QString
   name() const override
-  { return QStringLiteral("Expression Source"); }
+  { return QStringLiteral("Expression Display"); }
 
   std::unique_ptr<NodeDataModel>
   clone() const override
-  { return std::make_unique<ExpressionSourceModel>(); }
+  { return std::make_unique<ExpressionDisplayModel>(); }
 
 public:
 
@@ -69,28 +69,15 @@ public:
   outData(PortIndex port) override;
 
   void
-  setInData(std::shared_ptr<NodeData>, int) override
-  { }
+    setInData(std::shared_ptr<NodeData>, PortIndex) override;
 
   QWidget *
   embeddedWidget() override;
 
-private slots:
-
-  void
-  onVariableEdited(QString const &string);
-
-  void
-  onRangeEdited(QString const &string);
-
-
-  void
-  processChangedData();
-
 private:
 
-  std::vector<double>
-  processRangeText(QString const &rangeText) const;
+  QString
+  convertRangeToText(std::vector<double> const &range) const;
 
 private:
 
@@ -98,6 +85,6 @@ private:
 
   QWidget * _widget;
 
-  QLineEdit * _variableEdit;
-  QLineEdit * _rangeEdit;
+  QLabel * _variableLabel;
+  QLabel * _rangeLabel;
 };

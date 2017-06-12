@@ -10,6 +10,7 @@
 #include <nodes/DataModelRegistry>
 
 #include "ExpressionSourceModel.hpp"
+#include "ExpressionDisplayModel.hpp"
 //#include "NumberDisplayDataModel.hpp"
 //#include "AdditionModel.hpp"
 //#include "SubtractionModel.hpp"
@@ -29,6 +30,7 @@ registerDataModels()
 {
   auto ret = std::make_shared<DataModelRegistry>();
   ret->registerModel<ExpressionSourceModel>("Sources");
+  ret->registerModel<ExpressionDisplayModel>("Display");
 
   return ret;
 }
