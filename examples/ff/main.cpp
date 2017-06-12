@@ -11,6 +11,7 @@
 
 #include "ExpressionSourceModel.hpp"
 #include "ExpressionDisplayModel.hpp"
+#include "BoolConditionModel.hpp"
 //#include "NumberDisplayDataModel.hpp"
 //#include "AdditionModel.hpp"
 //#include "SubtractionModel.hpp"
@@ -31,6 +32,7 @@ registerDataModels()
   auto ret = std::make_shared<DataModelRegistry>();
   ret->registerModel<ExpressionSourceModel>("Sources");
   ret->registerModel<ExpressionDisplayModel>("Display");
+  ret->registerModel<BoolConditionModel>("BoolCondition");
 
   return ret;
 }
