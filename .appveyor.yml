@@ -33,6 +33,16 @@ build_script:
   - if "%PLATFORM%" == "x64" msbuild NodeEditor.sln
   - if "%PLATFORM%" == "Win32" msbuild NodeEditor.sln
 
+after_build:
+  - 7z a examples.zip %APPVEYOR_BUILD_FOLDER%
+  - cmd: cd
+  - cmd: dir \S \P "examples.zip"
+
+artifacts:
+  - path: build\examples.zip
+    name: ex
+
+
 #build:
   #parallel: true
   #project: C:\projects\nodeeditor\build\NodeEditor.sln
