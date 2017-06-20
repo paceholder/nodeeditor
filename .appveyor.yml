@@ -33,12 +33,16 @@ build_script:
   - if "%PLATFORM%" == "x64" msbuild NodeEditor.sln
   - if "%PLATFORM%" == "Win32" msbuild NodeEditor.sln
 
-#build:
-  #parallel: true
-  #project: C:\projects\nodeeditor\build\NodeEditor.sln
 
-#build_script:
-  #- msbuild NodeEditor.sln /t:build /p:Configuration=Release
+
+after_build:
+  - 7z a examples.zip %APPVEYOR_BUILD_FOLDER%/build/bin
+  - cmd: cd
+  - cmd: dir \S \P "examples.zip"
+
+artifacts:
+  - path: build\examples.zip
+    name: ex
 
 #deploy:
   #release: $(APPVEYOR_REPO_TAG_NAME)
