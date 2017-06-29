@@ -158,17 +158,16 @@ QColor
 ConnectionStyle::
 normalColor(QString typeId) const
 {
-  std::size_t hash = qHash(typeId, 50);
-  std::size_t const hue_range = 0xFF;
+    std::size_t hash = qHash(typeId);
 
-  //qsrand(hash);
-  //std::size_t hue = qrand() % hue_range;
-  std::size_t hue = hash % hue_range;
+    std::size_t const hue_range = 0xFF;
 
-  //std::size_t sat = 120 + hash % 129;
-  std::size_t sat = 90 + hash % 129;
+    qsrand(hash);
+    std::size_t hue = qrand() % hue_range;
 
-  return QColor::fromHsl(hue,
+    std::size_t sat = 120 + hash % 129;
+
+    return QColor::fromHsl(hue,
                          sat,
                          160);
 }
