@@ -7,6 +7,7 @@
 #include <QtWidgets/QMenu>
 
 #include <QtCore/QRectF>
+#include <QtCore/QPointF>
 
 #include <QtOpenGL>
 #include <QtWidgets>
@@ -29,6 +30,7 @@ FlowView::
 FlowView(FlowScene *scene)
   : QGraphicsView(scene)
   , _scene(scene)
+  , _click_pos(QPointF())
 {
   setDragMode(QGraphicsView::ScrollHandDrag);
   setRenderHint(QPainter::Antialiasing);
@@ -39,8 +41,8 @@ FlowView(FlowScene *scene)
 
   //setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
   //setViewportUpdateMode(QGraphicsView::MinimalViewportUpdate);
-  setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-  setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+  setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+  setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
   setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
 
@@ -280,6 +282,29 @@ keyReleaseEvent(QKeyEvent *event)
       break;
   }
   QGraphicsView::keyReleaseEvent(event);
+}
+
+void FlowView::mousePressEvent(QMouseEvent *event)
+{
+    QGraphicsView::mousePressEvent(event);
+    if (event->button() == Qt::LeftButton) {
+        _click_pos = mapToScene(event->pos());
+    }
+}
+
+void FlowView::mouseMoveEvent(QMouseEvent *event)
+{
+    QGraphicsView::mouseMoveEvent(event);
+
+    if (scene()->mouseGrabberItem() == NULL && event->buttons() == Qt::LeftButton)
+    {
+        // Make sure shift is not being pressed
+        if((event->modifiers() & Qt::ShiftModifier) == 0)
+        {
+            QPointF difference = _click_pos - mapToScene(event->pos());
+            setSceneRect(sceneRect().translated(difference.x(), difference.y()));
+        }
+    }
 }
 
 

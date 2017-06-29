@@ -41,6 +41,10 @@ protected:
 
   void keyReleaseEvent(QKeyEvent *event) override;
 
+  void mousePressEvent(QMouseEvent *event) override;
+
+  void mouseMoveEvent(QMouseEvent *event) override;
+
   void drawBackground(QPainter* painter, const QRectF& r) override;
 
   void showEvent(QShowEvent *event) override;
@@ -49,6 +53,8 @@ private:
 
   QAction* _clearSelectionAction;
   QAction* _deleteSelectionAction;
+
+  QPointF _click_pos;
 
   FlowScene* _scene;
 };
