@@ -284,7 +284,9 @@ keyReleaseEvent(QKeyEvent *event)
   QGraphicsView::keyReleaseEvent(event);
 }
 
-void FlowView::mousePressEvent(QMouseEvent *event)
+void
+FlowView::
+mousePressEvent(QMouseEvent *event)
 {
     QGraphicsView::mousePressEvent(event);
     if (event->button() == Qt::LeftButton) {
@@ -292,10 +294,11 @@ void FlowView::mousePressEvent(QMouseEvent *event)
     }
 }
 
-void FlowView::mouseMoveEvent(QMouseEvent *event)
+void
+FlowView::
+mouseMoveEvent(QMouseEvent *event)
 {
     QGraphicsView::mouseMoveEvent(event);
-
     if (scene()->mouseGrabberItem() == NULL && event->buttons() == Qt::LeftButton)
     {
         // Make sure shift is not being pressed
