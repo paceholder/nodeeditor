@@ -30,7 +30,7 @@ FlowView::
 FlowView(FlowScene *scene)
   : QGraphicsView(scene)
   , _scene(scene)
-  , _click_pos(QPointF())
+  , _clickPos(QPointF())
 {
   setDragMode(QGraphicsView::ScrollHandDrag);
   setRenderHint(QPainter::Antialiasing);
@@ -290,7 +290,7 @@ mousePressEvent(QMouseEvent *event)
 {
     QGraphicsView::mousePressEvent(event);
     if (event->button() == Qt::LeftButton) {
-        _click_pos = mapToScene(event->pos());
+        _clickPos = mapToScene(event->pos());
     }
 }
 
@@ -299,12 +299,12 @@ FlowView::
 mouseMoveEvent(QMouseEvent *event)
 {
     QGraphicsView::mouseMoveEvent(event);
-    if (scene()->mouseGrabberItem() == NULL && event->buttons() == Qt::LeftButton)
+    if (scene()->mouseGrabberItem() == nullptr && event->buttons() == Qt::LeftButton)
     {
         // Make sure shift is not being pressed
         if((event->modifiers() & Qt::ShiftModifier) == 0)
         {
-            QPointF difference = _click_pos - mapToScene(event->pos());
+            QPointF difference = _clickPos - mapToScene(event->pos());
             setSceneRect(sceneRect().translated(difference.x(), difference.y()));
         }
     }

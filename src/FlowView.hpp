@@ -54,7 +54,7 @@ private:
   QAction* _clearSelectionAction;
   QAction* _deleteSelectionAction;
 
-  QPointF _click_pos;
+  QPointF _clickPos;
 
   FlowScene* _scene;
 };
