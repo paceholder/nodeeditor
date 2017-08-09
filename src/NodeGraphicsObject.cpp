@@ -27,8 +27,8 @@ NodeGraphicsObject(FlowScene &scene,
                    Node& node)
   : _scene(scene)
   , _node(node)
-  , _proxyWidget(nullptr)
   , _locked(false)
+  , _proxyWidget(nullptr)
 {
   _scene.addItem(this);
 

@@ -29,8 +29,8 @@ using QtNodes::FlowScene;
 FlowView::
 FlowView(FlowScene *scene)
   : QGraphicsView(scene)
-  , _scene(scene)
   , _clickPos(QPointF())
+  , _scene(scene)
 {
   setDragMode(QGraphicsView::ScrollHandDrag);
   setRenderHint(QPainter::Antialiasing);
@@ -126,7 +126,7 @@ contextMenuEvent(QContextMenuEvent *event)
 
   treeView->expandAll();
 
-  connect(treeView, &QTreeWidget::itemClicked, [&](QTreeWidgetItem *item, int column)
+  connect(treeView, &QTreeWidget::itemClicked, [&](QTreeWidgetItem *item, int)
   {
     QString modelName = item->data(0, Qt::UserRole).toString();
 
