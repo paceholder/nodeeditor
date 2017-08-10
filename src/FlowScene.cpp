@@ -24,7 +24,6 @@
 
 #include "Connection.hpp"
 
-#include "FlowItemInterface.hpp"
 #include "FlowView.hpp"
 #include "DataModelRegistry.hpp"
 
