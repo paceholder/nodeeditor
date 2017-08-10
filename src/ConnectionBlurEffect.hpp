@@ -18,7 +18,5 @@ public:
   draw(QPainter* painter) override;
 
 private:
-
-  ConnectionGraphicsObject* _object;
 };
 }

@@ -2,7 +2,7 @@
 
 void
 FlowItemInterface::
-inputDataChanged(QString inSignature, QVariant data)
+inputDataChanged(QString, QVariant)
 {
   //
 }

@@ -7,8 +7,7 @@ using QtNodes::ConnectionBlurEffect;
 using QtNodes::ConnectionGraphicsObject;
 
 ConnectionBlurEffect::
-ConnectionBlurEffect(ConnectionGraphicsObject* object)
-  : _object(object)
+ConnectionBlurEffect(ConnectionGraphicsObject*)
 {
   //
 }
