@@ -261,7 +261,8 @@ mousePressEvent(QGraphicsSceneMouseEvent * event)
   auto & geom  = _node.nodeGeometry();
   auto & state = _node.nodeState();
 
-  if (geom.resizeRect().contains(QPoint(pos.x(),
+  if (_node.nodeDataModel()->resizable() &&
+      geom.resizeRect().contains(QPoint(pos.x(),
                                         pos.y())))
   {
     state.setResizing(true);
@@ -377,8 +378,9 @@ hoverMoveEvent(QGraphicsSceneHoverEvent * event)
   auto pos    = event->pos();
   auto & geom = _node.nodeGeometry();
 
-  if (geom.resizeRect().contains(QPoint(pos.x(),
-                                        pos.y())))
+
+  if (_node.nodeDataModel()->resizable() &&
+      geom.resizeRect().contains(QPoint(pos.x(), pos.y())))
   {
     setCursor(QCursor(Qt::SizeFDiagCursor));
   }
