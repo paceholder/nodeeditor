@@ -15,7 +15,7 @@ class NODE_EDITOR_PUBLIC FlowView
 public:
 
   FlowView(QWidget *parent = Q_NULLPTR);
-  FlowView(FlowScene *scene = Q_NULLPTR, QWidget *parent = Q_NULLPTR);
+  FlowView(FlowScene *scene, QWidget *parent = Q_NULLPTR);
 
   FlowView(const FlowView&) = delete;
   FlowView operator=(const FlowView&) = delete;
