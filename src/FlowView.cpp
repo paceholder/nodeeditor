@@ -27,11 +27,31 @@ using QtNodes::FlowView;
 using QtNodes::FlowScene;
 
 FlowView::
-FlowView(FlowScene *scene)
-  : QGraphicsView(scene)
-  , _clickPos(QPointF())
-  , _scene(scene)
+FlowView(QWidget *parent)
+  : QGraphicsView(parent)
+  , _scene(Q_NULLPTR)
 {
+  init();
+}
+
+
+FlowView::
+FlowView(FlowScene *scene, QWidget *parent)
+  : QGraphicsView(scene, parent)
+{
+  init();
+  setScene(scene);
+}
+
+
+void
+FlowView::
+init()
+{
+  _clickPos = QPointF();
+  _clearSelectionAction = Q_NULLPTR;
+  _deleteSelectionAction = Q_NULLPTR;
+
   setDragMode(QGraphicsView::ScrollHandDrag);
   setRenderHint(QPainter::Antialiasing);
 

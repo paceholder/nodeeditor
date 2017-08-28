@@ -14,7 +14,8 @@ class NODE_EDITOR_PUBLIC FlowView
 {
 public:
 
-  FlowView(FlowScene *scene);
+  FlowView(QWidget *parent = Q_NULLPTR);
+  FlowView(FlowScene *scene = Q_NULLPTR, QWidget *parent = Q_NULLPTR);
 
   FlowView(const FlowView&) = delete;
   FlowView operator=(const FlowView&) = delete;
@@ -50,6 +51,8 @@ protected:
   void showEvent(QShowEvent *event) override;
 
 private:
+
+  void init();
 
   QAction* _clearSelectionAction;
   QAction* _deleteSelectionAction;
