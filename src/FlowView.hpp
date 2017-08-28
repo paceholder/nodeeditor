@@ -49,13 +49,13 @@ protected:
 
   void showEvent(QShowEvent *event) override;
 
+  FlowScene* _scene;
+
 private:
 
   QAction* _clearSelectionAction;
   QAction* _deleteSelectionAction;
 
   QPointF _clickPos;
-
-  FlowScene* _scene;
 };
 }
