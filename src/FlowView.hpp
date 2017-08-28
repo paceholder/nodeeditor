@@ -24,6 +24,8 @@ public:
 
   QAction* deleteSelectionAction() const;
 
+  void setScene(FlowScene *scene);
+
 public slots:
 
   void scaleUp();

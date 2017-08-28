@@ -69,17 +69,6 @@ init()
   setCacheMode(QGraphicsView::CacheBackground);
 
   //setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
-
-  // setup actions
-  _clearSelectionAction = new QAction(QStringLiteral("Clear Selection"), this);
-  _clearSelectionAction->setShortcut(Qt::Key_Escape);
-  connect(_clearSelectionAction, &QAction::triggered, _scene, &QGraphicsScene::clearSelection);
-  addAction(_clearSelectionAction);
-
-  _deleteSelectionAction = new QAction(QStringLiteral("Delete Selection"), this);
-  _deleteSelectionAction->setShortcut(Qt::Key_Delete);
-  connect(_deleteSelectionAction, &QAction::triggered, this, &FlowView::deleteSelectedNodes);
-  addAction(_deleteSelectionAction);
 }
 
 
@@ -96,6 +85,27 @@ FlowView::
 deleteSelectionAction() const
 {
   return _deleteSelectionAction;
+}
+
+
+void
+FlowView::setScene(FlowScene *scene)
+{
+  _scene = scene;
+  QGraphicsView::setScene(_scene);
+
+  // setup actions
+  delete _clearSelectionAction;
+  _clearSelectionAction = new QAction(QStringLiteral("Clear Selection"), this);
+  _clearSelectionAction->setShortcut(Qt::Key_Escape);
+  connect(_clearSelectionAction, &QAction::triggered, _scene, &QGraphicsScene::clearSelection);
+  addAction(_clearSelectionAction);
+
+  delete _deleteSelectionAction;
+  _deleteSelectionAction = new QAction(QStringLiteral("Delete Selection"), this);
+  _deleteSelectionAction->setShortcut(Qt::Key_Delete);
+  connect(_deleteSelectionAction, &QAction::triggered, this, &FlowView::deleteSelectedNodes);
+  addAction(_deleteSelectionAction);
 }
 
 
