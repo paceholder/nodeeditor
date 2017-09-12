@@ -284,30 +284,33 @@ keyReleaseEvent(QKeyEvent *event)
   QGraphicsView::keyReleaseEvent(event);
 }
 
+
 void
 FlowView::
 mousePressEvent(QMouseEvent *event)
 {
-    QGraphicsView::mousePressEvent(event);
-    if (event->button() == Qt::LeftButton) {
-        _clickPos = mapToScene(event->pos());
-    }
+  QGraphicsView::mousePressEvent(event);
+  if (event->button() == Qt::LeftButton)
+  {
+    _clickPos = mapToScene(event->pos());
+  }
 }
+
 
 void
 FlowView::
 mouseMoveEvent(QMouseEvent *event)
 {
-    QGraphicsView::mouseMoveEvent(event);
-    if (scene()->mouseGrabberItem() == nullptr && event->buttons() == Qt::LeftButton)
+  QGraphicsView::mouseMoveEvent(event);
+  if (scene()->mouseGrabberItem() == nullptr && event->buttons() == Qt::LeftButton)
+  {
+    // Make sure shift is not being pressed
+    if ((event->modifiers() & Qt::ShiftModifier) == 0)
     {
-        // Make sure shift is not being pressed
-        if((event->modifiers() & Qt::ShiftModifier) == 0)
-        {
-            QPointF difference = _clickPos - mapToScene(event->pos());
-            setSceneRect(sceneRect().translated(difference.x(), difference.y()));
-        }
+      QPointF difference = _clickPos - mapToScene(event->pos());
+      setSceneRect(sceneRect().translated(difference.x(), difference.y()));
     }
+  }
 }
 
 
@@ -369,4 +372,12 @@ showEvent(QShowEvent *event)
 {
   _scene->setSceneRect(this->rect());
   QGraphicsView::showEvent(event);
+}
+
+
+FlowScene *
+FlowView::
+scene()
+{
+  return _scene;
 }

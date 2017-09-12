@@ -49,6 +49,10 @@ protected:
 
   void showEvent(QShowEvent *event) override;
 
+protected:
+
+  FlowScene * scene();
+
 private:
 
   QAction* _clearSelectionAction;
