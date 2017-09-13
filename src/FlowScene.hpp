@@ -112,6 +112,8 @@ signals:
 
   void nodeHoverLeft(Node& n);
 
+  void nodeContextMenu(Node& n);
+
 private:
 
   using SharedConnection = std::shared_ptr<Connection>;
