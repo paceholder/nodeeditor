@@ -85,7 +85,7 @@ protected:
   mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
 
   void
-  contextMenuEvent(QGraphicsSceneContextMenuEvent*) override;
+  contextMenuEvent(QGraphicsSceneContextMenuEvent* event) override;
 
 private:
   void

@@ -112,7 +112,7 @@ signals:
 
   void nodeHoverLeft(Node& n);
 
-  void nodeContextMenu(Node& n);
+  void nodeContextMenu(Node& n, const QPointF& pos);
 
 private:
 

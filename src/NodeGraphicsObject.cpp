@@ -405,7 +405,7 @@ mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
 
 void
 NodeGraphicsObject::
-contextMenuEvent(QGraphicsSceneContextMenuEvent*)
+contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
 {
-  _scene.nodeContextMenu(node());
+  _scene.nodeContextMenu(node(), mapToScene(event->pos()));
 }
