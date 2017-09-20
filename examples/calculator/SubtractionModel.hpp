@@ -25,7 +25,7 @@ public:
   { return QStringLiteral("Subtraction"); }
 
   virtual bool
-  portCaptionVisible(PortType, PortIndex) const override
+  portCaptionVisible(PortType portType, PortIndex portIndex) const override
   { return true; }
 
   virtual QString

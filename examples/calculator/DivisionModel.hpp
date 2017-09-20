@@ -24,7 +24,7 @@ public:
   { return QStringLiteral("Division"); }
 
   bool
-  portCaptionVisible(PortType, PortIndex) const override
+  portCaptionVisible(PortType portType, PortIndex portIndex) const override
   { return true; }
 
   QString
