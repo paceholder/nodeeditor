@@ -29,7 +29,7 @@ find_package(Qt5 COMPONENTS
              OpenGL)
 
 add_definitions(${Qt5Widgets_DEFINITIONS})
-set(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 
 if(MSVC)
   add_definitions(/Wall /EHsc)
