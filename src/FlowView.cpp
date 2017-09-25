@@ -30,28 +30,9 @@ FlowView::
 FlowView(QWidget *parent)
   : QGraphicsView(parent)
   , _scene(Q_NULLPTR)
+  , _clearSelectionAction(Q_NULLPTR)
+  , _deleteSelectionAction(Q_NULLPTR)
 {
-  init();
-}
-
-
-FlowView::
-FlowView(FlowScene *scene, QWidget *parent)
-  : QGraphicsView(scene, parent)
-{
-  init();
-  setScene(scene);
-}
-
-
-void
-FlowView::
-init()
-{
-  _clickPos = QPointF();
-  _clearSelectionAction = Q_NULLPTR;
-  _deleteSelectionAction = Q_NULLPTR;
-
   setDragMode(QGraphicsView::ScrollHandDrag);
   setRenderHint(QPainter::Antialiasing);
 
@@ -69,6 +50,14 @@ init()
   setCacheMode(QGraphicsView::CacheBackground);
 
   //setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
+}
+
+
+FlowView::
+FlowView(FlowScene *scene, QWidget *parent)
+  : FlowView(parent)
+{
+  setScene(scene);
 }
 
 

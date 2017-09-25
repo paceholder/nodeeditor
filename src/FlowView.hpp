@@ -58,8 +58,6 @@ protected:
 
 private:
 
-  void init();
-
   QAction* _clearSelectionAction;
   QAction* _deleteSelectionAction;
 
