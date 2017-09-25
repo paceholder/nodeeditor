@@ -14,11 +14,11 @@ public:
 
   NodeStyle();
 
-  NodeStyle(QString jsonText);
-
 public:
 
   static void setNodeStyle(QString jsonText);
+
+  static void setNodeStyleFromFile(QString styleFile);
 
 private:
 

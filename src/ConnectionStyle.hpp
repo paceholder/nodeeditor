@@ -14,11 +14,11 @@ public:
 
   ConnectionStyle();
 
-  ConnectionStyle(QString jsonText);
-
 public:
 
   static void setConnectionStyle(QString jsonText);
+
+  static void setConnectionStyleFromFile(QString styleFile);
 
 private:
 

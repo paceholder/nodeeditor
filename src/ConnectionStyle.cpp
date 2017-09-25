@@ -28,19 +28,23 @@ ConnectionStyle()
 }
 
 
+void
 ConnectionStyle::
-ConnectionStyle(QString jsonText)
+setConnectionStyle(QString jsonText)
 {
-  loadJsonFile(":DefaultStyle.json");
-  loadJsonText(jsonText);
+  ConnectionStyle style;
+  style.loadJsonText(jsonText);
+
+  StyleCollection::setConnectionStyle(style);
 }
 
 
 void
 ConnectionStyle::
-setConnectionStyle(QString jsonText)
+setConnectionStyleFromFile(QString styleFile)
 {
-  ConnectionStyle style(jsonText);
+  ConnectionStyle style;
+  style.loadJsonFile(styleFile);
 
   StyleCollection::setConnectionStyle(style);
 }

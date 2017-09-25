@@ -14,11 +14,11 @@ public:
 
   FlowViewStyle();
 
-  FlowViewStyle(QString jsonText);
-
 public:
 
   static void setStyle(QString jsonText);
+
+  static void setStyleFromFile(QString styleFile);
 
 private:
 
