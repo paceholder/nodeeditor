@@ -29,9 +29,9 @@ using QtNodes::FlowScene;
 FlowView::
 FlowView(QWidget *parent)
   : QGraphicsView(parent)
-  , _scene(Q_NULLPTR)
   , _clearSelectionAction(Q_NULLPTR)
   , _deleteSelectionAction(Q_NULLPTR)
+  , _scene(Q_NULLPTR)
 {
   setDragMode(QGraphicsView::ScrollHandDrag);
   setRenderHint(QPainter::Antialiasing);
