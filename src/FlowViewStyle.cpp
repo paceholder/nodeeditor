@@ -26,18 +26,23 @@ FlowViewStyle()
 }
 
 
+void
 FlowViewStyle::
-FlowViewStyle(QString jsonText)
+setStyle(QString jsonText)
 {
-  loadJsonText(jsonText);
+  FlowViewStyle style;
+  style.loadJsonText(jsonText);
+
+  StyleCollection::setFlowViewStyle(style);
 }
 
 
 void
 FlowViewStyle::
-setStyle(QString jsonText)
+setStyleFromFile(QString styleFile)
 {
-  FlowViewStyle style(jsonText);
+  FlowViewStyle style;
+  style.loadJsonFile(styleFile);
 
   StyleCollection::setFlowViewStyle(style);
 }

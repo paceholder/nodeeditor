@@ -28,19 +28,23 @@ NodeStyle()
 }
 
 
+void
 NodeStyle::
-NodeStyle(QString jsonText)
+setNodeStyle(QString jsonText)
 {
-  loadJsonText(jsonText);
+  NodeStyle style;
+  style.loadJsonText(jsonText);
+
+  StyleCollection::setNodeStyle(style);
 }
 
 
 void
 NodeStyle::
-setNodeStyle(QString jsonText)
+setNodeStyleFromFile(QString styleFile)
 {
-  NodeStyle style(jsonText);
-
+  NodeStyle style;
+  style.loadJsonFile(styleFile);
 
   StyleCollection::setNodeStyle(style);
 }
