@@ -45,12 +45,16 @@ setConnectionStyle(QString jsonText)
   StyleCollection::setConnectionStyle(style);
 }
 
+#ifdef STYLE_DEBUG
+  #define CONNECTION_STYLE_CHECK_UNDEFINED_VALUE(v, variable) { \
+      if (v.type() == QJsonValue::Undefined || \
+          v.type() == QJsonValue::Null) \
+        qWarning() << "Undefined value for parameter:" << #variable; \
+  }
+#else
+  #define CONNECTION_STYLE_CHECK_UNDEFINED_VALUE(v, variable)
+#endif
 
-#define CONNECTION_STYLE_CHECK_UNDEFINED_VALUE(v, variable) { \
-    if (v.type() == QJsonValue::Undefined || \
-        v.type() == QJsonValue::Null) \
-      qWarning() << "Undefined value for parameter:" << #variable; \
-}
 
 #define CONNECTION_VALUE_EXISTS(v) \
   (v.type() != QJsonValue::Undefined && \
