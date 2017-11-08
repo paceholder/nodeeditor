@@ -318,13 +318,51 @@ void FlowView::duplicateSelectedNode()
 	}
 	
 	//create connections 
-	
+	std::vector<std::shared_ptr<Connection> > createdConnections; 
+	for (QGraphicsItem * item : _scene->selectedItems())
+	{
+	    if (auto c = qgraphicsitem_cast<ConnectionGraphicsObject*>(item))
+		{
+			//if(c->connection().connectionState().)
+			
+			Node* nodeIn = c->connection().getNode(PortType::In); 
+			PortIndex portIndexIn = c->connection().getPortIndex(PortType::In); 
+			Node* nodeOut = c->connection().getNode(PortType::Out); 
+			PortIndex portIndexOut = c->connection().getPortIndex(PortType::Out); 
+			
+			//find index of node in couterpartNode Array
+			int j = -1;
+			for(j = 0; j < couterpartNode.size(); j++)
+			{
+				if(couterpartNode[j] == nodeIn)
+					break;
+			}
+			
+			int k = -1;
+			for(k = 0; k < couterpartNode.size(); k++)
+			{
+				if(couterpartNode[k] == nodeOut)
+					break;
+			}
+			
+			if(j >=0 && k>=0)
+			{
+				auto& connection = _scene->createConnection(*createdNodes[j], portIndexIn, *createdNodes[k], portIndexOut);
+				createdConnections.push_back(connection);
+			}
+		}
+	}
+
 	
 	//reset selection to nodes created
 	_scene->clearSelection();
 	for(int i = 0; i < createdNodes.size(); i++)
 	{
 		createdNodes[i]->nodeGraphicsObject().setSelected(true);
+	}
+	for(int i = 0; i < createdConnections.size(); i++)
+	{
+		createdConnections[i]->getConnectionGraphicsObject().setSelected(true);
 	}
 }
 
