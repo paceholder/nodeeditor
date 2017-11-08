@@ -30,6 +30,8 @@ public slots:
   void scaleDown();
 
   void deleteSelectedNodes();
+  
+  void duplicateSelectedNode();
 
 protected:
 
@@ -57,6 +59,7 @@ private:
 
   QAction* _clearSelectionAction;
   QAction* _deleteSelectionAction;
+  QAction* _duplicateSelectionAction;
 
   QPointF _clickPos;
 

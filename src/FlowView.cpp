@@ -48,7 +48,7 @@ FlowView(FlowScene *scene)
 
   setCacheMode(QGraphicsView::CacheBackground);
 
-  //setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
+  setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
 
   // setup actions
   _clearSelectionAction = new QAction(QStringLiteral("Clear Selection"), this);
@@ -60,6 +60,13 @@ FlowView(FlowScene *scene)
   _deleteSelectionAction->setShortcut(Qt::Key_Delete);
   connect(_deleteSelectionAction, &QAction::triggered, this, &FlowView::deleteSelectedNodes);
   addAction(_deleteSelectionAction);
+  
+  
+  _duplicateSelectionAction = new QAction(QStringLiteral("Delete Selection"), this);
+  _duplicateSelectionAction->setShortcut(Qt::Key_D);
+  connect(_duplicateSelectionAction, &QAction::triggered, this, &FlowView::duplicateSelectedNode);
+  addAction(_duplicateSelectionAction);
+  
 }
 
 
@@ -132,7 +139,7 @@ contextMenuEvent(QContextMenuEvent *event)
 
   treeView->expandAll();
 
-  connect(treeView, &QTreeWidget::itemClicked, [&](QTreeWidgetItem *item, int)
+  connect(treeView, &QTreeWidget::itemActivated, [&](QTreeWidgetItem *item, int)
   {
     QString modelName = item->data(0, Qt::UserRole).toString();
 
@@ -256,6 +263,72 @@ deleteSelectedNodes()
 }
 
 
+void FlowView::duplicateSelectedNode()
+{
+	//Get Bounds of all the selected items 
+	float minx = 10000000000;
+	float miny = 10000000000;
+	float maxx = -1000000000;
+	float maxy = -1000000000;
+	for (QGraphicsItem * item : _scene->selectedItems())
+	{
+		if (auto n = qgraphicsitem_cast<NodeGraphicsObject*>(item))
+		{
+			QPointF pos = n->pos();
+			if(pos.x() < minx) minx = pos.x();
+			if(pos.y() < miny) miny = pos.y();
+			if(pos.x() > maxx) maxx = pos.x();
+			if(pos.y() > maxy) maxy = pos.y();
+		}
+	}
+	//compute centroid
+	float centroidX = (maxx - minx) / 2.0 + minx;
+	float centroidY = (maxy - miny) / 2.0 + miny;
+	QPointF centroid(centroidX, centroidY);
+	
+	//create nodes
+	std::vector<Node*> createdNodes;
+	std::vector<Node*> couterpartNode; 
+	for (QGraphicsItem * item : _scene->selectedItems())
+	{
+		if (auto n = qgraphicsitem_cast<NodeGraphicsObject*>(item))
+		{
+			QString modelName = n->node().nodeDataModel()->name(); 
+	
+			auto& type = _scene->registry().create(modelName);
+			
+			if (type)
+			{
+			  auto& node = _scene->createNode(std::move(type));
+			  createdNodes.push_back(&node);
+			  couterpartNode.push_back(&(n->node()));
+			  
+			  QPoint viewPointMouse = this->mapFromGlobal(QCursor::pos());
+			  QPointF posViewMouse = this->mapToScene(viewPointMouse);
+
+			  QPointF pos = posViewMouse + (n->pos() - centroid);
+			  
+			  node.nodeGraphicsObject().setPos(pos);
+			}
+			else
+			{
+			  qDebug() << "Model not found";
+			}
+		}
+	}
+	
+	//create connections 
+	
+	
+	//reset selection to nodes created
+	_scene->clearSelection();
+	for(int i = 0; i < createdNodes.size(); i++)
+	{
+		createdNodes[i]->nodeGraphicsObject().setSelected(true);
+	}
+}
+
+
 void
 FlowView::
 keyPressEvent(QKeyEvent *event)
@@ -265,7 +338,6 @@ keyPressEvent(QKeyEvent *event)
     case Qt::Key_Shift:
       setDragMode(QGraphicsView::RubberBandDrag);
       break;
-
     default:
       break;
   }
