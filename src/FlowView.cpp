@@ -62,10 +62,20 @@ FlowView(FlowScene *scene)
   addAction(_deleteSelectionAction);
   
   
-  _duplicateSelectionAction = new QAction(QStringLiteral("Delete Selection"), this);
+  _duplicateSelectionAction = new QAction(QStringLiteral("Duplicate Selection"), this);
   _duplicateSelectionAction->setShortcut(QKeySequence(tr("Ctrl+D")));
   connect(_duplicateSelectionAction, &QAction::triggered, this, &FlowView::duplicateSelectedNode);
   addAction(_duplicateSelectionAction);
+  
+  _undoAction = new QAction(QStringLiteral("Undo"), this);
+  _undoAction->setShortcut(QKeySequence(tr("Ctrl+Z")));
+  connect(_undoAction, &QAction::triggered, _scene, &FlowScene::Undo);
+  addAction(_undoAction);
+  
+  _redoAction = new QAction(QStringLiteral("Redo"), this);
+  _redoAction->setShortcut(QKeySequence(tr("Ctrl+Y")));
+  connect(_redoAction, &QAction::triggered, _scene, &FlowScene::Redo);
+  addAction(_redoAction);
   
 }
 
@@ -159,6 +169,8 @@ contextMenuEvent(QContextMenuEvent *event)
       QPointF posView = this->mapToScene(pos);
 
       node.nodeGraphicsObject().setPos(posView);
+	  
+	  _scene->UpdateHistory();
     }
     else
     {
@@ -248,7 +260,7 @@ void
 FlowView::
 deleteSelectedNodes()
 {
-  std::cout << "deleteSelectedNodes" << std::endl; 
+  //std::cout << "deleteSelectedNodes" << std::endl; 
   // delete the nodes, this will delete many of the connections
   std::vector<Node*> nodeItems = _scene->selectedNodes();
   for(int i = 0; i < nodeItems.size(); i++)
@@ -268,6 +280,8 @@ deleteSelectedNodes()
 			_scene->deleteConnection(c->connection());
 	}
   }
+  
+  _scene->UpdateHistory(); 
 }
 
 
@@ -372,6 +386,10 @@ void FlowView::duplicateSelectedNode()
 	{
 		createdConnections[i]->getConnectionGraphicsObject().setSelected(true);
 	}
+	
+	
+	if(createdNodes.size() > 0)
+		_scene->UpdateHistory();
 }
 
 

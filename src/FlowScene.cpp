@@ -42,6 +42,9 @@ FlowScene(std::shared_ptr<DataModelRegistry> registry)
   : _registry(registry)
 {
   setItemIndexMethod(QGraphicsScene::NoIndex);
+  
+  ResetHistory();
+  UpdateHistory();
 }
 
 
@@ -147,6 +150,7 @@ createNode(std::unique_ptr<NodeDataModel> && dataModel)
   _nodes[node->id()] = std::move(node);
 
   nodeCreated(*nodePtr);
+  
   return *nodePtr;
 }
 
@@ -510,7 +514,72 @@ loadFromMemory(const QByteArray& data)
   {
     restoreConnection(connectionJsonArray[i].toObject());
   }
+  
+  
 }
+
+void FlowScene::Undo()
+{
+	std::cout << "Undo" << std::endl; 
+	if(historyInx > 1)
+	{
+		writeToHistory = false; 
+		clearScene();
+		historyInx--;
+		loadFromMemory(history[historyInx - 1].data);
+		writeToHistory = true; 
+	}
+}
+  
+void FlowScene::Redo()
+{
+	std::cout << "Redo" << std::endl; 
+	writeToHistory = false; 
+	if(historyInx < history.size())
+	{
+		std::cout << "historyInx:" << historyInx << " history.size():" << history.size() << std::endl; 
+		clearScene();
+		loadFromMemory(history[historyInx].data);
+		historyInx++;
+	}
+	else
+	{
+		std::cout << "Could not redo" << std::endl;
+	}
+	writeToHistory = true;
+}
+
+void FlowScene::UpdateHistory()
+{
+	if(writeToHistory)
+	{
+		std::cout << "UpdateHistory" << std::endl; 
+		
+		SceneHistory sh;
+		sh.data = saveToMemory();
+		
+		if(historyInx < history.size())
+		{
+			history.resize(historyInx);
+			history.push_back(sh);	
+		}
+		else
+		{
+			history.push_back(sh);
+		}
+		
+		historyInx++;
+	}
+}
+
+void FlowScene::ResetHistory()
+{
+	historyInx = 0; 
+	writeToHistory = true; 
+	history.clear();
+}
+
+
 
 
 //------------------------------------------------------------------------------

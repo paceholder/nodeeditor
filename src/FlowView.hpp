@@ -60,6 +60,8 @@ private:
   QAction* _clearSelectionAction;
   QAction* _deleteSelectionAction;
   QAction* _duplicateSelectionAction;
+  QAction* _undoAction;
+  QAction* _redoAction;
 
   QPointF _clickPos;
 
