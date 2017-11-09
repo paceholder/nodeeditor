@@ -63,7 +63,7 @@ FlowView(FlowScene *scene)
   
   
   _duplicateSelectionAction = new QAction(QStringLiteral("Delete Selection"), this);
-  _duplicateSelectionAction->setShortcut(Qt::Key_D);
+  _duplicateSelectionAction->setShortcut(QKeySequence(tr("Ctrl+D")));
   connect(_duplicateSelectionAction, &QAction::triggered, this, &FlowView::duplicateSelectedNode);
   addAction(_duplicateSelectionAction);
   
@@ -345,7 +345,7 @@ void FlowView::duplicateSelectedNode()
 					break;
 			}
 			
-			if(j >=0 && k>=0)
+			if(j >=0 && k>=0 && j < couterpartNode.size() && k < couterpartNode.size())
 			{
 				auto& connection = _scene->createConnection(*createdNodes[j], portIndexIn, *createdNodes[k], portIndexOut);
 				createdConnections.push_back(connection);
