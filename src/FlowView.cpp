@@ -58,22 +58,26 @@ FlowView(FlowScene *scene)
 
   _deleteSelectionAction = new QAction(QStringLiteral("Delete Selection"), this);
   _deleteSelectionAction->setShortcut(Qt::Key_Delete);
+  _deleteSelectionAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
   connect(_deleteSelectionAction, &QAction::triggered, this, &FlowView::deleteSelectedNodes);
   addAction(_deleteSelectionAction);
   
   
   _duplicateSelectionAction = new QAction(QStringLiteral("Duplicate Selection"), this);
   _duplicateSelectionAction->setShortcut(QKeySequence(tr("Ctrl+D")));
+  _duplicateSelectionAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
   connect(_duplicateSelectionAction, &QAction::triggered, this, &FlowView::duplicateSelectedNode);
   addAction(_duplicateSelectionAction);
   
   _undoAction = new QAction(QStringLiteral("Undo"), this);
   _undoAction->setShortcut(QKeySequence(tr("Ctrl+Z")));
+  _undoAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
   connect(_undoAction, &QAction::triggered, _scene, &FlowScene::Undo);
   addAction(_undoAction);
   
   _redoAction = new QAction(QStringLiteral("Redo"), this);
   _redoAction->setShortcut(QKeySequence(tr("Ctrl+Y")));
+  _redoAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
   connect(_redoAction, &QAction::triggered, _scene, &FlowScene::Redo);
   addAction(_redoAction);
   
@@ -311,6 +315,7 @@ void FlowView::duplicateSelectedNode()
 	//create nodes
 	std::vector<Node*> createdNodes;
 	std::vector<Node*> couterpartNode; 
+	std::vector<QJsonObject> nodeData;
 	for (QGraphicsItem * item : _scene->selectedItems())
 	{
 		if (auto n = qgraphicsitem_cast<NodeGraphicsObject*>(item))
@@ -322,6 +327,7 @@ void FlowView::duplicateSelectedNode()
 			if (type)
 			{
 			  auto& node = _scene->createNode(std::move(type));
+			  node.nodeDataModel()->restore(n->node().nodeDataModel()->save());
 			  createdNodes.push_back(&node);
 			  couterpartNode.push_back(&(n->node()));
 			  
