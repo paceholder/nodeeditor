@@ -40,7 +40,7 @@ NodeGraphicsObject(FlowScene &scene,
 
   setCacheMode( QGraphicsItem::DeviceCoordinateCache );
 
-  auto const &nodeStyle = StyleCollection::nodeStyle();
+  auto const &nodeStyle = node.nodeDataModel()->nodeStyle();
 
   {
     auto effect = new QGraphicsDropShadowEffect;
