@@ -45,6 +45,12 @@ FlowScene(std::shared_ptr<DataModelRegistry> registry)
   
   ResetHistory();
   UpdateHistory();
+  
+  auto UpdateLamda = [this](Node& n, const QPointF& p)
+  {
+	  UpdateHistory();
+  };
+  connect(this, &FlowScene::nodeMoveFinished, this, UpdateLamda);
 }
 
 
@@ -105,7 +111,7 @@ createConnection(Node& nodeIn,
   _connections[connection->id()] = connection;
 
   connectionCreated(*connection);
-
+  
   return connection;
 }
 

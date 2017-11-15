@@ -312,6 +312,8 @@ mouseMoveEvent(QGraphicsSceneMouseEvent * event)
       moveConnections();
 
     event->ignore();
+	
+	
   }
 
   QRectF r = scene()->sceneRect();
@@ -331,6 +333,8 @@ mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
   state.setResizing(false);
 
   QGraphicsObject::mouseReleaseEvent(event);
+  
+  _scene.nodeMoveFinished(_node, pos());
 
   // position connections precisely after fast node move
   moveConnections();

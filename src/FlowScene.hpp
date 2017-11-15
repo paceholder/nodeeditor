@@ -114,6 +114,8 @@ signals:
   void connectionDeleted(Connection &c);
 
   void nodeMoved(Node& n, const QPointF& newLocation);
+  
+  void nodeMoveFinished(Node& n, const QPointF& newLocation);
 
   void nodeDoubleClicked(Node& n);
 
