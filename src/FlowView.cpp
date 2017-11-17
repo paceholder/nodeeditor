@@ -321,12 +321,12 @@ void FlowView::duplicateSelectedNode()
 		if (auto n = qgraphicsitem_cast<NodeGraphicsObject*>(item))
 		{
 			QString modelName = n->node().nodeDataModel()->name(); 
-	
-			auto& type = _scene->registry().create(modelName);
+			auto type = _scene->registry().create(modelName);
+			auto& typeRef = type;
 			
-			if (type)
+			if (typeRef)
 			{
-			  auto& node = _scene->createNode(std::move(type));
+			  auto& node = _scene->createNode(std::move(typeRef));
 			  node.nodeDataModel()->restore(n->node().nodeDataModel()->save());
 			  createdNodes.push_back(&node);
 			  couterpartNode.push_back(&(n->node()));
@@ -375,7 +375,8 @@ void FlowView::duplicateSelectedNode()
 			
 			if(j >=0 && k>=0 && j < couterpartNode.size() && k < couterpartNode.size())
 			{
-				auto& connection = _scene->createConnection(*createdNodes[j], portIndexIn, *createdNodes[k], portIndexOut);
+				auto connection = _scene->createConnection(*createdNodes[j], portIndexIn, *createdNodes[k], portIndexOut);
+				auto& connectionRef = connection; 
 				createdConnections.push_back(connection);
 			}
 		}
