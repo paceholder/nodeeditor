@@ -10,11 +10,11 @@ std::unique_ptr<NodeDataModel>
 DataModelRegistry::
 create(QString const &modelName)
 {
-  auto it = _registeredModels.find(modelName);
+  auto it = _registeredModelCreators.find(modelName);
 
-  if (it != _registeredModels.end())
+  if (it != _registeredModelCreators.end())
   {
-    return it->second->clone();
+    return it->second();
   }
 
   return nullptr;
@@ -25,7 +25,7 @@ DataModelRegistry::RegisteredModelsMap const &
 DataModelRegistry::
 registeredModels() const
 {
-  return _registeredModels;
+  return _registeredModelCreators;
 }
 
 
@@ -54,7 +54,7 @@ getTypeConverter(QString const &sourceTypeID, QString const &destTypeID) const
 
   if (converter != _registeredTypeConverters.end())
   {
-    return converter->second->Model->clone();
+    return converter->second->ModelCloner();
   }
   return nullptr;
 }

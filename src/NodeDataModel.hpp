@@ -57,9 +57,6 @@ public:
   virtual QString
   name() const = 0;
 
-  /// Function creates instances of a model stored in DataModelRegistry
-  virtual std::unique_ptr<NodeDataModel>
-  clone() const = 0;
 
 public:
 
