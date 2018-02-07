@@ -48,8 +48,19 @@ FlowView(FlowScene *scene)
 
   setCacheMode(QGraphicsView::CacheBackground);
 
+  /*
+  QGLFormat* fmt = new QGLFormat; 
+  fmt->setDoubleBuffer(false);
+  fmt->setDirectRendering(false);
+  QGLContext* ctx = new QGLContext(*fmt); 
+  */
+  
   setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
-
+  //setViewport(new QGLWidget);
+  //setViewport(new QGLWidget(ctx));
+  
+  setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+  
   // setup actions
   _clearSelectionAction = new QAction(QStringLiteral("Clear Selection"), this);
   _clearSelectionAction->setShortcut(Qt::Key_Escape);

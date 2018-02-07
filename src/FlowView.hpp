@@ -13,7 +13,7 @@ class NODE_EDITOR_PUBLIC FlowView
   : public QGraphicsView
 {
 public:
-
+   
   FlowView(FlowScene *scene);
 
   FlowView(const FlowView&) = delete;
