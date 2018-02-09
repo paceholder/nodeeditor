@@ -112,7 +112,7 @@ drawConnectionPoints(QPainter* painter,
                      NodeDataModel const * model,
                      FlowScene const & scene)
 {
-  NodeStyle const& nodeStyle      = StyleCollection::nodeStyle();
+  NodeStyle const& nodeStyle      = model->nodeStyle();
   auto const     &connectionStyle = StyleCollection::connectionStyle();
 
   float diameter = nodeStyle.ConnectionPointDiameter;
@@ -198,7 +198,7 @@ drawFilledConnectionPoints(QPainter * painter,
                            NodeState const & state,
                            NodeDataModel const * model)
 {
-  NodeStyle const& nodeStyle       = StyleCollection::nodeStyle();
+  NodeStyle const& nodeStyle       = model->nodeStyle();
   auto const     & connectionStyle = StyleCollection::connectionStyle();
 
   auto diameter = nodeStyle.ConnectionPointDiameter;
@@ -247,7 +247,7 @@ drawModelName(QPainter * painter,
               NodeState const & state,
               NodeDataModel const * model)
 {
-  NodeStyle const& nodeStyle = StyleCollection::nodeStyle();
+  NodeStyle const& nodeStyle = model->nodeStyle();
 
   Q_UNUSED(state);
 
@@ -289,7 +289,7 @@ drawEntryLabels(QPainter * painter,
   auto drawPoints =
     [&](PortType portType)
     {
-      auto const &nodeStyle = StyleCollection::nodeStyle();
+      auto const &nodeStyle = model->nodeStyle();
 
       auto& entries = state.getEntries(portType);
 
@@ -369,7 +369,7 @@ drawValidationRect(QPainter * painter,
 
   if (modelValidationState != NodeValidationState::Valid)
   {
-    NodeStyle const& nodeStyle = StyleCollection::nodeStyle();
+    NodeStyle const& nodeStyle = model->nodeStyle();
 
     auto color = graphicsObject.isSelected()
                  ? nodeStyle.SelectedBoundaryColor
