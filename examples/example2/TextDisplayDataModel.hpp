@@ -39,9 +39,6 @@ public:
   name() const override
   { return QString("TextDisplayDataModel"); }
 
-  std::unique_ptr<NodeDataModel>
-  clone() const override
-  { return std::make_unique<TextDisplayDataModel>(); }
 
 public:
 

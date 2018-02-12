@@ -40,9 +40,6 @@ public:
   name() const override
   { return QStringLiteral("Result"); }
 
-  std::unique_ptr<NodeDataModel>
-  clone() const override
-  { return std::make_unique<NumberDisplayDataModel>(); }
 
 public:
 

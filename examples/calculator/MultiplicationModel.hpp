@@ -28,9 +28,6 @@ public:
   name() const override
   { return QStringLiteral("Multiplication"); }
 
-  std::unique_ptr<NodeDataModel>
-  clone() const override
-  { return std::make_unique<MultiplicationModel>(); }
 
 private:
 
