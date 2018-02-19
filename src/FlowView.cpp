@@ -492,6 +492,9 @@ drawBackground(QPainter* painter, const QRectF& r)
       double bottom = std::floor(tl.y() / gridStep - 0.5);
       double top    = std::floor (br.y() / gridStep + 1.0);
 
+	  if(right - left > 100)
+		  return; 
+	  
       // vertical lines
       for (int xi = int(left); xi <= int(right); ++xi)
       {
