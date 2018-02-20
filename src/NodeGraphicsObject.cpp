@@ -66,6 +66,10 @@ NodeGraphicsObject(FlowScene &scene,
   connect(this, &QGraphicsObject::xChanged, this, onMoveSlot);
   connect(this, &QGraphicsObject::yChanged, this, onMoveSlot);
 
+
+  connect(_node.nodeDataModel(), &NodeDataModel::setToolTipTextSignal, this, [this](QString &toolTipText ){
+		setToolTip(toolTipText);
+  });
 }
 
 

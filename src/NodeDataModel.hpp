@@ -60,6 +60,8 @@ public:
   /// Function creates instances of a model stored in DataModelRegistry
   virtual std::unique_ptr<NodeDataModel>
   clone() const = 0;
+  
+  void setToolTipText(QString toolTipText);
 
 public:
 
@@ -126,6 +128,8 @@ public:
   virtual
   NodePainterDelegate* painterDelegate() const { return nullptr; }
 
+  QString toolTipText();
+  
 signals:
 
   void
@@ -139,9 +143,14 @@ signals:
 
   void
   computingFinished();
+  
+  void setToolTipTextSignal(QString text);
+  
 
 private:
 
+	QString _toolTipText;
+	
   NodeStyle _nodeStyle;
 };
 }
