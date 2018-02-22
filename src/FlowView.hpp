@@ -13,8 +13,9 @@ class NODE_EDITOR_PUBLIC FlowView
   : public QGraphicsView
 {
 public:
-   
-  FlowView(FlowScene *scene);
+
+  FlowView(QWidget *parent = Q_NULLPTR);
+  FlowView(FlowScene *scene, QWidget *parent = Q_NULLPTR);
 
   FlowView(const FlowView&) = delete;
   FlowView operator=(const FlowView&) = delete;
@@ -22,6 +23,8 @@ public:
   QAction* clearSelectionAction() const;
 
   QAction* deleteSelectionAction() const;
+
+  void setScene(FlowScene *scene);
 
 public slots:
 

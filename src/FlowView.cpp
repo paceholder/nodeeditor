@@ -27,10 +27,11 @@ using QtNodes::FlowView;
 using QtNodes::FlowScene;
 
 FlowView::
-FlowView(FlowScene *scene)
-  : QGraphicsView(scene)
-  , _clickPos(QPointF())
-  , _scene(scene)
+FlowView(QWidget *parent)
+  : QGraphicsView(parent)
+  , _clearSelectionAction(Q_NULLPTR)
+  , _deleteSelectionAction(Q_NULLPTR)
+  , _scene(Q_NULLPTR)
 {
   setDragMode(QGraphicsView::ScrollHandDrag);
   setRenderHint(QPainter::Antialiasing);
@@ -47,32 +48,58 @@ FlowView(FlowScene *scene)
   setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
 
   setCacheMode(QGraphicsView::CacheBackground);
-
-  /*
-  QGLFormat* fmt = new QGLFormat; 
-  fmt->setDoubleBuffer(false);
-  fmt->setDirectRendering(false);
-  QGLContext* ctx = new QGLContext(*fmt); 
-  */
   
   setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
-  //setViewport(new QGLWidget);
-  //setViewport(new QGLWidget(ctx));
   
   setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+ 
   
+}
+
+
+FlowView::
+FlowView(FlowScene *scene, QWidget *parent)
+  : FlowView(parent)
+{
+  setScene(scene);
+}
+
+
+QAction*
+FlowView::
+clearSelectionAction() const
+{
+  return _clearSelectionAction;
+}
+
+
+QAction*
+FlowView::
+deleteSelectionAction() const
+{
+  return _deleteSelectionAction;
+}
+
+
+void
+FlowView::setScene(FlowScene *scene)
+{
+  _scene = scene;
+  QGraphicsView::setScene(_scene);
+
   // setup actions
-  _clearSelectionAction = new QAction(QStringLiteral("Clear Selection"), this);
+  delete _clearSelectionAction;
+   _clearSelectionAction = new QAction(QStringLiteral("Clear Selection"), this);
   _clearSelectionAction->setShortcut(Qt::Key_Escape);
   connect(_clearSelectionAction, &QAction::triggered, _scene, &QGraphicsScene::clearSelection);
   addAction(_clearSelectionAction);
 
+  delete _deleteSelectionAction;
   _deleteSelectionAction = new QAction(QStringLiteral("Delete Selection"), this);
   _deleteSelectionAction->setShortcut(Qt::Key_Delete);
   _deleteSelectionAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
   connect(_deleteSelectionAction, &QAction::triggered, this, &FlowView::deleteSelectedNodes);
   addAction(_deleteSelectionAction);
-  
   
   _duplicateSelectionAction = new QAction(QStringLiteral("Duplicate Selection"), this);
   _duplicateSelectionAction->setShortcut(QKeySequence(tr("Ctrl+D")));
@@ -91,23 +118,6 @@ FlowView(FlowScene *scene)
   _redoAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
   connect(_redoAction, &QAction::triggered, _scene, &FlowScene::Redo);
   addAction(_redoAction);
-  
-}
-
-
-QAction*
-FlowView::
-clearSelectionAction() const
-{
-  return _clearSelectionAction;
-}
-
-
-QAction*
-FlowView::
-deleteSelectionAction() const
-{
-  return _deleteSelectionAction;
 }
 
 
