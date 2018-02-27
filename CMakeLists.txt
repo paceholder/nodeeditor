@@ -6,13 +6,6 @@ project(NodeEditor CXX)
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 set(CMAKE_DISABLE_SOURCE_CHANGES  ON)
 
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-
-# Instruct CMake to run moc automatically when needed.
-set(CMAKE_AUTOMOC ON)
-
 option(BUILD_EXAMPLES "Build Examples" ON)
 
 # Find the QtWidgets library
@@ -23,6 +16,10 @@ find_package(Qt5 COMPONENTS
              OpenGL)
 
 qt5_add_resources(RESOURCES ./resources/resources.qrc)
+
+# Unfortunately, as we have a split include/src, AUTOMOC doesn't work.
+# We'll have to manually specify some files
+set(CMAKE_AUTOMOC ON)
 
 # If we want to give the option to build a static library,
 # leave off SHARED here and use BUILD_SHARED_LIBS to
@@ -56,7 +53,9 @@ target_include_directories(nodes
   PUBLIC 
     $<INSTALL_INTERFACE:include>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  PRIVATE src
+  PRIVATE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/nodes/internal>
 )
 
 target_link_libraries(nodes
@@ -88,6 +87,65 @@ target_compile_features(nodes
     cxx_generic_lambdas # Require C++14
 )
 
+set_target_properties(nodes
+  PROPERTIES
+    ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
+    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+)
+
+######
+# Moc
+##
+
+file(GLOB_RECURSE HEADERS_TO_MOC include/nodes/internal/*.hpp)
+
+qt5_wrap_cpp(nodes_moc
+    ${HEADERS_TO_MOC}
+  TARGET nodes
+  OPTIONS --no-notes # Don't display a note for the headers which don't produce a moc_*.cpp
+)
+
+target_sources(nodes PRIVATE ${nodes_moc})
+
+###########
+# Examples
+##
+
 if(BUILD_EXAMPLES)
   add_subdirectory(examples)
 endif()
+
+###############
+# Installation
+##
+
+include(GNUInstallDirs)
+
+set(INSTALL_CONFIGDIR ${CMAKE_INSTALL_LIBDIR}/cmake/NodeEditor)
+
+install(TARGETS nodes
+  EXPORT NodeEditorTargets
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)
+
+install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+install(EXPORT NodeEditorTargets
+  FILE NodeEditorTargets.cmake
+  NAMESPACE NodeEditor::
+  DESTINATION ${INSTALL_CONFIGDIR}
+)
+
+include(CMakePackageConfigHelpers)
+
+configure_package_config_file(${CMAKE_CURRENT_LIST_DIR}/cmake/NodeEditorConfig.cmake.in
+  ${CMAKE_CURRENT_BINARY_DIR}/NodeEditorConfig.cmake
+  INSTALL_DESTINATION ${INSTALL_CONFIGDIR}
+)
+
+install(FILES
+  ${CMAKE_CURRENT_BINARY_DIR}/NodeEditorConfig.cmake
+  DESTINATION ${INSTALL_CONFIGDIR}
+)
