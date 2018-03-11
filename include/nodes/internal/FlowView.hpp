@@ -12,6 +12,7 @@ class FlowScene;
 class NODE_EDITOR_PUBLIC FlowView
   : public QGraphicsView
 {
+  Q_OBJECT
 public:
 
   FlowView(QWidget *parent = Q_NULLPTR);

@@ -1,1 +1,1 @@
-#include "../../src/NodeDataModel.hpp"
+#include "internal/NodeDataModel.hpp"

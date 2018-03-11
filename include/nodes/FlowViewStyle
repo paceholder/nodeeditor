@@ -1,1 +1,1 @@
-#include "../../src/FlowViewStyle.hpp"
+#include "internal/FlowViewStyle.hpp"
