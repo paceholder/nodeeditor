@@ -1,1 +1,1 @@
-#include "../../src/Node.hpp"
+#include "internal/Node.hpp"

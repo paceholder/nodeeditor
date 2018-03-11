@@ -1,1 +1,1 @@
-#include "../../src/NodePainterDelegate.hpp"
+#include "internal/NodePainterDelegate.hpp"
