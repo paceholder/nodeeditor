@@ -21,10 +21,9 @@ qt5_add_resources(RESOURCES ./resources/resources.qrc)
 # We'll have to manually specify some files
 set(CMAKE_AUTOMOC ON)
 
-# If we want to give the option to build a static library,
-# leave off SHARED here and use BUILD_SHARED_LIBS to
-# choose whether to add -D NODE_EDITOR_SHARED
-add_library(nodes SHARED
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
+set(CPP_SOURCE_FILES
   src/Connection.cpp
   src/ConnectionBlurEffect.cpp
   src/ConnectionGeometry.cpp
@@ -46,6 +45,13 @@ add_library(nodes SHARED
   src/NodeStyle.cpp
   src/Properties.cpp
   src/StyleCollection.cpp
+)
+
+# If we want to give the option to build a static library,
+# leave off SHARED here and use BUILD_SHARED_LIBS to
+# choose whether to add -D NODE_EDITOR_SHARED
+add_library(nodes SHARED
+  ${CPP_SOURCE_FILES}
   ${RESOURCES}
 )
 
