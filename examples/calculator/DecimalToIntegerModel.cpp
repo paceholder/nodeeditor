@@ -5,11 +5,21 @@
 #include "DecimalData.hpp"
 #include "IntegerData.hpp"
 
+DecimalToIntegerModel::DecimalToIntegerModel()
+{
+
+}
+
+DecimalToIntegerModel::~DecimalToIntegerModel()
+{
+
+}
+
 QJsonObject
 DecimalToIntegerModel::
 save() const
 {
-  QJsonObject modelJson;
+    QJsonObject modelJson;
 
   modelJson["name"] = name();
 
@@ -72,7 +82,7 @@ setInData(std::shared_ptr<NodeData> data, PortIndex portIndex)
   }
 
   if (_decimal)
-    _integer = std::make_shared<IntegerData>(_decimal->number());
+    _integer = std::make_shared<IntegerData>(int(_decimal->number()));
 
   PortIndex const outPortIndex = 0;
 

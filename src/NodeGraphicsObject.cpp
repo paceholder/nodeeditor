@@ -40,7 +40,7 @@ NodeGraphicsObject(FlowScene &scene,
 
   setCacheMode( QGraphicsItem::DeviceCoordinateCache );
 
-  auto const &nodeStyle = StyleCollection::nodeStyle();
+  auto const &nodeStyle = node.nodeDataModel()->nodeStyle();
 
   {
     auto effect = new QGraphicsDropShadowEffect;
@@ -146,9 +146,9 @@ moveConnections() const
       auto const & connectionEntries =
         nodeState.getEntries(portType);
 
-      for (auto const & connections : connectionEntries)
+      foreach (auto const & connections , connectionEntries)
       {
-        for (auto & con : connections)
+        foreach (auto & con , connections)
           con.second->getConnectionGraphicsObject().move();
       }
     };
@@ -219,7 +219,7 @@ mousePressEvent(QGraphicsSceneMouseEvent * event)
       {
         NodeState const & nodeState = _node.nodeState();
 
-        std::unordered_map<QUuid, Connection*> connections =
+        UnorderedMap<QUuid, Connection*> connections =
           nodeState.connections(portToCheck, portIndex);
 
         // start dragging existing connection
@@ -344,7 +344,7 @@ hoverEnterEvent(QGraphicsSceneHoverEvent * event)
   // bring all the colliding nodes to background
   QList<QGraphicsItem *> overlapItems = collidingItems();
 
-  for (QGraphicsItem *item : overlapItems)
+  foreach (QGraphicsItem *item , overlapItems)
   {
     if (item->zValue() > 0.0)
     {

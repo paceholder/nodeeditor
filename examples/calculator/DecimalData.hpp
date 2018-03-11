@@ -20,8 +20,10 @@ public:
 
   NodeDataType type() const override
   {
-    return NodeDataType {"decimal",
-                         "Decimal"};
+    NodeDataType data;
+    data.id = "decimal";
+    data.name = "Decimal";
+    return data;
   }
 
   double number() const

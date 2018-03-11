@@ -15,9 +15,9 @@ static std::shared_ptr<DataModelRegistry>
 registerDataModels()
 {
   auto ret = std::make_shared<DataModelRegistry>();
-  ret->registerModel<ImageShowModel>();
+  ret->registerModel<ImageShowModel, false>(std::make_unique<ImageShowModel>());
 
-  ret->registerModel<ImageLoaderModel>();
+  ret->registerModel<ImageLoaderModel, false>(std::make_unique<ImageLoaderModel>());
 
   return ret;
 }

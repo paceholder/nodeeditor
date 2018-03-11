@@ -36,6 +36,8 @@ using QtNodes::NodeDataModel;
 //using QtNodes::Properties;
 using QtNodes::PortType;
 using QtNodes::PortIndex;
+using QtNodes::SharedConnection;
+using QtNodes::UniqueNode;
 
 FlowScene::
 FlowScene(std::shared_ptr<DataModelRegistry> registry)
@@ -54,7 +56,7 @@ FlowScene::
 
 //------------------------------------------------------------------------------
 
-std::shared_ptr<Connection>
+SharedConnection
 FlowScene::
 createConnection(PortType connectedPort,
                  Node& node,
@@ -74,7 +76,7 @@ createConnection(PortType connectedPort,
 }
 
 
-std::shared_ptr<Connection>
+SharedConnection
 FlowScene::
 createConnection(Node& nodeIn,
                  PortIndex portIndexIn,
@@ -107,7 +109,7 @@ createConnection(Node& nodeIn,
 }
 
 
-std::shared_ptr<Connection>
+SharedConnection
 FlowScene::
 restoreConnection(QJsonObject const &connectionJson)
 {
@@ -190,9 +192,9 @@ removeNode(Node& node)
       auto nodeState = node.nodeState();
       auto const & nodeEntries = nodeState.getEntries(portType);
 
-      for (auto &connections : nodeEntries)
+      foreach (auto &connections, nodeEntries)
       {
-        for (auto const &pair : connections)
+        foreach (auto const &pair, connections)
           deleteConnection(*pair.second);
       }
     };
@@ -224,7 +226,7 @@ void
 FlowScene::
 iterateOverNodes(std::function<void(Node*)> visitor)
 {
-  for (const auto& _node : _nodes)
+  foreach (const auto& _node , _nodes)
   {
     visitor(_node.second.get());
   }
@@ -235,7 +237,7 @@ void
 FlowScene::
 iterateOverNodeData(std::function<void(NodeDataModel*)> visitor)
 {
-  for (const auto& _node : _nodes)
+  foreach (const auto& _node , _nodes)
   {
     visitor(_node.second->nodeDataModel());
   }
@@ -250,7 +252,7 @@ iterateOverNodeDataDependentOrder(std::function<void(NodeDataModel*)> visitor)
 
   //A leaf node is a node with no input ports, or all possible input ports empty
   auto isNodeLeaf =
-    [](Node const &node, NodeDataModel const &model)
+    [](Node const &node, NodeDataModel const &model) -> bool
     {
       for (size_t i = 0; i < model.nPorts(PortType::In); ++i)
       {
@@ -265,7 +267,7 @@ iterateOverNodeDataDependentOrder(std::function<void(NodeDataModel*)> visitor)
     };
 
   //Iterate over "leaf" nodes
-  for (auto const &_node : _nodes)
+  foreach (auto const &_node , _nodes)
   {
     auto const &node = _node.second;
     auto model       = node->nodeDataModel();
@@ -278,13 +280,13 @@ iterateOverNodeDataDependentOrder(std::function<void(NodeDataModel*)> visitor)
   }
 
   auto areNodeInputsVisitedBefore =
-    [&](Node const &node, NodeDataModel const &model)
+    [&](Node const &node, NodeDataModel const &model) -> bool
     {
       for (size_t i = 0; i < model.nPorts(PortType::In); ++i)
       {
         auto connections = node.nodeState().connections(PortType::In, i);
 
-        for (auto& conn : connections)
+        foreach (auto& conn , connections)
         {
           if (visitedNodesSet.find(conn.second->getNode(PortType::Out)->id()) == visitedNodesSet.end())
           {
@@ -299,7 +301,7 @@ iterateOverNodeDataDependentOrder(std::function<void(NodeDataModel*)> visitor)
   //Iterate over dependent nodes
   while (_nodes.size() != visitedNodesSet.size())
   {
-    for (auto const &_node : _nodes)
+    foreach (auto const &_node , _nodes)
     {
       auto const &node = _node.second;
       if (visitedNodesSet.find(node->id()) != visitedNodesSet.end())
@@ -342,17 +344,13 @@ getNodeSize(const Node& node) const
 }
 
 
-std::unordered_map<QUuid, std::unique_ptr<Node> > const &
-FlowScene::
-nodes() const
+const std::map<QUuid, QtNodes::UniqueNode> &FlowScene::nodes() const
 {
   return _nodes;
 }
 
 
-std::unordered_map<QUuid, std::shared_ptr<Connection> > const &
-FlowScene::
-connections() const
+const std::map<QUuid, QtNodes::SharedConnection> &FlowScene::connections() const
 {
   return _connections;
 }
@@ -367,7 +365,7 @@ selectedNodes() const
   std::vector<Node*> ret;
   ret.reserve(graphicsItems.size());
 
-  for (QGraphicsItem* item : graphicsItems)
+  foreach (QGraphicsItem* item , graphicsItems)
   {
     auto ngo = qgraphicsitem_cast<NodeGraphicsObject*>(item);
 
@@ -391,12 +389,12 @@ clearScene()
   // there are both nodes and connections in the scene. (The data propagation internal logic tries to propagate
   // data through already freed connections.)
   std::vector<Node*> nodesToDelete;
-  for (auto& node : _nodes)
+  foreach (auto& node , _nodes)
   {
     nodesToDelete.push_back(node.second.get());
   }
 
-  for (auto& node : nodesToDelete)
+  foreach (auto& node , nodesToDelete)
   {
     removeNode(*node);
   }
@@ -463,7 +461,7 @@ saveToMemory() const
 
   QJsonArray nodesJsonArray;
 
-  for (auto const & pair : _nodes)
+  foreach (auto const & pair , _nodes)
   {
     auto const &node = pair.second;
 
@@ -473,7 +471,7 @@ saveToMemory() const
   sceneJson["nodes"] = nodesJsonArray;
 
   QJsonArray connectionJsonArray;
-  for (auto const & pair : _connections)
+  foreach (auto const & pair , _connections)
   {
     auto const &connection = pair.second;
 

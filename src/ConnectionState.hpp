@@ -21,11 +21,14 @@ public:
 
   ConnectionState(PortType port = PortType::None)
     : _requiredPort(port)
+    , _lastHoveredNode(nullptr)
   {}
 
-  ConnectionState(const ConnectionState&) = delete;
-  ConnectionState operator=(const ConnectionState&) = delete;
+private:
+  ConnectionState(const ConnectionState&);
+  ConnectionState operator=(const ConnectionState&);
 
+public:
   ~ConnectionState();
 
 public:
@@ -58,6 +61,6 @@ private:
 
   PortType _requiredPort;
 
-  Node* _lastHoveredNode{nullptr};
+  Node* _lastHoveredNode;
 };
 }

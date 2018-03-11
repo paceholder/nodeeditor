@@ -10,7 +10,7 @@ class Serializable
 public:
 
   virtual
-  ~Serializable() = default;
+  ~Serializable() {}
 
   virtual
   QJsonObject

@@ -36,6 +36,8 @@ Connection(PortType portType,
   , _outPortIndex(INVALID)
   , _inPortIndex(INVALID)
   , _connectionState()
+  , _outNode(nullptr)
+  , _inNode(nullptr)
 {
   setNodeToPort(node, portType, portIndex);
 

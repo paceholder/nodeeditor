@@ -18,8 +18,10 @@ public:
 
   NodeDataType type() const override
   {
-    return NodeDataType {"integer",
-                         "Integer"};
+    NodeDataType data;
+    data.id = "integer";
+    data.name = "Integer";
+    return data;
   }
 
   int number() const

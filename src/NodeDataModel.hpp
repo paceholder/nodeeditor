@@ -15,7 +15,7 @@
 namespace QtNodes
 {
 
-enum class NodeValidationState
+enum NodeValidationState
 {
   Valid,
   Warning,
@@ -35,7 +35,7 @@ public:
   NodeDataModel();
 
   virtual
-  ~NodeDataModel() = default;
+  ~NodeDataModel() {}
 
   /// Caption is used in GUI
   virtual QString
@@ -76,7 +76,7 @@ public:
 
 public:
 
-  enum class ConnectionPolicy
+  enum ConnectionPolicy
   {
     One,
     Many,

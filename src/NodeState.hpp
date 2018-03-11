@@ -32,8 +32,7 @@ public:
 
 public:
 
-  using ConnectionPtrSet =
-          std::unordered_map<QUuid, Connection*>;
+  typedef UnorderedMap<QUuid, Connection*> ConnectionPtrSet;
 
   /// Returns vector of connections ID.
   /// Some of them can be empty (null)

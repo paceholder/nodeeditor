@@ -39,13 +39,14 @@ public:
 
 private:
 
-  StyleCollection() = default;
+  StyleCollection();
 
-  StyleCollection(StyleCollection const&) = delete;
-
+private:
+  StyleCollection(StyleCollection const&);
   StyleCollection&
-  operator=(StyleCollection const&) = delete;
+  operator=(StyleCollection const&);
 
+private:
   static
   StyleCollection&
   instance();

@@ -52,7 +52,10 @@ setFlowViewStyle(FlowViewStyle flowViewStyle)
   instance()._flowViewStyle = flowViewStyle;
 }
 
+StyleCollection::StyleCollection()
+{
 
+}
 
 StyleCollection&
 StyleCollection::

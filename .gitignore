@@ -1,3 +1,5 @@
 *.py
 *.pyc
 CMakeLists.txt.user
+lib
+*.user

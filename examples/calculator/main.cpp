@@ -28,23 +28,23 @@ static std::shared_ptr<DataModelRegistry>
 registerDataModels()
 {
   auto ret = std::make_shared<DataModelRegistry>();
-  ret->registerModel<NumberSourceDataModel>("Sources");
+  ret->registerModel<NumberSourceDataModel, false>("Sources", std::make_unique<NumberSourceDataModel>());
 
-  ret->registerModel<NumberDisplayDataModel>("Displays");
+  ret->registerModel<NumberDisplayDataModel, false>("Displays", std::make_unique<NumberDisplayDataModel>());
 
-  ret->registerModel<AdditionModel>("Operators");
+  ret->registerModel<AdditionModel, false>("Operators", std::make_unique<AdditionModel>());
 
-  ret->registerModel<SubtractionModel>("Operators");
+  ret->registerModel<SubtractionModel, false>("Operators", std::make_unique<SubtractionModel>());
 
-  ret->registerModel<MultiplicationModel>("Operators");
+  ret->registerModel<MultiplicationModel, false>("Operators", std::make_unique<MultiplicationModel>());
 
-  ret->registerModel<DivisionModel>("Operators");
+  ret->registerModel<DivisionModel, false>("Operators", std::make_unique<DivisionModel>());
 
-  ret->registerModel<ModuloModel>("Operators");
+  ret->registerModel<ModuloModel, false>("Operators", std::make_unique<ModuloModel>());
 
-  ret->registerModel<DecimalToIntegerModel, true>("Type converters");
+  ret->registerModel<DecimalToIntegerModel, true>("Type converters", std::make_unique<DecimalToIntegerModel>());
 
-  ret->registerModel<IntegerToDecimalModel, true>("Type converters");
+  ret->registerModel<IntegerToDecimalModel, true>("Type converters", std::make_unique<IntegerToDecimalModel>());
 
   return ret;
 }
@@ -55,23 +55,22 @@ void
 setStyle()
 {
   ConnectionStyle::setConnectionStyle(
-  R"(
-  {
-    "ConnectionStyle": {
-      "ConstructionColor": "gray",
-      "NormalColor": "black",
-      "SelectedColor": "gray",
-      "SelectedHaloColor": "deepskyblue",
-      "HoveredColor": "deepskyblue",
-
-      "LineWidth": 3.0,
-      "ConstructionLineWidth": 2.0,
-      "PointDiameter": 10.0,
-
-      "UseDataDefinedColors": true
-    }
-  }
-  )");
+  "{"
+    "\"ConnectionStyle\": { "
+      "\"ConstructionColor\": \"gray\", "
+      "\"NormalColor\": \"black\", "
+      "\"SelectedColor\": \"gray\", "
+      "\"SelectedHaloColor\": \"deepskyblue\", "
+      "\"HoveredColor\": \"deepskyblue\", "
+      ""
+      "\"LineWidth\": 3.0, "
+      "\"ConstructionLineWidth\": 2.0, "
+      "\"PointDiameter\": 10.0, "
+      ""
+      "\"UseDataDefinedColors\": true  "
+    "}"
+  "}"
+  );
 }
 
 

@@ -24,7 +24,7 @@ public:
   NumberDisplayDataModel();
 
   virtual
-  ~NumberDisplayDataModel() {}
+  ~NumberDisplayDataModel();
 
 public:
 
@@ -70,8 +70,8 @@ public:
 
 private:
 
-  NodeValidationState modelValidationState = NodeValidationState::Warning;
-  QString modelValidationError = QStringLiteral("Missing or incorrect inputs");
+  NodeValidationState modelValidationState;
+  QString modelValidationError;
 
   QLabel * _label;
 };

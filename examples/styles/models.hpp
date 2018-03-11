@@ -22,7 +22,12 @@ public:
 
   NodeDataType
   type() const override
-  { return NodeDataType {"MyNodeData", "My Node Data"}; }
+  {
+    NodeDataType data;
+    data.id = "MyNodeData";
+    data.name = "My Node Data";
+    return data;
+  }
 };
 
 //------------------------------------------------------------------------------

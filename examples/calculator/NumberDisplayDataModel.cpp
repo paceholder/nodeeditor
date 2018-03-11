@@ -4,9 +4,16 @@
 
 NumberDisplayDataModel::
 NumberDisplayDataModel()
-  : _label(new QLabel())
+  : modelValidationState(NodeValidationState::Warning)
+  , modelValidationError(QStringLiteral("Missing or incorrect inputs"))
+  , _label(new QLabel())
 {
   _label->setMargin(3);
+}
+
+NumberDisplayDataModel::~NumberDisplayDataModel()
+{
+
 }
 
 

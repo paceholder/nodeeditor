@@ -22,10 +22,10 @@ class ModuloModel
   Q_OBJECT
 
 public:
-  ModuloModel() = default;
+  ModuloModel();
 
   virtual
-  ~ModuloModel() = default;
+  ~ModuloModel();
 
 public:
 
@@ -106,6 +106,6 @@ private:
 
   std::shared_ptr<IntegerData> _result;
 
-  NodeValidationState modelValidationState = NodeValidationState::Warning;
-  QString modelValidationError = QStringLiteral("Missing or incorrect inputs");
+  NodeValidationState modelValidationState;
+  QString modelValidationError;
 };

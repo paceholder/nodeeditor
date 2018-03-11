@@ -5,6 +5,16 @@
 #include "DecimalData.hpp"
 #include "IntegerData.hpp"
 
+IntegerToDecimalModel::IntegerToDecimalModel()
+{
+
+}
+
+IntegerToDecimalModel::~IntegerToDecimalModel()
+{
+
+}
+
 QJsonObject
 IntegerToDecimalModel::
 save() const

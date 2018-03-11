@@ -24,7 +24,7 @@ class NumberSourceDataModel
   Q_OBJECT
 
 public:
-  NumberSourceDataModel();
+  explicit NumberSourceDataModel();
 
   virtual
   ~NumberSourceDataModel() {}

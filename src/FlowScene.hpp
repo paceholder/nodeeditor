@@ -11,6 +11,7 @@
 #include "QUuidStdHash.hpp"
 #include "Export.hpp"
 #include "DataModelRegistry.hpp"
+#include "make_unique.hpp"
 
 namespace QtNodes
 {
@@ -23,6 +24,9 @@ class Connection;
 class ConnectionGraphicsObject;
 class NodeStyle;
 
+typedef std::shared_ptr<Connection> SharedConnection;
+typedef std::shared_ptr<Node> UniqueNode;
+
 /// Scene holds connections and nodes.
 class NODE_EDITOR_PUBLIC FlowScene
   : public QGraphicsScene
@@ -31,7 +35,8 @@ class NODE_EDITOR_PUBLIC FlowScene
 public:
 
   FlowScene(std::shared_ptr<DataModelRegistry> registry =
-              std::make_shared<DataModelRegistry>());
+    std::shared_ptr<DataModelRegistry>(new DataModelRegistry())
+    /*std::make_shared<DataModelRegistry>()*/);
 
   ~FlowScene();
 
@@ -73,9 +78,9 @@ public:
   QSizeF getNodeSize(const Node& node) const;
 public:
 
-  std::unordered_map<QUuid, std::unique_ptr<Node> > const &nodes() const;
+  std::map<QUuid, UniqueNode > const &nodes() const;
 
-  std::unordered_map<QUuid, std::shared_ptr<Connection> > const &connections() const;
+  std::map<QUuid, SharedConnection > const &connections() const;
 
   std::vector<Node*>selectedNodes() const;
 
@@ -116,11 +121,8 @@ signals:
 
 private:
 
-  using SharedConnection = std::shared_ptr<Connection>;
-  using UniqueNode       = std::unique_ptr<Node>;
-
-  std::unordered_map<QUuid, SharedConnection> _connections;
-  std::unordered_map<QUuid, UniqueNode>       _nodes;
+  std::map<QUuid, SharedConnection> _connections;
+  std::map<QUuid, UniqueNode>        _nodes;
   std::shared_ptr<DataModelRegistry>          _registry;
 };
 

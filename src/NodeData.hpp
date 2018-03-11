@@ -20,7 +20,7 @@ class NODE_EDITOR_PUBLIC NodeData
 {
 public:
 
-  virtual ~NodeData() = default;
+  virtual ~NodeData() {}
 
   virtual bool sameType(NodeData const &nodeData) const
   {

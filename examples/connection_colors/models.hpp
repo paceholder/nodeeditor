@@ -22,8 +22,10 @@ public:
   NodeDataType
   type() const override
   {
-    return NodeDataType {"MyNodeData",
-                         "My Node Data"};
+    NodeDataType data;
+    data.id = "MyNodeData";
+    data.name = "My Node Data";
+    return data;
   }
 };
 
@@ -34,8 +36,10 @@ public:
   NodeDataType
   type() const override
   {
-    return NodeDataType {"SimpleData",
-                         "Simple Data"};
+    NodeDataType data;
+    data.id = "SimpleData";
+    data.name = "Simple Data";
+    return data;
   }
 };
 

@@ -6,6 +6,16 @@
 using QtNodes::DataModelRegistry;
 using QtNodes::NodeDataModel;
 
+DataModelRegistry::DataModelRegistry()
+{
+
+}
+
+DataModelRegistry::~DataModelRegistry()
+{
+
+}
+
 std::unique_ptr<NodeDataModel>
 DataModelRegistry::
 create(QString const &modelName)

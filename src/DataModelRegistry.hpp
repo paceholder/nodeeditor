@@ -19,36 +19,39 @@ class NODE_EDITOR_PUBLIC DataModelRegistry
 
 public:
 
-  using RegistryItemPtr             = std::unique_ptr<NodeDataModel>;
-  using RegisteredModelsMap         = std::unordered_map<QString, RegistryItemPtr>;
-  using RegisteredModelsCategoryMap = std::unordered_map<QString, QString>;
-  using CategoriesSet               = std::set<QString>;
+  typedef std::unique_ptr<NodeDataModel> RegistryItemPtr;
+  typedef UnorderedMap<QString, RegistryItemPtr> RegisteredModelsMap;
+  typedef UnorderedMap<QString, QString> RegisteredModelsCategoryMap;
+  typedef std::set<QString> CategoriesSet;
 
   struct TypeConverterItem
   {
-    RegistryItemPtr Model{};
-    NodeDataType    SourceType{};
-    NodeDataType    DestinationType{};
+    RegistryItemPtr Model;
+    NodeDataType    SourceType;
+    NodeDataType    DestinationType;
   };
 
-  using ConvertingTypesPair = std::pair<QString, QString>; //Source type ID, Destination type ID in this order
-  using TypeConverterItemPtr = std::unique_ptr<TypeConverterItem>;
-  using RegisteredTypeConvertersMap = std::map<ConvertingTypesPair, TypeConverterItemPtr>;
+  typedef std::pair<QString, QString> ConvertingTypesPair; //Source type ID, Destination type ID in this order
+  typedef std::unique_ptr<TypeConverterItem> TypeConverterItemPtr;
+  typedef std::map<ConvertingTypesPair, TypeConverterItemPtr> RegisteredTypeConvertersMap;
 
-  DataModelRegistry()  = default;
-  ~DataModelRegistry() = default;
+  DataModelRegistry();
+  ~DataModelRegistry();
 
-  DataModelRegistry(DataModelRegistry const &) = delete;
-  DataModelRegistry(DataModelRegistry &&)      = default;
-
+private:
+  DataModelRegistry(DataModelRegistry const &);
+public:
+  DataModelRegistry(DataModelRegistry &&);
+private:
   DataModelRegistry&
-  operator=(DataModelRegistry const &) = delete;
+  operator=(DataModelRegistry const &);
+public:
   DataModelRegistry&
-  operator=(DataModelRegistry &&) = default;
+  operator=(DataModelRegistry &&);
 
 public:
 
-  template<typename ModelType, bool TypeConverter = false>
+  template<typename ModelType, bool TypeConverter/* = false*/>
   void
   registerModel(std::unique_ptr<ModelType> uniqueModel = std::make_unique<ModelType>(), QString const &category = "Nodes")
   {
@@ -87,7 +90,7 @@ public:
   }
 
   //Parameter order alias, so a category can be set without forcing to manually pass a model instance
-  template<typename ModelType, bool TypeConverter = false>
+  template<typename ModelType, bool TypeConverter/* = false*/>
   void
   registerModel(QString const &category, std::unique_ptr<ModelType> uniqueModel = std::make_unique<ModelType>())
   {
@@ -112,9 +115,9 @@ public:
 
 private:
 
-  RegisteredModelsCategoryMap _registeredModelsCategory{};
-  CategoriesSet _categories{};
-  RegisteredModelsMap _registeredModels{};
-  RegisteredTypeConvertersMap _registeredTypeConverters{};
+  RegisteredModelsCategoryMap _registeredModelsCategory;
+  CategoriesSet _categories;
+  RegisteredModelsMap _registeredModels;
+  RegisteredTypeConvertersMap _registeredTypeConverters;
 };
 }

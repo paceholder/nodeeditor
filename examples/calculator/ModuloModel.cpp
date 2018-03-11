@@ -4,6 +4,18 @@
 
 #include "IntegerData.hpp"
 
+ModuloModel::ModuloModel()
+    : modelValidationState(NodeValidationState::Warning)
+    , modelValidationError(QStringLiteral("Missing or incorrect inputs"))
+{
+
+}
+
+ModuloModel::~ModuloModel()
+{
+
+}
+
 QJsonObject
 ModuloModel::
 save() const

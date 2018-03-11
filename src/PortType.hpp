@@ -8,16 +8,17 @@
 namespace QtNodes
 {
 
-enum class PortType
+enum PortType
 {
   None,
   In,
   Out
 };
 
+
 static const int INVALID = -1;
 
-using PortIndex = int;
+typedef int PortIndex;
 
 struct Port
 {

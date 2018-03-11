@@ -46,9 +46,11 @@ public:
              Node& nodeOut,
              PortIndex portIndexOut);
 
-  Connection(const Connection&) = delete;
-  Connection operator=(const Connection&) = delete;
+private:
+  Connection(const Connection&);
+  Connection operator=(const Connection&);
 
+public:
   ~Connection();
 
 public:
@@ -126,8 +128,8 @@ private:
 
 private:
 
-  Node* _outNode = nullptr;
-  Node* _inNode  = nullptr;
+  Node* _outNode;
+  Node* _inNode;
 
   PortIndex _outPortIndex;
   PortIndex _inPortIndex;

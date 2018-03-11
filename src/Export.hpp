@@ -49,3 +49,12 @@
 #    error "Choose whether to link against shared or static."
 #  endif
 #endif
+
+//
+#if _MSC_VER <= 1600
+#include <map>
+#define UnorderedMap std::map
+#else
+#include <unordered_map>
+#define UnorderedMap std::unordered_map
+#endif

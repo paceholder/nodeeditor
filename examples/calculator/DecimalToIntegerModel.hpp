@@ -22,10 +22,10 @@ class DecimalToIntegerModel
   Q_OBJECT
 
 public:
-  DecimalToIntegerModel() = default;
+  DecimalToIntegerModel();
 
   virtual
-  ~DecimalToIntegerModel() = default;
+  ~DecimalToIntegerModel();
 
 public:
 

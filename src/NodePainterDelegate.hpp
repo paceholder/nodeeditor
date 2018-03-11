@@ -15,7 +15,7 @@ class NODE_EDITOR_PUBLIC NodePainterDelegate
 public:
 
   virtual
-  ~NodePainterDelegate() = default;
+  ~NodePainterDelegate() {}
 
   virtual void
   paint(QPainter* painter,

@@ -18,14 +18,14 @@ registerDataModels()
 {
   auto ret = std::make_shared<DataModelRegistry>();
 
-  ret->registerModel<NaiveDataModel>();
+  ret->registerModel<NaiveDataModel, false>(std::make_unique<NaiveDataModel>());
 
   /*
      We could have more models registered.
      All of them become items in the context meny of the scene.
 
-     ret->registerModel<AnotherDataModel>();
-     ret->registerModel<OneMoreDataModel>();
+     ret->registerModel<AnotherDataModel, false>(std::make_unique<NaiveDataModel>());
+     ret->registerModel<OneMoreDataModel, false>(std::make_unique<NaiveDataModel>());
 
    */
 
@@ -38,13 +38,11 @@ void
 setStyle()
 {
   ConnectionStyle::setConnectionStyle(
-    R"(
-  {
-    "ConnectionStyle": {
-      "UseDataDefinedColors": true
-    }
-  }
-  )");
+   "{"
+    "\"ConnectionStyle\": { "
+      "UseDataDefinedColors\": true "
+    "}"
+  "}");
 }
 
 

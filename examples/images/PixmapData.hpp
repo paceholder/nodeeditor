@@ -22,8 +22,10 @@ public:
   NodeDataType
   type() const override
   {
-    //       id      name
-    return {"pixmap", "P"};
+    NodeDataType data;
+    data.id = "pixmap";
+    data.name = "p";
+    return data;
   }
 
   QPixmap

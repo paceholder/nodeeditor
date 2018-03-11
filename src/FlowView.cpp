@@ -27,10 +27,28 @@ using QtNodes::FlowView;
 using QtNodes::FlowScene;
 
 FlowView::
-FlowView(FlowScene *scene)
-  : QGraphicsView(scene)
-  , _clickPos(QPointF())
-  , _scene(scene)
+FlowView(QWidget *parent)
+  : QGraphicsView(parent)
+  , _clearSelectionAction(Q_NULLPTR)
+  , _deleteSelectionAction(Q_NULLPTR)
+  , _scene(Q_NULLPTR)
+{
+    init();
+}
+
+
+FlowView::
+FlowView(FlowScene *scene, QWidget *parent)
+  : QGraphicsView(parent)
+  , _clearSelectionAction(Q_NULLPTR)
+  , _deleteSelectionAction(Q_NULLPTR)
+  , _scene(Q_NULLPTR)
+{
+    init();
+    setScene(scene);
+}
+
+void FlowView::init()
 {
   setDragMode(QGraphicsView::ScrollHandDrag);
   setRenderHint(QPainter::Antialiasing);
@@ -50,16 +68,6 @@ FlowView(FlowScene *scene)
 
   //setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
 
-  // setup actions
-  _clearSelectionAction = new QAction(QStringLiteral("Clear Selection"), this);
-  _clearSelectionAction->setShortcut(Qt::Key_Escape);
-  connect(_clearSelectionAction, &QAction::triggered, _scene, &QGraphicsScene::clearSelection);
-  addAction(_clearSelectionAction);
-
-  _deleteSelectionAction = new QAction(QStringLiteral("Delete Selection"), this);
-  _deleteSelectionAction->setShortcut(Qt::Key_Delete);
-  connect(_deleteSelectionAction, &QAction::triggered, this, &FlowView::deleteSelectedNodes);
-  addAction(_deleteSelectionAction);
 }
 
 
@@ -80,6 +88,27 @@ deleteSelectionAction() const
 
 
 void
+FlowView::setScene(FlowScene *scene)
+{
+  _scene = scene;
+  QGraphicsView::setScene(_scene);
+
+  // setup actions
+  delete _clearSelectionAction;
+  _clearSelectionAction = new QAction(QStringLiteral("Clear Selection"), this);
+  _clearSelectionAction->setShortcut(Qt::Key_Escape);
+  connect(_clearSelectionAction, &QAction::triggered, _scene, &QGraphicsScene::clearSelection);
+  addAction(_clearSelectionAction);
+
+  delete _deleteSelectionAction;
+  _deleteSelectionAction = new QAction(QStringLiteral("Delete Selection"), this);
+  _deleteSelectionAction->setShortcut(Qt::Key_Delete);
+  connect(_deleteSelectionAction, &QAction::triggered, this, &FlowView::deleteSelectedNodes);
+  addAction(_deleteSelectionAction);
+}
+
+
+void
 FlowView::
 contextMenuEvent(QContextMenuEvent *event)
 {
@@ -87,6 +116,10 @@ contextMenuEvent(QContextMenuEvent *event)
   {
     QGraphicsView::contextMenuEvent(event);
     return;
+  }
+
+  if (!_scene) {
+      return;
   }
 
   QMenu modelMenu;
@@ -114,7 +147,7 @@ contextMenuEvent(QContextMenuEvent *event)
   modelMenu.addAction(treeViewAction);
 
   QMap<QString, QTreeWidgetItem*> topLevelItems;
-  for (auto const &cat : _scene->registry().categories())
+  foreach (auto const &cat , _scene->registry().categories())
   {
     auto item = new QTreeWidgetItem(treeView);
     item->setText(0, cat);
@@ -122,7 +155,7 @@ contextMenuEvent(QContextMenuEvent *event)
     topLevelItems[cat] = item;
   }
 
-  for (auto const &assoc : _scene->registry().registeredModelsCategoryAssociation())
+  foreach (auto const &assoc , _scene->registry().registeredModelsCategoryAssociation())
   {
     auto parent = topLevelItems[assoc.second];
     auto item   = new QTreeWidgetItem(parent);
@@ -164,7 +197,7 @@ contextMenuEvent(QContextMenuEvent *event)
   //Setup filtering
   connect(txtBox, &QLineEdit::textChanged, [&](const QString &text)
   {
-    for (auto& topLvlItem : topLevelItems)
+    foreach (auto& topLvlItem , topLevelItems)
     {
       for (int i = 0; i < topLvlItem->childCount(); ++i)
       {
@@ -241,14 +274,17 @@ void
 FlowView::
 deleteSelectedNodes()
 {
+    if (!_scene) {
+        return;
+    }
   // delete the nodes, this will delete many of the connections
-  for (QGraphicsItem * item : _scene->selectedItems())
+  foreach (QGraphicsItem * item , _scene->selectedItems())
   {
     if (auto n = qgraphicsitem_cast<NodeGraphicsObject*>(item))
       _scene->removeNode(n->node());
   }
 
-  for (QGraphicsItem * item : _scene->selectedItems())
+  foreach (QGraphicsItem * item , _scene->selectedItems())
   {
     if (auto c = qgraphicsitem_cast<ConnectionGraphicsObject*>(item))
       _scene->deleteConnection(c->connection());
@@ -308,6 +344,9 @@ FlowView::
 mouseMoveEvent(QMouseEvent *event)
 {
   QGraphicsView::mouseMoveEvent(event);
+  if (!_scene) {
+      return;
+  }
   if (scene()->mouseGrabberItem() == nullptr && event->buttons() == Qt::LeftButton)
   {
     // Make sure shift is not being pressed
@@ -325,6 +364,10 @@ FlowView::
 drawBackground(QPainter* painter, const QRectF& r)
 {
   QGraphicsView::drawBackground(painter, r);
+
+    if (!_scene) {
+        return;
+    }
 
   auto drawGrid =
     [&](double gridStep)
@@ -376,8 +419,11 @@ void
 FlowView::
 showEvent(QShowEvent *event)
 {
-  _scene->setSceneRect(this->rect());
-  QGraphicsView::showEvent(event);
+    if (!_scene) {
+        return;
+    }
+    _scene->setSceneRect(this->rect());
+    QGraphicsView::showEvent(event);
 }
 
 

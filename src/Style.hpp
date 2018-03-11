@@ -7,7 +7,7 @@ class Style
 public:
 
   virtual
-  ~Style() = default;
+  ~Style() {}
 
 private:
 

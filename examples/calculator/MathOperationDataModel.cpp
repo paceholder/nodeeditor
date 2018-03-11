@@ -2,6 +2,18 @@
 
 #include "DecimalData.hpp"
 
+MathOperationDataModel::MathOperationDataModel()
+    : modelValidationState(NodeValidationState::Warning)
+    , modelValidationError(QString("Missing or incorrect inputs"))
+{
+
+}
+
+MathOperationDataModel::~MathOperationDataModel()
+{
+
+}
+
 unsigned int
 MathOperationDataModel::
 nPorts(PortType portType) const

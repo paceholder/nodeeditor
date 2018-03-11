@@ -24,9 +24,10 @@ class MathOperationDataModel : public NodeDataModel
   Q_OBJECT
 
 public:
+    MathOperationDataModel();
 
   virtual
-  ~MathOperationDataModel() {}
+  ~MathOperationDataModel();
 
 public:
 
@@ -64,6 +65,6 @@ protected:
 
   std::shared_ptr<DecimalData> _result;
 
-  NodeValidationState modelValidationState = NodeValidationState::Warning;
-  QString modelValidationError = QString("Missing or incorrect inputs");
+  NodeValidationState modelValidationState;
+  QString modelValidationError;
 };
