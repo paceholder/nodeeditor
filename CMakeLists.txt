@@ -21,8 +21,6 @@ qt5_add_resources(RESOURCES ./resources/resources.qrc)
 # We'll have to manually specify some files
 set(CMAKE_AUTOMOC ON)
 
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-
 set(CPP_SOURCE_FILES
   src/Connection.cpp
   src/ConnectionBlurEffect.cpp
@@ -81,7 +79,6 @@ target_compile_definitions(nodes
 )
 
 target_compile_options(nodes
-  PUBLIC ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}
   PRIVATE
     $<$<CXX_COMPILER_ID:MSVC>:/W4 /EHsc>
     $<$<CXX_COMPILER_ID:GNU>:-Wall -Wextra>
