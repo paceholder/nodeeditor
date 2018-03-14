@@ -13,8 +13,8 @@ matrix:
             - llvm-toolchain-precise-3.8
           packages:
             - clang-3.8
-              # VERY IMPORTANT TO INSTALL g++5! Otherwise will not compile with clang
-              # clang somehow uses std lib of g++, we should have fresh stdlib for using C++14
+              # VERY IMPORTANT TO INSTALL g++-5! clang doesn't come with a standard library, so
+              # we need to install g++-5 for a C++14 standard library.
             - g++-5
 
     - os: linux
@@ -31,7 +31,7 @@ matrix:
     - os: osx
       osx_image: xcode8.3
       compiler: clang
-      env: CMAKE_PREFIX_PATH=/usr/local/Cellar/qt/5.10.0_1:$CMAKE_PREFIX_PATH
+      env: CMAKE_PREFIX_PATH=/usr/local/Cellar/qt/5.10.1:$CMAKE_PREFIX_PATH
 
 git:
   depth: 10
@@ -47,7 +47,7 @@ before_install:
 script:
   - mkdir build
   - cd build
-  - cmake .. && make -j
+  - cmake -DCMAKE_VERBOSE_MAKEFILE=$VERBOSE_BUILD .. && make -j
 
 notifications:
   email: false
