@@ -1,6 +1,5 @@
 #include "FlowScene.hpp"
 
-#include <iostream>
 #include <stdexcept>
 
 #include <QtWidgets/QGraphicsSceneMoveEvent>
@@ -33,9 +32,9 @@ using QtNodes::NodeGraphicsObject;
 using QtNodes::Connection;
 using QtNodes::DataModelRegistry;
 using QtNodes::NodeDataModel;
-//using QtNodes::Properties;
 using QtNodes::PortType;
 using QtNodes::PortIndex;
+using QtNodes::TypeConverter;
 
 FlowScene::
 FlowScene(std::shared_ptr<DataModelRegistry> registry)
@@ -79,14 +78,15 @@ FlowScene::
 createConnection(Node& nodeIn,
                  PortIndex portIndexIn,
                  Node& nodeOut,
-                 PortIndex portIndexOut)
+                 PortIndex portIndexOut,
+                 TypeConverter const &converter)
 {
-
   auto connection =
     std::make_shared<Connection>(nodeIn,
                                  portIndexIn,
                                  nodeOut,
-                                 portIndexOut);
+                                 portIndexOut,
+                                 converter);
 
   auto cgo = std::make_unique<ConnectionGraphicsObject>(*this, *connection);
 
@@ -120,7 +120,36 @@ restoreConnection(QJsonObject const &connectionJson)
   auto nodeIn  = _nodes[nodeInId].get();
   auto nodeOut = _nodes[nodeOutId].get();
 
-  return createConnection(*nodeIn, portIndexIn, *nodeOut, portIndexOut);
+  auto getConverter = [&]()
+  {
+    QJsonValue converterVal = connectionJson["converter"];
+
+    if (!converterVal.isUndefined())
+    {
+      QJsonObject converterJson = converterVal.toObject();
+
+      NodeDataType inType { converterJson["in"].toObject()["id"].toString(),
+                            converterJson["in"].toObject()["name"].toString() };
+
+      NodeDataType outType { converterJson["out"].toObject()["id"].toString(),
+                             converterJson["out"].toObject()["name"].toString() };
+
+      auto converter  =
+        registry().getTypeConverter(outType, inType);
+
+      if (converter)
+        return converter;
+    }
+
+    return TypeConverter{};
+  };
+
+  std::shared_ptr<Connection> connection =
+    createConnection(*nodeIn, portIndexIn,
+                     *nodeOut, portIndexOut,
+                     getConverter());
+
+  return connection;
 }
 
 
@@ -252,7 +281,7 @@ iterateOverNodeDataDependentOrder(std::function<void(NodeDataModel*)> visitor)
   auto isNodeLeaf =
     [](Node const &node, NodeDataModel const &model)
     {
-      for (size_t i = 0; i < model.nPorts(PortType::In); ++i)
+      for (unsigned int i = 0; i < model.nPorts(PortType::In); ++i)
       {
         auto connections = node.nodeState().connections(PortType::In, i);
         if (!connections.empty())

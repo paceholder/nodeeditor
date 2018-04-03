@@ -13,6 +13,7 @@ using QtNodes::FlowScene;
 using QtNodes::Node;
 using QtNodes::Connection;
 using QtNodes::NodeDataModel;
+using QtNodes::TypeConverter;
 
 
 NodeConnectionInteraction::
@@ -25,10 +26,8 @@ NodeConnectionInteraction(Node& node, Connection& connection, FlowScene& scene)
 
 bool
 NodeConnectionInteraction::
-canConnect(PortIndex &portIndex, bool& typeConversionNeeded, std::unique_ptr<NodeDataModel> & converterModel) const
+canConnect(PortIndex &portIndex, TypeConverter & converter) const
 {
-  typeConversionNeeded = false;
-
   // 1) Connection requires a port
 
   PortType requiredPort = connectionRequiredPort();
@@ -65,7 +64,8 @@ canConnect(PortIndex &portIndex, bool& typeConversionNeeded, std::unique_ptr<Nod
 
   // 4) Connection type equals node port type, or there is a registered type conversion that can translate between the two
 
-  auto connectionDataType = _connection->dataType();
+  auto connectionDataType =
+    _connection->dataType(oppositePort(requiredPort));
 
   auto const   &modelTarget = _node->nodeDataModel();
   NodeDataType candidateNodeDataType = modelTarget->dataType(requiredPort, portIndex);
@@ -74,9 +74,14 @@ canConnect(PortIndex &portIndex, bool& typeConversionNeeded, std::unique_ptr<Nod
   {
     if (requiredPort == PortType::In)
     {
-      return typeConversionNeeded = (converterModel = _scene->registry().getTypeConverter(connectionDataType.id, candidateNodeDataType.id)) != nullptr;
+      converter = _scene->registry().getTypeConverter(connectionDataType, candidateNodeDataType);
     }
-    return typeConversionNeeded = (converterModel = _scene->registry().getTypeConverter(candidateNodeDataType.id, connectionDataType.id)) != nullptr;
+    else if (requiredPort == PortType::Out)
+    {
+      converter = _scene->registry().getTypeConverter(candidateNodeDataType , connectionDataType);
+    }
+
+    return (converter != nullptr);
   }
 
   return true;
@@ -89,53 +94,22 @@ tryConnect() const
 {
   // 1) Check conditions from 'canConnect'
   PortIndex portIndex = INVALID;
-  bool typeConversionNeeded = false; 
-  std::unique_ptr<NodeDataModel> typeConverterModel;
 
-  if (!canConnect(portIndex, typeConversionNeeded, typeConverterModel))
+  TypeConverter converter;
+
+  if (!canConnect(portIndex, converter))
   {
     return false;
   }
 
-  /// 1.5) If the connection is possible but a type conversion is needed, add a converter node to the scene, and connect it properly
-  if (typeConversionNeeded)
+  // 1.5) If the connection is possible but a type conversion is needed,
+  //      assign a convertor to connection
+  if (converter)
   {
-    //Determining port types
-    PortType requiredPort = connectionRequiredPort();
-    PortType connectedPort = requiredPort == PortType::Out ? PortType::In : PortType::Out;
-
-    //Get the node and port from where the connection starts
-    auto outNode = _connection->getNode(connectedPort);
-    auto outNodePortIndex = _connection->getPortIndex(connectedPort);
-
-    //Creating the converter node
-    Node& converterNode = _scene->createNode(std::move(typeConverterModel));
-    
-    //Calculate and set the converter node's position
-    auto converterNodePos = NodeGeometry::calculateNodePositionBetweenNodePorts(portIndex, requiredPort, _node, outNodePortIndex, connectedPort, outNode, converterNode);
-    converterNode.nodeGraphicsObject().setPos(converterNodePos);
-
-    //Connecting the converter node to the two nodes trhat originally supposed to be connected.
-    //The connection order is different based on if the users connection was started from an input port, or an output port.
-    if (requiredPort == PortType::In)
-    {
-      _scene->createConnection(converterNode, 0, *outNode, outNodePortIndex);
-      _scene->createConnection(*_node, portIndex, converterNode, 0);
-    }
-    else
-    {
-      _scene->createConnection(converterNode, 0, *_node, portIndex);
-      _scene->createConnection(*outNode, outNodePortIndex, converterNode, 0);
-    }
-
-    //Delete the users connection, we already replaced it.
-    _scene->deleteConnection(*_connection);
-
-    return true;
+    _connection->setTypeConverter(converter);
   }
 
   // 2) Assign node to required port in Connection
-
   PortType requiredPort = connectionRequiredPort();
   _node->nodeState().setConnection(requiredPort,
                                    portIndex,

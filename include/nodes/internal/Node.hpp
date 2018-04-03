@@ -101,7 +101,7 @@ private:
 
   // addressing
 
-  QUuid _id;
+  QUuid _uid;
 
   // data
 

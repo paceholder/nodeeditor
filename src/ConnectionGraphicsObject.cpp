@@ -180,7 +180,7 @@ mouseMoveEvent(QGraphicsSceneMouseEvent* event)
   if (node)
   {
     node->reactToPossibleConnection(state.requiredPort(),
-                                    _connection.dataType(),
+                                    _connection.dataType(oppositePort(state.requiredPort())),
                                     event->scenePos());
   }
 

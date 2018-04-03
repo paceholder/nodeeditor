@@ -24,7 +24,7 @@ using QtNodes::PortType;
 
 Node::
 Node(std::unique_ptr<NodeDataModel> && dataModel)
-  : _id(QUuid::createUuid())
+  : _uid(QUuid::createUuid())
   , _nodeDataModel(std::move(dataModel))
   , _nodeState(_nodeDataModel)
   , _nodeGeometry(_nodeDataModel)
@@ -47,7 +47,7 @@ save() const
 {
   QJsonObject nodeJson;
 
-  nodeJson["id"] = _id.toString();
+  nodeJson["id"] = _uid.toString();
 
   nodeJson["model"] = _nodeDataModel->save();
 
@@ -64,7 +64,7 @@ void
 Node::
 restore(QJsonObject const& json)
 {
-  _id = QUuid(json["id"].toString());
+  _uid = QUuid(json["id"].toString());
 
   QJsonObject positionJson = json["position"].toObject();
   QPointF     point(positionJson["x"].toDouble(),
@@ -79,7 +79,7 @@ QUuid
 Node::
 id() const
 {
-  return _id;
+  return _uid;
 }
 
 

@@ -5,6 +5,8 @@
 
 using QtNodes::DataModelRegistry;
 using QtNodes::NodeDataModel;
+using QtNodes::NodeDataType;
+using QtNodes::TypeConverter;
 
 std::unique_ptr<NodeDataModel>
 DataModelRegistry::
@@ -45,16 +47,19 @@ categories() const
 }
 
 
-std::unique_ptr<NodeDataModel>
+TypeConverter
 DataModelRegistry::
-getTypeConverter(QString const &sourceTypeID, QString const &destTypeID) const
+getTypeConverter(NodeDataType const & d1,
+                 NodeDataType const & d2) const
 {
-  auto typeConverterKey = std::make_pair(sourceTypeID, destTypeID);
-  auto converter = _registeredTypeConverters.find(typeConverterKey);
+  TypeConverterId converterId = std::make_pair(d1, d2);
 
-  if (converter != _registeredTypeConverters.end())
+  auto it = _registeredTypeConverters.find(converterId);
+
+  if (it != _registeredTypeConverters.end())
   {
-    return converter->second->Model->clone();
+    return it->second;
   }
-  return nullptr;
+
+  return TypeConverter{};
 }

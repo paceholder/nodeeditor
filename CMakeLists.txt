@@ -76,11 +76,12 @@ target_compile_definitions(nodes
     NODE_EDITOR_SHARED
   PRIVATE
     NODE_EDITOR_EXPORTS
+    #NODE_DEBUG_DRAWING
 )
 
 target_compile_options(nodes
   PRIVATE
-    $<$<CXX_COMPILER_ID:MSVC>:/W4 /EHsc>
+    $<$<CXX_COMPILER_ID:MSVC>:/W4 /wd4127 /EHsc>
     $<$<CXX_COMPILER_ID:GNU>:-Wall -Wextra>
     $<$<CXX_COMPILER_ID:Clang>:-Wall -Wextra>
 )

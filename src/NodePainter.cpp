@@ -123,9 +123,8 @@ drawConnectionPoints(QPainter* painter,
     {
       size_t n = state.getEntries(portType).size();
 
-      for (size_t i = 0; i < n; ++i)
+      for (unsigned int i = 0; i < n; ++i)
       {
-
         QPointF p = geom.portScenePosition(i, portType);
 
         auto const & dataType = model->dataType(portType, i);
@@ -147,11 +146,11 @@ drawConnectionPoints(QPainter* painter,
           {
             if (portType == PortType::In)
             {
-              typeConvertable = scene.registry().getTypeConverter(state.reactingDataType().id, dataType.id) != nullptr;
+              typeConvertable = scene.registry().getTypeConverter(state.reactingDataType(), dataType) != nullptr;
             }
             else
             {
-              typeConvertable = scene.registry().getTypeConverter(dataType.id, state.reactingDataType().id) != nullptr;
+              typeConvertable = scene.registry().getTypeConverter(dataType, state.reactingDataType()) != nullptr;
             }
           }
 

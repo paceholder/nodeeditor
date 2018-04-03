@@ -1,5 +1,6 @@
 <RCC version="1.0">
     <qresource>
         <file>DefaultStyle.json</file>
+        <file>convert.png</file>
     </qresource>
 </RCC>
