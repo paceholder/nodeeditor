@@ -1,6 +1,7 @@
 #include "NodeDataModel.hpp"
 
 #include "StyleCollection.hpp"
+#include <iostream>
 
 using QtNodes::NodeDataModel;
 using QtNodes::NodeStyle;
@@ -38,4 +39,16 @@ NodeDataModel::
 setNodeStyle(NodeStyle const& style)
 {
   _nodeStyle = style;
+}
+
+
+void NodeDataModel::setToolTipText(QString text)
+{
+	_toolTipText = text; 
+	emit setToolTipTextSignal(text);
+}
+
+QString NodeDataModel::toolTipText()
+{
+	return _toolTipText; 
 }

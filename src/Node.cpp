@@ -35,6 +35,7 @@ Node(std::unique_ptr<NodeDataModel> && dataModel)
   // propagate data: model => node
   connect(_nodeDataModel.get(), &NodeDataModel::dataUpdated,
           this, &Node::onDataUpdated);
+		
 }
 
 
@@ -135,6 +136,8 @@ setGraphicsObject(std::unique_ptr<NodeGraphicsObject>&& graphics)
   _nodeGraphicsObject = std::move(graphics);
 
   _nodeGeometry.recalculateSize();
+  
+  nodeGraphicsObject().setToolTip(_nodeDataModel->toolTipText());
 }
 
 

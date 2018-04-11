@@ -48,8 +48,12 @@ FlowView(QWidget *parent)
   setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
 
   setCacheMode(QGraphicsView::CacheBackground);
-
-  //setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
+  
+  setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
+  
+  setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+ 
+  
 }
 
 
@@ -85,7 +89,7 @@ FlowView::setScene(FlowScene *scene)
 
   // setup actions
   delete _clearSelectionAction;
-  _clearSelectionAction = new QAction(QStringLiteral("Clear Selection"), this);
+   _clearSelectionAction = new QAction(QStringLiteral("Clear Selection"), this);
   _clearSelectionAction->setShortcut(Qt::Key_Escape);
   connect(_clearSelectionAction, &QAction::triggered, _scene, &QGraphicsScene::clearSelection);
   addAction(_clearSelectionAction);
@@ -93,8 +97,27 @@ FlowView::setScene(FlowScene *scene)
   delete _deleteSelectionAction;
   _deleteSelectionAction = new QAction(QStringLiteral("Delete Selection"), this);
   _deleteSelectionAction->setShortcut(Qt::Key_Delete);
+  _deleteSelectionAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
   connect(_deleteSelectionAction, &QAction::triggered, this, &FlowView::deleteSelectedNodes);
   addAction(_deleteSelectionAction);
+  
+  _duplicateSelectionAction = new QAction(QStringLiteral("Duplicate Selection"), this);
+  _duplicateSelectionAction->setShortcut(QKeySequence(tr("Ctrl+D")));
+  _duplicateSelectionAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+  connect(_duplicateSelectionAction, &QAction::triggered, this, &FlowView::duplicateSelectedNode);
+  addAction(_duplicateSelectionAction);
+  
+  _undoAction = new QAction(QStringLiteral("Undo"), this);
+  _undoAction->setShortcut(QKeySequence(tr("Ctrl+Z")));
+  _undoAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+  connect(_undoAction, &QAction::triggered, _scene, &FlowScene::Undo);
+  addAction(_undoAction);
+  
+  _redoAction = new QAction(QStringLiteral("Redo"), this);
+  _redoAction->setShortcut(QKeySequence(tr("Ctrl+Y")));
+  _redoAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+  connect(_redoAction, &QAction::triggered, _scene, &FlowScene::Redo);
+  addAction(_redoAction);
 }
 
 
@@ -151,7 +174,7 @@ contextMenuEvent(QContextMenuEvent *event)
 
   treeView->expandAll();
 
-  connect(treeView, &QTreeWidget::itemClicked, [&](QTreeWidgetItem *item, int)
+  connect(treeView, &QTreeWidget::itemActivated, [&](QTreeWidgetItem *item, int)
   {
     QString modelName = item->data(0, Qt::UserRole).toString();
 
@@ -171,6 +194,8 @@ contextMenuEvent(QContextMenuEvent *event)
       QPointF posView = this->mapToScene(pos);
 
       node.nodeGraphicsObject().setPos(posView);
+	  
+	  _scene->UpdateHistory();
     }
     else
     {
@@ -260,18 +285,139 @@ void
 FlowView::
 deleteSelectedNodes()
 {
+  //std::cout << "deleteSelectedNodes" << std::endl; 
   // delete the nodes, this will delete many of the connections
-  for (QGraphicsItem * item : _scene->selectedItems())
+  std::vector<Node*> nodeItems = _scene->selectedNodes();
+  for(int i = 0; i < nodeItems.size(); i++)
   {
-    if (auto n = qgraphicsitem_cast<NodeGraphicsObject*>(item))
-      _scene->removeNode(n->node());
+	Node* item = nodeItems[i]; 
+	if(item)
+	{
+		_scene->removeNode(*item);
+	}
   }
 
   for (QGraphicsItem * item : _scene->selectedItems())
   {
-    if (auto c = qgraphicsitem_cast<ConnectionGraphicsObject*>(item))
-      _scene->deleteConnection(c->connection());
+	if(item)
+	{
+		if (auto c = qgraphicsitem_cast<ConnectionGraphicsObject*>(item))
+			_scene->deleteConnection(c->connection());
+	}
   }
+  
+  _scene->UpdateHistory(); 
+}
+
+
+void FlowView::duplicateSelectedNode()
+{
+	//Get Bounds of all the selected items 
+	float minx = 10000000000;
+	float miny = 10000000000;
+	float maxx = -1000000000;
+	float maxy = -1000000000;
+	for (QGraphicsItem * item : _scene->selectedItems())
+	{
+		if (auto n = qgraphicsitem_cast<NodeGraphicsObject*>(item))
+		{
+			QPointF pos = n->pos();
+			if(pos.x() < minx) minx = pos.x();
+			if(pos.y() < miny) miny = pos.y();
+			if(pos.x() > maxx) maxx = pos.x();
+			if(pos.y() > maxy) maxy = pos.y();
+		}
+	}
+	//compute centroid
+	float centroidX = (maxx - minx) / 2.0 + minx;
+	float centroidY = (maxy - miny) / 2.0 + miny;
+	QPointF centroid(centroidX, centroidY);
+	
+	//create nodes
+	std::vector<Node*> createdNodes;
+	std::vector<Node*> couterpartNode; 
+	std::vector<QJsonObject> nodeData;
+	for (QGraphicsItem * item : _scene->selectedItems())
+	{
+		if (auto n = qgraphicsitem_cast<NodeGraphicsObject*>(item))
+		{
+			QString modelName = n->node().nodeDataModel()->name(); 
+			auto type = _scene->registry().create(modelName);
+			auto& typeRef = type;
+			
+			if (typeRef)
+			{
+			  auto& node = _scene->createNode(std::move(typeRef));
+			  node.nodeDataModel()->restore(n->node().nodeDataModel()->save());
+			  createdNodes.push_back(&node);
+			  couterpartNode.push_back(&(n->node()));
+			  
+			  QPoint viewPointMouse = this->mapFromGlobal(QCursor::pos());
+			  QPointF posViewMouse = this->mapToScene(viewPointMouse);
+
+			  QPointF pos = posViewMouse + (n->pos() - centroid);
+			  
+			  node.nodeGraphicsObject().setPos(pos);
+			}
+			else
+			{
+			  qDebug() << "Model not found";
+			}
+		}
+	}
+	
+	//create connections 
+	std::vector<std::shared_ptr<Connection> > createdConnections; 
+	for (QGraphicsItem * item : _scene->selectedItems())
+	{
+	    if (auto c = qgraphicsitem_cast<ConnectionGraphicsObject*>(item))
+		{
+			//if(c->connection().connectionState().)
+			
+			Node* nodeIn = c->connection().getNode(PortType::In); 
+			PortIndex portIndexIn = c->connection().getPortIndex(PortType::In); 
+			Node* nodeOut = c->connection().getNode(PortType::Out); 
+			PortIndex portIndexOut = c->connection().getPortIndex(PortType::Out); 
+			
+			//find index of node in couterpartNode Array
+			int j = -1;
+			for(j = 0; j < couterpartNode.size(); j++)
+			{
+				if(couterpartNode[j] == nodeIn)
+					break;
+			}
+			
+			int k = -1;
+			for(k = 0; k < couterpartNode.size(); k++)
+			{
+				if(couterpartNode[k] == nodeOut)
+					break;
+			}
+			
+			if(j >=0 && k>=0 && j < couterpartNode.size() && k < couterpartNode.size())
+			{
+				auto connection = _scene->createConnection(*createdNodes[j], portIndexIn, *createdNodes[k], portIndexOut);
+				auto& connectionRef = connection; 
+				createdConnections.push_back(connection);
+			}
+		}
+	}
+
+	
+	//reset selection to nodes created
+	_scene->clearSelection();
+	for(int i = 0; i < createdNodes.size(); i++)
+	{
+		createdNodes[i]->nodeGraphicsObject().setSelected(true);
+	}
+	for(int i = 0; i < createdConnections.size(); i++)
+	{
+		createdConnections[i]->getConnectionGraphicsObject().setSelected(true);
+	}
+	
+	
+	if(createdNodes.size() > 0)
+		_scene->UpdateHistory();
 }
 
 
@@ -284,7 +430,6 @@ keyPressEvent(QKeyEvent *event)
     case Qt::Key_Shift:
       setDragMode(QGraphicsView::RubberBandDrag);
       break;
-
     default:
       break;
   }
@@ -357,6 +502,9 @@ drawBackground(QPainter* painter, const QRectF& r)
       double bottom = std::floor(tl.y() / gridStep - 0.5);
       double top    = std::floor (br.y() / gridStep + 1.0);
 
+	  if(right - left > 100)
+		  return; 
+	  
       // vertical lines
       for (int xi = int(left); xi <= int(right); ++xi)
       {

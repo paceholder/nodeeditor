@@ -43,12 +43,12 @@ NodeGraphicsObject(FlowScene &scene,
   auto const &nodeStyle = node.nodeDataModel()->nodeStyle();
 
   {
-    auto effect = new QGraphicsDropShadowEffect;
-    effect->setOffset(4, 4);
-    effect->setBlurRadius(20);
-    effect->setColor(nodeStyle.ShadowColor);
-
-    setGraphicsEffect(effect);
+    //auto effect = new QGraphicsDropShadowEffect;
+    //effect->setOffset(4, 4);
+    //effect->setBlurRadius(0);
+    //effect->setColor(nodeStyle.ShadowColor);
+	//auto effect = new QGraphicsColorizeEffect  ; 
+    //setGraphicsEffect(effect);
   }
 
   setOpacity(nodeStyle.Opacity);
@@ -66,6 +66,10 @@ NodeGraphicsObject(FlowScene &scene,
   connect(this, &QGraphicsObject::xChanged, this, onMoveSlot);
   connect(this, &QGraphicsObject::yChanged, this, onMoveSlot);
 
+
+  connect(_node.nodeDataModel(), &NodeDataModel::setToolTipTextSignal, this, [this](QString toolTipText ){
+		setToolTip(toolTipText);
+  });
 }
 
 
@@ -312,6 +316,8 @@ mouseMoveEvent(QGraphicsSceneMouseEvent * event)
       moveConnections();
 
     event->ignore();
+	
+	
   }
 
   QRectF r = scene()->sceneRect();
@@ -331,6 +337,8 @@ mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
   state.setResizing(false);
 
   QGraphicsObject::mouseReleaseEvent(event);
+  
+  _scene.nodeMoveFinished(_node, pos());
 
   // position connections precisely after fast node move
   moveConnections();

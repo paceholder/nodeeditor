@@ -23,6 +23,11 @@ class Connection;
 class ConnectionGraphicsObject;
 class NodeStyle;
 
+struct SceneHistory
+{
+	QByteArray data;
+};
+
 /// Scene holds connections and nodes.
 class NODE_EDITOR_PUBLIC FlowScene
   : public QGraphicsScene
@@ -90,6 +95,14 @@ public:
   QByteArray saveToMemory() const;
 
   void loadFromMemory(const QByteArray& data);
+  
+  void Undo();
+  
+  void Redo();
+  
+  void UpdateHistory();
+  
+  void ResetHistory();
 
 signals:
 
@@ -101,6 +114,8 @@ signals:
   void connectionDeleted(Connection &c);
 
   void nodeMoved(Node& n, const QPointF& newLocation);
+  
+  void nodeMoveFinished(Node& n, const QPointF& newLocation);
 
   void nodeDoubleClicked(Node& n);
 
@@ -122,6 +137,10 @@ private:
   std::unordered_map<QUuid, SharedConnection> _connections;
   std::unordered_map<QUuid, UniqueNode>       _nodes;
   std::shared_ptr<DataModelRegistry>          _registry;
+  
+  int historyInx; 
+  bool writeToHistory; 
+  std::vector< SceneHistory > history;
 };
 
 Node*
