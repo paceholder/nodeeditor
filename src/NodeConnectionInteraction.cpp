@@ -33,10 +33,17 @@ canConnect(PortIndex &portIndex, bool& typeConversionNeeded, std::unique_ptr<Nod
 
   PortType requiredPort = connectionRequiredPort();
 
+
   if (requiredPort == PortType::None)
   {
     return false;
   }
+
+  // 1.5) Forbid connecting the node to itself
+  Node* node = _connection->getNode(oppositePort(requiredPort));
+
+  if (node == _node)
+    return false;
 
   // 2) connection point is on top of the node port
 
@@ -89,7 +96,7 @@ tryConnect() const
   {
     return false;
   }
-  
+
   /// 1.5) If the connection is possible but a type conversion is needed, add a converter node to the scene, and connect it properly
   if (typeConversionNeeded)
   {
