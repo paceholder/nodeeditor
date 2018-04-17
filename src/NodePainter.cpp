@@ -3,6 +3,9 @@
 #include <cmath>
 
 #include <QtCore/QMargins>
+#include <QTextDocument>
+#include <QAbstractTextDocumentLayout>
+#include <QTextBlock>
 
 #include "StyleCollection.hpp"
 #include "PortType.hpp"
@@ -255,25 +258,25 @@ drawModelName(QPainter * painter,
 
   QString const &name = model->caption();
 
-  QFont f = painter->font();
+  QTextDocument td;
+  td.setDefaultStyleSheet(nodeStyle.NodeCaptionCss);
+  td.setHtml(name);
 
-  f.setBold(true);
-
-  QFontMetrics metrics(f);
-
-  auto rect = metrics.boundingRect(name);
+  auto rect = NodeGeometry::calculateDocRect(td);
 
   QPointF position((geom.width() - rect.width()) / 2.0,
-                   (geom.spacing() + geom.entryHeight()) / 3.0);
+    0);
 
-  painter->setFont(f);
-  painter->setPen(nodeStyle.FontColor);
-  painter->drawText(position, name);
+  position.setY(position.y() - rect.top());
 
-  f.setBold(false);
-  painter->setFont(f);
+  painter->setPen(QColor(0, 255, 0));
+
+
+  painter->translate(position);
+  td.drawContents(painter);
+  painter->translate(-position);
+
 }
-
 
 void
 NodePainter::
@@ -299,9 +302,9 @@ drawEntryLabels(QPainter * painter,
         QPointF p = geom.portScenePosition(i, portType);
 
         if (entries[i].empty())
-          painter->setPen(nodeStyle.FontColorFaded);
+          painter->setOpacity(0.3);
         else
-          painter->setPen(nodeStyle.FontColor);
+          painter->setOpacity(1.0);
 
         QString s;
 
@@ -314,25 +317,33 @@ drawEntryLabels(QPainter * painter,
           s = model->dataType(portType, i).name;
         }
 
-        auto rect = metrics.boundingRect(s);
+        QTextDocument td; 
+        td.setDefaultStyleSheet(nodeStyle.PortTextCss);
+        td.setHtml(s);
 
-        p.setY(p.y() + rect.height() / 4.0);
+        auto rect = NodeGeometry::calculateDocRect(td);
+
+        p.setY(p.y() - rect.height()/2.0);
 
         switch (portType)
         {
           case PortType::In:
-            p.setX(5.0);
+            p.setX(qreal(geom.portsXoffset()));
             break;
 
           case PortType::Out:
-            p.setX(geom.width() - 5.0 - rect.width());
+            p.setX(geom.width() - qreal(geom.portsXoffset()) - rect.width());
             break;
 
           default:
             break;
         }
+        p = p - rect.topLeft();
+        
+        painter->translate(p);
+        td.drawContents(painter);
+        painter->translate(-p);
 
-        painter->drawText(p, s);
       }
     };
 
