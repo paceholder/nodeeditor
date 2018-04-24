@@ -30,8 +30,10 @@ class NODE_EDITOR_PUBLIC FlowScene
   Q_OBJECT
 public:
 
-  FlowScene(std::shared_ptr<DataModelRegistry> registry =
-              std::make_shared<DataModelRegistry>());
+  FlowScene(std::shared_ptr<DataModelRegistry> registry,
+            QObject * parent = Q_NULLPTR);
+
+  FlowScene(QObject * parent = Q_NULLPTR);
 
   ~FlowScene();
 

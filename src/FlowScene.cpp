@@ -37,12 +37,21 @@ using QtNodes::NodeDataModel;
 using QtNodes::PortType;
 using QtNodes::PortIndex;
 
+
 FlowScene::
-FlowScene(std::shared_ptr<DataModelRegistry> registry)
-  : _registry(registry)
+FlowScene(std::shared_ptr<DataModelRegistry> registry,
+          QObject * parent)
+  : QGraphicsScene(parent)
+  , _registry(registry)
 {
   setItemIndexMethod(QGraphicsScene::NoIndex);
 }
+
+FlowScene::
+FlowScene(QObject * parent)
+  : FlowScene(std::make_shared<DataModelRegistry>(),
+              parent)
+{}
 
 
 FlowScene::

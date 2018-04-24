@@ -91,7 +91,7 @@ main(int argc, char *argv[])
   QVBoxLayout *l = new QVBoxLayout(&mainWidget);
 
   l->addWidget(menuBar);
-  auto scene = new FlowScene(registerDataModels());
+  auto scene = new FlowScene(registerDataModels(), &mainWidget);
   l->addWidget(new FlowView(scene));
   l->setContentsMargins(0, 0, 0, 0);
   l->setSpacing(0);
