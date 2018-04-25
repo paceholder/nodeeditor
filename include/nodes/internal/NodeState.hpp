@@ -6,6 +6,8 @@
 
 #include <QtCore/QUuid>
 
+#include "Export.hpp"
+
 #include "PortType.hpp"
 #include "NodeData.hpp"
 
@@ -17,7 +19,7 @@ class NodeDataModel;
 
 /// Contains vectors of connected input and output connections.
 /// Stores bool for reacting on hovering connections
-class NodeState
+class NODE_EDITOR_PUBLIC NodeState
 {
 public:
   enum ReactToConnectionState
