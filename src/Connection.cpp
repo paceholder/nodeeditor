@@ -87,10 +87,10 @@ save() const
 
   if (_inNode && _outNode)
   {
-    connectionJson["in_uid"] = _inNode->id().toString();
+    connectionJson["in_id"] = _inNode->id().toString();
     connectionJson["in_index"] = _inPortIndex;
 
-    connectionJson["out_uid"] = _outNode->id().toString();
+    connectionJson["out_id"] = _outNode->id().toString();
     connectionJson["out_index"] = _outPortIndex;
 
     if (_converter)
