@@ -30,6 +30,12 @@ registeredModelCreators() const
   return _registeredItemCreators;
 }
 
+DataModelRegistry::RegisteredModelsOrder const &
+DataModelRegistry::
+registeredModelsOrder() const
+{
+  return _registeredModelsOrder;
+}
 
 DataModelRegistry::RegisteredModelsCategoryMap const &
 DataModelRegistry::

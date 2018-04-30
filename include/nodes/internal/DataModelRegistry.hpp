@@ -36,6 +36,7 @@ public:
   using RegistryItemCreator = std::function<RegistryItemPtr()>;
   using RegisteredModelCreatorsMap = std::unordered_map<QString, RegistryItemCreator>;
   using RegisteredModelsCategoryMap = std::unordered_map<QString, QString>;
+  using RegisteredModelsOrder = std::vector<QString>;
   using CategoriesSet = std::set<QString>;
 
   using RegisteredTypeConvertersMap = std::map<TypeConverterId, TypeConverter>;
@@ -82,6 +83,8 @@ public:
 
   RegisteredModelCreatorsMap const &registeredModelCreators() const;
 
+  RegisteredModelsOrder const& registeredModelsOrder() const;
+
   RegisteredModelsCategoryMap const &registeredModelsCategoryAssociation() const;
 
   CategoriesSet const &categories() const;
@@ -96,6 +99,8 @@ private:
   CategoriesSet _categories;
 
   RegisteredModelCreatorsMap _registeredItemCreators;
+
+  RegisteredModelsOrder _registeredModelsOrder;
 
   RegisteredTypeConvertersMap _registeredTypeConverters;
 
@@ -129,6 +134,7 @@ private:
     {
       _registeredItemCreators[name] = std::move(creator);
       _categories.insert(category);
+      _registeredModelsOrder.push_back(name);
       _registeredModelsCategory[name] = category;
     }
   }
@@ -142,6 +148,7 @@ private:
     {
       _registeredItemCreators[name] = std::move(creator);
       _categories.insert(category);
+      _registeredModelsOrder.push_back(name);
       _registeredModelsCategory[name] = category;
     }
   }

@@ -141,12 +141,13 @@ contextMenuEvent(QContextMenuEvent *event)
     topLevelItems[cat] = item;
   }
 
-  for (auto const &assoc : _scene->registry().registeredModelsCategoryAssociation())
+  auto const &assocCategory = _scene->registry().registeredModelsCategoryAssociation();
+  for (auto const &name : _scene->registry().registeredModelsOrder())
   {
-    auto parent = topLevelItems[assoc.second];
+    auto parent = topLevelItems[assocCategory.at(name)];
     auto item   = new QTreeWidgetItem(parent);
-    item->setText(0, assoc.first);
-    item->setData(0, Qt::UserRole, assoc.first);
+    item->setText(0, name);
+    item->setData(0, Qt::UserRole, name);
   }
 
   treeView->expandAll();
