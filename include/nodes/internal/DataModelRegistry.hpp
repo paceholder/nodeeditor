@@ -38,6 +38,7 @@ public:
   using RegisteredModelsCategoryMap = std::unordered_map<QString, QString>;
   using RegisteredModelsOrder = std::vector<QString>;
   using CategoriesSet = std::set<QString>;
+  using CategoriesOrder = std::vector<QString>;
 
   using RegisteredTypeConvertersMap = std::map<TypeConverterId, TypeConverter>;
 
@@ -89,6 +90,10 @@ public:
 
   CategoriesSet const &categories() const;
 
+  CategoriesOrder const &categoriesOrder() const;
+
+  void sortCategories();
+
   TypeConverter getTypeConverter(NodeDataType const & d1,
                                  NodeDataType const & d2) const;
 
@@ -99,6 +104,8 @@ private:
   CategoriesSet _categories;
 
   RegisteredModelCreatorsMap _registeredItemCreators;
+
+  CategoriesOrder _categoriesOrder;
 
   RegisteredModelsOrder _registeredModelsOrder;
 
@@ -130,12 +137,16 @@ private:
   registerModelImpl(RegistryItemCreator creator, QString const &category )
   {
     const QString name = ModelType::Name();
-    if (_registeredItemCreators.count(name) == 0)
+    if (!_registeredItemCreators.count(name))
     {
       _registeredItemCreators[name] = std::move(creator);
-      _categories.insert(category);
       _registeredModelsOrder.push_back(name);
       _registeredModelsCategory[name] = category;
+
+      if (!_categories.count(category)) {
+        _categories.insert(category);
+        _categoriesOrder.push_back(category);
+      }
     }
   }
 
@@ -144,12 +155,16 @@ private:
   registerModelImpl(RegistryItemCreator creator, QString const &category )
   {
     const QString name = creator()->name();
-    if (_registeredItemCreators.count(name) == 0)
+    if (!_registeredItemCreators.count(name))
     {
       _registeredItemCreators[name] = std::move(creator);
-      _categories.insert(category);
       _registeredModelsOrder.push_back(name);
       _registeredModelsCategory[name] = category;
+
+      if (!_categories.count(category)) {
+        _categories.insert(category);
+        _categoriesOrder.push_back(category);
+      }
     }
   }
 

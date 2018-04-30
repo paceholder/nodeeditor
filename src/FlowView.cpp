@@ -133,7 +133,7 @@ contextMenuEvent(QContextMenuEvent *event)
   modelMenu.addAction(treeViewAction);
 
   QMap<QString, QTreeWidgetItem*> topLevelItems;
-  for (auto const &cat : _scene->registry().categories())
+  for (auto const &cat : _scene->registry().categoriesOrder())
   {
     auto item = new QTreeWidgetItem(treeView);
     item->setText(0, cat);
