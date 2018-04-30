@@ -70,7 +70,7 @@ createConnection(PortType connectedPort,
 {
   auto connection = std::make_shared<Connection>(connectedPort, node, portIndex);
 
-  auto cgo = std::make_unique<ConnectionGraphicsObject>(*this, *connection);
+  auto cgo = detail::make_unique<ConnectionGraphicsObject>(*this, *connection);
 
   // after this function connection points are set to node port
   connection->setGraphicsObject(std::move(cgo));
@@ -97,7 +97,7 @@ createConnection(Node& nodeIn,
                                  portIndexOut,
                                  converter);
 
-  auto cgo = std::make_unique<ConnectionGraphicsObject>(*this, *connection);
+  auto cgo = detail::make_unique<ConnectionGraphicsObject>(*this, *connection);
 
   nodeIn.nodeState().setConnection(PortType::In, portIndexIn, *connection);
   nodeOut.nodeState().setConnection(PortType::Out, portIndexOut, *connection);
@@ -176,8 +176,8 @@ Node&
 FlowScene::
 createNode(std::unique_ptr<NodeDataModel> && dataModel)
 {
-  auto node = std::make_unique<Node>(std::move(dataModel));
-  auto ngo  = std::make_unique<NodeGraphicsObject>(*this, *node);
+  auto node = detail::make_unique<Node>(std::move(dataModel));
+  auto ngo  = detail::make_unique<NodeGraphicsObject>(*this, *node);
 
   node->setGraphicsObject(std::move(ngo));
 
@@ -201,8 +201,8 @@ restoreNode(QJsonObject const& nodeJson)
     throw std::logic_error(std::string("No registered model with name ") +
                            modelName.toLocal8Bit().data());
 
-  auto node = std::make_unique<Node>(std::move(dataModel));
-  auto ngo  = std::make_unique<NodeGraphicsObject>(*this, *node);
+  auto node = detail::make_unique<Node>(std::move(dataModel));
+  auto ngo  = detail::make_unique<NodeGraphicsObject>(*this, *node);
   node->setGraphicsObject(std::move(ngo));
 
   node->restore(nodeJson);

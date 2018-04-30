@@ -1,8 +1,8 @@
 #pragma once
 
 #include "NodeData.hpp"
+#include "memory.hpp"
 
-#include <memory>
 #include <functional>
 
 namespace QtNodes

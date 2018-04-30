@@ -1,6 +1,5 @@
 #pragma once
 
-#include <memory>
 #include <vector>
 #include <unordered_map>
 
@@ -10,6 +9,7 @@
 
 #include "PortType.hpp"
 #include "NodeData.hpp"
+#include "memory.hpp"
 
 namespace QtNodes
 {
