@@ -32,8 +32,6 @@ public:
 
   void setStyle(FlowViewStyle style);
 
-  static FlowViewStyle const& defaultStyle();
-
 public slots:
 
   void scaleUp();
@@ -73,6 +71,6 @@ private:
 
   FlowScene* _scene;
 
-  FlowViewStyle _style = defaultStyle();
+  FlowViewStyle _style;
 };
 }

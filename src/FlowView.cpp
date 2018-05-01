@@ -26,9 +26,25 @@
 using QtNodes::FlowView;
 using QtNodes::FlowViewStyle;
 using QtNodes::FlowScene;
+using QtNodes::StyleCollection;
+
+
+static
+FlowViewStyle const&
+defaultStyle()
+{
+  return StyleCollection::flowViewStyle();
+}
+
 
 FlowView::
 FlowView(QWidget *parent)
+  : FlowView(::defaultStyle(), parent)
+{}
+
+
+FlowView::
+FlowView(FlowViewStyle style, QWidget *parent)
   : QGraphicsView(parent)
   , _clearSelectionAction(Q_NULLPTR)
   , _deleteSelectionAction(Q_NULLPTR)
@@ -48,31 +64,24 @@ FlowView(QWidget *parent)
   setCacheMode(QGraphicsView::CacheBackground);
 
   //setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
+
+  setStyle(std::move(style));
 }
 
 
 FlowView::
-FlowView(FlowViewStyle style, QWidget *parent)
+FlowView(FlowScene *scene, FlowViewStyle style, QWidget *parent)
   : FlowView(parent)
 {
+  setScene(scene);
   setStyle(std::move(style));
 }
 
 
 FlowView::
 FlowView(FlowScene *scene, QWidget *parent)
-  : FlowView(parent)
-{
-  setScene(scene);
-}
-
-
-FlowView::
-FlowView(FlowScene *scene, FlowViewStyle style, QWidget *parent)
-  : FlowView(scene, parent)
-{
-  setStyle(std::move(style));
-}
+  : FlowView(scene, ::defaultStyle(), parent)
+{}
 
 
 QAction*
@@ -118,13 +127,6 @@ FlowView::setStyle(FlowViewStyle style)
   _style = std::move(style);
 
   setBackgroundBrush(_style.BackgroundColor);
-}
-
-
-FlowViewStyle const&
-FlowView::defaultStyle()
-{
-  return StyleCollection::flowViewStyle();
 }
 
 
