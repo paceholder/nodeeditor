@@ -1,13 +1,13 @@
 #include "NodeDataModel.hpp"
 
-#include "StyleCollection.hpp"
+#include <utility>
 
 using QtNodes::NodeDataModel;
 using QtNodes::NodeStyle;
 
 NodeDataModel::
-NodeDataModel()
-  : _nodeStyle(StyleCollection::nodeStyle())
+NodeDataModel(std::shared_ptr<NodeStyle const> style)
+  : _nodeStyle(std::move(style))
 {
   // Derived classes can initialize specific style here
 }
@@ -29,14 +29,13 @@ NodeStyle const&
 NodeDataModel::
 nodeStyle() const
 {
-  return _nodeStyle;
+  return *_nodeStyle;
 }
 
 
 void
 NodeDataModel::
-setNodeStyle(NodeStyle const& style)
+setNodeStyle(std::shared_ptr<NodeStyle const> style)
 {
-  _nodeStyle = style;
-  _usingDefaultNodeStyle = false;
+  _nodeStyle = std::move(style);
 }

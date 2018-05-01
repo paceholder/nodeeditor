@@ -4,6 +4,7 @@
 
 #include "ConnectionGeometry.hpp"
 #include "ConnectionState.hpp"
+#include "ConnectionStyle.hpp"
 #include "ConnectionGraphicsObject.hpp"
 #include "Connection.hpp"
 

@@ -33,21 +33,6 @@ registerDataModels()
 }
 
 
-static
-void
-setStyle()
-{
-  ConnectionStyle::setConnectionStyle(
-    R"(
-  {
-    "ConnectionStyle": {
-      "UseDataDefinedColors": true
-    }
-  }
-  )");
-}
-
-
 //------------------------------------------------------------------------------
 
 int
@@ -55,9 +40,11 @@ main(int argc, char* argv[])
 {
   QApplication app(argc, argv);
 
-  setStyle();
+  auto connectionStyle = ConnectionStyle::defaultStyle();
+  connectionStyle->useDataDefinedColors(true);
 
   FlowScene scene(registerDataModels());
+  scene->setConnectionStyle(std::move(connectionStyle));
 
   FlowView view(&scene);
 

@@ -9,7 +9,6 @@
 
 #include "Serializable.hpp"
 #include "ConnectionState.hpp"
-#include "ConnectionStyle.hpp"
 #include "ConnectionGeometry.hpp"
 #include "TypeConverter.hpp"
 #include "QUuidStdHash.hpp"
@@ -24,6 +23,7 @@ namespace QtNodes
 class Node;
 class NodeData;
 class ConnectionGraphicsObject;
+class ConnectionStyle;
 
 ///
 class NODE_EDITOR_PUBLIC Connection

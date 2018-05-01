@@ -21,30 +21,20 @@
 #include "Node.hpp"
 #include "NodeGraphicsObject.hpp"
 #include "ConnectionGraphicsObject.hpp"
-#include "StyleCollection.hpp"
 
 using QtNodes::FlowView;
 using QtNodes::FlowViewStyle;
 using QtNodes::FlowScene;
-using QtNodes::StyleCollection;
-
-
-static
-FlowViewStyle const&
-defaultStyle()
-{
-  return StyleCollection::flowViewStyle();
-}
 
 
 FlowView::
 FlowView(QWidget *parent)
-  : FlowView(::defaultStyle(), parent)
+  : FlowView(FlowViewStyle::defaultStyle(), parent)
 {}
 
 
 FlowView::
-FlowView(FlowViewStyle style, QWidget *parent)
+FlowView(std::shared_ptr<FlowViewStyle const> style, QWidget *parent)
   : QGraphicsView(parent)
   , _clearSelectionAction(Q_NULLPTR)
   , _deleteSelectionAction(Q_NULLPTR)
@@ -70,7 +60,7 @@ FlowView(FlowViewStyle style, QWidget *parent)
 
 
 FlowView::
-FlowView(FlowScene *scene, FlowViewStyle style, QWidget *parent)
+FlowView(FlowScene *scene, std::shared_ptr<FlowViewStyle const> style, QWidget *parent)
   : FlowView(parent)
 {
   setScene(scene);
@@ -80,7 +70,7 @@ FlowView(FlowScene *scene, FlowViewStyle style, QWidget *parent)
 
 FlowView::
 FlowView(FlowScene *scene, QWidget *parent)
-  : FlowView(scene, ::defaultStyle(), parent)
+  : FlowView(scene, FlowViewStyle::defaultStyle(), parent)
 {}
 
 
@@ -122,11 +112,11 @@ FlowView::setScene(FlowScene *scene)
 
 
 void
-FlowView::setStyle(FlowViewStyle style)
+FlowView::setStyle(std::shared_ptr<FlowViewStyle const> style)
 {
   _style = std::move(style);
 
-  setBackgroundBrush(_style.BackgroundColor);
+  setBackgroundBrush(_style->backgroundColor());
 }
 
 
@@ -409,12 +399,12 @@ drawBackground(QPainter* painter, const QRectF& r)
 
   QBrush bBrush = backgroundBrush();
 
-  QPen pfine(_style.FineGridColor, 1.0);
+  QPen pfine(_style->fineGridColor(), 1.0);
 
   painter->setPen(pfine);
   drawGrid(15);
 
-  QPen p(_style.CoarseGridColor, 1.0);
+  QPen p(_style->coarseGridColor(), 1.0);
 
   painter->setPen(p);
   drawGrid(150);

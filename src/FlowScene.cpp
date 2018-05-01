@@ -29,7 +29,6 @@
 
 #include "NodeStyle.hpp"
 #include "ConnectionStyle.hpp"
-#include "StyleCollection.hpp"
 
 using QtNodes::FlowScene;
 using QtNodes::Node;
@@ -43,24 +42,14 @@ using QtNodes::PortType;
 using QtNodes::PortIndex;
 using QtNodes::TypeConverter;
 
-struct FlowScene::Style
-{
-  ConnectionStyle _connectionStyle;
-  NodeStyle       _defaultNodeStyle;
-
-  Style()
-    : _connectionStyle(StyleCollection::connectionStyle())
-    , _defaultNodeStyle(StyleCollection::nodeStyle())
-  {
-  }
-};
 
 FlowScene::
 FlowScene(std::shared_ptr<DataModelRegistry> registry,
           QObject * parent)
   : QGraphicsScene(parent)
   , _registry(registry)
-  , _style(std::make_unique<FlowScene::Style>())
+  , _connectionStyle(ConnectionStyle::defaultStyle())
+  , _nodeStyle(NodeStyle::defaultStyle())
 {
   setItemIndexMethod(QGraphicsScene::NoIndex);
 }
@@ -201,11 +190,7 @@ makeNode(FlowScene &                                       scene,
          std::unordered_map<QUuid, std::unique_ptr<Node>> &nodes,
          std::unique_ptr<NodeDataModel> &&                 dataModel)
 {
-  if (dataModel->usingDefaultNodeStyle()) {
-    dataModel->setNodeStyle(scene.defaultNodeStyle());
-  }
-
-  auto node = detail::make_unique<Node>(std::move(dataModel), scene.defaultNodeStyle());
+  auto node = detail::make_unique<Node>(std::move(dataModel), scene.nodeStyle());
   auto ngo  = detail::make_unique<NodeGraphicsObject>(scene, *node);
 
   node->setGraphicsObject(std::move(ngo));
@@ -586,31 +571,31 @@ ConnectionStyle const &
 FlowScene::
 connectionStyle() const
 {
-  return _style->_connectionStyle;
+  return *_connectionStyle;
 }
 
 
 NodeStyle const &
 FlowScene::
-defaultNodeStyle() const
+nodeStyle() const
 {
-  return _style->_defaultNodeStyle;
+  return *_nodeStyle;
 }
 
 
 void
 FlowScene::
-setConnectionStyle(ConnectionStyle style)
+setConnectionStyle(std::shared_ptr<ConnectionStyle const> style)
 {
-  _style->_connectionStyle = std::move(style);
+  _connectionStyle = std::move(style);
 }
 
 
 void
 FlowScene::
-setDefaultNodeStyle(NodeStyle style)
+setNodeStyle(std::shared_ptr<NodeStyle const> style)
 {
-  _style->_defaultNodeStyle = std::move(style);
+  _nodeStyle = std::move(style);
 }
 
 

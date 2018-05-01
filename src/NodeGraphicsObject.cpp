@@ -16,8 +16,6 @@
 #include "NodeDataModel.hpp"
 #include "NodeConnectionInteraction.hpp"
 
-#include "StyleCollection.hpp"
-
 using QtNodes::NodeGraphicsObject;
 using QtNodes::Node;
 using QtNodes::FlowScene;
@@ -46,12 +44,12 @@ NodeGraphicsObject(FlowScene &scene,
     auto effect = new QGraphicsDropShadowEffect;
     effect->setOffset(4, 4);
     effect->setBlurRadius(20);
-    effect->setColor(nodeStyle.ShadowColor);
+    effect->setColor(nodeStyle.shadowColor());
 
     setGraphicsEffect(effect);
   }
 
-  setOpacity(nodeStyle.Opacity);
+  setOpacity(nodeStyle.opacity());
 
   setAcceptHoverEvents(true);
 

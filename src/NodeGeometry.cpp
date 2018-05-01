@@ -56,7 +56,7 @@ QRectF
 NodeGeometry::
 boundingRect() const
 {
-  double addon = 4 * _nodeStyle->ConnectionPointDiameter;
+  double addon = 4 * _nodeStyle->connectionPointDiameter();
 
   return QRectF(0 - addon,
                 0 - addon,
@@ -150,7 +150,7 @@ portScenePosition(PortIndex index,
   {
     case PortType::Out:
     {
-      double x = _width + _nodeStyle->ConnectionPointDiameter;
+      double x = _width + _nodeStyle->connectionPointDiameter();
 
       result = QPointF(x, totalHeight);
       break;
@@ -158,7 +158,7 @@ portScenePosition(PortIndex index,
 
     case PortType::In:
     {
-      double x = 0.0 - _nodeStyle->ConnectionPointDiameter;
+      double x = 0.0 - _nodeStyle->connectionPointDiameter();
 
       result = QPointF(x, totalHeight);
       break;
@@ -183,7 +183,7 @@ checkHitScenePoint(PortType portType,
   if (portType == PortType::None)
     return result;
 
-  double const tolerance = 2.0 * _nodeStyle->ConnectionPointDiameter;
+  double const tolerance = 2.0 * _nodeStyle->connectionPointDiameter();
 
   unsigned int const nItems = _dataModel->nPorts(portType);
 

@@ -4,150 +4,79 @@
 #include <utility>
 
 #include <QtCore/QFile>
+#include <QtCore/QJsonArray>
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
 #include <QtCore/QJsonValueRef>
-#include <QtCore/QJsonArray>
 
 #include <QDebug>
 
-#include "StyleCollection.hpp"
+#include "StyleImport.hpp"
 
 using QtNodes::ConnectionStyle;
-
-inline void initResources() { Q_INIT_RESOURCE(resources); }
-
-ConnectionStyle::
-ConnectionStyle()
-{
-  // Explicit resources inialization for preventing the static initialization
-  // order fiasco: https://isocpp.org/wiki/faq/ctors#static-init-order
-  initResources();
-
-  // This configuration is stored inside the compiled unit and is loaded statically
-  loadJsonFile(":DefaultStyle.json");
-}
-
-
-ConnectionStyle::
-ConnectionStyle(QString jsonText)
-{
-  loadJsonFile(":DefaultStyle.json");
-  loadJsonText(jsonText);
-}
+using QtNodes::StyleImport;
 
 
 void
 ConnectionStyle::
-setConnectionStyle(QString jsonText)
+loadJson(QByteArray const& jsonBytes)
 {
-  ConnectionStyle style(jsonText);
-
-  StyleCollection::setConnectionStyle(std::move(style));
-}
-
-#ifdef STYLE_DEBUG
-  #define CONNECTION_STYLE_CHECK_UNDEFINED_VALUE(v, variable) { \
-      if (v.type() == QJsonValue::Undefined || \
-          v.type() == QJsonValue::Null) \
-        qWarning() << "Undefined value for parameter:" << #variable; \
-  }
-#else
-  #define CONNECTION_STYLE_CHECK_UNDEFINED_VALUE(v, variable)
-#endif
-
-
-#define CONNECTION_VALUE_EXISTS(v) \
-  (v.type() != QJsonValue::Undefined && \
-   v.type() != QJsonValue::Null)
-
-#define CONNECTION_STYLE_READ_COLOR(values, variable)  { \
-    auto valueRef = values[#variable]; \
-    CONNECTION_STYLE_CHECK_UNDEFINED_VALUE(valueRef, variable) \
-    if (CONNECTION_VALUE_EXISTS(valueRef)) {\
-      if (valueRef.isArray()) { \
-        auto colorArray = valueRef.toArray(); \
-        std::vector<int> rgb; rgb.reserve(3); \
-        for (auto it = colorArray.begin(); it != colorArray.end(); ++it) { \
-          rgb.push_back((*it).toInt()); \
-        } \
-        variable = QColor(rgb[0], rgb[1], rgb[2]); \
-      } else { \
-        variable = QColor(valueRef.toString()); \
-      } \
-    } \
-}
-
-#define CONNECTION_STYLE_READ_FLOAT(values, variable)  { \
-    auto valueRef = values[#variable]; \
-    CONNECTION_STYLE_CHECK_UNDEFINED_VALUE(valueRef, variable) \
-    if (CONNECTION_VALUE_EXISTS(valueRef)) \
-      variable = valueRef.toDouble(); \
-}
-
-#define CONNECTION_STYLE_READ_BOOL(values, variable)  { \
-    auto valueRef = values[#variable]; \
-    CONNECTION_STYLE_CHECK_UNDEFINED_VALUE(valueRef, variable) \
-    if (CONNECTION_VALUE_EXISTS(valueRef)) \
-      variable = valueRef.toBool(); \
-}
-
-void
-ConnectionStyle::
-loadJsonFile(QString styleFile)
-{
-  QFile file(styleFile);
-
-  if (!file.open(QIODevice::ReadOnly))
-  {
-    qWarning() << "Couldn't open file " << styleFile;
-
-    return;
-  }
-
-  loadJsonFromByteArray(file.readAll());
-}
-
-
-void
-ConnectionStyle::
-loadJsonText(QString jsonText)
-{
-  loadJsonFromByteArray(jsonText.toUtf8());
-}
-
-
-void
-ConnectionStyle::
-loadJsonFromByteArray(QByteArray const &byteArray)
-{
-  QJsonDocument json(QJsonDocument::fromJson(byteArray));
-
+  QJsonDocument json(QJsonDocument::fromJson(jsonBytes));
   QJsonObject topLevelObject = json.object();
 
   QJsonValueRef nodeStyleValues = topLevelObject["ConnectionStyle"];
-
   QJsonObject obj = nodeStyleValues.toObject();
 
-  CONNECTION_STYLE_READ_COLOR(obj, ConstructionColor);
-  CONNECTION_STYLE_READ_COLOR(obj, NormalColor);
-  CONNECTION_STYLE_READ_COLOR(obj, SelectedColor);
-  CONNECTION_STYLE_READ_COLOR(obj, SelectedHaloColor);
-  CONNECTION_STYLE_READ_COLOR(obj, HoveredColor);
+  StyleImport::readColor(obj, "ConstructionColor", &_constructionColor);
+  StyleImport::readColor(obj, "NormalColor", &_normalColor);
+  StyleImport::readColor(obj, "SelectedColor", &_selectedColor);
+  StyleImport::readColor(obj, "SelectedHaloColor", &_selectedHaloColor);
+  StyleImport::readColor(obj, "HoveredColor", &_hoveredColor);
 
-  CONNECTION_STYLE_READ_FLOAT(obj, LineWidth);
-  CONNECTION_STYLE_READ_FLOAT(obj, ConstructionLineWidth);
-  CONNECTION_STYLE_READ_FLOAT(obj, PointDiameter);
+  StyleImport::readFloat(obj, "LineWidth", &_lineWidth);
+  StyleImport::readFloat(obj, "ConstructionLineWidth", &_constructionLineWidth);
+  StyleImport::readFloat(obj, "PointDiameter", &_pointDiameter);
 
-  CONNECTION_STYLE_READ_BOOL(obj, UseDataDefinedColors);
+  StyleImport::readBool(obj, "UseDataDefinedColors", &_useDataDefinedColors);
 }
+
+
+std::shared_ptr<ConnectionStyle>
+ConnectionStyle::
+defaultStyle()
+{
+  StyleImport::initResources();
+
+  auto style = std::make_shared<ConnectionStyle>();
+
+  style->loadJson(StyleImport::readJsonFile(":DefaultStyle.json"));
+
+  return style;
+}
+
+
+std::shared_ptr<ConnectionStyle>
+ConnectionStyle::
+fromJson(QString jsonText)
+{
+  auto style = defaultStyle();
+
+  style->loadJson(StyleImport::readJsonText(jsonText));
+
+  return style;
+}
+
+
+ConnectionStyle::
+ConnectionStyle()
+= default;
 
 
 QColor
 ConnectionStyle::
 constructionColor() const
 {
-  return ConstructionColor;
+  return _constructionColor;
 }
 
 
@@ -155,34 +84,34 @@ QColor
 ConnectionStyle::
 normalColor() const
 {
-  return NormalColor;
+  return _normalColor;
 }
 
 
-QColor
-ConnectionStyle::
-normalColor(QString typeId) const
-{
-  std::size_t hash = qHash(typeId);
+// QColor
+// ConnectionStyle::
+// normalColor(QString typeId) const
+// {
+//   std::size_t hash = qHash(typeId);
 
-  std::size_t const hue_range = 0xFF;
+//   std::size_t const hue_range = 0xFF;
 
-  qsrand(hash);
-  std::size_t hue = qrand() % hue_range;
+//   qsrand(hash);
+//   std::size_t hue = qrand() % hue_range;
 
-  std::size_t sat = 120 + hash % 129;
+//   std::size_t sat = 120 + hash % 129;
 
-  return QColor::fromHsl(hue,
-                         sat,
-                         160);
-}
+//   return QColor::fromHsl(hue,
+//                          sat,
+//                          160);
+// }
 
 
 QColor
 ConnectionStyle::
 selectedColor() const
 {
-  return SelectedColor;
+  return _selectedColor;
 }
 
 
@@ -190,7 +119,7 @@ QColor
 ConnectionStyle::
 selectedHaloColor() const
 {
-  return SelectedHaloColor;
+  return _selectedHaloColor;
 }
 
 
@@ -198,7 +127,7 @@ QColor
 ConnectionStyle::
 hoveredColor() const
 {
-  return HoveredColor;
+  return _hoveredColor;
 }
 
 
@@ -206,7 +135,7 @@ float
 ConnectionStyle::
 lineWidth() const
 {
-  return LineWidth;
+  return _lineWidth;
 }
 
 
@@ -214,7 +143,7 @@ float
 ConnectionStyle::
 constructionLineWidth() const
 {
-  return ConstructionLineWidth;
+  return _constructionLineWidth;
 }
 
 
@@ -222,7 +151,7 @@ float
 ConnectionStyle::
 pointDiameter() const
 {
-  return PointDiameter;
+  return _pointDiameter;
 }
 
 
@@ -230,5 +159,77 @@ bool
 ConnectionStyle::
 useDataDefinedColors() const
 {
-  return UseDataDefinedColors;
+  return _useDataDefinedColors;
+}
+
+
+void
+ConnectionStyle::
+setConstructionColor(QColor color)
+{
+  _constructionColor = std::move(color);
+}
+
+
+void
+ConnectionStyle::
+setNormalColor(QColor color)
+{
+  _normalColor = std::move(color);
+}
+
+
+void
+ConnectionStyle::
+setSelectedColor(QColor color)
+{
+  _selectedColor = std::move(color);
+}
+
+
+void
+ConnectionStyle::
+setSelectedHaloColor(QColor color)
+{
+  _selectedHaloColor = std::move(color);
+}
+
+
+void
+ConnectionStyle::
+setHoveredColor(QColor color)
+{
+  _hoveredColor = std::move(color);
+}
+
+
+void
+ConnectionStyle::
+setLineWidth(float value)
+{
+  _lineWidth = value;
+}
+
+
+void
+ConnectionStyle::
+setConstructionLineWidth(float value)
+{
+  _constructionLineWidth = value;
+}
+
+
+void
+ConnectionStyle::
+setPointDiameter(float value)
+{
+  _pointDiameter = value;
+}
+
+
+void
+ConnectionStyle::
+useDataDefinedColors(bool use)
+{
+  _useDataDefinedColors = use;
 }

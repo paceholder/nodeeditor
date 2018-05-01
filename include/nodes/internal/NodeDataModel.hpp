@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include <QtWidgets/QWidget>
 
 #include "PortType.hpp"
@@ -32,7 +31,7 @@ class NODE_EDITOR_PUBLIC NodeDataModel
 
 public:
 
-  NodeDataModel();
+  NodeDataModel(std::shared_ptr<NodeStyle const> style);
 
   virtual
   ~NodeDataModel() = default;
@@ -93,13 +92,7 @@ public:
   nodeStyle() const;
 
   void
-  setNodeStyle(NodeStyle const& style);
-
-  bool
-  usingDefaultNodeStyle() const
-  {
-    return _usingDefaultNodeStyle;
-  }
+  setNodeStyle(std::shared_ptr<NodeStyle const> style);
 
 public:
 
@@ -147,7 +140,6 @@ signals:
   computingFinished();
 
 private:
-  NodeStyle _nodeStyle;
-  bool      _usingDefaultNodeStyle = true;
+  std::shared_ptr<NodeStyle const> _nodeStyle;
 };
 }

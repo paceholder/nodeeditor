@@ -100,10 +100,10 @@ public:
   void loadFromMemory(const QByteArray& data);
 
   ConnectionStyle const& connectionStyle() const;
-  NodeStyle const& defaultNodeStyle() const;
+  NodeStyle const& nodeStyle() const;
 
-  void setConnectionStyle(ConnectionStyle style);
-  void setDefaultNodeStyle(NodeStyle style);
+  void setConnectionStyle(std::shared_ptr<ConnectionStyle const> style);
+  void setNodeStyle(std::shared_ptr<NodeStyle const> style);
 
 signals:
 
@@ -133,13 +133,12 @@ private:
   using SharedConnection = std::shared_ptr<Connection>;
   using UniqueNode       = std::unique_ptr<Node>;
 
-  struct Style;
-
   std::unordered_map<QUuid, SharedConnection> _connections;
   std::unordered_map<QUuid, UniqueNode>       _nodes;
   std::shared_ptr<DataModelRegistry>          _registry;
 
-  std::unique_ptr<Style> _style;
+  std::shared_ptr<ConnectionStyle const> _connectionStyle;
+  std::shared_ptr<NodeStyle const>       _nodeStyle;
 };
 
 Node*

@@ -4,13 +4,15 @@
 
 #include <QtCore/QMargins>
 
+#include "ConnectionStyle.hpp"
 #include "PortType.hpp"
 #include "NodeGraphicsObject.hpp"
 #include "NodeGeometry.hpp"
 #include "NodeState.hpp"
+#include "FlowScene.hpp"
 #include "NodeDataModel.hpp"
 #include "Node.hpp"
-#include "FlowScene.hpp"
+#include "NodeStyle.hpp"
 
 using QtNodes::NodePainter;
 using QtNodes::NodeGeometry;
@@ -69,31 +71,31 @@ drawNodeRect(QPainter* painter,
   NodeStyle const& nodeStyle = model->nodeStyle();
 
   auto color = graphicsObject.isSelected()
-               ? nodeStyle.SelectedBoundaryColor
-               : nodeStyle.NormalBoundaryColor;
+               ? nodeStyle.selectedBoundaryColor()
+               : nodeStyle.normalBoundaryColor();
 
   if (geom.hovered())
   {
-    QPen p(color, nodeStyle.HoveredPenWidth);
+    QPen p(color, nodeStyle.hoveredPenWidth());
     painter->setPen(p);
   }
   else
   {
-    QPen p(color, nodeStyle.PenWidth);
+    QPen p(color, nodeStyle.penWidth());
     painter->setPen(p);
   }
 
   QLinearGradient gradient(QPointF(0.0, 0.0),
                            QPointF(2.0, geom.height()));
 
-  gradient.setColorAt(0.0, nodeStyle.GradientColor0);
-  gradient.setColorAt(0.03, nodeStyle.GradientColor1);
-  gradient.setColorAt(0.97, nodeStyle.GradientColor2);
-  gradient.setColorAt(1.0, nodeStyle.GradientColor3);
+  gradient.setColorAt(0.0, nodeStyle.gradientColor0());
+  gradient.setColorAt(0.03, nodeStyle.gradientColor1());
+  gradient.setColorAt(0.97, nodeStyle.gradientColor2());
+  gradient.setColorAt(1.0, nodeStyle.gradientColor3());
 
   painter->setBrush(gradient);
 
-  float diam = nodeStyle.ConnectionPointDiameter;
+  float diam = nodeStyle.connectionPointDiameter();
 
   QRectF boundary( -diam, -diam, 2.0 * diam + geom.width(), 2.0 * diam + geom.height());
 
@@ -114,7 +116,7 @@ drawConnectionPoints(QPainter* painter,
 {
   NodeStyle const& nodeStyle      = model->nodeStyle();
 
-  float diameter = nodeStyle.ConnectionPointDiameter;
+  float diameter = nodeStyle.connectionPointDiameter();
   auto  reducedDiameter = diameter * 0.6;
 
   auto drawPoints =
@@ -175,7 +177,7 @@ drawConnectionPoints(QPainter* painter,
         }
         else
         {
-          painter->setBrush(nodeStyle.ConnectionPointColor);
+          painter->setBrush(nodeStyle.connectionPointColor());
         }
 
         painter->drawEllipse(p,
@@ -199,7 +201,7 @@ drawFilledConnectionPoints(QPainter * painter,
 {
   NodeStyle const& nodeStyle       = model->nodeStyle();
 
-  auto diameter = nodeStyle.ConnectionPointDiameter;
+  auto diameter = nodeStyle.connectionPointDiameter();
 
   auto drawPoints =
     [&](PortType portType)
@@ -222,8 +224,8 @@ drawFilledConnectionPoints(QPainter * painter,
           }
           else
           {
-            painter->setPen(nodeStyle.FilledConnectionPointColor);
-            painter->setBrush(nodeStyle.FilledConnectionPointColor);
+            painter->setPen(nodeStyle.filledConnectionPointColor());
+            painter->setBrush(nodeStyle.filledConnectionPointColor());
           }
 
           painter->drawEllipse(p,
@@ -266,7 +268,7 @@ drawModelName(QPainter * painter,
                    (geom.spacing() + geom.entryHeight()) / 3.0);
 
   painter->setFont(f);
-  painter->setPen(nodeStyle.FontColor);
+  painter->setPen(nodeStyle.fontColor());
   painter->drawText(position, name);
 
   f.setBold(false);
@@ -298,9 +300,9 @@ drawEntryLabels(QPainter * painter,
         QPointF p = geom.portScenePosition(i, portType);
 
         if (entries[i].empty())
-          painter->setPen(nodeStyle.FontColorFaded);
+          painter->setPen(nodeStyle.fontColorFaded());
         else
-          painter->setPen(nodeStyle.FontColor);
+          painter->setPen(nodeStyle.fontColor());
 
         QString s;
 
@@ -370,33 +372,33 @@ drawValidationRect(QPainter * painter,
     NodeStyle const& nodeStyle = model->nodeStyle();
 
     auto color = graphicsObject.isSelected()
-                 ? nodeStyle.SelectedBoundaryColor
-                 : nodeStyle.NormalBoundaryColor;
+                 ? nodeStyle.selectedBoundaryColor()
+                 : nodeStyle.normalBoundaryColor();
 
     if (geom.hovered())
     {
-      QPen p(color, nodeStyle.HoveredPenWidth);
+      QPen p(color, nodeStyle.hoveredPenWidth());
       painter->setPen(p);
     }
     else
     {
-      QPen p(color, nodeStyle.PenWidth);
+      QPen p(color, nodeStyle.penWidth());
       painter->setPen(p);
     }
 
     //Drawing the validation message background
     if (modelValidationState == NodeValidationState::Error)
     {
-      painter->setBrush(nodeStyle.ErrorColor);
+      painter->setBrush(nodeStyle.errorColor());
     }
     else
     {
-      painter->setBrush(nodeStyle.WarningColor);
+      painter->setBrush(nodeStyle.warningColor());
     }
 
     double const radius = 3.0;
 
-    float diam = nodeStyle.ConnectionPointDiameter;
+    float diam = nodeStyle.connectionPointDiameter();
 
     QRectF boundary(-diam,
                     -diam + geom.height() - geom.validationHeight(),
@@ -420,7 +422,7 @@ drawValidationRect(QPainter * painter,
                      geom.height() - (geom.validationHeight() - diam) / 2.0);
 
     painter->setFont(f);
-    painter->setPen(nodeStyle.FontColor);
+    painter->setPen(nodeStyle.fontColor());
     painter->drawText(position, errorMsg);
   }
 }
