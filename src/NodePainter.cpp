@@ -4,7 +4,6 @@
 
 #include <QtCore/QMargins>
 
-#include "StyleCollection.hpp"
 #include "PortType.hpp"
 #include "NodeGraphicsObject.hpp"
 #include "NodeGeometry.hpp"
@@ -40,9 +39,9 @@ paint(QPainter* painter,
 
   drawNodeRect(painter, geom, model, graphicsObject);
 
-  drawConnectionPoints(painter, geom, state, model, scene);
+  drawConnectionPoints(painter, geom, state, model, scene, scene.connectionStyle());
 
-  drawFilledConnectionPoints(painter, geom, state, model);
+  drawFilledConnectionPoints(painter, geom, state, model, scene.connectionStyle());
 
   drawModelName(painter, geom, state, model);
 
@@ -110,10 +109,10 @@ drawConnectionPoints(QPainter* painter,
                      NodeGeometry const& geom,
                      NodeState const& state,
                      NodeDataModel const * model,
-                     FlowScene const & scene)
+                     FlowScene const & scene,
+                     ConnectionStyle const &connectionStyle)
 {
   NodeStyle const& nodeStyle      = model->nodeStyle();
-  auto const     &connectionStyle = StyleCollection::connectionStyle();
 
   float diameter = nodeStyle.ConnectionPointDiameter;
   auto  reducedDiameter = diameter * 0.6;
@@ -195,10 +194,10 @@ NodePainter::
 drawFilledConnectionPoints(QPainter * painter,
                            NodeGeometry const & geom,
                            NodeState const & state,
-                           NodeDataModel const * model)
+                           NodeDataModel const * model,
+                           ConnectionStyle const & connectionStyle)
 {
   NodeStyle const& nodeStyle       = model->nodeStyle();
-  auto const     & connectionStyle = StyleCollection::connectionStyle();
 
   auto diameter = nodeStyle.ConnectionPointDiameter;
 

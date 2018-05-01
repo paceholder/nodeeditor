@@ -1,6 +1,7 @@
 #include "FlowScene.hpp"
 
 #include <stdexcept>
+#include <utility>
 
 #include <QtWidgets/QGraphicsSceneMoveEvent>
 #include <QtWidgets/QFileDialog>
@@ -26,22 +27,40 @@
 #include "FlowView.hpp"
 #include "DataModelRegistry.hpp"
 
+#include "NodeStyle.hpp"
+#include "ConnectionStyle.hpp"
+#include "StyleCollection.hpp"
+
 using QtNodes::FlowScene;
 using QtNodes::Node;
+using QtNodes::NodeStyle;
 using QtNodes::NodeGraphicsObject;
 using QtNodes::Connection;
+using QtNodes::ConnectionStyle;
 using QtNodes::DataModelRegistry;
 using QtNodes::NodeDataModel;
 using QtNodes::PortType;
 using QtNodes::PortIndex;
 using QtNodes::TypeConverter;
 
+struct FlowScene::Style
+{
+  ConnectionStyle _connectionStyle;
+  NodeStyle       _defaultNodeStyle;
+
+  Style()
+    : _connectionStyle(StyleCollection::connectionStyle())
+    , _defaultNodeStyle(StyleCollection::nodeStyle())
+  {
+  }
+};
 
 FlowScene::
 FlowScene(std::shared_ptr<DataModelRegistry> registry,
           QObject * parent)
   : QGraphicsScene(parent)
   , _registry(registry)
+  , _style(std::make_unique<FlowScene::Style>())
 {
   setItemIndexMethod(QGraphicsScene::NoIndex);
 }
@@ -68,7 +87,10 @@ createConnection(PortType connectedPort,
                  Node& node,
                  PortIndex portIndex)
 {
-  auto connection = std::make_shared<Connection>(connectedPort, node, portIndex);
+  auto connection = std::make_shared<Connection>(connectedPort,
+                                                 node,
+                                                 portIndex,
+                                                 connectionStyle());
 
   auto cgo = detail::make_unique<ConnectionGraphicsObject>(*this, *connection);
 
@@ -95,6 +117,7 @@ createConnection(Node& nodeIn,
                                  portIndexIn,
                                  nodeOut,
                                  portIndexOut,
+                                 connectionStyle(),
                                  converter);
 
   auto cgo = detail::make_unique<ConnectionGraphicsObject>(*this, *connection);
@@ -172,20 +195,35 @@ deleteConnection(Connection& connection)
 }
 
 
+static
+Node &
+makeNode(FlowScene &                                       scene,
+         std::unordered_map<QUuid, std::unique_ptr<Node>> &nodes,
+         std::unique_ptr<NodeDataModel> &&                 dataModel)
+{
+  if (dataModel->usingDefaultNodeStyle()) {
+    dataModel->setNodeStyle(scene.defaultNodeStyle());
+  }
+
+  auto node = detail::make_unique<Node>(std::move(dataModel), scene.defaultNodeStyle());
+  auto ngo  = detail::make_unique<NodeGraphicsObject>(scene, *node);
+
+  node->setGraphicsObject(std::move(ngo));
+
+  auto nodePtr      = node.get();
+  nodes[node->id()] = std::move(node);
+
+  return *nodePtr;
+}
+
+
 Node&
 FlowScene::
 createNode(std::unique_ptr<NodeDataModel> && dataModel)
 {
-  auto node = detail::make_unique<Node>(std::move(dataModel));
-  auto ngo  = detail::make_unique<NodeGraphicsObject>(*this, *node);
-
-  node->setGraphicsObject(std::move(ngo));
-
-  auto nodePtr = node.get();
-  _nodes[node->id()] = std::move(node);
-
-  nodeCreated(*nodePtr);
-  return *nodePtr;
+  Node& node = ::makeNode(*this, _nodes, std::move(dataModel));
+  nodeCreated(node);
+  return node;
 }
 
 
@@ -201,17 +239,10 @@ restoreNode(QJsonObject const& nodeJson)
     throw std::logic_error(std::string("No registered model with name ") +
                            modelName.toLocal8Bit().data());
 
-  auto node = detail::make_unique<Node>(std::move(dataModel));
-  auto ngo  = detail::make_unique<NodeGraphicsObject>(*this, *node);
-  node->setGraphicsObject(std::move(ngo));
-
-  node->restore(nodeJson);
-
-  auto nodePtr = node.get();
-  _nodes[node->id()] = std::move(node);
-
-  nodeCreated(*nodePtr);
-  return *nodePtr;
+  auto& node = ::makeNode(*this, _nodes, std::move(dataModel));
+  node.restore(nodeJson);
+  nodeCreated(node);
+  return node;
 }
 
 
@@ -548,6 +579,38 @@ loadFromMemory(const QByteArray& data)
   {
     restoreConnection(connectionJsonArray[i].toObject());
   }
+}
+
+
+ConnectionStyle const &
+FlowScene::
+connectionStyle() const
+{
+  return _style->_connectionStyle;
+}
+
+
+NodeStyle const &
+FlowScene::
+defaultNodeStyle() const
+{
+  return _style->_defaultNodeStyle;
+}
+
+
+void
+FlowScene::
+setConnectionStyle(ConnectionStyle style)
+{
+  _style->_connectionStyle = std::move(style);
+}
+
+
+void
+FlowScene::
+setDefaultNodeStyle(NodeStyle style)
+{
+  _style->_defaultNodeStyle = std::move(style);
 }
 
 

@@ -9,6 +9,7 @@
 
 #include "Serializable.hpp"
 #include "ConnectionState.hpp"
+#include "ConnectionStyle.hpp"
 #include "ConnectionGeometry.hpp"
 #include "TypeConverter.hpp"
 #include "QUuidStdHash.hpp"
@@ -36,15 +37,17 @@ public:
 
   /// New Connection is attached to the port of the given Node.
   /// The port has parameters (portType, portIndex).
-  /// The opposite connection end will require anothre port.
+  /// The opposite connection end will require another port.
   Connection(PortType portType,
              Node& node,
-             PortIndex portIndex);
+             PortIndex portIndex,
+             ConnectionStyle const &style);
 
   Connection(Node& nodeIn,
              PortIndex portIndexIn,
              Node& nodeOut,
              PortIndex portIndexOut,
+             ConnectionStyle const &style,
              TypeConverter const & converter =
                TypeConverter{});
 
@@ -118,6 +121,9 @@ public:
   void
   setTypeConverter(TypeConverter converter);
 
+  ConnectionStyle const &
+  connectionStyle() const;
+
 public: // data propagation
 
   void
@@ -139,9 +145,10 @@ private:
   PortIndex _inPortIndex;
 
 private:
-
   ConnectionState    _connectionState;
   ConnectionGeometry _connectionGeometry;
+
+  ConnectionStyle const *_connectionStyle;
 
   std::unique_ptr<ConnectionGraphicsObject>_connectionGraphicsObject;
 

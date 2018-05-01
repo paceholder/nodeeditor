@@ -24,6 +24,7 @@ class Connection;
 class ConnectionState;
 class NodeGraphicsObject;
 class NodeDataModel;
+class NodeStyle;
 
 class NODE_EDITOR_PUBLIC Node
   : public QObject
@@ -34,7 +35,7 @@ class NODE_EDITOR_PUBLIC Node
 public:
 
   /// NodeDataModel should be an rvalue and is moved into the Node
-  Node(std::unique_ptr<NodeDataModel> && dataModel);
+  Node(std::unique_ptr<NodeDataModel> && dataModel, NodeStyle const& style);
 
   virtual
   ~Node();

@@ -95,6 +95,12 @@ public:
   void
   setNodeStyle(NodeStyle const& style);
 
+  bool
+  usingDefaultNodeStyle() const
+  {
+    return _usingDefaultNodeStyle;
+  }
+
 public:
 
   /// Triggers the algorithm
@@ -141,7 +147,7 @@ signals:
   computingFinished();
 
 private:
-
   NodeStyle _nodeStyle;
+  bool      _usingDefaultNodeStyle = true;
 };
 }

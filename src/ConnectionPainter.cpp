@@ -9,8 +9,6 @@
 
 #include "NodeData.hpp"
 
-#include "StyleCollection.hpp"
-
 
 using QtNodes::ConnectionPainter;
 using QtNodes::ConnectionGeometry;
@@ -110,7 +108,7 @@ drawSketchLine(QPainter * painter,
   if (state.requiresPort())
   {
     auto const & connectionStyle =
-      QtNodes::StyleCollection::connectionStyle();
+      connection.connectionStyle();
 
     QPen p;
     p.setWidth(connectionStyle.constructionLineWidth());
@@ -150,7 +148,7 @@ drawHoveredOrSelected(QPainter * painter,
     QPen p;
 
     auto const &connectionStyle =
-      QtNodes::StyleCollection::connectionStyle();
+      connection.connectionStyle();
     double const lineWidth     = connectionStyle.lineWidth();
 
     p.setWidth(2 * lineWidth);
@@ -184,7 +182,7 @@ drawNormalLine(QPainter * painter,
   // colors
 
   auto const &connectionStyle =
-    QtNodes::StyleCollection::connectionStyle();
+    connection.connectionStyle();
 
   QColor normalColorOut  = connectionStyle.normalColor();
   QColor normalColorIn   = connectionStyle.normalColor();
@@ -301,7 +299,7 @@ paint(QPainter* painter,
   QPointF const & sink   = geom.sink();
 
   auto const & connectionStyle =
-    QtNodes::StyleCollection::connectionStyle();
+    connection.connectionStyle();
 
   double const pointDiameter = connectionStyle.pointDiameter();
 

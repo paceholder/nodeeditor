@@ -22,6 +22,8 @@ class Node;
 class NodeGraphicsObject;
 class Connection;
 class ConnectionGraphicsObject;
+
+class ConnectionStyle;
 class NodeStyle;
 
 /// Scene holds connections and nodes.
@@ -97,6 +99,12 @@ public:
 
   void loadFromMemory(const QByteArray& data);
 
+  ConnectionStyle const& connectionStyle() const;
+  NodeStyle const& defaultNodeStyle() const;
+
+  void setConnectionStyle(ConnectionStyle style);
+  void setDefaultNodeStyle(NodeStyle style);
+
 signals:
 
   void nodeCreated(Node &n);
@@ -125,9 +133,13 @@ private:
   using SharedConnection = std::shared_ptr<Connection>;
   using UniqueNode       = std::unique_ptr<Node>;
 
+  struct Style;
+
   std::unordered_map<QUuid, SharedConnection> _connections;
   std::unordered_map<QUuid, UniqueNode>       _nodes;
   std::shared_ptr<DataModelRegistry>          _registry;
+
+  std::unique_ptr<Style> _style;
 };
 
 Node*

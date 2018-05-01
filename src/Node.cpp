@@ -8,6 +8,7 @@
 
 #include "NodeGraphicsObject.hpp"
 #include "NodeDataModel.hpp"
+#include "NodeStyle.hpp"
 
 #include "ConnectionGraphicsObject.hpp"
 #include "ConnectionState.hpp"
@@ -23,11 +24,11 @@ using QtNodes::PortIndex;
 using QtNodes::PortType;
 
 Node::
-Node(std::unique_ptr<NodeDataModel> && dataModel)
+Node(std::unique_ptr<NodeDataModel> && dataModel, NodeStyle const& style)
   : _uid(QUuid::createUuid())
   , _nodeDataModel(std::move(dataModel))
   , _nodeState(_nodeDataModel)
-  , _nodeGeometry(_nodeDataModel)
+  , _nodeGeometry(_nodeDataModel, style)
   , _nodeGraphicsObject(nullptr)
 {
   _nodeGeometry.recalculateSize();

@@ -2,18 +2,19 @@
 
 #include <cmath>
 
-#include "StyleCollection.hpp"
+#include "ConnectionStyle.hpp"
 
 using QtNodes::ConnectionGeometry;
 using QtNodes::PortType;
 
 ConnectionGeometry::
-ConnectionGeometry()
+ConnectionGeometry(ConnectionStyle const &style)
   : _in(0, 0)
   , _out(0, 0)
   //, _animationPhase(0)
   , _lineWidth(3.0)
   , _hovered(false)
+  , _style(&style)
 { }
 
 QPointF const&
@@ -78,10 +79,7 @@ boundingRect() const
 
   QRectF c1c2Rect = QRectF(points.first, points.second).normalized();
 
-  auto const &connectionStyle =
-    StyleCollection::connectionStyle();
-
-  float const diam = connectionStyle.pointDiameter();
+  float const diam = _style->pointDiameter();
 
   QRectF commonRect = basicRect.united(c1c2Rect);
 

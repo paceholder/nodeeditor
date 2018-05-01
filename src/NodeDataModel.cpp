@@ -38,4 +38,5 @@ NodeDataModel::
 setNodeStyle(NodeStyle const& style)
 {
   _nodeStyle = style;
+  _usingDefaultNodeStyle = false;
 }

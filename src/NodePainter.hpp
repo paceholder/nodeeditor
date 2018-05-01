@@ -12,6 +12,7 @@ class NodeGraphicsObject;
 class NodeDataModel;
 class FlowItemEntry;
 class FlowScene;
+class ConnectionStyle;
 
 class NodePainter
 {
@@ -54,14 +55,16 @@ public:
                        NodeGeometry const& geom,
                        NodeState const& state,
                        NodeDataModel const * model,
-                       FlowScene const & scene);
+                       FlowScene const & scene,
+                       ConnectionStyle const & connectionStyle);
 
   static
   void
   drawFilledConnectionPoints(QPainter* painter,
                              NodeGeometry const& geom,
                              NodeState const& state,
-                             NodeDataModel const * model);
+                             NodeDataModel const * model,
+                             ConnectionStyle const & connectionStyle);
 
   static
   void
