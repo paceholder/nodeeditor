@@ -1,6 +1,7 @@
 #include "NodeStyle.hpp"
 
 #include <iostream>
+#include <utility>
 
 #include <QtCore/QFile>
 #include <QtCore/QJsonDocument>
@@ -41,8 +42,7 @@ setNodeStyle(QString jsonText)
 {
   NodeStyle style(jsonText);
 
-
-  StyleCollection::setNodeStyle(style);
+  StyleCollection::setNodeStyle(std::move(style));
 }
 
 

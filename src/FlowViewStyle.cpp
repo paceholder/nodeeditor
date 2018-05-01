@@ -1,5 +1,7 @@
 #include "FlowViewStyle.hpp"
 
+#include <utility>
+
 #include <QtCore/QFile>
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
@@ -39,7 +41,7 @@ setStyle(QString jsonText)
 {
   FlowViewStyle style(jsonText);
 
-  StyleCollection::setFlowViewStyle(style);
+  StyleCollection::setFlowViewStyle(std::move(style));
 }
 
 

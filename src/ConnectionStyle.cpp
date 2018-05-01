@@ -1,6 +1,7 @@
 #include "ConnectionStyle.hpp"
 
 #include <iostream>
+#include <utility>
 
 #include <QtCore/QFile>
 #include <QtCore/QJsonDocument>
@@ -42,7 +43,7 @@ setConnectionStyle(QString jsonText)
 {
   ConnectionStyle style(jsonText);
 
-  StyleCollection::setConnectionStyle(style);
+  StyleCollection::setConnectionStyle(std::move(style));
 }
 
 #ifdef STYLE_DEBUG
