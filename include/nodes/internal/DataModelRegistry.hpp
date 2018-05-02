@@ -50,14 +50,20 @@ public:
 public:
 
   template<typename ModelType>
-  void registerModel(RegistryItemCreator creator = []{ return std::make_unique<ModelType>(); },
+  void registerModel(RegistryItemCreator creator,
                      QString const &category = "Nodes");
 
-  //Parameter order alias, so a category can be set without forcing to manually pass a model instance
   template<typename ModelType>
   void registerModel(QString const &category,
-                     RegistryItemCreator creator = []{ return std::make_unique<ModelType>(); })
+                     RegistryItemCreator creator)
   {
+    registerModel<ModelType>(std::move(creator), category);
+  }
+
+  template<typename ModelType>
+  void registerModel(QString const &category = "Nodes")
+  {
+    RegistryItemCreator creator = [](){ return std::make_unique<ModelType>(); };
     registerModel<ModelType>(std::move(creator), category);
   }
 
