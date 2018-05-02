@@ -67,10 +67,6 @@ public:
   name() const override
   { return QStringLiteral("Modulo"); }
 
-  std::unique_ptr<NodeDataModel>
-  clone() const override
-  { return std::make_unique<ModuloModel>(); }
-
 public:
 
   QJsonObject

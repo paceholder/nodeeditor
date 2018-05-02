@@ -39,10 +39,6 @@ public:
   name() const override
   { return QString("TextSourceDataModel"); }
 
-  std::unique_ptr<NodeDataModel>
-  clone() const override
-  { return std::make_unique<TextSourceDataModel>(); }
-
 public:
 
   unsigned int

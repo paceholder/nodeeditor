@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include <set>
 #include <memory>
+#include <functional>
 
 #include <QtCore/QString>
 
@@ -30,7 +31,8 @@ class NODE_EDITOR_PUBLIC DataModelRegistry
 public:
 
   using RegistryItemPtr     = std::unique_ptr<NodeDataModel>;
-  using RegisteredModelsMap = std::unordered_map<QString, RegistryItemPtr>;
+  using RegistryItemCreator = std::function<RegistryItemPtr()>;
+  using RegisteredModelCreatorsMap = std::unordered_map<QString, RegistryItemCreator>;
   using RegisteredModelsCategoryMap = std::unordered_map<QString, QString>;
   using CategoriesSet = std::set<QString>;
 
@@ -48,28 +50,15 @@ public:
 public:
 
   template<typename ModelType>
-  void registerModel(std::unique_ptr<ModelType> uniqueModel =
-                       std::make_unique<ModelType>(),
-                     QString const &category = "Nodes")
-  {
-    static_assert(std::is_base_of<NodeDataModel, ModelType>::value,
-                  "Must pass a subclass of NodeDataModel to registerModel");
-
-    QString const name = uniqueModel->name();
-
-    if (_registeredModels.count(name) == 0)
-    {
-      _registeredModels[name] = std::move(uniqueModel);
-      _categories.insert(category);
-      _registeredModelsCategory[name] = category;
-    }
-  }
+  void registerModel(RegistryItemCreator creator = []{ return std::make_unique<ModelType>(); },
+                     QString const &category = "Nodes");
 
   //Parameter order alias, so a category can be set without forcing to manually pass a model instance
   template<typename ModelType>
-  void registerModel(QString const &category, std::unique_ptr<ModelType> uniqueModel = std::make_unique<ModelType>())
+  void registerModel(QString const &category,
+                     RegistryItemCreator creator = []{ return std::make_unique<ModelType>(); })
   {
-    registerModel<ModelType>(std::move(uniqueModel), category);
+    registerModel<ModelType>(std::move(creator), category);
   }
 
   void registerTypeConverter(TypeConverterId const & id,
@@ -80,7 +69,7 @@ public:
 
   std::unique_ptr<NodeDataModel>create(QString const &modelName);
 
-  RegisteredModelsMap const &registeredModels() const;
+  RegisteredModelCreatorsMap const &registeredModelCreators() const;
 
   RegisteredModelsCategoryMap const &registeredModelsCategoryAssociation() const;
 
@@ -95,8 +84,29 @@ private:
 
   CategoriesSet _categories;
 
-  RegisteredModelsMap _registeredModels;
+  RegisteredModelCreatorsMap _registeredItemCreators;
 
   RegisteredTypeConvertersMap _registeredTypeConverters;
 };
+
+
+
+template<typename ModelType> inline void
+DataModelRegistry::
+    registerModel(RegistryItemCreator creator, QString const &category)
+{
+  static_assert(std::is_base_of<NodeDataModel, ModelType>::value,
+                "Must pass a subclass of NodeDataModel to registerModel");
+
+  RegistryItemPtr prototypeInstance = creator();
+  QString const name = prototypeInstance->name();
+
+  if (_registeredItemCreators.count(name) == 0)
+  {
+    _registeredItemCreators[name] = std::move(creator);
+    _categories.insert(category);
+    _registeredModelsCategory[name] = category;
+  }
+}
+
 }
