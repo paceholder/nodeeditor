@@ -1,6 +1,5 @@
 #pragma once
 
-#include <memory>
 
 #include <QtCore/QObject>
 #include <QtCore/QUuid>
@@ -16,6 +15,7 @@
 #include "NodeGraphicsObject.hpp"
 #include "ConnectionGraphicsObject.hpp"
 #include "Serializable.hpp"
+#include "memory.hpp"
 
 namespace QtNodes
 {

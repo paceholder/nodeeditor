@@ -1,7 +1,5 @@
 #pragma once
 
-#include <memory>
-
 #include <QtCore/QObject>
 #include <QtCore/QUuid>
 #include <QtCore/QVariant>
@@ -15,6 +13,7 @@
 #include "TypeConverter.hpp"
 #include "QUuidStdHash.hpp"
 #include "Export.hpp"
+#include "memory.hpp"
 
 class QPointF;
 
