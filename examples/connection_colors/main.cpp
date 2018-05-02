@@ -44,7 +44,7 @@ main(int argc, char* argv[])
   connectionStyle->useDataDefinedColors(true);
 
   FlowScene scene(registerDataModels());
-  scene->setConnectionStyle(std::move(connectionStyle));
+  scene.setConnectionStyle(std::move(connectionStyle));
 
   FlowView view(&scene);
 

@@ -12,7 +12,7 @@
 namespace QtNodes
 {
 
-class NODE_EDITOR_PUBLIC NodeStyle : public std::enable_shared_from_this<NodeStyle>
+class NODE_EDITOR_PUBLIC NodeStyle
 {
 public:
   NodeStyle();

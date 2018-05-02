@@ -55,7 +55,7 @@ public:
   std::unique_ptr<NodeDataModel>
   clone() const override
   {
-    return std::make_unique<MyDataModel>(nodeStyle().shared_from_this());
+    return std::make_unique<MyDataModel>();
   }
 
 public:

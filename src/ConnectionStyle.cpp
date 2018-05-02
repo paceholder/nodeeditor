@@ -67,6 +67,26 @@ fromJson(QString jsonText)
 }
 
 
+// static
+QColor
+ConnectionStyle::
+computeNormalColor(QString typeId)
+{
+  std::size_t hash = qHash(typeId);
+
+  std::size_t const hue_range = 0xFF;
+
+  qsrand(hash);
+  std::size_t hue = qrand() % hue_range;
+
+  std::size_t sat = 120 + hash % 129;
+
+  return QColor::fromHsl(hue,
+                         sat,
+                         160);
+}
+
+
 ConnectionStyle::
 ConnectionStyle()
 = default;
@@ -86,25 +106,6 @@ normalColor() const
 {
   return _normalColor;
 }
-
-
-// QColor
-// ConnectionStyle::
-// normalColor(QString typeId) const
-// {
-//   std::size_t hash = qHash(typeId);
-
-//   std::size_t const hue_range = 0xFF;
-
-//   qsrand(hash);
-//   std::size_t hue = qrand() % hue_range;
-
-//   std::size_t sat = 120 + hash % 129;
-
-//   return QColor::fromHsl(hue,
-//                          sat,
-//                          160);
-// }
 
 
 QColor

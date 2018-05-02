@@ -12,7 +12,7 @@
 namespace QtNodes
 {
 
-class NODE_EDITOR_PUBLIC FlowViewStyle : public std::enable_shared_from_this<FlowViewStyle>
+class NODE_EDITOR_PUBLIC FlowViewStyle
 {
 public:
   FlowViewStyle();
@@ -24,22 +24,40 @@ public:
   fromJson(QString jsonText);
 
   QColor const &
-  backgroundColor() const;
+  backgroundColor() const
+  {
+    return _backgroundColor;
+  }
 
   QColor const &
-  fineGridColor() const;
+  fineGridColor() const
+  {
+    return _fineGridColor;
+  }
 
   QColor const &
-  coarseGridColor() const;
+  coarseGridColor() const
+  {
+    return _coarseGridColor;
+  }
 
   void
-  setBackgroundColor(QColor backgroundColor);
+  setBackgroundColor(QColor backgroundColor)
+  {
+    _backgroundColor = backgroundColor;
+  }
 
   void
-  setFineGridColor(QColor fineGridColor);
+  setFineGridColor(QColor fineGridColor)
+  {
+    _fineGridColor = fineGridColor;
+  }
 
   void
-  setCoarseGridColor(QColor coarseGridColor);
+  setCoarseGridColor(QColor coarseGridColor)
+  {
+    _coarseGridColor = coarseGridColor;
+  }
 
 private:
 

@@ -8,11 +8,23 @@
 
 using QtNodes::StyleImport;
 
+
+static
+inline
+void
+initResources()
+{
+  // note: this function must be in the global namespace.
+  // Q_INIT_RESOURCE(...) requires it.
+  Q_INIT_RESOURCE(resources);
+}
+
+
 void
 StyleImport::
 initResources()
 {
-  Q_INIT_RESOURCE(resources);
+  ::initResources();
 }
 
 
@@ -20,13 +32,13 @@ QByteArray
 StyleImport::
 readJsonFile(QString const &fileName)
 {
-  QFile file(styleFile);
+  QFile file(fileName);
 
   if (!file.open(QIODevice::ReadOnly))
   {
-    qWarning() << "Couldn't open file " << styleFile;
+    qWarning() << "Couldn't open file " << fileName;
 
-    return;
+    return QByteArray();
   }
 
   return file.readAll();
@@ -43,7 +55,7 @@ readJsonText(QString const &jsonText)
 
 bool
 StyleImport::
-hasValue(QJsonValue const &value, QString const &name)
+hasValue(QJsonValue const &value, QString const &)
 {
   return (value.type() != QJsonValue::Undefined
           && value.type() != QJsonValue::Null);

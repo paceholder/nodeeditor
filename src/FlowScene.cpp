@@ -81,7 +81,7 @@ createConnection(PortType connectedPort,
                                                  portIndex,
                                                  connectionStyle());
 
-  auto cgo = detail::make_unique<ConnectionGraphicsObject>(*this, *connection);
+  auto cgo = QtNodes::detail::make_unique<ConnectionGraphicsObject>(*this, *connection);
 
   // after this function connection points are set to node port
   connection->setGraphicsObject(std::move(cgo));
@@ -109,7 +109,7 @@ createConnection(Node& nodeIn,
                                  connectionStyle(),
                                  converter);
 
-  auto cgo = detail::make_unique<ConnectionGraphicsObject>(*this, *connection);
+  auto cgo = QtNodes::detail::make_unique<ConnectionGraphicsObject>(*this, *connection);
 
   nodeIn.nodeState().setConnection(PortType::In, portIndexIn, *connection);
   nodeOut.nodeState().setConnection(PortType::Out, portIndexOut, *connection);
@@ -190,8 +190,8 @@ makeNode(FlowScene &                                       scene,
          std::unordered_map<QUuid, std::unique_ptr<Node>> &nodes,
          std::unique_ptr<NodeDataModel> &&                 dataModel)
 {
-  auto node = detail::make_unique<Node>(std::move(dataModel), scene.nodeStyle());
-  auto ngo  = detail::make_unique<NodeGraphicsObject>(scene, *node);
+  auto node = QtNodes::detail::make_unique<Node>(std::move(dataModel), scene.nodeStyle());
+  auto ngo  = QtNodes::detail::make_unique<NodeGraphicsObject>(scene, *node);
 
   node->setGraphicsObject(std::move(ngo));
 

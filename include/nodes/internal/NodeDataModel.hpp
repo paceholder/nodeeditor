@@ -31,7 +31,7 @@ class NODE_EDITOR_PUBLIC NodeDataModel
 
 public:
 
-  NodeDataModel(std::shared_ptr<NodeStyle const> style);
+  NodeDataModel();
 
   virtual
   ~NodeDataModel() = default;
@@ -88,11 +88,7 @@ public:
     return ConnectionPolicy::Many;
   }
 
-  NodeStyle const&
-  nodeStyle() const;
-
-  void
-  setNodeStyle(std::shared_ptr<NodeStyle const> style);
+  virtual NodeStyle const* nodeStyle() const { return nullptr; }
 
 public:
 
@@ -138,8 +134,5 @@ signals:
 
   void
   computingFinished();
-
-private:
-  std::shared_ptr<NodeStyle const> _nodeStyle;
 };
 }

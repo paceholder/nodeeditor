@@ -60,27 +60,24 @@ registerDataModels()
 
 
 static
-void
-setStyle()
+auto
+connectionStyle()
 {
-  ConnectionStyle::setConnectionStyle(
-  R"(
-  {
-    "ConnectionStyle": {
-      "ConstructionColor": "gray",
-      "NormalColor": "black",
-      "SelectedColor": "gray",
-      "SelectedHaloColor": "deepskyblue",
-      "HoveredColor": "deepskyblue",
+  auto style = ConnectionStyle::defaultStyle();
+  
+  style->setConstructionColor(QColor("gray"));
+  style->setNormalColor(QColor("black"));
+  style->setSelectedColor(QColor("gray"));
+  style->setSelectedHaloColor(QColor("deepskyblue"));
+  style->setHoveredColor(QColor("deepskyblue"));
 
-      "LineWidth": 3.0,
-      "ConstructionLineWidth": 2.0,
-      "PointDiameter": 10.0,
+  style->setLineWidth(3.0);
+  style->setConstructionLineWidth(2.0);
+  style->setPointDiameter(10.0);
 
-      "UseDataDefinedColors": true
-    }
-  }
-  )");
+  style->useDataDefinedColors(true);
+
+  return style;
 }
 
 
@@ -88,8 +85,6 @@ int
 main(int argc, char *argv[])
 {
   QApplication app(argc, argv);
-
-  setStyle();
 
   QWidget mainWidget;
 
@@ -101,6 +96,7 @@ main(int argc, char *argv[])
 
   l->addWidget(menuBar);
   auto scene = new FlowScene(registerDataModels(), &mainWidget);
+  scene->setConnectionStyle(connectionStyle());
   l->addWidget(new FlowView(scene));
   l->setContentsMargins(0, 0, 0, 0);
   l->setSpacing(0);

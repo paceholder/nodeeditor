@@ -13,7 +13,7 @@
 namespace QtNodes
 {
 
-class NODE_EDITOR_PUBLIC ConnectionStyle : public std::enable_shared_from_this<ConnectionStyle>
+class NODE_EDITOR_PUBLIC ConnectionStyle
 {
 public:
   ConnectionStyle();
@@ -26,7 +26,6 @@ public:
 
   QColor constructionColor() const;
   QColor normalColor() const;
-  QColor normalColor(QString typeId) const;
   QColor selectedColor() const;
   QColor selectedHaloColor() const;
   QColor hoveredColor() const;
@@ -48,6 +47,9 @@ public:
   void setPointDiameter(float);
 
   void useDataDefinedColors(bool);
+
+  static QColor
+  computeNormalColor(QString typeId);
 
 private:
   void loadJson(QByteArray const& jsonBytes);

@@ -11,9 +11,10 @@
 #include "NodeData.hpp"
 
 
-using QtNodes::ConnectionPainter;
-using QtNodes::ConnectionGeometry;
 using QtNodes::Connection;
+using QtNodes::ConnectionGeometry;
+using QtNodes::ConnectionPainter;
+using QtNodes::ConnectionStyle;
 
 
 static
@@ -200,8 +201,8 @@ drawNormalLine(QPainter * painter,
 
     gradientColor = (dataTypeOut.id != dataTypeIn.id);
 
-    normalColorOut  = connectionStyle.normalColor(dataTypeOut.id);
-    normalColorIn   = connectionStyle.normalColor(dataTypeIn.id);
+    normalColorOut  = ConnectionStyle::computeNormalColor(dataTypeOut.id);
+    normalColorIn   = ConnectionStyle::computeNormalColor(dataTypeIn.id);
     selectedColor = normalColorOut.darker(200);
   }
 
