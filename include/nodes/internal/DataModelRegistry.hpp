@@ -1,8 +1,8 @@
 #pragma once
 
-#include <unordered_map>
 #include <set>
-#include <memory>
+#include <unordered_map>
+#include <vector>
 
 #include <QtCore/QString>
 
@@ -10,6 +10,7 @@
 #include "TypeConverter.hpp"
 #include "Export.hpp"
 #include "QStringStdHash.hpp"
+#include "memory.hpp"
 
 namespace QtNodes
 {
@@ -49,7 +50,7 @@ public:
 
   template<typename ModelType>
   void registerModel(std::unique_ptr<ModelType> uniqueModel =
-                       std::make_unique<ModelType>(),
+                       detail::make_unique<ModelType>(),
                      QString const &category = "Nodes")
   {
     static_assert(std::is_base_of<NodeDataModel, ModelType>::value,
@@ -67,7 +68,7 @@ public:
 
   //Parameter order alias, so a category can be set without forcing to manually pass a model instance
   template<typename ModelType>
-  void registerModel(QString const &category, std::unique_ptr<ModelType> uniqueModel = std::make_unique<ModelType>())
+  void registerModel(QString const &category, std::unique_ptr<ModelType> uniqueModel = detail::make_unique<ModelType>())
   {
     registerModel<ModelType>(std::move(uniqueModel), category);
   }

@@ -1,7 +1,5 @@
 #pragma once
 
-#include <memory>
-
 #include <QtCore/QRectF>
 #include <QtCore/QPointF>
 #include <QtGui/QTransform>
@@ -9,6 +7,7 @@
 
 #include "PortType.hpp"
 #include "Export.hpp"
+#include "memory.hpp"
 
 namespace QtNodes
 {

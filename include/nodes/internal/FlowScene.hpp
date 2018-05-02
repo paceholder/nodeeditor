@@ -5,13 +5,13 @@
 
 #include <unordered_map>
 #include <tuple>
-#include <memory>
 #include <functional>
 
 #include "QUuidStdHash.hpp"
 #include "Export.hpp"
 #include "DataModelRegistry.hpp"
 #include "TypeConverter.hpp"
+#include "memory.hpp"
 
 namespace QtNodes
 {

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <memory>
 
 #include <QtWidgets/QWidget>
 
@@ -11,6 +10,7 @@
 #include "NodeStyle.hpp"
 #include "NodePainterDelegate.hpp"
 #include "Export.hpp"
+#include "memory.hpp"
 
 namespace QtNodes
 {
