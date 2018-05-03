@@ -35,9 +35,13 @@ public:
   bool
   captionVisible() const override { return false; }
 
+  static QString
+  Name()
+  { return QString("TextDisplayDataModel"); }
+
   QString
   name() const override
-  { return QString("TextDisplayDataModel"); }
+  { return TextDisplayDataModel::Name(); }
 
 public:
 

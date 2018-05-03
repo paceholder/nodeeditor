@@ -51,20 +51,22 @@ public:
 
   template<typename ModelType>
   void registerModel(RegistryItemCreator creator,
-                     QString const &category = "Nodes");
+                     QString const &category = "Nodes")
+  {
+    registerModelImpl<ModelType>(std::move(creator), category);
+  }
+  template<typename ModelType>
+  void registerModel(QString const &category = "Nodes")
+  {
+    RegistryItemCreator creator = [](){ return std::make_unique<ModelType>(); };
+    registerModelImpl<ModelType>(std::move(creator), category);
+  }
 
   template<typename ModelType>
   void registerModel(QString const &category,
                      RegistryItemCreator creator)
   {
-    registerModel<ModelType>(std::move(creator), category);
-  }
-
-  template<typename ModelType>
-  void registerModel(QString const &category = "Nodes")
-  {
-    RegistryItemCreator creator = [](){ return std::make_unique<ModelType>(); };
-    registerModel<ModelType>(std::move(creator), category);
+    registerModelImpl<ModelType>(std::move(creator), category);
   }
 
   void registerTypeConverter(TypeConverterId const & id,
@@ -93,26 +95,59 @@ private:
   RegisteredModelCreatorsMap _registeredItemCreators;
 
   RegisteredTypeConvertersMap _registeredTypeConverters;
+
+private:
+
+  // If the registered ModelType class has the static member method
+  //
+  //      static Qstring Name();
+  //
+  // use it. Otherwise use the non-static method:
+  //
+  //       virtual QString name() const;
+
+  // https://stackoverflow.com/questions/30372941/check-if-a-class-has-a-static-member-function-of-a-given-signature
+  template <typename U>
+  class HasStaticMethodName
+  {
+  private:
+      template<typename T, T> struct helper;
+      template<typename T>
+      static std::uint8_t check(helper<QString (*)(void), &T::Name>*);
+      template<typename T> static std::uint16_t check(...);
+  public:
+      static
+      constexpr bool value = sizeof(check<U>(0)) == sizeof(std::uint8_t);
+  };
+
+  template<typename ModelType>
+  typename std::enable_if< HasStaticMethodName<ModelType>::value>::type
+  registerModelImpl(RegistryItemCreator creator, QString const &category )
+  {
+    const QString name = ModelType::Name();
+    if (_registeredItemCreators.count(name) == 0)
+    {
+      _registeredItemCreators[name] = std::move(creator);
+      _categories.insert(category);
+      _registeredModelsCategory[name] = category;
+    }
+  }
+
+  template<typename ModelType>
+  typename std::enable_if< !HasStaticMethodName<ModelType>::value>::type
+  registerModelImpl(RegistryItemCreator creator, QString const &category )
+  {
+    const QString name = creator()->name();
+    if (_registeredItemCreators.count(name) == 0)
+    {
+      _registeredItemCreators[name] = std::move(creator);
+      _categories.insert(category);
+      _registeredModelsCategory[name] = category;
+    }
+  }
+
 };
 
 
-
-template<typename ModelType> inline void
-DataModelRegistry::
-    registerModel(RegistryItemCreator creator, QString const &category)
-{
-  static_assert(std::is_base_of<NodeDataModel, ModelType>::value,
-                "Must pass a subclass of NodeDataModel to registerModel");
-
-  RegistryItemPtr prototypeInstance = creator();
-  QString const name = prototypeInstance->name();
-
-  if (_registeredItemCreators.count(name) == 0)
-  {
-    _registeredItemCreators[name] = std::move(creator);
-    _categories.insert(category);
-    _registeredModelsCategory[name] = category;
-  }
-}
 
 }
