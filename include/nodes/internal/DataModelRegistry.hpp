@@ -1,9 +1,10 @@
 #pragma once
 
-#include <unordered_map>
 #include <set>
 #include <memory>
 #include <functional>
+#include <unordered_map>
+#include <vector>
 
 #include <QtCore/QString>
 
@@ -11,6 +12,7 @@
 #include "TypeConverter.hpp"
 #include "Export.hpp"
 #include "QStringStdHash.hpp"
+#include "memory.hpp"
 
 namespace QtNodes
 {
@@ -55,6 +57,7 @@ public:
   {
     registerModelImpl<ModelType>(std::move(creator), category);
   }
+
   template<typename ModelType>
   void registerModel(QString const &category = "Nodes")
   {

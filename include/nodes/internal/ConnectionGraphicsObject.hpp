@@ -1,7 +1,5 @@
 #pragma once
 
-#include <memory>
-
 #include <QtCore/QUuid>
 
 #include <QtWidgets/QGraphicsObject>

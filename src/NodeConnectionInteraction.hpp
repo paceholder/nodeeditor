@@ -1,7 +1,5 @@
 #pragma once
 
-#include <memory>
-
 #include "Node.hpp"
 #include "Connection.hpp"
 
