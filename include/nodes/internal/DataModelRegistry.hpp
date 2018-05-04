@@ -109,19 +109,16 @@ private:
   //
   //       virtual QString name() const;
 
-  // https://stackoverflow.com/questions/30372941/check-if-a-class-has-a-static-member-function-of-a-given-signature
-  template <typename U>
-  class HasStaticMethodName
-  {
-  private:
-      template<typename T, T> struct helper;
-      template<typename T>
-      static std::uint8_t check(helper<QString (*)(void), &T::Name>*);
-      template<typename T> static std::uint16_t check(...);
-  public:
-      static
-      constexpr bool value = sizeof(check<U>(0)) == sizeof(std::uint8_t);
-  };
+  template <typename T, typename = void>
+  struct HasStaticMethodName
+      : std::false_type
+  {};
+
+  template <typename T>
+  struct HasStaticMethodName<T,
+          typename std::enable_if<std::is_same<decltype(T::Name()), QString>::value>::type>
+      : std::true_type
+  {};
 
   template<typename ModelType>
   typename std::enable_if< HasStaticMethodName<ModelType>::value>::type
