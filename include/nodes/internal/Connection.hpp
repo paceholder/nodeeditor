@@ -45,7 +45,7 @@ public:
              PortIndex portIndexIn,
              Node& nodeOut,
              PortIndex portIndexOut,
-             TypeConverter const & converter =
+             TypeConverter converter =
                TypeConverter{});
 
   Connection(const Connection&) = delete;

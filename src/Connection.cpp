@@ -1,6 +1,7 @@
 #include "Connection.hpp"
 
-#include <math.h>
+#include <cmath>
+#include <utility>
 
 #include <QtWidgets/QtWidgets>
 #include <QtGlobal>
@@ -48,14 +49,14 @@ Connection(Node& nodeIn,
            PortIndex portIndexIn,
            Node& nodeOut,
            PortIndex portIndexOut,
-           TypeConverter const & typeConverter)
+           TypeConverter typeConverter)
   : _uid(QUuid::createUuid())
   , _outNode(&nodeOut)
   , _inNode(&nodeIn)
   , _outPortIndex(portIndexOut)
   , _inPortIndex(portIndexIn)
   , _connectionState()
-  , _converter(typeConverter)
+  , _converter(std::move(typeConverter))
 {
   setNodeToPort(nodeIn, PortType::In, portIndexIn);
   setNodeToPort(nodeOut, PortType::Out, portIndexOut);
