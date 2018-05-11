@@ -125,9 +125,14 @@ private:
   using SharedConnection = std::shared_ptr<Connection>;
   using UniqueNode       = std::unique_ptr<Node>;
 
+  // DO NOT reorder this member to go after the others.
+  // This should outlive all the connections and nodes of
+  // the graph, so that nodes can potentially have pointers into it,
+  // which is why it comes first in the class.
+  std::shared_ptr<DataModelRegistry> _registry;
+
   std::unordered_map<QUuid, SharedConnection> _connections;
   std::unordered_map<QUuid, UniqueNode>       _nodes;
-  std::shared_ptr<DataModelRegistry>          _registry;
 };
 
 Node*
