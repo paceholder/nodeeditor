@@ -55,21 +55,27 @@ public:
   void registerModel(RegistryItemCreator creator,
                      QString const &category = "Nodes")
   {
-    registerModelImpl<ModelType>(std::move(creator), category);
+    const QString name = computeName<ModelType>(HasStaticMethodName<ModelType>{}, creator);
+    if (!_registeredItemCreators.count(name))
+    {
+      _registeredItemCreators[name] = std::move(creator);
+      _categories.insert(category);
+      _registeredModelsCategory[name] = category;
+    }
   }
 
   template<typename ModelType>
   void registerModel(QString const &category = "Nodes")
   {
     RegistryItemCreator creator = [](){ return std::make_unique<ModelType>(); };
-    registerModelImpl<ModelType>(std::move(creator), category);
+    registerModel<ModelType>(std::move(creator), category);
   }
 
   template<typename ModelType>
   void registerModel(QString const &category,
                      RegistryItemCreator creator)
   {
-    registerModelImpl<ModelType>(std::move(creator), category);
+    registerModel<ModelType>(std::move(creator), category);
   }
 
   void registerTypeConverter(TypeConverterId const & id,
@@ -120,32 +126,19 @@ private:
       : std::true_type
   {};
 
-  template<typename ModelType>
-  typename std::enable_if< HasStaticMethodName<ModelType>::value>::type
-  registerModelImpl(RegistryItemCreator creator, QString const &category )
+  template <typename ModelType>
+  static QString
+  computeName(std::true_type, RegistryItemCreator const&)
   {
-    const QString name = ModelType::Name();
-    if (_registeredItemCreators.count(name) == 0)
-    {
-      _registeredItemCreators[name] = std::move(creator);
-      _categories.insert(category);
-      _registeredModelsCategory[name] = category;
-    }
+    return ModelType::Name();
   }
 
-  template<typename ModelType>
-  typename std::enable_if< !HasStaticMethodName<ModelType>::value>::type
-  registerModelImpl(RegistryItemCreator creator, QString const &category )
+  template <typename ModelType>
+  static QString
+  computeName(std::false_type, RegistryItemCreator const& creator)
   {
-    const QString name = creator()->name();
-    if (_registeredItemCreators.count(name) == 0)
-    {
-      _registeredItemCreators[name] = std::move(creator);
-      _categories.insert(category);
-      _registeredModelsCategory[name] = category;
-    }
+    return creator()->name();
   }
-
 };
 
 
