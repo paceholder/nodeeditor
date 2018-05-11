@@ -64,7 +64,7 @@ defaultStyle()
 
 std::shared_ptr<NodeStyle>
 NodeStyle::
-fromJson(QString jsonText)
+fromJson(QString const& jsonText)
 {
   auto style = std::make_shared<NodeStyle>();
   style->loadJson(StyleImport::readJsonText(jsonText));
@@ -75,8 +75,7 @@ fromJson(QString jsonText)
 
 NodeStyle::
 NodeStyle()
-{
-}
+= default;
 
 
 QColor

@@ -21,7 +21,7 @@ public:
   defaultStyle();
 
   static std::shared_ptr<NodeStyle>
-  fromJson(QString jsonText);
+  fromJson(QString const& jsonText);
 
   QColor normalBoundaryColor() const;
   QColor selectedBoundaryColor() const;

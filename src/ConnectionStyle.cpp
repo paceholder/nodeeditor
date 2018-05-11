@@ -57,7 +57,7 @@ defaultStyle()
 
 std::shared_ptr<ConnectionStyle>
 ConnectionStyle::
-fromJson(QString jsonText)
+fromJson(QString const& jsonText)
 {
   auto style = defaultStyle();
 
@@ -70,7 +70,7 @@ fromJson(QString jsonText)
 // static
 QColor
 ConnectionStyle::
-computeNormalColor(QString typeId)
+computeNormalColor(QString const& typeId)
 {
   std::size_t hash = qHash(typeId);
 

@@ -14,7 +14,6 @@
 
 using QtNodes::FlowViewStyle;
 using QtNodes::StyleImport;
-using QtNodes::StyleImportError;
 
 
 void
@@ -48,7 +47,7 @@ defaultStyle()
 
 std::shared_ptr<FlowViewStyle>
 FlowViewStyle::
-fromJson(QString jsonText)
+fromJson(QString const& jsonText)
 {
   auto style = std::make_shared<FlowViewStyle>();
   style->loadJson(StyleImport::readJsonText(jsonText));

@@ -22,7 +22,7 @@ public:
   defaultStyle();
 
   static std::shared_ptr<ConnectionStyle>
-  fromJson(QString jsonText);
+  fromJson(QString const& jsonText);
 
   QColor constructionColor() const;
   QColor normalColor() const;
@@ -49,7 +49,7 @@ public:
   void useDataDefinedColors(bool);
 
   static QColor
-  computeNormalColor(QString typeId);
+  computeNormalColor(QString const& typeId);
 
 private:
   void loadJson(QByteArray const& jsonBytes);

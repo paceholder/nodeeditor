@@ -21,7 +21,7 @@ public:
   defaultStyle();
 
   static std::shared_ptr<FlowViewStyle>
-  fromJson(QString jsonText);
+  fromJson(QString const& jsonText);
 
   QColor const &
   backgroundColor() const

@@ -6,8 +6,7 @@ using QtNodes::NodeDataModel;
 
 NodeDataModel::
 NodeDataModel()
-{
-}
+= default;
 
 
 QJsonObject
