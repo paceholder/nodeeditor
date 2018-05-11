@@ -17,6 +17,13 @@ using QtNodes::ConnectionStyle;
 using QtNodes::StyleImport;
 
 
+ConnectionStyle::
+ConnectionStyle(QByteArray const& jsonBytes)
+{
+  loadJson(jsonBytes);
+}
+
+
 void
 ConnectionStyle::
 loadJson(QByteArray const& jsonBytes)
@@ -41,27 +48,27 @@ loadJson(QByteArray const& jsonBytes)
 }
 
 
-std::shared_ptr<ConnectionStyle>
+ConnectionStyle const&
 ConnectionStyle::
 defaultStyle()
 {
-  StyleImport::initResources();
+  static ConnectionStyle const DefaultStyle = [] {
+    StyleImport::initResources();
 
-  auto style = std::make_shared<ConnectionStyle>();
+    return ConnectionStyle(StyleImport::readJsonFile(":DefaultStyle.json"));
+  }();
 
-  style->loadJson(StyleImport::readJsonFile(":DefaultStyle.json"));
-
-  return style;
+  return DefaultStyle;
 }
 
 
-std::shared_ptr<ConnectionStyle>
+ConnectionStyle
 ConnectionStyle::
 fromJson(QString const& jsonText)
 {
   auto style = defaultStyle();
 
-  style->loadJson(StyleImport::readJsonText(jsonText));
+  style.loadJson(StyleImport::readJsonText(jsonText));
 
   return style;
 }

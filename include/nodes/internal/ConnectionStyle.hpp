@@ -1,7 +1,5 @@
 #pragma once
 
-#include <memory>
-
 #include <QtGui/QColor>
 
 #include <QByteArray>
@@ -18,10 +16,10 @@ class NODE_EDITOR_PUBLIC ConnectionStyle
 public:
   ConnectionStyle();
 
-  static std::shared_ptr<ConnectionStyle>
+  static ConnectionStyle const&
   defaultStyle();
 
-  static std::shared_ptr<ConnectionStyle>
+  static ConnectionStyle
   fromJson(QString const& jsonText);
 
   QColor constructionColor() const;
@@ -52,6 +50,7 @@ public:
   computeNormalColor(QString const& typeId);
 
 private:
+  ConnectionStyle(QByteArray const& jsonBytes);
   void loadJson(QByteArray const& jsonBytes);
 
   QColor _constructionColor;

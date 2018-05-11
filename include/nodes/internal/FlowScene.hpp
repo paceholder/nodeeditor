@@ -13,6 +13,9 @@
 #include "TypeConverter.hpp"
 #include "memory.hpp"
 
+#include "ConnectionStyle.hpp"
+#include "NodeStyle.hpp"
+
 namespace QtNodes
 {
 
@@ -22,9 +25,6 @@ class Node;
 class NodeGraphicsObject;
 class Connection;
 class ConnectionGraphicsObject;
-
-class ConnectionStyle;
-class NodeStyle;
 
 /// Scene holds connections and nodes.
 class NODE_EDITOR_PUBLIC FlowScene
@@ -102,8 +102,8 @@ public:
   ConnectionStyle const& connectionStyle() const;
   NodeStyle const& nodeStyle() const;
 
-  void setConnectionStyle(std::shared_ptr<ConnectionStyle const> style);
-  void setNodeStyle(std::shared_ptr<NodeStyle const> style);
+  void setConnectionStyle(ConnectionStyle style);
+  void setNodeStyle(NodeStyle style);
 
 signals:
 
@@ -137,8 +137,8 @@ private:
   std::unordered_map<QUuid, UniqueNode>       _nodes;
   std::shared_ptr<DataModelRegistry>          _registry;
 
-  std::shared_ptr<ConnectionStyle const> _connectionStyle;
-  std::shared_ptr<NodeStyle const>       _nodeStyle;
+  ConnectionStyle _connectionStyle;
+  NodeStyle       _nodeStyle;
 };
 
 Node*

@@ -41,7 +41,7 @@ main(int argc, char* argv[])
   QApplication app(argc, argv);
 
   auto connectionStyle = ConnectionStyle::defaultStyle();
-  connectionStyle->useDataDefinedColors(true);
+  connectionStyle.useDataDefinedColors(true);
 
   FlowScene scene(registerDataModels());
   scene.setConnectionStyle(std::move(connectionStyle));

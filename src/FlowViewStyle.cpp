@@ -16,9 +16,8 @@ using QtNodes::FlowViewStyle;
 using QtNodes::StyleImport;
 
 
-void
 FlowViewStyle::
-loadJson(QByteArray const &jsonBytes)
+FlowViewStyle(QByteArray const& jsonBytes)
 {
   QJsonDocument json(QJsonDocument::fromJson(jsonBytes));
   QJsonObject   topLevelObject = json.object();
@@ -32,27 +31,24 @@ loadJson(QByteArray const &jsonBytes)
 }
 
 
-std::shared_ptr<FlowViewStyle>
+FlowViewStyle const&
 FlowViewStyle::
 defaultStyle()
 {
-  StyleImport::initResources();
+  static FlowViewStyle const DefaultStyle = [] {
+    StyleImport::initResources();
+    return FlowViewStyle(StyleImport::readJsonFile(":DefaultStyle.json"));
+  }();
 
-  auto style = std::make_shared<FlowViewStyle>();
-  style->loadJson(StyleImport::readJsonFile(":DefaultStyle.json"));
-
-  return style;
+  return DefaultStyle;
 }
 
 
-std::shared_ptr<FlowViewStyle>
+FlowViewStyle
 FlowViewStyle::
 fromJson(QString const& jsonText)
 {
-  auto style = std::make_shared<FlowViewStyle>();
-  style->loadJson(StyleImport::readJsonText(jsonText));
-
-  return style;
+  return FlowViewStyle(StyleImport::readJsonText(jsonText));
 }
 
 

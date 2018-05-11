@@ -17,9 +17,9 @@ class NODE_EDITOR_PUBLIC FlowView
 public:
 
   FlowView(QWidget *parent = Q_NULLPTR);
-  FlowView(std::shared_ptr<FlowViewStyle const> style, QWidget *parent = Q_NULLPTR);
+  FlowView(FlowViewStyle style, QWidget *parent = Q_NULLPTR);
   FlowView(FlowScene *scene, QWidget *parent = Q_NULLPTR);
-  FlowView(FlowScene *scene, std::shared_ptr<FlowViewStyle const> style, QWidget *parent = Q_NULLPTR);
+  FlowView(FlowScene *scene, FlowViewStyle style, QWidget *parent = Q_NULLPTR);
 
   FlowView(const FlowView&) = delete;
   FlowView operator=(const FlowView&) = delete;
@@ -30,7 +30,7 @@ public:
 
   void setScene(FlowScene *scene);
 
-  void setStyle(std::shared_ptr<FlowViewStyle const> style);
+  void setStyle(FlowViewStyle style);
 
 public slots:
 
@@ -71,6 +71,6 @@ private:
 
   FlowScene* _scene;
 
-  std::shared_ptr<FlowViewStyle const> _style;
+  FlowViewStyle _style;
 };
 }

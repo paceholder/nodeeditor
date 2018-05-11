@@ -17,10 +17,10 @@ class NODE_EDITOR_PUBLIC NodeStyle
 public:
   NodeStyle();
 
-  static std::shared_ptr<NodeStyle>
+  static NodeStyle const&
   defaultStyle();
 
-  static std::shared_ptr<NodeStyle>
+  static NodeStyle
   fromJson(QString const& jsonText);
 
   QColor normalBoundaryColor() const;
@@ -69,7 +69,7 @@ public:
 
 private:
 
-  void loadJson(QByteArray const& jsonBytes);
+  NodeStyle(QByteArray const& jsonBytes);
 
 private:
 

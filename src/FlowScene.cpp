@@ -571,7 +571,7 @@ ConnectionStyle const &
 FlowScene::
 connectionStyle() const
 {
-  return *_connectionStyle;
+  return _connectionStyle;
 }
 
 
@@ -579,13 +579,13 @@ NodeStyle const &
 FlowScene::
 nodeStyle() const
 {
-  return *_nodeStyle;
+  return _nodeStyle;
 }
 
 
 void
 FlowScene::
-setConnectionStyle(std::shared_ptr<ConnectionStyle const> style)
+setConnectionStyle(ConnectionStyle style)
 {
   _connectionStyle = std::move(style);
 }
@@ -593,7 +593,7 @@ setConnectionStyle(std::shared_ptr<ConnectionStyle const> style)
 
 void
 FlowScene::
-setNodeStyle(std::shared_ptr<NodeStyle const> style)
+setNodeStyle(NodeStyle style)
 {
   _nodeStyle = std::move(style);
 }

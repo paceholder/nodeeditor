@@ -17,9 +17,8 @@ using QtNodes::NodeStyle;
 using QtNodes::StyleImport;
 
 
-void
 NodeStyle::
-loadJson(QByteArray const &jsonBytes)
+NodeStyle(QByteArray const& jsonBytes)
 {
   QJsonDocument json(QJsonDocument::fromJson(jsonBytes));
   QJsonObject   topLevelObject = json.object();
@@ -49,27 +48,25 @@ loadJson(QByteArray const &jsonBytes)
 }
 
 
-std::shared_ptr<NodeStyle>
+NodeStyle const&
 NodeStyle::
 defaultStyle()
 {
-  StyleImport::initResources();
+  static NodeStyle const DefaultStyle = [] {
+    StyleImport::initResources();
 
-  auto style = std::make_shared<NodeStyle>();
-  style->loadJson(StyleImport::readJsonFile(":DefaultStyle.json"));
+    return NodeStyle(StyleImport::readJsonFile(":DefaultStyle.json"));
+  }();
 
-  return style;
+  return DefaultStyle;
 }
 
 
-std::shared_ptr<NodeStyle>
+NodeStyle
 NodeStyle::
 fromJson(QString const& jsonText)
 {
-  auto style = std::make_shared<NodeStyle>();
-  style->loadJson(StyleImport::readJsonText(jsonText));
-
-  return style;
+  return NodeStyle(StyleImport::readJsonText(jsonText));
 }
 
 

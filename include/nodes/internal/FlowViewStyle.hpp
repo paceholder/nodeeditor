@@ -17,10 +17,10 @@ class NODE_EDITOR_PUBLIC FlowViewStyle
 public:
   FlowViewStyle();
 
-  static std::shared_ptr<FlowViewStyle>
+  static FlowViewStyle const&
   defaultStyle();
 
-  static std::shared_ptr<FlowViewStyle>
+  static FlowViewStyle
   fromJson(QString const& jsonText);
 
   QColor const &
@@ -60,8 +60,7 @@ public:
   }
 
 private:
-
-  void loadJson(QByteArray const& jsonBytes);
+  FlowViewStyle(QByteArray const& jsonBytes);
 
   QColor _backgroundColor;
   QColor _fineGridColor;

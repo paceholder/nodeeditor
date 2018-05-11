@@ -34,7 +34,7 @@ FlowView(QWidget *parent)
 
 
 FlowView::
-FlowView(std::shared_ptr<FlowViewStyle const> style, QWidget *parent)
+FlowView(FlowViewStyle style, QWidget *parent)
   : QGraphicsView(parent)
   , _clearSelectionAction(Q_NULLPTR)
   , _deleteSelectionAction(Q_NULLPTR)
@@ -60,7 +60,7 @@ FlowView(std::shared_ptr<FlowViewStyle const> style, QWidget *parent)
 
 
 FlowView::
-FlowView(FlowScene *scene, std::shared_ptr<FlowViewStyle const> style, QWidget *parent)
+FlowView(FlowScene *scene, FlowViewStyle style, QWidget *parent)
   : FlowView(parent)
 {
   setScene(scene);
@@ -112,11 +112,11 @@ FlowView::setScene(FlowScene *scene)
 
 
 void
-FlowView::setStyle(std::shared_ptr<FlowViewStyle const> style)
+FlowView::setStyle(FlowViewStyle style)
 {
   _style = std::move(style);
 
-  setBackgroundBrush(_style->backgroundColor());
+  setBackgroundBrush(_style.backgroundColor());
 }
 
 
@@ -399,12 +399,12 @@ drawBackground(QPainter* painter, const QRectF& r)
 
   QBrush bBrush = backgroundBrush();
 
-  QPen pfine(_style->fineGridColor(), 1.0);
+  QPen pfine(_style.fineGridColor(), 1.0);
 
   painter->setPen(pfine);
   drawGrid(15);
 
-  QPen p(_style->coarseGridColor(), 1.0);
+  QPen p(_style.coarseGridColor(), 1.0);
 
   painter->setPen(p);
   drawGrid(150);

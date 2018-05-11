@@ -65,17 +65,17 @@ connectionStyle()
 {
   auto style = ConnectionStyle::defaultStyle();
   
-  style->setConstructionColor(QColor("gray"));
-  style->setNormalColor(QColor("black"));
-  style->setSelectedColor(QColor("gray"));
-  style->setSelectedHaloColor(QColor("deepskyblue"));
-  style->setHoveredColor(QColor("deepskyblue"));
+  style.setConstructionColor(QColor("gray"));
+  style.setNormalColor(QColor("black"));
+  style.setSelectedColor(QColor("gray"));
+  style.setSelectedHaloColor(QColor("deepskyblue"));
+  style.setHoveredColor(QColor("deepskyblue"));
 
-  style->setLineWidth(3.0);
-  style->setConstructionLineWidth(2.0);
-  style->setPointDiameter(10.0);
+  style.setLineWidth(3.0);
+  style.setConstructionLineWidth(2.0);
+  style.setPointDiameter(10.0);
 
-  style->useDataDefinedColors(true);
+  style.useDataDefinedColors(true);
 
   return style;
 }
