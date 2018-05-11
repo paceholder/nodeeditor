@@ -35,13 +35,13 @@ public:
   bool
   captionVisible() const override { return false; }
 
-  QString
-  name() const override
+  static QString
+  Name()
   { return QString("TextSourceDataModel"); }
 
-  std::unique_ptr<NodeDataModel>
-  clone() const override
-  { return std::make_unique<TextSourceDataModel>(); }
+  QString
+  name() const override
+  { return TextSourceDataModel::Name(); }
 
 public:
 

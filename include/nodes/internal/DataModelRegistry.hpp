@@ -1,6 +1,8 @@
 #pragma once
 
 #include <set>
+#include <memory>
+#include <functional>
 #include <unordered_map>
 #include <vector>
 
@@ -31,7 +33,8 @@ class NODE_EDITOR_PUBLIC DataModelRegistry
 public:
 
   using RegistryItemPtr     = std::unique_ptr<NodeDataModel>;
-  using RegisteredModelsMap = std::unordered_map<QString, RegistryItemPtr>;
+  using RegistryItemCreator = std::function<RegistryItemPtr()>;
+  using RegisteredModelCreatorsMap = std::unordered_map<QString, RegistryItemCreator>;
   using RegisteredModelsCategoryMap = std::unordered_map<QString, QString>;
   using CategoriesSet = std::set<QString>;
 
@@ -49,28 +52,24 @@ public:
 public:
 
   template<typename ModelType>
-  void registerModel(std::unique_ptr<ModelType> uniqueModel =
-                       detail::make_unique<ModelType>(),
+  void registerModel(RegistryItemCreator creator,
                      QString const &category = "Nodes")
   {
-    static_assert(std::is_base_of<NodeDataModel, ModelType>::value,
-                  "Must pass a subclass of NodeDataModel to registerModel");
-
-    QString const name = uniqueModel->name();
-
-    if (_registeredModels.count(name) == 0)
-    {
-      _registeredModels[name] = std::move(uniqueModel);
-      _categories.insert(category);
-      _registeredModelsCategory[name] = category;
-    }
+    registerModelImpl<ModelType>(std::move(creator), category);
   }
 
-  //Parameter order alias, so a category can be set without forcing to manually pass a model instance
   template<typename ModelType>
-  void registerModel(QString const &category, std::unique_ptr<ModelType> uniqueModel = detail::make_unique<ModelType>())
+  void registerModel(QString const &category = "Nodes")
   {
-    registerModel<ModelType>(std::move(uniqueModel), category);
+    RegistryItemCreator creator = [](){ return std::make_unique<ModelType>(); };
+    registerModelImpl<ModelType>(std::move(creator), category);
+  }
+
+  template<typename ModelType>
+  void registerModel(QString const &category,
+                     RegistryItemCreator creator)
+  {
+    registerModelImpl<ModelType>(std::move(creator), category);
   }
 
   void registerTypeConverter(TypeConverterId const & id,
@@ -81,7 +80,7 @@ public:
 
   std::unique_ptr<NodeDataModel>create(QString const &modelName);
 
-  RegisteredModelsMap const &registeredModels() const;
+  RegisteredModelCreatorsMap const &registeredModelCreators() const;
 
   RegisteredModelsCategoryMap const &registeredModelsCategoryAssociation() const;
 
@@ -96,8 +95,59 @@ private:
 
   CategoriesSet _categories;
 
-  RegisteredModelsMap _registeredModels;
+  RegisteredModelCreatorsMap _registeredItemCreators;
 
   RegisteredTypeConvertersMap _registeredTypeConverters;
+
+private:
+
+  // If the registered ModelType class has the static member method
+  //
+  //      static Qstring Name();
+  //
+  // use it. Otherwise use the non-static method:
+  //
+  //       virtual QString name() const;
+
+  template <typename T, typename = void>
+  struct HasStaticMethodName
+      : std::false_type
+  {};
+
+  template <typename T>
+  struct HasStaticMethodName<T,
+          typename std::enable_if<std::is_same<decltype(T::Name()), QString>::value>::type>
+      : std::true_type
+  {};
+
+  template<typename ModelType>
+  typename std::enable_if< HasStaticMethodName<ModelType>::value>::type
+  registerModelImpl(RegistryItemCreator creator, QString const &category )
+  {
+    const QString name = ModelType::Name();
+    if (_registeredItemCreators.count(name) == 0)
+    {
+      _registeredItemCreators[name] = std::move(creator);
+      _categories.insert(category);
+      _registeredModelsCategory[name] = category;
+    }
+  }
+
+  template<typename ModelType>
+  typename std::enable_if< !HasStaticMethodName<ModelType>::value>::type
+  registerModelImpl(RegistryItemCreator creator, QString const &category )
+  {
+    const QString name = creator()->name();
+    if (_registeredItemCreators.count(name) == 0)
+    {
+      _registeredItemCreators[name] = std::move(creator);
+      _categories.insert(category);
+      _registeredModelsCategory[name] = category;
+    }
+  }
+
 };
+
+
+
 }
