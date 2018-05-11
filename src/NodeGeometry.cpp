@@ -3,18 +3,19 @@
 #include <iostream>
 #include <cmath>
 
-#include "PortType.hpp"
-#include "NodeDataModel.hpp"
 #include "Node.hpp"
+#include "NodeDataModel.hpp"
 #include "NodeGraphicsObject.hpp"
 #include "NodeState.hpp"
 #include "NodeStyle.hpp"
+#include "PortType.hpp"
 
-using QtNodes::NodeGeometry;
+using QtNodes::Node;
 using QtNodes::NodeDataModel;
+using QtNodes::NodeGeometry;
+using QtNodes::NodeStyle;
 using QtNodes::PortIndex;
 using QtNodes::PortType;
-using QtNodes::Node;
 
 NodeGeometry::
 NodeGeometry(std::unique_ptr<NodeDataModel> const &dataModel, NodeStyle const &style)

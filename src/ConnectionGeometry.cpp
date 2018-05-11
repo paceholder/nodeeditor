@@ -5,6 +5,7 @@
 #include "ConnectionStyle.hpp"
 
 using QtNodes::ConnectionGeometry;
+using QtNodes::ConnectionStyle;
 using QtNodes::PortType;
 
 ConnectionGeometry::
