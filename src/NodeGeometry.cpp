@@ -131,7 +131,7 @@ QPointF
 NodeGeometry::
 portScenePosition(PortIndex index,
                   PortType portType,
-                  QTransform t) const
+                  QTransform const & t) const
 {
   unsigned int step = _entryHeight + _spacing;
 
@@ -176,7 +176,7 @@ PortIndex
 NodeGeometry::
 checkHitScenePoint(PortType portType,
                    QPointF const scenePoint,
-                   QTransform sceneTransform) const
+                   QTransform const & sceneTransform) const
 {
   PortIndex result = INVALID;
 

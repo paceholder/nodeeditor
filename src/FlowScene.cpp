@@ -47,7 +47,7 @@ FlowScene::
 FlowScene(std::shared_ptr<DataModelRegistry> registry,
           QObject * parent)
   : QGraphicsScene(parent)
-  , _registry(registry)
+  , _registry(std::move(registry))
   , _connectionStyle(ConnectionStyle::defaultStyle())
   , _nodeStyle(NodeStyle::defaultStyle())
 {
@@ -270,13 +270,13 @@ void
 FlowScene::
 setRegistry(std::shared_ptr<DataModelRegistry> registry)
 {
-  _registry = registry;
+  _registry = std::move(registry);
 }
 
 
 void
 FlowScene::
-iterateOverNodes(std::function<void(Node*)> visitor)
+iterateOverNodes(std::function<void(Node*)> const & visitor)
 {
   for (const auto& _node : _nodes)
   {
@@ -287,7 +287,7 @@ iterateOverNodes(std::function<void(Node*)> visitor)
 
 void
 FlowScene::
-iterateOverNodeData(std::function<void(NodeDataModel*)> visitor)
+iterateOverNodeData(std::function<void(NodeDataModel*)> const & visitor)
 {
   for (const auto& _node : _nodes)
   {
@@ -298,7 +298,7 @@ iterateOverNodeData(std::function<void(NodeDataModel*)> visitor)
 
 void
 FlowScene::
-iterateOverNodeDataDependentOrder(std::function<void(NodeDataModel*)> visitor)
+iterateOverNodeDataDependentOrder(std::function<void(NodeDataModel*)> const & visitor)
 {
   std::set<QUuid> visitedNodesSet;
 
@@ -553,16 +553,16 @@ loadFromMemory(const QByteArray& data)
 
   QJsonArray nodesJsonArray = jsonDocument["nodes"].toArray();
 
-  for (int i = 0; i < nodesJsonArray.size(); ++i)
+  for (QJsonValueRef node : nodesJsonArray)
   {
-    restoreNode(nodesJsonArray[i].toObject());
+    restoreNode(node.toObject());
   }
 
   QJsonArray connectionJsonArray = jsonDocument["connections"].toArray();
 
-  for (int i = 0; i < connectionJsonArray.size(); ++i)
+  for (QJsonValueRef connection : connectionJsonArray)
   {
-    restoreConnection(connectionJsonArray[i].toObject());
+    restoreConnection(connection.toObject());
   }
 }
 
@@ -605,7 +605,7 @@ namespace QtNodes
 
 Node*
 locateNodeAt(QPointF scenePoint, FlowScene &scene,
-             QTransform viewTransform)
+             QTransform const & viewTransform)
 {
   // items under cursor
   QList<QGraphicsItem*> items =

@@ -54,7 +54,7 @@ public:
   id() const;
 
   void reactToPossibleConnection(PortType,
-                                 NodeDataType,
+                                 NodeDataType const &,
                                  QPointF const & scenePoint);
 
   void

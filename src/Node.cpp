@@ -2,6 +2,7 @@
 
 #include <QtCore/QObject>
 
+#include <utility>
 #include <iostream>
 
 #include "FlowScene.hpp"
@@ -50,7 +51,7 @@ Node(std::unique_ptr<NodeDataModel> && dataModel, NodeStyle const& style)
 
 
 Node::
-~Node() {}
+~Node() = default;
 
 QJsonObject
 Node::
@@ -97,7 +98,7 @@ id() const
 void
 Node::
 reactToPossibleConnection(PortType reactingPortType,
-                          NodeDataType reactingDataType,
+                          NodeDataType const &reactingDataType,
                           QPointF const &scenePoint)
 {
   QTransform const t = _nodeGraphicsObject->sceneTransform();
@@ -202,7 +203,7 @@ Node::
 propagateData(std::shared_ptr<NodeData> nodeData,
               PortIndex inPortIndex) const
 {
-  _nodeDataModel->setInData(nodeData, inPortIndex);
+  _nodeDataModel->setInData(std::move(nodeData), inPortIndex);
 
   //Recalculate the nodes visuals. A data change can result in the node taking more space than before, so this forces a recalculate+repaint on the affected node
   _nodeGraphicsObject->setGeometryChanged();

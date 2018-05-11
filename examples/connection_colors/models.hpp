@@ -64,10 +64,6 @@ public:
   name() const override
   { return QString("NaiveDataModel"); }
 
-  std::unique_ptr<NodeDataModel>
-  clone() const override
-  { return std::make_unique<NaiveDataModel>(); }
-
 public:
 
   unsigned int
