@@ -110,7 +110,7 @@ setReaction(ReactToConnectionState reaction,
 
   _reactingPortType = reactingPortType;
 
-  _reactingDataType = reactingDataType;
+  _reactingDataType = std::move(reactingDataType);
 }
 
 
