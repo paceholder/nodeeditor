@@ -185,7 +185,8 @@ FlowScene::
 deleteConnection(Connection& connection)
 {
   auto it = _connections.find(connection.id());
-  if (it != _connections.end()) {
+  if (it != _connections.end())
+  {
     connection.removeFromNodes();
     _connections.erase(it);
   }

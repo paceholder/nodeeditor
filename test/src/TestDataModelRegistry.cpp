@@ -42,4 +42,31 @@ TEST_CASE("DataModelRegistry::registerModel", "[interface]")
 
     CHECK(model->name() == "name");
   }
+  SECTION("From model creator function")
+  {
+    SECTION("non-static name()")
+    {
+      registry.registerModel([] {
+        return std::make_unique<StubNodeDataModel>();
+      });
+
+      auto model = registry.create("name");
+
+      REQUIRE(model != nullptr);
+      CHECK(model->name() == "name");
+      CHECK(dynamic_cast<StubNodeDataModel*>(model.get()));
+    }
+    SECTION("static Name()")
+    {
+      registry.registerModel([] {
+        return std::make_unique<StubModelStaticName>();
+      });
+
+      auto model = registry.create("Name");
+
+      REQUIRE(model != nullptr);
+      CHECK(model->name() == "name");
+      CHECK(dynamic_cast<StubModelStaticName*>(model.get()));
+    }
+  }
 }
