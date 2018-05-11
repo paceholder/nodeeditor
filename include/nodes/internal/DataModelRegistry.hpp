@@ -1,9 +1,11 @@
 #pragma once
 
-#include <set>
-#include <memory>
 #include <functional>
+#include <memory>
+#include <set>
+#include <type_traits>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include <QtCore/QString>
@@ -76,6 +78,19 @@ public:
                      RegistryItemCreator creator)
   {
     registerModel<ModelType>(std::move(creator), category);
+  }
+
+  template <typename ModelCreator>
+  void registerModel(ModelCreator&& creator, QString const& category = "Nodes")
+  {
+    using ModelType = std::decay_t<decltype(creator())>;
+    registerModel<ModelType>(std::forward<ModelCreator>(creator), category);
+  }
+
+  template <typename ModelCreator>
+  void registerModel(QString const& category, ModelCreator&& creator)
+  {
+    registerModel(std::forward<ModelCreator>(creator), category);
   }
 
   void registerTypeConverter(TypeConverterId const & id,
