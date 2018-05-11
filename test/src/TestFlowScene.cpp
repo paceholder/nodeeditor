@@ -125,15 +125,19 @@ TEST_CASE("FlowScene triggers connections created or deleted", "[gui]")
   struct Deletion
   {
     std::string                                      name;
-    std::function<void(std::shared_ptr<Connection>)> deleteConnection;
+    std::function<void(Connection & connection)> deleteConnection;
   };
 
   Deletion sceneDeletion{"scene.deleteConnection",
-                         [&](auto c) { scene.deleteConnection(*c); }};
+                         [&](Connection & c) { scene.deleteConnection(c); }};
 
   Deletion partialDragDeletion{"scene-deleteConnectionByDraggingOff",
-                               [&](auto connection) {
-                                 connection->clearNode(PortType::In);
+                               [&](Connection & c)
+                               {
+                                 PortIndex portIndex = c.getPortIndex(PortType::In);
+                                 Node * node = c.getNode(PortType::In);
+                                 node->nodeState().getEntries(PortType::In)[portIndex].clear();
+                                 c.clearNode(PortType::In);
                                }};
 
   SECTION("creating a connection")
@@ -168,13 +172,14 @@ TEST_CASE("FlowScene triggers connections created or deleted", "[gui]")
     {
       SECTION("deletion: " + deletion.name)
       {
-        auto                      connection     = sceneCreation.createConnection();
-        std::weak_ptr<Connection> weakConnection = connection;
+        Connection & connection = *sceneCreation.createConnection();
 
         from.resetCallCounts();
         to.resetCallCounts();
 
-        deletion.deleteConnection(std::move(connection));
+        deletion.deleteConnection(connection);
+
+        // Here the Connection reference becomes dangling
 
         CHECK(from.inputDeletedCalledCount == 0);
         CHECK(from.outputDeletedCalledCount == 1);
@@ -187,4 +192,65 @@ TEST_CASE("FlowScene triggers connections created or deleted", "[gui]")
       }
     }
   }
+}
+
+
+TEST_CASE("FlowScene's DataModelRegistry outlives nodes and connections", "[asan][gui]")
+{
+  class MockDataModel : public StubNodeDataModel
+  {
+  public:
+    MockDataModel(int* const& incrementOnDestruction)
+      : incrementOnDestruction(incrementOnDestruction)
+    {
+    }
+
+    ~MockDataModel()
+    {
+      (*incrementOnDestruction)++;
+    }
+
+    // The reference ensures that we point into the memory that would be free'd
+    // if the DataModelRegistry doesn't outlive this node
+    int* const& incrementOnDestruction;
+  };
+
+  struct MockDataModelCreator
+  {
+    MockDataModelCreator(int* shouldBeAliveWhenAssignedTo)
+      : shouldBeAliveWhenAssignedTo(shouldBeAliveWhenAssignedTo)
+    {
+    }
+
+    auto
+    operator()() const
+    {
+      return std::make_unique<MockDataModel>(shouldBeAliveWhenAssignedTo);
+    }
+
+    int* shouldBeAliveWhenAssignedTo;
+  };
+
+  int modelsDestroyed = 0;
+
+  // Introduce a new scope, so that modelsDestroyed will be alive even after the
+  // FlowScene is destroyed.
+  {
+    auto setup = applicationSetup();
+
+    auto registry = std::make_shared<DataModelRegistry>();
+    registry->registerModel(MockDataModelCreator(&modelsDestroyed));
+
+    modelsDestroyed = 0;
+
+    FlowScene scene(std::move(registry));
+
+    auto& node = scene.createNode(scene.registry().create("name"));
+
+    // On destruction, if this `node` outlives its MockDataModelCreator,
+    // (if it outlives the DataModelRegistry), then we trigger undefined
+    // behavior through use-after-free. ASAN will catch that.
+  }
+
+  CHECK(modelsDestroyed == 1);
 }
