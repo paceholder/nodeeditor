@@ -128,6 +128,11 @@ private:
   std::unordered_map<QUuid, SharedConnection> _connections;
   std::unordered_map<QUuid, UniqueNode>       _nodes;
   std::shared_ptr<DataModelRegistry>          _registry;
+
+private slots:
+  
+  void sendConnectionCreatedToNodes(Connection const& c);
+  void sendConnectionDeletedToNodes(Connection const& c);
 };
 
 Node*

@@ -22,6 +22,8 @@ enum class NodeValidationState
   Error
 };
 
+class Connection;
+
 class StyleCollection;
 
 class NODE_EDITOR_PUBLIC NodeDataModel
@@ -121,6 +123,28 @@ public:
 
   virtual
   NodePainterDelegate* painterDelegate() const { return nullptr; }
+
+public slots:
+
+  virtual void
+  inputConnectionCreated(Connection const&)
+  {
+  }
+
+  virtual void
+  inputConnectionDeleted(Connection const&)
+  {
+  }
+
+  virtual void
+  outputConnectionCreated(Connection const&)
+  {
+  }
+
+  virtual void
+  outputConnectionDeleted(Connection const&)
+  {
+  }
 
 signals:
 

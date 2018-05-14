@@ -45,6 +45,9 @@ FlowScene(std::shared_ptr<DataModelRegistry> registry,
   , _registry(std::move(registry))
 {
   setItemIndexMethod(QGraphicsScene::NoIndex);
+
+  connect(this, &FlowScene::connectionCreated, this, &FlowScene::sendConnectionCreatedToNodes);
+  connect(this, &FlowScene::connectionDeleted, this, &FlowScene::sendConnectionDeletedToNodes);
 }
 
 FlowScene::
@@ -549,6 +552,30 @@ loadFromMemory(const QByteArray& data)
   {
     restoreConnection(connection.toObject());
   }
+}
+
+
+void
+FlowScene::
+sendConnectionCreatedToNodes(Connection const& c)
+{
+  Node* from = c.getNode(PortType::Out);
+  Node* to = c.getNode(PortType::In);
+
+  from->nodeDataModel()->outputConnectionCreated(c);
+  to->nodeDataModel()->inputConnectionCreated(c);
+}
+
+
+void
+FlowScene::
+sendConnectionDeletedToNodes(Connection const& c)
+{
+  Node* from = c.getNode(PortType::Out);
+  Node* to = c.getNode(PortType::In);
+
+  from->nodeDataModel()->outputConnectionDeleted(c);
+  to->nodeDataModel()->inputConnectionDeleted(c);
 }
 
 
