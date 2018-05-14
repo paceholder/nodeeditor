@@ -6,6 +6,8 @@ project(NodeEditor CXX)
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 set(CMAKE_DISABLE_SOURCE_CHANGES  ON)
 
+include(CTest)
+
 option(BUILD_EXAMPLES "Build Examples" ON)
 
 # Find the QtWidgets library
@@ -52,6 +54,7 @@ add_library(nodes SHARED
   ${CPP_SOURCE_FILES}
   ${RESOURCES}
 )
+add_library(NodeEditor::nodes ALIAS nodes)
 
 target_include_directories(nodes
   PUBLIC 
@@ -118,6 +121,14 @@ target_sources(nodes PRIVATE ${nodes_moc})
 
 if(BUILD_EXAMPLES)
   add_subdirectory(examples)
+endif()
+
+##################
+# Automated Tests
+##
+
+if(BUILD_TESTING)
+  add_subdirectory(test)
 endif()
 
 ###############
