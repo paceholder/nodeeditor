@@ -47,9 +47,9 @@ FlowScene::
 FlowScene(std::shared_ptr<DataModelRegistry> registry,
           QObject * parent)
   : QGraphicsScene(parent)
-  , _registry(std::move(registry))
   , _connectionStyle(ConnectionStyle::defaultStyle())
   , _nodeStyle(NodeStyle::defaultStyle())
+  , _registry(std::move(registry))
 {
   setItemIndexMethod(QGraphicsScene::NoIndex);
 }

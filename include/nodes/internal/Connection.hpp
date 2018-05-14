@@ -148,7 +148,7 @@ private:
   ConnectionState    _connectionState;
   ConnectionGeometry _connectionGeometry;
 
-  ConnectionStyle const *_connectionStyle;
+  ConnectionStyle const &_connectionStyle;
 
   std::unique_ptr<ConnectionGraphicsObject>_connectionGraphicsObject;
 

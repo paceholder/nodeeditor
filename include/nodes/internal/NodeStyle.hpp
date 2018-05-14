@@ -1,11 +1,9 @@
 #pragma once
 
-#include <memory>
-
 #include <QtGui/QColor>
 
-#include <QByteArray>
-#include <QString>
+#include <QtCore/QByteArray>
+#include <QtCore/QString>
 
 #include "Export.hpp"
 

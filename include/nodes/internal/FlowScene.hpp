@@ -133,12 +133,13 @@ private:
   using SharedConnection = std::shared_ptr<Connection>;
   using UniqueNode       = std::unique_ptr<Node>;
 
+  // styles MUST come before _connections and _nodes, so that the styles outlive them
+  ConnectionStyle _connectionStyle;
+  NodeStyle       _nodeStyle;
+
   std::unordered_map<QUuid, SharedConnection> _connections;
   std::unordered_map<QUuid, UniqueNode>       _nodes;
   std::shared_ptr<DataModelRegistry>          _registry;
-
-  ConnectionStyle _connectionStyle;
-  NodeStyle       _nodeStyle;
 };
 
 Node*

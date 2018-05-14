@@ -1,6 +1,6 @@
 #pragma once
 
-#include <QPainter>
+#include <QtGui/QPainter>
 
 #include "NodeGeometry.hpp"
 #include "NodeDataModel.hpp"

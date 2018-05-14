@@ -41,7 +41,7 @@ Connection(PortType portType,
   , _inPortIndex(INVALID)
   , _connectionState()
   , _connectionGeometry(style)
-  , _connectionStyle(&style)
+  , _connectionStyle(style)
 {
   setNodeToPort(node, portType, portIndex);
 
@@ -63,7 +63,7 @@ Connection(Node& nodeIn,
   , _inPortIndex(portIndexIn)
   , _connectionState()
   , _connectionGeometry(style)
-  , _connectionStyle(&style)
+  , _connectionStyle(style)
   , _converter(std::move(typeConverter))
 {
   setNodeToPort(nodeIn, PortType::In, portIndexIn);
@@ -413,7 +413,7 @@ setTypeConverter(TypeConverter converter)
 ConnectionStyle const &
 Connection::connectionStyle() const
 {
-  return *_connectionStyle;
+  return _connectionStyle;
 }
 
 

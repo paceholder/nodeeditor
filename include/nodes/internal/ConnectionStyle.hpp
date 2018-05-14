@@ -2,9 +2,8 @@
 
 #include <QtGui/QColor>
 
-#include <QByteArray>
-#include <QObject>
-#include <QString>
+#include <QtCore/QByteArray>
+#include <QtCore/QString>
 
 #include "Export.hpp"
 

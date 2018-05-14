@@ -8,8 +8,6 @@
 #include <QtCore/QJsonObject>
 #include <QtCore/QJsonValueRef>
 
-#include <QDebug>
-
 #include "StyleImport.hpp"
 
 using QtNodes::FlowViewStyle;

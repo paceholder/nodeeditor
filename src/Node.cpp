@@ -3,7 +3,6 @@
 #include <QtCore/QObject>
 
 #include <utility>
-#include <iostream>
 
 #include "FlowScene.hpp"
 
@@ -26,10 +25,10 @@ using QtNodes::PortIndex;
 using QtNodes::PortType;
 
 
-static NodeStyle const *
+static NodeStyle const&
 computeStyle(NodeStyle const *preferredStyle, NodeStyle const &backupStyle)
 {
-  return preferredStyle ? preferredStyle : &backupStyle;
+  return preferredStyle ? *preferredStyle : backupStyle;
 }
 
 
@@ -39,7 +38,7 @@ Node(std::unique_ptr<NodeDataModel> && dataModel, NodeStyle const& style)
   , _nodeDataModel(std::move(dataModel))
   , _nodeState(_nodeDataModel)
   , _nodeStyle(computeStyle(_nodeDataModel->nodeStyle(), style))
-  , _nodeGeometry(_nodeDataModel, *_nodeStyle)
+  , _nodeGeometry(_nodeDataModel, _nodeStyle)
   , _nodeGraphicsObject(nullptr)
 {
   _nodeGeometry.recalculateSize();
@@ -186,7 +185,7 @@ NodeStyle const &
 Node::
 nodeStyle() const
 {
-  return *_nodeStyle;
+  return _nodeStyle;
 }
 
 

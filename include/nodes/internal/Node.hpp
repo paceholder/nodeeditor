@@ -115,7 +115,8 @@ private:
 
   // painting
 
-  NodeStyle const *_nodeStyle;
+  // _nodeStyle must come before _nodeGeometry
+  NodeStyle const &_nodeStyle;
 
   NodeGeometry _nodeGeometry;
 

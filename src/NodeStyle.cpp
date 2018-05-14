@@ -1,6 +1,5 @@
 #include "NodeStyle.hpp"
 
-#include <iostream>
 #include <utility>
 
 #include <QtCore/QFile>
@@ -8,8 +7,6 @@
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
 #include <QtCore/QJsonValueRef>
-
-#include <QDebug>
 
 #include "StyleImport.hpp"
 
