@@ -8,8 +8,6 @@
 #include <QtTest>
 #include <QtWidgets/QApplication>
 
-#include <iostream>
-
 #include "ApplicationSetup.hpp"
 #include "Stringify.hpp"
 #include "StubNodeDataModel.hpp"

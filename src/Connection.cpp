@@ -66,6 +66,7 @@ Connection(Node& nodeIn,
 Connection::
 ~Connection()
 {
+  if (complete()) connectionMadeIncomplete(*this);
   propagateEmptyData();
 
   if (_inNode)
@@ -124,6 +125,14 @@ Connection::
 id() const
 {
   return _uid;
+}
+
+
+bool
+Connection::
+complete() const
+{
+  return _inNode != nullptr && _outNode != nullptr;
 }
 
 
@@ -227,6 +236,8 @@ setNodeToPort(Node& node,
               PortType portType,
               PortIndex portIndex)
 {
+  bool wasIncomplete = !complete();
+
   auto& nodeWeak = getNode(portType);
 
   nodeWeak = &node;
@@ -239,6 +250,9 @@ setNodeToPort(Node& node,
   _connectionState.setNoRequiredPort();
 
   updated(*this);
+  if (complete() && wasIncomplete) {
+    connectionCompleted(*this);
+  }
 }
 
 
@@ -342,6 +356,10 @@ void
 Connection::
 clearNode(PortType portType)
 {
+  if (complete()) {
+    connectionMadeIncomplete(*this);
+  }
+
   getNode(portType) = nullptr;
 
   if (portType == PortType::In)

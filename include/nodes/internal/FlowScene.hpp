@@ -77,6 +77,7 @@ public:
   void setNodePosition(Node& node, const QPointF& pos) const;
 
   QSizeF getNodeSize(const Node& node) const;
+  
 public:
 
   std::unordered_map<QUuid, std::unique_ptr<Node> > const &nodes() const;
@@ -114,8 +115,8 @@ Q_SIGNALS:
 
   void nodeDeleted(Node &n);
 
-  void connectionCreated(Connection &c);
-  void connectionDeleted(Connection &c);
+  void connectionCreated(Connection const &c);
+  void connectionDeleted(Connection const &c);
 
   void nodeMoved(Node& n, const QPointF& newLocation);
 
@@ -139,6 +140,14 @@ private:
   std::unordered_map<QUuid, SharedConnection> _connections;
   std::unordered_map<QUuid, UniqueNode>       _nodes;
   std::shared_ptr<DataModelRegistry>          _registry;
+
+private Q_SLOTS:
+
+  void setupConnectionSignals(Connection const& c);
+  
+  void sendConnectionCreatedToNodes(Connection const& c);
+  void sendConnectionDeletedToNodes(Connection const& c);
+
 };
 
 Node*
