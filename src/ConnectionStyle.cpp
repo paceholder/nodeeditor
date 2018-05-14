@@ -4,6 +4,7 @@
 #include <utility>
 
 #include <QtCore/QFile>
+#include <QtCore/QHash>
 #include <QtCore/QJsonArray>
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
