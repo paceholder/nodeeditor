@@ -62,7 +62,8 @@ script:
   - mkdir build
   - cd build
   - cmake -DCMAKE_VERBOSE_MAKEFILE=$VERBOSE_BUILD .. && make -j
-  - xvfb-run ./test/test_nodes
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then xvfb-run ./test/test_nodes; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ./test/test_nodes; fi
 
 notifications:
   email: false
