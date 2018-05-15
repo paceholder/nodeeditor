@@ -46,8 +46,8 @@ FlowScene(std::shared_ptr<DataModelRegistry> registry,
 {
   setItemIndexMethod(QGraphicsScene::NoIndex);
 
-  connect(this, &FlowScene::connectionCreated, this, &FlowScene::sendConnectionCreatedToNodes);
-  connect(this, &FlowScene::connectionDeleted, this, &FlowScene::sendConnectionDeletedToNodes);
+  connect(this, &FlowScene::connectionCreated, this, [this](Connection const& c) { sendConnectionCreatedToNodes(c); });
+  connect(this, &FlowScene::connectionDeleted, this, [this](Connection const& c) { sendConnectionDeletedToNodes(c); });
 }
 
 FlowScene::
