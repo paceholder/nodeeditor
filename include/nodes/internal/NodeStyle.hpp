@@ -38,7 +38,7 @@ public:
   QColor GradientColor3;
   QColor ShadowColor;
   QColor FontColor;
-  QColor FontColorFaded;
+  //QColor FontColorFaded;
 
   QColor ConnectionPointColor;
   QColor FilledConnectionPointColor;
@@ -52,5 +52,8 @@ public:
   float ConnectionPointDiameter;
 
   float Opacity;
+
+  QString PortTextCss;
+  QString NodeCaptionCss;
 };
 }

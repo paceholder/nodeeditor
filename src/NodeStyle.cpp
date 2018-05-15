@@ -77,6 +77,12 @@ setNodeStyle(QString jsonText)
     variable = valueRef.toDouble(); \
 }
 
+#define NODE_STYLE_READ_STRING(values, variable)  { \
+    auto valueRef = values[#variable]; \
+    NODE_STYLE_CHECK_UNDEFINED_VALUE(valueRef, variable) \
+    variable = valueRef.toString(); \
+}
+
 void
 NodeStyle::
 loadJsonFile(QString styleFile)
@@ -122,7 +128,7 @@ loadJsonFromByteArray(QByteArray const &byteArray)
   NODE_STYLE_READ_COLOR(obj, GradientColor3);
   NODE_STYLE_READ_COLOR(obj, ShadowColor);
   NODE_STYLE_READ_COLOR(obj, FontColor);
-  NODE_STYLE_READ_COLOR(obj, FontColorFaded);
+  //NODE_STYLE_READ_COLOR(obj, FontColorFaded);
   NODE_STYLE_READ_COLOR(obj, ConnectionPointColor);
   NODE_STYLE_READ_COLOR(obj, FilledConnectionPointColor);
   NODE_STYLE_READ_COLOR(obj, WarningColor);
@@ -133,4 +139,8 @@ loadJsonFromByteArray(QByteArray const &byteArray)
   NODE_STYLE_READ_FLOAT(obj, ConnectionPointDiameter);
 
   NODE_STYLE_READ_FLOAT(obj, Opacity);
+
+  NODE_STYLE_READ_STRING(obj, PortTextCss);
+  NODE_STYLE_READ_STRING(obj, NodeCaptionCss);
+  
 }

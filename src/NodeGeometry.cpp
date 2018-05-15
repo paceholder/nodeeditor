@@ -10,12 +10,16 @@
 #include "NodeGraphicsObject.hpp"
 
 #include "StyleCollection.hpp"
+#include <QTextDocument>
+#include <QTextBlock>
+#include <QAbstractTextDocumentLayout>
 
 using QtNodes::NodeGeometry;
 using QtNodes::NodeDataModel;
 using QtNodes::PortIndex;
 using QtNodes::PortType;
 using QtNodes::Node;
+
 
 NodeGeometry::
 NodeGeometry(std::unique_ptr<NodeDataModel> const &dataModel)
@@ -25,6 +29,7 @@ NodeGeometry(std::unique_ptr<NodeDataModel> const &dataModel)
   , _outputPortWidth(70)
   , _entryHeight(20)
   , _spacing(20)
+  , _portsXoffset(5)
   , _hovered(false)
   , _nSources(dataModel->nPorts(PortType::Out))
   , _nSinks(dataModel->nPorts(PortType::In))
@@ -32,6 +37,10 @@ NodeGeometry(std::unique_ptr<NodeDataModel> const &dataModel)
   , _dataModel(dataModel)
   , _fontMetrics(QFont())
   , _boldFontMetrics(QFont())
+  , _entryHeightCalculated(false)
+  , _portsWidthCalculated(false)
+  , _captionHeightCalculated(false)
+  , _captionWidthCalculated(false)
 {
   QFont f; f.setBold(true);
 
@@ -71,7 +80,22 @@ void
 NodeGeometry::
 recalculateSize() const
 {
-  _entryHeight = _fontMetrics.height();
+
+  if (!_entryHeightCalculated)
+  {
+    QRectF td_rect;
+
+    for (int i = 0; i < _dataModel->nPorts(PortType::In); i++)
+      td_rect |= portRect(PortType::In, i);
+
+    for (int i = 0; i < _dataModel->nPorts(PortType::Out); i++)
+      td_rect |= portRect(PortType::Out, i);
+
+    _entryHeight = td_rect.height();
+
+    _entryHeightCalculated = true;
+  }
+
 
   {
     unsigned int maxNumOfEntries = std::max(_nSinks, _nSources);
@@ -86,12 +110,16 @@ recalculateSize() const
 
   _height += captionHeight();
 
-  _inputPortWidth  = portWidth(PortType::In);
-  _outputPortWidth = portWidth(PortType::Out);
+  if (!_portsWidthCalculated)
+  {
+    _inputPortWidth = portWidth(PortType::In);
+    _outputPortWidth = portWidth(PortType::Out);
+    _portsWidthCalculated = true;
+  }
 
   _width = _inputPortWidth +
            _outputPortWidth +
-           2 * _spacing;
+           2 * _spacing + _portsXoffset * 3;
 
   if (auto w = _dataModel->embeddedWidget())
   {
@@ -191,9 +219,9 @@ checkHitScenePoint(PortType portType,
 
   double const tolerance = 2.0 * nodeStyle.ConnectionPointDiameter;
 
-  unsigned int const nItems = _dataModel->nPorts(portType);
+  size_t const nItems = _dataModel->nPorts(portType);
 
-  for (unsigned int i = 0; i < nItems; ++i)
+  for (size_t i = 0; i < nItems; ++i)
   {
     auto pp = portScenePosition(i, portType, sceneTransform);
 
@@ -251,9 +279,22 @@ captionHeight() const
   if (!_dataModel->captionVisible())
     return 0;
 
-  QString name = _dataModel->caption();
+  if (!_captionHeightCalculated)
+  {
+    auto const &nodeStyle = _dataModel->nodeStyle();
 
-  return _boldFontMetrics.boundingRect(name).height();
+    QString name = _dataModel->caption();
+
+    QTextDocument td;
+    td.setDefaultStyleSheet(nodeStyle.NodeCaptionCss);
+    td.setHtml(name);
+    auto rect = calculateDocRect(td);
+
+    _captionHeight = rect.height();
+    _captionHeightCalculated = true;
+  }
+
+  return _captionHeight;
 }
 
 
@@ -264,9 +305,24 @@ captionWidth() const
   if (!_dataModel->captionVisible())
     return 0;
 
-  QString name = _dataModel->caption();
+  if (!_captionWidthCalculated)
+  {
+    auto const &nodeStyle = _dataModel->nodeStyle();
 
-  return _boldFontMetrics.boundingRect(name).width();
+    QString name = _dataModel->caption();
+
+    QTextDocument td;
+    td.setDefaultStyleSheet(nodeStyle.NodeCaptionCss);
+    td.setHtml(name);
+    auto rect = calculateDocRect(td);
+
+    _captionWidth =  rect.width();
+
+    _captionWidthCalculated = true;
+  }
+
+  return _captionWidth;
+
 }
 
 
@@ -313,23 +369,71 @@ NodeGeometry::
 portWidth(PortType portType) const
 {
   unsigned width = 0;
-
   for (auto i = 0ul; i < _dataModel->nPorts(portType); ++i)
   {
-    QString name;
+    auto rect = portRect(portType, i);
 
-    if (_dataModel->portCaptionVisible(portType, i))
-    {
-      name = _dataModel->portCaption(portType, i);
-    }
-    else
-    {
-      name = _dataModel->dataType(portType, i).name;
-    }
-
-    width = std::max(unsigned(_fontMetrics.width(name)),
-                     width);
+    width = std::max(unsigned(rect.width()),
+      width);
   }
 
   return width;
+}
+
+QRectF NodeGeometry::calculateDocRect(const QTextDocument& td)
+{
+  QRectF rect;
+  auto layout = td.documentLayout();
+
+  QTextBlock currentBlock = td.begin();
+  while (currentBlock.isValid())
+  {
+    rect |= layout->blockBoundingRect(currentBlock);
+    currentBlock = currentBlock.next();
+  }
+
+  return rect;
+}
+
+
+
+QRectF NodeGeometry::portRect(PortType portType, const PortIndex& index) const
+{
+  if (int(portType) > 2)
+  {
+    return QRectF();
+  }
+
+  auto& curr_map = _cachedPortRects[int(portType)-1];
+
+  QRectF res;
+  if (curr_map.contains(index))
+  {
+    res = curr_map[index];
+  }
+  else
+  {
+    auto const &nodeStyle = _dataModel->nodeStyle();
+
+    QString name;
+
+    if (_dataModel->portCaptionVisible(portType, index))
+    {
+      name = _dataModel->portCaption(portType, index);
+    }
+    else
+    {
+      name = _dataModel->dataType(portType, index).name;
+    }
+
+    QTextDocument td;
+    td.setDefaultStyleSheet(nodeStyle.PortTextCss);
+    td.setHtml(name);
+    res = calculateDocRect(td);
+
+    curr_map[index] = res;
+  }
+
+  
+  return res;
 }

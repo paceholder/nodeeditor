@@ -4,6 +4,7 @@
 #include <QtCore/QPointF>
 #include <QtGui/QTransform>
 #include <QtGui/QFontMetrics>
+#include <QtGui/QTextDocument>
 
 #include "PortType.hpp"
 #include "Export.hpp"
@@ -72,6 +73,8 @@ public:
   setDraggingPosition(QPointF const& pos)
   { _draggingPos = pos; }
 
+  unsigned int portsXoffset() const { return _portsXoffset; }
+
 public:
 
   QRectF
@@ -117,6 +120,11 @@ public:
   calculateNodePositionBetweenNodePorts(PortIndex targetPortIndex, PortType targetPort, Node* targetNode,
                                         PortIndex sourcePortIndex, PortType sourcePort, Node* sourceNode,
                                         Node& newNode);
+
+  static
+  QRectF
+  calculateDocRect(const QTextDocument& td);
+
 private:
 
   unsigned int
@@ -127,6 +135,8 @@ private:
 
   unsigned int
   portWidth(PortType portType) const;
+
+  QRectF portRect(PortType portType, const PortIndex& index) const;
 
 private:
 
@@ -142,6 +152,10 @@ private:
   mutable unsigned int _outputPortWidth;
   mutable unsigned int _entryHeight;
   unsigned int _spacing;
+  unsigned int _portsXoffset;
+
+  mutable qreal _captionHeight;
+  mutable qreal _captionWidth;
 
   bool _hovered;
 
@@ -154,5 +168,12 @@ private:
 
   mutable QFontMetrics _fontMetrics;
   mutable QFontMetrics _boldFontMetrics;
+  mutable QMap<PortIndex, QRectF> _cachedPortRects[2];
+
+  mutable bool _entryHeightCalculated;
+  mutable bool _portsWidthCalculated;
+
+  mutable bool _captionHeightCalculated;
+  mutable bool _captionWidthCalculated;
 };
 }
