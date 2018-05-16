@@ -5,12 +5,15 @@ environment:
     - GENERATOR : "MinGW Makefiles"
       QTDIR: C:\Qt\5.6\mingw49_32
       PLATFORM: x86
+      BUILD_TESTING: OFF
     - GENERATOR : "Visual Studio 14 2015 Win64"
       QTDIR: C:\Qt\5.7\msvc2015_64
       PLATFORM: x64
+      BUILD_TESTING: ON
     - GENERATOR : "Visual Studio 14 2015"
       QTDIR: C:\Qt\5.7\msvc2015
       PLATFORM: Win32
+      BUILD_TESTING: ON
 
 configuration:
   - Release
@@ -19,19 +22,33 @@ configuration:
   #only:
     #- master
 
-before_build:
-  - mkdir build
-  - cd build
+install:
   - set PATH=%QTDIR%\bin;%PATH%
   - set PATH=C:\MinGW\bin;C:\MinGW\msys\1.0;%PATH%
   - set PATH=%PATH:C:\Program Files\Git\usr\bin=% # trick to remove sh.exe
-  - cmake "-G%GENERATOR%" -DCMAKE_PREFIX_PATH="%QTDIR/lib/cmake/Qt5" ..
+  - mkdir dependencies
+  - cd dependencies
+  - mkdir install
+  - set CMAKE_INSTALL_PREFIX=%cd%\install
+  - set DEPENDENCIES=%cd%\install
+  - git clone https://github.com/catchorg/Catch2.git
+  - cd Catch2
+  - mkdir build
+  - cd build
+  - cmake "-G%GENERATOR%" -DBUILD_TESTING=OFF ..
+  - cmake --build . --target install
+  - cd ..
+  - cd ..
+  - cd ..
+
+before_build:
+  - mkdir build
+  - cd build
+  - cmake "-G%GENERATOR%" -DCMAKE_PREFIX_PATH="%QTDIR/lib/cmake/Qt5" -DBUILD_TESTING="%BUILD_TESTING%" ..
 
 
 build_script:
-  - if "%PLATFORM%" == "x86" cmake --build .
-  - if "%PLATFORM%" == "x64" msbuild NodeEditor.sln
-  - if "%PLATFORM%" == "Win32" msbuild NodeEditor.sln
+  - cmake --build .
 
 
 
