@@ -560,10 +560,12 @@ FlowScene::
 sendConnectionCreatedToNodes(Connection const& c)
 {
   Node* from = c.getNode(PortType::Out);
-  Node* to = c.getNode(PortType::In);
+  Node* to   = c.getNode(PortType::In);
 
-  from->nodeDataModel()->outputConnectionCreated(c);
-  to->nodeDataModel()->inputConnectionCreated(c);
+  if (from != nullptr && to != nullptr) {
+    from->nodeDataModel()->outputConnectionCreated(c);
+    to->nodeDataModel()->inputConnectionCreated(c);
+  }
 }
 
 
@@ -572,10 +574,12 @@ FlowScene::
 sendConnectionDeletedToNodes(Connection const& c)
 {
   Node* from = c.getNode(PortType::Out);
-  Node* to = c.getNode(PortType::In);
+  Node* to   = c.getNode(PortType::In);
 
-  from->nodeDataModel()->outputConnectionDeleted(c);
-  to->nodeDataModel()->inputConnectionDeleted(c);
+  if (from != nullptr && to != nullptr) {
+    from->nodeDataModel()->outputConnectionDeleted(c);
+    to->nodeDataModel()->inputConnectionDeleted(c);
+  }
 }
 
 
