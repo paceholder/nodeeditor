@@ -118,6 +118,7 @@ tryConnect() const
   // 3) Assign Connection to empty port in NodeState
   // The port is not longer required after this function
   _connection->setNodeToPort(*_node, requiredPort, portIndex);
+  _scene->partialConnectionCompleted(*_connection);
 
   // 4) Adjust Connection geometry
 

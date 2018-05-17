@@ -103,8 +103,8 @@ signals:
 
   void nodeDeleted(Node &n);
 
-  void connectionCreated(Connection &c);
-  void connectionDeleted(Connection &c);
+  void connectionCreated(Connection const &c);
+  void connectionDeleted(Connection const &c);
 
   void nodeMoved(Node& n, const QPointF& newLocation);
 
@@ -119,6 +119,9 @@ signals:
   void nodeHoverLeft(Node& n);
 
   void nodeContextMenu(Node& n, const QPointF& pos);
+
+public slots:
+  void partialConnectionCompleted(Connection const& c);
 
 private:
 

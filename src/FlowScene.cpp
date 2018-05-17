@@ -14,6 +14,8 @@
 #include <QtCore/QJsonObject>
 #include <QtCore/QJsonArray>
 
+#include <QtGlobal>
+
 #include <QDebug>
 
 #include "Node.hpp"
@@ -81,7 +83,8 @@ createConnection(PortType connectedPort,
 
   _connections[connection->id()] = connection;
 
-  connectionCreated(*connection);
+  // Note: this connection isn't truly created yet. It's only partially created.
+  // Thus, don't send the connectionCreated(...) signal
   return connection;
 }
 
@@ -557,15 +560,24 @@ loadFromMemory(const QByteArray& data)
 
 void
 FlowScene::
+partialConnectionCompleted(Connection const& c)
+{
+  connectionCreated(c);
+}
+
+
+void
+FlowScene::
 sendConnectionCreatedToNodes(Connection const& c)
 {
   Node* from = c.getNode(PortType::Out);
   Node* to   = c.getNode(PortType::In);
 
-  if (from != nullptr && to != nullptr) {
-    from->nodeDataModel()->outputConnectionCreated(c);
-    to->nodeDataModel()->inputConnectionCreated(c);
-  }
+  Q_ASSERT(from != nullptr);
+  Q_ASSERT(to != nullptr);
+
+  from->nodeDataModel()->outputConnectionCreated(c);
+  to->nodeDataModel()->inputConnectionCreated(c);
 }
 
 
@@ -576,10 +588,11 @@ sendConnectionDeletedToNodes(Connection const& c)
   Node* from = c.getNode(PortType::Out);
   Node* to   = c.getNode(PortType::In);
 
-  if (from != nullptr && to != nullptr) {
-    from->nodeDataModel()->outputConnectionDeleted(c);
-    to->nodeDataModel()->inputConnectionDeleted(c);
-  }
+  Q_ASSERT(from != nullptr);
+  Q_ASSERT(to != nullptr);
+
+  from->nodeDataModel()->outputConnectionDeleted(c);
+  to->nodeDataModel()->inputConnectionDeleted(c);
 }
 
 
