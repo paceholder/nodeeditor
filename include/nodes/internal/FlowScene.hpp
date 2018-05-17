@@ -120,9 +120,6 @@ signals:
 
   void nodeContextMenu(Node& n, const QPointF& pos);
 
-public slots:
-  void partialConnectionCompleted(Connection const& c);
-
 private:
 
   using SharedConnection = std::shared_ptr<Connection>;

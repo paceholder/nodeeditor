@@ -173,7 +173,10 @@ void
 FlowScene::
 deleteConnection(Connection& connection)
 {
-  connectionDeleted(connection);
+  if (connection.getNode(PortType::Out) != nullptr
+      && connection.getNode(PortType::In) != nullptr) {
+    connectionDeleted(connection);
+  }
   connection.removeFromNodes();
   _connections.erase(connection.id());
 }
@@ -555,14 +558,6 @@ loadFromMemory(const QByteArray& data)
   {
     restoreConnection(connection.toObject());
   }
-}
-
-
-void
-FlowScene::
-partialConnectionCompleted(Connection const& c)
-{
-  connectionCreated(c);
 }
 
 
