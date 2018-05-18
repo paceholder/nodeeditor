@@ -146,8 +146,6 @@ disconnect(PortType portToDisconnect) const
   PortIndex portIndex =
     _connection->getPortIndex(portToDisconnect);
 
-  _scene->connectionDeleted(*_connection);
-
   NodeState &state = _node->nodeState();
 
   // clear pointer to Connection in the NodeState

@@ -48,6 +48,8 @@ FlowScene(std::shared_ptr<DataModelRegistry> registry,
 {
   setItemIndexMethod(QGraphicsScene::NoIndex);
 
+  connect(this, &FlowScene::connectionCreated, this, &FlowScene::setupConnectionSignals);
+
   connect(this, &FlowScene::connectionCreated, this, [this](Connection const& c) { sendConnectionCreatedToNodes(c); });
   connect(this, &FlowScene::connectionDeleted, this, [this](Connection const& c) { sendConnectionDeletedToNodes(c); });
 }
@@ -84,7 +86,15 @@ createConnection(PortType connectedPort,
   _connections[connection->id()] = connection;
 
   // Note: this connection isn't truly created yet. It's only partially created.
-  // Thus, don't send the connectionCreated(...) signal
+  // Thus, don't send the connectionCreated(...) signal.
+
+  connect(connection.get(),
+          &Connection::connectionCompleted,
+          this,
+          [this](Connection const& c) {
+            connectionCreated(c);
+          });
+
   return connection;
 }
 
@@ -165,6 +175,8 @@ restoreConnection(QJsonObject const &connectionJson)
                      *nodeOut, portIndexOut,
                      getConverter());
 
+  connectionCreated(*connection);
+
   return connection;
 }
 
@@ -173,12 +185,11 @@ void
 FlowScene::
 deleteConnection(Connection& connection)
 {
-  if (connection.getNode(PortType::Out) != nullptr
-      && connection.getNode(PortType::In) != nullptr) {
-    connectionDeleted(connection);
+  auto it = _connections.find(connection.id());
+  if (it != _connections.end()) {
+    connection.removeFromNodes();
+    _connections.erase(it);
   }
-  connection.removeFromNodes();
-  _connections.erase(connection.id());
 }
 
 
@@ -558,6 +569,20 @@ loadFromMemory(const QByteArray& data)
   {
     restoreConnection(connection.toObject());
   }
+}
+
+
+void
+FlowScene::
+setupConnectionSignals(Connection const& c)
+{
+  connect(&c,
+          &Connection::connectionMadeIncomplete,
+          this,
+          [this](Connection const& c) {
+            connectionDeleted(c);
+          },
+          Qt::UniqueConnection);
 }
 
 
