@@ -179,7 +179,8 @@ restoreConnection(QJsonObject const &connectionJson)
                      *nodeOut, portIndexOut,
                      getConverter());
 
-  connectionCreated(*connection);
+  // Note: the connectionCreated(...) signal has already been sent
+  // by createConnection(...)
 
   return connection;
 }
