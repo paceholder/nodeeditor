@@ -5,7 +5,7 @@
 #include <QApplication>
 
 
-std::unique_ptr<QApplication>
+inline std::unique_ptr<QApplication>
 applicationSetup()
 {
   static int    Argc       = 0;
