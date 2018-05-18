@@ -10,9 +10,9 @@
 
 #include <iostream>
 
-#include "GuiSetup.hpp"
-#include "MockNodeDataModel.hpp"
+#include "ApplicationSetup.hpp"
 #include "Stringify.hpp"
+#include "StubNodeDataModel.hpp"
 
 using QtNodes::Connection;
 using QtNodes::DataModelRegistry;
@@ -27,7 +27,7 @@ using QtNodes::PortType;
 
 TEST_CASE("Dragging node changes position", "[gui]")
 {
-  auto setup = guiSetup();
+  auto app = applicationSetup();
 
   FlowScene scene;
   FlowView  view(&scene);
@@ -37,7 +37,7 @@ TEST_CASE("Dragging node changes position", "[gui]")
 
   SECTION("just one node")
   {
-    auto& node = scene.createNode(std::make_unique<MockNodeDataModel>());
+    auto& node = scene.createNode(std::make_unique<StubNodeDataModel>());
 
     auto& ngo = node.nodeGraphicsObject();
 

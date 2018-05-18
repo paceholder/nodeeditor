@@ -6,7 +6,7 @@
 
 
 std::unique_ptr<QApplication>
-guiSetup()
+applicationSetup()
 {
   static int    Argc       = 0;
   static char   ArgvVal    = '\0';

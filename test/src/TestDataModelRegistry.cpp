@@ -2,6 +2,8 @@
 
 #include <catch.hpp>
 
+#include "StubNodeDataModel.hpp"
+
 using QtNodes::DataModelRegistry;
 using QtNodes::NodeData;
 using QtNodes::NodeDataModel;
@@ -11,52 +13,9 @@ using QtNodes::PortType;
 
 namespace
 {
-struct StubModel : public NodeDataModel
+class StubModelStaticName : public StubNodeDataModel
 {
-  QString
-  caption() const override
-  {
-    return "caption";
-  }
-
-  QString
-  name() const override
-  {
-    return "name";
-  }
-
-  unsigned int
-  nPorts(PortType type) const override
-  {
-    return 0;
-  }
-
-  NodeDataType
-  dataType(PortType type, PortIndex index) const override
-  {
-    return {};
-  }
-
-  void
-  setInData(std::shared_ptr<NodeData> nodeData, PortIndex index) override
-  {
-  }
-
-  std::shared_ptr<NodeData>
-  outData(PortIndex index) override
-  {
-    return nullptr;
-  }
-
-  QWidget*
-  embeddedWidget() override
-  {
-    return nullptr;
-  }
-};
-
-struct StubModelStaticName : public StubModel
-{
+public:
   static QString
   Name()
   {
@@ -71,7 +30,7 @@ TEST_CASE("DataModelRegistry::registerModel", "[interface]")
 
   SECTION("stub model")
   {
-    registry.registerModel<StubModel>();
+    registry.registerModel<StubNodeDataModel>();
     auto model = registry.create("name");
 
     CHECK(model->name() == "name");

@@ -4,7 +4,7 @@
 
 #include <nodes/NodeDataModel>
 
-class MockNodeDataModel : public QtNodes::NodeDataModel
+class StubNodeDataModel : public QtNodes::NodeDataModel
 {
 public:
   QString
