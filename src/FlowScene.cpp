@@ -48,7 +48,11 @@ FlowScene(std::shared_ptr<DataModelRegistry> registry,
 {
   setItemIndexMethod(QGraphicsScene::NoIndex);
 
-  connect(this, &FlowScene::connectionCreated, this, &FlowScene::setupConnectionSignals);
+  // Note: the weirdness of using a lambda instead of a member function pointer is
+  // due to a bug in Qt 5.2.
+
+  // This connection should come first
+  connect(this, &FlowScene::connectionCreated, this, [this](Connection const& c) { setupConnectionSignals(c); });
 
   connect(this, &FlowScene::connectionCreated, this, [this](Connection const& c) { sendConnectionCreatedToNodes(c); });
   connect(this, &FlowScene::connectionDeleted, this, [this](Connection const& c) { sendConnectionDeletedToNodes(c); });

@@ -66,6 +66,7 @@ Connection(Node& nodeIn,
 Connection::
 ~Connection()
 {
+  if (complete()) connectionMadeIncomplete(*this);
   propagateEmptyData();
 
   if (_inNode)
