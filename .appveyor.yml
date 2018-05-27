@@ -6,14 +6,16 @@ environment:
       QTDIR: C:\Qt\5.6\mingw49_32
       PLATFORM: x86
     - GENERATOR : "Visual Studio 14 2015 Win64"
-      QTDIR: C:\Qt\5.7\msvc2015_64
+      QTDIR: C:\Qt\5.6.3\msvc2015_64
       PLATFORM: x64
     - GENERATOR : "Visual Studio 14 2015"
-      QTDIR: C:\Qt\5.7\msvc2015
+      QTDIR: C:\Qt\5.6.3\msvc2015
       PLATFORM: Win32
 
 configuration:
   - Release
+
+image: Visual Studio 2015
 
 #branches:
   #only:
