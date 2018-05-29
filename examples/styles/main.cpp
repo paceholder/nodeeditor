@@ -30,9 +30,9 @@ registerDataModels()
 
 static
 void
-setStyle()
+setStyle(FlowScene& scene, FlowView& view)
 {
-  FlowViewStyle::setStyle(
+  view.setStyle(FlowViewStyle::fromJson(
   R"(
   {
     "FlowViewStyle": {
@@ -41,9 +41,9 @@ setStyle()
       "CoarseGridColor": [235, 235, 220]
     }
   }
-  )");
+  )"));
 
-  NodeStyle::setNodeStyle(
+  scene.setNodeStyle(NodeStyle::fromJson(
   R"(
   {
     "NodeStyle": {
@@ -63,9 +63,9 @@ setStyle()
       "Opacity": 1.0
     }
   }
-  )");
+  )"));
 
-  ConnectionStyle::setConnectionStyle(
+  scene.setConnectionStyle(ConnectionStyle::fromJson(
   R"(
   {
     "ConnectionStyle": {
@@ -82,7 +82,7 @@ setStyle()
       "UseDataDefinedColors": false
     }
   }
-  )");
+  )"));
 }
 
 
@@ -93,11 +93,9 @@ main(int argc, char* argv[])
 {
   QApplication app(argc, argv);
 
-  setStyle();
-
   FlowScene scene(registerDataModels());
-
   FlowView view(&scene);
+  setStyle(scene, view);
 
   view.setWindowTitle("Style example");
   view.resize(800, 600);

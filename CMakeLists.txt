@@ -44,7 +44,7 @@ set(CPP_SOURCE_FILES
   src/NodeState.cpp
   src/NodeStyle.cpp
   src/Properties.cpp
-  src/StyleCollection.cpp
+  src/StyleImport.cpp
 )
 
 # If we want to give the option to build a static library,

@@ -3,6 +3,7 @@
 #include <QtWidgets/QGraphicsView>
 
 #include "Export.hpp"
+#include "FlowViewStyle.hpp"
 
 namespace QtNodes
 {
@@ -16,7 +17,9 @@ class NODE_EDITOR_PUBLIC FlowView
 public:
 
   FlowView(QWidget *parent = Q_NULLPTR);
+  FlowView(FlowViewStyle style, QWidget *parent = Q_NULLPTR);
   FlowView(FlowScene *scene, QWidget *parent = Q_NULLPTR);
+  FlowView(FlowScene *scene, FlowViewStyle style, QWidget *parent = Q_NULLPTR);
 
   FlowView(const FlowView&) = delete;
   FlowView operator=(const FlowView&) = delete;
@@ -26,6 +29,8 @@ public:
   QAction* deleteSelectionAction() const;
 
   void setScene(FlowScene *scene);
+
+  void setStyle(FlowViewStyle style);
 
 public slots:
 
@@ -65,5 +70,7 @@ private:
   QPointF _clickPos;
 
   FlowScene* _scene;
+
+  FlowViewStyle _style;
 };
 }

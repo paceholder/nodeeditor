@@ -15,6 +15,7 @@
 #include "NodeDataModel.hpp"
 
 #include "ConnectionState.hpp"
+#include "ConnectionStyle.hpp"
 #include "ConnectionGeometry.hpp"
 #include "ConnectionGraphicsObject.hpp"
 
@@ -27,16 +28,20 @@ using QtNodes::NodeData;
 using QtNodes::NodeDataType;
 using QtNodes::ConnectionGraphicsObject;
 using QtNodes::ConnectionGeometry;
+using QtNodes::ConnectionStyle;
 using QtNodes::TypeConverter;
 
 Connection::
 Connection(PortType portType,
            Node& node,
-           PortIndex portIndex)
+           PortIndex portIndex,
+           ConnectionStyle const &style)
   : _uid(QUuid::createUuid())
   , _outPortIndex(INVALID)
   , _inPortIndex(INVALID)
   , _connectionState()
+  , _connectionGeometry(style)
+  , _connectionStyle(style)
 {
   setNodeToPort(node, portType, portIndex);
 
@@ -49,6 +54,7 @@ Connection(Node& nodeIn,
            PortIndex portIndexIn,
            Node& nodeOut,
            PortIndex portIndexOut,
+           ConnectionStyle const &style,
            TypeConverter typeConverter)
   : _uid(QUuid::createUuid())
   , _outNode(&nodeOut)
@@ -56,6 +62,8 @@ Connection(Node& nodeIn,
   , _outPortIndex(portIndexOut)
   , _inPortIndex(portIndexIn)
   , _connectionState()
+  , _connectionGeometry(style)
+  , _connectionStyle(style)
   , _converter(std::move(typeConverter))
 {
   setNodeToPort(nodeIn, PortType::In, portIndexIn);
@@ -399,6 +407,13 @@ Connection::
 setTypeConverter(TypeConverter converter)
 {
   _converter = std::move(converter);
+}
+
+
+ConnectionStyle const &
+Connection::connectionStyle() const
+{
+  return _connectionStyle;
 }
 
 

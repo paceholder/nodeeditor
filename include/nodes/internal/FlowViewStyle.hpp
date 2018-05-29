@@ -2,36 +2,66 @@
 
 #include <QtGui/QColor>
 
+#include <QtCore/QString>
+#include <QtCore/QByteArray>
+
 #include "Export.hpp"
-#include "Style.hpp"
 
 namespace QtNodes
 {
 
-class NODE_EDITOR_PUBLIC FlowViewStyle : public Style
+class NODE_EDITOR_PUBLIC FlowViewStyle
 {
 public:
-
   FlowViewStyle();
 
-  FlowViewStyle(QString jsonText);
+  static FlowViewStyle const&
+  defaultStyle();
 
-public:
+  static FlowViewStyle
+  fromJson(QString const& jsonText);
 
-  static void setStyle(QString jsonText);
+  QColor const &
+  backgroundColor() const
+  {
+    return _backgroundColor;
+  }
+
+  QColor const &
+  fineGridColor() const
+  {
+    return _fineGridColor;
+  }
+
+  QColor const &
+  coarseGridColor() const
+  {
+    return _coarseGridColor;
+  }
+
+  void
+  setBackgroundColor(QColor backgroundColor)
+  {
+    _backgroundColor = backgroundColor;
+  }
+
+  void
+  setFineGridColor(QColor fineGridColor)
+  {
+    _fineGridColor = fineGridColor;
+  }
+
+  void
+  setCoarseGridColor(QColor coarseGridColor)
+  {
+    _coarseGridColor = coarseGridColor;
+  }
 
 private:
+  FlowViewStyle(QByteArray const& jsonBytes);
 
-  void loadJsonText(QString jsonText) override;
-
-  void loadJsonFile(QString fileName) override;
-
-  void loadJsonFromByteArray(QByteArray const &byteArray) override;
-
-public:
-
-  QColor BackgroundColor;
-  QColor FineGridColor;
-  QColor CoarseGridColor;
+  QColor _backgroundColor;
+  QColor _fineGridColor;
+  QColor _coarseGridColor;
 };
 }

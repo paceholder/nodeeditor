@@ -10,11 +10,12 @@
 namespace QtNodes
 {
 
+class ConnectionStyle;
+
 class ConnectionGeometry
 {
 public:
-
-  ConnectionGeometry();
+  ConnectionGeometry(ConnectionStyle const &style);
 
 public:
 
@@ -56,5 +57,7 @@ private:
   double _lineWidth;
 
   bool _hovered;
+
+  ConnectionStyle const* _style;
 };
 }

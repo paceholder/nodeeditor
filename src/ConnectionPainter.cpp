@@ -4,17 +4,17 @@
 
 #include "ConnectionGeometry.hpp"
 #include "ConnectionState.hpp"
+#include "ConnectionStyle.hpp"
 #include "ConnectionGraphicsObject.hpp"
 #include "Connection.hpp"
 
 #include "NodeData.hpp"
 
-#include "StyleCollection.hpp"
 
-
-using QtNodes::ConnectionPainter;
-using QtNodes::ConnectionGeometry;
 using QtNodes::Connection;
+using QtNodes::ConnectionGeometry;
+using QtNodes::ConnectionPainter;
+using QtNodes::ConnectionStyle;
 
 
 static
@@ -110,7 +110,7 @@ drawSketchLine(QPainter * painter,
   if (state.requiresPort())
   {
     auto const & connectionStyle =
-      QtNodes::StyleCollection::connectionStyle();
+      connection.connectionStyle();
 
     QPen p;
     p.setWidth(connectionStyle.constructionLineWidth());
@@ -150,7 +150,7 @@ drawHoveredOrSelected(QPainter * painter,
     QPen p;
 
     auto const &connectionStyle =
-      QtNodes::StyleCollection::connectionStyle();
+      connection.connectionStyle();
     double const lineWidth     = connectionStyle.lineWidth();
 
     p.setWidth(2 * lineWidth);
@@ -184,7 +184,7 @@ drawNormalLine(QPainter * painter,
   // colors
 
   auto const &connectionStyle =
-    QtNodes::StyleCollection::connectionStyle();
+    connection.connectionStyle();
 
   QColor normalColorOut  = connectionStyle.normalColor();
   QColor normalColorIn   = connectionStyle.normalColor();
@@ -201,8 +201,8 @@ drawNormalLine(QPainter * painter,
 
     gradientColor = (dataTypeOut.id != dataTypeIn.id);
 
-    normalColorOut  = connectionStyle.normalColor(dataTypeOut.id);
-    normalColorIn   = connectionStyle.normalColor(dataTypeIn.id);
+    normalColorOut  = ConnectionStyle::computeNormalColor(dataTypeOut.id);
+    normalColorIn   = ConnectionStyle::computeNormalColor(dataTypeIn.id);
     selectedColor = normalColorOut.darker(200);
   }
 
@@ -301,7 +301,7 @@ paint(QPainter* painter,
   QPointF const & sink   = geom.sink();
 
   auto const & connectionStyle =
-    QtNodes::StyleCollection::connectionStyle();
+    connection.connectionStyle();
 
   double const pointDiameter = connectionStyle.pointDiameter();
 

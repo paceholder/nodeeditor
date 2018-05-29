@@ -12,6 +12,7 @@ class NodeGraphicsObject;
 class NodeDataModel;
 class FlowItemEntry;
 class FlowScene;
+class ConnectionStyle;
 
 class NodePainter
 {
@@ -31,7 +32,7 @@ public:
   void
   drawNodeRect(QPainter* painter,
                NodeGeometry const& geom,
-               NodeDataModel const* model,
+               Node const& node,
                NodeGraphicsObject const & graphicsObject);
 
   static
@@ -39,41 +40,43 @@ public:
   drawModelName(QPainter* painter,
                 NodeGeometry const& geom,
                 NodeState const& state,
-                NodeDataModel const * model);
+                Node const & node);
 
   static
   void
   drawEntryLabels(QPainter* painter,
                   NodeGeometry const& geom,
                   NodeState const& state,
-                  NodeDataModel const * model);
+                  Node const & node);
 
   static
   void
   drawConnectionPoints(QPainter* painter,
                        NodeGeometry const& geom,
                        NodeState const& state,
-                       NodeDataModel const * model,
-                       FlowScene const & scene);
+                       Node const & node,
+                       FlowScene const & scene,
+                       ConnectionStyle const & connectionStyle);
 
   static
   void
   drawFilledConnectionPoints(QPainter* painter,
                              NodeGeometry const& geom,
                              NodeState const& state,
-                             NodeDataModel const * model);
+                             Node const & node,
+                             ConnectionStyle const & connectionStyle);
 
   static
   void
   drawResizeRect(QPainter* painter,
                  NodeGeometry const& geom,
-                 NodeDataModel const * model);
+                 Node const & node);
 
   static
   void
   drawValidationRect(QPainter * painter,
                      NodeGeometry const & geom,
-                     NodeDataModel const * model,
+                     Node const & node,
                      NodeGraphicsObject const & graphicsObject);
 };
 }

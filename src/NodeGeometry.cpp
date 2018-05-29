@@ -3,22 +3,22 @@
 #include <iostream>
 #include <cmath>
 
-#include "PortType.hpp"
-#include "NodeState.hpp"
-#include "NodeDataModel.hpp"
 #include "Node.hpp"
+#include "NodeDataModel.hpp"
 #include "NodeGraphicsObject.hpp"
+#include "NodeState.hpp"
+#include "NodeStyle.hpp"
+#include "PortType.hpp"
 
-#include "StyleCollection.hpp"
-
-using QtNodes::NodeGeometry;
+using QtNodes::Node;
 using QtNodes::NodeDataModel;
+using QtNodes::NodeGeometry;
+using QtNodes::NodeStyle;
 using QtNodes::PortIndex;
 using QtNodes::PortType;
-using QtNodes::Node;
 
 NodeGeometry::
-NodeGeometry(std::unique_ptr<NodeDataModel> const &dataModel)
+NodeGeometry(std::unique_ptr<NodeDataModel> const &dataModel, NodeStyle const &style)
   : _width(100)
   , _height(150)
   , _inputPortWidth(70)
@@ -32,6 +32,7 @@ NodeGeometry(std::unique_ptr<NodeDataModel> const &dataModel)
   , _dataModel(dataModel)
   , _fontMetrics(QFont())
   , _boldFontMetrics(QFont())
+  , _nodeStyle(&style)
 {
   QFont f; f.setBold(true);
 
@@ -56,9 +57,7 @@ QRectF
 NodeGeometry::
 boundingRect() const
 {
-  auto const &nodeStyle = StyleCollection::nodeStyle();
-
-  double addon = 4 * nodeStyle.ConnectionPointDiameter;
+  double addon = 4 * _nodeStyle->connectionPointDiameter();
 
   return QRectF(0 - addon,
                 0 - addon,
@@ -135,8 +134,6 @@ portScenePosition(PortIndex index,
                   PortType portType,
                   QTransform const & t) const
 {
-  auto const &nodeStyle = StyleCollection::nodeStyle();
-
   unsigned int step = _entryHeight + _spacing;
 
   QPointF result;
@@ -154,7 +151,7 @@ portScenePosition(PortIndex index,
   {
     case PortType::Out:
     {
-      double x = _width + nodeStyle.ConnectionPointDiameter;
+      double x = _width + _nodeStyle->connectionPointDiameter();
 
       result = QPointF(x, totalHeight);
       break;
@@ -162,7 +159,7 @@ portScenePosition(PortIndex index,
 
     case PortType::In:
     {
-      double x = 0.0 - nodeStyle.ConnectionPointDiameter;
+      double x = 0.0 - _nodeStyle->connectionPointDiameter();
 
       result = QPointF(x, totalHeight);
       break;
@@ -182,14 +179,12 @@ checkHitScenePoint(PortType portType,
                    QPointF const scenePoint,
                    QTransform const & sceneTransform) const
 {
-  auto const &nodeStyle = StyleCollection::nodeStyle();
-
   PortIndex result = INVALID;
 
   if (portType == PortType::None)
     return result;
 
-  double const tolerance = 2.0 * nodeStyle.ConnectionPointDiameter;
+  double const tolerance = 2.0 * _nodeStyle->connectionPointDiameter();
 
   unsigned int const nItems = _dataModel->nPorts(portType);
 

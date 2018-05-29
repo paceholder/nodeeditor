@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include <QtWidgets/QWidget>
 
 #include "PortType.hpp"
@@ -85,11 +84,7 @@ public:
     return ConnectionPolicy::Many;
   }
 
-  NodeStyle const&
-  nodeStyle() const;
-
-  void
-  setNodeStyle(NodeStyle const& style);
+  virtual NodeStyle const* nodeStyle() const { return nullptr; }
 
 public:
 
@@ -135,9 +130,5 @@ signals:
 
   void
   computingFinished();
-
-private:
-
-  NodeStyle _nodeStyle;
 };
 }

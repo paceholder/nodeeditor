@@ -3,12 +3,12 @@
 #include <QtCore/QObject>
 
 #include <utility>
-#include <iostream>
 
 #include "FlowScene.hpp"
 
 #include "NodeGraphicsObject.hpp"
 #include "NodeDataModel.hpp"
+#include "NodeStyle.hpp"
 
 #include "ConnectionGraphicsObject.hpp"
 #include "ConnectionState.hpp"
@@ -16,6 +16,7 @@
 using QtNodes::Node;
 using QtNodes::NodeGeometry;
 using QtNodes::NodeState;
+using QtNodes::NodeStyle;
 using QtNodes::NodeData;
 using QtNodes::NodeDataType;
 using QtNodes::NodeDataModel;
@@ -23,12 +24,21 @@ using QtNodes::NodeGraphicsObject;
 using QtNodes::PortIndex;
 using QtNodes::PortType;
 
+
+static NodeStyle const&
+computeStyle(NodeStyle const *preferredStyle, NodeStyle const &backupStyle)
+{
+  return preferredStyle ? *preferredStyle : backupStyle;
+}
+
+
 Node::
-Node(std::unique_ptr<NodeDataModel> && dataModel)
+Node(std::unique_ptr<NodeDataModel> && dataModel, NodeStyle const& style)
   : _uid(QUuid::createUuid())
   , _nodeDataModel(std::move(dataModel))
   , _nodeState(_nodeDataModel)
-  , _nodeGeometry(_nodeDataModel)
+  , _nodeStyle(computeStyle(_nodeDataModel->nodeStyle(), style))
+  , _nodeGeometry(_nodeDataModel, _nodeStyle)
   , _nodeGraphicsObject(nullptr)
 {
   _nodeGeometry.recalculateSize();
@@ -168,6 +178,14 @@ Node::
 nodeState()
 {
   return _nodeState;
+}
+
+
+NodeStyle const &
+Node::
+nodeStyle() const
+{
+  return _nodeStyle;
 }
 
 

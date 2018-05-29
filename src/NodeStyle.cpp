@@ -1,136 +1,342 @@
 #include "NodeStyle.hpp"
 
-#include <iostream>
+#include <utility>
 
 #include <QtCore/QFile>
+#include <QtCore/QJsonArray>
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
 #include <QtCore/QJsonValueRef>
-#include <QtCore/QJsonArray>
 
-#include <QDebug>
-
-#include "StyleCollection.hpp"
+#include "StyleImport.hpp"
 
 using QtNodes::NodeStyle;
+using QtNodes::StyleImport;
 
-inline void initResources() { Q_INIT_RESOURCE(resources); }
+
+NodeStyle::
+NodeStyle(QByteArray const& jsonBytes)
+{
+  QJsonDocument json(QJsonDocument::fromJson(jsonBytes));
+  QJsonObject   topLevelObject = json.object();
+
+  QJsonValueRef nodeStyleValues = topLevelObject["NodeStyle"];
+  QJsonObject   obj             = nodeStyleValues.toObject();
+
+  _normalBoundaryColor        = StyleImport::readColor(obj, "NormalBoundaryColor");
+  _selectedBoundaryColor      = StyleImport::readColor(obj, "SelectedBoundaryColor");
+  _gradientColor0             = StyleImport::readColor(obj, "GradientColor0");
+  _gradientColor1             = StyleImport::readColor(obj, "GradientColor1");
+  _gradientColor2             = StyleImport::readColor(obj, "GradientColor2");
+  _gradientColor3             = StyleImport::readColor(obj, "GradientColor3");
+  _shadowColor                = StyleImport::readColor(obj, "ShadowColor");
+  _fontColor                  = StyleImport::readColor(obj, "FontColor");
+  _fontColorFaded             = StyleImport::readColor(obj, "FontColorFaded");
+  _connectionPointColor       = StyleImport::readColor(obj, "ConnectionPointColor");
+  _filledConnectionPointColor = StyleImport::readColor(obj, "FilledConnectionPointColor");
+  _warningColor               = StyleImport::readColor(obj, "WarningColor");
+  _errorColor                 = StyleImport::readColor(obj, "ErrorColor");
+
+  _penWidth                = StyleImport::readFloat(obj, "PenWidth");
+  _hoveredPenWidth         = StyleImport::readFloat(obj, "HoveredPenWidth");
+  _connectionPointDiameter = StyleImport::readFloat(obj, "ConnectionPointDiameter");
+
+  _opacity = StyleImport::readFloat(obj, "Opacity");
+}
+
+
+NodeStyle const&
+NodeStyle::
+defaultStyle()
+{
+  static NodeStyle const DefaultStyle = [] {
+    StyleImport::initResources();
+
+    return NodeStyle(StyleImport::readJsonFile(":DefaultStyle.json"));
+  }();
+
+  return DefaultStyle;
+}
+
+
+NodeStyle
+NodeStyle::
+fromJson(QString const& jsonText)
+{
+  return NodeStyle(StyleImport::readJsonText(jsonText));
+}
+
 
 NodeStyle::
 NodeStyle()
-{
-  // Explicit resources inialization for preventing the static initialization
-  // order fiasco: https://isocpp.org/wiki/faq/ctors#static-init-order
-  initResources();
+= default;
 
-  // This configuration is stored inside the compiled unit and is loaded statically
-  loadJsonFile(":DefaultStyle.json");
+
+QColor
+NodeStyle::
+normalBoundaryColor() const
+{
+  return _normalBoundaryColor;
 }
 
 
+QColor
 NodeStyle::
-NodeStyle(QString jsonText)
+selectedBoundaryColor() const
 {
-  loadJsonText(jsonText);
+  return _selectedBoundaryColor;
+}
+
+
+QColor
+NodeStyle::
+gradientColor0() const
+{
+  return _gradientColor0;
+}
+
+
+QColor
+NodeStyle::
+gradientColor1() const
+{
+  return _gradientColor1;
+}
+
+
+QColor
+NodeStyle::
+gradientColor2() const
+{
+  return _gradientColor2;
+}
+
+
+QColor
+NodeStyle::
+gradientColor3() const
+{
+  return _gradientColor3;
+}
+
+
+QColor
+NodeStyle::
+shadowColor() const
+{
+  return _shadowColor;
+}
+
+
+QColor
+NodeStyle::
+fontColor() const
+{
+  return _fontColor;
+}
+
+
+QColor
+NodeStyle::
+fontColorFaded() const
+{
+  return _fontColorFaded;
+}
+
+
+QColor
+NodeStyle::
+connectionPointColor() const
+{
+  return _connectionPointColor;
+}
+
+
+QColor
+NodeStyle::
+filledConnectionPointColor() const
+{
+  return _filledConnectionPointColor;
+}
+
+
+QColor
+NodeStyle::
+warningColor() const
+{
+  return _warningColor;
+}
+
+
+QColor
+NodeStyle::
+errorColor() const
+{
+  return _errorColor;
+}
+
+
+float
+NodeStyle::
+penWidth() const
+{
+  return _penWidth;
+}
+
+
+float
+NodeStyle::
+hoveredPenWidth() const
+{
+  return _hoveredPenWidth;
+}
+
+
+float
+NodeStyle::
+connectionPointDiameter() const
+{
+  return _connectionPointDiameter;
+}
+
+
+float
+NodeStyle::
+opacity() const
+{
+  return _opacity;
+}
+
+void
+NodeStyle::
+setNormalBoundaryColor(QColor color)
+{
+  _normalBoundaryColor = std::move(color);
 }
 
 
 void
 NodeStyle::
-setNodeStyle(QString jsonText)
+setSelectedBoundaryColor(QColor color)
 {
-  NodeStyle style(jsonText);
-
-
-  StyleCollection::setNodeStyle(style);
-}
-
-
-#ifdef STYLE_DEBUG
-  #define NODE_STYLE_CHECK_UNDEFINED_VALUE(v, variable) { \
-      if (v.type() == QJsonValue::Undefined || \
-          v.type() == QJsonValue::Null) \
-        qWarning() << "Undefined value for parameter:" << #variable; \
-  }
-#else
-  #define NODE_STYLE_CHECK_UNDEFINED_VALUE(v, variable)
-#endif
-
-#define NODE_STYLE_READ_COLOR(values, variable)  { \
-    auto valueRef = values[#variable]; \
-    NODE_STYLE_CHECK_UNDEFINED_VALUE(valueRef, variable) \
-    if (valueRef.isArray()) { \
-      auto colorArray = valueRef.toArray(); \
-      std::vector<int> rgb; rgb.reserve(3); \
-      for (auto it = colorArray.begin(); it != colorArray.end(); ++it) { \
-        rgb.push_back((*it).toInt()); \
-      } \
-      variable = QColor(rgb[0], rgb[1], rgb[2]); \
-    } else { \
-      variable = QColor(valueRef.toString()); \
-    } \
-}
-
-#define NODE_STYLE_READ_FLOAT(values, variable)  { \
-    auto valueRef = values[#variable]; \
-    NODE_STYLE_CHECK_UNDEFINED_VALUE(valueRef, variable) \
-    variable = valueRef.toDouble(); \
-}
-
-void
-NodeStyle::
-loadJsonFile(QString styleFile)
-{
-  QFile file(styleFile);
-
-  if (!file.open(QIODevice::ReadOnly))
-  {
-    qWarning() << "Couldn't open file " << styleFile;
-
-    return;
-  }
-
-  loadJsonFromByteArray(file.readAll());
+  _selectedBoundaryColor = std::move(color);
 }
 
 
 void
 NodeStyle::
-loadJsonText(QString jsonText)
+setGradientColor0(QColor color)
 {
-  loadJsonFromByteArray(jsonText.toUtf8());
+  _gradientColor0 = std::move(color);
 }
 
 
 void
 NodeStyle::
-loadJsonFromByteArray(QByteArray const &byteArray)
+setGradientColor1(QColor color)
 {
-  QJsonDocument json(QJsonDocument::fromJson(byteArray));
+  _gradientColor1 = std::move(color);
+}
 
-  QJsonObject topLevelObject = json.object();
 
-  QJsonValueRef nodeStyleValues = topLevelObject["NodeStyle"];
+void
+NodeStyle::
+setGradientColor2(QColor color)
+{
+  _gradientColor2 = std::move(color);
+}
 
-  QJsonObject obj = nodeStyleValues.toObject();
 
-  NODE_STYLE_READ_COLOR(obj, NormalBoundaryColor);
-  NODE_STYLE_READ_COLOR(obj, SelectedBoundaryColor);
-  NODE_STYLE_READ_COLOR(obj, GradientColor0);
-  NODE_STYLE_READ_COLOR(obj, GradientColor1);
-  NODE_STYLE_READ_COLOR(obj, GradientColor2);
-  NODE_STYLE_READ_COLOR(obj, GradientColor3);
-  NODE_STYLE_READ_COLOR(obj, ShadowColor);
-  NODE_STYLE_READ_COLOR(obj, FontColor);
-  NODE_STYLE_READ_COLOR(obj, FontColorFaded);
-  NODE_STYLE_READ_COLOR(obj, ConnectionPointColor);
-  NODE_STYLE_READ_COLOR(obj, FilledConnectionPointColor);
-  NODE_STYLE_READ_COLOR(obj, WarningColor);
-  NODE_STYLE_READ_COLOR(obj, ErrorColor);
+void
+NodeStyle::
+setGradientColor3(QColor color)
+{
+  _gradientColor3 = std::move(color);
+}
 
-  NODE_STYLE_READ_FLOAT(obj, PenWidth);
-  NODE_STYLE_READ_FLOAT(obj, HoveredPenWidth);
-  NODE_STYLE_READ_FLOAT(obj, ConnectionPointDiameter);
 
-  NODE_STYLE_READ_FLOAT(obj, Opacity);
+void
+NodeStyle::
+setShadowColor(QColor color)
+{
+  _shadowColor = std::move(color);
+}
+
+
+void
+NodeStyle::
+setFontColor(QColor color)
+{
+  _fontColor = std::move(color);
+}
+
+
+void
+NodeStyle::
+setFontColorFaded(QColor color)
+{
+  _fontColorFaded = std::move(color);
+}
+
+
+void
+NodeStyle::
+setConnectionPointColor(QColor color)
+{
+  _connectionPointColor = std::move(color);
+}
+
+
+void
+NodeStyle::
+setFilledConnectionPointColor(QColor color)
+{
+  _filledConnectionPointColor = std::move(color);
+}
+
+
+void
+NodeStyle::
+setWarningColor(QColor color)
+{
+  _warningColor = std::move(color);
+}
+
+
+void
+NodeStyle::
+setErrorColor(QColor color)
+{
+  _errorColor = std::move(color);
+}
+
+void
+NodeStyle::
+setPenWidth(float value)
+{
+  _penWidth = value;
+}
+
+
+void
+NodeStyle::
+setHoveredPenWidth(float value)
+{
+  _hoveredPenWidth = value;
+}
+
+
+void
+NodeStyle::
+setConnectionPointDiameter(float value)
+{
+  _connectionPointDiameter = value;
+}
+
+
+void
+NodeStyle::
+setOpacity(float value)
+{
+  _opacity = value;
 }

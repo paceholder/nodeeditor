@@ -15,12 +15,13 @@ namespace QtNodes
 class NodeState;
 class NodeDataModel;
 class Node;
+class NodeStyle;
 
 class NODE_EDITOR_PUBLIC NodeGeometry
 {
 public:
 
-  NodeGeometry(std::unique_ptr<NodeDataModel> const &dataModel);
+  NodeGeometry(std::unique_ptr<NodeDataModel> const &dataModel, NodeStyle const &style);
 
 public:
   unsigned int
@@ -154,5 +155,7 @@ private:
 
   mutable QFontMetrics _fontMetrics;
   mutable QFontMetrics _boldFontMetrics;
+
+  NodeStyle const* _nodeStyle;
 };
 }

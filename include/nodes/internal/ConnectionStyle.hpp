@@ -2,37 +2,27 @@
 
 #include <QtGui/QColor>
 
+#include <QtCore/QByteArray>
+#include <QtCore/QString>
+
 #include "Export.hpp"
-#include "Style.hpp"
 
 namespace QtNodes
 {
 
-class NODE_EDITOR_PUBLIC ConnectionStyle : public Style
+class NODE_EDITOR_PUBLIC ConnectionStyle
 {
 public:
-
   ConnectionStyle();
 
-  ConnectionStyle(QString jsonText);
+  static ConnectionStyle const&
+  defaultStyle();
 
-public:
-
-  static void setConnectionStyle(QString jsonText);
-
-private:
-
-  void loadJsonText(QString jsonText) override;
-
-  void loadJsonFile(QString fileName) override;
-
-  void loadJsonFromByteArray(QByteArray const &byteArray) override;
-
-public:
+  static ConnectionStyle
+  fromJson(QString const& jsonText);
 
   QColor constructionColor() const;
   QColor normalColor() const;
-  QColor normalColor(QString typeId) const;
   QColor selectedColor() const;
   QColor selectedHaloColor() const;
   QColor hoveredColor() const;
@@ -43,18 +33,35 @@ public:
 
   bool useDataDefinedColors() const;
 
+  void setConstructionColor(QColor);
+  void setNormalColor(QColor);
+  void setSelectedColor(QColor);
+  void setSelectedHaloColor(QColor);
+  void setHoveredColor(QColor);
+
+  void setLineWidth(float);
+  void setConstructionLineWidth(float);
+  void setPointDiameter(float);
+
+  void useDataDefinedColors(bool);
+
+  static QColor
+  computeNormalColor(QString const& typeId);
+
 private:
+  ConnectionStyle(QByteArray const& jsonBytes);
+  void loadJson(QByteArray const& jsonBytes);
 
-  QColor ConstructionColor;
-  QColor NormalColor;
-  QColor SelectedColor;
-  QColor SelectedHaloColor;
-  QColor HoveredColor;
+  QColor _constructionColor;
+  QColor _normalColor;
+  QColor _selectedColor;
+  QColor _selectedHaloColor;
+  QColor _hoveredColor;
 
-  float LineWidth;
-  float ConstructionLineWidth;
-  float PointDiameter;
+  float _lineWidth;
+  float _constructionLineWidth;
+  float _pointDiameter;
 
-  bool UseDataDefinedColors;
+  bool _useDataDefinedColors;
 };
 }

@@ -10,6 +10,7 @@
 
 #include "Export.hpp"
 #include "NodeState.hpp"
+#include "NodeStyle.hpp"
 #include "NodeGeometry.hpp"
 #include "NodeData.hpp"
 #include "NodeGraphicsObject.hpp"
@@ -34,7 +35,7 @@ class NODE_EDITOR_PUBLIC Node
 public:
 
   /// NodeDataModel should be an rvalue and is moved into the Node
-  Node(std::unique_ptr<NodeDataModel> && dataModel);
+  Node(std::unique_ptr<NodeDataModel> && dataModel, NodeStyle const& defaultStyle);
 
   virtual
   ~Node();
@@ -82,6 +83,9 @@ public:
   NodeState &
   nodeState();
 
+  NodeStyle const &
+  nodeStyle() const;
+
   NodeDataModel*
   nodeDataModel() const;
 
@@ -110,6 +114,9 @@ private:
   NodeState _nodeState;
 
   // painting
+
+  // _nodeStyle must come before _nodeGeometry
+  NodeStyle const &_nodeStyle;
 
   NodeGeometry _nodeGeometry;
 
