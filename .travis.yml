@@ -31,7 +31,7 @@ matrix:
     - os: osx
       osx_image: xcode8.3
       compiler: clang
-      env: CMAKE_PREFIX_PATH=/usr/local/Cellar/qt/5.10.1:$CMAKE_PREFIX_PATH
+      env: CMAKE_PREFIX_PATH=/usr/local/Cellar/qt/5.11.0:$CMAKE_PREFIX_PATH
 
 git:
   depth: 10
@@ -43,11 +43,27 @@ before_install:
    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install build-essential libgl1-mesa-dev ; fi
    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get -yy install qtbase5-dev ; fi
 
+install:
+  - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
+  - |
+    mkdir -p ${DEPS_DIR}
+    pushd ${DEPS_DIR}
+  - travis_retry git clone https://github.com/catchorg/Catch2.git # Install Catch2
+  - |
+    pushd Catch2
+    git checkout tags/v2.2.2
+    mkdir build && cd build
+  - cmake .. -DBUILD_TESTING=OFF -DCMAKE_INSTALL_PREFIX="${DEPS_DIR}/install"
+  - cmake --build . -- install
+  - export CMAKE_PREFIX_PATH="${DEPS_DIR}/install/:$CMAKE_PREFIX_PATH"
+  - popd; popd
 
 script:
   - mkdir build
   - cd build
   - cmake -DCMAKE_VERBOSE_MAKEFILE=$VERBOSE_BUILD .. && make -j
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then xvfb-run --server-args="-screen 0 1024x768x24" ./test/test_nodes; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ./test/test_nodes; fi
 
 notifications:
   email: false

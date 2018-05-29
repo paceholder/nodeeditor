@@ -12,22 +12,22 @@ std::unique_ptr<NodeDataModel>
 DataModelRegistry::
 create(QString const &modelName)
 {
-  auto it = _registeredModels.find(modelName);
+  auto it = _registeredItemCreators.find(modelName);
 
-  if (it != _registeredModels.end())
+  if (it != _registeredItemCreators.end())
   {
-    return it->second->clone();
+    return it->second();
   }
 
   return nullptr;
 }
 
 
-DataModelRegistry::RegisteredModelsMap const &
+DataModelRegistry::RegisteredModelCreatorsMap const &
 DataModelRegistry::
-registeredModels() const
+registeredModelCreators() const
 {
-  return _registeredModels;
+  return _registeredItemCreators;
 }
 
 

@@ -38,10 +38,6 @@ public:
   QString
   name() const override { return QString("ImageLoaderModel"); }
 
-  std::unique_ptr<NodeDataModel>
-  clone() const override
-  { return std::make_unique<ImageLoaderModel>(); }
-
 public:
 
   virtual QString
