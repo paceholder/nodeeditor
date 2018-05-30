@@ -33,8 +33,8 @@ matrix:
       compiler: gcc
       env:
         - CXX=g++-5 CC=gcc-5 QT=5
-        - CXXFLAGS="-fsanitize=address -fno-omit-frame-pointer"
-        - LDFLAGS=-fsanitize=address
+        - NODE_EDITOR_CXXFLAGS="-fsanitize=address -fno-omit-frame-pointer"
+        - NODE_EDITOR_LDFLAGS=-fsanitize=address
           # Too many false positive leaks:
         - ASAN_OPTIONS=detect_leaks=0
       addons:
@@ -77,6 +77,8 @@ install:
 script:
   - mkdir build
   - cd build
+  - CXXFLAGS=$NODE_EDITOR_CXXFLAGS
+  - LDFLAGS=$NODE_EDITOR_LDFLAGS
   - cmake -DCMAKE_VERBOSE_MAKEFILE=$VERBOSE_BUILD .. && make -j
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then xvfb-run --server-args="-screen 0 1024x768x24" ./test/test_nodes; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ./test/test_nodes; fi
