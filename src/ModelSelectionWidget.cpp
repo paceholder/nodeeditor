@@ -5,6 +5,7 @@
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QTreeWidget>
+#include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidgetAction>
 
 #include <nodes/DataModelRegistry>
@@ -20,6 +21,8 @@ ModelSelectionWidget::
 ModelSelectionWidget(DataModelRegistry& registry, QWidget* parent)
   : QWidget(parent)
 {
+  auto* layout = new QVBoxLayout(this);
+  setLayout(layout);
 
   // Add filterbox to the context menu
   auto* filter = new QLineEdit(this);
@@ -31,6 +34,7 @@ ModelSelectionWidget(DataModelRegistry& registry, QWidget* parent)
   filterAction->setDefaultWidget(filter);
 
   addAction(filterAction);
+  layout->addWidget(filter);
 
   // Add result treeview to the context menu
   auto* treeView = new QTreeWidget(this);
@@ -40,6 +44,7 @@ ModelSelectionWidget(DataModelRegistry& registry, QWidget* parent)
   treeViewAction->setDefaultWidget(treeView);
 
   addAction(treeViewAction);
+  layout->addWidget(treeView);
 
   QMap<QString, QTreeWidgetItem*> topLevelItems;
   for (auto const& cat : registry.categoriesOrder())
