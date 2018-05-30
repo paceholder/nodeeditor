@@ -5,6 +5,7 @@ add_executable(test_nodes
   test_main.cpp
   src/test_dragging.cpp
   src/TestDataModelRegistry.cpp
+  src/TestFlowScene.cpp
   src/TestNodeGraphicsObject.cpp
 )
 

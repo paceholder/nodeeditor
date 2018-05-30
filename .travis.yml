@@ -28,6 +28,21 @@ matrix:
           packages:
             - g++-5
 
+    - os: linux
+      dist: trusty
+      compiler: gcc
+      env: CXX=g++-5 CC=gcc-5 QT=5
+           CXXFLAGS="-fsanitize=address -fno-omit-frame-pointer"
+           LDFLAGS=-fsanitize=address
+           # Too many false positive leaks:
+           ASAN_OPTIONS=detect_leaks=0
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-5
+
     - os: osx
       osx_image: xcode8.3
       compiler: clang
