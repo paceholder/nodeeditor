@@ -68,3 +68,74 @@ TEST_CASE("ModelSelectionWidget models order (within a category)", "[gui]")
   CHECK(mainCategory->child(1)->data(0, Qt::UserRole).toString().toStdString() == "c");
   CHECK(mainCategory->child(2)->data(0, Qt::UserRole).toString().toStdString() == "b");
 }
+
+#include <nodes/FlowScene>
+#include <nodes/FlowView>
+
+TEST_CASE("ModelSelectionWidget category order", "[gui]")
+{
+  auto setup = applicationSetup();
+
+  DataModelRegistry registry;
+
+  registry.registerModel<StubNodeDataModel>("Category A", [] {
+    auto result = std::make_unique<StubNodeDataModel>();
+
+    result->name("A");
+
+    return result;
+  });
+
+  registry.registerModel<StubNodeDataModel>("Category C", [] {
+    auto result = std::make_unique<StubNodeDataModel>();
+
+    result->name("C");
+
+    return result;
+  });
+
+  registry.registerModel<StubNodeDataModel>("Category B", [] {
+    auto result = std::make_unique<StubNodeDataModel>();
+
+    result->name("B");
+
+    return result;
+  });
+
+  SECTION("unsorted categories")
+  {
+    auto widget = std::make_unique<ModelSelectionWidget>(registry);
+
+    auto tree = widget->findChild<QTreeWidget*>();
+
+    {
+      INFO("Test out of date. ModelSelectionWidget doesn't use QTreeWidget");
+      REQUIRE(tree != nullptr);
+    }
+
+    REQUIRE(tree->topLevelItemCount() == 3);
+
+    CHECK(tree->topLevelItem(0)->text(0).toStdString() == "Category A");
+    CHECK(tree->topLevelItem(1)->text(0).toStdString() == "Category C");
+    CHECK(tree->topLevelItem(2)->text(0).toStdString() == "Category B");
+  }
+  SECTION("sorted categories")
+  {
+    registry.sortCategories();
+
+    auto widget = std::make_unique<ModelSelectionWidget>(registry);
+
+    auto tree = widget->findChild<QTreeWidget*>();
+
+    {
+      INFO("Test out of date. ModelSelectionWidget doesn't use QTreeWidget");
+      REQUIRE(tree != nullptr);
+    }
+
+    REQUIRE(tree->topLevelItemCount() == 3);
+
+    CHECK(tree->topLevelItem(0)->text(0).toStdString() == "Category A");
+    CHECK(tree->topLevelItem(1)->text(0).toStdString() == "Category B");
+    CHECK(tree->topLevelItem(2)->text(0).toStdString() == "Category C");
+  }
+}
