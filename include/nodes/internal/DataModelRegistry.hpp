@@ -83,7 +83,7 @@ public:
   template <typename ModelCreator>
   void registerModel(ModelCreator&& creator, QString const& category = "Nodes")
   {
-    using ModelType = std::decay_t<decltype(creator())>;
+    using ModelType = compute_model_type_t<decltype(creator())>;
     registerModel<ModelType>(std::forward<ModelCreator>(creator), category);
   }
 
@@ -154,6 +154,27 @@ private:
   {
     return creator()->name();
   }
+
+  template <typename T>
+  struct UnwrapUniquePtr
+  {
+    // Assert always fires, but the compiler doesn't know this:
+    static_assert(!std::is_same<T, T>::value,
+                  "The ModelCreator must return a std::unique_ptr<T>, where T "
+                  "inherits from NodeDataModel");
+  };
+
+  template <typename T>
+  struct UnwrapUniquePtr<std::unique_ptr<T>>
+  {
+    static_assert(std::is_base_of<NodeDataModel, T>::value,
+                  "The ModelCreator must return a std::unique_ptr<T>, where T "
+                  "inherits from NodeDataModel");
+    using type = T;
+  };
+
+  template <typename CreatorResult>
+  using compute_model_type_t = typename UnwrapUniquePtr<CreatorResult>::type;
 };
 
 
