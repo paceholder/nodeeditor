@@ -233,24 +233,26 @@ mousePressEvent(QGraphicsSceneMouseEvent * event)
         }
         else // initialize new Connection
         {
-          const auto outPolicy = _node.nodeDataModel()->portOutConnectionPolicy(portIndex);
-          if (!connections.empty() &&
-              portToCheck == PortType::Out &&
-              outPolicy == NodeDataModel::ConnectionPolicy::One)
+          if (portToCheck == PortType::Out)
           {
-            _scene.deleteConnection( *connections.begin()->second );
+            const auto outPolicy = _node.nodeDataModel()->portOutConnectionPolicy(portIndex);
+            if (!connections.empty() &&
+                outPolicy == NodeDataModel::ConnectionPolicy::One)
+            {
+              _scene.deleteConnection( *connections.begin()->second );
+            }
+
+            // todo add to FlowScene
+            auto connection = _scene.createConnection(portToCheck,
+                                                      _node,
+                                                      portIndex);
+
+            _node.nodeState().setConnection(portToCheck,
+                                            portIndex,
+                                            *connection);
+
+            connection->getConnectionGraphicsObject().grabMouse();
           }
-
-          // todo add to FlowScene
-          auto connection = _scene.createConnection(portToCheck,
-                                                    _node,
-                                                    portIndex);
-
-          _node.nodeState().setConnection(portToCheck,
-                                          portIndex,
-                                          *connection);
-
-          connection->getConnectionGraphicsObject().grabMouse();
         }
       }
     };
