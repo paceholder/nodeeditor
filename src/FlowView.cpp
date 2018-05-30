@@ -119,8 +119,7 @@ contextMenuEvent(QContextMenuEvent* event)
 
   auto* modelSelectionWidget = new ModelSelectionWidget(_scene->registry(), &modelMenu);
 
-  // Avoid accidental detach by using qAsConst
-  for (QAction* action : qAsConst(modelSelectionWidget)->actions())
+  for (QAction* action : modelSelectionWidget->actions())
   {
     modelMenu.addAction(action);
   }
