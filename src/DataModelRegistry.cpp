@@ -1,5 +1,7 @@
 #include "DataModelRegistry.hpp"
 
+#include <algorithm>
+
 #include <QtCore/QFile>
 #include <QtWidgets/QMessageBox>
 
@@ -30,6 +32,12 @@ registeredModelCreators() const
   return _registeredItemCreators;
 }
 
+DataModelRegistry::RegisteredModelsOrder const &
+DataModelRegistry::
+registeredModelsOrder() const
+{
+  return _registeredModelsOrder;
+}
 
 DataModelRegistry::RegisteredModelsCategoryMap const &
 DataModelRegistry::
@@ -44,6 +52,21 @@ DataModelRegistry::
 categories() const
 {
   return _categories;
+}
+
+
+DataModelRegistry::CategoriesOrder const &
+DataModelRegistry::
+categoriesOrder() const
+{
+  return _categoriesOrder;
+}
+
+void
+DataModelRegistry::
+sortCategories()
+{
+  std::sort(_categoriesOrder.begin(), _categoriesOrder.end());
 }
 
 

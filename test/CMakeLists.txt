@@ -5,14 +5,14 @@ add_executable(test_nodes
   test_main.cpp
   src/test_dragging.cpp
   src/TestDataModelRegistry.cpp
+  src/TestModelSelectionWidget.cpp
   src/TestNodeGraphicsObject.cpp
 )
 
 target_include_directories(test_nodes
   PRIVATE
-    ../src
-    ../include/internal
     include
+    $<TARGET_PROPERTY:NodeEditor::nodes,INCLUDE_DIRECTORIES>
 )
 
 target_link_libraries(test_nodes

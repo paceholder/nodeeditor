@@ -1,6 +1,9 @@
 #pragma once
 
+#include <QtCore/QPoint>
+
 #include <QtWidgets/QGraphicsView>
+#include <QtWidgets/QTreeWidget>
 
 #include "Export.hpp"
 
