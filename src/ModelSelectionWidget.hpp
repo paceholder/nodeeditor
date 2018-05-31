@@ -4,12 +4,14 @@
 #include <QtWidgets/QTreeWidgetItem>
 #include <QtWidgets/QWidget>
 
+#include "Export.hpp"
+
 namespace QtNodes
 {
 
 class DataModelRegistry;
 
-class ModelSelectionWidget : public QWidget
+class NODE_EDITOR_PUBLIC ModelSelectionWidget : public QWidget
 {
   Q_OBJECT
 

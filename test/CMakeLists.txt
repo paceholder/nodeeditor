@@ -11,9 +11,8 @@ add_executable(test_nodes
 
 target_include_directories(test_nodes
   PRIVATE
-    ../src
-    ../include/internal
     include
+    $<TARGET_PROPERTY:NodeEditor::nodes,INCLUDE_DIRECTORIES>
 )
 
 target_link_libraries(test_nodes
