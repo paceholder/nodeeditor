@@ -223,21 +223,17 @@ removeNode(Node& node)
   // call signal
   nodeDeleted(node);
 
-  auto deleteConnections =
-    [&node, this] (PortType portType)
+  for(auto portType: {PortType::In,PortType::Out})
+  {
+    auto nodeState = node.nodeState();
+    auto const & nodeEntries = nodeState.getEntries(portType);
+
+    for (auto &connections : nodeEntries)
     {
-      auto nodeState = node.nodeState();
-      auto const & nodeEntries = nodeState.getEntries(portType);
-
-      for (auto &connections : nodeEntries)
-      {
-        for (auto const &pair : connections)
-          deleteConnection(*pair.second);
-      }
-    };
-
-  deleteConnections(PortType::In);
-  deleteConnections(PortType::Out);
+      for (auto const &pair : connections)
+        deleteConnection(*pair.second);
+    }
+  }
 
   _nodes.erase(node.id());
 }

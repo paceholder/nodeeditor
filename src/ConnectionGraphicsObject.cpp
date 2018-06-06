@@ -100,9 +100,7 @@ void
 ConnectionGraphicsObject::
 move()
 {
-
-  auto moveEndPoint =
-  [this] (PortType portType)
+  for(PortType portType: { PortType::In, PortType::Out } )
   {
     if (auto node = _connection.getNode(portType))
     {
@@ -115,22 +113,18 @@ move()
                                    portType,
                                    nodeGraphics.sceneTransform());
 
-      {
-        QTransform sceneTransform = this->sceneTransform();
+      QTransform sceneTransform = this->sceneTransform();
 
-        QPointF connectionPos = sceneTransform.inverted().map(scenePos);
+      QPointF connectionPos = sceneTransform.inverted().map(scenePos);
 
-        _connection.connectionGeometry().setEndPoint(portType,
-                                                     connectionPos);
+      _connection.connectionGeometry().setEndPoint(portType,
+                                                   connectionPos);
 
-        _connection.getConnectionGraphicsObject().setGeometryChanged();
-        _connection.getConnectionGraphicsObject().update();
-      }
+      _connection.getConnectionGraphicsObject().setGeometryChanged();
+      _connection.getConnectionGraphicsObject().update();
     }
-  };
+  }
 
-  moveEndPoint(PortType::In);
-  moveEndPoint(PortType::Out);
 }
 
 void ConnectionGraphicsObject::lock(bool locked)
@@ -221,7 +215,6 @@ mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
   }
   else if (_connection.connectionState().requiresPort())
   {
-
     _scene.deleteConnection(_connection);
   }
 }

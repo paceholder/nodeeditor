@@ -189,14 +189,8 @@ contextMenuEvent(QContextMenuEvent *event)
       {
         auto child = topLvlItem->child(i);
         auto modelName = child->data(0, Qt::UserRole).toString();
-        if (modelName.contains(text, Qt::CaseInsensitive))
-        {
-          child->setHidden(false);
-        }
-        else
-        {
-          child->setHidden(true);
-        }
+        const bool match = (modelName.contains(text, Qt::CaseInsensitive));
+        child->setHidden(!match);
       }
     }
   });
