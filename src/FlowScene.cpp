@@ -425,15 +425,14 @@ clearScene()
   //Manual node cleanup. Simply clearing the holding datastructures doesn't work, the code crashes when
   // there are both nodes and connections in the scene. (The data propagation internal logic tries to propagate
   // data through already freed connections.)
-  std::vector<Node*> nodesToDelete;
-  for (auto& node : _nodes)
+  while (_connections.size() > 0)
   {
-    nodesToDelete.push_back(node.second.get());
+    deleteConnection( *_connections.begin()->second );
   }
 
-  for (auto& node : nodesToDelete)
+  while (_nodes.size() > 0)
   {
-    removeNode(*node);
+    removeNode( *_nodes.begin()->second );
   }
 }
 
