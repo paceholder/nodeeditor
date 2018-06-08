@@ -59,10 +59,10 @@ public:
   setHovered(unsigned int h) { _hovered = h; }
 
   unsigned int
-  nSources() const { return _nSources; }
+  nSources() const;
 
   unsigned int
-  nSinks() const { return _nSinks; }
+  nSinks() const;
 
   QPointF const&
   draggingPos() const
