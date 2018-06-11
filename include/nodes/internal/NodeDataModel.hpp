@@ -136,6 +136,8 @@ signals:
   void
   computingFinished();
 
+  void embeddedWidgetSizeUpdated();
+
 private:
 
   NodeStyle _nodeStyle;
