@@ -1,5 +1,5 @@
 #include <nodes/NodeData>
-#include <nodes/FlowScene>
+#include <nodes/DataFlowScene>
 #include <nodes/FlowView>
 
 #include <QtWidgets/QApplication>
@@ -8,7 +8,7 @@
 #include "ImageLoaderModel.hpp"
 
 using QtNodes::DataModelRegistry;
-using QtNodes::FlowScene;
+using QtNodes::DataFlowScene;
 using QtNodes::FlowView;
 
 static std::shared_ptr<DataModelRegistry>
@@ -28,7 +28,7 @@ main(int argc, char *argv[])
 {
   QApplication app(argc, argv);
 
-  FlowScene scene(registerDataModels());
+  DataFlowScene scene(registerDataModels());
 
   FlowView view(&scene);
 

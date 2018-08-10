@@ -18,7 +18,7 @@ target_include_directories(test_nodes
 target_link_libraries(test_nodes
   PRIVATE
     NodeEditor::nodes
-    Catch2::Catch
+    Catch2::Catch2
     Qt5::Test
 )
 

@@ -132,21 +132,34 @@ contextMenuEvent(QContextMenuEvent *event)
 
   modelMenu.addAction(treeViewAction);
 
-  QMap<QString, QTreeWidgetItem*> topLevelItems;
-  for (auto const &cat : _scene->registry().categories())
+  QMap<QString, QTreeWidgetItem*> catergoryItems;
+  for (auto const &modelName : _scene->model()->modelRegistry())
   {
-    auto item = new QTreeWidgetItem(treeView);
-    item->setText(0, cat);
-    item->setData(0, Qt::UserRole, skipText);
-    topLevelItems[cat] = item;
-  }
+    // get the catergory
+    auto category = _scene->model()->nodeTypeCatergory(modelName);
+    
+    // see if it's already in the map
+    auto iter = catergoryItems.find(category);
+    
+    // add it if it doesn't exist
+    if (iter == catergoryItems.end()) {
+          
+      auto item = new QTreeWidgetItem(treeView);
+      item->setText(0, category);
+      item->setData(0, Qt::UserRole, skipText);
+          
+      iter = catergoryItems.insert(category, item); 
+    }
 
-  for (auto const &assoc : _scene->registry().registeredModelsCategoryAssociation())
-  {
-    auto parent = topLevelItems[assoc.second];
+    // this is the catergory item
+    auto parent = iter.value();
+    
+    // add the item
+    
+
     auto item   = new QTreeWidgetItem(parent);
-    item->setText(0, assoc.first);
-    item->setData(0, Qt::UserRole, assoc.first);
+    item->setText(0, modelName);
+    item->setData(0, Qt::UserRole, modelName);
   }
 
   treeView->expandAll();
@@ -160,21 +173,17 @@ contextMenuEvent(QContextMenuEvent *event)
       return;
     }
 
-    auto type = _scene->registry().create(modelName);
+    QPoint pos = event->pos();
 
-    if (type)
-    {
-      auto& node = _scene->createNode(std::move(type));
+    QPointF posView = this->mapToScene(pos);
 
-      QPoint pos = event->pos();
-
-      QPointF posView = this->mapToScene(pos);
-
-      node.nodeGraphicsObject().setPos(posView);
-    }
-    else
-    {
-      qDebug() << "Model not found";
+    // try to create the node
+    auto uuid = _scene->model()->addNode(modelName, posView);
+    
+    // if the node creation failed, then don't add it
+    if (!uuid.isNull()) {
+        // move it to the cursor location
+        _scene->model()->moveNode(_scene->model()->nodeIndex(uuid), posView);
     }
 
     modelMenu.close();
@@ -183,7 +192,7 @@ contextMenuEvent(QContextMenuEvent *event)
   //Setup filtering
   connect(txtBox, &QLineEdit::textChanged, [&](const QString &text)
   {
-    for (auto& topLvlItem : topLevelItems)
+    for (auto& topLvlItem : catergoryItems)
     {
       for (int i = 0; i < topLvlItem->childCount(); ++i)
       {
@@ -259,8 +268,12 @@ deleteSelectedNodes()
   // deletes some connections as well)
   for (QGraphicsItem * item : _scene->selectedItems())
   {
-    if (auto c = qgraphicsitem_cast<ConnectionGraphicsObject*>(item))
-      _scene->deleteConnection(c->connection());
+    if (auto c = qgraphicsitem_cast<ConnectionGraphicsObject*>(item)) {
+      
+      // does't matter if it works or doesn't, at least we tried
+      scene()->model()->removeConnection(c->node(PortType::Out), c->portIndex(PortType::Out), c->node(PortType::In), c->portIndex(PortType::In));
+      
+    }
   }
 
   // Delete the nodes; this will delete many of the connections.
@@ -269,8 +282,11 @@ deleteSelectedNodes()
   // when a selected connection is deleted by deleting the node.
   for (QGraphicsItem * item : _scene->selectedItems())
   {
-    if (auto n = qgraphicsitem_cast<NodeGraphicsObject*>(item))
-      _scene->removeNode(n->node());
+    if (auto n = qgraphicsitem_cast<NodeGraphicsObject*>(item)) {
+      auto index = n->index();
+      
+      scene()->model()->removeNodeWithConnections(index);
+    }
   }
 }
 
@@ -330,7 +346,7 @@ mouseMoveEvent(QMouseEvent *event)
   if (scene()->mouseGrabberItem() == nullptr && event->buttons() == Qt::LeftButton)
   {
     // Make sure shift is not being pressed
-    if ((event->modifiers() & Qt::ShiftModifier) == 0)
+      if ((event->modifiers() & Qt::ShiftModifier) == 0)
     {
       QPointF difference = _clickPos - mapToScene(event->pos());
       setSceneRect(sceneRect().translated(difference.x(), difference.y()));

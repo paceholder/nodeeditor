@@ -1,21 +1,22 @@
-#include <nodes/FlowScene>
+#include <nodes/DataFlowScene>
 #include <nodes/FlowView>
 #include <nodes/Node>
 #include <nodes/NodeDataModel>
 
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 
 #include <QtTest>
 
 #include "ApplicationSetup.hpp"
 #include "StubNodeDataModel.hpp"
 
-using QtNodes::FlowScene;
+using QtNodes::DataFlowScene;
 using QtNodes::FlowView;
 using QtNodes::Node;
 using QtNodes::NodeDataModel;
 using QtNodes::NodeGraphicsObject;
 using QtNodes::PortType;
+using QtNodes::ConnectionPolicy;
 
 TEST_CASE("NodeDataModel::portOutConnectionPolicy(...) isn't called for input "
           "connections (issue #127)",
@@ -26,11 +27,11 @@ TEST_CASE("NodeDataModel::portOutConnectionPolicy(...) isn't called for input "
   public:
     unsigned int nPorts(PortType) const override { return 1; }
 
-    NodeDataModel::ConnectionPolicy
+    ConnectionPolicy
     portOutConnectionPolicy(int index) const override
     {
       portOutConnectionPolicyCalledCount++;
-      return NodeDataModel::ConnectionPolicy::One;
+      return ConnectionPolicy::One;
     }
 
     mutable int portOutConnectionPolicyCalledCount = 0;
@@ -38,7 +39,7 @@ TEST_CASE("NodeDataModel::portOutConnectionPolicy(...) isn't called for input "
 
   auto setup = applicationSetup();
 
-  FlowScene scene;
+  DataFlowScene scene;
   FlowView  view(&scene);
 
   // Ensure we have enough size to contain the node
@@ -49,8 +50,8 @@ TEST_CASE("NodeDataModel::portOutConnectionPolicy(...) isn't called for input "
 
   auto& node  = scene.createNode(std::make_unique<MockModel>());
   auto& model = dynamic_cast<MockModel&>(*node.nodeDataModel());
-  auto& ngo   = node.nodeGraphicsObject();
-  auto& ngeom = node.nodeGeometry();
+  auto& ngo   = *scene.nodeGraphicsObject(scene.model()->nodeIndex(node.id()));
+  auto& ngeom = ngo.geometry();
 
   // Move the node to somewhere in the middle of the screen
   ngo.setPos(QPointF(50, 50));

@@ -19,6 +19,7 @@
 #include "ConnectionGraphicsObject.hpp"
 
 using QtNodes::Connection;
+using QtNodes::ConnectionID;
 using QtNodes::PortType;
 using QtNodes::PortIndex;
 using QtNodes::ConnectionState;
@@ -28,21 +29,6 @@ using QtNodes::NodeDataType;
 using QtNodes::ConnectionGraphicsObject;
 using QtNodes::ConnectionGeometry;
 using QtNodes::TypeConverter;
-
-Connection::
-Connection(PortType portType,
-           Node& node,
-           PortIndex portIndex)
-  : _uid(QUuid::createUuid())
-  , _outPortIndex(INVALID)
-  , _inPortIndex(INVALID)
-  , _connectionState()
-{
-  setNodeToPort(node, portType, portIndex);
-
-  setRequiredPort(oppositePort(portType));
-}
-
 
 Connection::
 Connection(Node& nodeIn,
@@ -67,16 +53,6 @@ Connection::
 ~Connection()
 {
   propagateEmptyData();
-
-  if (_inNode)
-  {
-    _inNode->nodeGraphicsObject().update();
-  }
-
-  if (_outNode)
-  {
-    _outNode->nodeGraphicsObject().update();
-  }
 }
 
 
@@ -118,80 +94,37 @@ save() const
   return connectionJson;
 }
 
-
-QUuid
+ConnectionID
 Connection::
-id() const
-{
-  return _uid;
+id() const {
+  ConnectionID ret;
+  ret.lNodeID = getNode(PortType::Out)->id();
+  ret.rNodeID = getNode(PortType::In)->id();
+  
+  ret.lPortID = getPortIndex(PortType::Out);
+  ret.rPortID = getPortIndex(PortType::In);
+  
+  return ret;
 }
-
 
 void
 Connection::
-setRequiredPort(PortType dragging)
+setNodeToPort(Node& node,
+              PortType portType,
+              PortIndex portIndex)
 {
-  _connectionState.setRequiredPort(dragging);
+  auto& nodeWeak = getNodePtrRef(portType);
 
-  switch (dragging)
-  {
-    case PortType::Out:
-      _outNode      = nullptr;
-      _outPortIndex = INVALID;
-      break;
+  nodeWeak = &node;
 
-    case PortType::In:
-      _inNode      = nullptr;
-      _inPortIndex = INVALID;
-      break;
+  if (portType == PortType::Out)
+    _outPortIndex = portIndex;
+  else
+    _inPortIndex = portIndex;
 
-    default:
-      break;
-  }
-}
+  _connectionState.setNoRequiredPort();
 
-
-PortType
-Connection::
-requiredPort() const
-{
-  return _connectionState.requiredPort();
-}
-
-
-void
-Connection::
-setGraphicsObject(std::unique_ptr<ConnectionGraphicsObject>&& graphics)
-{
-  _connectionGraphicsObject = std::move(graphics);
-
-  // This function is only called when the ConnectionGraphicsObject
-  // is newly created. At this moment both end coordinates are (0, 0)
-  // in Connection G.O. coordinates. The position of the whole
-  // Connection G. O. in scene coordinate system is also (0, 0).
-  // By moving the whole object to the Node Port position
-  // we position both connection ends correctly.
-
-  if (requiredPort() != PortType::None)
-  {
-
-    PortType attachedPort = oppositePort(requiredPort());
-
-    PortIndex attachedPortIndex = getPortIndex(attachedPort);
-
-    auto node = getNode(attachedPort);
-
-    QTransform nodeSceneTransform =
-      node->nodeGraphicsObject().sceneTransform();
-
-    QPointF pos = node->nodeGeometry().portScenePosition(attachedPortIndex,
-                                                         attachedPort,
-                                                         nodeSceneTransform);
-
-    _connectionGraphicsObject->setPos(pos);
-  }
-
-  _connectionGraphicsObject->move();
+  updated(*this);
 }
 
 
@@ -220,105 +153,9 @@ getPortIndex(PortType portType) const
   return result;
 }
 
-
-void
-Connection::
-setNodeToPort(Node& node,
-              PortType portType,
-              PortIndex portIndex)
-{
-  auto& nodeWeak = getNode(portType);
-
-  nodeWeak = &node;
-
-  if (portType == PortType::Out)
-    _outPortIndex = portIndex;
-  else
-    _inPortIndex = portIndex;
-
-  _connectionState.setNoRequiredPort();
-
-  updated(*this);
-}
-
-
-void
-Connection::
-removeFromNodes() const
-{
-  if (_inNode)
-    _inNode->nodeState().eraseConnection(PortType::In, _inPortIndex, id());
-
-  if (_outNode)
-    _outNode->nodeState().eraseConnection(PortType::Out, _outPortIndex, id());
-}
-
-
-ConnectionGraphicsObject&
-Connection::
-getConnectionGraphicsObject() const
-{
-  return *_connectionGraphicsObject;
-}
-
-
-ConnectionState&
-Connection::
-connectionState()
-{
-  return _connectionState;
-}
-
-
-ConnectionState const&
-Connection::
-connectionState() const
-{
-  return _connectionState;
-}
-
-
-ConnectionGeometry&
-Connection::
-connectionGeometry()
-{
-  return _connectionGeometry;
-}
-
-
-ConnectionGeometry const&
-Connection::
-connectionGeometry() const
-{
-  return _connectionGeometry;
-}
-
-
 Node*
 Connection::
 getNode(PortType portType) const
-{
-  switch (portType)
-  {
-    case PortType::In:
-      return _inNode;
-      break;
-
-    case PortType::Out:
-      return _outNode;
-      break;
-
-    default:
-      // not possible
-      break;
-  }
-  return nullptr;
-}
-
-
-Node*&
-Connection::
-getNode(PortType portType)
 {
   switch (portType)
   {
@@ -338,16 +175,25 @@ getNode(PortType portType)
 }
 
 
-void
+Node*&
 Connection::
-clearNode(PortType portType)
+getNodePtrRef(PortType portType)
 {
-  getNode(portType) = nullptr;
+  switch (portType)
+  {
+    case PortType::In:
+      return _inNode;
+      break;
 
-  if (portType == PortType::In)
-    _inPortIndex = INVALID;
-  else
-    _outPortIndex = INVALID;
+    case PortType::Out:
+      return _outNode;
+      break;
+
+    default:
+      // not possible
+      break;
+  }
+  Q_UNREACHABLE();
 }
 
 

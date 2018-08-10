@@ -3,8 +3,7 @@
 #include <QtCore/QUuid>
 #include <QtWidgets/QGraphicsObject>
 
-#include "Connection.hpp"
-
+#include "NodeIndex.hpp"
 #include "NodeGeometry.hpp"
 #include "NodeState.hpp"
 
@@ -14,7 +13,6 @@ namespace QtNodes
 {
 
 class FlowScene;
-class FlowItemEntry;
 
 /// Class reacts on GUI events, mouse clicks and
 /// forwards painting operation.
@@ -24,16 +22,31 @@ class NodeGraphicsObject : public QGraphicsObject
 
 public:
   NodeGraphicsObject(FlowScene &scene,
-                     Node& node);
-
+                     NodeIndex const& index);
+  
   virtual
   ~NodeGraphicsObject();
-
-  Node&
-  node();
-
-  Node const&
-  node() const;
+  
+  NodeIndex
+  index() const;
+  
+  FlowScene&
+  flowScene();
+  
+  FlowScene const&
+  flowScene() const;
+  
+  NodeGeometry&
+  geometry();
+  
+  NodeGeometry const&
+  geometry() const;
+  
+  NodeState&
+  nodeState();
+  
+  NodeState const&
+  nodeState() const;
 
   QRectF
   boundingRect() const override;
@@ -45,6 +58,14 @@ public:
   /// their corresponding end points.
   void
   moveConnections() const;
+
+  
+  void reactToPossibleConnection(PortType,
+                                 NodeDataType,
+                                 QPointF const& scenePoint);
+
+  void
+  resetReactionToConnection();
 
   enum { Type = UserType + 1 };
 
@@ -94,9 +115,13 @@ private:
 private:
 
   FlowScene & _scene;
-
-  Node& _node;
-
+  
+  NodeIndex _nodeIndex;
+  
+  NodeGeometry _geometry;
+  
+  NodeState _state;
+  
   bool _locked;
 
   // either nullptr or owned by parent QGraphicsItem

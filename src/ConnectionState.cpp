@@ -5,10 +5,10 @@
 #include <QtCore/QPointF>
 
 #include "FlowScene.hpp"
-#include "Node.hpp"
+#include "NodeGraphicsObject.hpp"
 
 using QtNodes::ConnectionState;
-using QtNodes::Node;
+using QtNodes::NodeGraphicsObject;
 
 ConnectionState::
 ~ConnectionState()
@@ -19,7 +19,7 @@ ConnectionState::
 
 void
 ConnectionState::
-interactWithNode(Node* node)
+interactWithNode(NodeGraphicsObject* node)
 {
   if (node)
   {
@@ -34,7 +34,7 @@ interactWithNode(Node* node)
 
 void
 ConnectionState::
-setLastHoveredNode(Node* node)
+setLastHoveredNode(NodeGraphicsObject* node)
 {
   _lastHoveredNode = node;
 }

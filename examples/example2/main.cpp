@@ -1,5 +1,5 @@
 #include <nodes/NodeData>
-#include <nodes/FlowScene>
+#include <nodes/DataFlowScene>
 #include <nodes/FlowView>
 
 #include <QtWidgets/QApplication>
@@ -11,7 +11,7 @@
 
 using QtNodes::DataModelRegistry;
 using QtNodes::FlowView;
-using QtNodes::FlowScene;
+using QtNodes::DataFlowScene;
 
 static std::shared_ptr<DataModelRegistry>
 registerDataModels()
@@ -31,7 +31,7 @@ main(int argc, char *argv[])
 {
   QApplication app(argc, argv);
 
-  FlowScene scene(registerDataModels());
+  DataFlowScene scene(registerDataModels());
 
   FlowView view(&scene);
 

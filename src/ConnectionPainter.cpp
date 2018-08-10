@@ -5,7 +5,6 @@
 #include "ConnectionGeometry.hpp"
 #include "ConnectionState.hpp"
 #include "ConnectionGraphicsObject.hpp"
-#include "Connection.hpp"
 
 #include "NodeData.hpp"
 
@@ -14,7 +13,7 @@
 
 using QtNodes::ConnectionPainter;
 using QtNodes::ConnectionGeometry;
-using QtNodes::Connection;
+using QtNodes::ConnectionGraphicsObject;
 
 
 static
@@ -62,12 +61,12 @@ getPainterStroke(ConnectionGeometry const& geom)
 static
 void
 debugDrawing(QPainter * painter,
-             Connection const & connection)
+             ConnectionGraphicsObject const & connection)
 {
   Q_UNUSED(painter);
   Q_UNUSED(connection);
   ConnectionGeometry const& geom =
-    connection.connectionGeometry();
+    connection.geometry();
 
   {
     QPointF const& source = geom.source();
@@ -100,12 +99,12 @@ debugDrawing(QPainter * painter,
 static
 void
 drawSketchLine(QPainter * painter,
-               Connection const & connection)
+               ConnectionGraphicsObject const & connection)
 {
   using QtNodes::ConnectionState;
 
   ConnectionState const& state =
-    connection.connectionState();
+    connection.state();
 
   if (state.requiresPort())
   {
@@ -121,7 +120,7 @@ drawSketchLine(QPainter * painter,
     painter->setBrush(Qt::NoBrush);
 
     using QtNodes::ConnectionGeometry;
-    ConnectionGeometry const& geom = connection.connectionGeometry();
+    ConnectionGeometry const& geom = connection.geometry();
 
     auto cubic = cubicPath(geom);
     // cubic spline
@@ -132,17 +131,15 @@ drawSketchLine(QPainter * painter,
 static
 void
 drawHoveredOrSelected(QPainter * painter,
-                      Connection const & connection)
+                      ConnectionGraphicsObject const & cgo)
 {
   using QtNodes::ConnectionGeometry;
 
-  ConnectionGeometry const& geom = connection.connectionGeometry();
+  ConnectionGeometry const& geom = cgo.geometry();
   bool const hovered = geom.hovered();
 
-  auto const& graphicsObject =
-    connection.getConnectionGraphicsObject();
-
-  bool const selected = graphicsObject.isSelected();
+  
+  bool const selected = cgo.isSelected();
 
   // drawn as a fat background
   if (hovered || selected)
@@ -171,12 +168,12 @@ drawHoveredOrSelected(QPainter * painter,
 static
 void
 drawNormalLine(QPainter * painter,
-               Connection const & connection)
+               ConnectionGraphicsObject const & connection)
 {
   using QtNodes::ConnectionState;
 
   ConnectionState const& state =
-    connection.connectionState();
+    connection.state();
 
   if (state.requiresPort())
     return;
@@ -208,7 +205,7 @@ drawNormalLine(QPainter * painter,
 
   // geometry
 
-  ConnectionGeometry const& geom = connection.connectionGeometry();
+  ConnectionGeometry const& geom = connection.geometry();
 
   double const lineWidth = connectionStyle.lineWidth();
 
@@ -217,8 +214,7 @@ drawNormalLine(QPainter * painter,
 
   p.setWidth(lineWidth);
 
-  auto const& graphicsObject = connection.getConnectionGraphicsObject();
-  bool const selected = graphicsObject.isSelected();
+  bool const selected = connection.isSelected();
 
 
   auto cubic = cubicPath(geom);
@@ -282,7 +278,7 @@ drawNormalLine(QPainter * painter,
 void
 ConnectionPainter::
 paint(QPainter* painter,
-      Connection const &connection)
+      ConnectionGraphicsObject const &connection)
 {
   drawHoveredOrSelected(painter, connection);
 
@@ -295,7 +291,7 @@ paint(QPainter* painter,
 #endif
 
   // draw end points
-  ConnectionGeometry const& geom = connection.connectionGeometry();
+  ConnectionGeometry const& geom = connection.geometry();
 
   QPointF const & source = geom.source();
   QPointF const & sink   = geom.sink();

@@ -1,9 +1,9 @@
 #include <nodes/Connection>
-#include <nodes/FlowScene>
+#include <nodes/DataFlowScene>
 #include <nodes/FlowView>
 #include <nodes/Node>
 
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 
 #include <QtTest>
 #include <QtWidgets/QApplication>
@@ -16,7 +16,7 @@
 
 using QtNodes::Connection;
 using QtNodes::DataModelRegistry;
-using QtNodes::FlowScene;
+using QtNodes::DataFlowScene;
 using QtNodes::FlowView;
 using QtNodes::Node;
 using QtNodes::NodeData;
@@ -29,8 +29,8 @@ TEST_CASE("Dragging node changes position", "[gui]")
 {
   auto app = applicationSetup();
 
-  FlowScene scene;
-  FlowView  view(&scene);
+  DataFlowScene scene;
+  FlowView      view(&scene);
 
   view.show();
   REQUIRE(QTest::qWaitForWindowExposed(&view));
@@ -39,9 +39,9 @@ TEST_CASE("Dragging node changes position", "[gui]")
   {
     auto& node = scene.createNode(std::make_unique<StubNodeDataModel>());
 
-    auto& ngo = node.nodeGraphicsObject();
+    auto& ngo = *scene.nodeGraphicsObject(scene.model()->nodeIndex(node.id()));
 
-    QPointF scPosBefore = ngo.pos();
+    QPointF scPosBefore = node.position();
 
     QPointF scClickPos = ngo.boundingRect().center();
     scClickPos         = QPointF(ngo.sceneTransform().map(scClickPos).toPoint());
@@ -60,7 +60,7 @@ TEST_CASE("Dragging node changes position", "[gui]")
     QTest::mousePress(view.windowHandle(), Qt::LeftButton, Qt::NoModifier, vwClickPos);
     QTest::mouseMove(view.windowHandle(), vwDestPos);
 
-    QPointF scDelta            = ngo.pos() - scPosBefore;
+    QPointF scDelta            = node.position() - scPosBefore;
     QPoint  roundDelta         = scDelta.toPoint();
     QPoint  roundExpectedDelta = scExpectedDelta.toPoint();
 

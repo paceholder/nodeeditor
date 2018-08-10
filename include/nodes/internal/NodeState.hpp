@@ -14,8 +14,8 @@
 namespace QtNodes
 {
 
-class Connection;
-class NodeDataModel;
+class NodeIndex;
+class ConnectionGraphicsObject;
 
 /// Contains vectors of connected input and output connections.
 /// Stores bool for reacting on hovering connections
@@ -30,33 +30,33 @@ public:
 
 public:
 
-  NodeState(std::unique_ptr<NodeDataModel> const &model);
+  NodeState(NodeIndex const& index);
 
 public:
 
-  using ConnectionPtrSet =
-          std::unordered_map<QUuid, Connection*>;
+  using ConnectionPtrVec =
+          std::vector<ConnectionGraphicsObject*>;
 
   /// Returns vector of connections ID.
   /// Some of them can be empty (null)
-  std::vector<ConnectionPtrSet> const&
+  std::vector<ConnectionPtrVec> const&
   getEntries(PortType) const;
 
-  std::vector<ConnectionPtrSet> &
+  std::vector<ConnectionPtrVec> &
   getEntries(PortType);
 
-  ConnectionPtrSet
+  ConnectionPtrVec
   connections(PortType portType, PortIndex portIndex) const;
 
   void
   setConnection(PortType portType,
                 PortIndex portIndex,
-                Connection& connection);
+                ConnectionGraphicsObject& connection);
 
   void
   eraseConnection(PortType portType,
                   PortIndex portIndex,
-                  QUuid id);
+                  ConnectionGraphicsObject& connection);
 
   ReactToConnectionState
   reaction() const;
@@ -85,8 +85,8 @@ public:
 
 private:
 
-  std::vector<ConnectionPtrSet> _inConnections;
-  std::vector<ConnectionPtrSet> _outConnections;
+  std::vector<ConnectionPtrVec> _inConnections;
+  std::vector<ConnectionPtrVec> _outConnections;
 
   ReactToConnectionState _reaction;
   PortType     _reactingPortType;

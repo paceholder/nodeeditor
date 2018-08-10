@@ -4,17 +4,21 @@
 
 #include <QtWidgets/QGraphicsObject>
 
+#include "PortType.hpp"
+#include "NodeData.hpp"
+#include "NodeIndex.hpp"
+#include "ConnectionGeometry.hpp"
+#include "ConnectionState.hpp"
+
 class QGraphicsSceneMouseEvent;
 
 namespace QtNodes
 {
 
 class FlowScene;
-class Connection;
-class ConnectionGeometry;
-class Node;
+class ConnectionID;
 
-/// Graphic Object for connection. Adds itself to scene
+/// Graphic Object for connection.
 class ConnectionGraphicsObject
   : public QGraphicsObject
 {
@@ -22,8 +26,12 @@ class ConnectionGraphicsObject
 
 public:
 
-  ConnectionGraphicsObject(FlowScene &scene,
-                           Connection &connection);
+  ConnectionGraphicsObject(
+    NodeIndex const& leftNode,
+    PortIndex leftPortIndex,
+    NodeIndex const& rightNode,
+    PortIndex rightPortIndex,
+    FlowScene& scene);
 
   virtual
   ~ConnectionGraphicsObject();
@@ -34,8 +42,16 @@ public:
 
 public:
 
-  Connection&
-  connection();
+  NodeIndex node(PortType pType) const { return pType == PortType::In ? _rightNode : _leftNode; }
+  PortIndex portIndex(PortType pType) const { return pType == PortType::In ? _rightPortIndex : _leftPortIndex; }
+  
+  FlowScene& flowScene() const { return _scene; }
+
+  ConnectionGeometry const& geometry() const { return _geometry; }
+  ConnectionGeometry& geometry() { return _geometry; }
+  
+  ConnectionState const& state() const { return _state; }
+  ConnectionState& state() { return _state; }
 
   QRectF
   boundingRect() const override;
@@ -46,12 +62,23 @@ public:
   void
   setGeometryChanged();
 
+  ConnectionID
+  id() const;
+
+  NodeDataType dataType(PortType ty) const;
+
   /// Updates the position of both ends
   void
   move();
 
   void
   lock(bool locked);
+
+  const FlowScene&
+  scene() const { return _scene; }
+
+  FlowScene&
+  scene() { return _scene; }
 
 protected:
 
@@ -84,6 +111,14 @@ private:
 
   FlowScene & _scene;
 
-  Connection& _connection;
+  ConnectionGeometry _geometry;
+  ConnectionState _state;
+  
+  NodeIndex _leftNode;
+  NodeIndex _rightNode;
+
+  PortIndex _leftPortIndex;
+  PortIndex _rightPortIndex;
+
 };
 }
