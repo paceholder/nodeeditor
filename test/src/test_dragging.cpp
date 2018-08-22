@@ -30,7 +30,7 @@ TEST_CASE("Dragging node changes position", "[gui]")
   auto app = applicationSetup();
 
   DataFlowScene scene;
-  FlowView      view(&scene);
+  FlowView view(&scene);
 
   view.show();
   REQUIRE(QTest::qWaitForWindowExposed(&view));
@@ -44,7 +44,7 @@ TEST_CASE("Dragging node changes position", "[gui]")
     QPointF scPosBefore = node.position();
 
     QPointF scClickPos = ngo.boundingRect().center();
-    scClickPos         = QPointF(ngo.sceneTransform().map(scClickPos).toPoint());
+    scClickPos = QPointF(ngo.sceneTransform().map(scClickPos).toPoint());
 
     QPoint vwClickPos = view.mapFromScene(scClickPos);
     QPoint vwDestPos  = vwClickPos + QPoint(10, 20);
@@ -60,9 +60,9 @@ TEST_CASE("Dragging node changes position", "[gui]")
     QTest::mousePress(view.windowHandle(), Qt::LeftButton, Qt::NoModifier, vwClickPos);
     QTest::mouseMove(view.windowHandle(), vwDestPos);
 
-    QPointF scDelta            = node.position() - scPosBefore;
-    QPoint  roundDelta         = scDelta.toPoint();
-    QPoint  roundExpectedDelta = scExpectedDelta.toPoint();
+    QPointF scDelta           = node.position() - scPosBefore;
+    QPoint roundDelta         = scDelta.toPoint();
+    QPoint roundExpectedDelta = scExpectedDelta.toPoint();
 
     CHECK(roundDelta == roundExpectedDelta);
   }

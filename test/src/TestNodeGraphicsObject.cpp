@@ -24,8 +24,9 @@ TEST_CASE("NodeDataModel::portOutConnectionPolicy(...) isn't called for input "
 {
   class MockModel : public StubNodeDataModel
   {
-  public:
-    unsigned int nPorts(PortType) const override { return 1; }
+public:
+    unsigned int
+    nPorts(PortType) const override { return 1; }
 
     ConnectionPolicy
     portOutConnectionPolicy(int index) const override
@@ -40,7 +41,7 @@ TEST_CASE("NodeDataModel::portOutConnectionPolicy(...) isn't called for input "
   auto setup = applicationSetup();
 
   DataFlowScene scene;
-  FlowView  view(&scene);
+  FlowView view(&scene);
 
   // Ensure we have enough size to contain the node
   view.resize(640, 480);
@@ -58,7 +59,7 @@ TEST_CASE("NodeDataModel::portOutConnectionPolicy(...) isn't called for input "
 
   // Compute the on-screen position of the input port
   QPointF scInPortPos = ngeom.portScenePosition(0, PortType::In, ngo.sceneTransform());
-  QPoint  vwInPortPos = view.mapFromScene(scInPortPos);
+  QPoint vwInPortPos  = view.mapFromScene(scInPortPos);
 
   // Create a partial connection by clicking on the input port of the node
   QTest::mousePress(view.windowHandle(), Qt::LeftButton, Qt::NoModifier, vwInPortPos);

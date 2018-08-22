@@ -5,8 +5,11 @@
 
 #include <utility>
 
-namespace QtNodes {
-class ConnectionID {
+namespace QtNodes
+{
+
+struct ConnectionID
+{
   QUuid lNodeID;
   QUuid rNodeID;
 
@@ -14,7 +17,9 @@ class ConnectionID {
   PortIndex rPortID;
 };
 
-inline bool operator==(ConnectionID const& lhs, ConnectionID const& rhs) {
+inline bool
+operator==(ConnectionID const& lhs, ConnectionID const& rhs)
+{
   return lhs.lNodeID == rhs.lNodeID &&
          lhs.rNodeID == rhs.rNodeID &&
          lhs.lPortID == rhs.lPortID &&
@@ -24,11 +29,15 @@ inline bool operator==(ConnectionID const& lhs, ConnectionID const& rhs) {
 } // namespace QtNodes
 
 // hash for ConnectionID
-namespace std {
+namespace std
+{
 
 template<>
-struct hash<::QtNodes::ConnectionID> {
-  size_t operator()(::QtNodes::ConnectionID const& toHash) const {
+struct hash<::QtNodes::ConnectionID>
+{
+  size_t
+  operator()(::QtNodes::ConnectionID const& toHash) const
+  {
     return qHash(toHash.rNodeID) ^ qHash(toHash.lNodeID) ^ std::hash<QtNodes::PortIndex>()(toHash.lPortID) ^ std::hash<QtNodes::PortIndex>()(toHash.rPortID);
   }
 };

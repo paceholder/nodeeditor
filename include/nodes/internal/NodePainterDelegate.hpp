@@ -4,11 +4,12 @@
 
 #include "Export.hpp"
 
-namespace QtNodes {
+namespace QtNodes
+{
 
 class NodeGraphicsObject;
 class NodeIndex;
-  
+
 /// Class to allow for custom painting
 class NODE_EDITOR_PUBLIC NodePainterDelegate
 {

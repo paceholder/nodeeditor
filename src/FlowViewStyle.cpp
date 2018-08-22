@@ -12,7 +12,8 @@
 
 using QtNodes::FlowViewStyle;
 
-inline void initResources() { Q_INIT_RESOURCE(resources); }
+inline void
+initResources() { Q_INIT_RESOURCE(resources); }
 
 FlowViewStyle::
 FlowViewStyle()
@@ -45,10 +46,10 @@ setStyle(QString jsonText)
 
 #ifdef STYLE_DEBUG
   #define FLOW_VIEW_STYLE_CHECK_UNDEFINED_VALUE(v, variable) { \
-      if (v.type() == QJsonValue::Undefined || \
-          v.type() == QJsonValue::Null) \
-        qWarning() << "Undefined value for parameter:" << #variable; \
-  }
+    if (v.type() == QJsonValue::Undefined || \
+        v.type() == QJsonValue::Null) \
+      qWarning() << "Undefined value for parameter:" << #variable; \
+}
 #else
   #define FLOW_VIEW_STYLE_CHECK_UNDEFINED_VALUE(v, variable)
 #endif

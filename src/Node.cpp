@@ -20,9 +20,8 @@ using QtNodes::Connection;
 
 Node::
 Node(std::unique_ptr<NodeDataModel> && dataModel, QUuid const& id)
-  : _uid(id),
-    _nodeDataModel(std::move(dataModel))
-  
+  : _uid(id)
+  ,_nodeDataModel(std::move(dataModel))
 {
   // propagate data: model => node
   connect(_nodeDataModel.get(), &NodeDataModel::dataUpdated,
@@ -47,8 +46,8 @@ save() const
   nodeJson["model"] = _nodeDataModel->save();
 
   QJsonObject obj;
-  obj["x"] = _pos.x();
-  obj["y"] = _pos.y();
+  obj["x"]             = _pos.x();
+  obj["y"]             = _pos.y();
   nodeJson["position"] = obj;
 
   return nodeJson;
@@ -61,8 +60,8 @@ restore(QJsonObject const& json)
 {
 
   QJsonObject positionJson = json["position"].toObject();
-  QPointF     point(positionJson["x"].toDouble(),
-                    positionJson["y"].toDouble());
+  QPointF point(positionJson["x"].toDouble(),
+                positionJson["y"].toDouble());
   setPosition(point);
 
   _nodeDataModel->restore(json["model"].toObject());
@@ -92,7 +91,8 @@ position() const
 
 void
 Node::
-setPosition(QPointF const& newPos) {
+setPosition(QPointF const& newPos)
+{
   _pos = newPos;
 
   emit positionChanged(newPos);
@@ -132,7 +132,7 @@ Node::
 onDataUpdated(PortIndex index)
 {
   auto nodeData = _nodeDataModel->outData(index);
-  auto& conns =
+  auto& conns   =
     connections(PortType::Out, index);
 
   for (auto const & c : conns)

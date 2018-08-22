@@ -26,8 +26,14 @@ using QtNodes::FlowScene;
 using QtNodes::NodeDataType;
 
 ConnectionGraphicsObject::
-ConnectionGraphicsObject(const NodeIndex& leftNode, PortIndex leftPortIndex, const NodeIndex& rightNode, PortIndex rightPortIndex, FlowScene& scene)
-  : _state(leftNode.isValid() ? (rightNode.isValid() ? PortType::None : PortType::In) : PortType::Out)
+ConnectionGraphicsObject(NodeIndex const& leftNode,
+                         PortIndex leftPortIndex,
+                         NodeIndex const& rightNode,
+                         PortIndex rightPortIndex,
+                         FlowScene&       scene)
+  : _state(leftNode.isValid() ?
+           (rightNode.isValid() ?  PortType::None : PortType::In) :
+           PortType::Out)
   , _leftNode{leftNode}
   , _rightNode{rightNode}
   , _leftPortIndex{leftPortIndex}
@@ -47,14 +53,16 @@ ConnectionGraphicsObject(const NodeIndex& leftNode, PortIndex leftPortIndex, con
   setZValue(-1.0);
 
   // initialize the end points
-  if (leftNode.isValid()) {
+  if (leftNode.isValid())
+  {
     auto ngo = _scene.nodeGraphicsObject(leftNode);
     Q_ASSERT(ngo != nullptr);
 
     geometry().moveEndPoint(PortType::Out,  ngo->geometry().portScenePosition(leftPortIndex, PortType::Out, ngo->sceneTransform()));
 
   }
-  if (rightNode.isValid()) {
+  if (rightNode.isValid())
+  {
     auto ngo = _scene.nodeGraphicsObject(rightNode);
     Q_ASSERT(ngo != nullptr);
 
@@ -105,24 +113,26 @@ setGeometryChanged()
 
 ConnectionID
 ConnectionGraphicsObject::
-id() const {
+id() const
+{
   ConnectionID ret;
-  
+
   ret.lNodeID = _leftNode.id();
   ret.rNodeID = _rightNode.id();
   ret.lPortID = _leftPortIndex;
   ret.rPortID = _rightPortIndex;
-  
+
   return ret;
 }
 
 NodeDataType
-ConnectionGraphicsObject::dataType(PortType ty) const 
+ConnectionGraphicsObject::
+dataType(PortType ty) const
 {
   // get a valid node
   auto n = node(ty);
   Q_ASSERT(n.isValid());
-  
+
   return _scene.model()->nodePortDataType(n, portIndex(ty), ty);
 }
 
@@ -140,7 +150,7 @@ move()
       auto const &nodeGeom = nodeGraphics.geometry();
 
       QPointF scenePos =
-      nodeGeom.portScenePosition(portIndex(portType), 
+        nodeGeom.portScenePosition(portIndex(portType),
                                    portType,
                                    nodeGraphics.sceneTransform());
 
@@ -158,7 +168,9 @@ move()
 
 }
 
-void ConnectionGraphicsObject::lock(bool locked)
+void
+ConnectionGraphicsObject::
+lock(bool locked)
 {
   setFlag(QGraphicsItem::ItemIsMovable, !locked);
   setFlag(QGraphicsItem::ItemIsFocusable, !locked);
@@ -168,7 +180,7 @@ void ConnectionGraphicsObject::lock(bool locked)
 
 void
 ConnectionGraphicsObject::
-paint(QPainter* painter,
+paint(QPainter*                       painter,
       QStyleOptionGraphicsItem const* option,
       QWidget*)
 {
@@ -235,19 +247,22 @@ mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
   auto node = locateNodeAt(event->scenePos(), _scene,
                            _scene.views()[0]->transform());
 
-  if (!node) {
-    
-    if (state().requiresPort()) {
+  if (!node)
+  {
+
+    if (state().requiresPort())
+    {
       Q_ASSERT(this == _scene._temporaryConn);
       // remove this from the scene
       delete _scene._temporaryConn;
       _scene._temporaryConn = nullptr;
     }
-    
+
     return;
   }
 
-  if (!state().requiresPort()) {
+  if (!state().requiresPort())
+  {
     return;
   }
 
@@ -278,9 +293,9 @@ hoverEnterEvent(QGraphicsSceneHoverEvent* event)
   geometry().setHovered(true);
 
   update();
-  
+
   flowScene().model()->connectionHovered(_leftNode, _leftPortIndex, _rightNode, _rightPortIndex, event->screenPos(), true);
-  
+
   event->accept();
 }
 

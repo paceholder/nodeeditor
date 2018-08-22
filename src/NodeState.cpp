@@ -72,14 +72,15 @@ void
 NodeState::
 eraseConnection(PortType portType,
                 PortIndex portIndex,
-                 ConnectionGraphicsObject& conn)
+                ConnectionGraphicsObject& conn)
 {
   auto& ptrSet = getEntries(portType)[portIndex];
-  auto iter = std::find(ptrSet.begin(), ptrSet.end(), &conn);
-  if (iter != ptrSet.end()) {
+  auto iter    = std::find(ptrSet.begin(), ptrSet.end(), &conn);
+  if (iter != ptrSet.end())
+  {
     ptrSet.erase(iter);
   }
-  
+
 }
 
 

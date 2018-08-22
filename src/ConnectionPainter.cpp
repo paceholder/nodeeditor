@@ -136,9 +136,9 @@ drawHoveredOrSelected(QPainter * painter,
   using QtNodes::ConnectionGeometry;
 
   ConnectionGeometry const& geom = cgo.geometry();
-  bool const hovered = geom.hovered();
+  bool const hovered             = geom.hovered();
 
-  
+
   bool const selected = cgo.isSelected();
 
   // drawn as a fat background
@@ -148,7 +148,7 @@ drawHoveredOrSelected(QPainter * painter,
 
     auto const &connectionStyle =
       QtNodes::StyleCollection::connectionStyle();
-    double const lineWidth     = connectionStyle.lineWidth();
+    double const lineWidth = connectionStyle.lineWidth();
 
     p.setWidth(2 * lineWidth);
     p.setColor(selected ?
@@ -183,9 +183,9 @@ drawNormalLine(QPainter * painter,
   auto const &connectionStyle =
     QtNodes::StyleCollection::connectionStyle();
 
-  QColor normalColorOut  = connectionStyle.normalColor();
-  QColor normalColorIn   = connectionStyle.normalColor();
-  QColor selectedColor = connectionStyle.selectedColor();
+  QColor normalColorOut = connectionStyle.normalColor();
+  QColor normalColorIn  = connectionStyle.normalColor();
+  QColor selectedColor  = connectionStyle.selectedColor();
 
   bool gradientColor = false;
 
@@ -194,13 +194,13 @@ drawNormalLine(QPainter * painter,
     using QtNodes::PortType;
 
     auto dataTypeOut = connection.dataType(PortType::Out);
-    auto dataTypeIn = connection.dataType(PortType::In);
+    auto dataTypeIn  = connection.dataType(PortType::In);
 
     gradientColor = (dataTypeOut.id != dataTypeIn.id);
 
-    normalColorOut  = connectionStyle.normalColor(dataTypeOut.id);
-    normalColorIn   = connectionStyle.normalColor(dataTypeIn.id);
-    selectedColor = normalColorOut.darker(200);
+    normalColorOut = connectionStyle.normalColor(dataTypeOut.id);
+    normalColorIn  = connectionStyle.normalColor(dataTypeIn.id);
+    selectedColor  = normalColorOut.darker(200);
   }
 
   // geometry
@@ -222,7 +222,7 @@ drawNormalLine(QPainter * painter,
   {
     painter->setBrush(Qt::NoBrush);
 
-    QColor c = normalColorOut; 
+    QColor c = normalColorOut;
     if (selected)
       c = c.darker(200);
     p.setColor(c);
@@ -233,11 +233,11 @@ drawNormalLine(QPainter * painter,
     for (unsigned int i = 0ul; i < segments; ++i)
     {
       double ratioPrev = double(i) / segments;
-      double ratio = double(i + 1) / segments;
+      double ratio     = double(i + 1) / segments;
 
       if (i == segments / 2)
       {
-        QColor c = normalColorIn; 
+        QColor c = normalColorIn;
         if (selected)
           c = c.darker(200);
 

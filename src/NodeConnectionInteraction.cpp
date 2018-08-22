@@ -65,7 +65,7 @@ canConnect(PortIndex &portIndex, bool& converted) const
   auto connectionDataType =
     _connection->dataType(oppositePort(requiredPort));
 
-  auto const   modelTarget           = _node.model();
+  auto const modelTarget             = _node.model();
   NodeDataType candidateNodeDataType = modelTarget->nodePortDataType(_node, portIndex, requiredPort);
 
   // if the types don't match, try a conversion
@@ -78,7 +78,7 @@ canConnect(PortIndex &portIndex, bool& converted) const
     }
     else if (requiredPort == PortType::Out)
     {
-      return modelTarget->getTypeConvertable({candidateNodeDataType , connectionDataType});
+      return modelTarget->getTypeConvertable({candidateNodeDataType, connectionDataType});
     }
     Q_UNREACHABLE();
   }
@@ -103,15 +103,16 @@ tryConnect() const
     return false;
   }
 
-  auto requiredPort = connectionRequiredPort();
+  auto requiredPort  = connectionRequiredPort();
   auto connectedPort = oppositePort(requiredPort);
 
   auto outNodePortIndex = _connection->portIndex(connectedPort);
-  auto outNode = _connection->node(connectedPort);
+  auto outNode          = _connection->node(connectedPort);
 
   auto model = _connection->flowScene().model();
 
-  if (requiredPort == PortType::In) {
+  if (requiredPort == PortType::In)
+  {
     return model->addConnection(outNode, outNodePortIndex, _node, portIndex);
   }
   return model->addConnection(_node, portIndex, outNode, outNodePortIndex);
@@ -147,7 +148,7 @@ nodePortScenePosition(PortType portType, PortIndex portIndex) const
 {
 
   NodeGraphicsObject const& ngo = *_connection->flowScene().nodeGraphicsObject(_node);
-  
+
   NodeGeometry const &geom = ngo.geometry();
 
   QPointF p = geom.portScenePosition(portIndex, portType);
@@ -162,7 +163,7 @@ nodePortIndexUnderScenePoint(PortType portType,
                              QPointF const & scenePoint) const
 {
   NodeGraphicsObject const& ngo = *_connection->flowScene().nodeGraphicsObject(_node);
-  NodeGeometry const &nodeGeom = ngo.geometry();
+  NodeGeometry const &nodeGeom  = ngo.geometry();
 
   QTransform sceneTransform =
     ngo.sceneTransform();
@@ -182,7 +183,8 @@ nodePortIsEmpty(PortType portType, PortIndex portIndex) const
 
   auto const & entries = nodeState.getEntries(portType);
 
-  if (entries[portIndex].empty()) return true;
+  if (entries[portIndex].empty())
+    return true;
 
   const auto outPolicy = _node.model()->nodePortConnectionPolicy(_node, portIndex, portType);
   return outPolicy == ConnectionPolicy::Many;

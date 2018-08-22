@@ -35,7 +35,7 @@ public:
 public:
 
   using ConnectionPtrVec =
-          std::vector<ConnectionGraphicsObject*>;
+    std::vector<ConnectionGraphicsObject*>;
 
   /// Returns vector of connections ID.
   /// Some of them can be empty (null)
@@ -89,7 +89,7 @@ private:
   std::vector<ConnectionPtrVec> _outConnections;
 
   ReactToConnectionState _reaction;
-  PortType     _reactingPortType;
+  PortType _reactingPortType;
   NodeDataType _reactingDataType;
 
   bool _resizing;

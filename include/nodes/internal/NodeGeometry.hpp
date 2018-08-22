@@ -110,11 +110,11 @@ public:
 
   unsigned int
   validationWidth() const;
-  
-  static 
-  QPointF 
-  calculateNodePositionBetweenNodePorts(PortIndex targetPortIndex, PortType targetPort, NodeGraphicsObject const& targetNode, 
-                                        PortIndex sourcePortIndex, PortType sourcePort, NodeGraphicsObject const& sourceNode, 
+
+  static
+  QPointF
+  calculateNodePositionBetweenNodePorts(PortIndex targetPortIndex, PortType targetPort, NodeGraphicsObject const& targetNode,
+                                        PortIndex sourcePortIndex, PortType sourcePort, NodeGraphicsObject const& sourceNode,
                                         NodeGeometry const& newNodeGeom);
 private:
 

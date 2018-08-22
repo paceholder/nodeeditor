@@ -84,7 +84,8 @@ public slots: // data propagation
 
 signals:
 
-  void positionChanged(QPointF const& newPos);
+  void
+  positionChanged(QPointF const& newPos);
 
 private:
 
@@ -94,7 +95,7 @@ private:
 
   // data
   std::unique_ptr<NodeDataModel> _nodeDataModel;
-  std::vector<std::vector<Connection*>> _inConnections, _outConnections;
+  std::vector<std::vector<Connection*> > _inConnections, _outConnections;
   QPointF _pos;
 };
 }

@@ -78,7 +78,8 @@ deleteSelectionAction() const
 
 
 void
-FlowView::setScene(FlowScene *scene)
+FlowView::
+setScene(FlowScene *scene)
 {
   _scene = scene;
   QGraphicsView::setScene(_scene);
@@ -137,27 +138,28 @@ contextMenuEvent(QContextMenuEvent *event)
   {
     // get the catergory
     auto category = _scene->model()->nodeTypeCatergory(modelName);
-    
+
     // see if it's already in the map
     auto iter = catergoryItems.find(category);
-    
+
     // add it if it doesn't exist
-    if (iter == catergoryItems.end()) {
-          
+    if (iter == catergoryItems.end())
+    {
+
       auto item = new QTreeWidgetItem(treeView);
       item->setText(0, category);
       item->setData(0, Qt::UserRole, skipText);
-          
-      iter = catergoryItems.insert(category, item); 
+
+      iter = catergoryItems.insert(category, item);
     }
 
     // this is the catergory item
     auto parent = iter.value();
-    
-    // add the item
-    
 
-    auto item   = new QTreeWidgetItem(parent);
+    // add the item
+
+
+    auto item = new QTreeWidgetItem(parent);
     item->setText(0, modelName);
     item->setData(0, Qt::UserRole, modelName);
   }
@@ -165,44 +167,45 @@ contextMenuEvent(QContextMenuEvent *event)
   treeView->expandAll();
 
   connect(treeView, &QTreeWidget::itemClicked, [&](QTreeWidgetItem *item, int)
-  {
-    QString modelName = item->data(0, Qt::UserRole).toString();
+          {
+            QString modelName = item->data(0, Qt::UserRole).toString();
 
-    if (modelName == skipText)
-    {
-      return;
-    }
+            if (modelName == skipText)
+            {
+              return;
+            }
 
-    QPoint pos = event->pos();
+            QPoint pos = event->pos();
 
-    QPointF posView = this->mapToScene(pos);
+            QPointF posView = this->mapToScene(pos);
 
-    // try to create the node
-    auto uuid = _scene->model()->addNode(modelName, posView);
-    
-    // if the node creation failed, then don't add it
-    if (!uuid.isNull()) {
-        // move it to the cursor location
-        _scene->model()->moveNode(_scene->model()->nodeIndex(uuid), posView);
-    }
+            // try to create the node
+            auto uuid = _scene->model()->addNode(modelName, posView);
 
-    modelMenu.close();
-  });
+            // if the node creation failed, then don't add it
+            if (!uuid.isNull())
+            {
+              // move it to the cursor location
+              _scene->model()->moveNode(_scene->model()->nodeIndex(uuid), posView);
+            }
+
+            modelMenu.close();
+          });
 
   //Setup filtering
   connect(txtBox, &QLineEdit::textChanged, [&](const QString &text)
-  {
-    for (auto& topLvlItem : catergoryItems)
-    {
-      for (int i = 0; i < topLvlItem->childCount(); ++i)
-      {
-        auto child = topLvlItem->child(i);
-        auto modelName = child->data(0, Qt::UserRole).toString();
-        const bool match = (modelName.contains(text, Qt::CaseInsensitive));
-        child->setHidden(!match);
-      }
-    }
-  });
+          {
+            for (auto& topLvlItem : catergoryItems)
+            {
+              for (int i = 0; i < topLvlItem->childCount(); ++i)
+              {
+                auto child       = topLvlItem->child(i);
+                auto modelName   = child->data(0, Qt::UserRole).toString();
+                const bool match = (modelName.contains(text, Qt::CaseInsensitive));
+                child->setHidden(!match);
+              }
+            }
+          });
 
   // make sure the text box gets focus so the user doesn't have to click on it
   txtBox->setFocus();
@@ -268,11 +271,12 @@ deleteSelectedNodes()
   // deletes some connections as well)
   for (QGraphicsItem * item : _scene->selectedItems())
   {
-    if (auto c = qgraphicsitem_cast<ConnectionGraphicsObject*>(item)) {
-      
+    if (auto c = qgraphicsitem_cast<ConnectionGraphicsObject*>(item))
+    {
+
       // does't matter if it works or doesn't, at least we tried
       scene()->model()->removeConnection(c->node(PortType::Out), c->portIndex(PortType::Out), c->node(PortType::In), c->portIndex(PortType::In));
-      
+
     }
   }
 
@@ -282,9 +286,10 @@ deleteSelectedNodes()
   // when a selected connection is deleted by deleting the node.
   for (QGraphicsItem * item : _scene->selectedItems())
   {
-    if (auto n = qgraphicsitem_cast<NodeGraphicsObject*>(item)) {
+    if (auto n = qgraphicsitem_cast<NodeGraphicsObject*>(item))
+    {
       auto index = n->index();
-      
+
       scene()->model()->removeNodeWithConnections(index);
     }
   }
@@ -346,7 +351,7 @@ mouseMoveEvent(QMouseEvent *event)
   if (scene()->mouseGrabberItem() == nullptr && event->buttons() == Qt::LeftButton)
   {
     // Make sure shift is not being pressed
-      if ((event->modifiers() & Qt::ShiftModifier) == 0)
+    if ((event->modifiers() & Qt::ShiftModifier) == 0)
     {
       QPointF difference = _clickPos - mapToScene(event->pos());
       setSceneRect(sceneRect().translated(difference.x(), difference.y()));
@@ -364,9 +369,9 @@ drawBackground(QPainter* painter, const QRectF& r)
   auto drawGrid =
     [&](double gridStep)
     {
-      QRect   windowRect = rect();
-      QPointF tl = mapToScene(windowRect.topLeft());
-      QPointF br = mapToScene(windowRect.bottomRight());
+      QRect windowRect = rect();
+      QPointF tl       = mapToScene(windowRect.topLeft());
+      QPointF br       = mapToScene(windowRect.bottomRight());
 
       double left   = std::floor(tl.x() / gridStep - 0.5);
       double right  = std::floor(br.x() / gridStep + 1.0);

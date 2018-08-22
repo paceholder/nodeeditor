@@ -22,35 +22,43 @@ public:
   {}
 
   ConnectionState(const ConnectionState&) = delete;
-  ConnectionState operator=(const ConnectionState&) = delete;
+  ConnectionState
+  operator=(const ConnectionState&) = delete;
 
   ~ConnectionState();
 
 public:
 
-  void setRequiredPort(PortType end)
+  void
+  setRequiredPort(PortType end)
   { _requiredPort = end; }
 
-  PortType requiredPort() const
+  PortType
+  requiredPort() const
   { return _requiredPort; }
 
-  bool requiresPort() const
+  bool
+  requiresPort() const
   { return _requiredPort != PortType::None; }
 
-  void setNoRequiredPort()
+  void
+  setNoRequiredPort()
   { _requiredPort = PortType::None; }
 
 public:
 
-  void interactWithNode(NodeGraphicsObject* node);
+  void
+  interactWithNode(NodeGraphicsObject* node);
 
-  void setLastHoveredNode(NodeGraphicsObject* node);
+  void
+  setLastHoveredNode(NodeGraphicsObject* node);
 
   NodeGraphicsObject*
   lastHoveredNode() const
   { return _lastHoveredNode; }
 
-  void resetLastHoveredNode();
+  void
+  resetLastHoveredNode();
 
 private:
 

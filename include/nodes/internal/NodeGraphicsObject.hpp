@@ -23,28 +23,28 @@ class NodeGraphicsObject : public QGraphicsObject
 public:
   NodeGraphicsObject(FlowScene &scene,
                      NodeIndex const& index);
-  
+
   virtual
   ~NodeGraphicsObject();
-  
+
   NodeIndex
   index() const;
-  
+
   FlowScene&
   flowScene();
-  
+
   FlowScene const&
   flowScene() const;
-  
+
   NodeGeometry&
   geometry();
-  
+
   NodeGeometry const&
   geometry() const;
-  
+
   NodeState&
   nodeState();
-  
+
   NodeState const&
   nodeState() const;
 
@@ -59,7 +59,7 @@ public:
   void
   moveConnections() const;
 
-  
+
   void reactToPossibleConnection(PortType,
                                  NodeDataType,
                                  QPointF const& scenePoint);
@@ -115,13 +115,13 @@ private:
 private:
 
   FlowScene & _scene;
-  
+
   NodeIndex _nodeIndex;
-  
+
   NodeGeometry _geometry;
-  
+
   NodeState _state;
-  
+
   bool _locked;
 
   // either nullptr or owned by parent QGraphicsItem
