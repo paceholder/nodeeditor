@@ -136,10 +136,11 @@ restoreNode(QJsonObject const& nodeJson)
 
   auto uid = QUuid(nodeJson["id"].toString());
  
-  _dataFlowModel->addNode(modelName, point, uid);
+  // set initial point to 0, 0, will be updated in Node::restore
+  _dataFlowModel->addNode(modelName, QPointF(0, 0), uid);
 
   auto& node = *_dataFlowModel->_nodes[uid];
-  node->restore(nodeJson);
+  node.restore(nodeJson);
   
   return node;
 }

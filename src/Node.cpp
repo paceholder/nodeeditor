@@ -14,7 +14,9 @@
 #include "ConnectionState.hpp"
 #include "Connection.hpp"
 
-namespace QtNodes {
+using QtNodes::Node;
+using QtNodes::NodeDataModel;
+using QtNodes::Connection;
 
 Node::
 Node(std::unique_ptr<NodeDataModel> && dataModel, QUuid const& id)
