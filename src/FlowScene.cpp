@@ -104,7 +104,7 @@ nodeRemoved(const QUuid& id)
   Q_ASSERT(!id.isNull());
 
   auto ngo = _nodeGraphicsObjects[id];
-#ifndef NDEBUG
+#ifndef QT_NO_DEBUG
   // make sure there are no connections left
   for (const auto& connPtrSet : ngo->nodeState().getEntries(PortType::In)) {
     Q_ASSERT(connPtrSet.size() == 0);
@@ -195,7 +195,7 @@ nodePortUpdated(NodeIndex const& id)
 
       // go through connections
       auto connections = model()->nodePortConnections(id, portID, ty);
-#ifndef NDEBUG
+#ifndef QT_NO_DEBUG
       for (auto conn : connections) {
         auto remoteConns = model()->nodePortConnections(conn.first, conn.second, oppositePort(ty));
 
@@ -237,7 +237,7 @@ FlowScene::
 connectionRemoved(NodeIndex const& leftNode, PortIndex leftPortID, NodeIndex const& rightNode, PortIndex rightPortID)
 {
   // check the model's sanity
-#ifndef NDEBUG
+#ifndef QT_NO_DEBUG
   for (const auto& conn : model()->nodePortConnections(leftNode, leftPortID, PortType::Out)) {
     // if you fail here, then you're emitting connectionRemoved on a connection that is in the model
     Q_ASSERT (conn.first != rightNode || conn.second != rightPortID);
@@ -274,7 +274,7 @@ FlowScene::
 connectionAdded(NodeIndex const& leftNode, PortIndex leftPortID, NodeIndex const& rightNode, PortIndex rightPortID)
 {
   // check the model's sanity
-#ifndef NDEBUG
+#ifndef QT_NO_DEBUG
   Q_ASSERT(leftPortID >= 0);
   Q_ASSERT(rightPortID >= 0);
   // if you fail here, then you're emitting connectionAdded on a portID that doesn't exist

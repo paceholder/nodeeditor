@@ -621,7 +621,7 @@ bool DataFlowScene::DataFlowModel::removeNode(NodeIndex const& index) {
   auto* node = static_cast<Node*>(index.internalPointer());
   
   // make sure there are no connections left
-#ifndef NDEBUG
+#ifndef QT_NO_DEBUG
   for (auto idx = 0u; idx < node->nodeDataModel()->nPorts(PortType::In); ++idx) {
     Q_ASSERT(node->connections(PortType::In, idx).empty());
   }

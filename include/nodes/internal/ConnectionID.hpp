@@ -6,7 +6,7 @@
 #include <utility>
 
 namespace QtNodes {
-struct ConnectionID {
+class ConnectionID {
   QUuid lNodeID;
   QUuid rNodeID;
 
