@@ -51,7 +51,7 @@ install:
   - travis_retry git clone https://github.com/catchorg/Catch2.git # Install Catch2
   - |
     pushd Catch2
-    git checkout tags/v2.2.2
+    git checkout tags/v2.3.0
     mkdir build && cd build
   - cmake .. -DBUILD_TESTING=OFF -DCMAKE_INSTALL_PREFIX="${DEPS_DIR}/install"
   - cmake --build . -- install
