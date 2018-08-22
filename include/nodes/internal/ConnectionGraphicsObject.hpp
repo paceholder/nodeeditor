@@ -16,7 +16,7 @@ namespace QtNodes
 {
 
 class FlowScene;
-class ConnectionID;
+struct ConnectionID;
 
 /// Graphic Object for connection.
 class ConnectionGraphicsObject
