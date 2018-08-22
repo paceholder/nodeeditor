@@ -14,7 +14,8 @@
 
 using QtNodes::NodeStyle;
 
-inline void initResources() { Q_INIT_RESOURCE(resources); }
+inline void
+initResources() { Q_INIT_RESOURCE(resources); }
 
 NodeStyle::
 NodeStyle()
@@ -48,10 +49,10 @@ setNodeStyle(QString jsonText)
 
 #ifdef STYLE_DEBUG
   #define NODE_STYLE_CHECK_UNDEFINED_VALUE(v, variable) { \
-      if (v.type() == QJsonValue::Undefined || \
-          v.type() == QJsonValue::Null) \
-        qWarning() << "Undefined value for parameter:" << #variable; \
-  }
+    if (v.type() == QJsonValue::Undefined || \
+        v.type() == QJsonValue::Null) \
+      qWarning() << "Undefined value for parameter:" << #variable; \
+}
 #else
   #define NODE_STYLE_CHECK_UNDEFINED_VALUE(v, variable)
 #endif

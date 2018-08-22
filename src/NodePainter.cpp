@@ -58,9 +58,9 @@ void
 NodePainter::
 drawNodeRect(QPainter* painter, NodeGraphicsObject const & graphicsObject)
 {
-  FlowSceneModel& model = *graphicsObject.flowScene().model();
+  FlowSceneModel& model      = *graphicsObject.flowScene().model();
   NodeStyle const& nodeStyle = model.nodeStyle(graphicsObject.index());
-  NodeGeometry const& geom = graphicsObject.geometry();
+  NodeGeometry const& geom   = graphicsObject.geometry();
 
   auto color = graphicsObject.isSelected()
                ? nodeStyle.SelectedBoundaryColor
@@ -101,14 +101,14 @@ void
 NodePainter::
 drawConnectionPoints(QPainter* painter, NodeGraphicsObject const & graphicsObject)
 {
-  const FlowSceneModel& model = *graphicsObject.flowScene().model();
+  const FlowSceneModel& model     = *graphicsObject.flowScene().model();
   NodeStyle const& nodeStyle      = model.nodeStyle(graphicsObject.index());
   auto const     &connectionStyle = StyleCollection::connectionStyle();
-  NodeState const& state = graphicsObject.nodeState();
-  NodeGeometry const& geom = graphicsObject.geometry();
+  NodeState const& state          = graphicsObject.nodeState();
+  NodeGeometry const& geom        = graphicsObject.geometry();
 
-  float diameter = nodeStyle.ConnectionPointDiameter;
-  auto  reducedDiameter = diameter * 0.6;
+  float diameter       = nodeStyle.ConnectionPointDiameter;
+  auto reducedDiameter = diameter * 0.6;
 
   for(PortType portType: {PortType::Out, PortType::In})
   {
@@ -122,7 +122,7 @@ drawConnectionPoints(QPainter* painter, NodeGraphicsObject const & graphicsObjec
 
       bool canConnect = (state.getEntries(portType)[i].empty() ||
                          (portType == PortType::Out &&
-                         model.nodePortConnectionPolicy(graphicsObject.index(), i, PortType::Out) == ConnectionPolicy::Many) );
+                          model.nodePortConnectionPolicy(graphicsObject.index(), i, PortType::Out) == ConnectionPolicy::Many) );
 
       double r = 1.0;
       if (state.isReacting() &&
@@ -130,9 +130,9 @@ drawConnectionPoints(QPainter* painter, NodeGraphicsObject const & graphicsObjec
           portType == state.reactingPortType())
       {
 
-        auto   diff = geom.draggingPos() - p;
-        double dist = std::sqrt(QPointF::dotProduct(diff, diff));
-        bool   typeConvertable = false;
+        auto diff            = geom.draggingPos() - p;
+        double dist          = std::sqrt(QPointF::dotProduct(diff, diff));
+        bool typeConvertable = false;
 
         {
           if (portType == PortType::In)
@@ -149,15 +149,15 @@ drawConnectionPoints(QPainter* painter, NodeGraphicsObject const & graphicsObjec
         {
           double const thres = 40.0;
           r = (dist < thres) ?
-                (2.0 - dist / thres ) :
-                1.0;
+              (2.0 - dist / thres ) :
+              1.0;
         }
         else
         {
           double const thres = 80.0;
           r = (dist < thres) ?
-                (dist / thres) :
-                1.0;
+              (dist / thres) :
+              1.0;
         }
       }
 
@@ -174,7 +174,8 @@ drawConnectionPoints(QPainter* painter, NodeGraphicsObject const & graphicsObjec
                            reducedDiameter * r,
                            reducedDiameter * r);
     }
-  };
+  }
+  ;
 }
 
 
@@ -187,7 +188,7 @@ drawFilledConnectionPoints(QPainter * painter, NodeGraphicsObject const & graphi
   auto const&           connectionStyle = StyleCollection::connectionStyle();
   NodeState const&      state           = graphicsObject.nodeState();
   NodeGeometry const&   geom            = graphicsObject.geometry();
-  
+
   auto diameter = nodeStyle.ConnectionPointDiameter;
 
   for(PortType portType: {PortType::Out, PortType::In})
@@ -229,12 +230,13 @@ drawModelName(QPainter * painter, NodeGraphicsObject const & graphicsObject)
 {
 
   FlowSceneModel const& model = *graphicsObject.index().model();
-  NodeStyle const& nodeStyle = model.nodeStyle(graphicsObject.index());
-  NodeGeometry const& geom = graphicsObject.geometry();
+  NodeStyle const& nodeStyle  = model.nodeStyle(graphicsObject.index());
+  NodeGeometry const& geom    = graphicsObject.geometry();
 
   QString const &name = model.nodeCaption(graphicsObject.index());
 
-  if (name.isEmpty()) {
+  if (name.isEmpty())
+  {
     return;
   }
 
@@ -262,9 +264,9 @@ void
 NodePainter::
 drawEntryLabels(QPainter * painter, NodeGraphicsObject const & graphicsObject)
 {
-  NodeState const& state = graphicsObject.nodeState();
-  NodeGeometry const& geom = graphicsObject.geometry();
-  FlowSceneModel const& model = *graphicsObject.index().model();
+  NodeState const& state       = graphicsObject.nodeState();
+  NodeGeometry const& geom     = graphicsObject.geometry();
+  FlowSceneModel const& model  = *graphicsObject.index().model();
   QFontMetrics const & metrics =
     painter->fontMetrics();
 
@@ -298,16 +300,16 @@ drawEntryLabels(QPainter * painter, NodeGraphicsObject const & graphicsObject)
 
       switch (portType)
       {
-      case PortType::In:
-        p.setX(5.0);
-        break;
+        case PortType::In:
+          p.setX(5.0);
+          break;
 
-      case PortType::Out:
-        p.setX(geom.width() - 5.0 - rect.width());
-        break;
+        case PortType::Out:
+          p.setX(geom.width() - 5.0 - rect.width());
+          break;
 
-      default:
-        break;
+        default:
+          break;
       }
 
       painter->drawText(p, s);
@@ -319,7 +321,7 @@ drawEntryLabels(QPainter * painter, NodeGraphicsObject const & graphicsObject)
 void
 NodePainter::
 drawResizeRect(QPainter * painter,
-                     NodeGraphicsObject const & graphicsObject)
+               NodeGraphicsObject const & graphicsObject)
 {
   FlowSceneModel const& model = *graphicsObject.index().model();
 
@@ -337,7 +339,7 @@ NodePainter::
 drawValidationRect(QPainter * painter, NodeGraphicsObject const & graphicsObject)
 {
   FlowSceneModel const& model = *graphicsObject.index().model();
-  NodeGeometry const& geom = graphicsObject.geometry();
+  NodeGeometry const& geom    = graphicsObject.geometry();
 
   auto modelValidationState = model.nodeValidationState(graphicsObject.index());
 

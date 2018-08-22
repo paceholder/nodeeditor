@@ -64,27 +64,27 @@ save() const
 
   if (_inNode && _outNode)
   {
-    connectionJson["in_id"] = _inNode->id().toString();
+    connectionJson["in_id"]    = _inNode->id().toString();
     connectionJson["in_index"] = _inPortIndex;
 
-    connectionJson["out_id"] = _outNode->id().toString();
+    connectionJson["out_id"]    = _outNode->id().toString();
     connectionJson["out_index"] = _outPortIndex;
 
     if (_converter)
     {
       auto getTypeJson = [this](PortType type)
-      {
-        QJsonObject typeJson;
-        NodeDataType nodeType = this->dataType(type);
-        typeJson["id"] = nodeType.id;
-        typeJson["name"] = nodeType.name;
+                         {
+                           QJsonObject typeJson;
+                           NodeDataType nodeType = this->dataType(type);
+                           typeJson["id"]   = nodeType.id;
+                           typeJson["name"] = nodeType.name;
 
-        return typeJson;
-      };
+                           return typeJson;
+                         };
 
       QJsonObject converterTypeJson;
 
-      converterTypeJson["in"] = getTypeJson(PortType::In);
+      converterTypeJson["in"]  = getTypeJson(PortType::In);
       converterTypeJson["out"] = getTypeJson(PortType::Out);
 
       connectionJson["converter"] = converterTypeJson;
@@ -96,14 +96,15 @@ save() const
 
 ConnectionID
 Connection::
-id() const {
+id() const
+{
   ConnectionID ret;
   ret.lNodeID = getNode(PortType::Out)->id();
   ret.rNodeID = getNode(PortType::In)->id();
-  
+
   ret.lPortID = getPortIndex(PortType::Out);
   ret.rPortID = getPortIndex(PortType::In);
-  
+
   return ret;
 }
 
@@ -204,15 +205,15 @@ dataType(PortType portType) const
   if (_inNode && _outNode)
   {
     auto const & model = (portType == PortType::In) ?
-                        _inNode->nodeDataModel() :
-                        _outNode->nodeDataModel();
-    PortIndex index = (portType == PortType::In) ? 
+                         _inNode->nodeDataModel() :
+                         _outNode->nodeDataModel();
+    PortIndex index = (portType == PortType::In) ?
                       _inPortIndex :
                       _outPortIndex;
 
     return model->dataType(portType, index);
   }
-  else 
+  else
   {
     Node* validNode;
     PortIndex index = INVALID;

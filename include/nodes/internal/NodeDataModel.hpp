@@ -59,10 +59,12 @@ public:
 public:
 
   virtual
-  unsigned int nPorts(PortType portType) const = 0;
+  unsigned int
+  nPorts(PortType portType) const = 0;
 
   virtual
-  NodeDataType dataType(PortType portType, PortIndex portIndex) const = 0;
+  NodeDataType
+  dataType(PortType portType, PortIndex portIndex) const = 0;
 
 public:
 
@@ -78,7 +80,7 @@ public:
 
   void
   setNodeStyle(NodeStyle const& style);
-  
+
 public:
 
   /// Triggers the algorithm
@@ -108,7 +110,8 @@ public:
   validationMessage() const { return QString(""); }
 
   virtual
-  NodePainterDelegate* painterDelegate() const { return nullptr; }
+  NodePainterDelegate*
+  painterDelegate() const { return nullptr; }
 
 signals:
 

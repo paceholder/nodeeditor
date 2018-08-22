@@ -26,32 +26,62 @@ class ConnectionGraphicsObject
 
 public:
 
-  ConnectionGraphicsObject(
-    NodeIndex const& leftNode,
-    PortIndex leftPortIndex,
-    NodeIndex const& rightNode,
-    PortIndex rightPortIndex,
-    FlowScene& scene);
+  ConnectionGraphicsObject(NodeIndex const& leftNode,
+                           PortIndex leftPortIndex,
+                           NodeIndex const& rightNode,
+                           PortIndex rightPortIndex,
+                           FlowScene& scene);
 
   virtual
   ~ConnectionGraphicsObject();
 
   enum { Type = UserType + 2 };
   int
-  type() const override { return Type; }
+  type() const override
+  {
+    return Type;
+  }
 
 public:
 
-  NodeIndex node(PortType pType) const { return pType == PortType::In ? _rightNode : _leftNode; }
-  PortIndex portIndex(PortType pType) const { return pType == PortType::In ? _rightPortIndex : _leftPortIndex; }
-  
-  FlowScene& flowScene() const { return _scene; }
+  NodeIndex
+  node(PortType pType) const
+  {
+    return pType == PortType::In ? _rightNode : _leftNode;
+  }
+  PortIndex
+  portIndex(PortType pType) const
+  {
+    return pType == PortType::In ? _rightPortIndex : _leftPortIndex;
+  }
 
-  ConnectionGeometry const& geometry() const { return _geometry; }
-  ConnectionGeometry& geometry() { return _geometry; }
-  
-  ConnectionState const& state() const { return _state; }
-  ConnectionState& state() { return _state; }
+  FlowScene&
+  flowScene() const
+  {
+    return _scene;
+  }
+
+  ConnectionGeometry const&
+  geometry() const
+  {
+    return _geometry;
+  }
+  ConnectionGeometry&
+  geometry()
+  {
+    return _geometry;
+  }
+
+  ConnectionState const&
+  state() const
+  {
+    return _state;
+  }
+  ConnectionState&
+  state()
+  {
+    return _state;
+  }
 
   QRectF
   boundingRect() const override;
@@ -65,7 +95,8 @@ public:
   ConnectionID
   id() const;
 
-  NodeDataType dataType(PortType ty) const;
+  NodeDataType
+  dataType(PortType ty) const;
 
   /// Updates the position of both ends
   void
@@ -75,10 +106,16 @@ public:
   lock(bool locked);
 
   const FlowScene&
-  scene() const { return _scene; }
+  scene() const
+  {
+    return _scene;
+  }
 
   FlowScene&
-  scene() { return _scene; }
+  scene()
+  {
+    return _scene;
+  }
 
 protected:
 
@@ -113,7 +150,7 @@ private:
 
   ConnectionGeometry _geometry;
   ConnectionState _state;
-  
+
   NodeIndex _leftNode;
   NodeIndex _rightNode;
 

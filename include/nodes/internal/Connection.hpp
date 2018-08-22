@@ -45,7 +45,8 @@ public:
                TypeConverter{});
 
   Connection(const Connection&) = delete;
-  Connection operator=(const Connection&) = delete;
+  Connection
+  operator=(const Connection&) = delete;
 
   ~Connection();
 
@@ -91,8 +92,8 @@ private:
   QUuid _uid;
 
 private:
-  
-  void 
+
+  void
   setNodeToPort(Node& node,
                 PortType portType,
                 PortIndex portIndex);
@@ -105,7 +106,7 @@ private:
 
 private:
 
-  ConnectionState    _connectionState;
+  ConnectionState _connectionState;
   ConnectionGeometry _connectionGeometry;
 
   std::unique_ptr<ConnectionGraphicsObject>_connectionGraphicsObject;
