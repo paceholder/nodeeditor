@@ -31,6 +31,7 @@ set(CPP_SOURCE_FILES
   src/ConnectionPainter.cpp
   src/ConnectionState.cpp
   src/ConnectionStyle.cpp
+  src/DataFlowModel.cpp
   src/DataModelRegistry.cpp
   src/FlowScene.cpp
   src/FlowSceneModel.cpp
