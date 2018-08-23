@@ -2,6 +2,7 @@
 #include "NodeIndex.hpp"
 #include "ConnectionGraphicsObject.hpp"
 #include "NodeGraphicsObject.hpp"
+#include "FlowSceneModel.hpp"
 
 #include <algorithm>
 

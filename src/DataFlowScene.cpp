@@ -17,6 +17,8 @@ using QtNodes::NodePainterDelegate;
 using QtNodes::NodeDataType;
 using QtNodes::ConnectionPolicy;
 using QtNodes::PortIndex;
+using QtNodes::TypeConverterId;
+using QtNodes::TypeCOnverter;
 
 class DataFlowScene::DataFlowModel : public FlowSceneModel
 {

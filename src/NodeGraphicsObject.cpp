@@ -25,6 +25,7 @@ using QtNodes::NodeIndex;
 using QtNodes::NodeGeometry;
 using QtNodes::NodeState;
 using QtNodes::ConnectionPolicy;
+using QtNodes::PortType;
 
 NodeGraphicsObject::
 NodeGraphicsObject(FlowScene &scene,

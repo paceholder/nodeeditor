@@ -25,6 +25,7 @@ using QtNodes::ConnectionID;
 using QtNodes::FlowScene;
 using QtNodes::NodeDataType;
 using QtNodes::NodeIndex;
+using QtNodes::PortIndex;
 
 ConnectionGraphicsObject::
 ConnectionGraphicsObject(NodeIndex const& leftNode,
