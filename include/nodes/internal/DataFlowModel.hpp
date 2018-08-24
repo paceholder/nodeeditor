@@ -2,6 +2,7 @@
 #include "DataModelRegistry.hpp"
 #include "ConnectionID.hpp"
 #include "QUuidStdHash.hpp"
+#include "Export.hpp"
 
 namespace QtNodes {
 
@@ -9,7 +10,8 @@ class Node;
 class Connection;
 
 /// Model for simple data flow
-class DataFlowModel : public FlowSceneModel
+class NODE_EDITOR_PUBLIC DataFlowModel 
+  : public FlowSceneModel
 {
 public:
 
