@@ -12,7 +12,7 @@ using QtNodes::PortIndex;
 using QtNodes::FlowScene;
 using QtNodes::NodeDataModel;
 using QtNodes::TypeConverter;
-
+using QtNodes::NodeIndex;
 
 NodeConnectionInteraction::
 NodeConnectionInteraction(NodeIndex const& node,

@@ -9,6 +9,7 @@
 using QtNodes::FlowScene;
 using QtNodes::NodeGraphicsObject;
 using QtNodes::NodeIndex;
+using QtNodes::FlowSceneModel;
 
 FlowScene::
 FlowScene(FlowSceneModel* model,

@@ -15,6 +15,7 @@ using QtNodes::PortIndex;
 using QtNodes::TypeConverter;
 using QtNodes::ConnectionID;
 using QtNodes::DataFlowModel;
+using QtNodes::NodeDataModel;
 
 DataFlowScene::
 DataFlowScene(std::shared_ptr<DataModelRegistry> registry, QObject* parent)

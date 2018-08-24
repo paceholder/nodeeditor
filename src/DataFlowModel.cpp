@@ -15,6 +15,7 @@ using QtNodes::NodePainterDelegate;
 using QtNodes::NodeDataType;
 using QtNodes::PortIndex;
 using QtNodes::ConnectionPolicy;
+using QtNodes::Connection;
 
 DataFlowModel::
 DataFlowModel(std::shared_ptr<DataModelRegistry> registry)
