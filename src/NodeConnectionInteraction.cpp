@@ -13,6 +13,7 @@ using QtNodes::FlowScene;
 using QtNodes::NodeDataModel;
 using QtNodes::TypeConverter;
 using QtNodes::NodeIndex;
+using QtNodes::ConnectionGraphicsObject;
 
 NodeConnectionInteraction::
 NodeConnectionInteraction(NodeIndex const& node,

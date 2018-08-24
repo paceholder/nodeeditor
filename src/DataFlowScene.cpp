@@ -76,6 +76,8 @@ deleteConnection(Connection& connection)
     connection.getPortIndex(PortType::Out),
     _dataFlowModel->nodeIndex(connection.getNode(PortType::In)->id()),
     connection.getPortIndex(PortType::Out));
+  
+  Q_UNUSED(deleted);
   Q_ASSERT(deleted);
 }
 

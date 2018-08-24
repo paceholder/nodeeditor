@@ -14,6 +14,7 @@ using QtNodes::PortType;
 using QtNodes::PortIndex;
 using QtNodes::Connection;
 using QtNodes::NodeIndex;
+using QtNodes::ConnectionGraphicsObject;
 
 NodeState::
 NodeState(NodeIndex const &index)
