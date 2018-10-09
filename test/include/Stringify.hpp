@@ -3,7 +3,7 @@
 #include <QtCore/QPoint>
 #include <QtCore/QPointF>
 
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 
 #include <QtTest>
 
