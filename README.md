@@ -33,6 +33,27 @@ Each change in the source node is immediately propagated through all the connect
 * JSON-based interface styles
 * Saving scenes to JSON files
 
+### Building
+
+#### Linux
+
+~~~
+git clone git@github.com:paceholder/nodeeditor.git
+cd nodeeditor
+mkdir build
+cd build
+cmake ..
+make -j && make install
+~~~
+
+#### Qt Creator
+
+1. Open `CMakeLists.txt` as project.
+2. If you don't have the `Catch2` library installed, go to `Build Settings`, disable the checkbox `BUILD_TESTING`.
+3. `Build -> Run CMake`
+4. `Build -> Build All`
+5. Click the button `Run`
+
 ### Roadmap
 
 1. Extend set of examples
