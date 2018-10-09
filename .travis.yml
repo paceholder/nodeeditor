@@ -31,7 +31,7 @@ matrix:
     - os: osx
       osx_image: xcode8.3
       compiler: clang
-      env: CMAKE_PREFIX_PATH=/usr/local/Cellar/qt/5.11.0:$CMAKE_PREFIX_PATH
+      env: CMAKE_PREFIX_PATH=/usr/local/Cellar/qt/5.11.2:$CMAKE_PREFIX_PATH
 
 git:
   depth: 10
