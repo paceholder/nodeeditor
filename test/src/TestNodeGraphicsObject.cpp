@@ -3,7 +3,7 @@
 #include <nodes/Node>
 #include <nodes/NodeDataModel>
 
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 
 #include <QtTest>
 

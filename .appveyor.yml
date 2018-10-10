@@ -5,15 +5,13 @@ environment:
     - GENERATOR : "Visual Studio 14 2015 Win64"
       QTDIR: C:\Qt\5.6.3\msvc2015_64
       PLATFORM: x64
-      BUILD_TESTING: ON
     - GENERATOR : "Visual Studio 14 2015"
       QTDIR: C:\Qt\5.6.3\msvc2015
       PLATFORM: Win32
-      BUILD_TESTING: ON
     - GENERATOR : "MinGW Makefiles"
       QTDIR: C:\Qt\5.6\mingw49_32
       PLATFORM: x86
-      BUILD_TESTING: OFF
+      CMAKE_CXX_FLAGS_INIT: -DCATCH_CONFIG_NO_CPP11_TO_STRING
 
 image: Visual Studio 2015
 
@@ -29,31 +27,16 @@ install:
   - set Qt5_DIR=%QTDIR%\lib\cmake\Qt5
   - set PATH=C:\MinGW\bin;C:\MinGW\msys\1.0;%PATH%
   - set PATH=%PATH:C:\Program Files\Git\usr\bin=% # trick to remove sh.exe
-  - mkdir dependencies
-  - cd dependencies
-  - mkdir install
-  - set CMAKE_INSTALL_PREFIX=%cd%\install
-  - set DEPENDENCIES=%cd%\install
-  - git clone https://github.com/catchorg/Catch2.git
-  - cd Catch2
-  - mkdir build
-  - cd build
-  - cmake "-G%GENERATOR%" -DBUILD_TESTING=OFF ..
-  - cmake --build . --target install
-  - set Catch2_DIR=%DEPENDENCIES=%cd%\install\lib\cmake\Catch2
-  - cd ..
-  - cd ..
-  - cd ..
 
 before_build:
   - mkdir build
   - cd build
   - mkdir bin
   - set OUTPUT_DIR=%cd%\bin
-  - echo %BUILD_TESTING%
-  - cmake "-G%GENERATOR%" -DBUILD_TESTING=%BUILD_TESTING%
+  - cmake "-G%GENERATOR%"
     -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG="%OUTPUT_DIR%"
     -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE="%OUTPUT_DIR%"
+    -DCMAKE_CXX_FLAGS_INIT="%CMAKE_CXX_FLAGS_INIT%"
     ..
 
 
@@ -61,7 +44,7 @@ build_script:
   - cmake --build .
 
 test_script:
-  - if "%BUILD_TESTING%" == "ON" .\bin\test_nodes.exe
+  - ctest --output-on-failure -C Debug
 
 
 after_build:
