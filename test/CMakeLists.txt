@@ -1,4 +1,4 @@
-find_package(Catch2 REQUIRED)
+find_package(Catch2 2.3.0 REQUIRED)
 find_package(Qt5 COMPONENTS Test)
 
 add_executable(test_nodes
@@ -22,4 +22,9 @@ target_link_libraries(test_nodes
     Qt5::Test
 )
 
-add_test(test_nodes test_nodes)
+add_test(
+  NAME test_nodes
+  COMMAND
+    $<TARGET_FILE:test_nodes>
+    $<$<BOOL:${NE_FORCE_TEST_COLOR}>:--use-colour=yes>
+)
