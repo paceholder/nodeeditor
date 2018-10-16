@@ -39,7 +39,7 @@ modelRegistry() const
 
 QString
 DataFlowModel::
-nodeTypeCatergory(QString const& name) const
+nodeTypeCategory(QString const& name) const
 {
   auto iter = _registry->registeredModelsCategoryAssociation().find(name);
 

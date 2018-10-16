@@ -22,7 +22,7 @@ public:
   modelRegistry() const override;
 
   QString
-  nodeTypeCatergory(QString const& name) const override;
+  nodeTypeCategory(QString const& name) const override;
 
   bool
   getTypeConvertable(TypeConverterId const& id ) const override;

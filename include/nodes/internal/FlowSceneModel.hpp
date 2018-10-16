@@ -50,10 +50,10 @@ public:
   virtual QStringList
   modelRegistry() const = 0;
 
-  /// Get the catergory for a node type
+  /// Get the category for a node type
   /// name will be from `modelRegistry()`
   virtual QString
-  nodeTypeCatergory(QString const& /*name*/) const { return {}; }
+  nodeTypeCategory(QString const& /*name*/) const { return {}; }
 
   /// Get if two types are convertable
   virtual bool

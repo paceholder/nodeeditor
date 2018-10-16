@@ -133,27 +133,27 @@ contextMenuEvent(QContextMenuEvent *event)
 
   modelMenu.addAction(treeViewAction);
 
-  QMap<QString, QTreeWidgetItem*> catergoryItems;
+  QMap<QString, QTreeWidgetItem*> categoryItems;
   for (auto const &modelName : _scene->model()->modelRegistry())
   {
-    // get the catergory
-    auto category = _scene->model()->nodeTypeCatergory(modelName);
+    // get the category
+    auto category = _scene->model()->nodeTypeCategory(modelName);
 
     // see if it's already in the map
-    auto iter = catergoryItems.find(category);
+    auto iter = categoryItems.find(category);
 
     // add it if it doesn't exist
-    if (iter == catergoryItems.end())
+    if (iter == categoryItems.end())
     {
 
       auto item = new QTreeWidgetItem(treeView);
       item->setText(0, category);
       item->setData(0, Qt::UserRole, skipText);
 
-      iter = catergoryItems.insert(category, item);
+      iter = categoryItems.insert(category, item);
     }
 
-    // this is the catergory item
+    // this is the category item
     auto parent = iter.value();
 
     // add the item
@@ -195,7 +195,7 @@ contextMenuEvent(QContextMenuEvent *event)
   //Setup filtering
   connect(txtBox, &QLineEdit::textChanged, [&](const QString &text)
           {
-            for (auto& topLvlItem : catergoryItems)
+            for (auto& topLvlItem : categoryItems)
             {
               for (int i = 0; i < topLvlItem->childCount(); ++i)
               {
