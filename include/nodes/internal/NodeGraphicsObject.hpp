@@ -3,6 +3,7 @@
 #include <QtCore/QUuid>
 #include <QtWidgets/QGraphicsObject>
 
+#include "Export.hpp"
 #include "NodeIndex.hpp"
 #include "NodeGeometry.hpp"
 #include "NodeState.hpp"
@@ -16,7 +17,7 @@ class FlowScene;
 
 /// Class reacts on GUI events, mouse clicks and
 /// forwards painting operation.
-class NodeGraphicsObject : public QGraphicsObject
+class NODE_EDITOR_PUBLIC NodeGraphicsObject : public QGraphicsObject
 {
   Q_OBJECT
 
