@@ -50,6 +50,8 @@ FlowView(QWidget *parent)
   setCacheMode(QGraphicsView::CacheBackground);
 
   //setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
+
+  grabGesture(Qt::PinchGesture);
 }
 
 
@@ -97,6 +99,44 @@ FlowView::setScene(FlowScene *scene)
   addAction(_deleteSelectionAction);
 }
 
+bool
+FlowView::
+event(QEvent *event)  
+{
+  switch(event->type())
+  {
+    case QEvent::TouchBegin:
+    case QEvent::TouchUpdate:
+      _usingTouch = true;
+      break;
+    case QEvent::Wheel:
+      if (static_cast<QWheelEvent*>(event)->source() == Qt::MouseEventNotSynthesized) 
+        _usingTouch = false;
+      break;
+    case QEvent::Gesture:
+      return gestureEvent(static_cast<QGestureEvent*>(event));
+      break;
+    default:
+      break;
+  }
+  return QGraphicsView::event(event);
+}
+
+bool
+FlowView::
+gestureEvent(QGestureEvent *event)
+{
+  if(QGesture *pinch = event->gesture(Qt::PinchGesture))
+  {
+    auto pinchGes = static_cast<QPinchGesture*>(pinch);
+    auto changeFlags = pinchGes->changeFlags();
+    auto factor = pinchGes->scaleFactor();
+    if (transform().m11() > 2.0 && factor > 1.0)
+      return false;
+    scale(factor, factor);
+  }
+  return true;
+}
 
 void
 FlowView::

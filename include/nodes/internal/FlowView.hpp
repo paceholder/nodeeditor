@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QtWidgets/QGraphicsView>
+#include <QGesture>
 
 #include "Export.hpp"
 
@@ -37,6 +38,10 @@ public slots:
 
 protected:
 
+  bool event(QEvent* event) override;
+
+  bool gestureEvent(QGestureEvent *event);
+
   void contextMenuEvent(QContextMenuEvent *event) override;
 
   void wheelEvent(QWheelEvent *event) override;
@@ -59,6 +64,7 @@ protected:
 
 private:
 
+  bool _usingTouch = false;
   QAction* _clearSelectionAction;
   QAction* _deleteSelectionAction;
 
