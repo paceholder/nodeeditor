@@ -257,8 +257,8 @@ mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
     {
       Q_ASSERT(this == _scene._temporaryConn);
       // remove this from the scene
-      delete _scene._temporaryConn;
       _scene._temporaryConn = nullptr;
+      delete this;
     }
 
     return;
