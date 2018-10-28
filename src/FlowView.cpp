@@ -130,7 +130,6 @@ gestureEvent(QGestureEvent *event)
   if(QGesture *pinch = event->gesture(Qt::PinchGesture))
   {
     auto pinchGes = static_cast<QPinchGesture*>(pinch);
-    auto changeFlags = pinchGes->changeFlags();
     auto factor = pinchGes->scaleFactor();
     if (transform().m11() > 2.0 && factor > 1.0)
       return false;
