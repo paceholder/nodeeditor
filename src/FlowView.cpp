@@ -51,6 +51,7 @@ FlowView(QWidget *parent)
 
   //setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
 
+  setAttribute(Qt::WA_AcceptTouchEvents, true);
   grabGesture(Qt::PinchGesture);
 }
 
@@ -246,20 +247,28 @@ void
 FlowView::
 wheelEvent(QWheelEvent *event)
 {
-  QPoint delta = event->angleDelta();
-
-  if (delta.y() == 0)
+  if (_usingTouch) 
   {
-    event->ignore();
-    return;
+    auto delta = event->pixelDelta();
+    if (!delta.isNull()) 
+      setSceneRect(sceneRect().translated(-delta.x() * 2, -delta.y() * 2));
   }
+  else {
+    QPoint delta = event->angleDelta();
 
-  double const d = delta.y() / std::abs(delta.y());
+    if (delta.y() == 0)
+    {
+      event->ignore();
+      return;
+    }
 
-  if (d > 0.0)
-    scaleUp();
-  else
-    scaleDown();
+    double const d = delta.y() / std::abs(delta.y());
+
+    if (d > 0.0)
+      scaleUp();
+    else
+      scaleDown();
+  }
 }
 
 
