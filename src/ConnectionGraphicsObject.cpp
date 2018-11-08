@@ -258,7 +258,7 @@ mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
       Q_ASSERT(this == _scene._temporaryConn);
       // remove this from the scene
       _scene._temporaryConn = nullptr;
-      delete this;
+      deleteLater();
     }
 
     return;
@@ -275,16 +275,14 @@ mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
   {
     node->resetReactionToConnection();
     Q_ASSERT(this == _scene._temporaryConn);
-
-    delete _scene._temporaryConn;
     _scene._temporaryConn = nullptr;
+    deleteLater();
   }
   else if (state().requiresPort())
   {
     Q_ASSERT(this == _scene._temporaryConn);
-
-    delete _scene._temporaryConn;
     _scene._temporaryConn = nullptr;
+    deleteLater();
   }
 }
 
