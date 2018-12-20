@@ -14,7 +14,8 @@
 
 using QtNodes::ConnectionStyle;
 
-inline void initResources() { Q_INIT_RESOURCE(resources); }
+inline void
+initResources() { Q_INIT_RESOURCE(resources); }
 
 ConnectionStyle::
 ConnectionStyle()
@@ -47,10 +48,10 @@ setConnectionStyle(QString jsonText)
 
 #ifdef STYLE_DEBUG
   #define CONNECTION_STYLE_CHECK_UNDEFINED_VALUE(v, variable) { \
-      if (v.type() == QJsonValue::Undefined || \
-          v.type() == QJsonValue::Null) \
-        qWarning() << "Undefined value for parameter:" << #variable; \
-  }
+    if (v.type() == QJsonValue::Undefined || \
+        v.type() == QJsonValue::Null) \
+      qWarning() << "Undefined value for parameter:" << #variable; \
+}
 #else
   #define CONNECTION_STYLE_CHECK_UNDEFINED_VALUE(v, variable)
 #endif
@@ -63,7 +64,7 @@ setConnectionStyle(QString jsonText)
 #define CONNECTION_STYLE_READ_COLOR(values, variable)  { \
     auto valueRef = values[#variable]; \
     CONNECTION_STYLE_CHECK_UNDEFINED_VALUE(valueRef, variable) \
-    if (CONNECTION_VALUE_EXISTS(valueRef)) {\
+    if (CONNECTION_VALUE_EXISTS(valueRef)) { \
       if (valueRef.isArray()) { \
         auto colorArray = valueRef.toArray(); \
         std::vector<int> rgb; rgb.reserve(3); \

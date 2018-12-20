@@ -1,7 +1,7 @@
 #include <QtWidgets/QApplication>
 
 #include <nodes/NodeData>
-#include <nodes/FlowScene>
+#include <nodes/DataFlowScene>
 #include <nodes/FlowView>
 #include <nodes/DataModelRegistry>
 #include <nodes/NodeStyle>
@@ -11,7 +11,7 @@
 #include "models.hpp"
 
 using QtNodes::DataModelRegistry;
-using QtNodes::FlowScene;
+using QtNodes::DataFlowScene;
 using QtNodes::FlowView;
 using QtNodes::FlowViewStyle;
 using QtNodes::NodeStyle;
@@ -95,7 +95,7 @@ main(int argc, char* argv[])
 
   setStyle();
 
-  FlowScene scene(registerDataModels());
+  DataFlowScene scene(registerDataModels());
 
   FlowView view(&scene);
 

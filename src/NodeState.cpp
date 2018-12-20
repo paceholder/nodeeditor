@@ -1,6 +1,9 @@
 #include "NodeState.hpp"
 
 #include "NodeDataModel.hpp"
+#include "NodeIndex.hpp"
+#include "FlowSceneModel.hpp"
+#include "QUuidStdHash.hpp"
 
 #include "Connection.hpp"
 
@@ -12,16 +15,16 @@ using QtNodes::PortIndex;
 using QtNodes::Connection;
 
 NodeState::
-NodeState(std::unique_ptr<NodeDataModel> const &model)
-  : _inConnections(model->nPorts(PortType::In))
-  , _outConnections(model->nPorts(PortType::Out))
+NodeState(NodeIndex const &index)
+  : _inConnections(index.model()->nodePortCount(index, PortType::In))
+  , _outConnections(index.model()->nodePortCount(index, PortType::Out))
   , _reaction(NOT_REACTING)
   , _reactingPortType(PortType::None)
   , _resizing(false)
 {}
 
 
-std::vector<NodeState::ConnectionPtrSet> const &
+std::vector<NodeState::ConnectionPtrVec> const &
 NodeState::
 getEntries(PortType portType) const
 {
@@ -32,7 +35,7 @@ getEntries(PortType portType) const
 }
 
 
-std::vector<NodeState::ConnectionPtrSet> &
+std::vector<NodeState::ConnectionPtrVec> &
 NodeState::
 getEntries(PortType portType)
 {
@@ -43,7 +46,7 @@ getEntries(PortType portType)
 }
 
 
-NodeState::ConnectionPtrSet
+NodeState::ConnectionPtrVec
 NodeState::
 connections(PortType portType, PortIndex portIndex) const
 {
@@ -57,12 +60,11 @@ void
 NodeState::
 setConnection(PortType portType,
               PortIndex portIndex,
-              Connection& connection)
+              ConnectionGraphicsObject& connection)
 {
   auto &connections = getEntries(portType);
 
-  connections[portIndex].insert(std::make_pair(connection.id(),
-                                               &connection));
+  connections[portIndex].push_back(&connection);
 }
 
 
@@ -70,9 +72,15 @@ void
 NodeState::
 eraseConnection(PortType portType,
                 PortIndex portIndex,
-                QUuid id)
+                ConnectionGraphicsObject& conn)
 {
-  getEntries(portType)[portIndex].erase(id);
+  auto& ptrSet = getEntries(portType)[portIndex];
+  auto iter    = std::find(ptrSet.begin(), ptrSet.end(), &conn);
+  if (iter != ptrSet.end())
+  {
+    ptrSet.erase(iter);
+  }
+
 }
 
 

@@ -34,7 +34,8 @@ class NODE_EDITOR_PUBLIC Node
 public:
 
   /// NodeDataModel should be an rvalue and is moved into the Node
-  Node(std::unique_ptr<NodeDataModel> && dataModel);
+  Node(std::unique_ptr<NodeDataModel> && dataModel,
+       QUuid const& id);
 
   virtual
   ~Node();
@@ -52,38 +53,22 @@ public:
   QUuid
   id() const;
 
-  void reactToPossibleConnection(PortType,
-                                 NodeDataType const &,
-                                 QPointF const & scenePoint);
+  QPointF
+  position() const;
 
   void
-  resetReactionToConnection();
+  setPosition(QPointF const& newPos);
 
 public:
 
-  NodeGraphicsObject const &
-  nodeGraphicsObject() const;
-
-  NodeGraphicsObject &
-  nodeGraphicsObject();
-
-  void
-  setGraphicsObject(std::unique_ptr<NodeGraphicsObject>&& graphics);
-
-  NodeGeometry&
-  nodeGeometry();
-
-  NodeGeometry const&
-  nodeGeometry() const;
-
-  NodeState const &
-  nodeState() const;
-
-  NodeState &
-  nodeState();
-
   NodeDataModel*
   nodeDataModel() const;
+
+  std::vector<Connection*> const&
+  connections(PortType pType, PortIndex pIdx) const;
+
+  std::vector<Connection*>&
+  connections(PortType pType, PortIndex pIdx);
 
 public slots: // data propagation
 
@@ -97,6 +82,11 @@ public slots: // data propagation
   void
   onDataUpdated(PortIndex index);
 
+signals:
+
+  void
+  positionChanged(QPointF const& newPos);
+
 private:
 
   // addressing
@@ -104,15 +94,8 @@ private:
   QUuid _uid;
 
   // data
-
   std::unique_ptr<NodeDataModel> _nodeDataModel;
-
-  NodeState _nodeState;
-
-  // painting
-
-  NodeGeometry _nodeGeometry;
-
-  std::unique_ptr<NodeGraphicsObject> _nodeGraphicsObject;
+  std::vector<std::vector<Connection*> > _inConnections, _outConnections;
+  QPointF _pos;
 };
 }

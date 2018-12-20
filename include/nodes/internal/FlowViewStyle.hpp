@@ -18,15 +18,19 @@ public:
 
 public:
 
-  static void setStyle(QString jsonText);
+  static void
+  setStyle(QString jsonText);
 
 private:
 
-  void loadJsonText(QString jsonText) override;
+  void
+  loadJsonText(QString jsonText) override;
 
-  void loadJsonFile(QString fileName) override;
+  void
+  loadJsonFile(QString fileName) override;
 
-  void loadJsonFromByteArray(QByteArray const &byteArray) override;
+  void
+  loadJsonFromByteArray(QByteArray const &byteArray) override;
 
 public:
 

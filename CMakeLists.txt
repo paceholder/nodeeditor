@@ -55,6 +55,8 @@ set(CPP_SOURCE_FILES
   src/ConnectionStyle.cpp
   src/DataModelRegistry.cpp
   src/FlowScene.cpp
+  src/FlowSceneModel.cpp
+  src/DataFlowScene.cpp
   src/FlowView.cpp
   src/FlowViewStyle.cpp
   src/Node.cpp

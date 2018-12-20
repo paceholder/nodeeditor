@@ -11,16 +11,10 @@
 #include "NodePainterDelegate.hpp"
 #include "Export.hpp"
 #include "memory.hpp"
+#include "FlowSceneModel.hpp"
 
 namespace QtNodes
 {
-
-enum class NodeValidationState
-{
-  Valid,
-  Warning,
-  Error
-};
 
 class StyleCollection;
 
@@ -65,18 +59,14 @@ public:
 public:
 
   virtual
-  unsigned int nPorts(PortType portType) const = 0;
+  unsigned int
+  nPorts(PortType portType) const = 0;
 
   virtual
-  NodeDataType dataType(PortType portType, PortIndex portIndex) const = 0;
+  NodeDataType
+  dataType(PortType portType, PortIndex portIndex) const = 0;
 
 public:
-
-  enum class ConnectionPolicy
-  {
-    One,
-    Many,
-  };
 
   virtual
   ConnectionPolicy
@@ -120,7 +110,8 @@ public:
   validationMessage() const { return QString(""); }
 
   virtual
-  NodePainterDelegate* painterDelegate() const { return nullptr; }
+  NodePainterDelegate*
+  painterDelegate() const { return nullptr; }
 
 signals:
 
