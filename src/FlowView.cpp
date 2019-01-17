@@ -1,7 +1,7 @@
 #include "FlowView.hpp"
 
 #include <QtWidgets/QGraphicsScene>
-
+#include <QClipboard>
 #include <QtGui/QPen>
 #include <QtGui/QBrush>
 #include <QtWidgets/QMenu>
@@ -106,6 +106,18 @@ FlowView::setScene(FlowScene *scene)
   _duplicateSelectionAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
   connect(_duplicateSelectionAction, &QAction::triggered, this, &FlowView::duplicateSelectedNode);
   addAction(_duplicateSelectionAction);
+
+  _copymultiplenodes = new QAction(QStringLiteral("Copy Multiple Nodes"), this);
+  _copymultiplenodes->setShortcut(QKeySequence(tr("Ctrl+C")));
+  _copymultiplenodes->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+  connect(_copymultiplenodes, &QAction::triggered, this, &FlowView::copySelectedNodes);
+  addAction(_copymultiplenodes);
+  
+  _pastemultiplenodes = new QAction(QStringLiteral("Paste Multiple Nodes"), this);
+  _pastemultiplenodes->setShortcut(QKeySequence(tr("Ctrl+V")));
+  _pastemultiplenodes->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+  connect(_pastemultiplenodes, &QAction::triggered, this, &FlowView::pasteSelectedNodes);
+  addAction(_pastemultiplenodes);
   
   _undoAction = new QAction(QStringLiteral("Undo"), this);
   _undoAction->setShortcut(QKeySequence(tr("Ctrl+Z")));
@@ -309,6 +321,78 @@ deleteSelectedNodes()
   _scene->UpdateHistory(); 
 }
 
+void FlowView::copySelectedNodes() {
+  QJsonObject sceneJson;
+  QJsonArray nodesJsonArray;
+  std::vector<QUuid> addedIds;
+  
+  for (QGraphicsItem * item : _scene->selectedItems())
+	{
+		if (auto n = qgraphicsitem_cast<NodeGraphicsObject*>(item))
+		{
+        Node& node = n->node();
+        nodesJsonArray.append(node.save());
+        addedIds.push_back(node.id());
+    }
+  }
+
+  QJsonArray connectionJsonArray;
+  for (QGraphicsItem * item : _scene->selectedItems())
+	{
+    if (auto c = qgraphicsitem_cast<ConnectionGraphicsObject*>(item)) {
+        Connection& connection = c->connection();
+
+        if( std::find(addedIds.begin(), addedIds.end(), connection.getNode(PortType::In)->id())  != addedIds.end() && 
+            std::find(addedIds.begin(), addedIds.end(), connection.getNode(PortType::Out)->id()) != addedIds.end() ) {
+          QJsonObject connectionJson = connection.save();
+          
+          if (!connectionJson.isEmpty())
+            connectionJsonArray.append(connectionJson);
+        }
+    }
+  }
+
+  sceneJson["nodes"] = nodesJsonArray;
+  sceneJson["connections"] = connectionJsonArray;
+
+  QJsonDocument document(sceneJson);
+  std::string json = document.toJson().toStdString();
+
+  QClipboard *p_Clipboard = QApplication::clipboard();
+  p_Clipboard->setText( QString::fromStdString(json));
+}
+
+void FlowView::pasteSelectedNodes() {
+    QClipboard *p_Clipboard = QApplication::clipboard();  
+    QByteArray text = p_Clipboard->text().toUtf8();
+
+    QJsonObject const jsonDocument = QJsonDocument::fromJson(text).object();
+    QJsonArray nodesJsonArray = jsonDocument["nodes"].toArray();
+
+    std::map<QUuid, QUuid> addedIds;
+
+    for (int i = 0; i < nodesJsonArray.size(); ++i)
+    {
+      QUuid currentId = QUuid( nodesJsonArray[i].toObject()["id"].toString() );
+      QUuid newId = _scene->pasteNode(nodesJsonArray[i].toObject());
+
+      addedIds.insert(std::pair<QUuid,QUuid>(currentId, newId));
+    }
+
+    QJsonArray connectionJsonArray = jsonDocument["connections"].toArray();
+    for (int i = 0; i < connectionJsonArray.size(); ++i)
+    {
+      QUuid in = QUuid(connectionJsonArray[i].toObject()["in_id"].toString());
+      QUuid newIn = addedIds[in];
+      
+      QUuid out = QUuid(connectionJsonArray[i].toObject()["out_id"].toString());
+      QUuid newOut = addedIds[out];
+
+      _scene->pasteConnection(connectionJsonArray[i].toObject(), newIn, newOut );
+    }
+    
+    _scene->UpdateHistory();
+}
 
 void FlowView::duplicateSelectedNode()
 {

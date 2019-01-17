@@ -59,6 +59,10 @@ public:
 
   Node&restoreNode(QJsonObject const& nodeJson);
 
+  QUuid pasteNode(QJsonObject &json);
+  
+  void pasteConnection(QJsonObject const &connectionJson, QUuid newIn, QUuid newOut);
+
   void removeNode(Node& node);
 
   DataModelRegistry&registry() const;
@@ -93,6 +97,8 @@ public:
   void load();
 
   QByteArray saveToMemory() const;
+
+  void saveToClipBoard();
 
   void loadFromMemory(const QByteArray& data);
   

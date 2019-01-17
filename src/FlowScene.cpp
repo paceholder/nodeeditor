@@ -132,6 +132,20 @@ restoreConnection(QJsonObject const &connectionJson)
   return createConnection(*nodeIn, portIndexIn, *nodeOut, portIndexOut);
 }
 
+void FlowScene::pasteConnection(QJsonObject const &connectionJson, QUuid newIn, QUuid newOut)
+{
+  QUuid nodeInId  = QUuid(connectionJson["in_id"].toString());
+  QUuid nodeOutId = QUuid(connectionJson["out_id"].toString());
+
+  PortIndex portIndexIn  = connectionJson["in_index"].toInt();
+  PortIndex portIndexOut = connectionJson["out_index"].toInt();
+
+  auto nodeIn  = _nodes[newIn].get();
+  auto nodeOut = _nodes[newOut].get();
+
+  createConnection(*nodeIn, portIndexIn, *nodeOut, portIndexOut);
+}
+
 
 void
 FlowScene::
@@ -166,7 +180,24 @@ FlowScene::
 restoreNode(QJsonObject const& nodeJson)
 {
   QString modelName = nodeJson["model"].toObject()["name"].toString();
+  auto dataModel = registry().create(modelName);
 
+  if (!dataModel)
+    throw std::logic_error(std::string("No registered model with name ") +
+                           modelName.toLocal8Bit().data());
+  auto node = std::make_unique<Node>(std::move(dataModel));
+  auto ngo  = std::make_unique<NodeGraphicsObject>(*this, *node);
+  node->setGraphicsObject(std::move(ngo));
+  node->restore(nodeJson);
+
+  auto nodePtr = node.get();
+  _nodes[node->id()] = std::move(node);
+  nodeCreated(*nodePtr);
+  return *nodePtr;
+}
+
+QUuid FlowScene::pasteNode(QJsonObject &nodeJson) {
+  QString modelName = nodeJson["model"].toObject()["name"].toString();
   auto dataModel = registry().create(modelName);
 
   if (!dataModel)
@@ -175,16 +206,19 @@ restoreNode(QJsonObject const& nodeJson)
 
   auto node = std::make_unique<Node>(std::move(dataModel));
   auto ngo  = std::make_unique<NodeGraphicsObject>(*this, *node);
-  node->setGraphicsObject(std::move(ngo));
 
-  node->restore(nodeJson);
+
+  node->setGraphicsObject(std::move(ngo));
+  
+  QUuid newId = QUuid::createUuid();
+  node->paste(nodeJson, newId);
 
   auto nodePtr = node.get();
   _nodes[node->id()] = std::move(node);
-
   nodeCreated(*nodePtr);
-  return *nodePtr;
+  return newId;
 }
+
 
 
 void
@@ -500,6 +534,11 @@ saveToMemory() const
   return document.toJson();
 }
 
+
+void FlowScene::saveToClipBoard()
+{
+
+}
 
 void
 FlowScene::

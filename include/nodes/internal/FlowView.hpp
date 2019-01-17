@@ -37,6 +37,10 @@ public slots:
   
   void duplicateSelectedNode();
 
+  void copySelectedNodes();
+
+  void pasteSelectedNodes();
+
 protected:
 
   void contextMenuEvent(QContextMenuEvent *event) override;
@@ -64,6 +68,8 @@ private:
   QAction* _clearSelectionAction;
   QAction* _deleteSelectionAction;
   QAction* _duplicateSelectionAction;
+  QAction* _copymultiplenodes;
+  QAction* _pastemultiplenodes;
   QAction* _undoAction;
   QAction* _redoAction;
 

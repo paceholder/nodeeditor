@@ -60,12 +60,42 @@ save() const
   return nodeJson;
 }
 
+QJsonObject Node::copyWithNewID(QUuid newId) const
+{
+  QJsonObject nodeJson;
+
+  nodeJson["id"] = newId.toString();
+  nodeJson["model"] = _nodeDataModel->save();
+
+  QJsonObject obj;
+  obj["x"] = _nodeGraphicsObject->pos().x();
+  obj["y"] = _nodeGraphicsObject->pos().y();
+  nodeJson["position"] = obj;
+
+  return nodeJson;
+}
+
+
 
 void
 Node::
 restore(QJsonObject const& json)
 {
   _id = QUuid(json["id"].toString());
+
+  QJsonObject positionJson = json["position"].toObject();
+  QPointF     point(positionJson["x"].toDouble(),
+                    positionJson["y"].toDouble());
+  _nodeGraphicsObject->setPos(point);
+
+  _nodeDataModel->restore(json["model"].toObject());
+}
+
+void
+Node::
+paste(QJsonObject const& json, QUuid ID)
+{
+  _id = ID;
 
   QJsonObject positionJson = json["position"].toObject();
   QPointF     point(positionJson["x"].toDouble(),
@@ -82,6 +112,11 @@ id() const
 {
   return _id;
 }
+
+void Node::setId(QUuid id) {
+  this->_id = id;
+}
+
 
 
 void

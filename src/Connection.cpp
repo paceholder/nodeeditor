@@ -96,6 +96,22 @@ save() const
 }
 
 
+QJsonObject Connection::copyWithNewID(QUuid in, QUuid out) {
+  QJsonObject connectionJson;
+
+  if (_inNode && _outNode)
+  {
+    connectionJson["in_id"] = in.toString();
+    connectionJson["in_index"] = _inPortIndex;
+
+    connectionJson["out_id"] = out.toString();
+    connectionJson["out_index"] = _outPortIndex;
+  }
+
+  return connectionJson;
+}
+
+
 QUuid
 Connection::
 id() const

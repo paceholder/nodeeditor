@@ -44,13 +44,24 @@ public:
   QJsonObject
   save() const override;
 
+
+  QJsonObject copyWithNewID(QUuid newId) const;
+
+
   void
   restore(QJsonObject const &json) override;
+
+  void
+  paste(QJsonObject const &json, QUuid ID);
+
+  
 
 public:
 
   QUuid
   id() const;
+
+  void setId(QUuid id);
 
   void reactToPossibleConnection(PortType,
                                  NodeDataType,
