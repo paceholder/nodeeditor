@@ -59,6 +59,7 @@ TEST_CASE("Dragging node changes position", "[gui]")
     QTest::mouseMove(view.windowHandle(), vwClickPos);
     QTest::mousePress(view.windowHandle(), Qt::LeftButton, Qt::NoModifier, vwClickPos);
     QTest::mouseMove(view.windowHandle(), vwDestPos);
+    QTest::mouseRelease(view.windowHandle(), Qt::LeftButton, Qt::NoModifier, vwDestPos);
 
     QPointF scDelta            = ngo.pos() - scPosBefore;
     QPoint  roundDelta         = scDelta.toPoint();
