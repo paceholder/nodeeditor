@@ -97,6 +97,14 @@ public slots: // data propagation
   void
   onDataUpdated(PortIndex index);
 
+  /// Port added to the end.
+  void
+  onPortAdded();
+
+  /// Port removed from the end.
+  void
+  onPortRemoved();
+
 private:
 
   // addressing
