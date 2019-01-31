@@ -24,10 +24,6 @@ RiverListData::addBack( const d_t &d ) {
 
 
 void RiverListData::remove( int i ) {
-
-    assert( i >= 0 );
-    assert( i < data_.size() );
-
     const auto it = std::next( data_.cbegin(), i );
     data_.erase( it );
 }

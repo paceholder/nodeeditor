@@ -5,8 +5,8 @@
 #include <nodes/FlowView>
 #include <nodes/DataModelRegistry>
 
-#include "RiverListModel.hpp"
-#include "RiverModel.hpp"
+#include "RiverListModel.h"
+#include "RiverModel.h"
 
 
 using QtNodes::DataModelRegistry;
