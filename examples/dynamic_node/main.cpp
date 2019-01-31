@@ -12,7 +12,6 @@
 using QtNodes::DataModelRegistry;
 using QtNodes::FlowScene;
 using QtNodes::FlowView;
-using QtNodes::ConnectionStyle;
 
 
 static std::shared_ptr<DataModelRegistry>
