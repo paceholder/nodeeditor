@@ -36,9 +36,10 @@ Node(std::unique_ptr<NodeDataModel> && dataModel)
   // propagate data: model => node
   connect(_nodeDataModel.get(), &NodeDataModel::dataUpdated,
           this, &Node::onDataUpdated);
-
-  connect(_nodeDataModel.get(), &NodeDataModel::embeddedWidgetSizeUpdated,
-          this, &Node::onNodeSizeUpdated );
+  connect(_nodeDataModel.get(), &NodeDataModel::portAdded,
+          this, &Node::onPortAdded);
+  connect(_nodeDataModel.get(), &NodeDataModel::portRemoved,
+          this, &Node::onPortRemoved);
 }
 
 
@@ -190,11 +191,7 @@ propagateData(std::shared_ptr<NodeData> nodeData,
 {
   _nodeDataModel->setInData(std::move(nodeData), inPortIndex, connectionId);
 
-  //Recalculate the nodes visuals. A data change can result in the node taking more space than before, so this forces a recalculate+repaint on the affected node
-  _nodeGraphicsObject->setGeometryChanged();
-  _nodeGeometry.recalculateSize();
-  _nodeGraphicsObject->update();
-  _nodeGraphicsObject->moveConnections();
+  recalculateVisuals();
 }
 
 
@@ -213,22 +210,54 @@ onDataUpdated(PortIndex index)
 
 void
 Node::
-onNodeSizeUpdated()
+onPortAdded()
 {
-    if( nodeDataModel()->embeddedWidget() )
-    {
-        nodeDataModel()->embeddedWidget()->adjustSize();
-    }
-    nodeGeometry().recalculateSize();
-    for(PortType type: {PortType::In, PortType::Out})
-    {
-        for(auto& conn_set : nodeState().getEntries(type))
-        {
-            for(auto& pair: conn_set)
-            {
-                Connection* conn = pair.second;
-                conn->getConnectionGraphicsObject().move();
-            }
-        }
-    }
+  // port In
+  const unsigned int nNewIn = _nodeDataModel->nPorts(PortType::In);
+  _nodeGeometry._nSources = nNewIn;
+  _nodeState._inConnections.resize( nNewIn );
+
+  // port Out
+  const unsigned int nNewOut = _nodeDataModel->nPorts(PortType::Out);
+  _nodeGeometry._nSinks = nNewOut;
+  _nodeState._outConnections.resize( nNewOut );
+
+  //Recalculate the nodes visuals. A data change can result in the node taking more space than before, so this forces a recalculate+repaint on the affected node
+  _nodeGraphicsObject->setGeometryChanged();
+  _nodeGeometry.recalculateSize();
+  _nodeGraphicsObject->update();
+
+  recalculateVisuals();
+}
+
+
+void
+Node::
+onPortRemoved()
+{
+  // port In
+  const unsigned int nNewIn = _nodeDataModel->nPorts(PortType::In);
+  _nodeGeometry._nSources = nNewIn;
+  _nodeState._inConnections.resize( nNewIn );
+  // \todo Remove the lost connections.
+
+  // port Out
+  const unsigned int nNewOut = _nodeDataModel->nPorts(PortType::Out);
+  _nodeGeometry._nSinks = nNewOut;
+  _nodeState._outConnections.resize( nNewOut );
+  // \todo Remove the lost connections.
+
+  recalculateVisuals();
+}
+
+
+void
+Node::
+recalculateVisuals() const
+{
+  //Recalculate the nodes visuals. A data change can result in the node taking more space than before, so this forces a recalculate+repaint on the affected node
+  _nodeGraphicsObject->setGeometryChanged();
+  _nodeGeometry.recalculateSize();
+  _nodeGraphicsObject->update();
+  _nodeGraphicsObject->moveConnections();
 }
