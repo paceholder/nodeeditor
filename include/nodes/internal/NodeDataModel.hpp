@@ -160,7 +160,11 @@ Q_SIGNALS:
   void
   computingFinished();
 
-  void embeddedWidgetSizeUpdated();
+  void
+  portAdded();
+
+  void
+  portRemoved();
 
 private:
 
