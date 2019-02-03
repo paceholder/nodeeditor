@@ -99,7 +99,18 @@ public:
 
 signals:
 
+  /**
+   * @brief Node has been created but not on the scene yet.
+   * @see nodePlaced()
+   */
   void nodeCreated(Node &n);
+
+  /**
+   * @brief Node has been added to the scene.
+   * @details Connect to this signal if need a correct position of node.
+   * @see nodeCreated()
+   */
+  void nodePlaced(Node &n);
 
   void nodeDeleted(Node &n);
 

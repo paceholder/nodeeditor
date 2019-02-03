@@ -171,6 +171,8 @@ contextMenuEvent(QContextMenuEvent *event)
       QPointF posView = this->mapToScene(pos);
 
       node.nodeGraphicsObject().setPos(posView);
+
+      _scene->nodePlaced(node);
     }
     else
     {
