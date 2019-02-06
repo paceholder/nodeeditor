@@ -147,7 +147,7 @@ private:
 
   TypeConverter _converter;
 
-signals:
+Q_SIGNALS:
 
   void
   updated(Connection& conn) const;

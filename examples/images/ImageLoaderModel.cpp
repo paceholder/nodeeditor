@@ -68,7 +68,7 @@ eventFilter(QObject *object, QEvent *event)
 
       _label->setPixmap(_pixmap.scaled(w, h, Qt::KeepAspectRatio));
 
-      emit dataUpdated(0);
+      Q_EMIT dataUpdated(0);
 
       return true;
     }

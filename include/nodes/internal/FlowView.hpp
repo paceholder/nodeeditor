@@ -27,7 +27,7 @@ public:
 
   void setScene(FlowScene *scene);
 
-public slots:
+public Q_SLOTS:
 
   void scaleUp();
 
