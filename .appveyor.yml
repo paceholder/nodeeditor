@@ -15,8 +15,6 @@ environment:
       PLATFORM: x86
       CMAKE_CXX_FLAGS_INIT: -DCATCH_CONFIG_NO_CPP11_TO_STRING
 
-#image: Visual Studio 2017
-
 configuration:
   - Release
 
@@ -47,7 +45,8 @@ build_script:
   - cmake --build .
 
 test_script:
-  - ctest --output-on-failure -C Debug
+  - ps: $env:isX86 = $env:PLATFORM.Contains("x86")
+  - IF %isX86% == False ctest --output-on-failure -C Debug
 
 
 after_build:
