@@ -122,7 +122,7 @@ public:
   virtual
   NodePainterDelegate* painterDelegate() const { return nullptr; }
 
-signals:
+Q_SIGNALS:
 
   void
   dataUpdated(PortIndex index);

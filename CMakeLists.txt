@@ -102,6 +102,7 @@ target_compile_definitions(nodes
   PRIVATE
     NODE_EDITOR_EXPORTS
     #NODE_DEBUG_DRAWING
+    QT_NO_KEYWORDS
 )
 
 target_compile_options(nodes

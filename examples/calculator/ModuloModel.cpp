@@ -97,7 +97,7 @@ setInData(std::shared_ptr<NodeData> data, PortIndex portIndex)
       _result.reset();
     }
 
-    emit dataUpdated(outPortIndex);
+    Q_EMIT dataUpdated(outPortIndex);
   }
 }
 

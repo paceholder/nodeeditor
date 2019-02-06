@@ -97,7 +97,7 @@ public:
 
   void loadFromMemory(const QByteArray& data);
 
-signals:
+Q_SIGNALS:
 
   void nodeCreated(Node &n);
 
