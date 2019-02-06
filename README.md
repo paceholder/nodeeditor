@@ -22,6 +22,7 @@ Each change in the source node is immediately propagated through all the connect
 
 * Qt >5.2
 * CMake 3.2
+* Catch2
 
 ### Current state
 
