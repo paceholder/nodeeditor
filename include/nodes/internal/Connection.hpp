@@ -129,7 +129,7 @@ public: // data propagation
   void
   propagateEmptyData() const;
 
-signals:
+Q_SIGNALS:
 
   void
   connectionCompleted(Connection const&) const;
