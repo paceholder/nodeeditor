@@ -124,29 +124,22 @@ public:
   virtual
   NodePainterDelegate* painterDelegate() const { return nullptr; }
 
-public slots:
+
+public Q_SLOTS:
 
   virtual void
-  inputConnectionCreated(Connection const&)
-  {
-  }
+  inputConnectionCreated(Connection const&) {}
 
   virtual void
-  inputConnectionDeleted(Connection const&)
-  {
-  }
+  inputConnectionDeleted(Connection const&) {}
 
   virtual void
-  outputConnectionCreated(Connection const&)
-  {
-  }
+  outputConnectionCreated(Connection const&) {}
 
   virtual void
-  outputConnectionDeleted(Connection const&)
-  {
-  }
+  outputConnectionDeleted(Connection const&) {}
 
-signals:
+Q_SIGNALS:
 
   void
   dataUpdated(PortIndex index);
@@ -159,6 +152,8 @@ signals:
 
   void
   computingFinished();
+
+  void embeddedWidgetSizeUpdated();
 
 private:
 

@@ -85,7 +85,7 @@ public:
   NodeDataModel*
   nodeDataModel() const;
 
-public slots: // data propagation
+public Q_SLOTS: // data propagation
 
   /// Propagates incoming data to the underlying model.
   void
@@ -96,6 +96,10 @@ public slots: // data propagation
   /// and propagates it to the connection
   void
   onDataUpdated(PortIndex index);
+
+  /// update the graphic part if the size of the embeddedwidget changes
+  void
+  onNodeSizeUpdated();
 
 private:
 

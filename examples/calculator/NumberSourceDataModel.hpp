@@ -69,7 +69,7 @@ public:
   QWidget *
   embeddedWidget() override { return _lineEdit; }
 
-private slots:
+private Q_SLOTS:
 
   void
   onTextEdited(QString const &string);

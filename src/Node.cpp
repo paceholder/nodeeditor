@@ -36,6 +36,9 @@ Node(std::unique_ptr<NodeDataModel> && dataModel)
   // propagate data: model => node
   connect(_nodeDataModel.get(), &NodeDataModel::dataUpdated,
           this, &Node::onDataUpdated);
+
+  connect(_nodeDataModel.get(), &NodeDataModel::embeddedWidgetSizeUpdated,
+          this, &Node::onNodeSizeUpdated );
 }
 
 
@@ -205,4 +208,26 @@ onDataUpdated(PortIndex index)
 
   for (auto const & c : connections)
     c.second->propagateData(nodeData);
+}
+
+void
+Node::
+onNodeSizeUpdated()
+{
+    if( nodeDataModel()->embeddedWidget() )
+    {
+        nodeDataModel()->embeddedWidget()->adjustSize();
+    }
+    nodeGeometry().recalculateSize();
+    for(PortType type: {PortType::In, PortType::Out})
+    {
+        for(auto& conn_set : nodeState().getEntries(type))
+        {
+            for(auto& pair: conn_set)
+            {
+                Connection* conn = pair.second;
+                conn->getConnectionGraphicsObject().move();
+            }
+        }
+    }
 }
