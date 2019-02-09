@@ -13,10 +13,8 @@
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
 #include <QtCore/QJsonArray>
-
-#include <QtGlobal>
-
-#include <QDebug>
+#include <QtCore/QtGlobal>
+#include <QtCore/QDebug>
 
 #include "Node.hpp"
 #include "NodeGraphicsObject.hpp"
