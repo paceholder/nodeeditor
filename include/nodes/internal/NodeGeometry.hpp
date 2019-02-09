@@ -154,5 +154,7 @@ private:
 
   mutable QFontMetrics _fontMetrics;
   mutable QFontMetrics _boldFontMetrics;
+
+  friend class Node;
 };
 }

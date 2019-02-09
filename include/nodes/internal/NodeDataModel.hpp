@@ -136,6 +136,12 @@ Q_SIGNALS:
   void
   computingFinished();
 
+  void
+  portAdded();
+
+  void
+  portRemoved();
+
 private:
 
   NodeStyle _nodeStyle;
