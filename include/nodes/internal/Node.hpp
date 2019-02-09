@@ -97,6 +97,10 @@ public Q_SLOTS: // data propagation
   void
   onDataUpdated(PortIndex index);
 
+  /// update the graphic part if the size of the embeddedwidget changes
+  void
+  onNodeSizeUpdated();
+
 private:
 
   // addressing
