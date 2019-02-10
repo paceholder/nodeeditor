@@ -18,10 +18,6 @@ environment:
 configuration:
   - Release
 
-#branches:
-  #only:
-    #- master
-
 install:
   - set PATH=%QTDIR%\bin;%PATH%
   - set Qt5_DIR=%QTDIR%\lib\cmake\Qt5

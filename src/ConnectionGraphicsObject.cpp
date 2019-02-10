@@ -207,12 +207,11 @@ mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
   auto node = locateNodeAt(event->scenePos(), _scene,
                            _scene.views()[0]->transform());
 
-  if (node) {
-    NodeConnectionInteraction interaction(*node, _connection, _scene);
-    if (interaction.tryConnect()) {
-      node->resetReactionToConnection();
-      return;
-    }
+  NodeConnectionInteraction interaction(*node, _connection, _scene);
+
+  if (node && interaction.tryConnect())
+  {
+    node->resetReactionToConnection();
   }
 
   if (_connection.connectionState().requiresPort())
