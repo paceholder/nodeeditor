@@ -50,10 +50,9 @@ FlowScene(std::shared_ptr<DataModelRegistry> registry,
   // due to a bug in Qt 5.2.
 
   // This connection should come first
-  connect(this, &FlowScene::connectionCreated, this, [this](Connection const& c) { setupConnectionSignals(c); });
-
-  connect(this, &FlowScene::connectionCreated, this, [this](Connection const& c) { sendConnectionCreatedToNodes(c); });
-  connect(this, &FlowScene::connectionDeleted, this, [this](Connection const& c) { sendConnectionDeletedToNodes(c); });
+  connect(this, &FlowScene::connectionCreated, this, &FlowScene::setupConnectionSignals);
+  connect(this, &FlowScene::connectionCreated, this, &FlowScene::sendConnectionCreatedToNodes);
+  connect(this, &FlowScene::connectionDeleted, this, &FlowScene::sendConnectionDeletedToNodes);
 }
 
 FlowScene::
