@@ -77,6 +77,7 @@ public:
   void setNodePosition(Node& node, const QPointF& pos) const;
 
   QSizeF getNodeSize(const Node& node) const;
+  
 public:
 
   std::unordered_map<QUuid, std::unique_ptr<Node> > const &nodes() const;
@@ -140,7 +141,7 @@ private:
   std::unordered_map<QUuid, UniqueNode>       _nodes;
   std::shared_ptr<DataModelRegistry>          _registry;
 
-private slots:
+private Q_SLOTS:
 
   void setupConnectionSignals(Connection const& c);
   
