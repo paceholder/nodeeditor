@@ -103,3 +103,9 @@ Chigraph is a programming language for beginners that is unique in that it is an
 ![chigraph screenshot](pictures/chigraph.png)
 
 It features easy bindings to C/C++, package management, and a cool interface.
+
+#### [Spkgen particle engine editor](https://github.com/fredakilla/spkgen)
+
+![spkgen screenshot](pictures/spkgen.png)
+
+Spkgen is an editor for the SPARK particles engine using a node-based interface to create particles effects for games.
