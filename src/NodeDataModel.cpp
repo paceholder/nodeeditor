@@ -7,7 +7,8 @@ using QtNodes::NodeStyle;
 
 NodeDataModel::
 NodeDataModel()
-  : _nodeStyle(StyleCollection::nodeStyle())
+  : m_wembed(false), _nodeStyle(StyleCollection::nodeStyle())
+
 {
   // Derived classes can initialize specific style here
 }
@@ -38,4 +39,14 @@ NodeDataModel::
 setNodeStyle(NodeStyle const& style)
 {
   _nodeStyle = style;
+}
+
+bool NodeDataModel::wembed() const
+{
+    return m_wembed;
+}
+
+void NodeDataModel::setWembed(bool wembed)
+{
+    m_wembed = wembed;
 }

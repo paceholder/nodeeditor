@@ -54,6 +54,9 @@ public:
   void
   lock(bool locked);
 
+  void
+  embedQWidget(bool embed=true);
+
 protected:
   void
   paint(QPainter*                       painter,
@@ -88,10 +91,6 @@ protected:
   contextMenuEvent(QGraphicsSceneContextMenuEvent* event) override;
 
 private:
-  void
-  embedQWidget();
-
-private:
 
   FlowScene & _scene;
 
@@ -101,5 +100,6 @@ private:
 
   // either nullptr or owned by parent QGraphicsItem
   QGraphicsProxyWidget * _proxyWidget;
+
 };
 }

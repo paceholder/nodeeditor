@@ -3,6 +3,7 @@
 #include <stdexcept>
 #include <utility>
 
+#include <QMenu>
 #include <QtWidgets/QGraphicsSceneMoveEvent>
 #include <QtWidgets/QFileDialog>
 #include <QtCore/QByteArray>
@@ -50,6 +51,8 @@ FlowScene(std::shared_ptr<DataModelRegistry> registry,
   connect(this, &FlowScene::connectionCreated, this, &FlowScene::setupConnectionSignals);
   connect(this, &FlowScene::connectionCreated, this, &FlowScene::sendConnectionCreatedToNodes);
   connect(this, &FlowScene::connectionDeleted, this, &FlowScene::sendConnectionDeletedToNodes);
+  connect(this, &FlowScene::nodeContextMenu  , this, &FlowScene::sceneContextMenuEvent);
+
 }
 
 FlowScene::
@@ -605,6 +608,24 @@ sendConnectionDeletedToNodes(Connection const& c)
 
   from->nodeDataModel()->outputConnectionDeleted(c);
   to->nodeDataModel()->inputConnectionDeleted(c);
+}
+
+void
+FlowScene::
+sceneContextMenuEvent(Node &node, const QPointF &pos)
+{
+    QMenu menu;
+    QAction *embedAction    = menu.addAction("Embed");
+    QAction *deembedAction  = menu.addAction("Deembed");
+    QGraphicsView *v = node.nodeGraphicsObject().scene()->views().first();
+    QPoint viewP = v->mapFromScene(pos);
+    QAction *selectedAction = menu.exec( v->viewport()->mapToGlobal(viewP) );
+    if(  selectedAction == embedAction  ){
+        node.nodeGraphicsObject().embedQWidget(true);
+    }
+    else if(selectedAction == deembedAction){
+        node.nodeGraphicsObject().embedQWidget(false);
+    }
 }
 
 
