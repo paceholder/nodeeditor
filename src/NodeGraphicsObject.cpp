@@ -29,6 +29,7 @@ NodeGraphicsObject(FlowScene &scene,
   , _node(node)
   , _locked(false)
   , _proxyWidget(nullptr)
+
 {
   _scene.addItem(this);
 
@@ -57,7 +58,7 @@ NodeGraphicsObject(FlowScene &scene,
 
   setZValue(0);
 
-  embedQWidget();
+  embedQWidget( true );
 
   // connect to the move signals to emit the move signals in FlowScene
   auto onMoveSlot = [this] {
@@ -93,27 +94,44 @@ node() const
 
 void
 NodeGraphicsObject::
-embedQWidget()
+embedQWidget( bool embed )
 {
-  NodeGeometry & geom = _node.nodeGeometry();
+    NodeGeometry & geom = _node.nodeGeometry();
+    _node.nodeDataModel()->setWembed( embed );
+    if (auto w = _node.nodeDataModel()->embeddedWidget())
+    {
+        if ( embed ){
+            if ( nullptr == _proxyWidget ) {
+                _proxyWidget = new QGraphicsProxyWidget(this);
+                w->setParent(nullptr);
 
-  if (auto w = _node.nodeDataModel()->embeddedWidget())
-  {
-    _proxyWidget = new QGraphicsProxyWidget(this);
+                _proxyWidget->setWidget(w);
 
-    _proxyWidget->setWidget(w);
+                _proxyWidget->setPreferredWidth(5);
+                geom.recalculateSize();
 
-    _proxyWidget->setPreferredWidth(5);
+                _proxyWidget->setPos(geom.widgetPosition());
 
-    geom.recalculateSize();
+                update();
 
-    _proxyWidget->setPos(geom.widgetPosition());
+                _proxyWidget->setOpacity(1.0);
+                _proxyWidget->setFlag(QGraphicsItem::ItemIgnoresParentOpacity);
+            }
 
-    update();
-
-    _proxyWidget->setOpacity(1.0);
-    _proxyWidget->setFlag(QGraphicsItem::ItemIgnoresParentOpacity);
-  }
+        }else{
+            if ( nullptr != _proxyWidget ){
+                _proxyWidget->setWidget(nullptr);
+                  QPoint pos = QCursor::pos();
+                delete _proxyWidget;
+                _proxyWidget = nullptr;
+                w->setWindowTitle(_node.nodeDataModel()->caption());
+                w->setWindowFlags(Qt::Widget);
+                w->move(pos.x(),pos.y());
+                w->show();
+                w->raise();
+            }
+        }
+    }
 }
 
 
@@ -345,6 +363,11 @@ hoverEnterEvent(QGraphicsSceneHoverEvent * event)
   // bring this node forward
   setZValue(1.0);
 
+  if (auto w = _node.nodeDataModel()->embeddedWidget())
+  {
+      w->raise();
+  }
+
   _node.nodeGeometry().setHovered(true);
   update();
   _scene.nodeHovered(node(), event->screenPos());
@@ -398,5 +421,7 @@ void
 NodeGraphicsObject::
 contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
 {
-  _scene.nodeContextMenu(node(), mapToScene(event->pos()));
+
+        _scene.nodeContextMenu(node(), mapToScene(event->pos()));
+
 }
