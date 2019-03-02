@@ -87,6 +87,13 @@ public:
     return ConnectionPolicy::Many;
   }
 
+  virtual
+  ConnectionPolicy
+  portInConnectionPolicy(PortIndex) const
+  {
+      return ConnectionPolicy::One;
+  }
+
   NodeStyle const&
   nodeStyle() const;
 
@@ -100,6 +107,11 @@ public:
   void
   setInData(std::shared_ptr<NodeData> nodeData,
             PortIndex port) = 0;
+
+  virtual
+  void
+  setInData(std::vector<std::shared_ptr<NodeData>> nodeData,
+            PortIndex port);
 
   virtual
   std::shared_ptr<NodeData>

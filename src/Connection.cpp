@@ -411,6 +411,12 @@ dataType(PortType portType) const
   Q_UNREACHABLE();
 }
 
+TypeConverter
+Connection::
+getTypeConverter() const
+{
+    return _converter;
+}
 
 void
 Connection::
@@ -422,16 +428,11 @@ setTypeConverter(TypeConverter converter)
 
 void
 Connection::
-propagateData(std::shared_ptr<NodeData> nodeData) const
+propagateData() const
 {
   if (_inNode)
   {
-    if (_converter)
-    {
-      nodeData = _converter(nodeData);
-    }
-
-    _inNode->propagateData(nodeData, _inPortIndex);
+    _inNode->propagateData(_inPortIndex);
   }
 }
 
@@ -440,7 +441,5 @@ void
 Connection::
 propagateEmptyData() const
 {
-  std::shared_ptr<NodeData> emptyData;
-
-  propagateData(emptyData);
+  propagateData();
 }
