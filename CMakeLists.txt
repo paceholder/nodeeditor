@@ -37,8 +37,7 @@ add_subdirectory(external)
 find_package(Qt5 5.3 COMPONENTS
              Core
              Widgets
-             Gui
-             OpenGL)
+             Gui)
 
 qt5_add_resources(RESOURCES ./resources/resources.qrc)
 
@@ -92,7 +91,6 @@ target_link_libraries(nodes
     Qt5::Core
     Qt5::Widgets
     Qt5::Gui
-    Qt5::OpenGL
 )
 
 target_compile_definitions(nodes
