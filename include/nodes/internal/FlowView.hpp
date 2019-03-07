@@ -29,11 +29,11 @@ public:
 
 public Q_SLOTS:
 
-  void scaleUp();
+  virtual void scaleUp();
 
-  void scaleDown();
+  virtual void scaleDown();
 
-  void deleteSelectedNodes();
+  virtual void deleteSelectedNodes();
 
 protected:
 
@@ -55,7 +55,7 @@ protected:
 
 protected:
 
-  FlowScene * scene();
+    FlowScene * scene();
 
 private:
 
