@@ -152,6 +152,7 @@ if(BUILD_TESTING)
   add_subdirectory(test)
 endif()
 
+if (NOT ${CMAKE_DISABLE_INSTALL_TARGETS})
 ###############
 # Installation
 ##
@@ -185,3 +186,4 @@ install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/NodeEditorConfig.cmake
   DESTINATION ${INSTALL_CONFIGDIR}
 )
+endif()
