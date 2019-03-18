@@ -2,6 +2,11 @@ language: cpp
 
 matrix:
   include:
+    - os: osx
+      osx_image: xcode8.3
+      compiler: clang
+      env: Qt5_DIR=/usr/local/opt/qt5/lib/cmake/Qt5
+
     - os: linux
       dist: xenial
       sudo: false
@@ -25,11 +30,6 @@ matrix:
             - ubuntu-toolchain-r-test
           packages:
             - g++-7
-
-    - os: osx
-      osx_image: xcode8.3
-      compiler: clang
-      env: Qt5_DIR=/usr/local/opt/qt5/lib/cmake/Qt5
 
 git:
   depth: 10
