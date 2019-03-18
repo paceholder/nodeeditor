@@ -40,8 +40,8 @@ before_install:
    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get update -qq ; fi
    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install build-essential libgl1-mesa-dev ; fi
    - if [[ "$QT" == "512" ]]; then sudo add-apt-repository ppa:beineri/opt-qt-5.12.1-xenial -y; fi
-   - if [[ "$QT" == "512" ]]; then sudo apt-get update -qq; fi
-   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get -yqq install qt512base; source /opt/qt512/bin/qt512-env.sh; fi
+   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get update -qq; fi
+   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get -yqq install qt${QT}base; source /opt/qt${QT}/bin/qt${QT}-env.sh; fi
 
 script:
   - mkdir build
