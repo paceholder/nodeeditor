@@ -4,14 +4,14 @@ environment:
   matrix:
     - GENERATOR : "Visual Studio 15 2017 Win64"
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-      QTDIR: C:\Qt\5.11.2\msvc2017_64
+      QTDIR: C:\Qt\5.12.1\msvc2017_64
       PLATFORM: x64
     - GENERATOR : "Visual Studio 15 2017"
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-      QTDIR: C:\Qt\5.11.2\msvc2015
+      QTDIR: C:\Qt\5.12.1\msvc2015
       PLATFORM: Win32
     - GENERATOR : "MinGW Makefiles"
-      QTDIR: C:\Qt\5.11.2\mingw53_32
+      QTDIR: C:\Qt\5.11.3\mingw53_32
       PLATFORM: x86
       CMAKE_CXX_FLAGS_INIT: -DCATCH_CONFIG_NO_CPP11_TO_STRING
 
