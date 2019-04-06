@@ -99,7 +99,6 @@ ConnectionGeometry::
 pointsC1C2() const
 {
   double xDistance = _in.x() - _out.x();
-  //double yDistance = _in.y() - _out.y() - 100;
 
   double defaultOffset = 200;
 
@@ -111,16 +110,13 @@ pointsC1C2() const
 
   if (xDistance <= 0)
   {
-    verticalOffset = -minimum;
+    double yDistance = _in.y() - _out.y();
+    double vector  =  yDistance < 0 ? -1.0 : 1.0;
+    double minimum = qMin(defaultOffset, std::abs(yDistance));
+    verticalOffset = minimum * vector;
 
     ratio1 = 1.0;
   }
-
-  //double verticalOffset2 = verticalOffset;
-  //if (xDistance <= 0)
-  //verticalOffset2 = qMin(defaultOffset, std::abs(yDistance));
-  //auto sign = [](double d) { return d > 0.0 ? +1.0 : -1.0; };
-  //verticalOffset2 = 0.0;
 
   QPointF c1(_out.x() + minimum * ratio1,
              _out.y() + verticalOffset);
