@@ -98,31 +98,34 @@ std::pair<QPointF, QPointF>
 ConnectionGeometry::
 pointsC1C2() const
 {
-double xDistance = _in.x() - _out.x();
+  const double defaultOffset = 200;
 
-  double defaultOffset = 200;
+  double xDistance = _in.x() - _out.x();
 
-  double minimum = qMin(defaultOffset, std::abs(xDistance));
+  double horizontalOffset = qMin(defaultOffset, std::abs(xDistance));
 
   double verticalOffset = 0;
 
-  double ratio1 = 0.5;
+  double ratioX = 0.5;
 
   if (xDistance <= 0)
   {
     double yDistance = _in.y() - _out.y() + 20;
-    double vector  =  yDistance < 0 ? -1.0 : 1.0;
-    double minimum = qMin(defaultOffset, std::abs(yDistance));
-    verticalOffset = minimum * vector;
 
-    ratio1 = 1.0;
+    double vector = yDistance < 0 ? -1.0 : 1.0;
+
+    verticalOffset = qMin(defaultOffset, std::abs(yDistance)) * vector;
+
+    ratioX = 1.0;
   }
 
-  QPointF c1(_out.x() + minimum * ratio1,
-             _out.y() + verticalOffset * ratio1);
+  horizontalOffset *= ratioX;
 
-  QPointF c2(_in.x() - minimum * ratio1,
-             _in.y() - verticalOffset * ratio1);
+  QPointF c1(_out.x() + horizontalOffset,
+             _out.y() + verticalOffset);
+
+  QPointF c2(_in.x() - horizontalOffset,
+             _in.y() - verticalOffset);
 
   return std::make_pair(c1, c2);
 }
