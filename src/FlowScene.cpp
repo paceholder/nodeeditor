@@ -50,6 +50,15 @@ FlowScene(std::shared_ptr<DataModelRegistry> registry,
   connect(this, &FlowScene::connectionCreated, this, &FlowScene::setupConnectionSignals);
   connect(this, &FlowScene::connectionCreated, this, &FlowScene::sendConnectionCreatedToNodes);
   connect(this, &FlowScene::connectionDeleted, this, &FlowScene::sendConnectionDeletedToNodes);
+
+  resetHistory();
+  updateHistory();
+
+  auto updateLamda = [this](Node&, const QPointF&){
+     updateHistory();
+  };
+
+  connect(this, &FlowScene::nodeMoveFinished, this, updateLamda);
 }
 
 FlowScene::
@@ -255,6 +264,41 @@ removeNode(Node& node)
   }
 
   _nodes.erase(node.id());
+}
+
+QUuid FlowScene::pasteNode(const QJsonObject& nodeJson)
+{
+   QString modelName = nodeJson["model"].toObject()["name"].toString();
+   auto dataModel = registry().create(modelName);
+
+   if (!dataModel)
+      throw std::logic_error(std::string("No registered model with name ") +
+                             modelName.toLocal8Bit().data());
+
+   auto node = std::make_unique<Node>(std::move(dataModel));
+   auto ngo  = std::make_unique<NodeGraphicsObject>(*this, *node);
+
+
+   node->setGraphicsObject(std::move(ngo));
+
+   QUuid newId = QUuid::createUuid();
+   node->paste(nodeJson, newId);
+
+   auto nodePtr = node.get();
+   _nodes[node->id()] = std::move(node);
+   nodeCreated(*nodePtr);
+   return newId;
+}
+
+void FlowScene::pasteConnection(const QJsonObject& connectionJson, QUuid newIn, QUuid newOut)
+{
+   PortIndex portIndexIn  = connectionJson["in_index"].toInt();
+   PortIndex portIndexOut = connectionJson["out_index"].toInt();
+
+   auto nodeIn  = _nodes[newIn].get();
+   auto nodeOut = _nodes[newOut].get();
+
+   createConnection(*nodeIn, portIndexIn, *nodeOut, portIndexOut);
 }
 
 
@@ -543,7 +587,6 @@ saveToMemory() const
   return document.toJson();
 }
 
-
 void
 FlowScene::
 loadFromMemory(const QByteArray& data)
@@ -563,6 +606,58 @@ loadFromMemory(const QByteArray& data)
   {
     restoreConnection(connection.toObject());
   }
+}
+
+void FlowScene::undo()
+{
+   if(_historyInx > 1)
+   {
+      _writeToHistory = false;
+      clearScene();
+      --_historyInx;
+      loadFromMemory(_history[_historyInx - 1].data);
+      _writeToHistory = true;
+   }
+}
+
+void FlowScene::redo()
+{
+   _writeToHistory = false;
+   if(_historyInx < _history.size())
+   {
+      clearScene();
+      loadFromMemory(_history[_historyInx].data);
+      ++_historyInx;
+   }
+   _writeToHistory = true;
+}
+
+void FlowScene::updateHistory()
+{
+   if(_writeToHistory)
+   {
+      SceneHistory sh;
+      sh.data = saveToMemory();
+
+      if(_historyInx < _history.size())
+      {
+         _history.resize(_historyInx);
+         _history.push_back(sh);
+      }
+      else
+      {
+         _history.push_back(sh);
+      }
+
+      ++_historyInx;
+   }
+}
+
+void FlowScene::resetHistory()
+{
+   _historyInx = 0;
+   _writeToHistory = true;
+   _history.clear();
 }
 
 

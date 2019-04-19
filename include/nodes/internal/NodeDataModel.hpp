@@ -59,6 +59,9 @@ public:
   virtual QString
   name() const = 0;
 
+  void
+  setToolTipText(const QString& toolTipText);
+
 public:
 
   QJsonObject
@@ -124,6 +127,9 @@ public:
   virtual
   NodePainterDelegate* painterDelegate() const { return nullptr; }
 
+  QString
+  toolTipText() const { return _toolTipText; }
+
 public Q_SLOTS:
 
   virtual void
@@ -162,8 +168,12 @@ Q_SIGNALS:
 
   void embeddedWidgetSizeUpdated();
 
+  void setToolTipTextSignal(QString text);
+
 private:
 
   NodeStyle _nodeStyle;
+  QString _toolTipText;
+
 };
 }

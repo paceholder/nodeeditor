@@ -116,7 +116,6 @@ public:
       case PortType::None:
         break;
     }
-    // FIXME: control may reach end of non-void function [-Wreturn-type]
     return NodeDataType();
   }
 

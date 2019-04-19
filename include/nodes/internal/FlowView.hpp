@@ -25,6 +25,12 @@ public:
 
   QAction* deleteSelectionAction() const;
 
+  void duplicateSelectedNode();
+
+  void copySelectedNodes();
+
+  void pasteSelectedNodes();
+
   void setScene(FlowScene *scene);
 
 public Q_SLOTS:
@@ -61,6 +67,11 @@ private:
 
   QAction* _clearSelectionAction;
   QAction* _deleteSelectionAction;
+  QAction* _duplicateSelectionAction;
+  QAction* _copymultiplenodes;
+  QAction* _pastemultiplenodes;
+  QAction* _undoAction;
+  QAction* _redoAction;
 
   QPointF _clickPos;
 

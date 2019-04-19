@@ -9,7 +9,13 @@ NodeDataModel::
 NodeDataModel()
   : _nodeStyle(StyleCollection::nodeStyle())
 {
-  // Derived classes can initialize specific style here
+   // Derived classes can initialize specific style here
+}
+
+void NodeDataModel::setToolTipText(const QString& toolTipText)
+{
+   _toolTipText = toolTipText;
+   Q_EMIT setToolTipTextSignal(toolTipText);
 }
 
 

@@ -24,6 +24,12 @@ class Connection;
 class ConnectionGraphicsObject;
 class NodeStyle;
 
+// TODO controllare ci sia la forward
+struct SceneHistory
+{
+   QByteArray data;
+};
+
 /// Scene holds connections and nodes.
 class NODE_EDITOR_PUBLIC FlowScene
   : public QGraphicsScene
@@ -62,6 +68,10 @@ public:
 
   void removeNode(Node& node);
 
+  QUuid pasteNode(const QJsonObject &json);
+
+  void pasteConnection(QJsonObject const &connectionJson, QUuid newIn, QUuid newOut);
+
   DataModelRegistry&registry() const;
 
   void setRegistry(std::shared_ptr<DataModelRegistry> registry);
@@ -98,6 +108,14 @@ public:
 
   void loadFromMemory(const QByteArray& data);
 
+  void undo();
+
+  void redo();
+
+  void updateHistory();
+
+  void resetHistory();
+
 Q_SIGNALS:
 
   /**
@@ -120,6 +138,8 @@ Q_SIGNALS:
 
   void nodeMoved(Node& n, const QPointF& newLocation);
 
+  void nodeMoveFinished(Node& n, const QPointF& newLocation);
+
   void nodeDoubleClicked(Node& n);
 
   void connectionHovered(Connection& c, QPoint screenPos);
@@ -140,6 +160,10 @@ private:
   std::unordered_map<QUuid, SharedConnection> _connections;
   std::unordered_map<QUuid, UniqueNode>       _nodes;
   std::shared_ptr<DataModelRegistry>          _registry;
+
+  unsigned int _historyInx;
+  bool _writeToHistory;
+  std::vector< SceneHistory > _history;
 
 private Q_SLOTS:
 

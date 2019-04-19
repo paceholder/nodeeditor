@@ -170,6 +170,8 @@ tryConnect() const
     outNode->onDataUpdated(outPortIndex);
   }
 
+  _scene->updateHistory();
+
   return true;
 }
 
@@ -198,6 +200,8 @@ disconnect(PortType portToDisconnect) const
   _connection->setRequiredPort(portToDisconnect);
 
   _connection->getConnectionGraphicsObject().grabMouse();
+
+  _scene->updateHistory();
 
   return true;
 }
