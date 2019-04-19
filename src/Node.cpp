@@ -63,6 +63,22 @@ save() const
   return nodeJson;
 }
 
+QJsonObject
+Node::
+copyWithNewID(QUuid newId) const
+{
+   QJsonObject nodeJson;
+
+   nodeJson["id"] = newId.toString();
+   nodeJson["model"] = _nodeDataModel->save();
+
+   QJsonObject obj;
+   obj["x"] = _nodeGraphicsObject->pos().x();
+   obj["y"] = _nodeGraphicsObject->pos().y();
+   nodeJson["position"] = obj;
+
+   return nodeJson;
+}
 
 void
 Node::
@@ -78,12 +94,31 @@ restore(QJsonObject const& json)
   _nodeDataModel->restore(json["model"].toObject());
 }
 
+void
+Node::
+paste(const QJsonObject& json, QUuid ID)
+{
+   _uid = ID;
+
+   QJsonObject positionJson = json["position"].toObject();
+   QPointF     point(positionJson["x"].toDouble(),
+                 positionJson["y"].toDouble());
+   _nodeGraphicsObject->setPos(point);
+
+   _nodeDataModel->restore(json["model"].toObject());
+}
+
 
 QUuid
 Node::
 id() const
 {
-  return _uid;
+   return _uid;
+}
+
+void Node::setId(QUuid id)
+{
+   _uid = id;
 }
 
 
@@ -139,6 +174,8 @@ setGraphicsObject(std::unique_ptr<NodeGraphicsObject>&& graphics)
   _nodeGraphicsObject = std::move(graphics);
 
   _nodeGeometry.recalculateSize();
+
+  nodeGraphicsObject().setToolTip(_nodeDataModel->toolTipText());
 }
 
 

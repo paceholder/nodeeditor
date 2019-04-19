@@ -58,6 +58,9 @@ public:
   QJsonObject
   save() const override;
 
+  QJsonObject
+  copyWithNewID(QUuid in, QUuid out);
+
 public:
 
   QUuid

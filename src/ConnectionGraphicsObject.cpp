@@ -218,6 +218,7 @@ mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
   {
     _scene.deleteConnection(_connection);
   }
+
 }
 
 
