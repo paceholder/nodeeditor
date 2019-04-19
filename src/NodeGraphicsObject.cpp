@@ -266,11 +266,11 @@ mousePressEvent(QGraphicsSceneMouseEvent * event)
   }
 }
 
-
 void
 NodeGraphicsObject::
 mouseMoveEvent(QGraphicsSceneMouseEvent * event)
 {
+  _nodeMoving = true;
   auto & geom  = _node.nodeGeometry();
   auto & state = _node.nodeState();
 
@@ -330,6 +330,12 @@ mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 
   // position connections precisely after fast node move
   moveConnections();
+
+  if(_nodeMoving){
+     _nodeMoving = false;
+     _scene.updateHistory();
+  }
+
 }
 
 

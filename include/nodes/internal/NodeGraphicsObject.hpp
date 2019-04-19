@@ -99,6 +99,8 @@ private:
 
   bool _locked;
 
+  bool _nodeMoving;
+
   // either nullptr or owned by parent QGraphicsItem
   QGraphicsProxyWidget * _proxyWidget;
 };

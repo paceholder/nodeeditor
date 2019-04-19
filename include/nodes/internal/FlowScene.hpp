@@ -24,7 +24,6 @@ class Connection;
 class ConnectionGraphicsObject;
 class NodeStyle;
 
-// TODO controllare ci sia la forward
 struct SceneHistory
 {
    QByteArray data;
@@ -42,7 +41,7 @@ public:
 
   FlowScene(QObject * parent = Q_NULLPTR);
 
-  ~FlowScene();
+  ~FlowScene() override;
 
 public:
 
