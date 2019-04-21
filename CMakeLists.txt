@@ -58,6 +58,7 @@ set(CPP_SOURCE_FILES
   src/FlowScene.cpp
   src/FlowView.cpp
   src/FlowViewStyle.cpp
+  src/ModelSelectionWidget.cpp
   src/Node.cpp
   src/NodeConnectionInteraction.cpp
   src/NodeDataModel.cpp
