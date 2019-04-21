@@ -6,7 +6,7 @@
 #include <QtTest>
 #include <QtWidgets/QTreeWidget>
 
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 
 #include "ApplicationSetup.hpp"
 #include "Stringify.hpp"
