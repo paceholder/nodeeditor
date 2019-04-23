@@ -244,11 +244,11 @@ widgetPosition() const
     if (_dataModel->validationState() != NodeValidationState::Valid)
     {
       return QPointF(_spacing + portWidth(PortType::In),
-                     (captionHeight() + _height - validationHeight() - _spacing - w->height()) / 2.0);
+                      (static_cast<int>(captionHeight() + _height - validationHeight() - _spacing) - w->height()) / 2.0);
     }
 
     return QPointF(_spacing + portWidth(PortType::In),
-                   (captionHeight() + _height - w->height()) / 2.0);
+                   (static_cast<int>(captionHeight() + _height) - w->height()) / 2.0);
   }
 
   return QPointF();
