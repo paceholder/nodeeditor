@@ -4,11 +4,11 @@ environment:
   matrix:
     - GENERATOR : "Visual Studio 15 2017 Win64"
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-      QTDIR: C:\Qt\5.12.1\msvc2017_64
+      QTDIR: C:\Qt\5.12.2\msvc2017_64
       PLATFORM: x64
     - GENERATOR : "Visual Studio 15 2017"
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-      QTDIR: C:\Qt\5.12.1\msvc2017
+      QTDIR: C:\Qt\5.12.2\msvc2017
       PLATFORM: Win32
     - GENERATOR : "MinGW Makefiles"
       QTDIR: C:\Qt\5.11.3\mingw53_32
