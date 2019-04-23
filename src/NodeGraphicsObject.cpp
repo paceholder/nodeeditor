@@ -70,7 +70,6 @@ NodeGraphicsObject(FlowScene &scene,
           this, [this](QString toolTipText ){
              setToolTip(toolTipText);
   });
-
 }
 
 
@@ -333,7 +332,7 @@ mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 
   if(_nodeMoving){
      _nodeMoving = false;
-     _scene.updateHistory();
+     _scene.nodeMoveFinished(_node, event->pos());
   }
 
 }
