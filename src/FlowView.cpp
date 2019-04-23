@@ -86,19 +86,19 @@ FlowView::
 duplicateSelectedNode()
 {
    //Get Bounds of all the selected items
-   double minx = 10000000000;
-   double miny = 10000000000;
-   double maxx = -1000000000;
-   double maxy = -1000000000;
+   double minx = std::numeric_limits<double>::max();
+   double miny = std::numeric_limits<double>::max();
+   double maxx = std::numeric_limits<double>::min();
+   double maxy = std::numeric_limits<double>::min();
    for (QGraphicsItem * item : _scene->selectedItems())
    {
       if (auto n = qgraphicsitem_cast<NodeGraphicsObject*>(item))
       {
          QPointF pos = n->pos();
-         if(pos.x() < minx) minx = pos.x();
-         if(pos.y() < miny) miny = pos.y();
-         if(pos.x() > maxx) maxx = pos.x();
-         if(pos.y() > maxy) maxy = pos.y();
+         minx = std::min(minx, pos.x());
+         miny = std::min(miny, pos.y());
+         maxx = std::max(maxx, pos.x());
+         maxy = std::max(maxy, pos.y());
       }
    }
 
@@ -133,10 +133,6 @@ duplicateSelectedNode()
 
             node.nodeGraphicsObject().setPos(pos);
          }
-         else
-         {
-            qDebug() << "Model not found";
-         }
       }
    }
 
@@ -146,8 +142,6 @@ duplicateSelectedNode()
    {
       if (auto c = qgraphicsitem_cast<ConnectionGraphicsObject*>(item))
       {
-         //if(c->connection().connectionState().)
-
          Node* nodeIn = c->connection().getNode(PortType::In);
          PortIndex portIndexIn = c->connection().getPortIndex(PortType::In);
          Node* nodeOut = c->connection().getNode(PortType::Out);
@@ -176,7 +170,6 @@ duplicateSelectedNode()
       }
    }
 
-
    //reset selection to nodes created
    _scene->clearSelection();
    for(auto & createdNode : createdNodes)
@@ -188,7 +181,6 @@ duplicateSelectedNode()
    {
       createdConnection->getConnectionGraphicsObject().setSelected(true);
    }
-
 
    if(createdNodes.size() > 0)
       _scene->updateHistory();
@@ -234,15 +226,15 @@ copySelectedNodes()
    QJsonDocument document(sceneJson);
    std::string json = document.toJson().toStdString();
 
-   QClipboard *p_Clipboard = QApplication::clipboard();
-   p_Clipboard->setText( QString::fromStdString(json));
+   QClipboard *clipboard = QApplication::clipboard();
+   clipboard->setText( QString::fromStdString(json));
 }
 
 void
 FlowView::
 pasteSelectedNodes() {
-   QClipboard *p_Clipboard = QApplication::clipboard();
-   QByteArray text = p_Clipboard->text().toUtf8();
+   QClipboard *clipboard = QApplication::clipboard();
+   QByteArray text = clipboard->text().toUtf8();
 
    QJsonObject const jsonDocument = QJsonDocument::fromJson(text).object();
    QJsonArray nodesJsonArray = jsonDocument["nodes"].toArray();
