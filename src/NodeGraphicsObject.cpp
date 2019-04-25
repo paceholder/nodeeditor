@@ -124,6 +124,7 @@ embedQWidget( bool embed )
                   QPoint pos = QCursor::pos();
                 delete _proxyWidget;
                 _proxyWidget = nullptr;
+                connect(this,SIGNAL(destroyed()), w, SLOT(deleteLater()));
                 w->setWindowTitle(_node.nodeDataModel()->caption());
                 w->setWindowFlags(Qt::Widget);
                 w->move(pos.x(),pos.y());
