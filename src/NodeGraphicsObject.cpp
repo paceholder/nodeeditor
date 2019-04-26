@@ -121,18 +121,24 @@ embedQWidget( bool embed )
         }else{
             if ( nullptr != _proxyWidget ){
                 _proxyWidget->setWidget(nullptr);
-                  QPoint pos = QCursor::pos();
-                delete _proxyWidget;
+                QPoint pos = QCursor::pos();
+                _proxyWidget->deleteLater();
                 _proxyWidget = nullptr;
                 connect(this,SIGNAL(destroyed()), w, SLOT(deleteLater()));
+                geom.recalculateSize();
+                update();
                 w->setWindowTitle(_node.nodeDataModel()->caption());
                 w->setWindowFlags(Qt::Widget);
                 w->move(pos.x(),pos.y());
                 w->show();
                 w->raise();
+
             }
         }
     }
+
+    moveConnections();
+    scene()->update();
 }
 
 
