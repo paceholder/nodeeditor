@@ -95,6 +95,7 @@ node() const
   return _node;
 }
 
+
 void
 NodeGraphicsObject::
 embedQWidget()
@@ -143,22 +144,26 @@ moveConnections() const
 {
   NodeState const & nodeState = _node.nodeState();
 
-  for(PortType portType: {PortType::In, PortType::Out})
+  for (PortType portType: {PortType::In, PortType::Out})
   {
     auto const & connectionEntries =
-        nodeState.getEntries(portType);
+      nodeState.getEntries(portType);
 
     for (auto const & connections : connectionEntries)
     {
       for (auto & con : connections)
         con.second->getConnectionGraphicsObject().move();
     }
-  };
+  }
 }
 
-void NodeGraphicsObject::lock(bool locked)
+
+void
+NodeGraphicsObject::
+lock(bool locked)
 {
   _locked = locked;
+
   setFlag(QGraphicsItem::ItemIsMovable, !locked);
   setFlag(QGraphicsItem::ItemIsFocusable, !locked);
   setFlag(QGraphicsItem::ItemIsSelectable, !locked);
@@ -194,7 +199,8 @@ void
 NodeGraphicsObject::
 mousePressEvent(QGraphicsSceneMouseEvent * event)
 {
-  if(_locked) return;
+  if (_locked)
+    return;
 
   // deselect all other items after this one is selected
   if (!isSelected() &&
@@ -203,20 +209,21 @@ mousePressEvent(QGraphicsSceneMouseEvent * event)
     _scene.clearSelection();
   }
 
-  for(PortType portToCheck: {PortType::In, PortType::Out})
+  for (PortType portToCheck: {PortType::In, PortType::Out})
   {
-    NodeGeometry & nodeGeometry = _node.nodeGeometry();
+    NodeGeometry const & nodeGeometry = _node.nodeGeometry();
 
     // TODO do not pass sceneTransform
-    int portIndex = nodeGeometry.checkHitScenePoint(portToCheck,
+    int const portIndex = nodeGeometry.checkHitScenePoint(portToCheck,
                                                     event->scenePos(),
                                                     sceneTransform());
+
     if (portIndex != INVALID)
     {
       NodeState const & nodeState = _node.nodeState();
 
       std::unordered_map<QUuid, Connection*> connections =
-          nodeState.connections(portToCheck, portIndex);
+        nodeState.connections(portToCheck, portIndex);
 
       // start dragging existing connection
       if (!connections.empty() && portToCheck == PortType::In)
@@ -231,24 +238,24 @@ mousePressEvent(QGraphicsSceneMouseEvent * event)
       {
         if (portToCheck == PortType::Out)
         {
-          const auto outPolicy = _node.nodeDataModel()->portOutConnectionPolicy(portIndex);
+          auto const outPolicy = _node.nodeDataModel()->portOutConnectionPolicy(portIndex);
           if (!connections.empty() &&
               outPolicy == NodeDataModel::ConnectionPolicy::One)
           {
             _scene.deleteConnection( *connections.begin()->second );
           }
-
-          // todo add to FlowScene
-          auto connection = _scene.createConnection(portToCheck,
-                                                    _node,
-                                                    portIndex);
-
-          _node.nodeState().setConnection(portToCheck,
-                                          portIndex,
-                                          *connection);
-
-          connection->getConnectionGraphicsObject().grabMouse();
         }
+
+        // todo add to FlowScene
+        auto connection = _scene.createConnection(portToCheck,
+                                                  _node,
+                                                  portIndex);
+
+        _node.nodeState().setConnection(portToCheck,
+                                        portIndex,
+                                        *connection);
+
+        connection->getConnectionGraphicsObject().grabMouse();
       }
     }
   }
@@ -352,6 +359,7 @@ hoverEnterEvent(QGraphicsSceneHoverEvent * event)
       item->setZValue(0.0);
     }
   }
+
   // bring this node forward
   setZValue(1.0);
 
@@ -380,7 +388,6 @@ hoverMoveEvent(QGraphicsSceneHoverEvent * event)
   auto pos    = event->pos();
   auto & geom = _node.nodeGeometry();
 
-
   if (_node.nodeDataModel()->resizable() &&
       geom.resizeRect().contains(QPoint(pos.x(), pos.y())))
   {
@@ -403,6 +410,7 @@ mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
 
   _scene.nodeDoubleClicked(node());
 }
+
 
 void
 NodeGraphicsObject::
