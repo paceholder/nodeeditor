@@ -415,6 +415,21 @@ connections() const
 
 std::vector<Node*>
 FlowScene::
+allNodes() const
+{
+  std::vector<Node*> nodes;
+
+  std::transform(_nodes.begin(),
+                 _nodes.end(),
+                 std::back_inserter(nodes),
+                 [](std::pair<QUuid const, std::unique_ptr<Node>> const & p) { return p.second.get(); });
+
+  return nodes;
+}
+
+
+std::vector<Node*>
+FlowScene::
 selectedNodes() const
 {
   QList<QGraphicsItem*> graphicsItems = selectedItems();
