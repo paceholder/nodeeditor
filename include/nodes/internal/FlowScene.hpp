@@ -52,7 +52,7 @@ public:
                    PortIndex portIndexOut,
                    TypeConverter const & converter = TypeConverter{});
 
-  std::shared_ptr<Connection>restoreConnection(QJsonObject const &connectionJson);
+  std::shared_ptr<Connection> restoreConnection(QJsonObject const &connectionJson);
 
   void deleteConnection(Connection& connection);
 
