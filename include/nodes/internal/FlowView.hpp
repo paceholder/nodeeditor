@@ -28,11 +28,15 @@ public:
 
   QAction* deleteSelectionAction() const;
 
-  void duplicateSelectedNode();
+  QAction* duplicateSelectionAction() const;
 
-  void copySelectedNodes();
+  QAction* copymultiplenodes() const;
 
-  void pasteSelectedNodes();
+  QAction* pastemultiplenodes() const;
+
+  QAction* undoAction() const;
+
+  QAction* redoAction() const;
 
   void setScene(FlowScene *scene);
 
@@ -43,6 +47,12 @@ public Q_SLOTS:
   void scaleDown();
 
   void deleteSelectedNodes();
+
+  void duplicateSelectedNode();
+
+  void copySelectedNodes();
+
+  void pasteSelectedNodes();
 
 protected:
 

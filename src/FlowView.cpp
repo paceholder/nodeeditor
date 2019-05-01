@@ -36,6 +36,11 @@ FlowView(QWidget *parent)
   : QGraphicsView(parent)
   , _clearSelectionAction(Q_NULLPTR)
   , _deleteSelectionAction(Q_NULLPTR)
+  , _duplicateSelectionAction(Q_NULLPTR)
+  , _copymultiplenodes(Q_NULLPTR)
+  , _pastemultiplenodes(Q_NULLPTR)
+  , _undoAction(Q_NULLPTR)
+  , _redoAction(Q_NULLPTR)
   , _scene(Q_NULLPTR)
 {
   setDragMode(QGraphicsView::ScrollHandDrag);
@@ -53,8 +58,6 @@ FlowView(QWidget *parent)
   setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
 
   setCacheMode(QGraphicsView::CacheBackground);
-
-  //setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
 }
 
 
@@ -79,6 +82,34 @@ FlowView::
 deleteSelectionAction() const
 {
    return _deleteSelectionAction;
+}
+
+QAction*
+FlowView::
+duplicateSelectionAction() const
+{
+   return _duplicateSelectionAction;
+}
+
+QAction*
+FlowView::
+pastemultiplenodes() const
+{
+   return _pastemultiplenodes;
+}
+
+QAction*
+FlowView::
+undoAction() const
+{
+   return _undoAction;
+}
+
+QAction*
+FlowView::
+redoAction() const
+{
+   return _redoAction;
 }
 
 void
@@ -287,30 +318,35 @@ setScene(FlowScene *scene)
   connect(_deleteSelectionAction, &QAction::triggered, this, &FlowView::deleteSelectedNodes);
   addAction(_deleteSelectionAction);
 
+  delete _duplicateSelectionAction;
   _duplicateSelectionAction = new QAction(QStringLiteral("Duplicate Selection"), this);
   _duplicateSelectionAction->setShortcut(QKeySequence(tr("Ctrl+D")));
   _duplicateSelectionAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
   connect(_duplicateSelectionAction, &QAction::triggered, this, &FlowView::duplicateSelectedNode);
   addAction(_duplicateSelectionAction);
 
+  delete  _copymultiplenodes;
   _copymultiplenodes = new QAction(QStringLiteral("Copy Multiple Nodes"), this);
   _copymultiplenodes->setShortcut(QKeySequence(tr("Ctrl+C")));
   _copymultiplenodes->setShortcutContext(Qt::WidgetWithChildrenShortcut);
   connect(_copymultiplenodes, &QAction::triggered, this, &FlowView::copySelectedNodes);
   addAction(_copymultiplenodes);
 
+  delete _pastemultiplenodes;
   _pastemultiplenodes = new QAction(QStringLiteral("Paste Multiple Nodes"), this);
   _pastemultiplenodes->setShortcut(QKeySequence(tr("Ctrl+V")));
   _pastemultiplenodes->setShortcutContext(Qt::WidgetWithChildrenShortcut);
   connect(_pastemultiplenodes, &QAction::triggered, this, &FlowView::pasteSelectedNodes);
   addAction(_pastemultiplenodes);
 
+  delete _undoAction;
   _undoAction = new QAction(QStringLiteral("Undo"), this);
   _undoAction->setShortcut(QKeySequence(tr("Ctrl+Z")));
   _undoAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
   connect(_undoAction, &QAction::triggered, _scene, &FlowScene::undo);
   addAction(_undoAction);
 
+  delete _redoAction;
   _redoAction = new QAction(QStringLiteral("Redo"), this);
   _redoAction->setShortcut(QKeySequence(tr("Ctrl+Y")));
   _redoAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
