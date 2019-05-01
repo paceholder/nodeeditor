@@ -453,7 +453,21 @@ std::unordered_map<QUuid, std::shared_ptr<Connection> > const &
 FlowScene::
 connections() const
 {
-  return _connections;
+   return _connections;
+}
+
+std::vector<QtNodes::Node*>
+FlowScene::
+allNodes() const
+{
+   std::vector<Node*> nodes;
+
+    std::transform(_nodes.begin(),
+                  _nodes.end(),
+                  std::back_inserter(nodes),
+                  [](std::pair<QUuid const, std::unique_ptr<Node>> const & p) { return p.second.get(); });
+
+    return nodes;
 }
 
 
