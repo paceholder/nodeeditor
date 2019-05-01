@@ -213,6 +213,7 @@ createNode(std::unique_ptr<NodeDataModel> && dataModel)
   auto nodePtr = node.get();
   _nodes[node->id()] = std::move(node);
 
+  nodePlaced(*nodePtr);
   nodeCreated(*nodePtr);
   return *nodePtr;
 }
