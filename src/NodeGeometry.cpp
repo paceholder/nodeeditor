@@ -90,6 +90,7 @@ recalculateSize() const
     _height = step * maxNumOfEntries;
   }
 
+  if(_dataModel->wembed())
   if (auto w = _dataModel->embeddedWidget())
   {
     _height = std::max(_height, static_cast<unsigned>(w->height()));
@@ -104,6 +105,7 @@ recalculateSize() const
            _outputPortWidth +
            2 * _spacing;
 
+  if(_dataModel->wembed())
   if (auto w = _dataModel->embeddedWidget())
   {
     _width += w->width();
