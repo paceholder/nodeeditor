@@ -33,7 +33,7 @@ nPorts(PortType portType) const
 }
 
 
-NodeDataType
+std::shared_ptr<NodeDataType>
 NumberDisplayDataModel::
 dataType(PortType, PortIndex) const
 {

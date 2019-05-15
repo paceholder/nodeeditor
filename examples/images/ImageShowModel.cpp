@@ -72,7 +72,7 @@ eventFilter(QObject *object, QEvent *event)
 }
 
 
-NodeDataType
+std::shared_ptr<NodeDataType>
 ImageShowModel::
 dataType(PortType, PortIndex) const
 {

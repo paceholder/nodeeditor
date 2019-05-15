@@ -17,7 +17,7 @@ nPorts(PortType portType) const
 }
 
 
-NodeDataType
+std::shared_ptr<NodeDataType>
 MathOperationDataModel::
 dataType(PortType, PortIndex) const
 {

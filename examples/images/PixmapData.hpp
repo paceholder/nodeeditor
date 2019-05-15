@@ -19,11 +19,11 @@ public:
     : _pixmap(pixmap)
   {}
 
-  NodeDataType
+  std::shared_ptr<NodeDataType>
   type() const override
   {
     //       id      name
-    return {"pixmap", "P"};
+    return std::make_shared<NodeDataType>("pixmap", "P");
   }
 
   QPixmap

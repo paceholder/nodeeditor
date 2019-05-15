@@ -92,9 +92,7 @@ reactingPortType() const
 }
 
 
-NodeDataType
-NodeState::
-reactingDataType() const
+std::shared_ptr<QtNodes::NodeDataType> NodeState::reactingDataType() const
 {
   return _reactingDataType;
 }
@@ -104,7 +102,7 @@ void
 NodeState::
 setReaction(ReactToConnectionState reaction,
             PortType reactingPortType,
-            NodeDataType reactingDataType)
+            std::shared_ptr<NodeDataType> reactingDataType)
 {
   _reaction = reaction;
 

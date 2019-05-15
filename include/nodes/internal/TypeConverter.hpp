@@ -16,6 +16,6 @@ using TypeConverter =
 
 // data-type-in, data-type-out
 using TypeConverterId =
-  std::pair<NodeDataType, NodeDataType>;
+  std::pair<NodeDataTypeId, NodeDataTypeId>;
 
 }

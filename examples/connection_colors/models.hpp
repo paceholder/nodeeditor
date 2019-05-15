@@ -19,11 +19,11 @@ class MyNodeData : public NodeData
 {
 public:
 
-  NodeDataType
+  std::shared_ptr<NodeDataType>
   type() const override
   {
-    return NodeDataType {"MyNodeData",
-                         "My Node Data"};
+    return std::make_shared<NodeDataType>("MyNodeData",
+                         "My Node Data");
   }
 };
 
@@ -31,11 +31,11 @@ class SimpleNodeData : public NodeData
 {
 public:
 
-  NodeDataType
+  std::shared_ptr<NodeDataType>
   type() const override
   {
-    return NodeDataType {"SimpleData",
-                         "Simple Data"};
+    return std::make_shared<NodeDataType>("SimpleData",
+                         "Simple Data");
   }
 };
 
@@ -87,7 +87,7 @@ public:
     return result;
   }
 
-  NodeDataType
+  std::shared_ptr<NodeDataType>
   dataType(PortType portType,
            PortIndex portIndex) const override
   {
@@ -117,7 +117,7 @@ public:
         break;
     }
     // FIXME: control may reach end of non-void function [-Wreturn-type]
-    return NodeDataType();
+    return std::make_shared<NodeDataType>();
   }
 
   std::shared_ptr<NodeData>

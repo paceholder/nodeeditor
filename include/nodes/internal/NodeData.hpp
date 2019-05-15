@@ -1,16 +1,59 @@
 #pragma once
 
 #include <QtCore/QString>
+#include <QtCore/QStringList>
 
 #include "Export.hpp"
+
+#include <memory>
 
 namespace QtNodes
 {
 
-struct NodeDataType
+using NodeDataTypeId = QString;
+
+class NodeDataType
 {
-  QString id;
-  QString name;
+public:
+  NodeDataType() = default;
+
+  virtual ~NodeDataType() = default;
+
+  NodeDataType(const QString& id, const QString& name)
+    : _id(id)
+    , _name(name)
+  {
+
+  }
+
+  virtual bool operator ==(const NodeDataType& other) const
+  {
+    return id() == other.id();
+  }
+
+  virtual bool operator !=(const NodeDataType& other) const
+  {
+    return !(*this == other);
+  }
+
+  virtual bool operator <(const NodeDataType& other) const
+  {
+    return id() < other.id();
+  }
+
+  NodeDataTypeId id() const
+  {
+    return _id;
+  }
+
+  QString name() const
+  {
+    return _name;
+  }
+
+private:
+  NodeDataTypeId _id;
+  QString _name;
 };
 
 /// Class represents data transferred between nodes.
@@ -24,10 +67,10 @@ public:
 
   virtual bool sameType(NodeData const &nodeData) const
   {
-    return (this->type().id == nodeData.type().id);
+    return (this->type() == nodeData.type());
   }
 
   /// Type for inner use
-  virtual NodeDataType type() const = 0;
+  virtual std::shared_ptr<NodeDataType> type() const = 0;
 };
 }

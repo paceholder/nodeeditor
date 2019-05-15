@@ -17,8 +17,8 @@ public:
     : _text(text)
   {}
 
-  NodeDataType type() const override
-  { return NodeDataType {"text", "Text"}; }
+  std::shared_ptr<NodeDataType> type() const override
+  { return std::make_shared<NodeDataType>("text", "Text"); }
 
   QString text() const { return _text; }
 

@@ -19,10 +19,10 @@ public:
     : _number(number)
   {}
 
-  NodeDataType type() const override
+  std::shared_ptr<NodeDataType> type() const override
   {
-    return NodeDataType {"integer",
-                         "Integer"};
+    return std::make_shared<NodeDataType>("integer",
+                         "Integer");
   }
 
   int number() const

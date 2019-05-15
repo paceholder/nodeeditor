@@ -145,15 +145,15 @@ drawConnectionPoints(QPainter* painter,
         {
           if (portType == PortType::In)
           {
-            typeConvertable = scene.registry().getTypeConverter(state.reactingDataType(), dataType) != nullptr;
+            typeConvertable = scene.registry().getTypeConverter(state.reactingDataType()->id(), dataType->id()) != nullptr;
           }
           else
           {
-            typeConvertable = scene.registry().getTypeConverter(dataType, state.reactingDataType()) != nullptr;
+            typeConvertable = scene.registry().getTypeConverter(dataType->id(), state.reactingDataType()->id()) != nullptr;
           }
         }
 
-        if (state.reactingDataType().id == dataType.id || typeConvertable)
+        if (*state.reactingDataType() == *dataType || typeConvertable)
         {
           double const thres = 40.0;
           r = (dist < thres) ?
@@ -171,7 +171,7 @@ drawConnectionPoints(QPainter* painter,
 
       if (connectionStyle.useDataDefinedColors())
       {
-        painter->setBrush(connectionStyle.normalColor(dataType.id));
+        painter->setBrush(connectionStyle.normalColor(dataType->id()));
       }
       else
       {
@@ -212,7 +212,7 @@ drawFilledConnectionPoints(QPainter * painter,
 
         if (connectionStyle.useDataDefinedColors())
         {
-          QColor const c = connectionStyle.normalColor(dataType.id);
+          QColor const c = connectionStyle.normalColor(dataType->id());
           painter->setPen(c);
           painter->setBrush(c);
         }
@@ -302,7 +302,7 @@ drawEntryLabels(QPainter * painter,
       }
       else
       {
-        s = model->dataType(portType, i).name;
+        s = model->dataType(portType, i)->name();
       }
 
       auto rect = metrics.boundingRect(s);

@@ -100,7 +100,7 @@ onTextEdited(QString const &string)
 }
 
 
-NodeDataType
+std::shared_ptr<NodeDataType>
 NumberSourceDataModel::
 dataType(PortType, PortIndex) const
 {
