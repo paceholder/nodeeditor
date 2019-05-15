@@ -39,7 +39,7 @@ nPorts(PortType portType) const
 }
 
 
-NodeDataType
+std::shared_ptr<NodeDataType>
 ModuloModel::
 dataType(PortType, PortIndex) const
 {

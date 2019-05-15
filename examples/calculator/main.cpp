@@ -45,14 +45,14 @@ registerDataModels()
 
   ret->registerModel<ModuloModel>("Operators");
 
-  ret->registerTypeConverter(std::make_pair(DecimalData().type(),
-                                            IntegerData().type()),
+  ret->registerTypeConverter(std::make_pair(DecimalData().type()->id(),
+                                            IntegerData().type()->id()),
                              TypeConverter{DecimalToIntegerConverter()});
 
 
 
-  ret->registerTypeConverter(std::make_pair(IntegerData().type(),
-                                            DecimalData().type()),
+  ret->registerTypeConverter(std::make_pair(IntegerData().type()->id(),
+                                            DecimalData().type()->id()),
                              TypeConverter{IntegerToDecimalConverter()});
 
   return ret;

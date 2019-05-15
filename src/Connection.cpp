@@ -100,9 +100,9 @@ save() const
       auto getTypeJson = [this](PortType type)
       {
         QJsonObject typeJson;
-        NodeDataType nodeType = this->dataType(type);
-        typeJson["id"] = nodeType.id;
-        typeJson["name"] = nodeType.name;
+        auto nodeType = this->dataType(type);
+        typeJson["id"] = nodeType->id();
+        typeJson["name"] = nodeType->name();
 
         return typeJson;
       };
@@ -369,7 +369,7 @@ clearNode(PortType portType)
 }
 
 
-NodeDataType
+std::shared_ptr<NodeDataType>
 Connection::
 dataType(PortType portType) const
 {

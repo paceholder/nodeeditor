@@ -45,7 +45,7 @@ public:
   unsigned int
   nPorts(PortType portType) const override;
 
-  NodeDataType
+  std::shared_ptr<NodeDataType>
   dataType(PortType portType,
            PortIndex portIndex) const override;
 

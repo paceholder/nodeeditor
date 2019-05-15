@@ -64,15 +64,14 @@ public:
   PortType
   reactingPortType() const;
 
-  NodeDataType
+  std::shared_ptr<NodeDataType>
   reactingDataType() const;
 
   void
   setReaction(ReactToConnectionState reaction,
               PortType reactingPortType = PortType::None,
-
-              NodeDataType reactingDataType =
-                NodeDataType());
+              std::shared_ptr<NodeDataType> reactingDataType =
+                std::make_shared<NodeDataType>());
 
   bool
   isReacting() const;
@@ -90,7 +89,7 @@ private:
 
   ReactToConnectionState _reaction;
   PortType     _reactingPortType;
-  NodeDataType _reactingDataType;
+  std::shared_ptr<NodeDataType> _reactingDataType;
 
   bool _resizing;
 };

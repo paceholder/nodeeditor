@@ -68,17 +68,17 @@ canConnect(PortIndex &portIndex, TypeConverter & converter) const
     _connection->dataType(oppositePort(requiredPort));
 
   auto const   &modelTarget = _node->nodeDataModel();
-  NodeDataType candidateNodeDataType = modelTarget->dataType(requiredPort, portIndex);
+  auto candidateNodeDataType = modelTarget->dataType(requiredPort, portIndex);
 
-  if (connectionDataType.id != candidateNodeDataType.id)
+  if (*connectionDataType != *candidateNodeDataType)
   {
     if (requiredPort == PortType::In)
     {
-      converter = _scene->registry().getTypeConverter(connectionDataType, candidateNodeDataType);
+      converter = _scene->registry().getTypeConverter(connectionDataType->id(), candidateNodeDataType->id());
     }
     else if (requiredPort == PortType::Out)
     {
-      converter = _scene->registry().getTypeConverter(candidateNodeDataType , connectionDataType);
+      converter = _scene->registry().getTypeConverter(candidateNodeDataType->id(), connectionDataType->id());
     }
 
     return (converter != nullptr);

@@ -49,8 +49,8 @@ categories() const
 
 TypeConverter
 DataModelRegistry::
-getTypeConverter(NodeDataType const & d1,
-                 NodeDataType const & d2) const
+getTypeConverter(QtNodes::NodeDataTypeId const & d1,
+                 QtNodes::NodeDataTypeId const & d2) const
 {
   TypeConverterId converterId = std::make_pair(d1, d2);
 

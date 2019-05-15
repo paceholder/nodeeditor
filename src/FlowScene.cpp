@@ -159,7 +159,7 @@ restoreConnection(QJsonObject const &connectionJson)
                              converterJson["out"].toObject()["name"].toString() };
 
       auto converter  =
-        registry().getTypeConverter(outType, inType);
+        registry().getTypeConverter(outType.id(), inType.id());
 
       if (converter)
         return converter;

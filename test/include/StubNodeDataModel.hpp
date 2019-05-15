@@ -27,9 +27,9 @@ public:
     return nullptr;
   }
 
-  QtNodes::NodeDataType dataType(QtNodes::PortType, QtNodes::PortIndex) const override
+  std::shared_ptr<QtNodes::NodeDataType> dataType(QtNodes::PortType, QtNodes::PortIndex) const override
   {
-    return QtNodes::NodeDataType();
+    return std::make_shared<QtNodes::NodeDataType>();
   }
 
   std::shared_ptr<QtNodes::NodeData> outData(QtNodes::PortIndex) override

@@ -20,9 +20,9 @@ class MyNodeData : public NodeData
 {
 public:
 
-  NodeDataType
+  std::shared_ptr<NodeDataType>
   type() const override
-  { return NodeDataType {"MyNodeData", "My Node Data"}; }
+  { return std::make_shared<NodeDataType>("MyNodeData", "My Node Data"); }
 };
 
 //------------------------------------------------------------------------------
@@ -72,7 +72,7 @@ public:
     return 3;
   }
 
-  NodeDataType
+  std::shared_ptr<NodeDataType>
   dataType(PortType, PortIndex) const override
   {
     return MyNodeData().type();

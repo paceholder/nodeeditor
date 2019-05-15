@@ -90,7 +90,7 @@ id() const
 void
 Node::
 reactToPossibleConnection(PortType reactingPortType,
-                          NodeDataType const &reactingDataType,
+                          std::shared_ptr<NodeDataType> reactingDataType,
                           QPointF const &scenePoint)
 {
   QTransform const t = _nodeGraphicsObject->sceneTransform();

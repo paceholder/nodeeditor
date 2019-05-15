@@ -53,7 +53,7 @@ public:
   id() const;
 
   void reactToPossibleConnection(PortType,
-                                 NodeDataType const &,
+                                 std::shared_ptr<NodeDataType>,
                                  QPointF const & scenePoint);
 
   void

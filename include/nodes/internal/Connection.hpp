@@ -112,7 +112,7 @@ public:
   void
   clearNode(PortType portType);
 
-  NodeDataType
+  std::shared_ptr<NodeDataType>
   dataType(PortType portType) const;
 
   void

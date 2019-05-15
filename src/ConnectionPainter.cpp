@@ -199,10 +199,10 @@ drawNormalLine(QPainter * painter,
     auto dataTypeOut = connection.dataType(PortType::Out);
     auto dataTypeIn = connection.dataType(PortType::In);
 
-    gradientColor = (dataTypeOut.id != dataTypeIn.id);
+    gradientColor = (*dataTypeOut != *dataTypeIn);
 
-    normalColorOut  = connectionStyle.normalColor(dataTypeOut.id);
-    normalColorIn   = connectionStyle.normalColor(dataTypeIn.id);
+    normalColorOut  = connectionStyle.normalColor(dataTypeOut->id());
+    normalColorIn   = connectionStyle.normalColor(dataTypeIn->id());
     selectedColor = normalColorOut.darker(200);
   }
 
