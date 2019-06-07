@@ -88,6 +88,9 @@ public:
   void
   recalculateSize(QFont const &font) const;
 
+  QSize
+  minimumSize() const;
+
   // TODO removed default QTransform()
   QPointF
   portScenePosition(PortIndex index,

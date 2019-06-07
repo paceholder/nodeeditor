@@ -279,6 +279,12 @@ mouseMoveEvent(QGraphicsSceneMouseEvent * event)
   {
     auto diff = event->pos() - event->lastPos();
 
+    if (qAbs(diff.x()) < 1 && qAbs(diff.y()) < 1)
+    {
+      event->ignore();
+      return;
+    }
+
     if (auto w = _node.nodeDataModel()->embeddedWidget())
     {
       prepareGeometryChange();
@@ -287,13 +293,27 @@ mouseMoveEvent(QGraphicsSceneMouseEvent * event)
 
       oldSize += QSize(diff.x(), diff.y());
 
+      const QSize min = geom.minimumSize();
+      const int minDiffX = oldSize.width() - min.width();
+      const int minDiffY = oldSize.height() - min.height();
+      if (minDiffX <= 0 && minDiffY<= 0)
+      {
+        event->ignore();
+        return;
+      }
+
+      if (minDiffX < 0)
+          oldSize.setWidth(min.width());
+      else if (minDiffY < 0)
+          oldSize.setHeight(min.height());
+
       w->setFixedSize(oldSize);
+      geom.recalculateSize();
 
       _proxyWidget->setMinimumSize(oldSize);
       _proxyWidget->setMaximumSize(oldSize);
       _proxyWidget->setPos(geom.widgetPosition());
 
-      geom.recalculateSize();
       update();
 
       moveConnections();
