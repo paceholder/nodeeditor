@@ -142,30 +142,35 @@ recalculateSize(QFont const & font) const
 
 QSize
 NodeGeometry::
-minimumSize() const
+minimumEmbeddedSize() const
 {
-  unsigned int maxNumOfEntries = std::max(_nSinks, _nSources);
-  unsigned int step = _fontMetrics.height() + _spacing;
+  const unsigned int maxNumOfEntries = std::max(_nSinks, _nSources);
+  const unsigned int step = _fontMetrics.height() + _spacing;
   unsigned int height = step * maxNumOfEntries;
+  unsigned int width = 0;
 
-  height += captionHeight();
-
-  unsigned int inputPortWidth  = portWidth(PortType::In);
-  unsigned int outputPortWidth = portWidth(PortType::Out);
-
-  unsigned int width = inputPortWidth +
-           outputPortWidth +
-           2 * _spacing;
+  if (auto w = _dataModel->embeddedWidget())
+  {
+    height = std::max(height, static_cast<unsigned>(w->minimumHeight()));
+    width = std::max(width, static_cast<unsigned>(w->minimumHeight()));
+  }
 
   width = std::max(width, captionWidth());
 
   if (_dataModel->validationState() != NodeValidationState::Valid)
-  {
-    width   = std::max(width, validationWidth());
-    height += validationHeight() + _spacing;
-  }
+    width = std::max(width, validationWidth());
 
   return QSize(width, height);
+}
+
+
+QSize
+NodeGeometry::
+maximumEmbeddedSize() const
+{
+  if (auto w = _dataModel->embeddedWidget())
+    return w->maximumSize();
+  return QSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
 }
 
 

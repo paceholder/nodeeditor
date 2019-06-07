@@ -89,7 +89,9 @@ public:
   recalculateSize(QFont const &font) const;
 
   QSize
-  minimumSize() const;
+  minimumEmbeddedSize() const;
+  QSize
+  maximumEmbeddedSize() const;
 
   // TODO removed default QTransform()
   QPointF

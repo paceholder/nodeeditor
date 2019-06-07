@@ -105,8 +105,20 @@ embedQWidget()
 
     _proxyWidget->setPreferredWidth(5);
 
+    QSize size = w->size();
+    QSize correct = size;
+    correct = correct.expandedTo(geom.minimumEmbeddedSize());
+    correct = correct.boundedTo(geom.maximumEmbeddedSize());
+    if (size != correct)
+    {
+      size = correct;
+      w->resize(size);
+    }
+
     geom.recalculateSize();
 
+    _proxyWidget->setMinimumSize(size);
+    _proxyWidget->setMaximumSize(size);
     _proxyWidget->setPos(geom.widgetPosition());
 
     update();
@@ -289,29 +301,28 @@ mouseMoveEvent(QGraphicsSceneMouseEvent * event)
     {
       prepareGeometryChange();
 
-      auto oldSize = w->size();
+      const QSize size = w->size();
+      QSize newSize = size + QSize(diff.x(), diff.y());
 
-      oldSize += QSize(diff.x(), diff.y());
-
-      const QSize min = geom.minimumSize();
-      const int minDiffX = oldSize.width() - min.width();
-      const int minDiffY = oldSize.height() - min.height();
-      if (minDiffX <= 0 && minDiffY<= 0)
+      const QSize minSize = geom.minimumEmbeddedSize();
+      const QSize maxSize = geom.maximumEmbeddedSize();
+      if ((newSize.width() < minSize.width() &&
+           newSize.height() < minSize.height()) ||
+          (newSize.width() > maxSize.width() &&
+           newSize.height() > maxSize.height()))
       {
         event->ignore();
         return;
       }
 
-      if (minDiffX < 0)
-          oldSize.setWidth(min.width());
-      else if (minDiffY < 0)
-          oldSize.setHeight(min.height());
+      newSize = newSize.expandedTo(minSize);
+      newSize = newSize.boundedTo(maxSize);
 
-      w->setFixedSize(oldSize);
+      w->resize(newSize);
       geom.recalculateSize();
 
-      _proxyWidget->setMinimumSize(oldSize);
-      _proxyWidget->setMaximumSize(oldSize);
+      _proxyWidget->setMinimumSize(newSize);
+      _proxyWidget->setMaximumSize(newSize);
       _proxyWidget->setPos(geom.widgetPosition());
 
       update();
