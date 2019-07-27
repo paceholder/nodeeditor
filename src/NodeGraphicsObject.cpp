@@ -107,6 +107,12 @@ embedQWidget()
 
     geom.recalculateSize();
 
+    if (w->sizePolicy().verticalPolicy() == QSizePolicy::MinimumExpanding)
+    {
+      // If the widget wants to use as much vertical space as possible, set it to have the geom's equivalentWidgetHeight.
+      _proxyWidget->setMinimumHeight(geom.equivalentWidgetHeight());
+    }
+
     _proxyWidget->setPos(geom.widgetPosition());
 
     update();
