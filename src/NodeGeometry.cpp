@@ -241,19 +241,37 @@ widgetPosition() const
 {
   if (auto w = _dataModel->embeddedWidget())
   {
-    if (_dataModel->validationState() != NodeValidationState::Valid)
+    if (w->sizePolicy().verticalPolicy() & QSizePolicy::ExpandFlag)
     {
-      return QPointF(_spacing + portWidth(PortType::In),
-                     (captionHeight() + _height - validationHeight() - _spacing - w->height()) / 2.0);
+      // If the widget wants to use as much vertical space as possible, place it immediately after the caption.
+      return QPointF(_spacing + portWidth(PortType::In), captionHeight());
     }
+    else
+    {
+      if (_dataModel->validationState() != NodeValidationState::Valid)
+      {
+        return QPointF(_spacing + portWidth(PortType::In),
+                      (captionHeight() + _height - validationHeight() - _spacing - w->height()) / 2.0);
+      }
 
-    return QPointF(_spacing + portWidth(PortType::In),
-                   (captionHeight() + _height - w->height()) / 2.0);
+      return QPointF(_spacing + portWidth(PortType::In), 
+                    (captionHeight() + _height - w->height()) / 2.0);
+    }
   }
-
   return QPointF();
 }
 
+int
+NodeGeometry::
+equivalentWidgetHeight() const
+{
+  if (_dataModel->validationState() != NodeValidationState::Valid)
+  {
+    return height() - captionHeight() + validationHeight();
+  }
+
+  return height() - captionHeight();
+}
 
 unsigned int
 NodeGeometry::

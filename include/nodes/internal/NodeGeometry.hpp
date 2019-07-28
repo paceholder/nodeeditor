@@ -106,6 +106,10 @@ public:
   QPointF
   widgetPosition() const;
 
+  /// Returns the maximum height a widget can be without causing the node to grow.
+  int
+  equivalentWidgetHeight() const;
+
   unsigned int
   validationHeight() const;
 
