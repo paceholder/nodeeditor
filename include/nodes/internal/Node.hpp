@@ -101,6 +101,11 @@ public Q_SLOTS: // data propagation
   void
   onNodeSizeUpdated();
 
+  /// Reallocate NodeState's connection sets to account for the new number of
+  /// input/output ports
+  void
+  onPortCountChanged();
+
 private:
 
   // addressing

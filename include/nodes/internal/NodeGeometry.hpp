@@ -64,6 +64,9 @@ public:
   unsigned int
   nSinks() const;
 
+  void
+  updatePortCount();
+
   QPointF const&
   draggingPos() const
   { return _draggingPos; }

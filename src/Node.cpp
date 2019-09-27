@@ -39,6 +39,9 @@ Node(std::unique_ptr<NodeDataModel> && dataModel)
 
   connect(_nodeDataModel.get(), &NodeDataModel::embeddedWidgetSizeUpdated,
           this, &Node::onNodeSizeUpdated );
+
+  connect(_nodeDataModel.get(), &NodeDataModel::portCountChanged,
+          this, &Node::onPortCountChanged);
 }
 
 
@@ -230,4 +233,15 @@ onNodeSizeUpdated()
             }
         }
     }
+}
+
+void
+Node::
+onPortCountChanged()
+{
+	// TODO: delete links to removed ports
+	_nodeState.updatePortCount(_nodeDataModel->nPorts(PortType::In),
+		                       _nodeDataModel->nPorts(PortType::Out));
+	nodeGeometry().updatePortCount();
+	onNodeSizeUpdated();
 }

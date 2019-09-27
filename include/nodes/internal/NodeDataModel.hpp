@@ -152,6 +152,9 @@ Q_SIGNALS:
   dataUpdated(PortIndex index);
 
   void
+  portCountChanged();
+
+  void
   dataInvalidated(PortIndex index);
 
   void

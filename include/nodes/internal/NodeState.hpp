@@ -83,6 +83,9 @@ public:
   bool
   resizing() const;
 
+  void
+  updatePortCount(int inPorts, int outPorts);
+
 private:
 
   std::vector<ConnectionPtrSet> _inConnections;
