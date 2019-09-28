@@ -235,9 +235,21 @@ void
 Node::
 onPortCountChanged()
 {
-	// TODO: delete links to removed ports
+	// Remove connections
+	for (auto portType : {PortType::In, PortType::Out}) {
+		auto & entries = _nodeState.getEntries(portType);
+		int oldCount = static_cast<int>(entries.size());
+		int newCount = _nodeDataModel->nPorts(portType);
+		for (PortIndex index = newCount ; index < oldCount ; ++index) {
+			auto connections = entries[index];
+			for (auto const & c : connections) {
+				Q_EMIT killConnection(*c.second);
+			}
+		}
+	}
+	
 	_nodeState.updatePortCount(_nodeDataModel->nPorts(PortType::In),
-		                       _nodeDataModel->nPorts(PortType::Out));
+	                           _nodeDataModel->nPorts(PortType::Out));
 	nodeGeometry().updatePortCount();
 	recalculateVisuals();
 }

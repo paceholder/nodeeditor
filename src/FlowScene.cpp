@@ -202,6 +202,7 @@ createNode(std::unique_ptr<NodeDataModel> && dataModel)
   node->setGraphicsObject(std::move(ngo));
 
   auto nodePtr = node.get();
+  connect(nodePtr, &Node::killConnection, this, &FlowScene::deleteConnection);
   _nodes[node->id()] = std::move(node);
 
   nodeCreated(*nodePtr);
@@ -228,6 +229,7 @@ restoreNode(QJsonObject const& nodeJson)
   node->restore(nodeJson);
 
   auto nodePtr = node.get();
+  connect(nodePtr, &Node::killConnection, this, &FlowScene::deleteConnection);
   _nodes[node->id()] = std::move(node);
 
   nodePlaced(*nodePtr);
@@ -337,7 +339,7 @@ iterateOverNodeDataDependentOrder(std::function<void(NodeDataModel*)> const & vi
     {
       for (size_t i = 0; i < model.nPorts(PortType::In); ++i)
       {
-        auto connections = node.nodeState().connections(PortType::In, i);
+        auto connections = node.nodeState().connections(PortType::In, static_cast<PortIndex>(i));
 
         for (auto& conn : connections)
         {
@@ -621,6 +623,13 @@ sendConnectionDeletedToNodes(Connection const& c)
 
   from->nodeDataModel()->outputConnectionDeleted(c);
   to->nodeDataModel()->inputConnectionDeleted(c);
+}
+
+void
+FlowScene::
+killConnection(Connection& connection)
+{
+	deleteConnection(connection);
 }
 
 

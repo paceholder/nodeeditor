@@ -103,8 +103,20 @@ public Q_SLOTS: // data propagation
 
   /// Reallocate NodeState's connection sets to account for the new number of
   /// input/output ports
+  /// NB: There is no general way of knowing how to maintain connections when
+  /// port count changes, especially when the removed ones are not the last
+  /// one, resulting in port shift that may plug connections of the wrong data
+  /// type. For now, the best thing to do is to first remove all connections,
+  /// change port count and then rebuild the connections appropriately, all of
+  /// this from the node's data model. A more generic solution would be to
+  /// split this port into insertPorts(row, count) and removePorts(row, count)
   void
   onPortCountChanged();
+
+Q_SIGNALS:
+  /// Ask flow scene to remove this connection
+  void
+  killConnection(Connection& connection);
 
 private:
   /// Recalculate the nodes visuals. A data change can result in the node
