@@ -107,6 +107,12 @@ public Q_SLOTS: // data propagation
   onPortCountChanged();
 
 private:
+  /// Recalculate the nodes visuals. A data change can result in the node
+  /// taking more space than before, so this forces a recalculate+repaint on
+  /// the affected node
+  void recalculateVisuals() const;
+
+private:
 
   // addressing
 

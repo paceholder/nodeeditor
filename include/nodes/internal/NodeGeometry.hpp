@@ -152,6 +152,10 @@ private:
 
   bool _hovered;
 
+  // TODO: Do we really need to keep these? The information can be accessed any
+  // time through _dataModel and is used only on geometry update. If we remove
+  // this, we can get rid of updatePortCount() (and its use in
+  // Node::onPortCountChanged)
   unsigned int _nSources;
   unsigned int _nSinks;
 
