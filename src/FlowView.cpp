@@ -80,12 +80,37 @@ deleteSelectionAction() const
   return _deleteSelectionAction;
 }
 
+void 
+FlowView::addAnchor(int index) 
+{
+  qreal x1, y1, x2, y2;
+  sceneRect().getCoords(&x1, &y1, &x2, &y2);
+
+  Anchor a;
+  a.position = QPointF((x2 + x1) * 0.5, (y1 + y2) * 0.5);
+  a.scale = 10;
+  
+  _scene->anchors[index] = a;
+}
+
+void 
+FlowView::goToAnchor(int index) 
+{
+  qreal x1, y1, x2, y2;
+  sceneRect().getCoords(&x1, &y1, &x2, &y2);
+  QPointF currentPosition = QPointF((x2 + x1) * 0.5, (y1 + y2) * 0.5);
+
+  QPointF difference = _scene->anchors[index].position - currentPosition;
+  
+  setSceneRect(sceneRect().translated(difference.x(), difference.y()));    
+}
 
 void
 FlowView::setScene(FlowScene *scene)
 {
   _scene = scene;
   QGraphicsView::setScene(_scene);
+
 
   // setup actions
   delete _clearSelectionAction;
@@ -118,7 +143,13 @@ FlowView::setScene(FlowScene *scene)
   _pastemultiplenodes->setShortcutContext(Qt::WidgetWithChildrenShortcut);
   connect(_pastemultiplenodes, &QAction::triggered, this, &FlowView::pasteSelectedNodes);
   addAction(_pastemultiplenodes);
-  
+    
+  _createGroup = new QAction(QStringLiteral("Create Node Group"), this);
+  _createGroup->setShortcut(QKeySequence(tr("Ctrl+G")));
+  _createGroup->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+  connect(_createGroup, &QAction::triggered, this, &FlowView::createGroup);
+  addAction(_createGroup);
+
   _undoAction = new QAction(QStringLiteral("Undo"), this);
   _undoAction->setShortcut(QKeySequence(tr("Ctrl+Z")));
   _undoAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
@@ -130,8 +161,28 @@ FlowView::setScene(FlowScene *scene)
   _redoAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
   connect(_redoAction, &QAction::triggered, _scene, &FlowScene::Redo);
   addAction(_redoAction);
-}
 
+  for(int i=0; i<10; i++) {
+    QAction* _addAnchor = new QAction(QStringLiteral("Add Anchor"), this);
+    QString sequenceString = QString("Ctrl+") + QString::number(i);
+    _addAnchor->setShortcut(QKeySequence(sequenceString));
+    _addAnchor->setShortcutContext(Qt::WidgetWithChildrenShortcut	);
+    connect(_addAnchor, &QAction::triggered, _scene, [this, i]() {
+      addAnchor(i);
+    });
+    addAction(_addAnchor);
+    anchorActions.push_back(_addAnchor);
+
+    QAction* _goToAnchor = new QAction(QStringLiteral("Go to Anchor"), this);
+    _goToAnchor->setShortcut(QKeySequence(tr(std::to_string(i).c_str())));
+    _goToAnchor->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    connect(_goToAnchor, &QAction::triggered, _scene, [this, i]() {
+      goToAnchor(i);
+    });
+    addAction(_goToAnchor);
+    anchorActions.push_back(_goToAnchor);
+  }
+}
 
 void
 FlowView::
@@ -222,12 +273,14 @@ contextMenuEvent(QContextMenuEvent *event)
   {
     for (auto& topLvlItem : topLevelItems)
     {
+      bool shouldHideCategory = true;
       for (int i = 0; i < topLvlItem->childCount(); ++i)
       {
         auto child = topLvlItem->child(i);
         auto modelName = child->data(0, Qt::UserRole).toString();
         if (modelName.contains(text, Qt::CaseInsensitive))
         {
+          shouldHideCategory = false;
           child->setHidden(false);
         }
         else
@@ -235,6 +288,7 @@ contextMenuEvent(QContextMenuEvent *event)
           child->setHidden(true);
         }
       }
+      topLvlItem->setHidden(shouldHideCategory);
     }
   });
 
@@ -371,10 +425,35 @@ void FlowView::pasteSelectedNodes() {
 
     std::map<QUuid, QUuid> addedIds;
 
+    //Get Bounds of all the selected items 
+    float minx = 10000000000;
+    float miny = 10000000000;
+    float maxx = -1000000000;
+    float maxy = -1000000000;
+    for (int i = 0; i < nodesJsonArray.size(); ++i)
+    {
+      QJsonObject nodeJsonObject = nodesJsonArray[i].toObject();
+      QJsonObject positionJson = nodeJsonObject["position"].toObject();
+      QPointF pos(positionJson["x"].toDouble(), positionJson["y"].toDouble());
+
+      if(pos.x() < minx) minx = pos.x();
+      if(pos.y() < miny) miny = pos.y();
+      if(pos.x() > maxx) maxx = pos.x();
+      if(pos.y() > maxy) maxy = pos.y();     
+    }
+    
+    float centroidX = (maxx - minx) / 2.0 + minx;
+    float centroidY = (maxy - miny) / 2.0 + miny;
+    QPointF centroid(centroidX, centroidY);
+
+
+    QPoint viewPointMouse = this->mapFromGlobal(QCursor::pos());
+    QPointF posViewMouse = this->mapToScene(viewPointMouse);      
+
     for (int i = 0; i < nodesJsonArray.size(); ++i)
     {
       QUuid currentId = QUuid( nodesJsonArray[i].toObject()["id"].toString() );
-      QUuid newId = _scene->pasteNode(nodesJsonArray[i].toObject());
+      QUuid newId = _scene->pasteNode(nodesJsonArray[i].toObject(), centroid, posViewMouse);
 
       addedIds.insert(std::pair<QUuid,QUuid>(currentId, newId));
     }
@@ -393,6 +472,11 @@ void FlowView::pasteSelectedNodes() {
     
     _scene->UpdateHistory();
 }
+
+void FlowView::createGroup() {
+  _scene->createGroup();
+}
+
 
 void FlowView::duplicateSelectedNode()
 {

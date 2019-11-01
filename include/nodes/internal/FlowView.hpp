@@ -41,6 +41,8 @@ public slots:
 
   void pasteSelectedNodes();
 
+  void createGroup();
+
 protected:
 
   void contextMenuEvent(QContextMenuEvent *event) override;
@@ -59,6 +61,9 @@ protected:
 
   void showEvent(QShowEvent *event) override;
 
+  void addAnchor(int index);
+  void goToAnchor(int index);
+
 protected:
 
   FlowScene * scene();
@@ -70,8 +75,11 @@ private:
   QAction* _duplicateSelectionAction;
   QAction* _copymultiplenodes;
   QAction* _pastemultiplenodes;
+  QAction* _createGroup;
   QAction* _undoAction;
   QAction* _redoAction;
+
+  std::vector<QAction*> anchorActions;
 
   QPointF _clickPos;
 

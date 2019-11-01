@@ -34,6 +34,8 @@ set(CPP_SOURCE_FILES
   src/FlowView.cpp
   src/FlowViewStyle.cpp
   src/Node.cpp
+  src/Group.cpp
+  src/GroupGraphicsObject.cpp
   src/NodeConnectionInteraction.cpp
   src/NodeDataModel.cpp
   src/NodeGeometry.cpp

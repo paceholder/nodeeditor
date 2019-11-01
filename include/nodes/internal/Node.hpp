@@ -36,6 +36,7 @@ public:
   /// NodeDataModel should be an rvalue and is moved into the Node
   Node(std::unique_ptr<NodeDataModel> && dataModel);
 
+
   virtual
   ~Node();
 

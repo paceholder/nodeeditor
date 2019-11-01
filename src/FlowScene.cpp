@@ -17,6 +17,7 @@
 #include <QDebug>
 
 #include "Node.hpp"
+#include "Group.hpp"
 #include "NodeGraphicsObject.hpp"
 
 #include "NodeGraphicsObject.hpp"
@@ -51,6 +52,8 @@ FlowScene(std::shared_ptr<DataModelRegistry> registry)
 	  UpdateHistory();
   };
   connect(this, &FlowScene::nodeMoveFinished, this, UpdateLamda);
+
+  anchors.resize(10);  
 }
 
 
@@ -174,13 +177,17 @@ createNode(std::unique_ptr<NodeDataModel> && dataModel)
   return *nodePtr;
 }
 
+void FlowScene::createGroup() {
+  Group group(*this);
+}
+
 
 Node&
 FlowScene::
 restoreNode(QJsonObject const& nodeJson)
 {
   QString modelName = nodeJson["model"].toObject()["name"].toString();
-  auto dataModel = registry().create(modelName);
+  auto dataModel = registry().create(modelName); //This is where it looks for the node by name
 
   if (!dataModel)
     throw std::logic_error(std::string("No registered model with name ") +
@@ -196,7 +203,7 @@ restoreNode(QJsonObject const& nodeJson)
   return *nodePtr;
 }
 
-QUuid FlowScene::pasteNode(QJsonObject &nodeJson) {
+QUuid FlowScene::pasteNode(QJsonObject &nodeJson, QPointF nodeGroupCentroid, QPointF mousePos) {
   QString modelName = nodeJson["model"].toObject()["name"].toString();
   auto dataModel = registry().create(modelName);
 
@@ -207,11 +214,17 @@ QUuid FlowScene::pasteNode(QJsonObject &nodeJson) {
   auto node = std::make_unique<Node>(std::move(dataModel));
   auto ngo  = std::make_unique<NodeGraphicsObject>(*this, *node);
 
-
   node->setGraphicsObject(std::move(ngo));
   
+
   QUuid newId = QUuid::createUuid();
   node->paste(nodeJson, newId);
+
+  QPointF offset = node->nodeGraphicsObject().pos() - nodeGroupCentroid;
+
+
+  QPointF pos = mousePos + (node->nodeGraphicsObject().pos() - nodeGroupCentroid);
+  node->nodeGraphicsObject().setPos(pos);
 
   auto nodePtr = node.get();
   _nodes[node->id()] = std::move(node);
@@ -529,6 +542,17 @@ saveToMemory() const
 
   sceneJson["connections"] = connectionJsonArray;
 
+  QJsonArray anchorsJsonArray;
+  for(int i=0; i<anchors.size(); i++) {
+    QJsonObject anchor;
+    anchor["position_x"] = anchors[i].position.x();
+    anchor["position_y"] = anchors[i].position.y();
+    anchor["scale"] = anchors[i].scale;
+    anchorsJsonArray.append(anchor);
+  }
+
+  sceneJson["anchors"] = anchorsJsonArray;
+
   QJsonDocument document(sceneJson);
 
   return document.toJson();
@@ -559,8 +583,20 @@ loadFromMemory(const QByteArray& data)
   {
     restoreConnection(connectionJsonArray[i].toObject());
   }
-  
-  
+
+  if(jsonDocument.contains("anchors")) {
+    QJsonArray anchorsJsonArray = jsonDocument["anchors"].toArray();
+    for(int i=0; i<anchorsJsonArray.size(); i++) {
+      Anchor a;
+      QJsonObject anchorObject =anchorsJsonArray[i].toObject();
+      float x = anchorObject["position_x"].toDouble();
+      float y = anchorObject["position_y"].toDouble();
+      float scale = anchorObject["scale"].toDouble();
+      a.position= QPointF(x, y);
+      a.scale = scale;
+      anchors[i] = a;
+    }
+  }
 }
 
 void FlowScene::Undo()

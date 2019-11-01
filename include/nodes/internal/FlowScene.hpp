@@ -28,6 +28,12 @@ struct SceneHistory
 	QByteArray data;
 };
 
+
+struct Anchor {
+  QPointF position;
+  double scale;
+};
+
 /// Scene holds connections and nodes.
 class NODE_EDITOR_PUBLIC FlowScene
   : public QGraphicsScene
@@ -57,9 +63,11 @@ public:
 
   Node&createNode(std::unique_ptr<NodeDataModel> && dataModel);
 
+  void createGroup();
+
   Node&restoreNode(QJsonObject const& nodeJson);
 
-  QUuid pasteNode(QJsonObject &json);
+  QUuid pasteNode(QJsonObject &json, QPointF nodeGroupCentroid, QPointF mousePos);
   
   void pasteConnection(QJsonObject const &connectionJson, QUuid newIn, QUuid newOut);
 
@@ -135,6 +143,10 @@ signals:
 
   void nodeContextMenu(Node& n, const QPointF& pos);
 
+public:
+
+  std::vector<Anchor> anchors;  
+
 private:
 
   using SharedConnection = std::shared_ptr<Connection>;
@@ -147,6 +159,9 @@ private:
   int historyInx; 
   bool writeToHistory; 
   std::vector< SceneHistory > history;
+
+
+private: 
 };
 
 Node*
