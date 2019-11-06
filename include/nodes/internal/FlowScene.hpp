@@ -118,6 +118,8 @@ public:
   
   void ResetHistory();
 
+  int GetHistoryIndex();
+
 signals:
 
   void nodeCreated(Node &n);

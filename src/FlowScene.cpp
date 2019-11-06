@@ -653,11 +653,16 @@ void FlowScene::UpdateHistory()
 	}
 }
 
+
 void FlowScene::ResetHistory()
 {
 	historyInx = 0; 
 	writeToHistory = true; 
 	history.clear();
+}
+
+int FlowScene::GetHistoryIndex() {
+  return historyInx;
 }
 
 

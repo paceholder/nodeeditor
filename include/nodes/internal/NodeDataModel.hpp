@@ -115,7 +115,7 @@ public:
 
   virtual
   bool
-  resizable() const { return false; }
+  resizable() const { return true; }
 
   virtual
   NodeValidationState

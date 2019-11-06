@@ -217,8 +217,8 @@ resizeRect() const
 {
   unsigned int rectSize = 7;
 
-  return QRect(_width - rectSize,
-               _height - rectSize,
+  return QRect(_width + rectSize,
+               _height + rectSize,
                rectSize,
                rectSize);
 }
