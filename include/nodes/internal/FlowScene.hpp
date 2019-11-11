@@ -124,6 +124,8 @@ Q_SIGNALS:
 
   void nodeDoubleClicked(Node& n);
 
+  void nodeClicked(Node& n);
+
   void connectionHovered(Connection& c, QPoint screenPos);
 
   void nodeHovered(Node& n, QPoint screenPos);
