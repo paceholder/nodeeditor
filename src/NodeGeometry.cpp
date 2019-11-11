@@ -356,8 +356,13 @@ portWidth(PortType portType) const
       name = _dataModel->dataType(portType, i).name;
     }
 
-    width = std::max(unsigned(_fontMetrics.width(name)),
-                     width);
+    #if QT_VERSION < QT_VERSION_CHECK(5,13,0)
+         width = std::max(unsigned(_fontMetrics.width(name)),
+                          width);
+    #else
+        width = std::max(unsigned(_fontMetrics.horizontalAdvance(name)),
+                         width);
+    #endif
   }
 
   return width;
