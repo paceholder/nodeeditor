@@ -500,9 +500,6 @@ void
 FlowScene::
 load()
 {
-  clearScene();
-
-  //-------------
 
   QString fileName =
     QFileDialog::getOpenFileName(nullptr,
@@ -517,6 +514,8 @@ load()
 
   if (!file.open(QIODevice::ReadOnly))
     return;
+
+  clearScene();
 
   QByteArray wholeFile = file.readAll();
 
