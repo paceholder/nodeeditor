@@ -64,7 +64,7 @@ public:
 
   void removeNode(Node& node);
 
-  NodeGroup& createGroup(std::vector<Node*>&& nodes);
+  NodeGroup& createGroup();
 
   // NodeGroup& restoreGroup();
 

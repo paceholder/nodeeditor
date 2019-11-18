@@ -29,6 +29,14 @@ public:
   QRectF
   boundingRect() const override;
 
+  enum { Type = UserType + 3 };
+
+  int
+  type() const override
+  {
+    return Type;
+  }
+
 protected:
   void
   paint(QPainter*                       painter,
@@ -39,6 +47,8 @@ private:
   FlowScene& _scene;
 
   NodeGroup& _group;
+
+  QRectF _areaRect;
 };
 
 }

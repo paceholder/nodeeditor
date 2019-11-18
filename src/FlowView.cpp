@@ -114,8 +114,6 @@ contextMenuEvent(QContextMenuEvent *event)
 
   auto skipText = QStringLiteral("skip me");
 
-  auto newGroupText = QStringLiteral("Create group");
-
   //Add filterbox to the context menu
   auto *txtBox = new QLineEdit(&modelMenu);
 
@@ -164,19 +162,6 @@ contextMenuEvent(QContextMenuEvent *event)
       return;
     }
 
-    if (modelName == newGroupText)
-    {
-      auto& group = _scene->createGroup(_scene->selectedNodes());
-
-      QPoint pos = event->pos();
-
-      QPointF posView = this->mapToScene(pos);
-
-      group.groupGraphicsObject().setPos(posView);
-
-      return;
-    }
-
     auto type = _scene->registry().create(modelName);
 
     if (type)
@@ -213,6 +198,17 @@ contextMenuEvent(QContextMenuEvent *event)
       }
     }
   });
+
+  auto createGroupAction = new QAction(&modelMenu);
+  createGroupAction->setText(QStringLiteral("Create group"));
+  QPoint pos = event->pos();
+  QPointF posView = mapToScene(pos);
+  connect(createGroupAction, &QAction::triggered, [posView = posView, _scene = _scene]()
+  {
+    auto& group = _scene->createGroup();
+    group.groupGraphicsObject().setPos(posView);
+  });
+  modelMenu.addAction(createGroupAction);
 
   // make sure the text box gets focus so the user doesn't have to click on it
   txtBox->setFocus();

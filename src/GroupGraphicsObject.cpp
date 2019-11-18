@@ -9,8 +9,13 @@ GroupGraphicsObject::
 GroupGraphicsObject(QtNodes::FlowScene& scene, QtNodes::NodeGroup& nodeGroup)
   : _scene(scene)
   , _group(nodeGroup)
+  , _areaRect(QRectF(0, 0, 50, 50))
 {
   _scene.addItem(this);
+
+  setFlag(QGraphicsItem::ItemIsMovable, true);
+  setFlag(QGraphicsItem::ItemIsFocusable, true);
+  setFlag(QGraphicsItem::ItemIsSelectable, true);
 
   setOpacity(0.5);
 }
@@ -48,7 +53,7 @@ paint(QPainter* painter,
       const QStyleOptionGraphicsItem* option,
       QWidget* widget)
 {
-  painter->setBrush(Qt::darkBlue);
+  painter->setBrush(Qt::lightGray);
   painter->setPen(Qt::PenStyle::DashLine);
-  painter->drawRect(QRectF(0, 0, 30, 30));
+  painter->drawRoundedRect(_areaRect, 8.0, 8.0);
 }

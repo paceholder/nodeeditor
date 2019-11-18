@@ -268,8 +268,9 @@ removeNode(Node& node)
 
 NodeGroup&
 FlowScene::
-createGroup(std::vector<Node*>&& nodes)
+createGroup()
 {
+  auto nodes = selectedNodes();
   auto group = std::make_unique<NodeGroup>(std::move(nodes));
   auto ggo   = std::make_unique<GroupGraphicsObject>(*this, *group);
 
