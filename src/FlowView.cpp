@@ -22,6 +22,8 @@
 #include "NodeGraphicsObject.hpp"
 #include "ConnectionGraphicsObject.hpp"
 #include "StyleCollection.hpp"
+#include "NodeGroup.hpp"
+#include "GroupGraphicsObject.hpp"
 
 using QtNodes::FlowView;
 using QtNodes::FlowScene;
@@ -112,6 +114,8 @@ contextMenuEvent(QContextMenuEvent *event)
 
   auto skipText = QStringLiteral("skip me");
 
+  auto newGroupText = QStringLiteral("Create group");
+
   //Add filterbox to the context menu
   auto *txtBox = new QLineEdit(&modelMenu);
 
@@ -157,6 +161,19 @@ contextMenuEvent(QContextMenuEvent *event)
 
     if (modelName == skipText)
     {
+      return;
+    }
+
+    if (modelName == newGroupText)
+    {
+      auto& group = _scene->createGroup(_scene->selectedNodes());
+
+      QPoint pos = event->pos();
+
+      QPointF posView = this->mapToScene(pos);
+
+      group.groupGraphicsObject().setPos(posView);
+
       return;
     }
 
@@ -283,12 +300,12 @@ keyPressEvent(QKeyEvent *event)
 {
   switch (event->key())
   {
-    case Qt::Key_Shift:
-      setDragMode(QGraphicsView::RubberBandDrag);
-      break;
+  case Qt::Key_Shift:
+    setDragMode(QGraphicsView::RubberBandDrag);
+    break;
 
-    default:
-      break;
+  default:
+    break;
   }
 
   QGraphicsView::keyPressEvent(event);
@@ -301,12 +318,12 @@ keyReleaseEvent(QKeyEvent *event)
 {
   switch (event->key())
   {
-    case Qt::Key_Shift:
-      setDragMode(QGraphicsView::ScrollHandDrag);
-      break;
+  case Qt::Key_Shift:
+    setDragMode(QGraphicsView::ScrollHandDrag);
+    break;
 
-    default:
-      break;
+  default:
+    break;
   }
   QGraphicsView::keyReleaseEvent(event);
 }
@@ -349,33 +366,33 @@ drawBackground(QPainter* painter, const QRectF& r)
 
   auto drawGrid =
     [&](double gridStep)
+  {
+    QRect   windowRect = rect();
+    QPointF tl = mapToScene(windowRect.topLeft());
+    QPointF br = mapToScene(windowRect.bottomRight());
+
+    double left   = std::floor(tl.x() / gridStep - 0.5);
+    double right  = std::floor(br.x() / gridStep + 1.0);
+    double bottom = std::floor(tl.y() / gridStep - 0.5);
+    double top    = std::floor (br.y() / gridStep + 1.0);
+
+    // vertical lines
+    for (int xi = int(left); xi <= int(right); ++xi)
     {
-      QRect   windowRect = rect();
-      QPointF tl = mapToScene(windowRect.topLeft());
-      QPointF br = mapToScene(windowRect.bottomRight());
+      QLineF line(xi * gridStep, bottom * gridStep,
+                  xi * gridStep, top * gridStep );
 
-      double left   = std::floor(tl.x() / gridStep - 0.5);
-      double right  = std::floor(br.x() / gridStep + 1.0);
-      double bottom = std::floor(tl.y() / gridStep - 0.5);
-      double top    = std::floor (br.y() / gridStep + 1.0);
+      painter->drawLine(line);
+    }
 
-      // vertical lines
-      for (int xi = int(left); xi <= int(right); ++xi)
-      {
-        QLineF line(xi * gridStep, bottom * gridStep,
-                    xi * gridStep, top * gridStep );
-
-        painter->drawLine(line);
-      }
-
-      // horizontal lines
-      for (int yi = int(bottom); yi <= int(top); ++yi)
-      {
-        QLineF line(left * gridStep, yi * gridStep,
-                    right * gridStep, yi * gridStep );
-        painter->drawLine(line);
-      }
-    };
+    // horizontal lines
+    for (int yi = int(bottom); yi <= int(top); ++yi)
+    {
+      QLineF line(left * gridStep, yi * gridStep,
+                  right * gridStep, yi * gridStep );
+      painter->drawLine(line);
+    }
+  };
 
   auto const &flowViewStyle = StyleCollection::flowViewStyle();
 

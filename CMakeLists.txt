@@ -58,10 +58,12 @@ set(CPP_SOURCE_FILES
   src/FlowScene.cpp
   src/FlowView.cpp
   src/FlowViewStyle.cpp
+  src/GroupGraphicsObject.cpp
   src/Node.cpp
   src/NodeConnectionInteraction.cpp
   src/NodeDataModel.cpp
   src/NodeGeometry.cpp
+  src/NodeGroup.cpp
   src/NodeGraphicsObject.cpp
   src/NodePainter.cpp
   src/NodeState.cpp

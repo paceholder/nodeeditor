@@ -19,7 +19,6 @@
 #include "Node.hpp"
 #include "NodeGraphicsObject.hpp"
 
-#include "NodeGraphicsObject.hpp"
 #include "ConnectionGraphicsObject.hpp"
 
 #include "NodeGroup.hpp"
@@ -269,14 +268,17 @@ removeNode(Node& node)
 
 NodeGroup&
 FlowScene::
-createGroup()
+createGroup(std::vector<Node*>&& nodes)
 {
-  auto group = detail::make_unique<NodeGroup>();
-  auto ggo   = detail::make_unique<GroupGraphicsObject>(*this, *group);
+  auto group = std::make_unique<NodeGroup>(std::move(nodes));
+  auto ggo   = std::make_unique<GroupGraphicsObject>(*this, *group);
 
   group->setGraphicsObject(std::move(ggo));
 
+  auto groupPtr = group.get();
+  _groups[group->id()] = std::move(group);
 
+  return *groupPtr;
 }
 
 
@@ -431,6 +433,13 @@ FlowScene::
 connections() const
 {
   return _connections;
+}
+
+std::unordered_map<QUuid, std::unique_ptr<NodeGroup> > const &
+FlowScene::
+groups() const
+{
+  return _groups;
 }
 
 

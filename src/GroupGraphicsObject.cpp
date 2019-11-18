@@ -7,8 +7,12 @@ using QtNodes::GroupGraphicsObject;
 
 GroupGraphicsObject::
 GroupGraphicsObject(QtNodes::FlowScene& scene, QtNodes::NodeGroup& nodeGroup)
+  : _scene(scene)
+  , _group(nodeGroup)
 {
+  _scene.addItem(this);
 
+  setOpacity(0.5);
 }
 
 GroupGraphicsObject::
@@ -35,9 +39,16 @@ QRectF
 GroupGraphicsObject::
 boundingRect() const
 {
+  return QRectF();
 }
 
-void QtNodes::GroupGraphicsObject::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
+void
+GroupGraphicsObject::
+paint(QPainter* painter,
+      const QStyleOptionGraphicsItem* option,
+      QWidget* widget)
 {
-
+  painter->setBrush(Qt::darkBlue);
+  painter->setPen(Qt::PenStyle::DashLine);
+  painter->drawRect(QRectF(0, 0, 30, 30));
 }

@@ -1,13 +1,17 @@
 #include "NodeGroup.hpp"
 
 using QtNodes::NodeGroup;
+using QtNodes::GroupGraphicsObject;
 
 NodeGroup::
-NodeGroup(std::vector<std::unique_ptr<Node>>&& nodes)
+NodeGroup(std::vector<Node*>&& nodes)
   : _uid(QUuid::createUuid())
   , _childNodes(std::move(nodes))
   , _groupGraphicsObject(nullptr)
 {}
+
+NodeGroup::
+~NodeGroup() = default;
 
 QJsonObject
 NodeGroup::
@@ -16,7 +20,7 @@ save() const
 
 void
 NodeGroup::
-restore(const QJsonObject& json)
+restore(QJsonObject const & json)
 {}
 
 QUuid
@@ -26,11 +30,33 @@ id() const
   return _uid;
 }
 
-void NodeGroup::addNode(const QUuid& node_id) {}
+GroupGraphicsObject const &
+NodeGroup::
+groupGraphicsObject() const
+{
+  return *_groupGraphicsObject.get();
+}
 
-void NodeGroup::removeNode(const QUuid& node_id) {}
+GroupGraphicsObject &
+NodeGroup::
+groupGraphicsObject()
+{
+  return *_groupGraphicsObject.get();
+}
 
-void NodeGroup::setGraphicsObject(
-    std::unique_ptr<GroupGraphicsObject>&& graphics_object) {
+void
+NodeGroup::
+setGraphicsObject(std::unique_ptr<GroupGraphicsObject>&& graphics_object) {
   _groupGraphicsObject = std::move(graphics_object);
 }
+
+void
+NodeGroup::
+addNode(const QUuid& node_id)
+{
+}
+
+void NodeGroup::removeNode(const QUuid& node_id)
+{
+}
+

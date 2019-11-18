@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "GroupGraphicsObject.hpp"
+#include "Node.hpp"
 #include "Export.hpp"
 #include "Serializable.hpp"
 #include "memory.hpp"
@@ -14,6 +15,7 @@ namespace QtNodes
 {
 
 class Node;
+class GroupGraphicsObject;
 
 class NODE_EDITOR_PUBLIC NodeGroup
   : public QObject
@@ -22,9 +24,14 @@ class NODE_EDITOR_PUBLIC NodeGroup
   Q_OBJECT
 
 public:
-  NodeGroup(std::vector<std::unique_ptr<Node>>&& nodes);
+
+  NodeGroup(std::vector<Node*>&& nodes);
+
+  virtual
+  ~NodeGroup() override;
 
 public:
+
   QJsonObject
   save() const override;
 
@@ -32,18 +39,26 @@ public:
   restore(QJsonObject const &json) override;
 
 public:
+
   QUuid
   id() const;
 
+  GroupGraphicsObject const &
+  groupGraphicsObject() const;
+
+  GroupGraphicsObject &
+  groupGraphicsObject();
+
+  void
+  setGraphicsObject(std::unique_ptr<GroupGraphicsObject>&& graphics_object);
+
 public Q_SLOTS:
+
   void
   addNode(const QUuid& node_id);
 
   void
   removeNode(const QUuid& node_id);
-
-  void
-  setGraphicsObject(std::unique_ptr<GroupGraphicsObject>&& graphics_object);
 
   //  void calculateArea();
 
@@ -51,8 +66,10 @@ private:
   // addressing
   QUuid _uid;
 
+  QString _name;
+
   // data
-  std::vector<std::unique_ptr<Node>> _childNodes;
+  std::vector<Node*> _childNodes;
 
   // painting
   std::unique_ptr<GroupGraphicsObject> _groupGraphicsObject;

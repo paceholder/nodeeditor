@@ -4,27 +4,30 @@
 
 #include "NodeGroup.hpp"
 
-namespace QtNodes {
+namespace QtNodes
+{
 
 class FlowScene;
+class NodeGroup;
 
-class GroupGraphicsObject : public QGraphicsObject {
-    Q_OBJECT
+class GroupGraphicsObject : public QGraphicsObject
+{
+  Q_OBJECT
 public:
-    GroupGraphicsObject(FlowScene& scene,
-                            NodeGroup& nodeGroup);
+  GroupGraphicsObject(FlowScene& scene,
+                      NodeGroup& nodeGroup);
 
-    virtual
-    ~GroupGraphicsObject();
+  virtual
+  ~GroupGraphicsObject();
 
-    NodeGroup&
-    group();
+  NodeGroup&
+  group();
 
-    NodeGroup const&
-    group() const;
+  NodeGroup const&
+  group() const;
 
-    QRectF
-    boundingRect() const override;
+  QRectF
+  boundingRect() const override;
 
 protected:
   void
