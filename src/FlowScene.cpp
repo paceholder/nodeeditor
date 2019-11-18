@@ -22,6 +22,9 @@
 #include "NodeGraphicsObject.hpp"
 #include "ConnectionGraphicsObject.hpp"
 
+#include "NodeGroup.hpp"
+#include "GroupGraphicsObject.hpp"
+
 #include "Connection.hpp"
 
 #include "FlowView.hpp"
@@ -36,7 +39,8 @@ using QtNodes::NodeDataModel;
 using QtNodes::PortType;
 using QtNodes::PortIndex;
 using QtNodes::TypeConverter;
-
+using QtNodes::NodeGroup;
+using QtNodes::GroupGraphicsObject;
 
 FlowScene::
 FlowScene(std::shared_ptr<DataModelRegistry> registry,
@@ -89,9 +93,10 @@ createConnection(PortType connectedPort,
   connect(connection.get(),
           &Connection::connectionCompleted,
           this,
-          [this](Connection const& c) {
-            connectionCreated(c);
-          });
+          [this](Connection const& c)
+  {
+    connectionCreated(c);
+  });
 
   return connection;
 }
@@ -185,7 +190,8 @@ FlowScene::
 deleteConnection(Connection& connection)
 {
   auto it = _connections.find(connection.id());
-  if (it != _connections.end()) {
+  if (it != _connections.end())
+  {
     connection.removeFromNodes();
     _connections.erase(it);
   }
@@ -243,7 +249,10 @@ removeNode(Node& node)
   // call signal
   nodeDeleted(node);
 
-  for(auto portType: {PortType::In,PortType::Out})
+  for(auto portType:
+      {
+        PortType::In,PortType::Out
+      })
   {
     auto nodeState = node.nodeState();
     auto const & nodeEntries = nodeState.getEntries(portType);
@@ -256,6 +265,18 @@ removeNode(Node& node)
   }
 
   _nodes.erase(node.id());
+}
+
+NodeGroup&
+FlowScene::
+createGroup()
+{
+  auto group = detail::make_unique<NodeGroup>();
+  auto ggo   = detail::make_unique<GroupGraphicsObject>(*this, *group);
+
+  group->setGraphicsObject(std::move(ggo));
+
+
 }
 
 
@@ -306,18 +327,18 @@ iterateOverNodeDataDependentOrder(std::function<void(NodeDataModel*)> const & vi
   //A leaf node is a node with no input ports, or all possible input ports empty
   auto isNodeLeaf =
     [](Node const &node, NodeDataModel const &model)
+  {
+    for (unsigned int i = 0; i < model.nPorts(PortType::In); ++i)
     {
-      for (unsigned int i = 0; i < model.nPorts(PortType::In); ++i)
+      auto connections = node.nodeState().connections(PortType::In, i);
+      if (!connections.empty())
       {
-        auto connections = node.nodeState().connections(PortType::In, i);
-        if (!connections.empty())
-        {
-          return false;
-        }
+        return false;
       }
+    }
 
-      return true;
-    };
+    return true;
+  };
 
   //Iterate over "leaf" nodes
   for (auto const &_node : _nodes)
@@ -334,22 +355,22 @@ iterateOverNodeDataDependentOrder(std::function<void(NodeDataModel*)> const & vi
 
   auto areNodeInputsVisitedBefore =
     [&](Node const &node, NodeDataModel const &model)
+  {
+    for (size_t i = 0; i < model.nPorts(PortType::In); ++i)
     {
-      for (size_t i = 0; i < model.nPorts(PortType::In); ++i)
-      {
-        auto connections = node.nodeState().connections(PortType::In, i);
+      auto connections = node.nodeState().connections(PortType::In, i);
 
-        for (auto& conn : connections)
+      for (auto& conn : connections)
+      {
+        if (visitedNodesSet.find(conn.second->getNode(PortType::Out)->id()) == visitedNodesSet.end())
         {
-          if (visitedNodesSet.find(conn.second->getNode(PortType::Out)->id()) == visitedNodesSet.end())
-          {
-            return false;
-          }
+          return false;
         }
       }
+    }
 
-      return true;
-    };
+    return true;
+  };
 
   //Iterate over dependent nodes
   while (_nodes.size() != visitedNodesSet.size())
@@ -422,7 +443,10 @@ allNodes() const
   std::transform(_nodes.begin(),
                  _nodes.end(),
                  std::back_inserter(nodes),
-                 [](std::pair<QUuid const, std::unique_ptr<Node>> const & p) { return p.second.get(); });
+                 [](std::pair<QUuid const, std::unique_ptr<Node>> const & p)
+  {
+    return p.second.get();
+  });
 
   return nodes;
 }
@@ -645,9 +669,9 @@ locateNodeAt(QPointF scenePoint, FlowScene &scene,
                items.end(),
                std::back_inserter(filteredItems),
                [] (QGraphicsItem * item)
-    {
-      return (dynamic_cast<NodeGraphicsObject*>(item) != nullptr);
-    });
+  {
+    return (dynamic_cast<NodeGraphicsObject*>(item) != nullptr);
+  });
 
   Node* resultNode = nullptr;
 

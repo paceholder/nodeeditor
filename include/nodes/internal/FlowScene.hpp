@@ -23,6 +23,8 @@ class NodeGraphicsObject;
 class Connection;
 class ConnectionGraphicsObject;
 class NodeStyle;
+class NodeGroup;
+class GroupGraphicsObject;
 
 /// Scene holds connections and nodes.
 class NODE_EDITOR_PUBLIC FlowScene
@@ -61,6 +63,12 @@ public:
   Node&restoreNode(QJsonObject const& nodeJson);
 
   void removeNode(Node& node);
+
+  NodeGroup& createGroup();
+
+  // NodeGroup& restoreGroup();
+
+  //  void removeGroup();
 
   DataModelRegistry&registry() const;
 
@@ -140,9 +148,11 @@ private:
 
   using SharedConnection = std::shared_ptr<Connection>;
   using UniqueNode       = std::unique_ptr<Node>;
+  using UniqueGroup      = std::unique_ptr<NodeGroup>;
 
   std::unordered_map<QUuid, SharedConnection> _connections;
   std::unordered_map<QUuid, UniqueNode>       _nodes;
+  std::unordered_map<QUuid, UniqueGroup>       _groups;
   std::shared_ptr<DataModelRegistry>          _registry;
 
 private Q_SLOTS:
