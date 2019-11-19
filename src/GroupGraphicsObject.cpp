@@ -10,7 +10,9 @@ GroupRectItem::
 GroupRectItem(QRectF rect,
               QGraphicsObject* parent)
   : QGraphicsRectItem(rect, parent)
-{}
+{
+  _currentColor = _fillColor;
+}
 
 void
 GroupRectItem::
@@ -18,7 +20,7 @@ paint(QPainter* painter,
       const QStyleOptionGraphicsItem* option,
       QWidget* widget)
 {
-  painter->setBrush(QColor("#10a5b084"));
+  painter->setBrush(_currentColor);
   painter->setPen(Qt::PenStyle::DashLine);
   painter->drawRoundedRect(rect(), roundedBorderRadius, roundedBorderRadius);
 }
@@ -28,6 +30,13 @@ GroupRectItem::
 boundingRect() const
 {
   return rect();
+}
+
+void
+GroupRectItem::
+hoverEnterEvent(QGraphicsSceneHoverEvent*)
+{
+  _currentColor = _hoverColor;
 }
 
 GroupGraphicsObject::
@@ -42,6 +51,7 @@ GroupGraphicsObject(QtNodes::FlowScene& scene, QtNodes::NodeGroup& nodeGroup)
   setFlag(QGraphicsItem::ItemIsFocusable, true);
   setFlag(QGraphicsItem::ItemDoesntPropagateOpacityToChildren, true);
 
+  setAcceptHoverEvents(true);
 }
 
 GroupGraphicsObject::

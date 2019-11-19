@@ -31,8 +31,18 @@ public:
     return Type;
   }
 
+protected:
+  void
+  hoverEnterEvent(QGraphicsSceneHoverEvent*) override;
+
 private:
   static constexpr double roundedBorderRadius = 8.0;
+
+  const QColor _fillColor = "#10a5b084";
+  const QColor _borderColor = "#10aaaaaa";
+  const QColor _hoverColor = "1083a4af";
+
+  QColor _currentColor;
 };
 
 class GroupGraphicsObject : public QGraphicsObject
