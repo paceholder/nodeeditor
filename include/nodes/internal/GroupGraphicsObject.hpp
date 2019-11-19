@@ -10,6 +10,31 @@ namespace QtNodes
 class FlowScene;
 class NodeGroup;
 
+class GroupRectItem : public QGraphicsRectItem
+{
+public:
+  GroupRectItem(QRectF rect, QGraphicsObject * parent = nullptr);
+
+  void
+  paint(QPainter*                       painter,
+        QStyleOptionGraphicsItem const* option,
+        QWidget*                        widget = 0) override;
+
+  QRectF
+  boundingRect() const override;
+
+  enum { Type = UserType + 4 };
+
+  int
+  type() const override
+  {
+    return Type;
+  }
+
+private:
+  static constexpr double roundedBorderRadius = 8.0;
+};
+
 class GroupGraphicsObject : public QGraphicsObject
 {
   Q_OBJECT
@@ -48,7 +73,7 @@ private:
 
   NodeGroup& _group;
 
-  QRectF _areaRect;
+  GroupRectItem _areaRect;
 };
 
 }
