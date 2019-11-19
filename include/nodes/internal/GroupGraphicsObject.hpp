@@ -12,13 +12,10 @@ class NodeGroup;
 
 class GroupRectItem : public QGraphicsRectItem
 {
+  friend class GroupGraphicsObject;
 public:
   GroupRectItem(QRectF rect, QGraphicsObject * parent = nullptr);
 
-  void
-  paint(QPainter*                       painter,
-        QStyleOptionGraphicsItem const* option,
-        QWidget*                        widget = 0) override;
 
   QRectF
   boundingRect() const override;
@@ -31,18 +28,32 @@ public:
     return Type;
   }
 
+  void
+  setHoverColor()
+  {
+    _currentColor = _hoverColor;
+  }
+
+  void
+  setFillColor()
+  {
+    _currentColor = _fillColor;
+  }
+
+  QColor _currentColor;
+
 protected:
   void
-  hoverEnterEvent(QGraphicsSceneHoverEvent*) override;
-
+  paint(QPainter*                       painter,
+        QStyleOptionGraphicsItem const* option,
+        QWidget*                        widget = 0) override;
 private:
   static constexpr double roundedBorderRadius = 8.0;
 
-  const QColor _fillColor = "#10a5b084";
-  const QColor _borderColor = "#10aaaaaa";
-  const QColor _hoverColor = "1083a4af";
+  const QColor _fillColor = "#50a5b084";
+  const QColor _borderColor = "#50aaaaaa";
+  const QColor _hoverColor = "#5083a4af";
 
-  QColor _currentColor;
 };
 
 class GroupGraphicsObject : public QGraphicsObject
@@ -77,6 +88,21 @@ protected:
   paint(QPainter*                       painter,
         QStyleOptionGraphicsItem const* option,
         QWidget*                        widget = 0) override;
+
+  void
+  hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
+
+  void
+  hoverLeaveEvent(QGraphicsSceneHoverEvent* event) override;
+
+//  void
+//  mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
+
+//  void
+//  mousePressEvent(QGraphicsSceneMouseEvent* event) override;
+
+//  void
+//  mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
 
 private:
   FlowScene& _scene;

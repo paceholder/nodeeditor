@@ -11,6 +11,9 @@ GroupRectItem(QRectF rect,
               QGraphicsObject* parent)
   : QGraphicsRectItem(rect, parent)
 {
+  setFlag(QGraphicsItem::ItemIsMovable, true);
+  setFlag(QGraphicsItem::ItemIsFocusable, true);
+  setFlag(QGraphicsItem::ItemIsSelectable, true);
   _currentColor = _fillColor;
 }
 
@@ -33,10 +36,19 @@ boundingRect() const
 }
 
 void
-GroupRectItem::
-hoverEnterEvent(QGraphicsSceneHoverEvent*)
+GroupGraphicsObject::
+hoverEnterEvent(QGraphicsSceneHoverEvent* event)
 {
-  _currentColor = _hoverColor;
+  _areaRect.setHoverColor();
+  update();
+}
+
+void
+GroupGraphicsObject::
+hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
+{
+  _areaRect.setFillColor();
+  update();
 }
 
 GroupGraphicsObject::
@@ -49,6 +61,7 @@ GroupGraphicsObject(QtNodes::FlowScene& scene, QtNodes::NodeGroup& nodeGroup)
 
   setFlag(QGraphicsItem::ItemIsMovable, true);
   setFlag(QGraphicsItem::ItemIsFocusable, true);
+  setFlag(QGraphicsItem::ItemIsSelectable, true);
   setFlag(QGraphicsItem::ItemDoesntPropagateOpacityToChildren, true);
 
   setAcceptHoverEvents(true);
@@ -78,7 +91,7 @@ QRectF
 GroupGraphicsObject::
 boundingRect() const
 {
-  return QRectF();
+  return _areaRect.boundingRect();
 }
 
 void
