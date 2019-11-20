@@ -1,5 +1,6 @@
 #include "NodeGroup.hpp"
 
+using QtNodes::Node;
 using QtNodes::NodeGroup;
 using QtNodes::GroupGraphicsObject;
 
@@ -44,19 +45,36 @@ groupGraphicsObject()
   return *_groupGraphicsObject.get();
 }
 
+std::vector<Node*> const
+NodeGroup::
+childNodes() const
+{
+  return _childNodes;
+}
+
 void
 NodeGroup::
-setGraphicsObject(std::unique_ptr<GroupGraphicsObject>&& graphics_object) {
+setGraphicsObject(std::unique_ptr<GroupGraphicsObject>&& graphics_object)
+{
   _groupGraphicsObject = std::move(graphics_object);
+}
+
+bool
+NodeGroup::
+empty() const
+{
+  return _childNodes.empty();
 }
 
 void
 NodeGroup::
 addNode(const QUuid& node_id)
 {
+  // add node to list and update the bounding rectangle
 }
 
 void NodeGroup::removeNode(const QUuid& node_id)
 {
+  // remove node from list and update the bounding rectangle
 }
 

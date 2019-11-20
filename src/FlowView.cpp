@@ -207,6 +207,7 @@ contextMenuEvent(QContextMenuEvent *event)
   {
     auto& group = _scene->createGroup();
     group.groupGraphicsObject().setPos(posView);
+    group.groupGraphicsObject().updateBounds();
   });
   modelMenu.addAction(createGroupAction);
 

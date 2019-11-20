@@ -49,8 +49,13 @@ public:
   GroupGraphicsObject &
   groupGraphicsObject();
 
+  std::vector<Node*> const
+  childNodes() const;
+
   void
   setGraphicsObject(std::unique_ptr<GroupGraphicsObject>&& graphics_object);
+
+  bool empty() const;
 
 public Q_SLOTS:
 
@@ -69,6 +74,8 @@ private:
   QString _name;
 
   // data
+  /** @todo check if the node's memory management should be done differently; this
+   * seems really error-prone */
   std::vector<Node*> _childNodes;
 
   // painting

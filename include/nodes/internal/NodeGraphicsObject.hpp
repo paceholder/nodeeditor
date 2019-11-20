@@ -49,7 +49,10 @@ public:
   enum { Type = UserType + 1 };
 
   int
-  type() const override { return Type; }
+  type() const override
+  {
+    return Type;
+  }
 
   void
   lock(bool locked);
