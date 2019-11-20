@@ -60,7 +60,8 @@ NodeGraphicsObject(FlowScene &scene,
   embedQWidget();
 
   // connect to the move signals to emit the move signals in FlowScene
-  auto onMoveSlot = [this] {
+  auto onMoveSlot = [this]
+  {
     _scene.nodeMoved(_node, pos());
   };
   connect(this, &QGraphicsObject::xChanged, this, onMoveSlot);
@@ -145,7 +146,10 @@ moveConnections() const
 {
   NodeState const & nodeState = _node.nodeState();
 
-  for (PortType portType: {PortType::In, PortType::Out})
+  for (PortType portType:
+       {
+         PortType::In, PortType::Out
+       })
   {
     auto const & connectionEntries =
       nodeState.getEntries(portType);
@@ -210,14 +214,17 @@ mousePressEvent(QGraphicsSceneMouseEvent * event)
     _scene.clearSelection();
   }
 
-  for (PortType portToCheck: {PortType::In, PortType::Out})
+  for (PortType portToCheck:
+       {
+         PortType::In, PortType::Out
+       })
   {
     NodeGeometry const & nodeGeometry = _node.nodeGeometry();
 
     // TODO do not pass sceneTransform
     int const portIndex = nodeGeometry.checkHitScenePoint(portToCheck,
-                                                    event->scenePos(),
-                                                    sceneTransform());
+                          event->scenePos(),
+                          sceneTransform());
 
     if (portIndex != INVALID)
     {
@@ -249,8 +256,8 @@ mousePressEvent(QGraphicsSceneMouseEvent * event)
 
         // todo add to FlowScene
         auto connection = _scene.createConnection(portToCheck,
-                                                  _node,
-                                                  portIndex);
+                          _node,
+                          portIndex);
 
         _node.nodeState().setConnection(portToCheck,
                                         portIndex,

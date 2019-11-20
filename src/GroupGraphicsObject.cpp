@@ -117,31 +117,30 @@ void
 GroupGraphicsObject::
 updateBounds()
 {
-//  if(!_group.childNodes().empty())
-//  {
-//    QRectF currentRect = _group.childNodes()[0]->nodeGraphicsObject().boundingRect();
-//    QRectF rect = _group.childNodes()[0]->nodeGraphicsObject().boundingRect();
-//    QPointF firstRectScenePos = _group.childNodes()[0]->nodeGraphicsObject().scenePos();
-//    rect.translate(-firstRectScenePos);
-//    QPointF rectScenePos;
-//    for (auto& node : _group.childNodes())
-//    {
-//      currentRect = node->nodeGraphicsObject().boundingRect();
-//      rectScenePos = node->nodeGraphicsObject().scenePos();
-//      currentRect.translate(rectScenePos - firstRectScenePos);
+  if(!_group.childNodes().empty())
+  {
+    QRectF currentRect = _group.childNodes()[0]->nodeGraphicsObject().boundingRect();
+    QRectF rect = _group.childNodes()[0]->nodeGraphicsObject().boundingRect();
+    QPointF firstRectScenePos = _group.childNodes()[0]->nodeGraphicsObject().scenePos();
+    rect.translate(firstRectScenePos);
+    QPointF finalRectScenePos = firstRectScenePos;
+    QPointF rectScenePos;
+    for (auto& node : _group.childNodes())
+    {
+      currentRect = node->nodeGraphicsObject().boundingRect();
+      rectScenePos = node->nodeGraphicsObject().scenePos();
+      currentRect.translate(rectScenePos);
 
-//      rect = rect.united(currentRect);
-////      rectScenePos = node->nodeGraphicsObject().scenePos();
-////      if()
-////      {
+      rect = rect.united(currentRect);
 
-////      }
-//    }
-//    _areaRect.setRect(rect);
-////    setPos(firstRectScenePos);
-//  }
-////  setPos(_areaRect.pos());
-  update();
+      finalRectScenePos.setX(std::min(finalRectScenePos.x(), rectScenePos.x()));
+      finalRectScenePos.setY(std::min(finalRectScenePos.y(), rectScenePos.y()));
+    }
+    rect.translate(-firstRectScenePos);
+    _areaRect.setRect(rect);
+    setPos(firstRectScenePos);
+    update();
+  }
 }
 
 QRectF
