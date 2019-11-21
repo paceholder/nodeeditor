@@ -57,6 +57,12 @@ NodeGroup::
 setGraphicsObject(std::unique_ptr<GroupGraphicsObject>&& graphics_object)
 {
   _groupGraphicsObject = std::move(graphics_object);
+//  for(auto& node : _childNodes)
+//  {
+//    auto initialNodePos = node->nodeGraphicsObject().pos();
+//    node->nodeGraphicsObject().setParentItem(_groupGraphicsObject.get());
+//    node->nodeGraphicsObject().setPos(-_groupGraphicsObject->pos() + initialNodePos);
+//  }
 }
 
 bool

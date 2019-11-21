@@ -1,5 +1,7 @@
 #include "GroupGraphicsObject.hpp"
 
+#include <QGraphicsSceneMouseEvent>
+
 #include "FlowScene.hpp"
 
 using QtNodes::GroupRectItem;
@@ -75,6 +77,49 @@ hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
   update();
 }
 
+void
+GroupGraphicsObject::
+mousePressEvent(QGraphicsSceneMouseEvent* event)
+{
+//  for(auto& node : _group.childNodes())
+//  {
+//    node->nodeGraphicsObject().setSelected(true);
+//    node->nodeGraphicsObject().update();
+//  }
+
+//  QPainterPath path{};
+//  path.addRect(mapRectToScene(_areaRect.rect()));
+//  _scene.setSelectionArea(path);
+}
+
+
+
+void
+GroupGraphicsObject::
+mouseMoveEvent(QGraphicsSceneMouseEvent* event)
+{
+//  if(event->buttons() == Qt::LeftButton)
+//  {
+//    QPointF difference = _mousePressStart - event->scenePos();
+//    setPos(pos() + difference);
+//    for(auto& node : _group.childNodes())
+//    {
+////      node->nodeGraphicsObject().moveBy(difference.x(), difference.y());
+//      node->nodeGraphicsObject().setPos(node->nodeGraphicsObject().pos() + difference);
+//      node->nodeGraphicsObject().update();
+//    }
+  //  }
+}
+
+void GroupGraphicsObject::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
+{
+//  for(auto& node : _group.childNodes())
+//  {
+//    node->nodeGraphicsObject().setSelected(false);
+//    node->nodeGraphicsObject().update();
+//  }
+}
+
 GroupGraphicsObject::
 GroupGraphicsObject(QtNodes::FlowScene& scene, QtNodes::NodeGroup& nodeGroup)
   : _scene(scene)
@@ -88,7 +133,7 @@ GroupGraphicsObject(QtNodes::FlowScene& scene, QtNodes::NodeGroup& nodeGroup)
   setFlag(QGraphicsItem::ItemIsSelectable, true);
   setFlag(QGraphicsItem::ItemDoesntPropagateOpacityToChildren, true);
 
-  setZValue(-1.0);
+  setZValue(2.0);
 
   setAcceptHoverEvents(true);
 }
@@ -120,7 +165,7 @@ updateBounds()
   if(!_group.childNodes().empty())
   {
     QRectF currentRect = _group.childNodes()[0]->nodeGraphicsObject().boundingRect();
-    QRectF rect = _group.childNodes()[0]->nodeGraphicsObject().boundingRect();
+    QRectF rect = currentRect;
     QPointF firstRectScenePos = _group.childNodes()[0]->nodeGraphicsObject().scenePos();
     rect.translate(firstRectScenePos);
     QPointF finalRectScenePos = firstRectScenePos;
@@ -138,7 +183,9 @@ updateBounds()
     }
     rect.translate(-firstRectScenePos);
     _areaRect.setRect(rect);
+    auto currentPos = pos();
     setPos(firstRectScenePos);
+    currentPos = pos();
     update();
   }
 }
