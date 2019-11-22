@@ -53,6 +53,8 @@ public:
     setRect(x(), y(), _defaultWidth, _defaultHeight);
   }
 
+  void addObject(const QGraphicsObject& object);
+
   QColor _currentColor;
 
 protected:
@@ -69,7 +71,9 @@ private:
 
   NodeGroup& _group;
 
-  static constexpr double roundedBorderRadius = 8.0;
+  static constexpr double _roundedBorderRadius = 8.0;
+  static constexpr double _groupBorderX = 1.0;
+  static constexpr double _groupBorderY = _groupBorderX * 0.5;
 
   static constexpr double _defaultWidth = 50.0;
   static constexpr double _defaultHeight = 50.0;

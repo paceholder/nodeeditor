@@ -206,8 +206,8 @@ contextMenuEvent(QContextMenuEvent *event)
   connect(createGroupAction, &QAction::triggered, [posView = posView, _scene = _scene]()
   {
     auto& group = _scene->createGroup();
-    group.groupGraphicsObject().setPos(posView);
-    group.groupGraphicsObject().updateBounds();
+//    group.groupGraphicsObject().setPos(posView);
+//    group.groupGraphicsObject().updateBounds();
   });
   modelMenu.addAction(createGroupAction);
 

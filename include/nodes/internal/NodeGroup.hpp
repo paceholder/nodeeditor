@@ -60,10 +60,10 @@ public:
 public Q_SLOTS:
 
   void
-  addNode(const QUuid& node_id);
+  addNode(Node* node);
 
   void
-  removeNode(const QUuid& node_id);
+  removeNode(Node* node_id);
 
   //  void calculateArea();
 

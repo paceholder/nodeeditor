@@ -41,8 +41,9 @@ void NodeGroup::setGraphicsObject(
   _groupGraphicsObject = std::move(graphics_object);
   for (auto& node : _childNodes)
   {
+//    node->nodeGraphicsObject().setParentItem(_groupGraphicsObject.get());
+    addNode(node);
     //    auto initialNodePos = node->nodeGraphicsObject().pos();
-    node->nodeGraphicsObject().setParentItem(_groupGraphicsObject.get());
     //    node->nodeGraphicsObject().setPos(-_groupGraphicsObject->pos() +
     //                                      initialNodePos);
   }
@@ -53,12 +54,13 @@ bool NodeGroup::empty() const
   return _childNodes.empty();
 }
 
-void NodeGroup::addNode(const QUuid& node_id)
+void NodeGroup::addNode(Node* node)
 {
-  // add node to list and update the bounding rectangle
+  _groupGraphicsObject->addObject(node->nodeGraphicsObject());
+  _childNodes.push_back(node);
 }
 
-void NodeGroup::removeNode(const QUuid& node_id)
+void NodeGroup::removeNode(Node* node)
 {
   // remove node from list and update the bounding rectangle
 }
