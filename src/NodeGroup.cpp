@@ -7,7 +7,14 @@ using QtNodes::NodeGroup;
 NodeGroup::NodeGroup(std::vector<Node*>&& nodes)
   : _uid(QUuid::createUuid()),
     _childNodes(std::move(nodes)),
-    _groupGraphicsObject(nullptr) {}
+    _groupGraphicsObject(nullptr)
+{
+
+  for (auto& node : _childNodes)
+  {
+    node->setNodeGroup(this);
+  }
+}
 
 NodeGroup::~NodeGroup() = default;
 
@@ -35,14 +42,21 @@ std::vector<Node*> const NodeGroup::childNodes() const
   return _childNodes;
 }
 
+bool NodeGroup::locked() const
+{
+  return _locked;
+}
+
 void NodeGroup::setGraphicsObject(
   std::unique_ptr<GroupGraphicsObject>&& graphics_object)
 {
   _groupGraphicsObject = std::move(graphics_object);
   for (auto& node : _childNodes)
   {
-    addNodeGraphicsObject(node);
+    addNode(node);
   }
+
+  lock(true);
 }
 
 bool NodeGroup::empty() const
@@ -50,9 +64,34 @@ bool NodeGroup::empty() const
   return _childNodes.empty();
 }
 
-void NodeGroup::addNodeGraphicsObject(Node* node)
+void
+NodeGroup::
+setSelected(bool selected)
 {
-  _groupGraphicsObject->addObject(node->nodeGraphicsObject());
+  _groupGraphicsObject->setSelected(selected);
+  for (auto& node : childNodes())
+  {
+    node->nodeGraphicsObject().setSelected(selected);
+  }
+}
+
+void NodeGroup::lock(bool locked)
+{
+  for (auto& node : childNodes())
+  {
+    node->nodeGraphicsObject().lock(locked);
+  }
+  _locked = locked;
+}
+
+void NodeGroup::addNodeGraphicsObject(NodeGraphicsObject& ngo)
+{
+  _groupGraphicsObject->addObject(ngo);
+}
+
+void NodeGroup::addNode(Node* node)
+{
+  addNodeGraphicsObject(node->nodeGraphicsObject());
 }
 
 void NodeGroup::removeNode(Node* node)

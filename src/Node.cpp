@@ -13,8 +13,11 @@
 #include "ConnectionGraphicsObject.hpp"
 #include "ConnectionState.hpp"
 
+#include "NodeGroup.hpp"
+
 using QtNodes::Node;
 using QtNodes::NodeGeometry;
+using QtNodes::NodeGroup;
 using QtNodes::NodeState;
 using QtNodes::NodeData;
 using QtNodes::NodeDataType;
@@ -26,6 +29,7 @@ using QtNodes::PortType;
 Node::
 Node(std::unique_ptr<NodeDataModel> && dataModel)
   : _uid(QUuid::createUuid())
+  , _nodeGroup(nullptr)
   , _nodeDataModel(std::move(dataModel))
   , _nodeState(_nodeDataModel)
   , _nodeGeometry(_nodeDataModel)
@@ -141,6 +145,13 @@ setGraphicsObject(std::unique_ptr<NodeGraphicsObject>&& graphics)
   _nodeGeometry.recalculateSize();
 }
 
+void
+Node::
+setNodeGroup(NodeGroup* group)
+{
+  _nodeGroup = group;
+}
+
 
 NodeGeometry&
 Node::
@@ -181,6 +192,21 @@ nodeDataModel() const
   return _nodeDataModel.get();
 }
 
+NodeGroup*
+Node::
+nodeGroup() const
+{
+  return _nodeGroup;
+}
+
+void
+Node::
+selectGroup(bool selected)
+{
+  if(_nodeGroup)
+    _nodeGroup->setSelected(selected);
+}
+
 
 void
 Node::
@@ -214,20 +240,23 @@ void
 Node::
 onNodeSizeUpdated()
 {
-    if( nodeDataModel()->embeddedWidget() )
+  if( nodeDataModel()->embeddedWidget() )
+  {
+    nodeDataModel()->embeddedWidget()->adjustSize();
+  }
+  nodeGeometry().recalculateSize();
+  for(PortType type:
+      {
+        PortType::In, PortType::Out
+      })
+  {
+    for(auto& conn_set : nodeState().getEntries(type))
     {
-        nodeDataModel()->embeddedWidget()->adjustSize();
+      for(auto& pair: conn_set)
+      {
+        Connection* conn = pair.second;
+        conn->getConnectionGraphicsObject().move();
+      }
     }
-    nodeGeometry().recalculateSize();
-    for(PortType type: {PortType::In, PortType::Out})
-    {
-        for(auto& conn_set : nodeState().getEntries(type))
-        {
-            for(auto& pair: conn_set)
-            {
-                Connection* conn = pair.second;
-                conn->getConnectionGraphicsObject().move();
-            }
-        }
-    }
+  }
 }

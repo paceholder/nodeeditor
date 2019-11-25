@@ -50,6 +50,12 @@ void GroupGraphicsObject::hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
   update();
 }
 
+void GroupGraphicsObject::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
+{
+  QGraphicsItem::mouseDoubleClickEvent(event);
+  group().lock(!group().locked());
+}
+
 GroupGraphicsObject::~GroupGraphicsObject()
 {
   _scene.removeItem(this);
@@ -69,10 +75,12 @@ void GroupGraphicsObject::addObject(NodeGraphicsObject& object)
 {
   QMarginsF groupMargins{_groupBorderX, _groupBorderY, _groupBorderX, _groupBorderY};
 
-  auto objScenePos = object.scenePos();
+  QPointF objScenePos = object.scenePos();
   object.setParentItem(this);
   object.setPos(mapFromScene(objScenePos));
+
   setRect(childrenBoundingRect().marginsAdded(groupMargins));
+
   update();
 }
 

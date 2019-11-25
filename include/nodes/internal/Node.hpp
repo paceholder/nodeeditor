@@ -24,6 +24,7 @@ class Connection;
 class ConnectionState;
 class NodeGraphicsObject;
 class NodeDataModel;
+class NodeGroup;
 
 class NODE_EDITOR_PUBLIC Node
   : public QObject
@@ -70,6 +71,9 @@ public:
   void
   setGraphicsObject(std::unique_ptr<NodeGraphicsObject>&& graphics);
 
+  void
+  setNodeGroup(NodeGroup* group);
+
   NodeGeometry&
   nodeGeometry();
 
@@ -84,6 +88,12 @@ public:
 
   NodeDataModel*
   nodeDataModel() const;
+
+  NodeGroup*
+  nodeGroup() const;
+
+  void
+  selectGroup(bool selected);
 
 public Q_SLOTS: // data propagation
 
@@ -106,6 +116,8 @@ private:
   // addressing
 
   QUuid _uid;
+
+  NodeGroup* _nodeGroup;
 
   // data
 

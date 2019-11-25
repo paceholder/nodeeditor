@@ -16,6 +16,8 @@
 #include "NodeDataModel.hpp"
 #include "NodeConnectionInteraction.hpp"
 
+#include "NodeGroup.hpp"
+
 #include "StyleCollection.hpp"
 
 using QtNodes::NodeGraphicsObject;
@@ -169,7 +171,7 @@ lock(bool locked)
 {
   _locked = locked;
 
-  setFlag(QGraphicsItem::ItemIsMovable, !locked);
+//  setFlag(QGraphicsItem::ItemIsMovable, !locked);
   setFlag(QGraphicsItem::ItemIsFocusable, !locked);
   setFlag(QGraphicsItem::ItemIsSelectable, !locked);
 }
@@ -205,8 +207,10 @@ NodeGraphicsObject::
 mousePressEvent(QGraphicsSceneMouseEvent * event)
 {
   if (_locked)
+  {
+    node().selectGroup(true);
     return;
-
+  }
   // deselect all other items after this one is selected
   if (!isSelected() &&
       !(event->modifiers() & Qt::ControlModifier))

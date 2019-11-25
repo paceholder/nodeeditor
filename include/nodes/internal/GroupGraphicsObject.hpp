@@ -47,6 +47,11 @@ public:
     setColor(_fillColor);
   }
 
+  void setLockedColor()
+  {
+    setColor(_lockedColor);
+  }
+
   void resetSize()
   {
     setRect(x(), y(), _defaultWidth, _defaultHeight);
@@ -65,6 +70,8 @@ protected:
 
   void hoverLeaveEvent(QGraphicsSceneHoverEvent* event) override;
 
+  void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
+
 private:
   FlowScene& _scene;
 
@@ -77,9 +84,10 @@ private:
   static constexpr double _defaultWidth = 50.0;
   static constexpr double _defaultHeight = 50.0;
 
-  const QColor _fillColor = "#50a5b084";
-  const QColor _borderColor = "#50aaaaaa";
-  const QColor _hoverColor = "#5083a4af";
+  const QColor _fillColor = "#20a5b084";
+  const QColor _borderColor = "#20aaaaaa";
+  const QColor _hoverColor = "#2083a4af";
+  const QColor _lockedColor = "20ffffff";
 };
 
 }  // namespace QtNodes

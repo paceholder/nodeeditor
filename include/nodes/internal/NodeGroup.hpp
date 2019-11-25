@@ -52,18 +52,27 @@ public:
   std::vector<Node*> const
   childNodes() const;
 
+  bool locked() const;
+
   void
   setGraphicsObject(std::unique_ptr<GroupGraphicsObject>&& graphics_object);
 
   bool empty() const;
 
+  void setSelected(bool selected);
+
+  void lock(bool locked);
+
 public Q_SLOTS:
 
   void
-  addNodeGraphicsObject(Node* node);
+  addNodeGraphicsObject(NodeGraphicsObject& ngo);
 
   void
-  removeNode(Node* node_id);
+  addNode(Node* node);
+
+  void
+  removeNode(Node* node);
 
   //  void calculateArea();
 
@@ -72,6 +81,8 @@ private:
   QUuid _uid;
 
   QString _name;
+
+  bool _locked;
 
   // data
   /** @todo check if the node's memory management should be done differently; this
