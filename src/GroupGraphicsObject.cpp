@@ -97,7 +97,7 @@ void GroupGraphicsObject::updateBounds()
   }
 }
 
-void GroupGraphicsObject::addObject(const QGraphicsObject& object)
+void GroupGraphicsObject::addObject(QtNodes::NodeGraphicsObject& object)
 {
   QMarginsF groupMargins{_groupBorderX, _groupBorderY, _groupBorderX, _groupBorderY};
   QPointF groupBorder{_groupBorderX, _groupBorderY};
@@ -110,6 +110,7 @@ void GroupGraphicsObject::addObject(const QGraphicsObject& object)
     setRect(object.boundingRect().marginsAdded(groupMargins));
   }
   else
+    /// TODO: PASS NODE AS ARGUMENT
   {
     QRectF finalRect{rect()};
     QRectF objRect{object.boundingRect()};
@@ -118,6 +119,9 @@ void GroupGraphicsObject::addObject(const QGraphicsObject& object)
     finalRect = finalRect.united(objRect);
     setRect(finalRect.marginsAdded(groupMargins));
   }
+  auto objScenePos = object.scenePos();
+  object.setParentItem(this);
+  object.setPos(pos() - objScenePos);
   update();
 }
 

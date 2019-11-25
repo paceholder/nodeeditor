@@ -53,7 +53,7 @@ public:
     setRect(x(), y(), _defaultWidth, _defaultHeight);
   }
 
-  void addObject(const QGraphicsObject& object);
+  void addObject(QtNodes::NodeGraphicsObject& node);
 
   QColor _currentColor;
 
