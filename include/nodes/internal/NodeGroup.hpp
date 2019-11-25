@@ -60,7 +60,7 @@ public:
 public Q_SLOTS:
 
   void
-  addNode(Node* node);
+  addNodeGraphicsObject(Node* node);
 
   void
   removeNode(Node* node_id);

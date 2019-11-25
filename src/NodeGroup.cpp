@@ -41,11 +41,7 @@ void NodeGroup::setGraphicsObject(
   _groupGraphicsObject = std::move(graphics_object);
   for (auto& node : _childNodes)
   {
-//    node->nodeGraphicsObject().setParentItem(_groupGraphicsObject.get());
-    addNode(node);
-    //    auto initialNodePos = node->nodeGraphicsObject().pos();
-    //    node->nodeGraphicsObject().setPos(-_groupGraphicsObject->pos() +
-    //                                      initialNodePos);
+    addNodeGraphicsObject(node);
   }
 }
 
@@ -54,10 +50,9 @@ bool NodeGroup::empty() const
   return _childNodes.empty();
 }
 
-void NodeGroup::addNode(Node* node)
+void NodeGroup::addNodeGraphicsObject(Node* node)
 {
   _groupGraphicsObject->addObject(node->nodeGraphicsObject());
-  _childNodes.push_back(node);
 }
 
 void NodeGroup::removeNode(Node* node)

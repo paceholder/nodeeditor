@@ -97,20 +97,17 @@ void GroupGraphicsObject::updateBounds()
   }
 }
 
-void GroupGraphicsObject::addObject(QtNodes::NodeGraphicsObject& object)
+void GroupGraphicsObject::addObject(NodeGraphicsObject& object)
 {
   QMarginsF groupMargins{_groupBorderX, _groupBorderY, _groupBorderX, _groupBorderY};
   QPointF groupBorder{_groupBorderX, _groupBorderY};
 
-  // not working properly because childItems will always be empty as of now,
-  // since the nodes are not yet being added as children of the group
   if (childItems().empty())
   {
     setPos(object.scenePos() - groupBorder);
     setRect(object.boundingRect().marginsAdded(groupMargins));
   }
   else
-    /// TODO: PASS NODE AS ARGUMENT
   {
     QRectF finalRect{rect()};
     QRectF objRect{object.boundingRect()};

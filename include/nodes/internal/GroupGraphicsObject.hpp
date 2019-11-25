@@ -9,6 +9,7 @@ namespace QtNodes
 
 class FlowScene;
 class NodeGroup;
+class NodeGraphicsObject;
 
 class GroupGraphicsObject : public QObject, public QGraphicsRectItem
 {
@@ -53,7 +54,7 @@ public:
     setRect(x(), y(), _defaultWidth, _defaultHeight);
   }
 
-  void addObject(QtNodes::NodeGraphicsObject& node);
+  void addObject(NodeGraphicsObject& object);
 
   QColor _currentColor;
 
