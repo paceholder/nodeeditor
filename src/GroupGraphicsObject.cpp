@@ -73,24 +73,6 @@ void GroupGraphicsObject::addObject(NodeGraphicsObject& object)
   object.setParentItem(this);
   object.setPos(mapFromScene(objScenePos));
   setRect(childrenBoundingRect().marginsAdded(groupMargins));
-//  if (childItems().empty())
-//  {
-//    setPos(object.scenePos() - groupBorder);
-//    setRect(object.boundingRect().marginsAdded(groupMargins));
-//  }
-//  else
-//  {
-//    QRectF finalRect{mapRectToScene(rect())};
-//    QRectF objRect{object.mapRectToScene(object.boundingRect())};
-//    finalRect |= objRect;
-//    auto objScenePos = object.scenePos();
-//    object.setParentItem(this);
-//    object.setPos(mapFromScene(objScenePos));
-//    setRect(mapRectFromScene(finalRect.marginsAdded(groupMargins)));
-//    auto Pos = pos();
-//    auto rec = rect();
-//    pos();
-//  }
   update();
 }
 
