@@ -32,8 +32,6 @@ public:
     return Type;
   }
 
-  void updateBounds();
-
   void setColor(QColor color)
   {
     _currentColor = color;

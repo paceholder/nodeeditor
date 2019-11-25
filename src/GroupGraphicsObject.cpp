@@ -65,60 +65,32 @@ NodeGroup const& GroupGraphicsObject::group() const
   return _group;
 }
 
-void GroupGraphicsObject::updateBounds()
-{
-  if (!_group.childNodes().empty())
-  {
-//    QRectF currentRect =
-//      _group.childNodes()[0]->nodeGraphicsObject().  boundingRect();
-//    QRectF rect = currentRect;
-//    QPointF firstRectScenePos =
-//      _group.childNodes()[0]->nodeGraphicsObject().scenePos();
-//    rect.translate(firstRectScenePos);
-//    QPointF finalRectScenePos = firstRectScenePos;
-//    QPointF rectScenePos;
-//    for (auto& node : _group.childNodes())
-//    {
-//      currentRect = node->nodeGraphicsObject().boundingRect();
-//      rectScenePos = node->nodeGraphicsObject().scenePos();
-//      currentRect.translate(rectScenePos);
-
-//      rect = rect.united(currentRect);
-
-//      finalRectScenePos.setX(std::min(finalRectScenePos.x(),
-//                                      rectScenePos.x()));
-//      finalRectScenePos.setY(std::min(finalRectScenePos.y(),
-//                                      rectScenePos.y()));
-//    }
-////    rect.translate(-firstRectScenePos);
-//    setRect(rect);
-////    setPos(firstRectScenePos);
-//    update();
-  }
-}
-
 void GroupGraphicsObject::addObject(NodeGraphicsObject& object)
 {
   QMarginsF groupMargins{_groupBorderX, _groupBorderY, _groupBorderX, _groupBorderY};
-  QPointF groupBorder{_groupBorderX, _groupBorderY};
 
-  if (childItems().empty())
-  {
-    setPos(object.scenePos() - groupBorder);
-    setRect(object.boundingRect().marginsAdded(groupMargins));
-  }
-  else
-  {
-    QRectF finalRect{rect()};
-    QRectF objRect{object.boundingRect()};
-    objRect.setX(object.scenePos().x());
-    objRect.setY(object.scenePos().y());
-    finalRect = finalRect.united(objRect);
-    setRect(finalRect.marginsAdded(groupMargins));
-  }
   auto objScenePos = object.scenePos();
   object.setParentItem(this);
-  object.setPos(pos() - objScenePos);
+  object.setPos(mapFromScene(objScenePos));
+  setRect(childrenBoundingRect().marginsAdded(groupMargins));
+//  if (childItems().empty())
+//  {
+//    setPos(object.scenePos() - groupBorder);
+//    setRect(object.boundingRect().marginsAdded(groupMargins));
+//  }
+//  else
+//  {
+//    QRectF finalRect{mapRectToScene(rect())};
+//    QRectF objRect{object.mapRectToScene(object.boundingRect())};
+//    finalRect |= objRect;
+//    auto objScenePos = object.scenePos();
+//    object.setParentItem(this);
+//    object.setPos(mapFromScene(objScenePos));
+//    setRect(mapRectFromScene(finalRect.marginsAdded(groupMargins)));
+//    auto Pos = pos();
+//    auto rec = rect();
+//    pos();
+//  }
   update();
 }
 
