@@ -32,13 +32,7 @@ public:
     return Type;
   }
 
-  void setColor(QColor color);
-
-  void setHoverColor();
-
-  void setFillColor();
-
-  void setLockedColor();
+  void setColor(const QColor& color);
 
   void resetSize();
 
@@ -57,10 +51,14 @@ protected:
 
   void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
 
-  const QColor _fillColor = "#20a5b084";
-  const QColor _borderColor = "#20aaaaaa";
-  const QColor _hoverColor = "#2083a4af";
-  const QColor _lockedColor = "20ffffff";
+public:
+  const QColor kUnlockedFillColor  = QColor("#20a5b084");
+  const QColor kUnlockedHoverColor = QColor("#2083a4af");
+
+  const QColor kLockedFillColor  = QColor("#20ba6a6a");
+  const QColor kLockedHoverColor = QColor("#20aa5757");
+
+  const QColor kBorderColor = QColor("#20aaaaaa");
 
 private:
   FlowScene& _scene;

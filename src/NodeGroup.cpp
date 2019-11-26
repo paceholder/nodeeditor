@@ -82,6 +82,14 @@ void NodeGroup::lock(bool locked)
     node->nodeGraphicsObject().lock(locked);
   }
   _locked = locked;
+  if (locked)
+  {
+    groupGraphicsObject().setColor(groupGraphicsObject().kLockedFillColor);
+  }
+  else
+  {
+    groupGraphicsObject().setColor(groupGraphicsObject().kUnlockedFillColor);
+  }
 }
 
 void NodeGroup::addNodeGraphicsObject(NodeGraphicsObject& ngo)

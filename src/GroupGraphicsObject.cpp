@@ -19,9 +19,9 @@ GroupGraphicsObject::GroupGraphicsObject(QtNodes::FlowScene& scene,
   setFlag(QGraphicsItem::ItemIsMovable, true);
   setFlag(QGraphicsItem::ItemIsFocusable, true);
   setFlag(QGraphicsItem::ItemIsSelectable, true);
-  setFlag(QGraphicsItem::ItemDoesntPropagateOpacityToChildren, true);
+//  setFlag(QGraphicsItem::ItemDoesntPropagateOpacityToChildren, true);
 
-  _currentColor = _fillColor;
+  _currentColor = kUnlockedFillColor;
 
   setZValue(-1.0);
 
@@ -30,7 +30,14 @@ GroupGraphicsObject::GroupGraphicsObject(QtNodes::FlowScene& scene,
 
 void GroupGraphicsObject::hoverEnterEvent(QGraphicsSceneHoverEvent* event)
 {
-  setHoverColor();
+  if (group().locked())
+  {
+    setColor(kLockedHoverColor);
+  }
+  else
+  {
+    setColor(kUnlockedHoverColor);
+  }
   for (auto& node : _group.childNodes())
   {
     node->nodeGeometry().setHovered(true);
@@ -41,7 +48,14 @@ void GroupGraphicsObject::hoverEnterEvent(QGraphicsSceneHoverEvent* event)
 
 void GroupGraphicsObject::hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
 {
-  setFillColor();
+  if (group().locked())
+  {
+    setColor(kLockedFillColor);
+  }
+  else
+  {
+    setColor(kUnlockedFillColor);
+  }
   for (auto& node : _group.childNodes())
   {
     node->nodeGeometry().setHovered(false);
@@ -94,24 +108,10 @@ QRectF GroupGraphicsObject::boundingRect() const
   return childrenBoundingRect().marginsAdded(_margins);
 }
 
-void GroupGraphicsObject::setColor(QColor color)
+void GroupGraphicsObject::setColor(const QColor& color)
 {
   _currentColor = color;
-}
-
-void GroupGraphicsObject::setHoverColor()
-{
-  setColor(_hoverColor);
-}
-
-void GroupGraphicsObject::setFillColor()
-{
-  setColor(_fillColor);
-}
-
-void GroupGraphicsObject::setLockedColor()
-{
-  setColor(_lockedColor);
+  update();
 }
 
 void GroupGraphicsObject::resetSize()
