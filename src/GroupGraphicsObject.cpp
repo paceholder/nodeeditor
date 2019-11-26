@@ -73,14 +73,9 @@ NodeGroup const& GroupGraphicsObject::group() const
 
 void GroupGraphicsObject::addObject(NodeGraphicsObject& object)
 {
-  QMarginsF groupMargins{_groupBorderX, _groupBorderY, _groupBorderX, _groupBorderY};
-
   QPointF objScenePos = object.scenePos();
   object.setParentItem(this);
   object.setPos(mapFromScene(objScenePos));
-
-  setRect(childrenBoundingRect().marginsAdded(groupMargins));
-
   update();
 }
 
@@ -88,6 +83,7 @@ void GroupGraphicsObject::paint(QPainter* painter,
                                 const QStyleOptionGraphicsItem* option,
                                 QWidget* widget)
 {
+  setRect(boundingRect());
   painter->setBrush(_currentColor);
   painter->setPen(Qt::PenStyle::DashLine);
   painter->drawRoundedRect(rect(), _roundedBorderRadius, _roundedBorderRadius);
@@ -95,5 +91,30 @@ void GroupGraphicsObject::paint(QPainter* painter,
 
 QRectF GroupGraphicsObject::boundingRect() const
 {
-  return rect();
+  return childrenBoundingRect().marginsAdded(_margins);
+}
+
+void GroupGraphicsObject::setColor(QColor color)
+{
+  _currentColor = color;
+}
+
+void GroupGraphicsObject::setHoverColor()
+{
+  setColor(_hoverColor);
+}
+
+void GroupGraphicsObject::setFillColor()
+{
+  setColor(_fillColor);
+}
+
+void GroupGraphicsObject::setLockedColor()
+{
+  setColor(_lockedColor);
+}
+
+void GroupGraphicsObject::resetSize()
+{
+  setRect(x(), y(), _defaultWidth, _defaultHeight);
 }

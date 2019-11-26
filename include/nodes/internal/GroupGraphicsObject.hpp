@@ -32,30 +32,15 @@ public:
     return Type;
   }
 
-  void setColor(QColor color)
-  {
-    _currentColor = color;
-  }
+  void setColor(QColor color);
 
-  void setHoverColor()
-  {
-    setColor(_hoverColor);
-  }
+  void setHoverColor();
 
-  void setFillColor()
-  {
-    setColor(_fillColor);
-  }
+  void setFillColor();
 
-  void setLockedColor()
-  {
-    setColor(_lockedColor);
-  }
+  void setLockedColor();
 
-  void resetSize()
-  {
-    setRect(x(), y(), _defaultWidth, _defaultHeight);
-  }
+  void resetSize();
 
   void addObject(NodeGraphicsObject& object);
 
@@ -72,6 +57,11 @@ protected:
 
   void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
 
+  const QColor _fillColor = "#20a5b084";
+  const QColor _borderColor = "#20aaaaaa";
+  const QColor _hoverColor = "#2083a4af";
+  const QColor _lockedColor = "20ffffff";
+
 private:
   FlowScene& _scene;
 
@@ -80,14 +70,10 @@ private:
   static constexpr double _roundedBorderRadius = 8.0;
   static constexpr double _groupBorderX = 1.0;
   static constexpr double _groupBorderY = _groupBorderX * 0.5;
+  static constexpr QMarginsF  _margins = QMarginsF(_groupBorderX, _groupBorderY, _groupBorderX, _groupBorderY);
 
   static constexpr double _defaultWidth = 50.0;
   static constexpr double _defaultHeight = 50.0;
-
-  const QColor _fillColor = "#20a5b084";
-  const QColor _borderColor = "#20aaaaaa";
-  const QColor _hoverColor = "#2083a4af";
-  const QColor _lockedColor = "20ffffff";
 };
 
 }  // namespace QtNodes
