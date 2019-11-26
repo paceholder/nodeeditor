@@ -38,6 +38,8 @@ public:
 
   void addObject(NodeGraphicsObject& object);
 
+  void moveConnections();
+
   QColor _currentColor;
 
 protected:
@@ -48,6 +50,8 @@ protected:
   void hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
 
   void hoverLeaveEvent(QGraphicsSceneHoverEvent* event) override;
+
+  void mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
 
   void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
 

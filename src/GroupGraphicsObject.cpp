@@ -6,6 +6,7 @@
 #include "FlowScene.hpp"
 
 using QtNodes::GroupGraphicsObject;
+using QtNodes::NodeGraphicsObject;
 using QtNodes::NodeGroup;
 
 GroupGraphicsObject::GroupGraphicsObject(QtNodes::FlowScene& scene,
@@ -64,6 +65,15 @@ void GroupGraphicsObject::hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
   update();
 }
 
+void GroupGraphicsObject::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
+{
+  QGraphicsItem::mouseMoveEvent(event);
+  if (event->lastPos() != event->pos())
+  {
+    moveConnections();
+  }
+}
+
 void GroupGraphicsObject::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
 {
   QGraphicsItem::mouseDoubleClickEvent(event);
@@ -91,6 +101,14 @@ void GroupGraphicsObject::addObject(NodeGraphicsObject& object)
   object.setParentItem(this);
   object.setPos(mapFromScene(objScenePos));
   update();
+}
+
+void GroupGraphicsObject::moveConnections()
+{
+  for (auto& node : group().childNodes())
+  {
+    node->nodeGraphicsObject().moveConnections();
+  }
 }
 
 void GroupGraphicsObject::paint(QPainter* painter,

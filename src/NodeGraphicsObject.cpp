@@ -208,6 +208,7 @@ mousePressEvent(QGraphicsSceneMouseEvent * event)
 {
   if (_locked)
   {
+    _scene.clearSelection();
     node().selectGroup(true);
     return;
   }
@@ -323,7 +324,16 @@ mouseMoveEvent(QGraphicsSceneMouseEvent * event)
     QGraphicsObject::mouseMoveEvent(event);
 
     if (event->lastPos() != event->pos())
-      moveConnections();
+    {
+      if (node().nodeGroup())
+      {
+        node().nodeGroup()->groupGraphicsObject().moveConnections();
+      }
+      else
+      {
+        moveConnections();
+      }
+    }
 
     event->ignore();
   }
