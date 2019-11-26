@@ -40,6 +40,8 @@ public:
 
   void moveConnections();
 
+  void lock(bool locked);
+
   QColor _currentColor;
 
 protected:
@@ -55,6 +57,8 @@ protected:
 
   void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
 
+  void positionLockedIcon();
+
 public:
   const QColor kUnlockedFillColor  = QColor("#20a5b084");
   const QColor kUnlockedHoverColor = QColor("#2083a4af");
@@ -68,6 +72,12 @@ private:
   FlowScene& _scene;
 
   NodeGroup& _group;
+
+  QGraphicsPixmapItem* _lockedGraphicsItem;
+  QGraphicsPixmapItem* _unlockedGraphicsItem;
+
+  QPixmap _lockedIcon{"://padlock-lock.png"};
+  QPixmap _unlockedIcon{"://padlock-unlock.png"};
 
   static constexpr double _roundedBorderRadius = 8.0;
   static constexpr double _groupBorderX = 1.0;

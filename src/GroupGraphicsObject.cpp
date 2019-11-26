@@ -15,6 +15,9 @@ GroupGraphicsObject::GroupGraphicsObject(QtNodes::FlowScene& scene,
 {
   setRect(0, 0, _defaultWidth, _defaultHeight);
 
+  _lockedGraphicsItem = new QGraphicsPixmapItem(_lockedIcon, this);
+  _unlockedGraphicsItem = new QGraphicsPixmapItem(_unlockedIcon, this);
+
   _scene.addItem(this);
 
   setFlag(QGraphicsItem::ItemIsMovable, true);
@@ -80,6 +83,18 @@ void GroupGraphicsObject::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
   group().lock(!group().locked());
 }
 
+void GroupGraphicsObject::positionLockedIcon()
+{
+  _lockedGraphicsItem->setPos(boundingRect().topRight()
+                              + QPointF(-(_roundedBorderRadius +
+                                          _lockedGraphicsItem->boundingRect().width()),
+                                        _roundedBorderRadius));
+  _unlockedGraphicsItem->setPos(boundingRect().topRight()
+                                + QPointF(-(_roundedBorderRadius +
+                                          _unlockedGraphicsItem->boundingRect().width()),
+                                          _roundedBorderRadius));
+}
+
 GroupGraphicsObject::~GroupGraphicsObject()
 {
   _scene.removeItem(this);
@@ -111,11 +126,19 @@ void GroupGraphicsObject::moveConnections()
   }
 }
 
+void GroupGraphicsObject::lock(bool locked)
+{
+  _lockedGraphicsItem->setVisible(locked);
+  _unlockedGraphicsItem->setVisible(!locked);
+  setColor(locked? kLockedFillColor : kUnlockedFillColor);
+}
+
 void GroupGraphicsObject::paint(QPainter* painter,
                                 const QStyleOptionGraphicsItem* option,
                                 QWidget* widget)
 {
   setRect(boundingRect());
+  positionLockedIcon();
   painter->setBrush(_currentColor);
   painter->setPen(Qt::PenStyle::DashLine);
   painter->drawRoundedRect(rect(), _roundedBorderRadius, _roundedBorderRadius);
