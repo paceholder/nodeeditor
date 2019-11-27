@@ -66,13 +66,13 @@ public:
 
   void removeNode(Node& node);
 
-  NodeGroup& createGroup();
+  NodeGroup* createGroup();
 
   Node* getNodeFromID(QUuid node_id) const;
 
   // NodeGroup& restoreGroup();
 
-  //  void removeGroup();
+  void removeGroup(NodeGroup* group);
 
   DataModelRegistry&registry() const;
 

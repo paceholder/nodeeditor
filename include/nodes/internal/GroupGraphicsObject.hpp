@@ -4,6 +4,16 @@
 
 #include "NodeGroup.hpp"
 
+class PadlockGraphicsItem : public QGraphicsPixmapItem
+{
+public:
+  PadlockGraphicsItem(QGraphicsItem* parent = nullptr);
+  PadlockGraphicsItem(const QPixmap& pixmap, QGraphicsItem* parent = nullptr);
+
+protected:
+  QRectF boundingRect() const override;
+};
+
 namespace QtNodes
 {
 
@@ -17,7 +27,7 @@ class GroupGraphicsObject : public QObject, public QGraphicsRectItem
 public:
   GroupGraphicsObject(FlowScene& scene, NodeGroup& nodeGroup);
 
-  virtual ~GroupGraphicsObject();
+  virtual ~GroupGraphicsObject() override;
 
   NodeGroup& group();
 
@@ -44,6 +54,8 @@ public:
 
   QColor _currentColor;
 
+  void positionLockedIcon();
+
 protected:
   void paint(QPainter* painter,
              QStyleOptionGraphicsItem const* option,
@@ -56,8 +68,6 @@ protected:
   void mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
 
   void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
-
-  void positionLockedIcon();
 
 public:
   const QColor kUnlockedFillColor  = QColor("#20a5b084");

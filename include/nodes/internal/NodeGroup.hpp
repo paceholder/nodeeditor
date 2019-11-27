@@ -72,7 +72,7 @@ public Q_SLOTS:
   addNode(Node* node);
 
   void
-  removeNode(QUuid nodeID);
+  removeNodeFromGroup(QUuid nodeID);
 
   //  void calculateArea();
 

@@ -1,6 +1,7 @@
 #include "GroupGraphicsObject.hpp"
 
 #include <QGraphicsSceneMouseEvent>
+#include <QStyleOptionGraphicsItem>
 #include <nodes/Node>
 
 #include "FlowScene.hpp"
@@ -9,14 +10,26 @@ using QtNodes::GroupGraphicsObject;
 using QtNodes::NodeGraphicsObject;
 using QtNodes::NodeGroup;
 
-GroupGraphicsObject::GroupGraphicsObject(QtNodes::FlowScene& scene,
-    QtNodes::NodeGroup& nodeGroup)
+
+PadlockGraphicsItem::PadlockGraphicsItem(QGraphicsItem* parent)
+  : QGraphicsPixmapItem(parent) {}
+
+PadlockGraphicsItem::PadlockGraphicsItem(const QPixmap& pixmap, QGraphicsItem* parent)
+  : QGraphicsPixmapItem(pixmap, parent) {}
+
+QRectF PadlockGraphicsItem::boundingRect() const
+{
+  return QRectF();
+}
+
+GroupGraphicsObject::GroupGraphicsObject(FlowScene& scene,
+    NodeGroup& nodeGroup)
   : _scene(scene), _group(nodeGroup)
 {
   setRect(0, 0, _defaultWidth, _defaultHeight);
 
-  _lockedGraphicsItem = new QGraphicsPixmapItem(_lockedIcon, this);
-  _unlockedGraphicsItem = new QGraphicsPixmapItem(_unlockedIcon, this);
+  _lockedGraphicsItem = new PadlockGraphicsItem(_lockedIcon, this);
+  _unlockedGraphicsItem = new PadlockGraphicsItem(_unlockedIcon, this);
 
   _scene.addItem(this);
 
@@ -30,6 +43,11 @@ GroupGraphicsObject::GroupGraphicsObject(QtNodes::FlowScene& scene,
   setZValue(-1.0);
 
   setAcceptHoverEvents(true);
+}
+
+GroupGraphicsObject::~GroupGraphicsObject()
+{
+  _scene.removeItem(this);
 }
 
 void GroupGraphicsObject::hoverEnterEvent(QGraphicsSceneHoverEvent* event)
@@ -86,18 +104,11 @@ void GroupGraphicsObject::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
 void GroupGraphicsObject::positionLockedIcon()
 {
   _lockedGraphicsItem->setPos(boundingRect().topRight()
-                              + QPointF(-(_roundedBorderRadius +
-                                          _lockedGraphicsItem->boundingRect().width()),
+                              + QPointF(-(_roundedBorderRadius + _lockedIcon.width()),
                                         _roundedBorderRadius));
   _unlockedGraphicsItem->setPos(boundingRect().topRight()
-                                + QPointF(-(_roundedBorderRadius +
-                                          _unlockedGraphicsItem->boundingRect().width()),
+                                + QPointF(-(_roundedBorderRadius + _unlockedIcon.width()),
                                           _roundedBorderRadius));
-}
-
-GroupGraphicsObject::~GroupGraphicsObject()
-{
-  _scene.removeItem(this);
 }
 
 NodeGroup& GroupGraphicsObject::group()
@@ -124,7 +135,6 @@ void GroupGraphicsObject::moveConnections()
   {
     node->nodeGraphicsObject().moveConnections();
   }
-  positionLockedIcon();
 }
 
 void GroupGraphicsObject::lock(bool locked)
@@ -139,6 +149,8 @@ void GroupGraphicsObject::paint(QPainter* painter,
                                 QWidget* widget)
 {
   setRect(boundingRect());
+  positionLockedIcon();
+  painter->setClipRect(option->exposedRect);
   painter->setBrush(_currentColor);
   painter->setPen(Qt::PenStyle::DashLine);
   painter->drawRoundedRect(rect(), _roundedBorderRadius, _roundedBorderRadius);
@@ -159,3 +171,4 @@ void GroupGraphicsObject::resetSize()
 {
   setRect(x(), y(), _defaultWidth, _defaultHeight);
 }
+

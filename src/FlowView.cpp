@@ -201,15 +201,10 @@ contextMenuEvent(QContextMenuEvent *event)
 
   auto createGroupAction = new QAction(&modelMenu);
   createGroupAction->setText(QStringLiteral("Create group"));
-  QPoint pos = event->pos();
-  QPointF posView = mapToScene(pos);
-  connect(createGroupAction, &QAction::triggered, [posView = posView, _scene = _scene]()
+  connect(createGroupAction, &QAction::triggered,
+          [_scene = _scene]()
   {
-    auto& group = _scene->createGroup();
-    if (group.childNodes().empty())
-    {
-      group.groupGraphicsObject().setPos(posView);
-    }
+    _scene->createGroup();
   });
   modelMenu.addAction(createGroupAction);
 
@@ -291,11 +286,16 @@ deleteSelectedNodes()
     {
       // if the node belongs to a group, we should remove it from
       // the group's node list.
-      if (n->node().nodeGroup() != nullptr)
-      {
-        n->node().nodeGroup()->removeNode(n->node().id());
-      }
+      NodeGroup* nodeGroup = n->node().nodeGroup();
       _scene->removeNode(n->node());
+      if (nodeGroup != nullptr)
+      {
+        nodeGroup->removeNodeFromGroup(n->node().id());
+        if(nodeGroup->empty())
+        {
+          _scene->removeGroup(nodeGroup);
+        }
+      }
     }
   }
 }

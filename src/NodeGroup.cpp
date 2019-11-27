@@ -94,7 +94,7 @@ void NodeGroup::addNode(Node* node)
   addNodeGraphicsObject(node->nodeGraphicsObject());
 }
 
-void NodeGroup::removeNode(QUuid nodeID)
+void NodeGroup::removeNodeFromGroup(QUuid nodeID)
 {
   // since we're using vectors, this operation is inefficient.
   // might be good to change it to an std::map<QUuid, node>.
@@ -103,6 +103,7 @@ void NodeGroup::removeNode(QUuid nodeID)
     if ((*nodeIt)->id() == nodeID)
     {
       childNodes().erase(nodeIt);
+      groupGraphicsObject().positionLockedIcon();
       return;
     }
   }

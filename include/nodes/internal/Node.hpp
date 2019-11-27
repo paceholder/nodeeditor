@@ -90,7 +90,7 @@ public:
   nodeDataModel() const;
 
   NodeGroup*
-  nodeGroup() const;
+  nodeGroup();
 
   void
   selectGroup(bool selected);

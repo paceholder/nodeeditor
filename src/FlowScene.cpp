@@ -265,20 +265,22 @@ removeNode(Node& node)
   _nodes.erase(node.id());
 }
 
-NodeGroup&
+NodeGroup*
 FlowScene::
 createGroup()
 {
   auto nodes = selectedNodes();
-  auto group = std::make_unique<NodeGroup>(nodes);
-  auto ggo   = std::make_unique<GroupGraphicsObject>(*this, *group);
+  if(nodes.empty())
+    return nullptr;
+  auto group = detail::make_unique<NodeGroup>(nodes);
+  auto ggo   = detail::make_unique<GroupGraphicsObject>(*this, *group);
 
   group->setGraphicsObject(std::move(ggo));
 
   auto groupPtr = group.get();
   _groups[group->id()] = std::move(group);
 
-  return *groupPtr;
+  return groupPtr;
 }
 
 Node*
@@ -287,6 +289,16 @@ getNodeFromID(QUuid node_id) const
 {
   auto nodeIt = nodes().find(node_id);
   return (nodeIt != nodes().end())? nodeIt->second.get() : nullptr;
+}
+
+void
+FlowScene::
+removeGroup(NodeGroup* group)
+{
+  if (group->empty())
+  {
+    _groups.erase(group->id());
+  }
 }
 
 

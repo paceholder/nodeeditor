@@ -194,7 +194,7 @@ nodeDataModel() const
 
 NodeGroup*
 Node::
-nodeGroup() const
+nodeGroup()
 {
   return _nodeGroup;
 }
