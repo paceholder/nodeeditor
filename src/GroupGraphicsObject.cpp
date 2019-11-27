@@ -23,7 +23,7 @@ GroupGraphicsObject::GroupGraphicsObject(QtNodes::FlowScene& scene,
   setFlag(QGraphicsItem::ItemIsMovable, true);
   setFlag(QGraphicsItem::ItemIsFocusable, true);
   setFlag(QGraphicsItem::ItemIsSelectable, true);
-//  setFlag(QGraphicsItem::ItemDoesntPropagateOpacityToChildren, true);
+  setFlag(QGraphicsItem::ItemDoesntPropagateOpacityToChildren, true);
 
   _currentColor = kUnlockedFillColor;
 
@@ -124,6 +124,7 @@ void GroupGraphicsObject::moveConnections()
   {
     node->nodeGraphicsObject().moveConnections();
   }
+  positionLockedIcon();
 }
 
 void GroupGraphicsObject::lock(bool locked)
@@ -138,7 +139,6 @@ void GroupGraphicsObject::paint(QPainter* painter,
                                 QWidget* widget)
 {
   setRect(boundingRect());
-  positionLockedIcon();
   painter->setBrush(_currentColor);
   painter->setPen(Qt::PenStyle::DashLine);
   painter->drawRoundedRect(rect(), _roundedBorderRadius, _roundedBorderRadius);

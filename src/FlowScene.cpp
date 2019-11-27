@@ -21,7 +21,6 @@
 
 #include "ConnectionGraphicsObject.hpp"
 
-#include "NodeGroup.hpp"
 #include "GroupGraphicsObject.hpp"
 
 #include "Connection.hpp"
@@ -271,7 +270,7 @@ FlowScene::
 createGroup()
 {
   auto nodes = selectedNodes();
-  auto group = std::make_unique<NodeGroup>(std::move(nodes));
+  auto group = std::make_unique<NodeGroup>(nodes);
   auto ggo   = std::make_unique<GroupGraphicsObject>(*this, *group);
 
   group->setGraphicsObject(std::move(ggo));
@@ -280,6 +279,14 @@ createGroup()
   _groups[group->id()] = std::move(group);
 
   return *groupPtr;
+}
+
+Node*
+FlowScene::
+getNodeFromID(QUuid node_id) const
+{
+  auto nodeIt = nodes().find(node_id);
+  return (nodeIt != nodes().end())? nodeIt->second.get() : nullptr;
 }
 
 

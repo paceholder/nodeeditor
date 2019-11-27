@@ -4,12 +4,11 @@ using QtNodes::GroupGraphicsObject;
 using QtNodes::Node;
 using QtNodes::NodeGroup;
 
-NodeGroup::NodeGroup(std::vector<Node*>&& nodes)
+NodeGroup::NodeGroup(const std::vector<Node*>& nodes)
   : _uid(QUuid::createUuid()),
-    _childNodes(std::move(nodes)),
+    _childNodes(nodes),
     _groupGraphicsObject(nullptr)
 {
-
   for (auto& node : _childNodes)
   {
     node->setNodeGroup(this);
@@ -37,7 +36,7 @@ GroupGraphicsObject& NodeGroup::groupGraphicsObject()
   return *_groupGraphicsObject.get();
 }
 
-std::vector<Node*> const NodeGroup::childNodes() const
+std::vector<Node*>& NodeGroup::childNodes()
 {
   return _childNodes;
 }
@@ -95,7 +94,16 @@ void NodeGroup::addNode(Node* node)
   addNodeGraphicsObject(node->nodeGraphicsObject());
 }
 
-void NodeGroup::removeNode(Node* node)
+void NodeGroup::removeNode(QUuid nodeID)
 {
-  // remove node from list and update the bounding rectangle
+  // since we're using vectors, this operation is inefficient.
+  // might be good to change it to an std::map<QUuid, node>.
+  for (auto nodeIt = childNodes().begin(); nodeIt != childNodes().end(); ++nodeIt)
+  {
+    if ((*nodeIt)->id() == nodeID)
+    {
+      childNodes().erase(nodeIt);
+      return;
+    }
+  }
 }

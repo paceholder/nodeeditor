@@ -25,7 +25,7 @@ class NODE_EDITOR_PUBLIC NodeGroup
 
 public:
 
-  NodeGroup(std::vector<Node*>&& nodes);
+  NodeGroup(const std::vector<Node*>& nodes);
 
   virtual
   ~NodeGroup() override;
@@ -49,8 +49,8 @@ public:
   GroupGraphicsObject &
   groupGraphicsObject();
 
-  std::vector<Node*> const
-  childNodes() const;
+  std::vector<Node*>&
+  childNodes();
 
   bool locked() const;
 
@@ -72,7 +72,7 @@ public Q_SLOTS:
   addNode(Node* node);
 
   void
-  removeNode(Node* node);
+  removeNode(QUuid nodeID);
 
   //  void calculateArea();
 

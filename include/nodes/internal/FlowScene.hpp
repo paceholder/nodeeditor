@@ -13,6 +13,8 @@
 #include "TypeConverter.hpp"
 #include "memory.hpp"
 
+#include "NodeGroup.hpp"
+
 namespace QtNodes
 {
 
@@ -65,6 +67,8 @@ public:
   void removeNode(Node& node);
 
   NodeGroup& createGroup();
+
+  Node* getNodeFromID(QUuid node_id) const;
 
   // NodeGroup& restoreGroup();
 
@@ -152,10 +156,10 @@ private:
   using UniqueNode       = std::unique_ptr<Node>;
   using UniqueGroup      = std::unique_ptr<NodeGroup>;
 
-  std::unordered_map<QUuid, SharedConnection> _connections;
-  std::unordered_map<QUuid, UniqueNode>       _nodes;
-  std::unordered_map<QUuid, UniqueGroup>      _groups;
-  std::shared_ptr<DataModelRegistry>          _registry;
+  std::unordered_map<QUuid, SharedConnection> _connections{};
+  std::unordered_map<QUuid, UniqueNode>       _nodes{};
+  std::unordered_map<QUuid, UniqueGroup>      _groups{};
+  std::shared_ptr<DataModelRegistry>          _registry{};
 
 private Q_SLOTS:
 

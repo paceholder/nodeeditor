@@ -288,7 +288,15 @@ deleteSelectedNodes()
   for (QGraphicsItem * item : _scene->selectedItems())
   {
     if (auto n = qgraphicsitem_cast<NodeGraphicsObject*>(item))
+    {
+      // if the node belongs to a group, we should remove it from
+      // the group's node list.
+      if (n->node().nodeGroup() != nullptr)
+      {
+        n->node().nodeGroup()->removeNode(n->node().id());
+      }
       _scene->removeNode(n->node());
+    }
   }
 }
 
