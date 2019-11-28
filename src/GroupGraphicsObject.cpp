@@ -62,8 +62,8 @@ void GroupGraphicsObject::hoverEnterEvent(QGraphicsSceneHoverEvent* event)
   }
   for (auto& node : _group.childNodes())
   {
-    node->nodeGeometry().setHovered(true);
-    node->nodeGraphicsObject().update();
+    node.second->nodeGeometry().setHovered(true);
+    node.second->nodeGraphicsObject().update();
   }
   update();
 }
@@ -80,8 +80,8 @@ void GroupGraphicsObject::hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
   }
   for (auto& node : _group.childNodes())
   {
-    node->nodeGeometry().setHovered(false);
-    node->nodeGraphicsObject().update();
+    node.second->nodeGeometry().setHovered(false);
+    node.second->nodeGraphicsObject().update();
   }
   update();
 }
@@ -133,7 +133,7 @@ void GroupGraphicsObject::moveConnections()
 {
   for (auto& node : group().childNodes())
   {
-    node->nodeGraphicsObject().moveConnections();
+    node.second->nodeGraphicsObject().moveConnections();
   }
 }
 
