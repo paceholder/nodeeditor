@@ -102,7 +102,7 @@ public:
 
   std::vector<Node*> selectedNodes() const;
 
-  std::vector<Connection*> selectedConnections() const;
+  std::vector<QUuid> connectionsBetweenNodes(const std::vector<Node*>& nodes) const;
 
 public:
 
