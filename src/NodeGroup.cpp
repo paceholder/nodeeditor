@@ -1,81 +1,25 @@
 #include "NodeGroup.hpp"
 
-#include <QtCore/QByteArray>
-#include <QtWidgets/QFileDialog>
-#include <QtCore/QJsonObject>
-#include <QtCore/QJsonArray>
-#include <QtCore/QFile>
-
 using QtNodes::GroupGraphicsObject;
 using QtNodes::Node;
 using QtNodes::NodeGroup;
 
-NodeGroup::NodeGroup(const std::vector<QUuid>& nodeKeys,
-                     const std::vector<QUuid>& connectionKeys,
-                     std::unordered_map<QUuid, UniqueNode>& nodes,
-                     std::unordered_map<QUuid, SharedConnection>& connections)
+NodeGroup::NodeGroup(const std::vector<Node*>& nodes)
   : _uid(QUuid::createUuid()),
+    _childNodes(nodes),
     _groupGraphicsObject(nullptr)
 {
-  // steals the nodes from the scene
-  for (auto& key : nodeKeys)
-  {
-    auto nodeIt = nodes.find(key);
-    auto handler = nodes.extract(nodeIt);
-    _childNodes.insert(std::move(handler));
-  }
-
-  // steals the connections from the scene
-  for (auto& key : connectionKeys)
-  {
-    auto connectionIt = connections.find(key);
-    auto handler = connections.extract(connectionIt);
-    _childConnections.insert(std::move(handler));
-  }
-
   for (auto& node : _childNodes)
   {
-    node.second->setNodeGroup(this);
+    node->setNodeGroup(this);
   }
 }
 
 NodeGroup::~NodeGroup() = default;
 
-
-QJsonObject NodeGroup::save() const
-{
-  QJsonObject groupJson;
-
-  groupJson["id"] = _uid.toString();
-
-  QJsonObject pos;
-  pos["x"] = _groupGraphicsObject->pos().x();
-  pos["y"] = _groupGraphicsObject->pos().y();
-  groupJson["pos"] = pos;
-
-  QJsonArray children;
-  for (auto & child : _childNodes)
-  {
-    children.append(child.second->save());
-  }
-  groupJson["children"] = children;
-
-  QJsonArray connections;
-  for (auto & connection : _childConnections)
-  {
-    connections.append(connection.second->save());
-  }
-  groupJson["connections"] = connections;
-
-  return groupJson;
-}
+QJsonObject NodeGroup::save() const {}
 
 void NodeGroup::restore(QJsonObject const& json) {}
-
-void NodeGroup::saveGroupFile() const
-{
-
-}
 
 QUuid NodeGroup::id() const
 {
@@ -92,16 +36,9 @@ GroupGraphicsObject& NodeGroup::groupGraphicsObject()
   return *_groupGraphicsObject.get();
 }
 
-std::unordered_map<QUuid, std::unique_ptr<Node> > const &
-NodeGroup::childNodes() const
+std::vector<Node*>& NodeGroup::childNodes()
 {
   return _childNodes;
-}
-
-std::unordered_map<QUuid, NodeGroup::SharedConnection> const &
-NodeGroup::childConnections() const
-{
-  return _childConnections;
 }
 
 bool NodeGroup::locked() const
@@ -115,7 +52,7 @@ void NodeGroup::setGraphicsObject(
   _groupGraphicsObject = std::move(graphics_object);
   for (auto& node : _childNodes)
   {
-    addNodeToGroup(node.second.get());
+    addNode(node);
   }
 
   lock(true);
@@ -133,7 +70,7 @@ setSelected(bool selected)
   _groupGraphicsObject->setSelected(selected);
   for (auto& node : childNodes())
   {
-    node.second->nodeGraphicsObject().setSelected(selected);
+    node->nodeGraphicsObject().setSelected(selected);
   }
 }
 
@@ -141,7 +78,7 @@ void NodeGroup::lock(bool locked)
 {
   for (auto& node : childNodes())
   {
-    node.second->nodeGraphicsObject().lock(locked);
+    node->nodeGraphicsObject().lock(locked);
   }
   groupGraphicsObject().lock(locked);
   _locked = locked;
@@ -152,17 +89,22 @@ void NodeGroup::addNodeGraphicsObject(NodeGraphicsObject& ngo)
   _groupGraphicsObject->addObject(ngo);
 }
 
-void NodeGroup::addNodeToGroup(Node* node)
+void NodeGroup::addNode(Node* node)
 {
   addNodeGraphicsObject(node->nodeGraphicsObject());
 }
 
-std::unordered_map<QUuid, std::unique_ptr<Node>>::node_type
-    NodeGroup::
-    removeNodeFromGroup(QUuid nodeID)
+void NodeGroup::removeNodeFromGroup(QUuid nodeID)
 {
-  auto nodeIterator = _childNodes.find(nodeID);
-  auto nodeHandler = _childNodes.extract(nodeIterator);
-  groupGraphicsObject().positionLockedIcon();
-  return nodeHandler;
+  // since we're using vectors, this operation is inefficient.
+  // might be good to change it to an std::map<QUuid, node>.
+  for (auto nodeIt = childNodes().begin(); nodeIt != childNodes().end(); ++nodeIt)
+  {
+    if ((*nodeIt)->id() == nodeID)
+    {
+      childNodes().erase(nodeIt);
+      groupGraphicsObject().positionLockedIcon();
+      return;
+    }
+  }
 }

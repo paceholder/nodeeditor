@@ -272,20 +272,7 @@ createGroup()
   auto nodes = selectedNodes();
   if(nodes.empty())
     return nullptr;
-  std::vector<QUuid> nodeKeys{};
-  for (auto& node : nodes)
-  {
-    nodeKeys.push_back(node->id());
-  }
-
-  auto connections = selectedConnections();
-  std::vector<QUuid> connectionKeys{};
-  for (auto& connection : connections)
-  {
-    connectionKeys.push_back(connection->id());
-  }
-
-  auto group = detail::make_unique<NodeGroup>(nodeKeys, connectionKeys, _nodes, _connections);
+  auto group = detail::make_unique<NodeGroup>(nodes);
   auto ggo   = detail::make_unique<GroupGraphicsObject>(*this, *group);
 
   group->setGraphicsObject(std::move(ggo));
@@ -516,28 +503,6 @@ selectedNodes() const
   return ret;
 }
 
-std::vector<Connection*>
-FlowScene::
-selectedConnections() const
-{
-  QList<QGraphicsItem*> graphicsItems = selectedItems();
-
-  std::vector<Connection*> ret;
-  ret.reserve(graphicsItems.size());
-
-  for (QGraphicsItem* item : graphicsItems)
-  {
-    auto cgo = qgraphicsitem_cast<ConnectionGraphicsObject*>(item);
-
-    if (cgo != nullptr)
-    {
-      ret.push_back(&cgo->connection());
-    }
-  }
-
-  return ret;
-}
-
 
 //------------------------------------------------------------------------------
 
@@ -640,8 +605,6 @@ saveToMemory() const
   }
 
   sceneJson["connections"] = connectionJsonArray;
-
-  /// TODO: groups
 
   QJsonDocument document(sceneJson);
 

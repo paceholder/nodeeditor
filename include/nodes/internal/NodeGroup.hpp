@@ -16,9 +16,6 @@ namespace QtNodes
 
 class Node;
 class GroupGraphicsObject;
-class Connection;
-
-
 
 class NODE_EDITOR_PUBLIC NodeGroup
   : public QObject
@@ -27,20 +24,13 @@ class NODE_EDITOR_PUBLIC NodeGroup
   Q_OBJECT
 
 public:
-  using SharedConnection = std::shared_ptr<Connection>;
-  using UniqueNode       = std::unique_ptr<Node>;
 
-  NodeGroup(const std::vector<QUuid>& nodeKeys,
-            const std::vector<QUuid>& connectionKeys,
-            std::unordered_map<QUuid, UniqueNode>& nodes,
-            std::unordered_map<QUuid, SharedConnection>& connections);
+  NodeGroup(const std::vector<Node*>& nodes);
 
   virtual
   ~NodeGroup() override;
 
 public:
-
-  void saveGroupFile() const;
 
   QJsonObject
   save() const override;
@@ -59,11 +49,8 @@ public:
   GroupGraphicsObject &
   groupGraphicsObject();
 
-  std::unordered_map<QUuid, UniqueNode> const &
-  childNodes() const;
-
-  std::unordered_map<QUuid, SharedConnection> const &
-  childConnections() const;
+  std::vector<Node*>&
+  childNodes();
 
   bool locked() const;
 
@@ -82,9 +69,9 @@ public Q_SLOTS:
   addNodeGraphicsObject(NodeGraphicsObject& ngo);
 
   void
-  addNodeToGroup(Node* node);
+  addNode(Node* node);
 
-  std::unordered_map<QUuid, UniqueNode>::node_type
+  void
   removeNodeFromGroup(QUuid nodeID);
 
   //  void calculateArea();
@@ -98,8 +85,9 @@ private:
   bool _locked;
 
   // data
-  std::unordered_map<QUuid, UniqueNode> _childNodes{};
-  std::unordered_map<QUuid, SharedConnection> _childConnections{};
+  /** @todo check if the node's memory management should be done differently; this
+   * seems really error-prone */
+  std::vector<Node*> _childNodes;
 
   // painting
   std::unique_ptr<GroupGraphicsObject> _groupGraphicsObject;

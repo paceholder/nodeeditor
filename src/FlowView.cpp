@@ -99,31 +99,14 @@ FlowView::setScene(FlowScene *scene)
   addAction(_deleteSelectionAction);
 }
 
-void
-FlowView::
-groupContextMenu(QContextMenuEvent *event)
-{
-  QMenu groupMenu;
-
-  auto *saveGroupAction = new QAction(&groupMenu);
-  saveGroupAction->setText(QStringLiteral("Save Group..."));
-  groupMenu.addAction(saveGroupAction);
-
-  groupMenu.exec(event->globalPos());
-}
-
 
 void
 FlowView::
 contextMenuEvent(QContextMenuEvent *event)
 {
-  auto clickedItem = itemAt(event->pos());
-  if (clickedItem)
+  if (itemAt(event->pos()))
   {
-    if (auto group = qgraphicsitem_cast<GroupGraphicsObject*>(clickedItem); group)
-    {
-      groupContextMenu(event);
-    }
+    QGraphicsView::contextMenuEvent(event);
     return;
   }
 

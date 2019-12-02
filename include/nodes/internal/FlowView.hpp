@@ -57,8 +57,6 @@ protected:
 
   FlowScene * scene();
 
-  void groupContextMenu(QContextMenuEvent *event);
-
 private:
 
   QAction* _clearSelectionAction;

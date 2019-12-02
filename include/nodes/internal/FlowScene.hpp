@@ -102,8 +102,6 @@ public:
 
   std::vector<Node*> selectedNodes() const;
 
-  std::vector<Connection*> selectedConnections() const;
-
 public:
 
   void clearScene();
