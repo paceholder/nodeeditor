@@ -283,14 +283,6 @@ createGroup()
   return groupPtr;
 }
 
-Node*
-FlowScene::
-getNodeFromID(QUuid node_id) const
-{
-  auto nodeIt = nodes().find(node_id);
-  return (nodeIt != nodes().end())? nodeIt->second.get() : nullptr;
-}
-
 void
 FlowScene::
 removeGroup(NodeGroup* group)

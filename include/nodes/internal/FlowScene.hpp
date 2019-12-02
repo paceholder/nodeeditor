@@ -68,8 +68,6 @@ public:
 
   NodeGroup* createGroup();
 
-  Node* getNodeFromID(QUuid node_id) const;
-
   // NodeGroup& restoreGroup();
 
   void removeGroup(NodeGroup* group);
