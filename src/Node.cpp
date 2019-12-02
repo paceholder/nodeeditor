@@ -203,8 +203,9 @@ void
 Node::
 selectGroup(bool selected)
 {
-  if(_nodeGroup)
-    _nodeGroup->setSelected(selected);
+/// TODO: GROUP REFACTORING
+//  if(_nodeGroup)
+//    _nodeGroup->setSelected(selected);
 }
 
 

@@ -66,11 +66,11 @@ public:
 
   void removeNode(Node& node);
 
-  NodeGroup* createGroup();
+//  NodeGroup* createGroup();
 
   // NodeGroup& restoreGroup();
 
-  void removeGroup(NodeGroup* group);
+//  void removeGroup(NodeGroup* group);
 
   DataModelRegistry&registry() const;
 
@@ -94,7 +94,7 @@ public:
 
   std::unordered_map<QUuid, std::shared_ptr<Connection> > const & connections() const;
 
-  std::unordered_map<QUuid, std::unique_ptr<NodeGroup> > const & groups() const;
+  std::unordered_map<QUuid, std::shared_ptr<NodeGroup> > const & groups() const;
 
   std::vector<Node*> allNodes() const;
 
@@ -152,11 +152,11 @@ private:
 
   using SharedConnection = std::shared_ptr<Connection>;
   using UniqueNode       = std::unique_ptr<Node>;
-  using UniqueGroup      = std::unique_ptr<NodeGroup>;
+  using SharedGroup      = std::shared_ptr<NodeGroup>;
 
   std::unordered_map<QUuid, SharedConnection> _connections{};
   std::unordered_map<QUuid, UniqueNode>       _nodes{};
-  std::unordered_map<QUuid, UniqueGroup>      _groups{};
+  std::unordered_map<QUuid, SharedGroup>      _groups{};
   std::shared_ptr<DataModelRegistry>          _registry{};
 
 private Q_SLOTS:

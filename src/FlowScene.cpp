@@ -265,33 +265,29 @@ removeNode(Node& node)
   _nodes.erase(node.id());
 }
 
-NodeGroup*
-FlowScene::
-createGroup()
-{
-  auto nodes = selectedNodes();
-  if(nodes.empty())
-    return nullptr;
-  auto group = detail::make_unique<NodeGroup>(nodes);
-  auto ggo   = detail::make_unique<GroupGraphicsObject>(*this, *group);
+//NodeGroup*
+//FlowScene::
+//createGroup()
+//{
+//  auto nodes = selectedNodes();
+//  if(nodes.empty())
+//    return nullptr;
+//  auto group = detail::make_unique<NodeGroup>(nodes);
+//  auto ggo   = detail::make_unique<GroupGraphicsObject>(*this, *group);
 
-  group->setGraphicsObject(std::move(ggo));
+//  group->setGraphicsObject(std::move(ggo));
 
-  auto groupPtr = group.get();
-  _groups[group->id()] = std::move(group);
+//  auto groupPtr = group.get();
+//  _groups[group->id()] = std::move(group);
 
-  return groupPtr;
-}
+//  return groupPtr;
+//}
 
-void
-FlowScene::
-removeGroup(NodeGroup* group)
-{
-  if (group->empty())
-  {
-    _groups.erase(group->id());
-  }
-}
+//void
+//FlowScene::
+//removeGroup(NodeGroup* group)
+//{
+//}
 
 
 DataModelRegistry&
@@ -447,7 +443,7 @@ connections() const
   return _connections;
 }
 
-std::unordered_map<QUuid, std::unique_ptr<NodeGroup> > const &
+std::unordered_map<QUuid, std::shared_ptr<NodeGroup> > const &
 FlowScene::
 groups() const
 {
