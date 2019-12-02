@@ -17,8 +17,21 @@ NodeGroup::NodeGroup(const std::vector<QUuid>& nodeKeys,
   : _uid(QUuid::createUuid()),
     _groupGraphicsObject(nullptr)
 {
-  stealNodes(nodeKeys, nodes);
-  stealConnections(connectionKeys, connections);
+  // steals the nodes from the scene
+  for (auto& key : nodeKeys)
+  {
+    auto nodeIt = nodes.find(key);
+    auto handler = nodes.extract(nodeIt);
+    _childNodes.insert(std::move(handler));
+  }
+
+  // steals the connections from the scene
+  for (auto& key : connectionKeys)
+  {
+    auto connectionIt = connections.find(key);
+    auto handler = connections.extract(connectionIt);
+    _childConnections.insert(std::move(handler));
+  }
 
   for (auto& node : _childNodes)
   {
@@ -79,7 +92,7 @@ GroupGraphicsObject& NodeGroup::groupGraphicsObject()
   return *_groupGraphicsObject.get();
 }
 
-std::unordered_map<QUuid, NodeGroup::UniqueNode> const &
+std::unordered_map<QUuid, std::unique_ptr<Node> > const &
 NodeGroup::childNodes() const
 {
   return _childNodes;
@@ -134,28 +147,6 @@ void NodeGroup::lock(bool locked)
   _locked = locked;
 }
 
-void NodeGroup::stealNodes(const std::vector<QUuid>& keys,
-                           std::unordered_map<QUuid, NodeGroup::UniqueNode>& nodes)
-{
-  for (auto& key : keys)
-  {
-    auto nodeIt = nodes.find(key);
-    auto handler = nodes.extract(nodeIt);
-    _childNodes.insert(std::move(handler));
-  }
-}
-
-void NodeGroup::stealConnections(const std::vector<QUuid>& keys,
-                                 std::unordered_map<QUuid, NodeGroup::SharedConnection>& connections)
-{
-  for (auto& key : keys)
-  {
-    auto connectionIt = connections.find(key);
-    auto handler = connections.extract(connectionIt);
-    _childConnections.insert(std::move(handler));
-  }
-}
-
 void NodeGroup::addNodeGraphicsObject(NodeGraphicsObject& ngo)
 {
   _groupGraphicsObject->addObject(ngo);
@@ -163,13 +154,12 @@ void NodeGroup::addNodeGraphicsObject(NodeGraphicsObject& ngo)
 
 void NodeGroup::addNodeToGroup(Node* node)
 {
-  /// TODO: check if any connection should be added to the group as well
   addNodeGraphicsObject(node->nodeGraphicsObject());
 }
 
-std::unordered_map<QUuid, NodeGroup::UniqueNode>::node_type
-NodeGroup::
-removeNodeFromGroup(QUuid nodeID)
+std::unordered_map<QUuid, std::unique_ptr<Node>>::node_type
+    NodeGroup::
+    removeNodeFromGroup(QUuid nodeID)
 {
   auto nodeIterator = _childNodes.find(nodeID);
   auto nodeHandler = _childNodes.extract(nodeIterator);

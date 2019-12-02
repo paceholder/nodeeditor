@@ -76,12 +76,6 @@ public:
 
   void lock(bool locked);
 
-  void stealNodes(const std::vector<QUuid>& keys,
-                  std::unordered_map<QUuid, UniqueNode>& nodes);
-
-  void stealConnections(const std::vector<QUuid>& keys,
-                        std::unordered_map<QUuid, SharedConnection>& connections);
-
 public Q_SLOTS:
 
   void
@@ -90,7 +84,6 @@ public Q_SLOTS:
   void
   addNodeToGroup(Node* node);
 
-  // this function has this return type to make use of C++17's extract method.
   std::unordered_map<QUuid, UniqueNode>::node_type
   removeNodeFromGroup(QUuid nodeID);
 

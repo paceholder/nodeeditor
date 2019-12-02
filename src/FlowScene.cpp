@@ -278,7 +278,12 @@ createGroup()
     nodeKeys.push_back(node->id());
   }
 
-  std::vector<QUuid> connectionKeys = connectionsBetweenNodes(nodes);
+  auto connections = selectedConnections();
+  std::vector<QUuid> connectionKeys{};
+  for (auto& connection : connections)
+  {
+    connectionKeys.push_back(connection->id());
+  }
 
   auto group = detail::make_unique<NodeGroup>(nodeKeys, connectionKeys, _nodes, _connections);
   auto ggo   = detail::make_unique<GroupGraphicsObject>(*this, *group);
@@ -511,39 +516,28 @@ selectedNodes() const
   return ret;
 }
 
-std::vector<QUuid>
+std::vector<Connection*>
 FlowScene::
-connectionsBetweenNodes(const std::vector<Node*>& nodes) const
+selectedConnections() const
 {
-  // gets all connections that are set between members of "nodes".
-  // this function may be optimized by using other data structures.
-  std::map<QUuid, Connection*> ids{};
-  std::vector<QUuid> ret{};
-  for (auto const & node : nodes)
+  QList<QGraphicsItem*> graphicsItems = selectedItems();
+
+  std::vector<Connection*> ret;
+  ret.reserve(graphicsItems.size());
+
+  for (QGraphicsItem* item : graphicsItems)
   {
-    for (PortType type:
-         {
-           PortType::In, PortType::Out
-         })
+    auto cgo = qgraphicsitem_cast<ConnectionGraphicsObject*>(item);
+
+    if (cgo != nullptr)
     {
-      for (auto& conn_set : node->nodeState().getEntries(type))
-      {
-        for (auto& entry : conn_set)
-        {
-          if(ids.insert(entry).second) // if this connection was not considered before
-          {
-            if (std::find(nodes.begin(), nodes.end(), entry.second->getNode(PortType::In)) != nodes.end() &&
-                std::find(nodes.begin(), nodes.end(), entry.second->getNode(PortType::Out)) != nodes.end())
-            {
-              ret.push_back(entry.first);
-            }
-          }
-        }
-      }
+      ret.push_back(&cgo->connection());
     }
   }
+
   return ret;
 }
+
 
 //------------------------------------------------------------------------------
 
