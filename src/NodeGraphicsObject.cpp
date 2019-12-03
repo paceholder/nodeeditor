@@ -327,8 +327,7 @@ mouseMoveEvent(QGraphicsSceneMouseEvent * event)
     {
       if (node().nodeGroup())
       {
-        /// TODO: GROUP REFACTORING
-        /// node().nodeGroup()->groupGraphicsObject().moveConnections();
+        node().nodeGroup()->groupGraphicsObject().moveConnections();
       }
       else
       {

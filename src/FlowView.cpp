@@ -204,8 +204,7 @@ contextMenuEvent(QContextMenuEvent *event)
   connect(createGroupAction, &QAction::triggered,
           [_scene = _scene]()
   {
-    /// TODO: GROUP REFACTORING
-//    _scene->createGroup();
+    _scene->createGroup();
   });
   modelMenu.addAction(createGroupAction);
 
@@ -291,12 +290,11 @@ deleteSelectedNodes()
       _scene->removeNode(n->node());
       if (nodeGroup != nullptr)
       {
-        /// TODO: GROUP REFACTORING
-//        nodeGroup->removeNodeFromGroup(n->node().id());
-//        if(nodeGroup->empty())
-//        {
-//          _scene->removeGroup(nodeGroup);
-//        }
+        nodeGroup->removeNodeFromGroup(n->node().id());
+        if(nodeGroup->empty())
+        {
+          _scene->removeGroup(nodeGroup);
+        }
       }
     }
   }

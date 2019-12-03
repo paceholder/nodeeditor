@@ -89,8 +89,6 @@ private:
   QPixmap _lockedIcon{"://padlock-lock.png"};
   QPixmap _unlockedIcon{"://padlock-unlock.png"};
 
-  bool _locked;
-
   static constexpr double _roundedBorderRadius = 8.0;
   static constexpr double _groupBorderX = 1.0;
   static constexpr double _groupBorderY = _groupBorderX * 0.5;

@@ -52,7 +52,7 @@ GroupGraphicsObject::~GroupGraphicsObject()
 
 void GroupGraphicsObject::hoverEnterEvent(QGraphicsSceneHoverEvent* event)
 {
-  if (_locked)
+  if (group().locked())
   {
     setColor(kLockedHoverColor);
   }
@@ -60,17 +60,17 @@ void GroupGraphicsObject::hoverEnterEvent(QGraphicsSceneHoverEvent* event)
   {
     setColor(kUnlockedHoverColor);
   }
-//  for (auto& node : _group.childNodes())
-//  {
-//    node->nodeGeometry().setHovered(true);
-//    node->nodeGraphicsObject().update();
-//  }
+  for (auto& node : _group.childNodes())
+  {
+    node->nodeGeometry().setHovered(true);
+    node->nodeGraphicsObject().update();
+  }
   update();
 }
 
 void GroupGraphicsObject::hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
 {
-  if (_locked)
+  if (group().locked())
   {
     setColor(kLockedFillColor);
   }
@@ -78,11 +78,11 @@ void GroupGraphicsObject::hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
   {
     setColor(kUnlockedFillColor);
   }
-//  for (auto& node : _group.childNodes())
-//  {
-//    node->nodeGeometry().setHovered(false);
-//    node->nodeGraphicsObject().update();
-//  }
+  for (auto& node : _group.childNodes())
+  {
+    node->nodeGeometry().setHovered(false);
+    node->nodeGraphicsObject().update();
+  }
   update();
 }
 
@@ -98,7 +98,7 @@ void GroupGraphicsObject::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 void GroupGraphicsObject::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
 {
   QGraphicsItem::mouseDoubleClickEvent(event);
-  lock(!_locked);
+  group().lock(!group().locked());
 }
 
 void GroupGraphicsObject::positionLockedIcon()
@@ -131,10 +131,10 @@ void GroupGraphicsObject::addObject(NodeGraphicsObject& object)
 
 void GroupGraphicsObject::moveConnections()
 {
-//  for (auto& node : group().childNodes())
-//  {
-//    node->nodeGraphicsObject().moveConnections();
-//  }
+  for (auto& node : group().childNodes())
+  {
+    node->nodeGraphicsObject().moveConnections();
+  }
 }
 
 void GroupGraphicsObject::lock(bool locked)
