@@ -209,7 +209,6 @@ mousePressEvent(QGraphicsSceneMouseEvent * event)
   if (_locked)
   {
     _scene.clearSelection();
-    node().selectGroup(true);
     return;
   }
   // deselect all other items after this one is selected
@@ -293,9 +292,10 @@ mouseMoveEvent(QGraphicsSceneMouseEvent * event)
   auto & geom  = _node.nodeGeometry();
   auto & state = _node.nodeState();
 
+  auto diff = event->pos() - event->lastPos();
+
   if (state.resizing())
   {
-    auto diff = event->pos() - event->lastPos();
 
     if (auto w = _node.nodeDataModel()->embeddedWidget())
     {
@@ -328,6 +328,10 @@ mouseMoveEvent(QGraphicsSceneMouseEvent * event)
       if (auto nodeGroup = node().nodeGroup().lock(); nodeGroup)
       {
         nodeGroup->groupGraphicsObject().moveConnections();
+        if (nodeGroup->groupGraphicsObject().locked())
+        {
+          nodeGroup->groupGraphicsObject().moveNodes(diff);
+        }
       }
       else
       {

@@ -92,9 +92,6 @@ public:
   std::weak_ptr<NodeGroup>
   nodeGroup();
 
-  void
-  selectGroup(bool selected);
-
 public Q_SLOTS: // data propagation
 
   /// Propagates incoming data to the underlying model.

@@ -46,11 +46,13 @@ public:
 
   void resetSize();
 
-  void addObject(NodeGraphicsObject& object);
-
   void moveConnections();
 
+  void moveNodes(const QPointF& offset);
+
   void lock(bool locked);
+
+  bool locked() const;
 
   QColor _currentColor;
 
@@ -89,8 +91,14 @@ private:
   QPixmap _lockedIcon{"://padlock-lock.png"};
   QPixmap _unlockedIcon{"://padlock-unlock.png"};
 
+  bool _locked;
+
+  bool _mouseDragActive;
+
+  QPointF _mouseDragStart;
+
   static constexpr double _roundedBorderRadius = 8.0;
-  static constexpr double _groupBorderX = 1.0;
+  static constexpr double _groupBorderX = 10.0;
   static constexpr double _groupBorderY = _groupBorderX * 0.5;
   static constexpr QMarginsF  _margins = QMarginsF(_groupBorderX, _groupBorderY, _groupBorderX, _groupBorderY);
 

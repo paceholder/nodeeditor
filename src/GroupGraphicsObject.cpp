@@ -52,14 +52,7 @@ GroupGraphicsObject::~GroupGraphicsObject()
 
 void GroupGraphicsObject::hoverEnterEvent(QGraphicsSceneHoverEvent* event)
 {
-  if (group().locked())
-  {
-    setColor(kLockedHoverColor);
-  }
-  else
-  {
-    setColor(kUnlockedHoverColor);
-  }
+  setColor(locked()? kLockedHoverColor : kUnlockedHoverColor);
   for (auto& node : _group.childNodes())
   {
     node->nodeGeometry().setHovered(true);
@@ -70,14 +63,7 @@ void GroupGraphicsObject::hoverEnterEvent(QGraphicsSceneHoverEvent* event)
 
 void GroupGraphicsObject::hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
 {
-  if (group().locked())
-  {
-    setColor(kLockedFillColor);
-  }
-  else
-  {
-    setColor(kUnlockedFillColor);
-  }
+  setColor(locked()? kLockedFillColor : kUnlockedFillColor);
   for (auto& node : _group.childNodes())
   {
     node->nodeGeometry().setHovered(false);
@@ -91,6 +77,8 @@ void GroupGraphicsObject::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
   QGraphicsItem::mouseMoveEvent(event);
   if (event->lastPos() != event->pos())
   {
+    auto diff = event->pos() - event->lastPos();
+    moveNodes(diff);
     moveConnections();
   }
 }
@@ -98,7 +86,7 @@ void GroupGraphicsObject::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 void GroupGraphicsObject::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
 {
   QGraphicsItem::mouseDoubleClickEvent(event);
-  group().lock(!group().locked());
+  lock(!locked());
 }
 
 void GroupGraphicsObject::positionLockedIcon()
@@ -121,12 +109,9 @@ NodeGroup const& GroupGraphicsObject::group() const
   return _group;
 }
 
-void GroupGraphicsObject::addObject(NodeGraphicsObject& object)
+bool GroupGraphicsObject::locked() const
 {
-  QPointF objScenePos = object.scenePos();
-  object.setParentItem(this);
-  object.setPos(mapFromScene(objScenePos));
-  update();
+  return _locked;
 }
 
 void GroupGraphicsObject::moveConnections()
@@ -137,11 +122,24 @@ void GroupGraphicsObject::moveConnections()
   }
 }
 
+void GroupGraphicsObject::moveNodes(const QPointF& offset)
+{
+  for (auto& node : group().childNodes())
+  {
+    node->nodeGraphicsObject().moveBy(offset.x(), offset.y());
+  }
+}
+
 void GroupGraphicsObject::lock(bool locked)
 {
+  for (auto& node : _group.childNodes())
+  {
+    node->nodeGraphicsObject().lock(locked);
+  }
   _lockedGraphicsItem->setVisible(locked);
   _unlockedGraphicsItem->setVisible(!locked);
   setColor(locked? kLockedFillColor : kUnlockedFillColor);
+  _locked = locked;
 }
 
 void GroupGraphicsObject::paint(QPainter* painter,
@@ -158,7 +156,13 @@ void GroupGraphicsObject::paint(QPainter* painter,
 
 QRectF GroupGraphicsObject::boundingRect() const
 {
-  return childrenBoundingRect().marginsAdded(_margins);
+  QRectF ret{};
+  for (auto& node : _group.childNodes())
+  {
+    NodeGraphicsObject* ngo = &node->nodeGraphicsObject();
+    ret |= ngo->mapRectToScene(ngo->boundingRect());
+  }
+  return mapRectFromScene(ret.marginsAdded(_margins));
 }
 
 void GroupGraphicsObject::setColor(const QColor& color)

@@ -294,10 +294,7 @@ deleteSelectedNodes()
           _scene->removeGroup(nodeGroup);
         }
       }
-      else
-      {
-        _scene->removeNode(n->node());
-      }
+      _scene->removeNode(n->node());
     }
   }
 }

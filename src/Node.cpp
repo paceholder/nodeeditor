@@ -200,15 +200,6 @@ nodeGroup()
 
 void
 Node::
-selectGroup(bool selected)
-{
-  if(auto nodeGroup = _nodeGroup.lock(); nodeGroup)
-    nodeGroup->setSelected(selected);
-}
-
-
-void
-Node::
 propagateData(std::shared_ptr<NodeData> nodeData,
               PortIndex inPortIndex) const
 {
