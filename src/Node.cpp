@@ -29,6 +29,7 @@ using QtNodes::PortType;
 Node::
 Node(std::unique_ptr<NodeDataModel> && dataModel)
   : _uid(QUuid::createUuid())
+  , _nodeGroup(nullptr)
   , _nodeDataModel(std::move(dataModel))
   , _nodeState(_nodeDataModel)
   , _nodeGeometry(_nodeDataModel)
@@ -146,7 +147,7 @@ setGraphicsObject(std::unique_ptr<NodeGraphicsObject>&& graphics)
 
 void
 Node::
-setNodeGroup(std::weak_ptr<NodeGroup> group)
+setNodeGroup(NodeGroup* group)
 {
   _nodeGroup = group;
 }
@@ -191,7 +192,7 @@ nodeDataModel() const
   return _nodeDataModel.get();
 }
 
-std::weak_ptr<NodeGroup>
+NodeGroup*
 Node::
 nodeGroup()
 {

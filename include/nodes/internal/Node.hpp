@@ -72,7 +72,7 @@ public:
   setGraphicsObject(std::unique_ptr<NodeGraphicsObject>&& graphics);
 
   void
-  setNodeGroup(std::weak_ptr<NodeGroup> group);
+  setNodeGroup(NodeGroup* group);
 
   NodeGeometry&
   nodeGeometry();
@@ -89,7 +89,7 @@ public:
   NodeDataModel*
   nodeDataModel() const;
 
-  std::weak_ptr<NodeGroup>
+  NodeGroup*
   nodeGroup();
 
   void
@@ -117,7 +117,7 @@ private:
 
   QUuid _uid;
 
-  std::weak_ptr<NodeGroup> _nodeGroup{};
+  NodeGroup* _nodeGroup;
 
   // data
 
