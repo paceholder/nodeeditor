@@ -325,9 +325,9 @@ mouseMoveEvent(QGraphicsSceneMouseEvent * event)
 
     if (event->lastPos() != event->pos())
     {
-      if (node().nodeGroup())
+      if (auto nodeGroup = node().nodeGroup().lock(); nodeGroup)
       {
-        node().nodeGroup()->groupGraphicsObject().moveConnections();
+        nodeGroup->groupGraphicsObject().moveConnections();
       }
       else
       {

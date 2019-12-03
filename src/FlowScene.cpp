@@ -265,19 +265,26 @@ removeNode(Node& node)
   _nodes.erase(node.id());
 }
 
-NodeGroup*
+std::weak_ptr<NodeGroup>
 FlowScene::
 createGroup()
 {
-  auto nodes = selectedNodes();
-  if(nodes.empty())
-    return nullptr;
-  auto group = detail::make_unique<NodeGroup>(nodes);
-  auto ggo   = detail::make_unique<GroupGraphicsObject>(*this, *group);
+  /// note: might be better to change all instances of std::vector<Node*> to vectors of the nodes' QUuids.
+  auto selNodes = selectedNodes();
+  if(selNodes.empty())
+    return std::weak_ptr<NodeGroup>();
+  auto group = std::make_shared<NodeGroup>(selNodes);
+  auto ggo   = std::make_unique<GroupGraphicsObject>(*this, *group);
 
   group->setGraphicsObject(std::move(ggo));
 
-  auto groupPtr = group.get();
+  for (auto& nodePtr : selNodes)
+  {
+    auto node = _nodes[nodePtr->id()].get();
+    node->setNodeGroup(group);
+  }
+
+  std::weak_ptr<NodeGroup> groupPtr = group;
   _groups[group->id()] = std::move(group);
 
   return groupPtr;
@@ -285,7 +292,7 @@ createGroup()
 
 void
 FlowScene::
-removeGroup(NodeGroup* group)
+removeGroup(std::shared_ptr<NodeGroup> group)
 {
   if (group->empty())
   {
@@ -447,7 +454,7 @@ connections() const
   return _connections;
 }
 
-std::unordered_map<QUuid, std::unique_ptr<NodeGroup> > const &
+std::unordered_map<QUuid, std::shared_ptr<NodeGroup> > const &
 FlowScene::
 groups() const
 {

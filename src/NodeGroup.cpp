@@ -8,12 +8,7 @@ NodeGroup::NodeGroup(const std::vector<Node*>& nodes)
   : _uid(QUuid::createUuid()),
     _childNodes(nodes),
     _groupGraphicsObject(nullptr)
-{
-  for (auto& node : _childNodes)
-  {
-    node->setNodeGroup(this);
-  }
-}
+{}
 
 NodeGroup::~NodeGroup() = default;
 

@@ -286,15 +286,17 @@ deleteSelectedNodes()
     {
       // if the node belongs to a group, we should remove it from
       // the group's node list.
-      NodeGroup* nodeGroup = n->node().nodeGroup();
-      _scene->removeNode(n->node());
-      if (nodeGroup != nullptr)
+      if (auto nodeGroup = n->node().nodeGroup().lock(); nodeGroup)
       {
         nodeGroup->removeNodeFromGroup(n->node().id());
         if(nodeGroup->empty())
         {
           _scene->removeGroup(nodeGroup);
         }
+      }
+      else
+      {
+        _scene->removeNode(n->node());
       }
     }
   }
