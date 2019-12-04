@@ -4,8 +4,10 @@ using QtNodes::GroupGraphicsObject;
 using QtNodes::Node;
 using QtNodes::NodeGroup;
 
-NodeGroup::NodeGroup(const std::vector<Node*>& nodes)
+NodeGroup::NodeGroup(const std::vector<Node*>& nodes,
+                     const QString& name)
   : _uid(QUuid::createUuid()),
+    _name(name),
     _childNodes(nodes),
     _groupGraphicsObject(nullptr)
 {}
@@ -35,7 +37,6 @@ std::vector<Node*>& NodeGroup::childNodes()
 {
   return _childNodes;
 }
-
 
 void NodeGroup::setGraphicsObject(
   std::unique_ptr<GroupGraphicsObject>&& graphics_object)

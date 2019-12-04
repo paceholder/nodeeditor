@@ -9,6 +9,7 @@
 #include <QtCore/QBuffer>
 #include <QtCore/QDataStream>
 #include <QtCore/QFile>
+#include <QtCore/QString>
 
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
@@ -269,11 +270,13 @@ std::weak_ptr<NodeGroup>
 FlowScene::
 createGroup()
 {
-  /// note: might be better to change all instances of std::vector<Node*> to vectors of the nodes' QUuids.
+  /// note: might be better to change all instances of std::vector<Node*> to vectors of
+  /// the nodes' QUuids.
   auto selNodes = selectedNodes();
   if(selNodes.empty())
     return std::weak_ptr<NodeGroup>();
-  auto group = std::make_shared<NodeGroup>(selNodes);
+  QString groupName = "Group " + QString::number(_groups.size());
+  auto group = std::make_shared<NodeGroup>(selNodes, groupName);
   auto ggo   = std::make_unique<GroupGraphicsObject>(*this, *group);
 
   group->setGraphicsObject(std::move(ggo));

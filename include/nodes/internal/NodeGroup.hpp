@@ -25,7 +25,8 @@ class NODE_EDITOR_PUBLIC NodeGroup
 
 public:
 
-  NodeGroup(const std::vector<Node*>& nodes);
+  NodeGroup(const std::vector<Node*>& nodes,
+            const QString& name = QStringLiteral(""));
 
   virtual
   ~NodeGroup() override;
