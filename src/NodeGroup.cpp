@@ -38,6 +38,11 @@ std::vector<Node*>& NodeGroup::childNodes()
   return _childNodes;
 }
 
+const QString& NodeGroup::name() const
+{
+  return _name;
+}
+
 void NodeGroup::setGraphicsObject(
   std::unique_ptr<GroupGraphicsObject>&& graphics_object)
 {

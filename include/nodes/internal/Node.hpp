@@ -92,6 +92,8 @@ public:
   std::weak_ptr<NodeGroup>
   nodeGroup();
 
+  bool isInGroup() const;
+
 public Q_SLOTS: // data propagation
 
   /// Propagates incoming data to the underlying model.

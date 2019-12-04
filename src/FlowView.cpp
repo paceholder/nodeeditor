@@ -99,14 +99,61 @@ FlowView::setScene(FlowScene *scene)
   addAction(_deleteSelectionAction);
 }
 
+void
+FlowView::
+groupContextMenu(QContextMenuEvent *event)
+{
+  QMenu groupMenu;
+
+  auto* saveGroupAction = new QAction(&groupMenu);
+  saveGroupAction->setText(QStringLiteral("Save Group..."));
+  groupMenu.addAction(saveGroupAction);
+
+  groupMenu.exec(event->globalPos());
+}
+
+void
+FlowView::
+nodeContextMenu(QContextMenuEvent* event,
+                NodeGraphicsObject& ngo)
+{
+  QMenu nodeMenu;
+
+  if (ngo.node().isInGroup())
+  {
+
+    if (auto nodeGroup = ngo.node().nodeGroup().lock(); nodeGroup)
+    {
+      auto* removeFromGroupAction = new QAction(&nodeMenu);
+      removeFromGroupAction->setText(QString("Remove from \"" + nodeGroup->name()) + "\"");
+      nodeMenu.addAction(removeFromGroupAction);
+    }
+  }
+  else
+  {
+    auto* addToGroupAction = new QAction(&nodeMenu);
+    addToGroupAction->setText(QStringLiteral("Add to group..."));
+    nodeMenu.addAction(addToGroupAction);
+  }
+
+  nodeMenu.exec(event->globalPos());
+}
 
 void
 FlowView::
 contextMenuEvent(QContextMenuEvent *event)
 {
-  if (itemAt(event->pos()))
+  auto clickedItem = itemAt(event->pos());
+  if (clickedItem)
   {
-    QGraphicsView::contextMenuEvent(event);
+    if (auto groupGO = qgraphicsitem_cast<GroupGraphicsObject*>(clickedItem); groupGO)
+    {
+      groupContextMenu(event);
+    }
+    else if (auto nodeGO = qgraphicsitem_cast<NodeGraphicsObject*>(clickedItem); nodeGO)
+    {
+      nodeContextMenu(event, *nodeGO);
+    }
     return;
   }
 

@@ -198,6 +198,12 @@ nodeGroup()
   return _nodeGroup;
 }
 
+bool Node::isInGroup() const
+{
+  auto group = _nodeGroup.lock();
+  return group? true : false;
+}
+
 void
 Node::
 propagateData(std::shared_ptr<NodeData> nodeData,

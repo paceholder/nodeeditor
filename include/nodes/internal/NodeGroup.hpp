@@ -53,6 +53,9 @@ public:
   std::vector<Node*>&
   childNodes();
 
+  QString const &
+  name() const;
+
   void
   setGraphicsObject(std::unique_ptr<GroupGraphicsObject>&& graphics_object);
 
