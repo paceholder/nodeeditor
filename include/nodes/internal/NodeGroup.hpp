@@ -67,7 +67,7 @@ public Q_SLOTS:
   addNode(Node* node);
 
   void
-  removeNodeFromGroup(QUuid nodeID);
+  removeNode(Node* node);
 
 private:
   // addressing

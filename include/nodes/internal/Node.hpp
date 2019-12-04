@@ -74,6 +74,9 @@ public:
   void
   setNodeGroup(std::shared_ptr<NodeGroup> group);
 
+  void
+  unsetNodeGroup();
+
   NodeGeometry&
   nodeGeometry();
 

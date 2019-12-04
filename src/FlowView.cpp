@@ -127,22 +127,30 @@ nodeContextMenu(QContextMenuEvent* event,
       removeFromGroupAction->setText(QString("Remove from \"" + nodeGroup->name()) + "\"");
       nodeMenu.addAction(removeFromGroupAction);
 
-//      connect(removeFromGroupAction, &QAction::triggered, []
-//      {
-
-//      });
+      connect(removeFromGroupAction, &QAction::triggered, [this, &ngo]
+      {
+        _scene->removeNodeFromGroup(ngo.node().id());
+      });
     }
   }
   else
   {
     auto* groupsMenu = new QMenu(&nodeMenu);
+    QList<QAction*> groupActions{};
     groupsMenu->setTitle(QStringLiteral("Add to group..."));
     for (auto groupEntry : _scene->groups())
     {
       auto* currentGroupAction = new QAction(&nodeMenu);
       currentGroupAction->setText(groupEntry.second->name());
-      groupsMenu->addAction(currentGroupAction);
+
+      connect(currentGroupAction, &QAction::triggered, [this, groupEntry, &ngo]
+      {
+        _scene->addNodeToGroup(ngo.node().id(), groupEntry.second->id());
+      });
+
+      groupActions.push_back(currentGroupAction);
     }
+    groupsMenu->addActions(groupActions);
     nodeMenu.addMenu(groupsMenu);
   }
   nodeMenu.exec(event->globalPos());
@@ -340,16 +348,7 @@ deleteSelectedNodes()
   {
     if (auto n = qgraphicsitem_cast<NodeGraphicsObject*>(item))
     {
-      // if the node belongs to a group, we should remove it from
-      // the group's node list.
-      if (auto nodeGroup = n->node().nodeGroup().lock(); nodeGroup)
-      {
-        nodeGroup->removeNodeFromGroup(n->node().id());
-        if(nodeGroup->empty())
-        {
-          _scene->removeGroup(nodeGroup);
-        }
-      }
+      _scene->removeNodeFromGroup(n->node().id());
       _scene->removeNode(n->node());
     }
   }

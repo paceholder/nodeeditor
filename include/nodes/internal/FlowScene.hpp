@@ -72,6 +72,10 @@ public:
 
   void removeGroup(std::shared_ptr<NodeGroup> group);
 
+  void addNodeToGroup(QUuid nodeID, QUuid groupID);
+
+  void removeNodeFromGroup(QUuid nodeID);
+
   DataModelRegistry&registry() const;
 
   void setRegistry(std::shared_ptr<DataModelRegistry> registry);

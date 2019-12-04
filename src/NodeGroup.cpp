@@ -56,19 +56,16 @@ bool NodeGroup::empty() const
 }
 
 void NodeGroup::addNode(Node* node)
-{}
-
-void NodeGroup::removeNodeFromGroup(QUuid nodeID)
 {
-  // since we're using vectors, this operation is inefficient.
-  // might be good to change it to an std::map<QUuid, node>.
-  for (auto nodeIt = childNodes().begin(); nodeIt != childNodes().end(); ++nodeIt)
+  _childNodes.push_back(node);
+}
+
+void NodeGroup::removeNode(Node* node)
+{
+  auto nodeIt = std::find(_childNodes.begin(), _childNodes.end(), node);
+  if (nodeIt != _childNodes.end())
   {
-    if ((*nodeIt)->id() == nodeID)
-    {
-      childNodes().erase(nodeIt);
-      groupGraphicsObject().positionLockedIcon();
-      return;
-    }
+    _childNodes.erase(nodeIt);
+    groupGraphicsObject().positionLockedIcon();
   }
 }

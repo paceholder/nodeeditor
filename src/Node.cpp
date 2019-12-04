@@ -151,6 +151,13 @@ setNodeGroup(std::shared_ptr<NodeGroup> group)
   _nodeGroup = group;
 }
 
+void
+Node::
+unsetNodeGroup()
+{
+  _nodeGroup = std::weak_ptr<NodeGroup>();
+}
+
 
 NodeGeometry&
 Node::

@@ -303,6 +303,29 @@ removeGroup(std::shared_ptr<NodeGroup> group)
   }
 }
 
+void
+FlowScene::
+addNodeToGroup(QUuid nodeID,
+               QUuid groupID)
+{
+  auto group = _groups.at(groupID);
+  auto node = _nodes.at(nodeID).get();
+  group->addNode(node);
+  node->setNodeGroup(group);
+}
+
+void
+FlowScene::
+removeNodeFromGroup(QUuid nodeID)
+{
+  auto nodeIt = _nodes.at(nodeID).get();
+  if(auto group = nodeIt->nodeGroup().lock(); group)
+  {
+    group->removeNode(nodeIt);
+  }
+  nodeIt->unsetNodeGroup();
+}
+
 
 DataModelRegistry&
 FlowScene::
