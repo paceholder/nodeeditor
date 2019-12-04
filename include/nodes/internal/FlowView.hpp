@@ -2,7 +2,11 @@
 
 #include <QtWidgets/QGraphicsView>
 
+#include <memory>
+
 #include "Export.hpp"
+
+class QMenu;
 
 namespace QtNodes
 {

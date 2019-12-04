@@ -121,21 +121,30 @@ nodeContextMenu(QContextMenuEvent* event,
 
   if (ngo.node().isInGroup())
   {
-
     if (auto nodeGroup = ngo.node().nodeGroup().lock(); nodeGroup)
     {
       auto* removeFromGroupAction = new QAction(&nodeMenu);
       removeFromGroupAction->setText(QString("Remove from \"" + nodeGroup->name()) + "\"");
       nodeMenu.addAction(removeFromGroupAction);
+
+//      connect(removeFromGroupAction, &QAction::triggered, []
+//      {
+
+//      });
     }
   }
   else
   {
-    auto* addToGroupAction = new QAction(&nodeMenu);
-    addToGroupAction->setText(QStringLiteral("Add to group..."));
-    nodeMenu.addAction(addToGroupAction);
+    auto* groupsMenu = new QMenu(&nodeMenu);
+    groupsMenu->setTitle(QStringLiteral("Add to group..."));
+    for (auto groupEntry : _scene->groups())
+    {
+      auto* currentGroupAction = new QAction(&nodeMenu);
+      currentGroupAction->setText(groupEntry.second->name());
+      groupsMenu->addAction(currentGroupAction);
+    }
+    nodeMenu.addMenu(groupsMenu);
   }
-
   nodeMenu.exec(event->globalPos());
 }
 
@@ -249,7 +258,7 @@ contextMenuEvent(QContextMenuEvent *event)
   auto createGroupAction = new QAction(&modelMenu);
   createGroupAction->setText(QStringLiteral("Create group"));
   connect(createGroupAction, &QAction::triggered,
-          [_scene = _scene]()
+          [&_scene = _scene]()
   {
     _scene->createGroup();
   });
