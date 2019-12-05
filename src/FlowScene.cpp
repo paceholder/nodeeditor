@@ -270,9 +270,8 @@ std::weak_ptr<NodeGroup>
 FlowScene::
 createGroup()
 {
-  /// note: might be better to change all instances of std::vector<Node*> to vectors of
-  /// the nodes' QUuids.
   auto selNodes = selectedNodes();
+
   // remove nodes which already belong to a group
   for (auto nodeIt = selNodes.begin(); nodeIt != selNodes.end();)
   {
@@ -285,8 +284,10 @@ createGroup()
       ++nodeIt;
     }
   }
+
   if(selNodes.empty())
     return std::weak_ptr<NodeGroup>();
+
   QString groupName = "Group " + QString::number(_groups.size());
   auto group = std::make_shared<NodeGroup>(selNodes, groupName);
   auto ggo   = std::make_unique<GroupGraphicsObject>(*this, *group);
@@ -340,6 +341,7 @@ removeNodeFromGroup(QUuid nodeID)
     }
   }
   nodeIt->unsetNodeGroup();
+  nodeIt->nodeGraphicsObject().lock(false);
 }
 
 
