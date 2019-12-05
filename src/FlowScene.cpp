@@ -273,6 +273,18 @@ createGroup()
   /// note: might be better to change all instances of std::vector<Node*> to vectors of
   /// the nodes' QUuids.
   auto selNodes = selectedNodes();
+  // remove nodes which already belong to a group
+  for (auto nodeIt = selNodes.begin(); nodeIt != selNodes.end();)
+  {
+    if (auto group = (*nodeIt)->nodeGroup().lock(); group)
+    {
+      selNodes.erase(nodeIt);
+    }
+    else
+    {
+      ++nodeIt;
+    }
+  }
   if(selNodes.empty())
     return std::weak_ptr<NodeGroup>();
   QString groupName = "Group " + QString::number(_groups.size());
@@ -319,9 +331,13 @@ FlowScene::
 removeNodeFromGroup(QUuid nodeID)
 {
   auto nodeIt = _nodes.at(nodeID).get();
-  if(auto group = nodeIt->nodeGroup().lock(); group)
+  if (auto group = nodeIt->nodeGroup().lock(); group)
   {
     group->removeNode(nodeIt);
+    if (group->empty())
+    {
+      removeGroup(group);
+    }
   }
   nodeIt->unsetNodeGroup();
 }

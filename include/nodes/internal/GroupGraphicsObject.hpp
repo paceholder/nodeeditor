@@ -93,10 +93,6 @@ private:
 
   bool _locked;
 
-  bool _mouseDragActive;
-
-  QPointF _mouseDragStart;
-
   static constexpr double _roundedBorderRadius = 8.0;
   static constexpr double _groupBorderX = 10.0;
   static constexpr double _groupBorderY = _groupBorderX * 0.5;
