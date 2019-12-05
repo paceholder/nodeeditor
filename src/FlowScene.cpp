@@ -268,33 +268,24 @@ removeNode(Node& node)
 
 std::weak_ptr<NodeGroup>
 FlowScene::
-createGroup()
+createGroup(std::vector<Node*>& nodes)
 {
-  auto selNodes = selectedNodes();
-
   // remove nodes which already belong to a group
-  for (auto nodeIt = selNodes.begin(); nodeIt != selNodes.end();)
+  for (auto nodeIt = nodes.begin(); nodeIt != nodes.end();)
   {
-    if (auto group = (*nodeIt)->nodeGroup().lock(); group)
-    {
-      selNodes.erase(nodeIt);
-    }
-    else
-    {
-      ++nodeIt;
-    }
+    (*nodeIt)->nodeGroup().expired() ? ++nodeIt : nodes.erase(nodeIt);
   }
 
-  if(selNodes.empty())
+  if (nodes.empty())
     return std::weak_ptr<NodeGroup>();
 
   QString groupName = "Group " + QString::number(_groups.size());
-  auto group = std::make_shared<NodeGroup>(selNodes, groupName);
+  auto group = std::make_shared<NodeGroup>(nodes, groupName);
   auto ggo   = std::make_unique<GroupGraphicsObject>(*this, *group);
 
   group->setGraphicsObject(std::move(ggo));
 
-  for (auto& nodePtr : selNodes)
+  for (auto& nodePtr : nodes)
   {
     auto node = _nodes[nodePtr->id()].get();
     node->setNodeGroup(group);

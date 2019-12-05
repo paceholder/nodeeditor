@@ -66,7 +66,7 @@ public:
 
   void removeNode(Node& node);
 
-  std::weak_ptr<NodeGroup> createGroup();
+  std::weak_ptr<NodeGroup> createGroup(std::vector<Node*>& nodes);
 
   // NodeGroup& restoreGroup();
 

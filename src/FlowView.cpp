@@ -115,13 +115,13 @@ groupContextMenu(QContextMenuEvent *event)
 void
 FlowView::
 nodeContextMenu(QContextMenuEvent* event,
-                NodeGraphicsObject& ngo)
+                NodeGraphicsObject* ngo)
 {
   QMenu nodeMenu;
 
-  if (ngo.node().isInGroup())
+  if (ngo->node().isInGroup())
   {
-    if (auto nodeGroup = ngo.node().nodeGroup().lock(); nodeGroup)
+    if (auto nodeGroup = ngo->node().nodeGroup().lock(); nodeGroup)
     {
       auto* removeFromGroupAction = new QAction(&nodeMenu);
       removeFromGroupAction->setText(QString("Remove from \"" + nodeGroup->name()) + "\"");
@@ -129,7 +129,7 @@ nodeContextMenu(QContextMenuEvent* event,
 
       connect(removeFromGroupAction, &QAction::triggered, [this, &ngo]
       {
-        _scene->removeNodeFromGroup(ngo.node().id());
+        _scene->removeNodeFromGroup(ngo->node().id());
       });
     }
   }
@@ -145,13 +145,30 @@ nodeContextMenu(QContextMenuEvent* event,
 
       connect(currentGroupAction, &QAction::triggered, [this, groupEntry, &ngo]
       {
-        _scene->addNodeToGroup(ngo.node().id(), groupEntry.second->id());
+        _scene->addNodeToGroup(ngo->node().id(), groupEntry.second->id());
       });
 
       groupActions.push_back(currentGroupAction);
     }
     groupsMenu->addActions(groupActions);
+    groupsMenu->setEnabled(!groupActions.empty());
     nodeMenu.addMenu(groupsMenu);
+
+    auto createGroupAction = new QAction(&nodeMenu);
+    createGroupAction->setText(QStringLiteral("Create group"));
+    auto createGroup = [&_scene = _scene, &ngo]()
+    {
+      auto nodes = _scene->selectedNodes();
+      Node* currentNode = &ngo->node();
+      if (std::find(nodes.begin(), nodes.end(), currentNode) == nodes.end())
+      {
+        nodes.push_back(currentNode);
+      }
+      _scene->createGroup(nodes);
+    };
+    connect(createGroupAction, &QAction::triggered, createGroup);
+
+    nodeMenu.addAction(createGroupAction);
   }
   nodeMenu.exec(event->globalPos());
 }
@@ -169,7 +186,7 @@ contextMenuEvent(QContextMenuEvent *event)
     }
     else if (auto nodeGO = qgraphicsitem_cast<NodeGraphicsObject*>(clickedItem); nodeGO)
     {
-      nodeContextMenu(event, *nodeGO);
+      nodeContextMenu(event, nodeGO);
     }
     return;
   }
@@ -263,14 +280,18 @@ contextMenuEvent(QContextMenuEvent *event)
     }
   });
 
-  auto createGroupAction = new QAction(&modelMenu);
-  createGroupAction->setText(QStringLiteral("Create group"));
-  connect(createGroupAction, &QAction::triggered,
-          [&_scene = _scene]()
+  auto nodes = _scene->selectedNodes();
+  if (!nodes.empty())
   {
-    _scene->createGroup();
-  });
-  modelMenu.addAction(createGroupAction);
+    auto createGroupAction = new QAction(&modelMenu);
+    createGroupAction->setText(QStringLiteral("Create group from selection"));
+    connect(createGroupAction, &QAction::triggered,
+            [&_scene = _scene, &nodes]()
+    {
+      _scene->createGroup(nodes);
+    });
+    modelMenu.addAction(createGroupAction);
+  }
 
   // make sure the text box gets focus so the user doesn't have to click on it
   txtBox->setFocus();

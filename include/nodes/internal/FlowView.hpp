@@ -43,7 +43,7 @@ public Q_SLOTS:
 protected:
   void groupContextMenu(QContextMenuEvent *event);
 
-  void nodeContextMenu(QContextMenuEvent *event, NodeGraphicsObject& ngo);
+  void nodeContextMenu(QContextMenuEvent *event, NodeGraphicsObject* ngo);
 
   void contextMenuEvent(QContextMenuEvent *event) override;
 
