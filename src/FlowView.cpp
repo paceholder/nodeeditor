@@ -143,9 +143,23 @@ nodeContextMenu(QContextMenuEvent* event,
       auto* currentGroupAction = new QAction(&nodeMenu);
       currentGroupAction->setText(groupEntry.second->name());
 
-      connect(currentGroupAction, &QAction::triggered, [this, groupEntry, &ngo]
+      connect(currentGroupAction, &QAction::triggered,
+              [&_scene = _scene, groupEntry, &ngo]
       {
         _scene->addNodeToGroup(ngo->node().id(), groupEntry.second->id());
+        for (auto group : _scene->groups())
+        {
+          group.second->groupGraphicsObject().setHovered(false);
+        }
+      });
+
+      connect(currentGroupAction, &QAction::hovered,
+              [&groupEntry, &_scene = _scene]()
+      {
+        for (auto group : _scene->groups())
+        {
+          group.second->groupGraphicsObject().setHovered(group == groupEntry);
+        }
       });
 
       groupActions.push_back(currentGroupAction);
