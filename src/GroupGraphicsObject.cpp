@@ -52,24 +52,12 @@ GroupGraphicsObject::~GroupGraphicsObject()
 
 void GroupGraphicsObject::hoverEnterEvent(QGraphicsSceneHoverEvent* event)
 {
-  setColor(locked()? kLockedHoverColor : kUnlockedHoverColor);
-  for (auto& node : _group.childNodes())
-  {
-    node->nodeGeometry().setHovered(true);
-    node->nodeGraphicsObject().update();
-  }
-  update();
+  setHovered(true);
 }
 
 void GroupGraphicsObject::hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
 {
-  setColor(locked()? kLockedFillColor : kUnlockedFillColor);
-  for (auto& node : _group.childNodes())
-  {
-    node->nodeGeometry().setHovered(false);
-    node->nodeGraphicsObject().update();
-  }
-  update();
+  setHovered(false);
 }
 
 void GroupGraphicsObject::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
@@ -97,6 +85,20 @@ void GroupGraphicsObject::positionLockedIcon()
   _unlockedGraphicsItem->setPos(boundingRect().topRight()
                                 + QPointF(-(_roundedBorderRadius + _unlockedIcon.width()),
                                           _roundedBorderRadius));
+}
+
+void GroupGraphicsObject::setHovered(bool hovered)
+{
+  hovered?
+  setColor(locked()? kLockedHoverColor : kUnlockedHoverColor) :
+  setColor(locked()? kLockedFillColor : kUnlockedFillColor);
+
+  for (auto& node : _group.childNodes())
+  {
+    node->nodeGeometry().setHovered(hovered);
+    node->nodeGraphicsObject().update();
+  }
+  update();
 }
 
 NodeGroup& GroupGraphicsObject::group()

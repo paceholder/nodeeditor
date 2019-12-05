@@ -24,6 +24,7 @@ class NodeGraphicsObject;
 class GroupGraphicsObject : public QObject, public QGraphicsRectItem
 {
   Q_OBJECT
+
 public:
   GroupGraphicsObject(FlowScene& scene, NodeGroup& nodeGroup);
 
@@ -57,6 +58,8 @@ public:
   QColor _currentColor;
 
   void positionLockedIcon();
+
+  void setHovered(bool hovered);
 
 protected:
   void paint(QPainter* painter,
