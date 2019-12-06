@@ -154,7 +154,7 @@ nodeContextMenu(QContextMenuEvent* event,
       });
 
       connect(currentGroupAction, &QAction::hovered,
-              [&groupEntry, &_scene = _scene]()
+              [groupEntry, &_scene = _scene]()
       {
         for (auto group : _scene->groups())
         {
