@@ -659,9 +659,32 @@ loadFromMemory(const QByteArray& data)
 
   QJsonArray nodesJsonArray = jsonDocument["nodes"].toArray();
 
+  std::map<QUuid, std::vector<Node*>> groupsMap{};
+
   for (QJsonValueRef node : nodesJsonArray)
   {
-    restoreNode(node.toObject());
+    auto nodeObj = node.toObject();
+    auto& nodeRef = restoreNode(nodeObj);
+    QString groupStr = nodeObj["group"].toString();
+    if (groupStr != "")
+    {
+      QUuid groupID(groupStr);
+      auto groupIt = groupsMap.find(groupID);
+      if (groupIt == groupsMap.end())
+      {
+        std::vector<Node*> groupNodes{1, &nodeRef};
+        groupsMap[groupID] = groupNodes;
+      }
+      else
+      {
+        groupIt->second.push_back(&nodeRef);
+      }
+    }
+  }
+
+  for (auto& mapEntry : groupsMap)
+  {
+    createGroup(mapEntry.second);
   }
 
   QJsonArray connectionJsonArray = jsonDocument["connections"].toArray();

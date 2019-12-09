@@ -383,7 +383,6 @@ deleteSelectedNodes()
   {
     if (auto n = qgraphicsitem_cast<NodeGraphicsObject*>(item))
     {
-      _scene->removeNodeFromGroup(n->node().id());
       _scene->removeNode(n->node());
     }
   }
