@@ -61,6 +61,8 @@ public:
 
   bool empty() const;
 
+  static int groupCount();
+
 public Q_SLOTS:
 
   void
@@ -82,5 +84,7 @@ private:
 
   // painting
   std::unique_ptr<GroupGraphicsObject> _groupGraphicsObject;
+
+  static int _groupCount;
 };
 }

@@ -279,7 +279,7 @@ createGroup(std::vector<Node*>& nodes)
   if (nodes.empty())
     return std::weak_ptr<NodeGroup>();
 
-  QString groupName = "Group " + QString::number(_groups.size());
+  QString groupName = "Group " + QString::number(NodeGroup::groupCount());
   auto group = std::make_shared<NodeGroup>(nodes, groupName);
   auto ggo   = std::make_unique<GroupGraphicsObject>(*this, *group);
 
