@@ -363,6 +363,24 @@ mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
   // position connections precisely after fast node move
   moveConnections();
 
+  if (!node().isInGroup())
+  {
+    QList<QGraphicsItem*> overlapItems = collidingItems();
+    for (auto& item : overlapItems)
+    {
+      auto ggo = qgraphicsitem_cast<GroupGraphicsObject*>(item);
+      if (ggo != nullptr)
+      {
+        if (!ggo->locked())
+        {
+          _scene.addNodeToGroup(node().id(), ggo->group().id());
+          ggo->update();
+          break;
+        }
+      }
+    }
+  }
+
   QGraphicsItem::mouseReleaseEvent(event);
   _scene.nodeClicked(node());
 }
