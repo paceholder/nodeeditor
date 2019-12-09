@@ -17,6 +17,7 @@
 #include "NodeConnectionInteraction.hpp"
 
 #include "NodeGroup.hpp"
+#include "GroupGraphicsObject.hpp"
 
 #include "StyleCollection.hpp"
 
@@ -30,6 +31,9 @@ NodeGraphicsObject(FlowScene &scene,
   : _scene(scene)
   , _node(node)
   , _locked(false)
+  , _draggingIntoGroup(false)
+  , _possibleGroup(nullptr)
+  , _originalGroupSize(QRectF())
   , _proxyWidget(nullptr)
 {
   _scene.addItem(this);
@@ -336,6 +340,39 @@ mouseMoveEvent(QGraphicsSceneMouseEvent * event)
       else
       {
         moveConnections();
+        /// if it intersects with a group, expand group
+        QList<QGraphicsItem*> overlapItems = collidingItems();
+        for (auto& item : overlapItems)
+        {
+          auto ggo = qgraphicsitem_cast<GroupGraphicsObject*>(item);
+          if (ggo != nullptr)
+          {
+            if (!ggo->locked())
+            {
+              if (!_draggingIntoGroup)
+              {
+                _draggingIntoGroup = true;
+                _possibleGroup = ggo;
+                _originalGroupSize = _possibleGroup->mapRectToScene(ggo->rect());
+                _possibleGroup->setPossibleChild(this);
+                break;
+              }
+              else
+              {
+                if (ggo == _possibleGroup)
+                {
+                  if (!boundingRect().intersects(mapRectFromScene(_originalGroupSize)))
+                  {
+                    _draggingIntoGroup = false;
+                    _originalGroupSize = QRectF();
+                    _possibleGroup->unsetPossibleChild();
+                    _possibleGroup = nullptr;
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     }
 
@@ -363,23 +400,14 @@ mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
   // position connections precisely after fast node move
   moveConnections();
 
-  if (!node().isInGroup())
+  if (_draggingIntoGroup && _possibleGroup && !node().isInGroup())
   {
-    QList<QGraphicsItem*> overlapItems = collidingItems();
-    for (auto& item : overlapItems)
-    {
-      auto ggo = qgraphicsitem_cast<GroupGraphicsObject*>(item);
-      if (ggo != nullptr)
-      {
-        if (!ggo->locked())
-        {
-          _scene.addNodeToGroup(node().id(), ggo->group().id());
-          ggo->update();
-          break;
-        }
-      }
-    }
+    _scene.addNodeToGroup(node().id(), _possibleGroup->group().id());
+    _possibleGroup->unsetPossibleChild();
+    _draggingIntoGroup = false;
+    _originalGroupSize = QRectF();
   }
+
 
   QGraphicsItem::mouseReleaseEvent(event);
   _scene.nodeClicked(node());

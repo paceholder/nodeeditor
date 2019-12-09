@@ -15,6 +15,7 @@ namespace QtNodes
 
 class FlowScene;
 class FlowItemEntry;
+class GroupGraphicsObject;
 
 /// Class reacts on GUI events, mouse clicks and
 /// forwards painting operation.
@@ -101,6 +102,12 @@ private:
   Node& _node;
 
   bool _locked;
+
+  bool _draggingIntoGroup;
+
+  GroupGraphicsObject* _possibleGroup;
+
+  QRectF _originalGroupSize;
 
   // either nullptr or owned by parent QGraphicsItem
   QGraphicsProxyWidget * _proxyWidget;

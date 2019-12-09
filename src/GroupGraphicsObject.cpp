@@ -24,7 +24,7 @@ QRectF PadlockGraphicsItem::boundingRect() const
 
 GroupGraphicsObject::GroupGraphicsObject(FlowScene& scene,
     NodeGroup& nodeGroup)
-  : _scene(scene), _group(nodeGroup)
+  : _scene(scene), _group(nodeGroup), _possibleChild(nullptr)
 {
   setRect(0, 0, _defaultWidth, _defaultHeight);
 
@@ -40,7 +40,7 @@ GroupGraphicsObject::GroupGraphicsObject(FlowScene& scene,
 
   _currentColor = kUnlockedFillColor;
 
-  setZValue(-1.0);
+  setZValue(-2.0);
 
   setAcceptHoverEvents(true);
 }
@@ -101,6 +101,16 @@ void GroupGraphicsObject::setHovered(bool hovered)
   update();
 }
 
+void GroupGraphicsObject::setPossibleChild(QtNodes::NodeGraphicsObject* possibleChild)
+{
+  _possibleChild = possibleChild;
+}
+
+void GroupGraphicsObject::unsetPossibleChild()
+{
+  _possibleChild = nullptr;
+}
+
 NodeGroup& GroupGraphicsObject::group()
 {
   return _group;
@@ -142,6 +152,7 @@ void GroupGraphicsObject::lock(bool locked)
   _unlockedGraphicsItem->setVisible(!locked);
   setColor(locked? kLockedFillColor : kUnlockedFillColor);
   _locked = locked;
+  setZValue(locked? 2.0 : -2.0);
 }
 
 void GroupGraphicsObject::paint(QPainter* painter,
@@ -163,6 +174,10 @@ QRectF GroupGraphicsObject::boundingRect() const
   {
     NodeGraphicsObject* ngo = &node->nodeGraphicsObject();
     ret |= ngo->mapRectToScene(ngo->boundingRect());
+  }
+  if (_possibleChild)
+  {
+    ret |= _possibleChild->mapRectToScene(_possibleChild->boundingRect());
   }
   return mapRectFromScene(ret.marginsAdded(_margins));
 }

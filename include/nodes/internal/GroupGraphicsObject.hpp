@@ -61,6 +61,10 @@ public:
 
   void setHovered(bool hovered);
 
+  void setPossibleChild(NodeGraphicsObject* possibleChild);
+
+  void unsetPossibleChild();
+
 protected:
   void paint(QPainter* painter,
              QStyleOptionGraphicsItem const* option,
@@ -78,8 +82,8 @@ public:
   const QColor kUnlockedFillColor  = QColor("#20a5b084");
   const QColor kUnlockedHoverColor = QColor("#2083a4af");
 
-  const QColor kLockedFillColor  = QColor("#20ba6a6a");
-  const QColor kLockedHoverColor = QColor("#20aa5757");
+  const QColor kLockedFillColor  = QColor("#3fe0bebc");
+  const QColor kLockedHoverColor = QColor("#3feecdcb");
 
   const QColor kBorderColor = QColor("#20aaaaaa");
 
@@ -93,6 +97,8 @@ private:
 
   QPixmap _lockedIcon{"://padlock-lock.png"};
   QPixmap _unlockedIcon{"://padlock-unlock.png"};
+
+  NodeGraphicsObject* _possibleChild;
 
   bool _locked;
 
