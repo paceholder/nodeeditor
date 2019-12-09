@@ -263,6 +263,11 @@ removeNode(Node& node)
     }
   }
 
+  if (!node.nodeGroup().expired())
+  {
+    removeNodeFromGroup(node.id());
+  }
+
   _nodes.erase(node.id());
 }
 

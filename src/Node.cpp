@@ -58,6 +58,13 @@ save() const
 
   nodeJson["model"] = _nodeDataModel->save();
 
+  QString groupID = "";
+  if (auto group = _nodeGroup.lock(); group)
+  {
+    groupID = group->id().toString();
+  }
+  nodeJson["group"] = groupID;
+
   QJsonObject obj;
   obj["x"] = _nodeGraphicsObject->pos().x();
   obj["y"] = _nodeGraphicsObject->pos().y();

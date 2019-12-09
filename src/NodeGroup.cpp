@@ -18,7 +18,11 @@ NodeGroup::NodeGroup(const std::vector<Node*>& nodes,
 
 NodeGroup::~NodeGroup() = default;
 
-QJsonObject NodeGroup::save() const {}
+QJsonObject NodeGroup::save() const
+{
+  QJsonObject groupJson;
+  return groupJson;
+}
 
 void NodeGroup::restore(QJsonObject const& json) {}
 
