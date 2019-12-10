@@ -68,13 +68,17 @@ public:
 
   std::weak_ptr<NodeGroup> createGroup(std::vector<Node*>& nodes);
 
+  void saveGroup(const QUuid& groupID);
+
+  std::vector<std::shared_ptr<Connection>> connectionsWithinGroup(const QUuid& groupID);
+
   // NodeGroup& restoreGroup();
 
   void removeGroup(std::shared_ptr<NodeGroup> group);
 
-  void addNodeToGroup(QUuid nodeID, QUuid groupID);
+  void addNodeToGroup(const QUuid& nodeID, const QUuid& groupID);
 
-  void removeNodeFromGroup(QUuid nodeID);
+  void removeNodeFromGroup(const QUuid& nodeID);
 
   DataModelRegistry&registry() const;
 

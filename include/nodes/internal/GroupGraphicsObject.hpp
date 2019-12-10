@@ -2,7 +2,10 @@
 
 #include <QtWidgets/QGraphicsRectItem>
 
+#include <memory>
+
 #include "NodeGroup.hpp"
+#include "Connection.hpp"
 
 class PadlockGraphicsItem : public QGraphicsPixmapItem
 {
@@ -64,6 +67,8 @@ public:
   void setPossibleChild(NodeGraphicsObject* possibleChild);
 
   void unsetPossibleChild();
+
+  std::vector<std::shared_ptr<Connection>> connections() const;
 
 protected:
   void paint(QPainter* painter,

@@ -2,14 +2,15 @@
 
 #include <QtCore/QObject>
 #include <QtCore/QUuid>
+#include <QtCore/QByteArray>
 
 #include <vector>
 
 #include "GroupGraphicsObject.hpp"
 #include "Node.hpp"
 #include "Export.hpp"
-#include "Serializable.hpp"
 #include "memory.hpp"
+#include "Connection.hpp"
 
 namespace QtNodes
 {
@@ -19,7 +20,6 @@ class GroupGraphicsObject;
 
 class NODE_EDITOR_PUBLIC NodeGroup
   : public QObject
-  , public Serializable
 {
   Q_OBJECT
 
@@ -33,11 +33,11 @@ public:
 
 public:
 
-  QJsonObject
-  save() const override;
+  QByteArray
+  saveToFile() const;
 
   void
-  restore(QJsonObject const &json) override;
+  restoreFromFile(QJsonObject const &json);
 
 public:
 
@@ -52,6 +52,9 @@ public:
 
   std::vector<Node*>&
   childNodes();
+
+  std::vector<QUuid>
+  nodeIDs() const;
 
   QString const &
   name() const;

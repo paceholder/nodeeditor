@@ -101,13 +101,20 @@ FlowView::setScene(FlowScene *scene)
 
 void
 FlowView::
-groupContextMenu(QContextMenuEvent *event)
+groupContextMenu(QContextMenuEvent* event,
+                 GroupGraphicsObject* ggo)
 {
   QMenu groupMenu;
 
   auto* saveGroupAction = new QAction(&groupMenu);
   saveGroupAction->setText(QStringLiteral("Save Group..."));
   groupMenu.addAction(saveGroupAction);
+
+  connect(saveGroupAction, &QAction::triggered,
+          [&ggo, &_scene = _scene]()
+  {
+    _scene->saveGroup(ggo->group().id());
+  });
 
   groupMenu.exec(event->globalPos());
 }
@@ -196,7 +203,7 @@ contextMenuEvent(QContextMenuEvent *event)
   {
     if (auto groupGO = qgraphicsitem_cast<GroupGraphicsObject*>(clickedItem); groupGO)
     {
-      groupContextMenu(event);
+      groupContextMenu(event, groupGO);
     }
     else if (auto nodeGO = qgraphicsitem_cast<NodeGraphicsObject*>(clickedItem); nodeGO)
     {

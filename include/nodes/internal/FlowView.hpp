@@ -13,6 +13,7 @@ namespace QtNodes
 
 class FlowScene;
 class NodeGraphicsObject;
+class GroupGraphicsObject;
 
 class NODE_EDITOR_PUBLIC FlowView
   : public QGraphicsView
@@ -41,7 +42,7 @@ public Q_SLOTS:
   void deleteSelectedNodes();
 
 protected:
-  void groupContextMenu(QContextMenuEvent *event);
+  void groupContextMenu(QContextMenuEvent *event, GroupGraphicsObject* ggo);
 
   void nodeContextMenu(QContextMenuEvent *event, NodeGraphicsObject* ngo);
 

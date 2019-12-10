@@ -5,10 +5,12 @@
 #include <nodes/Node>
 
 #include "FlowScene.hpp"
+#include "Connection.hpp"
 
 using QtNodes::GroupGraphicsObject;
 using QtNodes::NodeGraphicsObject;
 using QtNodes::NodeGroup;
+using QtNodes::Connection;
 
 
 PadlockGraphicsItem::PadlockGraphicsItem(QGraphicsItem* parent)
@@ -109,6 +111,11 @@ void GroupGraphicsObject::setPossibleChild(QtNodes::NodeGraphicsObject* possible
 void GroupGraphicsObject::unsetPossibleChild()
 {
   _possibleChild = nullptr;
+}
+
+std::vector<std::shared_ptr<Connection>> GroupGraphicsObject::connections() const
+{
+  return _scene.connectionsWithinGroup(group().id());
 }
 
 NodeGroup& GroupGraphicsObject::group()

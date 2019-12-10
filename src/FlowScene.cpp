@@ -304,6 +304,53 @@ createGroup(std::vector<Node*>& nodes)
 
 void
 FlowScene::
+saveGroup(const QUuid& groupID)
+{
+  QString fileName =
+    QFileDialog::getSaveFileName(nullptr,
+                                 tr("Save Node Group"),
+                                 QDir::homePath(),
+                                 tr("Node Group files (*.group)"));
+
+  if (!fileName.isEmpty())
+  {
+    if (!fileName.endsWith("group", Qt::CaseInsensitive))
+      fileName += ".group";
+
+    auto group = _groups.find(groupID);
+
+    QFile file(fileName);
+    if (file.open(QIODevice::WriteOnly))
+    {
+      file.write(group->second->saveToFile());
+    }
+  }
+}
+
+std::vector<std::shared_ptr<Connection> >
+FlowScene::
+connectionsWithinGroup(const QUuid& groupID)
+{
+  std::vector<std::shared_ptr<Connection>> ret{};
+
+  for (auto const & connection : _connections)
+  {
+    auto node1 = connection.second->getNode(PortType::In)->nodeGroup().lock();
+    auto node2 = connection.second->getNode(PortType::Out)->nodeGroup().lock();
+    if ( node1 && node2 )
+    {
+      if ((node1->id() == node2->id()) && (node1->id() == groupID))
+      {
+        ret.push_back(connection.second);
+      }
+    }
+  }
+
+  return ret;
+}
+
+void
+FlowScene::
 removeGroup(std::shared_ptr<NodeGroup> group)
 {
   if (group->empty())
@@ -314,8 +361,8 @@ removeGroup(std::shared_ptr<NodeGroup> group)
 
 void
 FlowScene::
-addNodeToGroup(QUuid nodeID,
-               QUuid groupID)
+addNodeToGroup(const QUuid& nodeID,
+               const QUuid& groupID)
 {
   auto group = _groups.at(groupID);
   auto node = _nodes.at(nodeID).get();
@@ -325,7 +372,7 @@ addNodeToGroup(QUuid nodeID,
 
 void
 FlowScene::
-removeNodeFromGroup(QUuid nodeID)
+removeNodeFromGroup(const QUuid& nodeID)
 {
   auto nodeIt = _nodes.at(nodeID).get();
   if (auto group = nodeIt->nodeGroup().lock(); group)

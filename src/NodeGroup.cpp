@@ -1,5 +1,8 @@
 #include "NodeGroup.hpp"
 
+#include <QJsonDocument>
+#include <QJsonArray>
+
 using QtNodes::GroupGraphicsObject;
 using QtNodes::Node;
 using QtNodes::NodeGroup;
@@ -18,13 +21,31 @@ NodeGroup::NodeGroup(const std::vector<Node*>& nodes,
 
 NodeGroup::~NodeGroup() = default;
 
-QJsonObject NodeGroup::save() const
+QByteArray NodeGroup::saveToFile() const
 {
   QJsonObject groupJson;
-  return groupJson;
+
+  QJsonArray nodesJson;
+  for (auto const & node : _childNodes)
+  {
+    nodesJson.append(node->save());
+  }
+  groupJson["nodes"] = nodesJson;
+
+  QJsonArray connectionsJson;
+  auto groupConnections = _groupGraphicsObject->connections();
+  for (auto const & connection : groupConnections)
+  {
+    connectionsJson.append(connection->save());
+  }
+  groupJson["connections"] = connectionsJson;
+
+  QJsonDocument groupDocument(groupJson);
+
+  return groupDocument.toJson();
 }
 
-void NodeGroup::restore(QJsonObject const& json) {}
+void NodeGroup::restoreFromFile(QJsonObject const& json) {}
 
 QUuid NodeGroup::id() const
 {
@@ -44,6 +65,18 @@ GroupGraphicsObject& NodeGroup::groupGraphicsObject()
 std::vector<Node*>& NodeGroup::childNodes()
 {
   return _childNodes;
+}
+
+std::vector<QUuid> NodeGroup::nodeIDs() const
+{
+  std::vector<QUuid> ret{};
+
+  for (auto const & node : _childNodes)
+  {
+    ret.push_back(node->id());
+  }
+
+  return ret;
 }
 
 const QString& NodeGroup::name() const
