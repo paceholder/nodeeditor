@@ -314,6 +314,10 @@ contextMenuEvent(QContextMenuEvent *event)
     modelMenu.addAction(createGroupAction);
   }
 
+  auto restoreGroupAction = new QAction(&modelMenu);
+  restoreGroupAction->setText(QStringLiteral("Load Group..."));
+  connect(restoreGroupAction, &QAction::triggered, _scene, &FlowScene::loadGroupFile);
+
   // make sure the text box gets focus so the user doesn't have to click on it
   txtBox->setFocus();
 

@@ -45,7 +45,7 @@ QByteArray NodeGroup::saveToFile() const
   return groupDocument.toJson();
 }
 
-void NodeGroup::restoreFromFile(QJsonObject const& json) {}
+void NodeGroup::restoreFromFile(const QByteArray& data) {}
 
 QUuid NodeGroup::id() const
 {

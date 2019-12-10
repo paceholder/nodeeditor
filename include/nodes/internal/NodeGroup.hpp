@@ -37,7 +37,7 @@ public:
   saveToFile() const;
 
   void
-  restoreFromFile(QJsonObject const &json);
+  restoreFromFile(const QByteArray& data);
 
 public:
 

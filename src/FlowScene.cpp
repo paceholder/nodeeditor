@@ -302,31 +302,6 @@ createGroup(std::vector<Node*>& nodes)
   return groupPtr;
 }
 
-void
-FlowScene::
-saveGroup(const QUuid& groupID)
-{
-  QString fileName =
-    QFileDialog::getSaveFileName(nullptr,
-                                 tr("Save Node Group"),
-                                 QDir::homePath(),
-                                 tr("Node Group files (*.group)"));
-
-  if (!fileName.isEmpty())
-  {
-    if (!fileName.endsWith("group", Qt::CaseInsensitive))
-      fileName += ".group";
-
-    auto group = _groups.find(groupID);
-
-    QFile file(fileName);
-    if (file.open(QIODevice::WriteOnly))
-    {
-      file.write(group->second->saveToFile());
-    }
-  }
-}
-
 std::vector<std::shared_ptr<Connection> >
 FlowScene::
 connectionsWithinGroup(const QUuid& groupID)
@@ -740,6 +715,54 @@ loadFromMemory(const QByteArray& data)
   {
     restoreConnection(connection.toObject());
   }
+}
+
+void
+FlowScene::
+saveGroupFile(const QUuid& groupID)
+{
+  QString fileName =
+    QFileDialog::getSaveFileName(nullptr,
+                                 tr("Save Node Group"),
+                                 QDir::homePath(),
+                                 tr("Node Group files (*.group)"));
+
+  if (!fileName.isEmpty())
+  {
+    if (!fileName.endsWith("group", Qt::CaseInsensitive))
+      fileName += ".group";
+
+    auto group = _groups.find(groupID);
+
+    QFile file(fileName);
+    if (file.open(QIODevice::WriteOnly))
+    {
+      file.write(group->second->saveToFile());
+    }
+  }
+}
+
+void
+FlowScene::
+loadGroupFile()
+{
+  QString fileName =
+    QFileDialog::getOpenFileName(nullptr,
+                                 tr("Open Node Group"),
+                                 QDir::homePath(),
+                                 tr("Node Group files (*.group)"));
+
+  if (!QFileInfo::exists(fileName))
+    return;
+
+  QFile file(fileName);
+
+  if (!file.open(QIODevice::ReadOnly))
+    return;
+
+  QByteArray wholeFile = file.readAll();
+
+//  loadFromMemory(wholeFile);
 }
 
 

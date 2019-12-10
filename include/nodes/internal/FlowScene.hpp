@@ -68,8 +68,6 @@ public:
 
   std::weak_ptr<NodeGroup> createGroup(std::vector<Node*>& nodes);
 
-  void saveGroup(const QUuid& groupID);
-
   std::vector<std::shared_ptr<Connection>> connectionsWithinGroup(const QUuid& groupID);
 
   // NodeGroup& restoreGroup();
@@ -119,6 +117,10 @@ public:
   QByteArray saveToMemory() const;
 
   void loadFromMemory(const QByteArray& data);
+
+  void saveGroupFile(const QUuid& groupID);
+
+  void loadGroupFile();
 
 Q_SIGNALS:
 
