@@ -36,11 +36,6 @@ public:
   QByteArray
   saveToFile() const;
 
-  void
-  restoreFromFile(const QByteArray& data);
-
-public:
-
   QUuid
   id() const;
 

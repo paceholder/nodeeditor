@@ -32,6 +32,8 @@ class NODE_EDITOR_PUBLIC Connection
 
   Q_OBJECT
 
+  friend class FlowScene;
+
 public:
 
   /// New Connection is attached to the port of the given Node.
@@ -136,6 +138,10 @@ Q_SIGNALS:
 
   void
   connectionMadeIncomplete(Connection const&) const;
+
+protected:
+  void
+  setID(const QUuid& id);
 
 private:
 

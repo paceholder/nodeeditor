@@ -139,50 +139,55 @@ std::shared_ptr<Connection>
 FlowScene::
 restoreConnection(QJsonObject const &connectionJson)
 {
+  return loadConnectionToMap(connectionJson, _nodes, _connections);
+}
+
+std::shared_ptr<Connection>
+FlowScene::
+loadConnectionToMap(const QJsonObject& connectionJson,
+                    std::unordered_map<QUuid, std::unique_ptr<Node>>& nodesMap,
+                    std::unordered_map<QUuid, std::shared_ptr<Connection> >& connectionsMap,
+                    const std::unordered_map<QUuid, QUuid>& IDMap)
+{
   QUuid nodeInId  = QUuid(connectionJson["in_id"].toString());
   QUuid nodeOutId = QUuid(connectionJson["out_id"].toString());
+
+  if (!IDMap.empty())
+  {
+    nodeInId = IDMap.at(nodeInId);
+    nodeOutId = IDMap.at(nodeOutId);
+  }
 
   PortIndex portIndexIn  = connectionJson["in_index"].toInt();
   PortIndex portIndexOut = connectionJson["out_index"].toInt();
 
-  auto nodeIn  = _nodes[nodeInId].get();
-  auto nodeOut = _nodes[nodeOutId].get();
+  auto nodeIn  = nodesMap[nodeInId].get();
+  auto nodeOut = nodesMap[nodeOutId].get();
 
-  auto getConverter = [&]()
-  {
-    QJsonValue converterVal = connectionJson["converter"];
+  const TypeConverter& converter = getConverter(connectionJson);
 
-    if (!converterVal.isUndefined())
-    {
-      QJsonObject converterJson = converterVal.toObject();
+  auto connection =
+    std::make_shared<Connection>(*nodeIn,
+                                 portIndexIn,
+                                 *nodeOut,
+                                 portIndexOut,
+                                 converter);
+  auto cgo = detail::make_unique<ConnectionGraphicsObject>(*this, *connection);
 
-      NodeDataType inType { converterJson["in"].toObject()["id"].toString(),
-                            converterJson["in"].toObject()["name"].toString() };
+  nodeIn->nodeState().setConnection(PortType::In, portIndexIn, *connection);
+  nodeOut->nodeState().setConnection(PortType::Out, portIndexOut, *connection);
 
-      NodeDataType outType { converterJson["out"].toObject()["id"].toString(),
-                             converterJson["out"].toObject()["name"].toString() };
+  // after this function connection points are set to node port
+  connection->setGraphicsObject(std::move(cgo));
 
-      auto converter  =
-        registry().getTypeConverter(outType, inType);
+  // trigger data propagation
+  nodeOut->onDataUpdated(portIndexOut);
 
-      if (converter)
-        return converter;
-    }
+  connectionsMap[connection->id()] = connection;
 
-    return TypeConverter{};
-  };
-
-  std::shared_ptr<Connection> connection =
-    createConnection(*nodeIn, portIndexIn,
-                     *nodeOut, portIndexOut,
-                     getConverter());
-
-  // Note: the connectionCreated(...) signal has already been sent
-  // by createConnection(...)
-
+  connectionCreated(*connection);
   return connection;
 }
-
 
 void
 FlowScene::
@@ -194,6 +199,31 @@ deleteConnection(Connection& connection)
     connection.removeFromNodes();
     _connections.erase(it);
   }
+}
+
+TypeConverter
+FlowScene::
+getConverter(const QJsonObject& connectionJson)
+{
+  QJsonValue converterVal = connectionJson["converter"];
+
+  if (!converterVal.isUndefined())
+  {
+    QJsonObject converterJson = converterVal.toObject();
+
+    NodeDataType inType { converterJson["in"].toObject()["id"].toString(),
+                          converterJson["in"].toObject()["name"].toString() };
+
+    NodeDataType outType { converterJson["out"].toObject()["id"].toString(),
+                           converterJson["out"].toObject()["name"].toString() };
+
+    auto converter  =
+      registry().getTypeConverter(outType, inType);
+
+    if (converter)
+      return converter;
+  }
+  return TypeConverter{};
 }
 
 
@@ -218,6 +248,16 @@ Node&
 FlowScene::
 restoreNode(QJsonObject const& nodeJson)
 {
+  auto id = QUuid(nodeJson["id"].toString());
+  return loadNodeToMap(nodeJson, _nodes, id);
+}
+
+Node&
+FlowScene::
+loadNodeToMap(const QJsonObject& nodeJson,
+              std::unordered_map<QUuid, std::unique_ptr<Node>>& map,
+              const QUuid& customID)
+{
   QString modelName = nodeJson["model"].toObject()["name"].toString();
 
   auto dataModel = registry().create(modelName);
@@ -232,8 +272,10 @@ restoreNode(QJsonObject const& nodeJson)
 
   node->restore(nodeJson);
 
+  node->setID(customID);
+
   auto nodePtr = node.get();
-  _nodes[node->id()] = std::move(node);
+  map[node->id()] = std::move(node);
 
   nodePlaced(*nodePtr);
   nodeCreated(*nodePtr);
@@ -273,7 +315,8 @@ removeNode(Node& node)
 
 std::weak_ptr<NodeGroup>
 FlowScene::
-createGroup(std::vector<Node*>& nodes)
+createGroup(std::vector<Node*>& nodes,
+            QString groupName)
 {
   // remove nodes which already belong to a group
   for (auto nodeIt = nodes.begin(); nodeIt != nodes.end();)
@@ -284,7 +327,10 @@ createGroup(std::vector<Node*>& nodes)
   if (nodes.empty())
     return std::weak_ptr<NodeGroup>();
 
-  QString groupName = "Group " + QString::number(NodeGroup::groupCount());
+  if (groupName == QStringLiteral(""))
+  {
+    groupName = "Group " + QString::number(NodeGroup::groupCount());
+  }
   auto group = std::make_shared<NodeGroup>(nodes, groupName);
   auto ggo   = std::make_unique<GroupGraphicsObject>(*this, *group);
 
@@ -296,10 +342,9 @@ createGroup(std::vector<Node*>& nodes)
     node->setNodeGroup(group);
   }
 
-  std::weak_ptr<NodeGroup> groupPtr = group;
   _groups[group->id()] = std::move(group);
 
-  return groupPtr;
+  return group;
 }
 
 std::vector<std::shared_ptr<Connection> >
@@ -322,6 +367,43 @@ connectionsWithinGroup(const QUuid& groupID)
   }
 
   return ret;
+}
+
+std::weak_ptr<NodeGroup>
+FlowScene::
+restoreGroup(QJsonObject const& groupJson)
+{
+  std::unordered_map<QUuid, std::unique_ptr<Node>> nodesMap{};
+  std::unordered_map<QUuid, std::shared_ptr<QtNodes::Connection> > connectionsMap{};
+  std::vector<Node*> children{};
+
+  // since the new nodes will have the same IDs as in the file and the connections
+  // need these old IDs to be restored, we must create new IDs, map them to the
+  // old ones and apply them after the group is restored.
+  std::unordered_map<QUuid, QUuid> IDsMap{};
+
+  QJsonArray nodesJson = groupJson["nodes"].toArray();
+  for (const QJsonValueRef nodeJson : nodesJson)
+  {
+    auto newID = QUuid::createUuid();
+    auto oldID = QUuid(nodeJson.toObject()["id"].toString());
+
+    auto& nodeRef = loadNodeToMap(nodeJson.toObject(), nodesMap, newID);
+    IDsMap[oldID] = newID;
+
+    children.push_back(&nodeRef);
+  }
+
+  QJsonArray connectionJsonArray = groupJson["connections"].toArray();
+  for (auto connection : connectionJsonArray)
+  {
+    loadConnectionToMap(connection.toObject(), nodesMap, connectionsMap, IDsMap);
+  }
+
+  _nodes.merge(nodesMap);
+  _connections.merge(connectionsMap);
+
+  return createGroup(children, groupJson["name"].toString());
 }
 
 void
@@ -681,21 +763,25 @@ loadFromMemory(const QByteArray& data)
 
   QJsonArray nodesJsonArray = jsonDocument["nodes"].toArray();
 
-  std::map<QUuid, std::vector<Node*>> groupsMap{};
+  std::map<QUuid, std::vector<Node*>> IDNodesMap{};
+  std::map<QUuid, QString> IDNamesMap{};
 
   for (QJsonValueRef node : nodesJsonArray)
   {
     auto nodeObj = node.toObject();
     auto& nodeRef = restoreNode(nodeObj);
-    QString groupStr = nodeObj["group"].toString();
-    if (groupStr != "")
+    QJsonObject group = nodeObj["group"].toObject();
+    QString groupIDStr = group["id"].toString();
+    QString groupName = group["name"].toString();
+    if (groupIDStr != "")
     {
-      QUuid groupID(groupStr);
-      auto groupIt = groupsMap.find(groupID);
-      if (groupIt == groupsMap.end())
+      QUuid groupID(groupIDStr);
+      auto groupIt = IDNodesMap.find(groupID);
+      if (groupIt == IDNodesMap.end())
       {
         std::vector<Node*> groupNodes{1, &nodeRef};
-        groupsMap[groupID] = groupNodes;
+        IDNodesMap[groupID] = groupNodes;
+        IDNamesMap[groupID] = groupName;
       }
       else
       {
@@ -704,9 +790,10 @@ loadFromMemory(const QByteArray& data)
     }
   }
 
-  for (auto& mapEntry : groupsMap)
+  for (auto& mapEntry : IDNodesMap)
   {
-    createGroup(mapEntry.second);
+    QString name = IDNamesMap.at(mapEntry.first);
+    createGroup(mapEntry.second, name);
   }
 
   QJsonArray connectionJsonArray = jsonDocument["connections"].toArray();
@@ -762,7 +849,9 @@ loadGroupFile()
 
   QByteArray wholeFile = file.readAll();
 
-//  loadFromMemory(wholeFile);
+  const QJsonObject fileJson = QJsonDocument::fromJson(wholeFile).object();
+
+  restoreGroup(fileJson);
 }
 
 

@@ -58,12 +58,17 @@ save() const
 
   nodeJson["model"] = _nodeDataModel->save();
 
+  QJsonObject groupJson;
   QString groupID = "";
+  QString groupName = "";
   if (auto group = _nodeGroup.lock(); group)
   {
     groupID = group->id().toString();
+    groupName = group->name();
   }
-  nodeJson["group"] = groupID;
+  groupJson["id"] = groupID;
+  groupJson["name"] = groupName;
+  nodeJson["group"] = groupJson;
 
   QJsonObject obj;
   obj["x"] = _nodeGraphicsObject->pos().x();
@@ -79,7 +84,13 @@ Node::
 restore(QJsonObject const& json)
 {
   _uid = QUuid(json["id"].toString());
+  clone(json);
+}
 
+void
+Node::
+clone(QJsonObject const& json)
+{
   QJsonObject positionJson = json["position"].toObject();
   QPointF     point(positionJson["x"].toDouble(),
                     positionJson["y"].toDouble());
@@ -95,7 +106,6 @@ id() const
 {
   return _uid;
 }
-
 
 void
 Node::
@@ -269,4 +279,11 @@ onNodeSizeUpdated()
       }
     }
   }
+}
+
+void
+Node::
+setID(const QUuid& id)
+{
+  _uid = id;
 }

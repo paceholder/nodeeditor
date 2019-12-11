@@ -180,6 +180,7 @@ QRectF GroupGraphicsObject::boundingRect() const
   for (auto& node : _group.childNodes())
   {
     NodeGraphicsObject* ngo = &node->nodeGraphicsObject();
+
     ret |= ngo->mapRectToScene(ngo->boundingRect());
   }
   if (_possibleChild)

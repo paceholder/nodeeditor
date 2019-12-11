@@ -32,6 +32,8 @@ class NODE_EDITOR_PUBLIC Node
 {
   Q_OBJECT
 
+  friend class FlowScene;
+
 public:
 
   /// NodeDataModel should be an rvalue and is moved into the Node
@@ -48,14 +50,18 @@ public:
   void
   restore(QJsonObject const &json) override;
 
+  void
+  clone(QJsonObject const &json);
+
 public:
 
   QUuid
   id() const;
 
-  void reactToPossibleConnection(PortType,
-                                 NodeDataType const &,
-                                 QPointF const & scenePoint);
+  void
+  reactToPossibleConnection(PortType,
+                            NodeDataType const &,
+                            QPointF const & scenePoint);
 
   void
   resetReactionToConnection();
@@ -112,6 +118,10 @@ public Q_SLOTS: // data propagation
   /// update the graphic part if the size of the embeddedwidget changes
   void
   onNodeSizeUpdated();
+
+protected:
+  void
+  setID(const QUuid& id);
 
 private:
 

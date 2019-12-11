@@ -113,7 +113,7 @@ groupContextMenu(QContextMenuEvent* event,
   connect(saveGroupAction, &QAction::triggered,
           [&ggo, &_scene = _scene]()
   {
-    _scene->saveGroup(ggo->group().id());
+    _scene->saveGroupFile(ggo->group().id());
   });
 
   groupMenu.exec(event->globalPos());
@@ -317,6 +317,7 @@ contextMenuEvent(QContextMenuEvent *event)
   auto restoreGroupAction = new QAction(&modelMenu);
   restoreGroupAction->setText(QStringLiteral("Load Group..."));
   connect(restoreGroupAction, &QAction::triggered, _scene, &FlowScene::loadGroupFile);
+  modelMenu.addAction(restoreGroupAction);
 
   // make sure the text box gets focus so the user doesn't have to click on it
   txtBox->setFocus();

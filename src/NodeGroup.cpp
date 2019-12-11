@@ -25,6 +25,8 @@ QByteArray NodeGroup::saveToFile() const
 {
   QJsonObject groupJson;
 
+  groupJson["name"] = _name;
+
   QJsonArray nodesJson;
   for (auto const & node : _childNodes)
   {
@@ -44,8 +46,6 @@ QByteArray NodeGroup::saveToFile() const
 
   return groupDocument.toJson();
 }
-
-void NodeGroup::restoreFromFile(const QByteArray& data) {}
 
 QUuid NodeGroup::id() const
 {

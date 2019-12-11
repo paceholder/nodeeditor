@@ -58,19 +58,31 @@ public:
 
   std::shared_ptr<Connection> restoreConnection(QJsonObject const &connectionJson);
 
+  std::shared_ptr<Connection> loadConnectionToMap(QJsonObject const &connectionJson,
+      std::unordered_map<QUuid, std::unique_ptr<Node>>& nodes,
+      std::unordered_map<QUuid, std::shared_ptr<Connection>>& connections,
+      const std::unordered_map<QUuid, QUuid>& IDMap = std::unordered_map<QUuid, QUuid>());
+
   void deleteConnection(Connection& connection);
+
+  TypeConverter getConverter(const QJsonObject& connectionJson);
 
   Node&createNode(std::unique_ptr<NodeDataModel> && dataModel);
 
   Node&restoreNode(QJsonObject const& nodeJson);
 
+  Node&loadNodeToMap(QJsonObject const& nodeJson,
+                     std::unordered_map<QUuid, std::unique_ptr<Node>>& map,
+                     const QUuid& customID);
+
   void removeNode(Node& node);
 
-  std::weak_ptr<NodeGroup> createGroup(std::vector<Node*>& nodes);
+  std::weak_ptr<NodeGroup> createGroup(std::vector<Node*>& nodes,
+                                       QString name = QStringLiteral(""));
 
   std::vector<std::shared_ptr<Connection>> connectionsWithinGroup(const QUuid& groupID);
 
-  // NodeGroup& restoreGroup();
+  std::weak_ptr<NodeGroup> restoreGroup(QJsonObject const& groupJson);
 
   void removeGroup(std::shared_ptr<NodeGroup> group);
 
