@@ -73,7 +73,7 @@ public:
 
   Node&loadNodeToMap(QJsonObject const& nodeJson,
                      std::unordered_map<QUuid, std::unique_ptr<Node>>& map,
-                     const QUuid& customID);
+                     bool restore = false);
 
   void removeNode(Node& node);
 

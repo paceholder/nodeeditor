@@ -127,14 +127,6 @@ id() const
   return _uid;
 }
 
-void
-Connection::
-setID(const QUuid& id)
-{
-  _uid = id;
-}
-
-
 bool
 Connection::
 complete() const

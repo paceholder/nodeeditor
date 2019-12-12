@@ -119,10 +119,6 @@ public Q_SLOTS: // data propagation
   void
   onNodeSizeUpdated();
 
-protected:
-  void
-  setID(const QUuid& id);
-
 private:
 
   // addressing

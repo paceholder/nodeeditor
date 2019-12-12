@@ -139,10 +139,6 @@ Q_SIGNALS:
   void
   connectionMadeIncomplete(Connection const&) const;
 
-protected:
-  void
-  setID(const QUuid& id);
-
 private:
 
   QUuid _uid;

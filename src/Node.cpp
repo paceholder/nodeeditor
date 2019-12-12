@@ -280,10 +280,3 @@ onNodeSizeUpdated()
     }
   }
 }
-
-void
-Node::
-setID(const QUuid& id)
-{
-  _uid = id;
-}

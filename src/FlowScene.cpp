@@ -248,15 +248,15 @@ Node&
 FlowScene::
 restoreNode(QJsonObject const& nodeJson)
 {
-  auto id = QUuid(nodeJson["id"].toString());
-  return loadNodeToMap(nodeJson, _nodes, id);
+  return loadNodeToMap(nodeJson, _nodes, true);
 }
+
 
 Node&
 FlowScene::
 loadNodeToMap(const QJsonObject& nodeJson,
               std::unordered_map<QUuid, std::unique_ptr<Node>>& map,
-              const QUuid& customID)
+              bool restore)
 {
   QString modelName = nodeJson["model"].toObject()["name"].toString();
 
@@ -270,9 +270,7 @@ loadNodeToMap(const QJsonObject& nodeJson,
   auto ngo  = detail::make_unique<NodeGraphicsObject>(*this, *node);
   node->setGraphicsObject(std::move(ngo));
 
-  node->restore(nodeJson);
-
-  node->setID(customID);
+  restore? node->restore(nodeJson) : node->clone(nodeJson);
 
   auto nodePtr = node.get();
   map[node->id()] = std::move(node);
@@ -385,12 +383,12 @@ restoreGroup(QJsonObject const& groupJson)
   QJsonArray nodesJson = groupJson["nodes"].toArray();
   for (const QJsonValueRef nodeJson : nodesJson)
   {
-    auto newID = QUuid::createUuid();
     auto oldID = QUuid(nodeJson.toObject()["id"].toString());
+    auto& nodeRef = loadNodeToMap(nodeJson.toObject(), nodesMap);
 
-    auto& nodeRef = loadNodeToMap(nodeJson.toObject(), nodesMap, newID);
+    auto newID = nodeRef.id();
+
     IDsMap[oldID] = newID;
-
     children.push_back(&nodeRef);
   }
 
