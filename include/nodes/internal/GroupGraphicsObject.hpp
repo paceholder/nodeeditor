@@ -89,6 +89,9 @@ public:
   std::vector<std::shared_ptr<Connection> >
   connections() const;
 
+  void
+  setPosition(const QPointF& position);
+
   QColor
   _currentColor;
 

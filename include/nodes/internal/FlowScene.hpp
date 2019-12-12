@@ -132,7 +132,7 @@ public:
 
   void saveGroupFile(const QUuid& groupID);
 
-  void loadGroupFile();
+  std::weak_ptr<NodeGroup> loadGroupFile();
 
 Q_SIGNALS:
 

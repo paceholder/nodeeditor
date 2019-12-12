@@ -144,6 +144,15 @@ connections() const
   return _scene.connectionsWithinGroup(group().id());
 }
 
+void
+GroupGraphicsObject::
+setPosition(const QPointF& position)
+{
+  QPointF diffPos = position - scenePos();
+  moveNodes(diffPos);
+  moveConnections();
+}
+
 NodeGroup&
 GroupGraphicsObject::
 group()

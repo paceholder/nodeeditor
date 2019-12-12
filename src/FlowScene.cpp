@@ -340,9 +340,11 @@ createGroup(std::vector<Node*>& nodes,
     node->setNodeGroup(group);
   }
 
+  std::weak_ptr<NodeGroup> groupWeakPtr = group;
+
   _groups[group->id()] = std::move(group);
 
-  return group;
+  return groupWeakPtr;
 }
 
 std::vector<std::shared_ptr<Connection> >
@@ -827,7 +829,7 @@ saveGroupFile(const QUuid& groupID)
   }
 }
 
-void
+std::weak_ptr<NodeGroup>
 FlowScene::
 loadGroupFile()
 {
@@ -838,18 +840,18 @@ loadGroupFile()
                                  tr("Node Group files (*.group)"));
 
   if (!QFileInfo::exists(fileName))
-    return;
+    return std::weak_ptr<NodeGroup>();
 
   QFile file(fileName);
 
   if (!file.open(QIODevice::ReadOnly))
-    return;
+    return std::weak_ptr<NodeGroup>();
 
   QByteArray wholeFile = file.readAll();
 
   const QJsonObject fileJson = QJsonDocument::fromJson(wholeFile).object();
 
-  restoreGroup(fileJson);
+  return restoreGroup(fileJson);
 }
 
 

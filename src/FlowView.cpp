@@ -255,6 +255,9 @@ contextMenuEvent(QContextMenuEvent *event)
 
   treeView->expandAll();
 
+  QPoint pos = event->pos();
+  QPointF posView = this->mapToScene(pos);
+
   connect(treeView, &QTreeWidget::itemClicked, [&](QTreeWidgetItem *item, int)
   {
     QString modelName = item->data(0, Qt::UserRole).toString();
@@ -269,10 +272,6 @@ contextMenuEvent(QContextMenuEvent *event)
     if (type)
     {
       auto& node = _scene->createNode(std::move(type));
-
-      QPoint pos = event->pos();
-
-      QPointF posView = this->mapToScene(pos);
 
       node.nodeGraphicsObject().setPos(posView);
 
@@ -316,7 +315,15 @@ contextMenuEvent(QContextMenuEvent *event)
 
   auto restoreGroupAction = new QAction(&modelMenu);
   restoreGroupAction->setText(QStringLiteral("Load Group..."));
-  connect(restoreGroupAction, &QAction::triggered, _scene, &FlowScene::loadGroupFile);
+  connect(restoreGroupAction, &QAction::triggered,
+          [&_scene = _scene, &posView]()
+  {
+    std::weak_ptr<NodeGroup> groupPtr = _scene->loadGroupFile();
+    if (auto group = groupPtr.lock(); group)
+    {
+      group->groupGraphicsObject().setPosition(posView);
+    }
+  });
   modelMenu.addAction(restoreGroupAction);
 
   // make sure the text box gets focus so the user doesn't have to click on it
