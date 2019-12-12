@@ -9,19 +9,23 @@ using QtNodes::NodeGroup;
 
 int NodeGroup::_groupCount = 0;
 
-NodeGroup::NodeGroup(const std::vector<Node*>& nodes,
-                     const QString& name)
-  : _uid(QUuid::createUuid()),
-    _name(name),
-    _childNodes(nodes),
-    _groupGraphicsObject(nullptr)
+NodeGroup::
+NodeGroup(const std::vector<Node*>& nodes,
+          const QString& name)
+  : _name(name)
+  , _uid(QUuid::createUuid())
+  , _childNodes(nodes)
+  , _groupGraphicsObject(nullptr)
 {
   _groupCount++;
 }
 
-NodeGroup::~NodeGroup() = default;
+NodeGroup::
+~NodeGroup() = default;
 
-QByteArray NodeGroup::saveToFile() const
+QByteArray
+NodeGroup::
+saveToFile() const
 {
   QJsonObject groupJson;
 
@@ -47,27 +51,37 @@ QByteArray NodeGroup::saveToFile() const
   return groupDocument.toJson();
 }
 
-QUuid NodeGroup::id() const
+QUuid
+NodeGroup::
+id() const
 {
   return _uid;
 }
 
-GroupGraphicsObject const& NodeGroup::groupGraphicsObject() const
+GroupGraphicsObject const&
+NodeGroup::
+groupGraphicsObject() const
 {
   return *_groupGraphicsObject.get();
 }
 
-GroupGraphicsObject& NodeGroup::groupGraphicsObject()
+GroupGraphicsObject&
+NodeGroup::
+groupGraphicsObject()
 {
   return *_groupGraphicsObject.get();
 }
 
-std::vector<Node*>& NodeGroup::childNodes()
+std::vector<Node*>&
+NodeGroup::
+childNodes()
 {
   return _childNodes;
 }
 
-std::vector<QUuid> NodeGroup::nodeIDs() const
+std::vector<QUuid>
+NodeGroup::
+nodeIDs() const
 {
   std::vector<QUuid> ret{};
 
@@ -79,34 +93,44 @@ std::vector<QUuid> NodeGroup::nodeIDs() const
   return ret;
 }
 
-const QString& NodeGroup::name() const
+QString const&
+NodeGroup::name() const
 {
   return _name;
 }
 
-void NodeGroup::setGraphicsObject(
-  std::unique_ptr<GroupGraphicsObject>&& graphics_object)
+void
+NodeGroup::
+setGraphicsObject(std::unique_ptr<GroupGraphicsObject>&& graphics_object)
 {
   _groupGraphicsObject = std::move(graphics_object);
   _groupGraphicsObject->lock(true);
 }
 
-bool NodeGroup::empty() const
+bool
+NodeGroup::
+empty() const
 {
   return _childNodes.empty();
 }
 
-int NodeGroup::groupCount()
+int
+NodeGroup::
+groupCount()
 {
   return _groupCount;
 }
 
-void NodeGroup::addNode(Node* node)
+void
+NodeGroup::
+addNode(Node* node)
 {
   _childNodes.push_back(node);
 }
 
-void NodeGroup::removeNode(Node* node)
+void
+NodeGroup::
+removeNode(Node* node)
 {
   auto nodeIt = std::find(_childNodes.begin(), _childNodes.end(), node);
   if (nodeIt != _childNodes.end())

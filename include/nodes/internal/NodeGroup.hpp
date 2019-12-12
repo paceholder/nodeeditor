@@ -70,14 +70,14 @@ public Q_SLOTS:
   removeNode(Node* node);
 
 private:
-  // addressing
-  QUuid _uid;
 
   QString _name;
 
+  // addressing
+  QUuid _uid;
+
+
   // data
-  /** @todo check if the node's memory management should be done differently; this
-   * seems really error-prone */
   std::vector<Node*> _childNodes;
 
   // painting

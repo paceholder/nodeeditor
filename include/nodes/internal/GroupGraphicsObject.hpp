@@ -7,14 +7,17 @@
 #include "NodeGroup.hpp"
 #include "Connection.hpp"
 
-class PadlockGraphicsItem : public QGraphicsPixmapItem
+class PadlockGraphicsItem
+  : public QGraphicsPixmapItem
 {
 public:
   PadlockGraphicsItem(QGraphicsItem* parent = nullptr);
+
   PadlockGraphicsItem(const QPixmap& pixmap, QGraphicsItem* parent = nullptr);
 
 protected:
-  QRectF boundingRect() const override;
+  QRectF
+  boundingRect() const override;
 };
 
 namespace QtNodes
@@ -24,20 +27,27 @@ class FlowScene;
 class NodeGroup;
 class NodeGraphicsObject;
 
-class GroupGraphicsObject : public QObject, public QGraphicsRectItem
+class GroupGraphicsObject
+  : public QObject
+  , public QGraphicsRectItem
 {
   Q_OBJECT
 
 public:
+
   GroupGraphicsObject(FlowScene& scene, NodeGroup& nodeGroup);
 
-  virtual ~GroupGraphicsObject() override;
+  virtual
+  ~GroupGraphicsObject() override;
 
-  NodeGroup& group();
+  NodeGroup&
+  group();
 
-  NodeGroup const& group() const;
+  NodeGroup const&
+  group() const;
 
-  QRectF boundingRect() const override;
+  QRectF
+  boundingRect() const override;
 
   enum { Type = UserType + 3 };
 
@@ -46,42 +56,59 @@ public:
     return Type;
   }
 
-  void setColor(const QColor& color);
+  void
+  setColor(const QColor& color);
 
-  void resetSize();
+  void
+  resetSize();
 
-  void moveConnections();
+  void
+  moveConnections();
 
-  void moveNodes(const QPointF& offset);
+  void
+  moveNodes(const QPointF& offset);
 
-  void lock(bool locked);
+  void
+  lock(bool locked);
 
-  bool locked() const;
+  bool
+  locked() const;
 
-  QColor _currentColor;
+  void
+  positionLockedIcon();
 
-  void positionLockedIcon();
+  void
+  setHovered(bool hovered);
 
-  void setHovered(bool hovered);
+  void
+  setPossibleChild(NodeGraphicsObject* possibleChild);
 
-  void setPossibleChild(NodeGraphicsObject* possibleChild);
+  void
+  unsetPossibleChild();
 
-  void unsetPossibleChild();
+  std::vector<std::shared_ptr<Connection> >
+  connections() const;
 
-  std::vector<std::shared_ptr<Connection>> connections() const;
+  QColor
+  _currentColor;
 
 protected:
-  void paint(QPainter* painter,
-             QStyleOptionGraphicsItem const* option,
-             QWidget* widget = 0) override;
+  void
+  paint(QPainter* painter,
+        QStyleOptionGraphicsItem const* option,
+        QWidget* widget = 0) override;
 
-  void hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
+  void
+  hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
 
-  void hoverLeaveEvent(QGraphicsSceneHoverEvent* event) override;
+  void
+  hoverLeaveEvent(QGraphicsSceneHoverEvent* event) override;
 
-  void mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
+  void
+  mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
 
-  void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
+  void
+  mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
 
 public:
   const QColor kUnlockedFillColor  = QColor("#20a5b084");

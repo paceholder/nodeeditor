@@ -376,8 +376,8 @@ restoreGroup(QJsonObject const& groupJson)
   std::vector<Node*> children{};
 
   // since the new nodes will have the same IDs as in the file and the connections
-  // need these old IDs to be restored, we must create new IDs, map them to the
-  // old ones and apply them after the group is restored.
+  // need these old IDs to be restored, we must create new IDs and map them to the
+  // old ones so the connections are properly restored
   std::unordered_map<QUuid, QUuid> IDsMap{};
 
   QJsonArray nodesJson = groupJson["nodes"].toArray();
