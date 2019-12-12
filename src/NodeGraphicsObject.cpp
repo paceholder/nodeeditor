@@ -175,7 +175,6 @@ lock(bool locked)
 {
   _locked = locked;
 
-//  setFlag(QGraphicsItem::ItemIsMovable, !locked);
   setFlag(QGraphicsItem::ItemIsFocusable, !locked);
   setFlag(QGraphicsItem::ItemIsSelectable, !locked);
 }
