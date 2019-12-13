@@ -19,13 +19,10 @@ PadlockGraphicsItem(QGraphicsItem* parent)
 
 PadlockGraphicsItem::
 PadlockGraphicsItem(const QPixmap& pixmap, QGraphicsItem* parent)
-  : QGraphicsPixmapItem(pixmap, parent) {}
-
-QRectF
-PadlockGraphicsItem::
-boundingRect() const
+  : QGraphicsPixmapItem(pixmap, parent)
 {
-  return QRectF();
+  _scaleFactor = _iconSize / pixmap.size().width();
+  setScale(_scaleFactor);
 }
 
 GroupGraphicsObject::
@@ -100,10 +97,14 @@ GroupGraphicsObject::
 positionLockedIcon()
 {
   _lockedGraphicsItem->setPos(boundingRect().topRight()
-                              + QPointF(-(_roundedBorderRadius + _lockedIcon.width()),
+                              + QPointF(-(_roundedBorderRadius
+                                          + _lockedGraphicsItem->boundingRect().width()
+                                          * _lockedGraphicsItem->_scaleFactor),
                                         _roundedBorderRadius));
   _unlockedGraphicsItem->setPos(boundingRect().topRight()
-                                + QPointF(-(_roundedBorderRadius + _unlockedIcon.width()),
+                                + QPointF(-(_roundedBorderRadius
+                                          + _unlockedGraphicsItem->boundingRect().width()
+                                          * _unlockedGraphicsItem->_scaleFactor),
                                           _roundedBorderRadius));
 }
 

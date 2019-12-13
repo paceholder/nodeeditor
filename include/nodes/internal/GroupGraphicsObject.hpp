@@ -16,9 +16,10 @@ public:
 
   PadlockGraphicsItem(const QPixmap& pixmap, QGraphicsItem* parent = nullptr);
 
-protected:
-  QRectF
-  boundingRect() const override;
+  double _scaleFactor;
+
+private:
+  static constexpr double _iconSize = 24.0;
 };
 
 namespace QtNodes
@@ -135,8 +136,8 @@ private:
 
   NodeGroup& _group;
 
-  QGraphicsPixmapItem* _lockedGraphicsItem;
-  QGraphicsPixmapItem* _unlockedGraphicsItem;
+  PadlockGraphicsItem* _lockedGraphicsItem;
+  PadlockGraphicsItem* _unlockedGraphicsItem;
 
   QPixmap _lockedIcon{"://padlock-lock.png"};
   QPixmap _unlockedIcon{"://padlock-unlock.png"};
