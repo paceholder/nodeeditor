@@ -422,6 +422,10 @@ hoverEnterEvent(QGraphicsSceneHoverEvent * event)
 
   for (QGraphicsItem *item : overlapItems)
   {
+    if (auto group = qgraphicsitem_cast<GroupGraphicsObject*>(item))
+    {
+      continue;
+    }
     if (item->zValue() > 0.0)
     {
       item->setZValue(0.0);

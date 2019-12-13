@@ -145,9 +145,9 @@ private:
 
   bool _locked;
 
-  static constexpr double _roundedBorderRadius = 8.0;
   static constexpr double _groupBorderX = 25.0;
   static constexpr double _groupBorderY = _groupBorderX * 0.8;
+  static constexpr double _roundedBorderRadius = _groupBorderY;
   static constexpr QMarginsF  _margins = QMarginsF(_groupBorderX, _groupBorderY, _groupBorderX, _groupBorderY);
 
   static constexpr double _defaultWidth = 50.0;
