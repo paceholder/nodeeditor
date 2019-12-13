@@ -4,8 +4,9 @@
 
 #include <memory>
 
-#include "NodeGroup.hpp"
 #include "Connection.hpp"
+#include "NodeGroup.hpp"
+#include "NodeStyle.hpp"
 
 class PadlockGraphicsItem
   : public QGraphicsPixmapItem
@@ -57,7 +58,10 @@ public:
   }
 
   void
-  setColor(const QColor& color);
+  setFillColor(const QColor& color);
+
+  void
+  setBorderColor(const QColor& color);
 
   void
   resetSize();
@@ -93,7 +97,10 @@ public:
   setPosition(const QPointF& position);
 
   QColor
-  _currentColor;
+  _currentFillColor;
+
+  QColor
+  _currentBorderColor;
 
 protected:
   void
@@ -120,7 +127,8 @@ public:
   const QColor kLockedFillColor  = QColor("#3fe0bebc");
   const QColor kLockedHoverColor = QColor("#3feecdcb");
 
-  const QColor kBorderColor = QColor("#20aaaaaa");
+  const QColor kSelectedBorderColor   = QColor("#eeffa500");
+  const QColor kUnselectedBorderColor = QColor("#eeaaaaaa");
 
 private:
   FlowScene& _scene;
@@ -138,8 +146,8 @@ private:
   bool _locked;
 
   static constexpr double _roundedBorderRadius = 8.0;
-  static constexpr double _groupBorderX = 10.0;
-  static constexpr double _groupBorderY = _groupBorderX * 0.5;
+  static constexpr double _groupBorderX = 25.0;
+  static constexpr double _groupBorderY = _groupBorderX * 0.8;
   static constexpr QMarginsF  _margins = QMarginsF(_groupBorderX, _groupBorderY, _groupBorderX, _groupBorderY);
 
   static constexpr double _defaultWidth = 50.0;

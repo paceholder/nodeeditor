@@ -385,6 +385,19 @@ void
 FlowView::
 deleteSelectedNodes()
 {
+
+  for (QGraphicsItem * item : _scene->selectedItems())
+  {
+    if (auto g = qgraphicsitem_cast<GroupGraphicsObject*>(item))
+    {
+      g->lock(false);
+      for (auto& node : g->group().childNodes())
+      {
+        node->nodeGraphicsObject().setSelected(true);
+      }
+      g->setSelected(false);
+    }
+  }
   // Delete the selected connections first, ensuring that they won't be
   // automatically deleted when selected nodes are deleted (deleting a node
   // deletes some connections as well)

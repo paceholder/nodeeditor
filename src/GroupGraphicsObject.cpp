@@ -47,7 +47,7 @@ GroupGraphicsObject(FlowScene& scene,
   setFlag(QGraphicsItem::ItemIsSelectable, true);
   setFlag(QGraphicsItem::ItemDoesntPropagateOpacityToChildren, true);
 
-  _currentColor = kUnlockedFillColor;
+  _currentFillColor = kUnlockedFillColor;
 
   setZValue(-2.0);
 
@@ -112,8 +112,8 @@ GroupGraphicsObject::
 setHovered(bool hovered)
 {
   hovered?
-  setColor(locked()? kLockedHoverColor : kUnlockedHoverColor) :
-  setColor(locked()? kLockedFillColor : kUnlockedFillColor);
+  setFillColor(locked()? kLockedHoverColor : kUnlockedHoverColor) :
+  setFillColor(locked()? kLockedFillColor : kUnlockedFillColor);
 
   for (auto& node : _group.childNodes())
   {
@@ -204,7 +204,7 @@ lock(bool locked)
   }
   _lockedGraphicsItem->setVisible(locked);
   _unlockedGraphicsItem->setVisible(!locked);
-  setColor(locked? kLockedFillColor : kUnlockedFillColor);
+  setFillColor(locked? kLockedFillColor : kUnlockedFillColor);
   _locked = locked;
   setZValue(locked? 2.0 : -2.0);
 }
@@ -218,8 +218,11 @@ paint(QPainter* painter,
   setRect(boundingRect());
   positionLockedIcon();
   painter->setClipRect(option->exposedRect);
-  painter->setBrush(_currentColor);
-  painter->setPen(Qt::PenStyle::DashLine);
+  painter->setBrush(_currentFillColor);
+
+  setBorderColor(isSelected()? kSelectedBorderColor : kUnselectedBorderColor);
+  painter->setPen(QPen(_currentBorderColor, 1.0, Qt::PenStyle::DashLine));
+
   painter->drawRoundedRect(rect(), _roundedBorderRadius, _roundedBorderRadius);
 }
 
@@ -243,9 +246,17 @@ boundingRect() const
 
 void
 GroupGraphicsObject::
-setColor(const QColor& color)
+setFillColor(const QColor& color)
 {
-  _currentColor = color;
+  _currentFillColor = color;
+  update();
+}
+
+void
+GroupGraphicsObject::
+setBorderColor(const QColor& color)
+{
+  _currentBorderColor = color;
   update();
 }
 
