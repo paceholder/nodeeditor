@@ -1,12 +1,12 @@
 #pragma once
 
 #include <QtWidgets/QGraphicsRectItem>
+#include <QPen>
 
 #include <memory>
 
 #include "Connection.hpp"
 #include "NodeGroup.hpp"
-#include "NodeStyle.hpp"
 
 class PadlockGraphicsItem
   : public QGraphicsPixmapItem
@@ -97,12 +97,6 @@ public:
   void
   setPosition(const QPointF& position);
 
-  QColor
-  _currentFillColor;
-
-  QColor
-  _currentBorderColor;
-
 protected:
   void
   paint(QPainter* painter,
@@ -122,6 +116,11 @@ protected:
   mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
 
 public:
+
+  QColor _currentFillColor;
+
+  QColor _currentBorderColor;
+
   const QColor kUnlockedFillColor  = QColor("#20a5b084");
   const QColor kUnlockedHoverColor = QColor("#2083a4af");
 
@@ -130,6 +129,8 @@ public:
 
   const QColor kSelectedBorderColor   = QColor("#eeffa500");
   const QColor kUnselectedBorderColor = QColor("#eeaaaaaa");
+
+  QPen _borderPen;
 
 private:
   FlowScene& _scene;

@@ -45,6 +45,9 @@ GroupGraphicsObject(FlowScene& scene,
   setFlag(QGraphicsItem::ItemDoesntPropagateOpacityToChildren, true);
 
   _currentFillColor = kUnlockedFillColor;
+  _currentBorderColor = kUnselectedBorderColor;
+
+  _borderPen = QPen(_currentBorderColor, 1.0, Qt::PenStyle::DashLine);
 
   setZValue(-2.0);
 
@@ -222,7 +225,7 @@ paint(QPainter* painter,
   painter->setBrush(_currentFillColor);
 
   setBorderColor(isSelected()? kSelectedBorderColor : kUnselectedBorderColor);
-  painter->setPen(QPen(_currentBorderColor, 1.0, Qt::PenStyle::DashLine));
+  painter->setPen(_borderPen);
 
   painter->drawRoundedRect(rect(), _roundedBorderRadius, _roundedBorderRadius);
 }
@@ -258,7 +261,7 @@ GroupGraphicsObject::
 setBorderColor(const QColor& color)
 {
   _currentBorderColor = color;
-  update();
+  _borderPen.setColor(_currentBorderColor);
 }
 
 void
