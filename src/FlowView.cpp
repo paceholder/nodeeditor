@@ -145,7 +145,7 @@ nodeContextMenu(QContextMenuEvent* event,
     auto* groupsMenu = new QMenu(&nodeMenu);
     QList<QAction*> groupActions{};
     groupsMenu->setTitle(QStringLiteral("Add to group..."));
-    for (auto groupEntry : _scene->groups())
+    for (const auto& groupEntry : _scene->groups())
     {
       auto* currentGroupAction = new QAction(&nodeMenu);
       currentGroupAction->setText(groupEntry.second->name());
@@ -154,7 +154,7 @@ nodeContextMenu(QContextMenuEvent* event,
               [&_scene = _scene, groupEntry, &ngo]
       {
         _scene->addNodeToGroup(ngo->node().id(), groupEntry.second->id());
-        for (auto group : _scene->groups())
+        for (const auto& group : _scene->groups())
         {
           group.second->groupGraphicsObject().setHovered(false);
         }
@@ -163,7 +163,7 @@ nodeContextMenu(QContextMenuEvent* event,
       connect(currentGroupAction, &QAction::hovered,
               [groupEntry, &_scene = _scene]()
       {
-        for (auto group : _scene->groups())
+        for (const auto& group : _scene->groups())
         {
           group.second->groupGraphicsObject().setHovered(group == groupEntry);
         }

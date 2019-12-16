@@ -84,7 +84,7 @@ public:
 
   std::weak_ptr<NodeGroup> restoreGroup(QJsonObject const& groupJson);
 
-  void removeGroup(std::shared_ptr<NodeGroup> group);
+  void removeGroup(const std::shared_ptr<NodeGroup>& group);
 
   void addNodeToGroup(const QUuid& nodeID, const QUuid& groupID);
 

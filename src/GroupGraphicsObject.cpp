@@ -32,6 +32,7 @@ scaleFactor() const
   return _scaleFactor;
 }
 
+
 GroupGraphicsObject::
 GroupGraphicsObject(FlowScene& scene,
                     NodeGroup& nodeGroup)
@@ -109,13 +110,11 @@ positionLockedIcon()
 {
   _lockedGraphicsItem->setPos(boundingRect().topRight()
                               + QPointF(-(_roundedBorderRadius
-                                          + _lockedGraphicsItem->boundingRect().width()
-                                          * _lockedGraphicsItem->scaleFactor()),
+                                          + PadlockGraphicsItem::iconSize()),
                                         _roundedBorderRadius));
   _unlockedGraphicsItem->setPos(boundingRect().topRight()
                                 + QPointF(-(_roundedBorderRadius
-                                          + _unlockedGraphicsItem->boundingRect().width()
-                                          * _unlockedGraphicsItem->scaleFactor()),
+                                          + PadlockGraphicsItem::iconSize()),
                                           _roundedBorderRadius));
 }
 

@@ -408,7 +408,7 @@ restoreGroup(QJsonObject const& groupJson)
 
 void
 FlowScene::
-removeGroup(std::shared_ptr<NodeGroup> group)
+removeGroup(const std::shared_ptr<NodeGroup>& group)
 {
   if (group->empty())
   {
