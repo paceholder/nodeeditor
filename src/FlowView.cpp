@@ -144,6 +144,7 @@ nodeContextMenu(QContextMenuEvent* event,
   {
     auto* groupsMenu = new QMenu(&nodeMenu);
     QList<QAction*> groupActions{};
+    groupActions.reserve(_scene->groups().size());
     groupsMenu->setTitle(QStringLiteral("Add to group..."));
     for (const auto& groupEntry : _scene->groups())
     {

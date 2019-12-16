@@ -50,8 +50,8 @@ public:
 
   GroupGraphicsObject(const GroupGraphicsObject& ggo) = delete;
   GroupGraphicsObject& operator=(const GroupGraphicsObject& other) = delete;
-  GroupGraphicsObject(GroupGraphicsObject&& ggo) = default;
-  GroupGraphicsObject& operator=(GroupGraphicsObject&& other) = default;
+  GroupGraphicsObject(GroupGraphicsObject&& ggo) = delete;
+  GroupGraphicsObject& operator=(GroupGraphicsObject&& other) = delete;
 
   ~GroupGraphicsObject() override;
 
@@ -153,8 +153,8 @@ private:
   PadlockGraphicsItem* _lockedGraphicsItem;
   PadlockGraphicsItem* _unlockedGraphicsItem;
 
-  QPixmap _lockedIcon{"://padlock-lock.png"};
-  QPixmap _unlockedIcon{"://padlock-unlock.png"};
+  QPixmap _lockedIcon{QStringLiteral("://padlock-lock.png")};
+  QPixmap _unlockedIcon{QStringLiteral("://padlock-unlock.png")};
 
   NodeGraphicsObject* _possibleChild;
 

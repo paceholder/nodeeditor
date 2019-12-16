@@ -329,7 +329,7 @@ createGroup(std::vector<Node*>& nodes,
   {
     groupName = "Group " + QString::number(NodeGroup::groupCount());
   }
-  auto group = std::make_shared<NodeGroup>(nodes, groupName);
+  auto group = std::make_shared<NodeGroup>(nodes, groupName, this);
   auto ggo   = std::make_unique<GroupGraphicsObject>(*this, *group);
 
   group->setGraphicsObject(std::move(ggo));

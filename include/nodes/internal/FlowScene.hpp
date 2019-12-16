@@ -40,7 +40,7 @@ public:
 
   FlowScene(QObject * parent = Q_NULLPTR);
 
-  ~FlowScene();
+  ~FlowScene() override;
 
 public:
 

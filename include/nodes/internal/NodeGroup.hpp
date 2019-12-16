@@ -26,7 +26,8 @@ class NODE_EDITOR_PUBLIC NodeGroup
 public:
 
   NodeGroup(std::vector<Node*> nodes,
-            QString name = QString());
+            QString name = QString(),
+            QObject* parent = nullptr);
 
 public:
 

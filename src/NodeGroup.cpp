@@ -13,8 +13,10 @@ int NodeGroup::_groupCount = 0;
 
 NodeGroup::
 NodeGroup(std::vector<Node*> nodes,
-          QString name)
-  : _name(std::move(name))
+          QString name,
+          QObject* parent)
+  : QObject(parent)
+  , _name(std::move(name))
   , _uid(QUuid::createUuid())
   , _childNodes(std::move(nodes))
   , _groupGraphicsObject(nullptr)
@@ -83,6 +85,7 @@ NodeGroup::
 nodeIDs() const
 {
   std::vector<QUuid> ret{};
+  ret.reserve(_childNodes.size());
 
   for (auto const & node : _childNodes)
   {
