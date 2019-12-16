@@ -3,6 +3,8 @@
 #include <QJsonDocument>
 #include <QJsonArray>
 
+#include <utility>
+
 using QtNodes::GroupGraphicsObject;
 using QtNodes::Node;
 using QtNodes::NodeGroup;
@@ -10,18 +12,15 @@ using QtNodes::NodeGroup;
 int NodeGroup::_groupCount = 0;
 
 NodeGroup::
-NodeGroup(const std::vector<Node*>& nodes,
-          const QString& name)
-  : _name(name)
+NodeGroup(std::vector<Node*> nodes,
+          QString name)
+  : _name(std::move(name))
   , _uid(QUuid::createUuid())
-  , _childNodes(nodes)
+  , _childNodes(std::move(nodes))
   , _groupGraphicsObject(nullptr)
 {
   _groupCount++;
 }
-
-NodeGroup::
-~NodeGroup() = default;
 
 QByteArray
 NodeGroup::
@@ -62,14 +61,14 @@ GroupGraphicsObject const&
 NodeGroup::
 groupGraphicsObject() const
 {
-  return *_groupGraphicsObject.get();
+  return *_groupGraphicsObject;
 }
 
 GroupGraphicsObject&
 NodeGroup::
 groupGraphicsObject()
 {
-  return *_groupGraphicsObject.get();
+  return *_groupGraphicsObject;
 }
 
 std::vector<Node*>&

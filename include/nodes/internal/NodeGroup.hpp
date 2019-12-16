@@ -25,11 +25,8 @@ class NODE_EDITOR_PUBLIC NodeGroup
 
 public:
 
-  NodeGroup(const std::vector<Node*>& nodes,
-            const QString& name = QStringLiteral(""));
-
-  virtual
-  ~NodeGroup() override;
+  NodeGroup(std::vector<Node*> nodes,
+            QString name = QString());
 
 public:
 
@@ -64,10 +61,10 @@ public:
 public Q_SLOTS:
 
   void
-  addNode(Node* node);
+  addNode(QtNodes::Node* node);
 
   void
-  removeNode(Node* node);
+  removeNode(QtNodes::Node* node);
 
 private:
 

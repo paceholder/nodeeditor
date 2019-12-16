@@ -25,12 +25,20 @@ PadlockGraphicsItem(const QPixmap& pixmap, QGraphicsItem* parent)
   setScale(_scaleFactor);
 }
 
+double
+PadlockGraphicsItem::
+scaleFactor() const
+{
+  return _scaleFactor;
+}
+
 GroupGraphicsObject::
 GroupGraphicsObject(FlowScene& scene,
                     NodeGroup& nodeGroup)
   : _scene(scene)
   , _group(nodeGroup)
   , _possibleChild(nullptr)
+  , _locked(false)
 {
   setRect(0, 0, _defaultWidth, _defaultHeight);
 
@@ -49,7 +57,7 @@ GroupGraphicsObject(FlowScene& scene,
 
   _borderPen = QPen(_currentBorderColor, 1.0, Qt::PenStyle::DashLine);
 
-  setZValue(-2.0);
+  setZValue(-_groupAreaZValue);
 
   setAcceptHoverEvents(true);
 }
@@ -102,12 +110,12 @@ positionLockedIcon()
   _lockedGraphicsItem->setPos(boundingRect().topRight()
                               + QPointF(-(_roundedBorderRadius
                                           + _lockedGraphicsItem->boundingRect().width()
-                                          * _lockedGraphicsItem->_scaleFactor),
+                                          * _lockedGraphicsItem->scaleFactor()),
                                         _roundedBorderRadius));
   _unlockedGraphicsItem->setPos(boundingRect().topRight()
                                 + QPointF(-(_roundedBorderRadius
                                           + _unlockedGraphicsItem->boundingRect().width()
-                                          * _unlockedGraphicsItem->_scaleFactor),
+                                          * _unlockedGraphicsItem->scaleFactor()),
                                           _roundedBorderRadius));
 }
 
@@ -210,7 +218,7 @@ lock(bool locked)
   _unlockedGraphicsItem->setVisible(!locked);
   setFillColor(locked? kLockedFillColor : kUnlockedFillColor);
   _locked = locked;
-  setZValue(locked? 2.0 : -2.0);
+  setZValue(locked? _groupAreaZValue : -_groupAreaZValue);
 }
 
 void

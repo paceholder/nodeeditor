@@ -16,7 +16,11 @@ public:
 
   PadlockGraphicsItem(const QPixmap& pixmap, QGraphicsItem* parent = nullptr);
 
-  double _scaleFactor;
+  double scaleFactor() const;
+
+private:
+
+  double _scaleFactor{};
 
 private:
   static constexpr double _iconSize = 24.0;
@@ -39,7 +43,11 @@ public:
 
   GroupGraphicsObject(FlowScene& scene, NodeGroup& nodeGroup);
 
-  virtual
+  GroupGraphicsObject(const GroupGraphicsObject& ggo) = delete;
+  GroupGraphicsObject& operator=(const GroupGraphicsObject& other) = delete;
+  GroupGraphicsObject(GroupGraphicsObject&& ggo) = default;
+  GroupGraphicsObject& operator=(GroupGraphicsObject&& other) = default;
+
   ~GroupGraphicsObject() override;
 
   NodeGroup&
@@ -101,7 +109,7 @@ protected:
   void
   paint(QPainter* painter,
         QStyleOptionGraphicsItem const* option,
-        QWidget* widget = 0) override;
+        QWidget* widget = nullptr) override;
 
   void
   hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
@@ -154,6 +162,8 @@ private:
 
   static constexpr double _defaultWidth = 50.0;
   static constexpr double _defaultHeight = 50.0;
+
+  static constexpr double _groupAreaZValue = 2.0;
 };
 
 }  // namespace QtNodes
