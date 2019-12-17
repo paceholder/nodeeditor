@@ -3,8 +3,6 @@
 #include <QtWidgets/QGraphicsRectItem>
 #include <QPen>
 
-#include <memory>
-
 #include "Connection.hpp"
 #include "NodeGroup.hpp"
 
