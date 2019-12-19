@@ -47,6 +47,9 @@ class FlowScene;
 class NodeGroup;
 class NodeGraphicsObject;
 
+/**
+ * @brief The GroupGraphicsObject class handles the graphical part of a node group.
+ */
 class GroupGraphicsObject
   : public QObject
   , public QGraphicsRectItem
@@ -64,58 +67,122 @@ public:
 
   ~GroupGraphicsObject() override;
 
+  /**
+   * @brief Returns a reference to this group.
+   */
   NodeGroup&
   group();
 
+
+  /**
+   * @brief Returns a const reference to this group.
+   */
   NodeGroup const&
   group() const;
 
+
+  /**
+   * @copydoc QGraphicsItem::boundingRect()
+   */
   QRectF
   boundingRect() const override;
 
   enum { Type = UserType + 3 };
 
+  /**
+   * @copydoc QGraphicsItem::type()
+   */
   int type() const override
   {
     return Type;
   }
 
+  /**
+   * @brief Sets the group's area color.
+   * @param color Color to paint the group area.
+   */
   void
   setFillColor(const QColor& color);
 
+  /**
+   * @brief Sets the group's border color.
+   * @param color Color to paint the group's border.
+   */
   void
   setBorderColor(const QColor& color);
 
-  void
-  resetSize();
-
+  /**
+   * @brief Updates the position of all the connections that are incident
+   * to the nodes of this group.
+   */
   void
   moveConnections();
 
+  /**
+   * @brief Moves the position of all the nodes of this group by the amount given.
+   * @param offset 2D vector representing the amount by which the group has moved.
+   */
   void
   moveNodes(const QPointF& offset);
 
+  /**
+   * @brief Sets the lock state of the group. Locked groups don't allow individual
+   * interactions with its nodes, and can only be moved or selected as a whole.
+   * @param locked Determines whether this group should be locked.
+   */
   void
   lock(bool locked);
 
+  /**
+   * @brief Returns the lock state of the group.
+   */
   bool
   locked() const;
 
+  /**
+   * @brief Updates the position of the group's padlock icon to
+   * the top-right corner.
+   */
   void
   positionLockedIcon();
 
+  /**
+   * @brief Sets the group hovered state. When the mouse pointer hovers over
+   * (or leaves) a group, the group's appearance changes.
+   * @param hovered Determines the hovered state.
+   */
   void
   setHovered(bool hovered);
 
+  /**
+   * @brief When a node is dragged within the borders of a group, the group's
+   * area expands to include the node until the node leaves the area or is
+   * released in the group. This function temporarily sets the node as the
+   * possible newest member of the group, making the group's area expand.
+   * @param possibleChild Pointer to the node that may be included.
+   */
   void
   setPossibleChild(NodeGraphicsObject* possibleChild);
 
+  /**
+   * @brief Clears the possibleChild variable.
+   * @note See setPossibleChild(NodeGraphicsObject*).
+   */
   void
   unsetPossibleChild();
 
+  /**
+   * @brief Returns all the connections that are incident strictly within the
+   * nodes of this group.
+   */
   std::vector<std::shared_ptr<Connection> >
   connections() const;
 
+  /**
+   * @brief Sets the position of the group.
+   * @param position The desired (top-left corner) position of the group, in
+   * scene coordinates.
+   */
   void
   setPosition(const QPointF& position);
 

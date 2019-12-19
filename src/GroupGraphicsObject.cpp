@@ -17,6 +17,7 @@ IconGraphicsItem::
 IconGraphicsItem(QGraphicsItem* parent)
   : QGraphicsPixmapItem(parent) {}
 
+
 IconGraphicsItem::
 IconGraphicsItem(const QPixmap& pixmap, QGraphicsItem* parent)
   : QGraphicsPixmapItem(pixmap, parent)
@@ -25,12 +26,14 @@ IconGraphicsItem(const QPixmap& pixmap, QGraphicsItem* parent)
   setScale(_scaleFactor);
 }
 
+
 double
 IconGraphicsItem::
 scaleFactor() const
 {
   return _scaleFactor;
 }
+
 
 
 GroupGraphicsObject::
@@ -63,11 +66,176 @@ GroupGraphicsObject(FlowScene& scene,
   setAcceptHoverEvents(true);
 }
 
+
 GroupGraphicsObject::
 ~GroupGraphicsObject()
 {
   _scene.removeItem(this);
 }
+
+NodeGroup&
+GroupGraphicsObject::
+group()
+{
+  return _group;
+}
+
+
+NodeGroup const&
+GroupGraphicsObject::
+group() const
+{
+  return _group;
+}
+
+
+QRectF
+GroupGraphicsObject::
+boundingRect() const
+{
+  QRectF ret{};
+  for (auto& node : _group.childNodes())
+  {
+    NodeGraphicsObject* ngo = &node->nodeGraphicsObject();
+
+    ret |= ngo->mapRectToScene(ngo->boundingRect());
+  }
+  if (_possibleChild)
+  {
+    ret |= _possibleChild->mapRectToScene(_possibleChild->boundingRect());
+  }
+  return mapRectFromScene(ret.marginsAdded(_margins));
+}
+
+
+void
+GroupGraphicsObject::
+setFillColor(const QColor& color)
+{
+  _currentFillColor = color;
+  update();
+}
+
+void
+GroupGraphicsObject::
+setBorderColor(const QColor& color)
+{
+  _currentBorderColor = color;
+  _borderPen.setColor(_currentBorderColor);
+}
+
+
+void
+GroupGraphicsObject::
+moveConnections()
+{
+  for (auto& node : group().childNodes())
+  {
+    node->nodeGraphicsObject().moveConnections();
+  }
+}
+
+
+void
+GroupGraphicsObject::
+moveNodes(const QPointF& offset)
+{
+  for (auto& node : group().childNodes())
+  {
+    node->nodeGraphicsObject().moveBy(offset.x(), offset.y());
+  }
+}
+
+
+void
+GroupGraphicsObject::
+lock(bool locked)
+{
+  for (auto& node : _group.childNodes())
+  {
+    node->nodeGraphicsObject().lock(locked);
+  }
+  _lockedGraphicsItem->setVisible(locked);
+  _unlockedGraphicsItem->setVisible(!locked);
+  setFillColor(locked? kLockedFillColor : kUnlockedFillColor);
+  _locked = locked;
+  setZValue(locked? _groupAreaZValue : -_groupAreaZValue);
+}
+
+
+bool
+GroupGraphicsObject::
+locked() const
+{
+  return _locked;
+}
+
+
+void
+GroupGraphicsObject::
+positionLockedIcon()
+{
+  _lockedGraphicsItem->setPos(boundingRect().topRight()
+                              + QPointF(-(_roundedBorderRadius
+                                          + IconGraphicsItem::iconSize()),
+                                        _roundedBorderRadius));
+  _unlockedGraphicsItem->setPos(boundingRect().topRight()
+                                + QPointF(-(_roundedBorderRadius
+                                          + IconGraphicsItem::iconSize()),
+                                          _roundedBorderRadius));
+}
+
+
+void
+GroupGraphicsObject::
+setHovered(bool hovered)
+{
+  hovered?
+  setFillColor(locked()? kLockedHoverColor : kUnlockedHoverColor) :
+  setFillColor(locked()? kLockedFillColor : kUnlockedFillColor);
+
+  for (auto& node : _group.childNodes())
+  {
+    node->nodeGeometry().setHovered(hovered);
+    node->nodeGraphicsObject().update();
+  }
+  update();
+}
+
+
+void
+GroupGraphicsObject::
+setPossibleChild(QtNodes::NodeGraphicsObject* possibleChild)
+{
+  _possibleChild = possibleChild;
+}
+
+
+void
+GroupGraphicsObject::
+unsetPossibleChild()
+{
+  _possibleChild = nullptr;
+}
+
+
+std::vector<std::shared_ptr<Connection> >
+GroupGraphicsObject::
+connections() const
+{
+  return _scene.connectionsWithinGroup(group().id());
+}
+
+
+void
+GroupGraphicsObject::
+setPosition(const QPointF& position)
+{
+  QPointF diffPos = position - scenePos();
+  moveNodes(diffPos);
+  moveConnections();
+}
+
 
 void
 GroupGraphicsObject::
@@ -104,121 +272,6 @@ mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
   lock(!locked());
 }
 
-void
-GroupGraphicsObject::
-positionLockedIcon()
-{
-  _lockedGraphicsItem->setPos(boundingRect().topRight()
-                              + QPointF(-(_roundedBorderRadius
-                                          + IconGraphicsItem::iconSize()),
-                                        _roundedBorderRadius));
-  _unlockedGraphicsItem->setPos(boundingRect().topRight()
-                                + QPointF(-(_roundedBorderRadius
-                                          + IconGraphicsItem::iconSize()),
-                                          _roundedBorderRadius));
-}
-
-void
-GroupGraphicsObject::
-setHovered(bool hovered)
-{
-  hovered?
-  setFillColor(locked()? kLockedHoverColor : kUnlockedHoverColor) :
-  setFillColor(locked()? kLockedFillColor : kUnlockedFillColor);
-
-  for (auto& node : _group.childNodes())
-  {
-    node->nodeGeometry().setHovered(hovered);
-    node->nodeGraphicsObject().update();
-  }
-  update();
-}
-
-void
-GroupGraphicsObject::
-setPossibleChild(QtNodes::NodeGraphicsObject* possibleChild)
-{
-  _possibleChild = possibleChild;
-}
-
-void
-GroupGraphicsObject::
-unsetPossibleChild()
-{
-  _possibleChild = nullptr;
-}
-
-std::vector<std::shared_ptr<Connection> >
-GroupGraphicsObject::
-connections() const
-{
-  return _scene.connectionsWithinGroup(group().id());
-}
-
-void
-GroupGraphicsObject::
-setPosition(const QPointF& position)
-{
-  QPointF diffPos = position - scenePos();
-  moveNodes(diffPos);
-  moveConnections();
-}
-
-NodeGroup&
-GroupGraphicsObject::
-group()
-{
-  return _group;
-}
-
-NodeGroup const&
-GroupGraphicsObject::
-group() const
-{
-  return _group;
-}
-
-bool
-GroupGraphicsObject::
-locked() const
-{
-  return _locked;
-}
-
-void
-GroupGraphicsObject::
-moveConnections()
-{
-  for (auto& node : group().childNodes())
-  {
-    node->nodeGraphicsObject().moveConnections();
-  }
-}
-
-void
-GroupGraphicsObject::
-moveNodes(const QPointF& offset)
-{
-  for (auto& node : group().childNodes())
-  {
-    node->nodeGraphicsObject().moveBy(offset.x(), offset.y());
-  }
-}
-
-void
-GroupGraphicsObject::
-lock(bool locked)
-{
-  for (auto& node : _group.childNodes())
-  {
-    node->nodeGraphicsObject().lock(locked);
-  }
-  _lockedGraphicsItem->setVisible(locked);
-  _unlockedGraphicsItem->setVisible(!locked);
-  setFillColor(locked? kLockedFillColor : kUnlockedFillColor);
-  _locked = locked;
-  setZValue(locked? _groupAreaZValue : -_groupAreaZValue);
-}
 
 void
 GroupGraphicsObject::
@@ -236,45 +289,3 @@ paint(QPainter* painter,
 
   painter->drawRoundedRect(rect(), _roundedBorderRadius, _roundedBorderRadius);
 }
-
-QRectF
-GroupGraphicsObject::
-boundingRect() const
-{
-  QRectF ret{};
-  for (auto& node : _group.childNodes())
-  {
-    NodeGraphicsObject* ngo = &node->nodeGraphicsObject();
-
-    ret |= ngo->mapRectToScene(ngo->boundingRect());
-  }
-  if (_possibleChild)
-  {
-    ret |= _possibleChild->mapRectToScene(_possibleChild->boundingRect());
-  }
-  return mapRectFromScene(ret.marginsAdded(_margins));
-}
-
-void
-GroupGraphicsObject::
-setFillColor(const QColor& color)
-{
-  _currentFillColor = color;
-  update();
-}
-
-void
-GroupGraphicsObject::
-setBorderColor(const QColor& color)
-{
-  _currentBorderColor = color;
-  _borderPen.setColor(_currentBorderColor);
-}
-
-void
-GroupGraphicsObject::
-resetSize()
-{
-  setRect(x(), y(), _defaultWidth, _defaultHeight);
-}
-
