@@ -13,12 +13,12 @@ using QtNodes::NodeGroup;
 using QtNodes::Connection;
 
 
-PadlockGraphicsItem::
-PadlockGraphicsItem(QGraphicsItem* parent)
+IconGraphicsItem::
+IconGraphicsItem(QGraphicsItem* parent)
   : QGraphicsPixmapItem(parent) {}
 
-PadlockGraphicsItem::
-PadlockGraphicsItem(const QPixmap& pixmap, QGraphicsItem* parent)
+IconGraphicsItem::
+IconGraphicsItem(const QPixmap& pixmap, QGraphicsItem* parent)
   : QGraphicsPixmapItem(pixmap, parent)
 {
   _scaleFactor = _iconSize / pixmap.size().width();
@@ -26,7 +26,7 @@ PadlockGraphicsItem(const QPixmap& pixmap, QGraphicsItem* parent)
 }
 
 double
-PadlockGraphicsItem::
+IconGraphicsItem::
 scaleFactor() const
 {
   return _scaleFactor;
@@ -43,8 +43,8 @@ GroupGraphicsObject(FlowScene& scene,
 {
   setRect(0, 0, _defaultWidth, _defaultHeight);
 
-  _lockedGraphicsItem = new PadlockGraphicsItem(_lockedIcon, this);
-  _unlockedGraphicsItem = new PadlockGraphicsItem(_unlockedIcon, this);
+  _lockedGraphicsItem = new IconGraphicsItem(_lockedIcon, this);
+  _unlockedGraphicsItem = new IconGraphicsItem(_unlockedIcon, this);
 
   _scene.addItem(this);
 
@@ -110,11 +110,11 @@ positionLockedIcon()
 {
   _lockedGraphicsItem->setPos(boundingRect().topRight()
                               + QPointF(-(_roundedBorderRadius
-                                          + PadlockGraphicsItem::iconSize()),
+                                          + IconGraphicsItem::iconSize()),
                                         _roundedBorderRadius));
   _unlockedGraphicsItem->setPos(boundingRect().topRight()
                                 + QPointF(-(_roundedBorderRadius
-                                          + PadlockGraphicsItem::iconSize()),
+                                          + IconGraphicsItem::iconSize()),
                                           _roundedBorderRadius));
 }
 

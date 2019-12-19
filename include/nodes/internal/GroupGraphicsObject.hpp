@@ -6,16 +6,27 @@
 #include "Connection.hpp"
 #include "NodeGroup.hpp"
 
-class PadlockGraphicsItem
+/**
+ * @brief The IconGraphicsItem class is an auxiliary class that implements
+ * custom behaviour to a fixed-size icon object.
+ */
+class IconGraphicsItem
   : public QGraphicsPixmapItem
 {
 public:
-  PadlockGraphicsItem(QGraphicsItem* parent = nullptr);
+  IconGraphicsItem(QGraphicsItem* parent = nullptr);
 
-  PadlockGraphicsItem(const QPixmap& pixmap, QGraphicsItem* parent = nullptr);
+  IconGraphicsItem(const QPixmap& pixmap, QGraphicsItem* parent = nullptr);
 
+  /**
+   * @brief Returns the factor by which the original image was scaled
+   * to fit the desired icon size.
+   */
   double scaleFactor() const;
 
+  /**
+   * @brief Returns the icon size.
+   */
   static constexpr double iconSize()
   {
     return _iconSize;
@@ -148,8 +159,8 @@ private:
 
   NodeGroup& _group;
 
-  PadlockGraphicsItem* _lockedGraphicsItem;
-  PadlockGraphicsItem* _unlockedGraphicsItem;
+  IconGraphicsItem* _lockedGraphicsItem;
+  IconGraphicsItem* _unlockedGraphicsItem;
 
   QPixmap _lockedIcon{QStringLiteral("://padlock-lock.png")};
   QPixmap _unlockedIcon{QStringLiteral("://padlock-unlock.png")};
@@ -162,8 +173,8 @@ private:
   static constexpr double _groupBorderY = _groupBorderX * 0.8;
   static constexpr double _roundedBorderRadius = _groupBorderY;
   static constexpr QMarginsF  _margins = QMarginsF(_groupBorderX,
-                                         _groupBorderY + PadlockGraphicsItem::iconSize(),
-                                         _groupBorderX + PadlockGraphicsItem::iconSize(),
+                                         _groupBorderY + IconGraphicsItem::iconSize(),
+                                         _groupBorderX + IconGraphicsItem::iconSize(),
                                          _groupBorderY);
 
   static constexpr double _defaultWidth = 50.0;

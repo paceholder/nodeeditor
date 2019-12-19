@@ -851,7 +851,6 @@ loadGroupFile()
   if (!file.open(QIODevice::ReadOnly))
   {
     qDebug() << "Error loading group file!";
-    return std::weak_ptr<NodeGroup>();
   }
 
   QByteArray wholeFile = file.readAll();
