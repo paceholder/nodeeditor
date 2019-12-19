@@ -826,6 +826,10 @@ saveGroupFile(const QUuid& groupID)
     {
       file.write(group->second->saveToFile());
     }
+    else
+    {
+      qDebug() << "Error saving group file!";
+    }
   }
 }
 
@@ -845,7 +849,10 @@ loadGroupFile()
   QFile file(fileName);
 
   if (!file.open(QIODevice::ReadOnly))
+  {
+    qDebug() << "Error loading group file!";
     return std::weak_ptr<NodeGroup>();
+  }
 
   QByteArray wholeFile = file.readAll();
 
