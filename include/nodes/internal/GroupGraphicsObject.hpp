@@ -57,7 +57,12 @@ class GroupGraphicsObject
   Q_OBJECT
 
 public:
-
+  /**
+   * @brief Constructor that creates a group's graphical object that should be
+   * included in the given scene and associated with the given NodeGroup object.
+   * @param scene Reference to the scene that will include this object.
+   * @param nodeGroup Reference to the group associated with this object.
+   */
   GroupGraphicsObject(FlowScene& scene, NodeGroup& nodeGroup);
 
   GroupGraphicsObject(const GroupGraphicsObject& ggo) = delete;
@@ -68,18 +73,16 @@ public:
   ~GroupGraphicsObject() override;
 
   /**
-   * @brief Returns a reference to this group.
+   * @brief Returns a reference to this object's associated group.
    */
   NodeGroup&
   group();
 
-
   /**
-   * @brief Returns a const reference to this group.
+   * @brief Returns a const reference to this object's associated group.
    */
   NodeGroup const&
   group() const;
-
 
   /**
    * @copydoc QGraphicsItem::boundingRect()
@@ -134,7 +137,8 @@ public:
   lock(bool locked);
 
   /**
-   * @brief Returns the lock state of the group.
+   * @brief Returns the lock state of the group. Locked groups don't allow individual
+   * interactions with its nodes, and can only be moved or selected as a whole.
    */
   bool
   locked() const;
@@ -187,27 +191,42 @@ public:
   setPosition(const QPointF& position);
 
 protected:
+  /** @copydoc QGraphicsItem::paint() */
   void
   paint(QPainter* painter,
         QStyleOptionGraphicsItem const* option,
         QWidget* widget = nullptr) override;
 
+
+  /** @copydoc QGraphicsItem::hoverEnterEvent() */
   void
   hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
 
+
+  /** @copydoc QGraphicsItem::hoverLeaveEvent() */
   void
   hoverLeaveEvent(QGraphicsSceneHoverEvent* event) override;
 
+
+  /** @copydoc QGraphicsItem::mouseMoveEvent() */
   void
   mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
 
+
+  /** @copydoc QGraphicsItem::mouseDoubleClickEvent() */
   void
   mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
 
 public:
 
+  /**
+   * @brief _currentFillColor Holds the current color of the group background.
+   */
   QColor _currentFillColor;
 
+  /**
+   * @brief _currentBorderColor Holds the current color of the group border.
+   */
   QColor _currentBorderColor;
 
   const QColor kUnlockedFillColor  = QColor("#20a5b084");
@@ -219,11 +238,20 @@ public:
   const QColor kSelectedBorderColor   = QColor("#eeffa500");
   const QColor kUnselectedBorderColor = QColor("#eeaaaaaa");
 
+  /**
+   * @brief _borderPen Object that dictates how the group border should be drawn.
+   */
   QPen _borderPen;
 
 private:
+  /**
+   * @brief _scene Reference to the scene object in which this object is included.
+   */
   FlowScene& _scene;
 
+  /**
+   * @brief _group Reference to the group instance that corresponds to this object.
+   */
   NodeGroup& _group;
 
   IconGraphicsItem* _lockedGraphicsItem;
@@ -232,8 +260,16 @@ private:
   QPixmap _lockedIcon{QStringLiteral("://padlock-lock.png")};
   QPixmap _unlockedIcon{QStringLiteral("://padlock-unlock.png")};
 
+  /**
+   * @brief _possibleChild Pointer that temporarily is set to an existing node when
+   * the user drags the node to this group's area.
+   */
   NodeGraphicsObject* _possibleChild;
 
+  /**
+   * @brief _locked Holds the lock state of the group. Locked groups don't allow individual
+   * interactions with its nodes, and can only be moved or selected as a whole.
+   */
   bool _locked;
 
   static constexpr double _groupBorderX = 25.0;

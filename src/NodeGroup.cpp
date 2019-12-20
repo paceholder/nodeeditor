@@ -59,16 +59,16 @@ id() const
   return _uid;
 }
 
-GroupGraphicsObject const&
+GroupGraphicsObject&
 NodeGroup::
-groupGraphicsObject() const
+groupGraphicsObject()
 {
   return *_groupGraphicsObject;
 }
 
-GroupGraphicsObject&
+GroupGraphicsObject const&
 NodeGroup::
-groupGraphicsObject()
+groupGraphicsObject() const
 {
   return *_groupGraphicsObject;
 }
