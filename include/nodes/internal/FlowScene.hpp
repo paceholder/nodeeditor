@@ -77,17 +77,48 @@ public:
 
   void removeNode(Node& node);
 
+  /**
+   * @brief Creates a group in the scene containing the given nodes.
+   * @param nodes Reference to the list of nodes to be included in the group.
+   * @param name Group's name.
+   * @return Pointer to the newly-created group.
+   */
   std::weak_ptr<NodeGroup> createGroup(std::vector<Node*>& nodes,
                                        QString name = QStringLiteral(""));
 
+  /**
+   * @brief Creates a list of the connections that are incident only to nodes within a
+   * given group.
+   * @param groupID ID of the desired group.
+   * @return List of (pointers of) connections whose both endpoints belong to members of
+   * the specified group.
+   */
   std::vector<std::shared_ptr<Connection>> connectionsWithinGroup(const QUuid& groupID);
 
+  /**
+   * @brief Restores a group from a JSON object.
+   * @param groupJson JSON object containing the group data.
+   * @return Pointer to the newly-created group.
+   */
   std::weak_ptr<NodeGroup> restoreGroup(QJsonObject const& groupJson);
 
+  /**
+   * @brief Deletes an empty group. Does nothing if the group isn't empty.
+   * @param group Group to be deleted.
+   */
   void removeGroup(const std::shared_ptr<NodeGroup>& group);
 
+  /**
+   * @brief Adds a node to a group.
+   * @param nodeID ID of the node that will be included in the group.
+   * @param groupID ID of the group that will include the node.
+   */
   void addNodeToGroup(const QUuid& nodeID, const QUuid& groupID);
 
+  /**
+   * @brief Removes the given node from its current group. The node is not deleted.
+   * @param nodeID ID of the node to be removed from its group.
+   */
   void removeNodeFromGroup(const QUuid& nodeID);
 
   DataModelRegistry&registry() const;
@@ -112,6 +143,9 @@ public:
 
   std::unordered_map<QUuid, std::shared_ptr<Connection> > const & connections() const;
 
+  /**
+   * @brief Returns a const reference to the mapping of existing groups.
+   */
   std::unordered_map<QUuid, std::shared_ptr<NodeGroup> > const & groups() const;
 
   std::vector<Node*> allNodes() const;
@@ -130,8 +164,16 @@ public:
 
   void loadFromMemory(const QByteArray& data);
 
+  /**
+   * @brief Saves a group in a file specified by the user.
+   * @param groupID ID of the group to be saved.
+   */
   void saveGroupFile(const QUuid& groupID);
 
+  /**
+   * @brief Loads a group from a file specified by the user.
+   * @return Pointer to the newly-created group.
+   */
   std::weak_ptr<NodeGroup> loadGroupFile();
 
 Q_SIGNALS:
