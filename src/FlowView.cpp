@@ -353,24 +353,24 @@ deleteSelectedNodes()
 {
   //std::cout << "deleteSelectedNodes" << std::endl; 
   // delete the nodes, this will delete many of the connections
-  std::vector<Node*> nodeItems = _scene->selectedNodes();
+  std::vector<std::shared_ptr<Node>> nodeItems = _scene->selectedNodes();
   for(int i = 0; i < nodeItems.size(); i++)
   {
-	Node* item = nodeItems[i]; 
-	if(item)
-	{
-		_scene->removeNode(*item);
-	}
+    Node* item = nodeItems[i].get(); 
+    if(item)
+    {
+      _scene->removeNode(*item);
+    }
   }
 
-  for (QGraphicsItem * item : _scene->selectedItems())
-  {
-	if(item)
-	{
-		if (auto c = qgraphicsitem_cast<ConnectionGraphicsObject*>(item))
-			_scene->deleteConnection(c->connection());
-	}
-  }
+  // for (QGraphicsItem * item : _scene->selectedItems())
+  // {
+  //   if(item)
+  //   {
+  //     if (auto c = qgraphicsitem_cast<ConnectionGraphicsObject*>(item))
+  //       _scene->deleteConnection(c->connection());
+  //   }
+  // }
   
   _scene->UpdateHistory(); 
 }

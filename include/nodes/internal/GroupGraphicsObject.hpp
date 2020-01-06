@@ -23,6 +23,60 @@ class GroupGraphicsObject : public QGraphicsObject
   Q_OBJECT
 
 public:
-  GroupGraphicsObject(){}
+  GroupGraphicsObject(FlowScene &scene);
+
+  virtual
+  ~GroupGraphicsObject();
+
+  QRectF
+  boundingRect() const override;
+
+  void
+  setGeometryChanged();
+
+  enum { Type = UserType + 1 };
+
+  int
+  type() const override { return Type; }
+
+  void
+  lock(bool locked);
+
+protected:
+  void
+  paint(QPainter*                       painter,
+        QStyleOptionGraphicsItem const* option,
+        QWidget*                        widget = 0) override;
+
+  QVariant
+  itemChange(GraphicsItemChange change, const QVariant &value) override;
+
+  void
+  mousePressEvent(QGraphicsSceneMouseEvent* event) override;
+
+  void
+  mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
+
+  void
+  mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
+
+  void
+  hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
+
+  void
+  hoverLeaveEvent(QGraphicsSceneHoverEvent* event) override;
+
+  void
+  hoverMoveEvent(QGraphicsSceneHoverEvent *) override;
+
+  void
+  mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
+
+  void
+  contextMenuEvent(QGraphicsSceneContextMenuEvent* event) override;
+
+
+private:
+  FlowScene & _scene;
 };
 }

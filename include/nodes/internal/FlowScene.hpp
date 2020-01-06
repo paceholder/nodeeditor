@@ -18,6 +18,7 @@ namespace QtNodes
 class NodeDataModel;
 class FlowItemInterface;
 class Node;
+class Group;
 class NodeGraphicsObject;
 class Connection;
 class ConnectionGraphicsObject;
@@ -90,11 +91,11 @@ public:
   QSizeF getNodeSize(const Node& node) const;
 public:
 
-  std::unordered_map<QUuid, std::unique_ptr<Node> > const &nodes() const;
+  std::unordered_map<QUuid, std::shared_ptr<Node> > const &nodes() const;
 
   std::unordered_map<QUuid, std::shared_ptr<Connection> > const &connections() const;
 
-  std::vector<Node*>selectedNodes() const;
+  std::vector<std::shared_ptr<Node>>selectedNodes() const;
 
 public:
 
@@ -152,12 +153,13 @@ public:
 private:
 
   using SharedConnection = std::shared_ptr<Connection>;
-  using UniqueNode       = std::unique_ptr<Node>;
+  using UniqueNode       = std::shared_ptr<Node>;
 
   std::unordered_map<QUuid, SharedConnection> _connections;
   std::unordered_map<QUuid, UniqueNode>       _nodes;
   std::shared_ptr<DataModelRegistry>          _registry;
-  
+  std::unordered_map<QUuid, std::unique_ptr<Group>> _groups;
+
   int historyInx; 
   bool writeToHistory; 
   std::vector< SceneHistory > history;

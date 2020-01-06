@@ -178,7 +178,15 @@ createNode(std::unique_ptr<NodeDataModel> && dataModel)
 }
 
 void FlowScene::createGroup() {
-  Group group(*this);
+
+  std::vector<std::shared_ptr<Node>> selection =  selectedNodes();
+  auto group = std::make_unique<Group>(*this);
+  
+  for(int i=0; i<selection.size(); i++) {
+    group->AddNode(selection[i]);
+  }
+  
+  _groups[group->id()] = std::move(group);
 }
 
 
@@ -191,7 +199,7 @@ restoreNode(QJsonObject const& nodeJson)
 
   if (!dataModel)
     throw std::logic_error(std::string("No registered model with name ") +
-                           modelName.toLocal8Bit().data());
+                            modelName.toLocal8Bit().data());
   auto node = std::make_unique<Node>(std::move(dataModel));
   auto ngo  = std::make_unique<NodeGraphicsObject>(*this, *node);
   node->setGraphicsObject(std::move(ngo));
@@ -399,7 +407,7 @@ getNodeSize(const Node& node) const
 }
 
 
-std::unordered_map<QUuid, std::unique_ptr<Node> > const &
+std::unordered_map<QUuid, std::shared_ptr<Node> > const &
 FlowScene::
 nodes() const
 {
@@ -415,13 +423,13 @@ connections() const
 }
 
 
-std::vector<Node*>
+std::vector<std::shared_ptr<Node>>
 FlowScene::
 selectedNodes() const
 {
   QList<QGraphicsItem*> graphicsItems = selectedItems();
 
-  std::vector<Node*> ret;
+  std::vector<std::shared_ptr<Node>> ret;
   ret.reserve(graphicsItems.size());
 
   for (QGraphicsItem* item : graphicsItems)
@@ -430,7 +438,9 @@ selectedNodes() const
 
     if (ngo != nullptr)
     {
-      ret.push_back(&ngo->node());
+      Node* n = &(ngo->node());
+      std::shared_ptr<Node> ptr(n);
+      ret.push_back(ptr);
     }
   }
 
