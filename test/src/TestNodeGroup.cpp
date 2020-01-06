@@ -23,12 +23,6 @@ TEST_CASE("Creating groups from node", "[groups], [namo]")
   FlowScene scene;
   FlowView  view(&scene);
 
-  // Ensure we have enough size to contain the node
-  view.resize(640, 480);
-
-  view.show();
-  REQUIRE(QTest::qWaitForWindowExposed(&view));
-
   SECTION("Creating a group from a single node")
   {
     // check number of groups in scene, node affiliation to group, IDs
@@ -45,6 +39,11 @@ TEST_CASE("Creating groups from node", "[groups], [namo]")
   {
     constexpr size_t nodesPerGroup = 5;
     constexpr size_t nGroups = 2;
+
+    std::vector< std::vector<QUuid> > nodeIDs(nGroups,
+        std::vector<QUuid>(nodesPerGroup));
+    std::vector<QUuid> groupIDs(nGroups);
+
     for (size_t i = 0; i < nGroups; i++)
     {
       std::vector<Node*> nodes;
@@ -53,8 +52,53 @@ TEST_CASE("Creating groups from node", "[groups], [namo]")
       {
         auto& node = scene.createNode(std::make_unique<MockModel>());
         nodes.push_back(&node);
+        nodeIDs[i][j] = node.id();
       }
-      scene.createGroup(nodes);
+      auto group_weak = scene.createGroup(nodes);
+      if (auto group = group_weak.lock(); group)
+      {
+        groupIDs[i] = group->id();
+      }
+    }
+
+    SECTION("Finding groups in scene via ID")
+    {
+      for (auto& groupID : groupIDs)
+      {
+        auto it = scene.groups().find(groupID);
+        CHECK(it != scene.groups().end());
+      }
+    }
+
+    SECTION("Finding node IDs in groups map")
+    {
+      for (size_t i = 0; i < nGroups; i++)
+      {
+        auto group = scene.groups().at(groupIDs[i]);
+        auto ids = group->nodeIDs();
+
+        std::set<QUuid> sceneIdSet;
+        sceneIdSet.insert(ids.begin(), ids.end());
+        std::set<QUuid> localIdSet;
+        localIdSet.insert(nodeIDs[i].begin(), nodeIDs[i].end());
+
+        // checks if the IDs stored in the scene are the same
+        // as the ones previously generated.
+        CHECK(sceneIdSet == localIdSet);
+      }
+    }
+
+    SECTION("Checking the group reference of each node")
+    {
+      for (auto& group : scene.groups())
+      {
+        auto id = group.first;
+        for (auto& node : group.second->childNodes())
+        {
+          auto nodeGroup = node->nodeGroup().lock();
+          CHECK(id == nodeGroup->id());
+        }
+      }
     }
   }
 }
