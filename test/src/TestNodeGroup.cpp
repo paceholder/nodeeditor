@@ -13,7 +13,10 @@ using QtNodes::FlowView;
 using QtNodes::FlowScene;
 using QtNodes::Node;
 
-TEST_CASE("Creating groups from node", "[groups], [namo]")
+constexpr size_t nodesPerGroup = 5;
+constexpr size_t nGroups = 2;
+
+TEST_CASE("Creating groups from node", "[node groups][namo]")
 {
   class MockModel : public StubNodeDataModel
   {};
@@ -25,7 +28,6 @@ TEST_CASE("Creating groups from node", "[groups], [namo]")
 
   SECTION("Creating a group from a single node")
   {
-    // check number of groups in scene, node affiliation to group, IDs
     auto& node = scene.createNode(std::make_unique<MockModel>());
     auto nodeID = node.id();
 
@@ -37,8 +39,6 @@ TEST_CASE("Creating groups from node", "[groups], [namo]")
 
   SECTION("Creating a group from multiple nodes")
   {
-    constexpr size_t nodesPerGroup = 5;
-    constexpr size_t nGroups = 2;
 
     std::vector< std::vector<QUuid> > nodeIDs(nGroups,
         std::vector<QUuid>(nodesPerGroup));
@@ -103,22 +103,136 @@ TEST_CASE("Creating groups from node", "[groups], [namo]")
   }
 }
 
-TEST_CASE("Deleting nodes and groups", "[groups], [namo]")
+TEST_CASE("Deleting nodes and groups", "[node groups][namo]")
 {
-  SECTION("Deleting a node associated with a group") {}
+  class MockModel : public StubNodeDataModel
+  {};
+
+  auto setup = applicationSetup();
+
+  FlowScene scene;
+  FlowView  view(&scene);
+
+  view.resize(640, 480);
+
+  view.show();
+  REQUIRE(QTest::qWaitForWindowExposed(&view));
+
+  std::vector< std::vector<QUuid> > nodeIDs(nGroups,
+      std::vector<QUuid>(nodesPerGroup));
+  std::vector<QUuid> groupIDs(nGroups);
+
+  for (size_t i = 0; i < nGroups; i++)
+  {
+    std::vector<Node*> nodes;
+    nodes.reserve(nodesPerGroup);
+    for (size_t j = 0; j < nodesPerGroup; j++)
+    {
+      auto& node = scene.createNode(std::make_unique<MockModel>());
+      nodes.push_back(&node);
+      nodeIDs[i][j] = node.id();
+    }
+    auto group_weak = scene.createGroup(nodes);
+    if (auto group = group_weak.lock(); group)
+    {
+      groupIDs[i] = group->id();
+    }
+  }
+
+  SECTION("Deleting nodes that belong to a group")
+  {
+
+    for (size_t i = 0; i < nGroups; i++)
+    {
+      for (size_t j = 0; j < nodesPerGroup - 1; j++)
+      {
+        QUuid currentNodeID = nodeIDs[i][j];
+        auto& node = scene.nodes().at(currentNodeID);
+        if (auto currentGroup = node->nodeGroup().lock(); currentGroup)
+        {
+          scene.removeNode(*node.get());
+          auto ids = currentGroup->nodeIDs();
+          auto nodeInGroupIt = std::find(ids.begin(), ids.end(), currentNodeID);
+          // checks if the id was actually removed from the map
+          CHECK(nodeInGroupIt == ids.end());
+        }
+      }
+    }
+
+  }
 
   SECTION("Removing a node from a group")
   {
-    SECTION("Then deleting the node") {}
+    for (size_t i = 0; i < nGroups; i++)
+    {
+      for (size_t j = 0; j < nodesPerGroup - 1; j++)
+      {
+        QUuid currentNodeID = nodeIDs[i][j];
+        auto& node = scene.nodes().at(currentNodeID);
+        if (auto currentGroup = node->nodeGroup().lock(); currentGroup)
+        {
+          currentGroup->removeNode(node.get());
+          auto ids = currentGroup->nodeIDs();
+          auto nodeInGroupIt = std::find(ids.begin(), ids.end(), currentNodeID);
 
-    SECTION("Then assigning the node to another group") {}
+          // checks if the id was actually removed from the map
+          CHECK(nodeInGroupIt == ids.end());
+
+          // checks if the node still exists in the scene
+          auto nodeInSceneIt = scene.nodes().find(currentNodeID);
+          CHECK(nodeInSceneIt != scene.nodes().end());
+
+          SECTION("...then deleting the node")
+          {
+            scene.removeNode(*node.get());
+            ids = currentGroup->nodeIDs();
+            auto nodeInSceneIt = scene.nodes().find(currentNodeID);
+            // checks if the node was removed from the scene
+            CHECK(nodeInSceneIt == scene.nodes().end());
+          }
+
+          SECTION("...then assigning the node to another group")
+          {
+            std::vector<Node*> nodeVec(1, node.get());
+            auto new_group_weakptr = scene.createGroup(nodeVec);
+            auto newGroup = new_group_weakptr.lock();
+            auto newGroupIDs = newGroup->nodeIDs();
+            auto nodeInGroupIt = std::find(newGroupIDs.begin(), newGroupIDs.end(), currentNodeID);
+
+            // checks if the id was included in the new group
+            CHECK(nodeInGroupIt != newGroupIDs.end());
+          }
+
+//          SECTION("...then reassigning the node to the group")
+//          {
+//            currentGroup->addNode(node.get());
+//            auto ids = currentGroup->nodeIDs();
+//            auto nodeInGroupIt = std::find(ids.begin(), ids.end(), currentNodeID);
+
+//            // checks if the id was actually included in the map
+//            CHECK(nodeInGroupIt != ids.end());
+//          }
+        }
+      }
+    }
   }
 
-  SECTION("Deleting a whole group") {}
+  SECTION("Deleting a whole group")
+  {
+
+  }
 }
 
-TEST_CASE("Saving and loading groups", "[groups], [namo]")
+TEST_CASE("Saving and loading groups", "[node groups][namo]")
 {
+  class MockModel : public StubNodeDataModel
+  {};
+
+  auto setup = applicationSetup();
+
+  FlowScene scene;
+  FlowView  view(&scene);
+
   SECTION("Saving a group file")
   {
 

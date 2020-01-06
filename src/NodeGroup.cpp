@@ -137,6 +137,7 @@ removeNode(Node* node)
   auto nodeIt = std::find(_childNodes.begin(), _childNodes.end(), node);
   if (nodeIt != _childNodes.end())
   {
+    (*nodeIt)->unsetNodeGroup();
     _childNodes.erase(nodeIt);
     groupGraphicsObject().positionLockedIcon();
   }
