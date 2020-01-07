@@ -203,15 +203,16 @@ TEST_CASE("Deleting nodes and groups", "[node groups][namo]")
             CHECK(nodeInGroupIt != newGroupIDs.end());
           }
 
-//          SECTION("...then reassigning the node to the group")
-//          {
-//            currentGroup->addNode(node.get());
-//            auto ids = currentGroup->nodeIDs();
-//            auto nodeInGroupIt = std::find(ids.begin(), ids.end(), currentNodeID);
+          SECTION("...then reassigning the node to the group")
+          {
+            currentGroup->addNode(node.get()); // should this function be private?
+            node->setNodeGroup(currentGroup);
+            auto ids = currentGroup->nodeIDs();
+            auto nodeInGroupIt = std::find(ids.begin(), ids.end(), currentNodeID);
 
-//            // checks if the id was actually included in the map
-//            CHECK(nodeInGroupIt != ids.end());
-//          }
+            // checks if the id was actually included in the map
+            CHECK(nodeInGroupIt != ids.end());
+          }
         }
       }
     }
