@@ -31,6 +31,7 @@ saveToFile() const
   QJsonObject groupJson;
 
   groupJson["name"] = _name;
+  groupJson["id"] = _uid.toString();
 
   QJsonArray nodesJson;
   for (auto const & node : _childNodes)
