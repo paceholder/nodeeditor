@@ -106,7 +106,7 @@ public:
    * @brief Deletes an empty group. Does nothing if the group isn't empty.
    * @param group Group to be deleted.
    */
-  void removeGroup(const std::shared_ptr<NodeGroup>& group);
+  void removeGroup(const QUuid& groupID);
 
   /**
    * @brief Adds a node to a group.

@@ -391,12 +391,7 @@ deleteSelectedNodes()
   {
     if (auto g = qgraphicsitem_cast<GroupGraphicsObject*>(item))
     {
-      g->lock(false);
-      for (auto& node : g->group().childNodes())
-      {
-        node->nodeGraphicsObject().setSelected(true);
-      }
-      g->setSelected(false);
+      _scene->removeGroup(g->group().id());
     }
   }
   // Delete the selected connections first, ensuring that they won't be

@@ -408,12 +408,15 @@ restoreGroup(QJsonObject const& groupJson)
 
 void
 FlowScene::
-removeGroup(const std::shared_ptr<NodeGroup>& group)
+removeGroup(const QUuid& groupID)
 {
-  if (group->empty())
+  auto group = _groups.at(groupID);
+  group->groupGraphicsObject().lock(false);
+  while (!group->childNodes().empty())
   {
-    _groups.erase(group->id());
+    removeNode(*group->childNodes().back());
   }
+  _groups.erase(group->id());
 }
 
 void
@@ -437,7 +440,7 @@ removeNodeFromGroup(const QUuid& nodeID)
     group->removeNode(nodeIt);
     if (group->empty())
     {
-      removeGroup(group);
+      removeGroup(group->id());
     }
   }
   nodeIt->unsetNodeGroup();

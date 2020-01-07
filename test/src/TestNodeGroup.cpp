@@ -14,7 +14,7 @@ using QtNodes::FlowScene;
 using QtNodes::Node;
 
 constexpr size_t nodesPerGroup = 5;
-constexpr size_t nGroups = 2;
+constexpr size_t nGroups = 6;
 
 TEST_CASE("Creating groups from node", "[node groups][namo]")
 {
@@ -205,8 +205,7 @@ TEST_CASE("Deleting nodes and groups", "[node groups][namo]")
 
           SECTION("...then reassigning the node to the group")
           {
-            currentGroup->addNode(node.get()); // should this function be private?
-            node->setNodeGroup(currentGroup);
+            scene.addNodeToGroup(node->id(), currentGroup->id());
             auto ids = currentGroup->nodeIDs();
             auto nodeInGroupIt = std::find(ids.begin(), ids.end(), currentNodeID);
 
@@ -220,7 +219,20 @@ TEST_CASE("Deleting nodes and groups", "[node groups][namo]")
 
   SECTION("Deleting a whole group")
   {
+    // check if the group was deleted along with each node
+    for (size_t i = 0; i < nGroups; i++)
+    {
+      scene.removeGroup(groupIDs[i]);
+      auto groupIt = scene.groups().find(groupIDs[i]);
+      CHECK(groupIt == scene.groups().end());
 
+      for (size_t j = 0; j < nodesPerGroup; j++)
+      {
+        auto nodeIt = scene.nodes().find(nodeIDs[i][j]);
+        CHECK(nodeIt == scene.nodes().end());
+      }
+
+    }
   }
 }
 
