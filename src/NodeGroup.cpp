@@ -13,11 +13,12 @@ int NodeGroup::_groupCount = 0;
 
 NodeGroup::
 NodeGroup(std::vector<Node*> nodes,
+          const QUuid& uid,
           QString name,
           QObject* parent)
   : QObject(parent)
   , _name(std::move(name))
-  , _uid(QUuid::createUuid())
+  , _uid(uid)
   , _childNodes(std::move(nodes))
   , _groupGraphicsObject(nullptr)
 {

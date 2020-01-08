@@ -84,6 +84,7 @@ public:
    * @return Pointer to the newly-created group.
    */
   std::weak_ptr<NodeGroup> createGroup(std::vector<Node*>& nodes,
+                                       const QUuid& uid = QUuid::createUuid(),
                                        QString name = QStringLiteral(""));
 
   /**

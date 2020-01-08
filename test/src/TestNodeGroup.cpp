@@ -12,15 +12,53 @@
 using QtNodes::FlowView;
 using QtNodes::FlowScene;
 using QtNodes::Node;
+using QtNodes::DataModelRegistry;
 
 constexpr size_t nodesPerGroup = 5;
 constexpr size_t nGroups = 2;
 
+class MockModel : public StubNodeDataModel
+{
+public:
+  MockModel(int n = 0)
+    : StubNodeDataModel()
+    , _double(n * 1.9)
+    , _int(n) {}
+
+  QJsonObject save() const override
+  {
+    QJsonObject output = NodeDataModel::save();
+    output["int"] = _int;
+    output["double"] = _double;
+    output["caption"] = caption();
+    return output;
+  }
+
+  void restore(const QJsonObject& object) override
+  {
+    name(object["name"].toString());
+    caption(object["caption"].toString());
+    _double = object["double"].toDouble();
+    _int = object["int"].toInt();
+  }
+
+  double _double{};
+  int _int{};
+};
+
+
+static std::shared_ptr<DataModelRegistry>
+registerDataModels()
+{
+  auto ret = std::make_shared<DataModelRegistry>();
+
+  ret->registerModel<MockModel>();
+
+  return ret;
+}
+
 TEST_CASE("Creating groups from node", "[node groups][namo]")
 {
-  class MockModel : public StubNodeDataModel
-  {};
-
   auto setup = applicationSetup();
 
   FlowScene scene;
@@ -81,6 +119,9 @@ TEST_CASE("Creating groups from node", "[node groups][namo]")
         sceneIdSet.insert(ids.begin(), ids.end());
         std::set<QUuid> localIdSet;
         localIdSet.insert(nodeIDs[i].begin(), nodeIDs[i].end());
+
+        // checks if the IDs stored in the scene are the same
+        // as the ones previously generated.
         CHECK(sceneIdSet == localIdSet);
       }
     }
@@ -102,9 +143,6 @@ TEST_CASE("Creating groups from node", "[node groups][namo]")
 
 TEST_CASE("Deleting nodes and groups", "[node groups][namo]")
 {
-  class MockModel : public StubNodeDataModel
-  {};
-
   auto setup = applicationSetup();
 
   FlowScene scene;
@@ -145,6 +183,7 @@ TEST_CASE("Deleting nodes and groups", "[node groups][namo]")
           scene.removeNode(*node.get());
           auto ids = currentGroup->nodeIDs();
           auto nodeInGroupIt = std::find(ids.begin(), ids.end(), currentNodeID);
+          // checks if the id was actually removed from the map
           CHECK(nodeInGroupIt == ids.end());
         }
       }
@@ -165,9 +204,11 @@ TEST_CASE("Deleting nodes and groups", "[node groups][namo]")
           currentGroup->removeNode(node.get());
           auto ids = currentGroup->nodeIDs();
 
+          // checks if the id was actually removed from the map
           auto nodeInGroupIt = std::find(ids.begin(), ids.end(), currentNodeID);
           CHECK(nodeInGroupIt == ids.end());
 
+          // checks if the node still exists in the scene
           auto nodeInSceneIt = scene.nodes().find(currentNodeID);
           CHECK(nodeInSceneIt != scene.nodes().end());
 
@@ -176,6 +217,7 @@ TEST_CASE("Deleting nodes and groups", "[node groups][namo]")
             scene.removeNode(*node.get());
             ids = currentGroup->nodeIDs();
             auto nodeInSceneIt = scene.nodes().find(currentNodeID);
+            // checks if the node was removed from the scene
             CHECK(nodeInSceneIt == scene.nodes().end());
           }
 
@@ -186,6 +228,7 @@ TEST_CASE("Deleting nodes and groups", "[node groups][namo]")
             auto newGroup = new_group_weakptr.lock();
             auto newGroupIDs = newGroup->nodeIDs();
             auto nodeInGroupIt = std::find(newGroupIDs.begin(), newGroupIDs.end(), currentNodeID);
+            // checks if the id was included in the new group
             CHECK(nodeInGroupIt != newGroupIDs.end());
           }
 
@@ -195,6 +238,7 @@ TEST_CASE("Deleting nodes and groups", "[node groups][namo]")
             auto ids = currentGroup->nodeIDs();
             auto nodeInGroupIt = std::find(ids.begin(), ids.end(), currentNodeID);
 
+            // checks if the id was actually included in the map
             CHECK(nodeInGroupIt != ids.end());
           }
         }
@@ -207,11 +251,13 @@ TEST_CASE("Deleting nodes and groups", "[node groups][namo]")
     for (size_t i = 0; i < nGroups; i++)
     {
       scene.removeGroup(groupIDs[i]);
+      // checks if the group ID was removed from the map
       auto groupIt = scene.groups().find(groupIDs[i]);
       CHECK(groupIt == scene.groups().end());
 
       for (size_t j = 0; j < nodesPerGroup; j++)
       {
+        // checks if each node was also deleted
         auto nodeIt = scene.nodes().find(nodeIDs[i][j]);
         CHECK(nodeIt == scene.nodes().end());
       }
@@ -222,49 +268,18 @@ TEST_CASE("Deleting nodes and groups", "[node groups][namo]")
 
 TEST_CASE("Saving and loading groups", "[node groups][namo]")
 {
-  // populate with mock fields
-  class MockModel : public StubNodeDataModel
-  {
-  public:
-    MockModel(int n = 0)
-      : StubNodeDataModel()
-      , _double(n * 1.9)
-      , _int(n) {}
-
-    QJsonObject save() const override
-    {
-      QJsonObject output = NodeDataModel::save();
-      output["int"] = _int;
-      output["double"] = _double;
-      output["caption"] = caption();
-      return output;
-    }
-
-    void restore(const QJsonObject& object) override
-    {
-      // checks here?
-      name(object["name"].toString());
-      caption(object["caption"].toString());
-      _double = object["double"].toDouble();
-      _int = object["int"].toInt();
-    }
-
-    double _double{};
-    int _int{};
-  };
-
   struct NodeFields
   {
     QUuid id;
     QString name;
     QString caption;
-    int intVal;
     double doubleVal;
+    int intVal;
   };
 
   auto setup = applicationSetup();
 
-  FlowScene scene;
+  FlowScene scene(registerDataModels());
   FlowView  view(&scene);
 
   std::unordered_map<QUuid, std::vector<QUuid> > groupNodeMap;
@@ -281,7 +296,7 @@ TEST_CASE("Saving and loading groups", "[node groups][namo]")
 
     for (size_t j = 0; j < nodesPerGroup; j++)
     {
-      auto& node = scene.createNode(std::make_unique<MockModel>(i*nodesPerGroup + j));
+      auto& node = scene.createNode(std::make_unique<MockModel>(i * nodesPerGroup + j));
       nodes.push_back(&node);
       nodeIDs[j] = node.id();
     }
@@ -298,7 +313,6 @@ TEST_CASE("Saving and loading groups", "[node groups][namo]")
     std::vector<QJsonObject> groupFiles;
     groupFiles.reserve(nGroups);
 
-    // save groups in working memory (not disk) and check the object
     for (auto& group : scene.groups())
     {
       auto groupByteArray = group.second->saveToFile();
@@ -347,8 +361,6 @@ TEST_CASE("Saving and loading groups", "[node groups][namo]")
 
       for (auto& nodeID : nodeIDs)
       {
-
-        // find corresponding NodeFields struct
         for (auto& restoredNode : restoredNodes)
         {
           auto nodeEntry = scene.nodes().find(nodeID);
@@ -369,6 +381,65 @@ TEST_CASE("Saving and loading groups", "[node groups][namo]")
       }
     }
   }
-  SECTION("Saving a scene that includes a group") {}
-  SECTION("Loading a scene that includes a group") {}
+  SECTION("Saving a scene that includes a group")
+  {
+    std::unordered_map<QUuid, std::vector<NodeFields> > currentSceneMap;
+    currentSceneMap.reserve(nGroups);
+
+    // saves the current scene state for comparison
+    for (auto& group : scene.groups())
+    {
+      std::vector<NodeFields> sceneNodes;
+      sceneNodes.reserve(nodesPerGroup);
+
+      for (auto& node : group.second->childNodes())
+      {
+        auto nodeMockModel = dynamic_cast<MockModel*>(node->nodeDataModel());
+        CHECK(nodeMockModel);
+
+        NodeFields nodeFields;
+        nodeFields.id = node->id();
+        nodeFields.name = nodeMockModel->name();
+        nodeFields.caption = nodeMockModel->caption();
+        nodeFields.doubleVal = nodeMockModel->_double;
+        nodeFields.intVal = nodeMockModel->_int;
+
+        sceneNodes.push_back(nodeFields);
+      }
+
+      currentSceneMap[group.first] = std::move(sceneNodes);
+    }
+
+    // saves the scene using the actual save function
+    auto sceneFile = scene.saveToMemory();
+    scene.clearScene();
+    CHECK(scene.groups().empty());
+    CHECK(scene.nodes().empty());
+
+    // reloads the saved scene and compares its elements with the ones
+    // previously stored
+    scene.loadFromMemory(sceneFile);
+    CHECK(!scene.groups().empty());
+    CHECK(!scene.nodes().empty());
+    for (const auto& groupEntry : scene.groups())
+    {
+      auto group = groupEntry.second;
+      auto& savedNodes = currentSceneMap.at(group->id());
+      for (const auto& savedNode : savedNodes)
+      {
+        for (const auto& node : group->childNodes())
+        {
+          if (savedNode.id == node->id())
+          {
+            auto nodeMockModel = dynamic_cast<MockModel*>(node->nodeDataModel());
+            CHECK(nodeMockModel);
+            CHECK(savedNode.name == nodeMockModel->name());
+            CHECK(savedNode.caption == nodeMockModel->caption());
+            CHECK(qFuzzyCompare(savedNode.doubleVal, nodeMockModel->_double));
+            CHECK(savedNode.intVal == nodeMockModel->_int);
+          }
+        }
+      }
+    }
+  }
 }

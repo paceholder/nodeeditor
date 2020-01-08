@@ -36,6 +36,7 @@ public:
    * @param parent Parent object.
    */
   NodeGroup(std::vector<Node*> nodes,
+            const QUuid& uid,
             QString name = QString(),
             QObject* parent = nullptr);
 

@@ -314,6 +314,7 @@ removeNode(Node& node)
 std::weak_ptr<NodeGroup>
 FlowScene::
 createGroup(std::vector<Node*>& nodes,
+            const QUuid& uid,
             QString groupName)
 {
   // remove nodes which already belong to a group
@@ -329,7 +330,7 @@ createGroup(std::vector<Node*>& nodes,
   {
     groupName = "Group " + QString::number(NodeGroup::groupCount());
   }
-  auto group = std::make_shared<NodeGroup>(nodes, groupName, this);
+  auto group = std::make_shared<NodeGroup>(nodes, uid, groupName, this);
   auto ggo   = std::make_unique<GroupGraphicsObject>(*this, *group);
 
   group->setGraphicsObject(std::move(ggo));
@@ -386,7 +387,7 @@ restoreGroup(QJsonObject const& groupJson)
   for (const QJsonValueRef nodeJson : nodesJson)
   {
     auto oldID = QUuid(nodeJson.toObject()["id"].toString());
-    auto& nodeRef = loadNodeToMap(nodeJson.toObject(), nodesMap);
+    auto& nodeRef = loadNodeToMap(nodeJson.toObject(), nodesMap, false);
 
     auto newID = nodeRef.id();
 
@@ -403,7 +404,7 @@ restoreGroup(QJsonObject const& groupJson)
   _nodes.merge(nodesMap);
   _connections.merge(connectionsMap);
 
-  return createGroup(children, groupJson["name"].toString());
+  return createGroup(children, QUuid::createUuid(), groupJson["name"].toString());
 }
 
 void
@@ -796,7 +797,7 @@ loadFromMemory(const QByteArray& data)
   for (auto& mapEntry : IDNodesMap)
   {
     QString name = IDNamesMap.at(mapEntry.first);
-    createGroup(mapEntry.second, name);
+    createGroup(mapEntry.second, mapEntry.first, name);
   }
 
   QJsonArray connectionJsonArray = jsonDocument["connections"].toArray();
