@@ -17,8 +17,11 @@ class FlowScene;
 class FlowItemEntry;
 class GroupGraphicsObject;
 
-/// Class reacts on GUI events, mouse clicks and
-/// forwards painting operation.
+/**
+ * @brief The NodeGraphicsObject class handles the graphical part of a node.
+ * Each node is associated with a unique NodeGraphicsObject. This class reacts
+ * on GUI events, mouse clicks and forwards painting operation.
+ */
 class NodeGraphicsObject : public QGraphicsObject
 {
   Q_OBJECT

@@ -13,6 +13,11 @@ class FlowScene;
 class NodeGraphicsObject;
 class GroupGraphicsObject;
 
+/**
+ * @brief The FlowView class controls the display of the FlowScene in the UI.
+ * It is responsible for mediating the user interaction with the scene and
+ * managing the UI overlays, such as context menus for nodes.
+ */
 class NODE_EDITOR_PUBLIC FlowView
   : public QGraphicsView
 {

@@ -15,7 +15,11 @@ namespace QtNodes
 class NodeState;
 class NodeDataModel;
 class Node;
-
+/**
+ * @brief The NodeGeometry class holds the aspects of a node's graphical object
+ * geometry in the FlowScene, such as the position of each port within a node.
+ * Each connection is associated with a unique geometry object.
+ */
 class NODE_EDITOR_PUBLIC NodeGeometry
 {
 public:
@@ -24,39 +28,75 @@ public:
 
 public:
   unsigned int
-  height() const { return _height; }
+  height() const
+  {
+    return _height;
+  }
 
   void
-  setHeight(unsigned int h) { _height = h; }
+  setHeight(unsigned int h)
+  {
+    _height = h;
+  }
 
   unsigned int
-  width() const { return _width; }
+  width() const
+  {
+    return _width;
+  }
 
   void
-  setWidth(unsigned int w) { _width = w; }
+  setWidth(unsigned int w)
+  {
+    _width = w;
+  }
 
   unsigned int
-  entryHeight() const { return _entryHeight; }
+  entryHeight() const
+  {
+    return _entryHeight;
+  }
   void
-  setEntryHeight(unsigned int h) { _entryHeight = h; }
+  setEntryHeight(unsigned int h)
+  {
+    _entryHeight = h;
+  }
 
   unsigned int
-  entryWidth() const { return _entryWidth; }
+  entryWidth() const
+  {
+    return _entryWidth;
+  }
 
   void
-  setEntryWidth(unsigned int w) { _entryWidth = w; }
+  setEntryWidth(unsigned int w)
+  {
+    _entryWidth = w;
+  }
 
   unsigned int
-  spacing() const { return _spacing; }
+  spacing() const
+  {
+    return _spacing;
+  }
 
   void
-  setSpacing(unsigned int s) { _spacing = s; }
+  setSpacing(unsigned int s)
+  {
+    _spacing = s;
+  }
 
   bool
-  hovered() const { return _hovered; }
+  hovered() const
+  {
+    return _hovered;
+  }
 
   void
-  setHovered(unsigned int h) { _hovered = h; }
+  setHovered(unsigned int h)
+  {
+    _hovered = h;
+  }
 
   unsigned int
   nSources() const;
@@ -66,11 +106,15 @@ public:
 
   QPointF const&
   draggingPos() const
-  { return _draggingPos; }
+  {
+    return _draggingPos;
+  }
 
   void
   setDraggingPosition(QPointF const& pos)
-  { _draggingPos = pos; }
+  {
+    _draggingPos = pos;
+  }
 
 public:
 
@@ -115,9 +159,9 @@ public:
 
   unsigned int
   validationWidth() const;
-  
-  static 
-  QPointF 
+
+  static
+  QPointF
   calculateNodePositionBetweenNodePorts(PortIndex targetPortIndex, PortType targetPort, Node* targetNode,
                                         PortIndex sourcePortIndex, PortType sourcePort, Node* sourceNode,
                                         Node& newNode);

@@ -26,6 +26,9 @@ class NodeGraphicsObject;
 class NodeDataModel;
 class NodeGroup;
 
+/**
+ * @brief The Node class stores the logical structure of a node.
+ */
 class NODE_EDITOR_PUBLIC Node
   : public QObject
   , public Serializable

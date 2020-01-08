@@ -14,7 +14,11 @@ class Connection;
 class ConnectionGeometry;
 class Node;
 
-/// Graphic Object for connection. Adds itself to scene
+/**
+ * @brief The ConnectionGraphicsObject class stores the graphical object
+ * of a connection. Each connection is associated with a unique graphics
+ * object. Upon creation, the object adds itself to the scene.
+ */
 class ConnectionGraphicsObject
   : public QGraphicsObject
 {
@@ -30,7 +34,10 @@ public:
 
   enum { Type = UserType + 2 };
   int
-  type() const override { return Type; }
+  type() const override
+  {
+    return Type;
+  }
 
 public:
 

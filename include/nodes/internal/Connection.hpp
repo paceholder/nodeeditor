@@ -24,7 +24,11 @@ class Node;
 class NodeData;
 class ConnectionGraphicsObject;
 
-///
+/**
+ * @brief The Connection class models a connection between ports of
+ * nodes. Each connection is specified by an input node and port index
+ * and an output node and port index.
+ */
 class NODE_EDITOR_PUBLIC Connection
   : public QObject
   , public Serializable

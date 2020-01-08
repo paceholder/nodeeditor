@@ -49,6 +49,7 @@ class NodeGraphicsObject;
 
 /**
  * @brief The GroupGraphicsObject class handles the graphical part of a node group.
+ * Each node group is associated with a unique GroupGraphicsObject.
  */
 class GroupGraphicsObject
   : public QObject
