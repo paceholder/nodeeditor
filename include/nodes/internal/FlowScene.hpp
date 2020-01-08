@@ -28,7 +28,12 @@ class NodeStyle;
 class NodeGroup;
 class GroupGraphicsObject;
 
-/// Scene holds connections and nodes.
+/**
+ * @brief The FlowScene class is responsible for handling nodes and
+ * connections. It represents the 2D canvas onto which the graphical
+ * elements are drawn, and it controls both the logical models and the
+ * graphical objects of NodeEditor.
+ */
 class NODE_EDITOR_PUBLIC FlowScene
   : public QGraphicsScene
 {
@@ -58,9 +63,20 @@ public:
 
   std::shared_ptr<Connection> restoreConnection(QJsonObject const &connectionJson);
 
+  /**
+   * @brief Loads a connection between nodes from a JSON file into the given map of
+   * connections.
+   * @param connectionJson JSON object that stores the connection's endpoints.
+   * @param nodesMap Map of nodes (i.e. all possible endpoints).
+   * @param connectionsMap Map into which the new connection will be added.
+   * @param IDMap Map of old node IDs to new node IDs -- to be used when the connections
+   * are being restored from a group file to avoid duplicate IDs, since the stored IDs
+   * might already be in use.
+   * @return Pointer to the newly created connection.
+   */
   std::shared_ptr<Connection> loadConnectionToMap(QJsonObject const &connectionJson,
-      std::unordered_map<QUuid, std::unique_ptr<Node>>& nodes,
-      std::unordered_map<QUuid, std::shared_ptr<Connection>>& connections,
+      const std::unordered_map<QUuid, std::unique_ptr<Node>>& nodesMap,
+      std::unordered_map<QUuid, std::shared_ptr<Connection>>& connectionsMap,
       const std::unordered_map<QUuid, QUuid>& IDMap = std::unordered_map<QUuid, QUuid>());
 
   void deleteConnection(Connection& connection);

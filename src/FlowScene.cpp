@@ -145,7 +145,7 @@ restoreConnection(QJsonObject const &connectionJson)
 std::shared_ptr<Connection>
 FlowScene::
 loadConnectionToMap(const QJsonObject& connectionJson,
-                    std::unordered_map<QUuid, std::unique_ptr<Node>>& nodesMap,
+                    const std::unordered_map<QUuid, std::unique_ptr<Node>>& nodesMap,
                     std::unordered_map<QUuid, std::shared_ptr<Connection> >& connectionsMap,
                     const std::unordered_map<QUuid, QUuid>& IDMap)
 {
@@ -161,8 +161,8 @@ loadConnectionToMap(const QJsonObject& connectionJson,
   PortIndex portIndexIn  = connectionJson["in_index"].toInt();
   PortIndex portIndexOut = connectionJson["out_index"].toInt();
 
-  auto nodeIn  = nodesMap[nodeInId].get();
-  auto nodeOut = nodesMap[nodeOutId].get();
+  auto nodeIn  = nodesMap.at(nodeInId).get();
+  auto nodeOut = nodesMap.at(nodeOutId).get();
 
   const TypeConverter& converter = getConverter(connectionJson);
 
