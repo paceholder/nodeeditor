@@ -22,9 +22,13 @@
 #include "NodeGraphicsObject.hpp"
 #include "ConnectionGraphicsObject.hpp"
 #include "StyleCollection.hpp"
+#include "NodeGroup.hpp"
+#include "GroupGraphicsObject.hpp"
 
 using QtNodes::FlowView;
 using QtNodes::FlowScene;
+using QtNodes::GroupGraphicsObject;
+using QtNodes::NodeGraphicsObject;
 
 FlowView::
 FlowView(QWidget *parent)
@@ -40,8 +44,8 @@ FlowView(QWidget *parent)
 
   setBackgroundBrush(flowViewStyle.BackgroundColor);
 
-  //setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
-  //setViewportUpdateMode(QGraphicsView::MinimalViewportUpdate);
+  setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+//  setViewportUpdateMode(QGraphicsView::MinimalViewportUpdate);
   setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
@@ -97,14 +101,117 @@ FlowView::setScene(FlowScene *scene)
   addAction(_deleteSelectionAction);
 }
 
+void
+FlowView::
+groupContextMenu(QContextMenuEvent* event,
+                 GroupGraphicsObject* ggo)
+{
+  QMenu groupMenu;
+
+  auto* saveGroupAction = new QAction(&groupMenu);
+  saveGroupAction->setText(QStringLiteral("Save Group..."));
+  groupMenu.addAction(saveGroupAction);
+
+  connect(saveGroupAction, &QAction::triggered,
+          [&ggo, &_scene = _scene]()
+  {
+    _scene->saveGroupFile(ggo->group().id());
+  });
+
+  groupMenu.exec(event->globalPos());
+}
+
+void
+FlowView::
+nodeContextMenu(QContextMenuEvent* event,
+                NodeGraphicsObject* ngo)
+{
+  QMenu nodeMenu;
+
+  if (ngo->node().isInGroup())
+  {
+    if (auto nodeGroup = ngo->node().nodeGroup().lock(); nodeGroup)
+    {
+      auto* removeFromGroupAction = new QAction(&nodeMenu);
+      removeFromGroupAction->setText(QString("Remove from \"" + nodeGroup->name()) + "\"");
+      nodeMenu.addAction(removeFromGroupAction);
+
+      connect(removeFromGroupAction, &QAction::triggered, [this, &ngo]
+      {
+        _scene->removeNodeFromGroup(ngo->node().id());
+      });
+    }
+  }
+  else
+  {
+    auto* groupsMenu = new QMenu(&nodeMenu);
+    QList<QAction*> groupActions{};
+    groupActions.reserve(_scene->groups().size());
+    groupsMenu->setTitle(QStringLiteral("Add to group..."));
+    for (const auto& groupEntry : _scene->groups())
+    {
+      auto* currentGroupAction = new QAction(&nodeMenu);
+      currentGroupAction->setText(groupEntry.second->name());
+
+      connect(currentGroupAction, &QAction::triggered,
+              [&_scene = _scene, groupEntry, &ngo]
+      {
+        _scene->addNodeToGroup(ngo->node().id(), groupEntry.second->id());
+        for (const auto& group : _scene->groups())
+        {
+          group.second->groupGraphicsObject().setHovered(false);
+        }
+      });
+
+      connect(currentGroupAction, &QAction::hovered,
+              [groupEntry, &_scene = _scene]()
+      {
+        for (const auto& group : _scene->groups())
+        {
+          group.second->groupGraphicsObject().setHovered(group == groupEntry);
+        }
+      });
+
+      groupActions.push_back(currentGroupAction);
+    }
+    groupsMenu->addActions(groupActions);
+    groupsMenu->setEnabled(!groupActions.empty());
+    nodeMenu.addMenu(groupsMenu);
+
+    auto createGroupAction = new QAction(&nodeMenu);
+    createGroupAction->setText(QStringLiteral("Create group"));
+    auto createGroup = [&_scene = _scene, &ngo]()
+    {
+      auto nodes = _scene->selectedNodes();
+      Node* currentNode = &ngo->node();
+      if (std::find(nodes.begin(), nodes.end(), currentNode) == nodes.end())
+      {
+        nodes.push_back(currentNode);
+      }
+      _scene->createGroup(nodes);
+    };
+    connect(createGroupAction, &QAction::triggered, createGroup);
+
+    nodeMenu.addAction(createGroupAction);
+  }
+  nodeMenu.exec(event->globalPos());
+}
 
 void
 FlowView::
 contextMenuEvent(QContextMenuEvent *event)
 {
-  if (itemAt(event->pos()))
+  auto clickedItem = itemAt(event->pos());
+  if (clickedItem)
   {
-    QGraphicsView::contextMenuEvent(event);
+    if (auto groupGO = qgraphicsitem_cast<GroupGraphicsObject*>(clickedItem); groupGO)
+    {
+      groupContextMenu(event, groupGO);
+    }
+    else if (auto nodeGO = qgraphicsitem_cast<NodeGraphicsObject*>(clickedItem); nodeGO)
+    {
+      nodeContextMenu(event, nodeGO);
+    }
     return;
   }
 
@@ -151,6 +258,9 @@ contextMenuEvent(QContextMenuEvent *event)
 
   treeView->expandAll();
 
+  QPoint pos = event->pos();
+  QPointF posView = this->mapToScene(pos);
+
   connect(treeView, &QTreeWidget::itemClicked, [&](QTreeWidgetItem *item, int)
   {
     QString modelName = item->data(0, Qt::UserRole).toString();
@@ -165,10 +275,6 @@ contextMenuEvent(QContextMenuEvent *event)
     if (type)
     {
       auto& node = _scene->createNode(std::move(type));
-
-      QPoint pos = event->pos();
-
-      QPointF posView = this->mapToScene(pos);
 
       node.nodeGraphicsObject().setPos(posView);
 
@@ -196,6 +302,32 @@ contextMenuEvent(QContextMenuEvent *event)
       }
     }
   });
+
+  auto nodes = _scene->selectedNodes();
+  if (!nodes.empty())
+  {
+    auto createGroupAction = new QAction(&modelMenu);
+    createGroupAction->setText(QStringLiteral("Create group from selection"));
+    connect(createGroupAction, &QAction::triggered,
+            [&_scene = _scene, &nodes]()
+    {
+      _scene->createGroup(nodes);
+    });
+    modelMenu.addAction(createGroupAction);
+  }
+
+  auto restoreGroupAction = new QAction(&modelMenu);
+  restoreGroupAction->setText(QStringLiteral("Load Group..."));
+  connect(restoreGroupAction, &QAction::triggered,
+          [&_scene = _scene, &posView]()
+  {
+    std::weak_ptr<NodeGroup> groupPtr = _scene->loadGroupFile();
+    if (auto group = groupPtr.lock(); group)
+    {
+      group->groupGraphicsObject().setPosition(posView);
+    }
+  });
+  modelMenu.addAction(restoreGroupAction);
 
   // make sure the text box gets focus so the user doesn't have to click on it
   txtBox->setFocus();
@@ -256,6 +388,14 @@ void
 FlowView::
 deleteSelectedNodes()
 {
+
+  for (QGraphicsItem * item : _scene->selectedItems())
+  {
+    if (auto g = qgraphicsitem_cast<GroupGraphicsObject*>(item))
+    {
+      _scene->removeGroup(g->group().id());
+    }
+  }
   // Delete the selected connections first, ensuring that they won't be
   // automatically deleted when selected nodes are deleted (deleting a node
   // deletes some connections as well)
@@ -272,7 +412,9 @@ deleteSelectedNodes()
   for (QGraphicsItem * item : _scene->selectedItems())
   {
     if (auto n = qgraphicsitem_cast<NodeGraphicsObject*>(item))
+    {
       _scene->removeNode(n->node());
+    }
   }
 }
 
@@ -283,12 +425,12 @@ keyPressEvent(QKeyEvent *event)
 {
   switch (event->key())
   {
-    case Qt::Key_Shift:
-      setDragMode(QGraphicsView::RubberBandDrag);
-      break;
+  case Qt::Key_Shift:
+    setDragMode(QGraphicsView::RubberBandDrag);
+    break;
 
-    default:
-      break;
+  default:
+    break;
   }
 
   QGraphicsView::keyPressEvent(event);
@@ -301,12 +443,12 @@ keyReleaseEvent(QKeyEvent *event)
 {
   switch (event->key())
   {
-    case Qt::Key_Shift:
-      setDragMode(QGraphicsView::ScrollHandDrag);
-      break;
+  case Qt::Key_Shift:
+    setDragMode(QGraphicsView::ScrollHandDrag);
+    break;
 
-    default:
-      break;
+  default:
+    break;
   }
   QGraphicsView::keyReleaseEvent(event);
 }
@@ -349,33 +491,33 @@ drawBackground(QPainter* painter, const QRectF& r)
 
   auto drawGrid =
     [&](double gridStep)
+  {
+    QRect   windowRect = rect();
+    QPointF tl = mapToScene(windowRect.topLeft());
+    QPointF br = mapToScene(windowRect.bottomRight());
+
+    double left   = std::floor(tl.x() / gridStep - 0.5);
+    double right  = std::floor(br.x() / gridStep + 1.0);
+    double bottom = std::floor(tl.y() / gridStep - 0.5);
+    double top    = std::floor (br.y() / gridStep + 1.0);
+
+    // vertical lines
+    for (int xi = int(left); xi <= int(right); ++xi)
     {
-      QRect   windowRect = rect();
-      QPointF tl = mapToScene(windowRect.topLeft());
-      QPointF br = mapToScene(windowRect.bottomRight());
+      QLineF line(xi * gridStep, bottom * gridStep,
+                  xi * gridStep, top * gridStep );
 
-      double left   = std::floor(tl.x() / gridStep - 0.5);
-      double right  = std::floor(br.x() / gridStep + 1.0);
-      double bottom = std::floor(tl.y() / gridStep - 0.5);
-      double top    = std::floor (br.y() / gridStep + 1.0);
+      painter->drawLine(line);
+    }
 
-      // vertical lines
-      for (int xi = int(left); xi <= int(right); ++xi)
-      {
-        QLineF line(xi * gridStep, bottom * gridStep,
-                    xi * gridStep, top * gridStep );
-
-        painter->drawLine(line);
-      }
-
-      // horizontal lines
-      for (int yi = int(bottom); yi <= int(top); ++yi)
-      {
-        QLineF line(left * gridStep, yi * gridStep,
-                    right * gridStep, yi * gridStep );
-        painter->drawLine(line);
-      }
-    };
+    // horizontal lines
+    for (int yi = int(bottom); yi <= int(top); ++yi)
+    {
+      QLineF line(left * gridStep, yi * gridStep,
+                  right * gridStep, yi * gridStep );
+      painter->drawLine(line);
+    }
+  };
 
   auto const &flowViewStyle = StyleCollection::flowViewStyle();
 

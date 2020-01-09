@@ -7,6 +7,7 @@ add_executable(test_nodes
   src/TestDataModelRegistry.cpp
   src/TestNodeGraphicsObject.cpp
   src/TestFlowScene.cpp
+  src/TestNodeGroup.cpp
 )
 
 target_include_directories(test_nodes

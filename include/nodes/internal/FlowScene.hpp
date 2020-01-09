@@ -13,6 +13,8 @@
 #include "TypeConverter.hpp"
 #include "memory.hpp"
 
+#include "NodeGroup.hpp"
+
 namespace QtNodes
 {
 
@@ -23,8 +25,15 @@ class NodeGraphicsObject;
 class Connection;
 class ConnectionGraphicsObject;
 class NodeStyle;
+class NodeGroup;
+class GroupGraphicsObject;
 
-/// Scene holds connections and nodes.
+/**
+ * @brief The FlowScene class is responsible for handling nodes and
+ * connections. It represents the 2D canvas onto which the graphical
+ * elements are drawn, and it controls both the logical models and the
+ * graphical objects of NodeEditor.
+ */
 class NODE_EDITOR_PUBLIC FlowScene
   : public QGraphicsScene
 {
@@ -36,7 +45,7 @@ public:
 
   FlowScene(QObject * parent = Q_NULLPTR);
 
-  ~FlowScene();
+  ~FlowScene() override;
 
 public:
 
@@ -54,13 +63,80 @@ public:
 
   std::shared_ptr<Connection> restoreConnection(QJsonObject const &connectionJson);
 
+  /**
+   * @brief Loads a connection between nodes from a JSON file into the given map of
+   * connections.
+   * @param connectionJson JSON object that stores the connection's endpoints.
+   * @param nodesMap Map of nodes (i.e. all possible endpoints).
+   * @param connectionsMap Map into which the new connection will be added.
+   * @param IDMap Map of old node IDs to new node IDs -- to be used when the connections
+   * are being restored from a group file to avoid duplicate IDs, since the stored IDs
+   * might already be in use.
+   * @return Pointer to the newly created connection.
+   */
+  std::shared_ptr<Connection> loadConnectionToMap(QJsonObject const &connectionJson,
+      const std::unordered_map<QUuid, std::unique_ptr<Node>>& nodesMap,
+      std::unordered_map<QUuid, std::shared_ptr<Connection>>& connectionsMap,
+      const std::unordered_map<QUuid, QUuid>& IDMap = std::unordered_map<QUuid, QUuid>());
+
   void deleteConnection(Connection& connection);
+
+  TypeConverter getConverter(const QJsonObject& connectionJson);
 
   Node&createNode(std::unique_ptr<NodeDataModel> && dataModel);
 
   Node&restoreNode(QJsonObject const& nodeJson);
 
+  Node&loadNodeToMap(QJsonObject const& nodeJson,
+                     std::unordered_map<QUuid, std::unique_ptr<Node>>& map,
+                     bool restore = false);
+
   void removeNode(Node& node);
+
+  /**
+   * @brief Creates a group in the scene containing the given nodes.
+   * @param nodes Reference to the list of nodes to be included in the group.
+   * @param name Group's name.
+   * @return Pointer to the newly-created group.
+   */
+  std::weak_ptr<NodeGroup> createGroup(std::vector<Node*>& nodes,
+                                       const QUuid& uid = QUuid::createUuid(),
+                                       QString name = QStringLiteral(""));
+
+  /**
+   * @brief Creates a list of the connections that are incident only to nodes within a
+   * given group.
+   * @param groupID ID of the desired group.
+   * @return List of (pointers of) connections whose both endpoints belong to members of
+   * the specified group.
+   */
+  std::vector<std::shared_ptr<Connection>> connectionsWithinGroup(const QUuid& groupID);
+
+  /**
+   * @brief Restores a group from a JSON object.
+   * @param groupJson JSON object containing the group data.
+   * @return Pointer to the newly-created group.
+   */
+  std::weak_ptr<NodeGroup> restoreGroup(QJsonObject const& groupJson);
+
+  /**
+   * @brief Deletes an empty group. Does nothing if the group isn't empty.
+   * @param group Group to be deleted.
+   */
+  void removeGroup(const QUuid& groupID);
+
+  /**
+   * @brief Adds a node to a group.
+   * @param nodeID ID of the node that will be included in the group.
+   * @param groupID ID of the group that will include the node.
+   */
+  void addNodeToGroup(const QUuid& nodeID, const QUuid& groupID);
+
+  /**
+   * @brief Removes the given node from its current group. The node is not deleted.
+   * @param nodeID ID of the node to be removed from its group.
+   */
+  void removeNodeFromGroup(const QUuid& nodeID);
 
   DataModelRegistry&registry() const;
 
@@ -84,6 +160,11 @@ public:
 
   std::unordered_map<QUuid, std::shared_ptr<Connection> > const & connections() const;
 
+  /**
+   * @brief Returns a const reference to the mapping of existing groups.
+   */
+  std::unordered_map<QUuid, std::shared_ptr<NodeGroup> > const & groups() const;
+
   std::vector<Node*> allNodes() const;
 
   std::vector<Node*> selectedNodes() const;
@@ -99,6 +180,18 @@ public:
   QByteArray saveToMemory() const;
 
   void loadFromMemory(const QByteArray& data);
+
+  /**
+   * @brief Saves a group in a file specified by the user.
+   * @param groupID ID of the group to be saved.
+   */
+  void saveGroupFile(const QUuid& groupID);
+
+  /**
+   * @brief Loads a group from a file specified by the user.
+   * @return Pointer to the newly-created group.
+   */
+  std::weak_ptr<NodeGroup> loadGroupFile();
 
 Q_SIGNALS:
 
@@ -140,10 +233,12 @@ private:
 
   using SharedConnection = std::shared_ptr<Connection>;
   using UniqueNode       = std::unique_ptr<Node>;
+  using SharedGroup      = std::shared_ptr<NodeGroup>;
 
-  std::unordered_map<QUuid, SharedConnection> _connections;
-  std::unordered_map<QUuid, UniqueNode>       _nodes;
-  std::shared_ptr<DataModelRegistry>          _registry;
+  std::unordered_map<QUuid, SharedConnection> _connections{};
+  std::unordered_map<QUuid, UniqueNode>       _nodes{};
+  std::unordered_map<QUuid, SharedGroup>      _groups{};
+  std::shared_ptr<DataModelRegistry>          _registry{};
 
 private Q_SLOTS:
 

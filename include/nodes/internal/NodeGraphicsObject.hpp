@@ -15,9 +15,13 @@ namespace QtNodes
 
 class FlowScene;
 class FlowItemEntry;
+class GroupGraphicsObject;
 
-/// Class reacts on GUI events, mouse clicks and
-/// forwards painting operation.
+/**
+ * @brief The NodeGraphicsObject class handles the graphical part of a node.
+ * Each node is associated with a unique NodeGraphicsObject. This class reacts
+ * on GUI events, mouse clicks and forwards painting operation.
+ */
 class NodeGraphicsObject : public QGraphicsObject
 {
   Q_OBJECT
@@ -49,7 +53,10 @@ public:
   enum { Type = UserType + 1 };
 
   int
-  type() const override { return Type; }
+  type() const override
+  {
+    return Type;
+  }
 
   void
   lock(bool locked);
@@ -98,6 +105,12 @@ private:
   Node& _node;
 
   bool _locked;
+
+  bool _draggingIntoGroup;
+
+  GroupGraphicsObject* _possibleGroup;
+
+  QRectF _originalGroupSize;
 
   // either nullptr or owned by parent QGraphicsItem
   QGraphicsProxyWidget * _proxyWidget;

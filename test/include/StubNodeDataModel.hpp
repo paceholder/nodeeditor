@@ -19,7 +19,10 @@ public:
     return _caption;
   }
 
-  unsigned int nPorts(QtNodes::PortType) const override { return 0; }
+  unsigned int nPorts(QtNodes::PortType) const override
+  {
+    return 0;
+  }
 
   QWidget*
   embeddedWidget() override

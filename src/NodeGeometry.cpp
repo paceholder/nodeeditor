@@ -33,7 +33,8 @@ NodeGeometry(std::unique_ptr<NodeDataModel> const &dataModel)
   , _fontMetrics(QFont())
   , _boldFontMetrics(QFont())
 {
-  QFont f; f.setBold(true);
+  QFont f;
+  f.setBold(true);
 
   _boldFontMetrics = QFontMetrics(f);
 }
@@ -69,7 +70,7 @@ boundingRect() const
 {
   auto const &nodeStyle = StyleCollection::nodeStyle();
 
-  double addon = 4 * nodeStyle.ConnectionPointDiameter;
+  float addon = 2 * nodeStyle.ConnectionPointDiameter;
 
   return QRectF(0 - addon,
                 0 - addon,
@@ -163,24 +164,24 @@ portScenePosition(PortIndex index,
 
   switch (portType)
   {
-    case PortType::Out:
-    {
-      double x = _width + nodeStyle.ConnectionPointDiameter;
+  case PortType::Out:
+  {
+    double x = _width + nodeStyle.ConnectionPointDiameter;
 
-      result = QPointF(x, totalHeight);
-      break;
-    }
+    result = QPointF(x, totalHeight);
+    break;
+  }
 
-    case PortType::In:
-    {
-      double x = 0.0 - nodeStyle.ConnectionPointDiameter;
+  case PortType::In:
+  {
+    double x = 0.0 - nodeStyle.ConnectionPointDiameter;
 
-      result = QPointF(x, totalHeight);
-      break;
-    }
+    result = QPointF(x, totalHeight);
+    break;
+  }
 
-    default:
-      break;
+  default:
+    break;
   }
 
   return t.map(result);
@@ -251,11 +252,11 @@ widgetPosition() const
       if (_dataModel->validationState() != NodeValidationState::Valid)
       {
         return QPointF(_spacing + portWidth(PortType::In),
-                      (captionHeight() + _height - validationHeight() - _spacing - w->height()) / 2.0);
+                       (captionHeight() + _height - validationHeight() - _spacing - w->height()) / 2.0);
       }
 
-      return QPointF(_spacing + portWidth(PortType::In), 
-                    (captionHeight() + _height - w->height()) / 2.0);
+      return QPointF(_spacing + portWidth(PortType::In),
+                     (captionHeight() + _height - w->height()) / 2.0);
     }
   }
   return QPointF();
@@ -321,16 +322,16 @@ validationWidth() const
 
 QPointF
 NodeGeometry::
-calculateNodePositionBetweenNodePorts(PortIndex targetPortIndex, PortType targetPort, Node* targetNode, 
-                                      PortIndex sourcePortIndex, PortType sourcePort, Node* sourceNode, 
+calculateNodePositionBetweenNodePorts(PortIndex targetPortIndex, PortType targetPort, Node* targetNode,
+                                      PortIndex sourcePortIndex, PortType sourcePort, Node* sourceNode,
                                       Node& newNode)
 {
-  //Calculating the nodes position in the scene. It'll be positioned half way between the two ports that it "connects". 
+  //Calculating the nodes position in the scene. It'll be positioned half way between the two ports that it "connects".
   //The first line calculates the halfway point between the ports (node position + port position on the node for both nodes averaged).
   //The second line offsets this coordinate with the size of the new node, so that the new nodes center falls on the originally
   //calculated coordinate, instead of it's upper left corner.
   auto converterNodePos = (sourceNode->nodeGraphicsObject().pos() + sourceNode->nodeGeometry().portScenePosition(sourcePortIndex, sourcePort) +
-    targetNode->nodeGraphicsObject().pos() + targetNode->nodeGeometry().portScenePosition(targetPortIndex, targetPort)) / 2.0f;
+                           targetNode->nodeGraphicsObject().pos() + targetNode->nodeGeometry().portScenePosition(targetPortIndex, targetPort)) / 2.0f;
   converterNodePos.setX(converterNodePos.x() - newNode.nodeGeometry().width() / 2.0f);
   converterNodePos.setY(converterNodePos.y() - newNode.nodeGeometry().height() / 2.0f);
   return converterNodePos;

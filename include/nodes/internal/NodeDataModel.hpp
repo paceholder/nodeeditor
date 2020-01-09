@@ -26,6 +26,11 @@ class Connection;
 
 class StyleCollection;
 
+/**
+ * @brief The NodeDataModel class represents the data types of input and output
+ * ports of a node. It is used to handle the data flow between nodes and checking
+ * the compatibility between each connection's endpoint.
+ */
 class NODE_EDITOR_PUBLIC NodeDataModel
   : public QObject
   , public Serializable
@@ -45,15 +50,24 @@ public:
 
   /// It is possible to hide caption in GUI
   virtual bool
-  captionVisible() const { return true; }
+  captionVisible() const
+  {
+    return true;
+  }
 
   /// Port caption is used in GUI to label individual ports
   virtual QString
-  portCaption(PortType, PortIndex) const { return QString(); }
+  portCaption(PortType, PortIndex) const
+  {
+    return QString();
+  }
 
   /// It is possible to hide port caption in GUI
   virtual bool
-  portCaptionVisible(PortType, PortIndex) const { return false; }
+  portCaptionVisible(PortType, PortIndex) const
+  {
+    return false;
+  }
 
   /// Name makes this model unique
   virtual QString
@@ -111,18 +125,30 @@ public:
 
   virtual
   bool
-  resizable() const { return false; }
+  resizable() const
+  {
+    return false;
+  }
 
   virtual
   NodeValidationState
-  validationState() const { return NodeValidationState::Valid; }
+  validationState() const
+  {
+    return NodeValidationState::Valid;
+  }
 
   virtual
   QString
-  validationMessage() const { return QString(""); }
+  validationMessage() const
+  {
+    return QString("");
+  }
 
   virtual
-  NodePainterDelegate* painterDelegate() const { return nullptr; }
+  NodePainterDelegate* painterDelegate() const
+  {
+    return nullptr;
+  }
 
 public Q_SLOTS:
 

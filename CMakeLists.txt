@@ -23,7 +23,7 @@ option(NE_FORCE_TEST_COLOR "Force colorized unit test output" OFF)
 enable_testing()
 
 if(NE_DEVELOPER_DEFAULTS)
-  set(CMAKE_CXX_STANDARD 14)
+  set(CMAKE_CXX_STANDARD 17)
   set(CMAKE_CXX_EXTENSIONS OFF)
 
   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
@@ -58,10 +58,12 @@ set(CPP_SOURCE_FILES
   src/FlowScene.cpp
   src/FlowView.cpp
   src/FlowViewStyle.cpp
+  src/GroupGraphicsObject.cpp
   src/Node.cpp
   src/NodeConnectionInteraction.cpp
   src/NodeDataModel.cpp
   src/NodeGeometry.cpp
+  src/NodeGroup.cpp
   src/NodeGraphicsObject.cpp
   src/NodePainter.cpp
   src/NodeState.cpp
@@ -99,8 +101,8 @@ target_compile_definitions(nodes
   PUBLIC
     ${Qt5Widgets_DEFINITIONS}
     NODE_EDITOR_SHARED
-  PRIVATE
     NODE_EDITOR_EXPORTS
+  PRIVATE
     #NODE_DEBUG_DRAWING
     QT_NO_KEYWORDS
 )

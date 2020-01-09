@@ -24,12 +24,18 @@ class Connection;
 class ConnectionState;
 class NodeGraphicsObject;
 class NodeDataModel;
+class NodeGroup;
 
+/**
+ * @brief The Node class stores the logical structure of a node.
+ */
 class NODE_EDITOR_PUBLIC Node
   : public QObject
   , public Serializable
 {
   Q_OBJECT
+
+  friend class FlowScene;
 
 public:
 
@@ -47,14 +53,18 @@ public:
   void
   restore(QJsonObject const &json) override;
 
+  void
+  clone(QJsonObject const &json);
+
 public:
 
   QUuid
   id() const;
 
-  void reactToPossibleConnection(PortType,
-                                 NodeDataType const &,
-                                 QPointF const & scenePoint);
+  void
+  reactToPossibleConnection(PortType,
+                            NodeDataType const &,
+                            QPointF const & scenePoint);
 
   void
   resetReactionToConnection();
@@ -70,6 +80,12 @@ public:
   void
   setGraphicsObject(std::unique_ptr<NodeGraphicsObject>&& graphics);
 
+  void
+  setNodeGroup(std::shared_ptr<NodeGroup> group);
+
+  void
+  unsetNodeGroup();
+
   NodeGeometry&
   nodeGeometry();
 
@@ -84,6 +100,11 @@ public:
 
   NodeDataModel*
   nodeDataModel() const;
+
+  std::weak_ptr<NodeGroup>
+  nodeGroup();
+
+  bool isInGroup() const;
 
 public Q_SLOTS: // data propagation
 
@@ -106,6 +127,8 @@ private:
   // addressing
 
   QUuid _uid;
+
+  std::weak_ptr<NodeGroup> _nodeGroup{};
 
   // data
 

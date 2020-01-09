@@ -27,6 +27,12 @@ operator<(QtNodes::NodeDataType const & d1,
 
 
 /// Class uses map for storing models (name, model)
+/**
+ * @brief The DataModelRegistry class stores the node models that can be created
+ * in a FlowScene. Each FlowScene instance has an associated model registry, and
+ * a node model should be registered in the scene in order to be available for
+ * creation.
+ */
 class NODE_EDITOR_PUBLIC DataModelRegistry
 {
 
@@ -61,7 +67,10 @@ public:
   template<typename ModelType>
   void registerModel(QString const &category = "Nodes")
   {
-    RegistryItemCreator creator = [](){ return std::make_unique<ModelType>(); };
+    RegistryItemCreator creator = []()
+    {
+      return std::make_unique<ModelType>();
+    };
     registerModelImpl<ModelType>(std::move(creator), category);
   }
 
@@ -111,14 +120,14 @@ private:
 
   template <typename T, typename = void>
   struct HasStaticMethodName
-      : std::false_type
+    : std::false_type
   {};
 
   template <typename T>
   struct HasStaticMethodName<T,
-          typename std::enable_if<std::is_same<decltype(T::Name()), QString>::value>::type>
-      : std::true_type
-  {};
+         typename std::enable_if<std::is_same<decltype(T::Name()), QString>::value>::type>
+       : std::true_type
+         {};
 
   template<typename ModelType>
   typename std::enable_if< HasStaticMethodName<ModelType>::value>::type

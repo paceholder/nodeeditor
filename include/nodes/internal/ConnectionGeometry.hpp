@@ -10,6 +10,11 @@
 namespace QtNodes
 {
 
+/**
+ * @brief The ConnectionGeometry class holds the aspects of a connection's
+ * graphical object geometry in the FlowScene. Each connection is associated
+ * with a unique geometry object.
+ */
 class ConnectionGeometry
 {
 public:
@@ -34,17 +39,32 @@ public:
   pointsC1C2() const;
 
   QPointF
-  source() const { return _out; }
+  source() const
+  {
+    return _out;
+  }
   QPointF
-  sink() const { return _in; }
+  sink() const
+  {
+    return _in;
+  }
 
   double
-  lineWidth() const { return _lineWidth; }
+  lineWidth() const
+  {
+    return _lineWidth;
+  }
 
   bool
-  hovered() const { return _hovered; }
+  hovered() const
+  {
+    return _hovered;
+  }
   void
-  setHovered(bool hovered) { _hovered = hovered; }
+  setHovered(bool hovered)
+  {
+    _hovered = hovered;
+  }
 
 private:
   // local object coordinates

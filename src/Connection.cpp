@@ -127,7 +127,6 @@ id() const
   return _uid;
 }
 
-
 bool
 Connection::
 complete() const
@@ -144,18 +143,18 @@ setRequiredPort(PortType dragging)
 
   switch (dragging)
   {
-    case PortType::Out:
-      _outNode      = nullptr;
-      _outPortIndex = INVALID;
-      break;
+  case PortType::Out:
+    _outNode      = nullptr;
+    _outPortIndex = INVALID;
+    break;
 
-    case PortType::In:
-      _inNode      = nullptr;
-      _inPortIndex = INVALID;
-      break;
+  case PortType::In:
+    _inNode      = nullptr;
+    _inPortIndex = INVALID;
+    break;
 
-    default:
-      break;
+  default:
+    break;
   }
 }
 
@@ -194,8 +193,8 @@ setGraphicsObject(std::unique_ptr<ConnectionGraphicsObject>&& graphics)
       node->nodeGraphicsObject().sceneTransform();
 
     QPointF pos = node->nodeGeometry().portScenePosition(attachedPortIndex,
-                                                         attachedPort,
-                                                         nodeSceneTransform);
+                  attachedPort,
+                  nodeSceneTransform);
 
     _connectionGraphicsObject->setPos(pos);
   }
@@ -213,17 +212,17 @@ getPortIndex(PortType portType) const
 
   switch (portType)
   {
-    case PortType::In:
-      result = _inPortIndex;
-      break;
+  case PortType::In:
+    result = _inPortIndex;
+    break;
 
-    case PortType::Out:
-      result = _outPortIndex;
+  case PortType::Out:
+    result = _outPortIndex;
 
-      break;
+    break;
 
-    default:
-      break;
+  default:
+    break;
   }
 
   return result;
@@ -250,7 +249,8 @@ setNodeToPort(Node& node,
   _connectionState.setNoRequiredPort();
 
   updated(*this);
-  if (complete() && wasIncomplete) {
+  if (complete() && wasIncomplete)
+  {
     connectionCompleted(*this);
   }
 }
@@ -314,17 +314,17 @@ getNode(PortType portType) const
 {
   switch (portType)
   {
-    case PortType::In:
-      return _inNode;
-      break;
+  case PortType::In:
+    return _inNode;
+    break;
 
-    case PortType::Out:
-      return _outNode;
-      break;
+  case PortType::Out:
+    return _outNode;
+    break;
 
-    default:
-      // not possible
-      break;
+  default:
+    // not possible
+    break;
   }
   return nullptr;
 }
@@ -336,17 +336,17 @@ getNode(PortType portType)
 {
   switch (portType)
   {
-    case PortType::In:
-      return _inNode;
-      break;
+  case PortType::In:
+    return _inNode;
+    break;
 
-    case PortType::Out:
-      return _outNode;
-      break;
+  case PortType::Out:
+    return _outNode;
+    break;
 
-    default:
-      // not possible
-      break;
+  default:
+    // not possible
+    break;
   }
   Q_UNREACHABLE();
 }
@@ -356,7 +356,8 @@ void
 Connection::
 clearNode(PortType portType)
 {
-  if (complete()) {
+  if (complete())
+  {
     connectionMadeIncomplete(*this);
   }
 
@@ -376,15 +377,15 @@ dataType(PortType portType) const
   if (_inNode && _outNode)
   {
     auto const & model = (portType == PortType::In) ?
-                        _inNode->nodeDataModel() :
-                        _outNode->nodeDataModel();
-    PortIndex index = (portType == PortType::In) ? 
+                         _inNode->nodeDataModel() :
+                         _outNode->nodeDataModel();
+    PortIndex index = (portType == PortType::In) ?
                       _inPortIndex :
                       _outPortIndex;
 
     return model->dataType(portType, index);
   }
-  else 
+  else
   {
     Node* validNode;
     PortIndex index = INVALID;
