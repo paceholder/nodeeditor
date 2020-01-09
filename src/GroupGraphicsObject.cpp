@@ -11,6 +11,7 @@ using QtNodes::GroupGraphicsObject;
 using QtNodes::NodeGraphicsObject;
 using QtNodes::NodeGroup;
 using QtNodes::Connection;
+using QtNodes::FlowScene;
 
 
 IconGraphicsItem::

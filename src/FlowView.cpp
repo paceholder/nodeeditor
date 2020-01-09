@@ -27,6 +27,8 @@
 
 using QtNodes::FlowView;
 using QtNodes::FlowScene;
+using QtNodes::GroupGraphicsObject;
+using QtNodes::NodeGraphicsObject;
 
 FlowView::
 FlowView(QWidget *parent)
