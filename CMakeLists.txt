@@ -101,8 +101,8 @@ target_compile_definitions(nodes
   PUBLIC
     ${Qt5Widgets_DEFINITIONS}
     NODE_EDITOR_SHARED
-  PRIVATE
     NODE_EDITOR_EXPORTS
+  PRIVATE
     #NODE_DEBUG_DRAWING
     QT_NO_KEYWORDS
 )
