@@ -1,5 +1,4 @@
 #include <QtWidgets/QGraphicsBlurEffect>
-
 #include <QtWidgets/QGraphicsItem>
 
 namespace QtNodes
@@ -11,12 +10,8 @@ class ConnectionBlurEffect : public QGraphicsBlurEffect
 {
 
 public:
-
   ConnectionBlurEffect(ConnectionGraphicsObject* item);
 
-  void
-  draw(QPainter* painter) override;
-
-private:
+  void draw(QPainter* painter) override;
 };
 }

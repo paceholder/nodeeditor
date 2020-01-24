@@ -3,9 +3,6 @@
 #include <QtCore/QUuid>
 #include <QtWidgets/QGraphicsObject>
 
-#include "Connection.hpp"
-
-#include "NodeGeometry.hpp"
 #include "NodeState.hpp"
 
 class QGraphicsProxyWidget;
@@ -13,27 +10,42 @@ class QGraphicsProxyWidget;
 namespace QtNodes
 {
 
-class FlowScene;
-class FlowItemEntry;
+class BasicGraphicsScene;
+class GraphModel;
 
-/// Class reacts on GUI events, mouse clicks and
-/// forwards painting operation.
 class NodeGraphicsObject : public QGraphicsObject
 {
   Q_OBJECT
+public:
+  // Needed for qgraphicsitem_cast
+  enum { Type = UserType + 1 };
+
+  int
+  type() const override { return Type; }
 
 public:
-  NodeGraphicsObject(FlowScene &scene,
-                     Node& node);
+  NodeGraphicsObject(BasicGraphicsScene &scene,
+                     NodeId node);
 
-  virtual
-  ~NodeGraphicsObject();
+  ~NodeGraphicsObject() override = default;
 
-  Node&
-  node();
+public:
 
-  Node const&
-  node() const;
+  GraphModel &
+  graphModel() const;
+
+  BasicGraphicsScene *
+  nodeScene() const;
+
+  NodeId
+  nodeId() { return _nodeId; }
+  NodeId
+  nodeId() const { return _nodeId; }
+
+  NodeState &
+  nodeState() { return _nodeState; }
+  NodeState const &
+  nodeState() const { return _nodeState; }
 
   QRectF
   boundingRect() const override;
@@ -46,19 +58,11 @@ public:
   void
   moveConnections() const;
 
-  enum { Type = UserType + 1 };
-
-  int
-  type() const override { return Type; }
-
-  void
-  lock(bool locked);
-
 protected:
   void
-  paint(QPainter*                       painter,
+  paint(QPainter* painter,
         QStyleOptionGraphicsItem const* option,
-        QWidget*                        widget = 0) override;
+        QWidget*  widget = 0) override;
 
   QVariant
   itemChange(GraphicsItemChange change, const QVariant &value) override;
@@ -88,16 +92,21 @@ protected:
   contextMenuEvent(QGraphicsSceneContextMenuEvent* event) override;
 
 private:
+
   void
   embedQWidget();
 
+//private Q_SLOTS:
+
+  //void onNodeSizeUpdated();
+
 private:
 
-  FlowScene & _scene;
+  NodeId _nodeId;
 
-  Node& _node;
+  GraphModel &_graphModel;
 
-  bool _locked;
+  NodeState _nodeState;
 
   // either nullptr or owned by parent QGraphicsItem
   QGraphicsProxyWidget * _proxyWidget;

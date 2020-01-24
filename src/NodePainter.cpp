@@ -4,76 +4,68 @@
 
 #include <QtCore/QMargins>
 
-#include "StyleCollection.hpp"
-#include "PortType.hpp"
-#include "NodeGraphicsObject.hpp"
+#include "GraphModel.hpp"
 #include "NodeGeometry.hpp"
+#include "NodeGraphicsObject.hpp"
 #include "NodeState.hpp"
-#include "NodeDataModel.hpp"
-#include "Node.hpp"
-#include "FlowScene.hpp"
+#include "PortType.hpp"
+#include "StyleCollection.hpp"
 
-using QtNodes::NodePainter;
-using QtNodes::NodeGeometry;
-using QtNodes::NodeGraphicsObject;
-using QtNodes::Node;
-using QtNodes::NodeState;
-using QtNodes::NodeDataModel;
-using QtNodes::FlowScene;
+
+namespace QtNodes
+{
 
 void
 NodePainter::
-paint(QPainter* painter,
-      Node & node,
-      FlowScene const& scene)
+paint(QPainter * painter,
+      NodeGraphicsObject const &ngo)
 {
-  NodeGeometry const& geom = node.nodeGeometry();
+  NodeGeometry geometry(ngo);
+  geometry.recalculateSizeIfFontChanged(painter->font());
 
-  NodeState const& state = node.nodeState();
+  drawNodeRect(painter, ngo);
 
-  NodeGraphicsObject const & graphicsObject = node.nodeGraphicsObject();
+  drawConnectionPoints(painter, ngo);
 
-  geom.recalculateSize(painter->font());
+  drawFilledConnectionPoints(painter, ngo);
 
-  //--------------------------------------------
-  NodeDataModel const * model = node.nodeDataModel();
+  drawNodeCaption(painter, ngo);
 
-  drawNodeRect(painter, geom, model, graphicsObject);
+  drawEntryLabels(painter, ngo);
 
-  drawConnectionPoints(painter, geom, state, model, scene);
-
-  drawFilledConnectionPoints(painter, geom, state, model);
-
-  drawModelName(painter, geom, state, model);
-
-  drawEntryLabels(painter, geom, state, model);
-
-  drawResizeRect(painter, geom, model);
-
-  drawValidationRect(painter, geom, model, graphicsObject);
+  drawResizeRect(painter, ngo);
 
   /// call custom painter
-  if (auto painterDelegate = model->painterDelegate())
-  {
-    painterDelegate->paint(painter, geom, model);
-  }
+  // TODO: think about and implement custom painter delegate
+  //if (auto painterDelegate = model->painterDelegate())
+  //{
+  //painterDelegate->paint(painter, geom, model);
+  //}
 }
 
 
 void
 NodePainter::
-drawNodeRect(QPainter* painter,
-             NodeGeometry const& geom,
-             NodeDataModel const* model,
-             NodeGraphicsObject const & graphicsObject)
+drawNodeRect(QPainter * painter,
+             NodeGraphicsObject const &ngo)
 {
-  NodeStyle const& nodeStyle = model->nodeStyle();
+  GraphModel const &model = ngo.graphModel();
 
-  auto color = graphicsObject.isSelected()
-               ? nodeStyle.SelectedBoundaryColor
-               : nodeStyle.NormalBoundaryColor;
+  NodeId const nodeId = ngo.nodeId();
 
-  if (geom.hovered())
+  NodeGeometry geom(ngo);
+  QSize size = geom.size();
+
+  QJsonDocument json =
+    QJsonDocument::fromVariant(model.nodeData(nodeId, NodeRole::Style));
+
+  NodeStyle nodeStyle(json);
+
+  auto color = ngo.isSelected() ?
+               nodeStyle.SelectedBoundaryColor :
+               nodeStyle.NormalBoundaryColor;
+
+  if (ngo.nodeState().hovered())
   {
     QPen p(color, nodeStyle.HoveredPenWidth);
     painter->setPen(p);
@@ -85,18 +77,20 @@ drawNodeRect(QPainter* painter,
   }
 
   QLinearGradient gradient(QPointF(0.0, 0.0),
-                           QPointF(2.0, geom.height()));
+                           QPointF(2.0, size.height()));
 
-  gradient.setColorAt(0.0, nodeStyle.GradientColor0);
+  gradient.setColorAt(0.0,  nodeStyle.GradientColor0);
   gradient.setColorAt(0.03, nodeStyle.GradientColor1);
   gradient.setColorAt(0.97, nodeStyle.GradientColor2);
-  gradient.setColorAt(1.0, nodeStyle.GradientColor3);
+  gradient.setColorAt(1.0,  nodeStyle.GradientColor3);
 
   painter->setBrush(gradient);
 
   float diam = nodeStyle.ConnectionPointDiameter;
 
-  QRectF boundary( -diam, -diam, 2.0 * diam + geom.width(), 2.0 * diam + geom.height());
+  QRectF boundary(-diam, -diam,
+                  2.0 * diam + size.width(),
+                  2.0 * diam + size.height());
 
   double const radius = 3.0;
 
@@ -106,67 +100,86 @@ drawNodeRect(QPainter* painter,
 
 void
 NodePainter::
-drawConnectionPoints(QPainter* painter,
-                     NodeGeometry const& geom,
-                     NodeState const& state,
-                     NodeDataModel const * model,
-                     FlowScene const & scene)
+drawConnectionPoints(QPainter * painter,
+                     NodeGraphicsObject const &ngo)
 {
-  NodeStyle const& nodeStyle      = model->nodeStyle();
-  auto const     &connectionStyle = StyleCollection::connectionStyle();
+  GraphModel const &model = ngo.graphModel();
+  NodeId const nodeId     = ngo.nodeId();
+  NodeGeometry geom(ngo);
 
-  float diameter = nodeStyle.ConnectionPointDiameter;
-  auto  reducedDiameter = diameter * 0.6;
+  QJsonDocument json =
+    QJsonDocument::fromVariant(model.nodeData(nodeId, NodeRole::Style));
+  NodeStyle nodeStyle(json);
 
-  for(PortType portType: {PortType::Out, PortType::In})
+  auto const &connectionStyle = StyleCollection::connectionStyle();
+
+  float diameter       = nodeStyle.ConnectionPointDiameter;
+  auto reducedDiameter = diameter * 0.6;
+
+  for (PortType portType: {PortType::Out, PortType::In})
   {
-    size_t n = state.getEntries(portType).size();
+    size_t const n =
+      model.nodeData(nodeId,
+                     (portType == PortType::Out) ?
+                     NodeRole::NumberOfOutPorts :
+                     NodeRole::NumberOfInPorts).toUInt();
 
-    for (unsigned int i = 0; i < n; ++i)
+    for (PortIndex portIndex = 0; portIndex < n; ++portIndex)
     {
-      QPointF p = geom.portScenePosition(i, portType);
+      QPointF p = geom.portNodePosition(portType, portIndex);
 
-      auto const & dataType = 
-        model->dataType(portType, static_cast<int>(i));
+      auto const &dataType =
+        model.portData(nodeId,
+                       portType,
+                       portIndex,
+                       PortRole::DataType).value<NodeDataType>();
 
-      bool canConnect = (state.getEntries(portType)[i].empty() ||
-                         (portType == PortType::Out &&
-                          model->portOutConnectionPolicy(i) == NodeDataModel::ConnectionPolicy::Many) );
+      auto const &connectedNodes =
+        model.connectedNodes(nodeId, portType, portIndex);
+
+      bool canConnect =
+        (connectedNodes.empty() ||
+         model.portData(nodeId,
+                        portType,
+                        portIndex,
+                        PortRole::ConnectionPolicy).value<ConnectionPolicy>() == ConnectionPolicy::Many);
 
       double r = 1.0;
+
+      NodeState const &state = ngo.nodeState();
+
       if (state.isReacting() &&
           canConnect &&
           portType == state.reactingPortType())
       {
-
-        auto   diff = geom.draggingPos() - p;
+        auto diff   = state.draggingPos() - p;
         double dist = std::sqrt(QPointF::dotProduct(diff, diff));
-        bool   typeConvertable = false;
+        bool typeConvertable = false;
 
-        {
-          if (portType == PortType::In)
-          {
-            typeConvertable = scene.registry().getTypeConverter(state.reactingDataType(), dataType) != nullptr;
-          }
-          else
-          {
-            typeConvertable = scene.registry().getTypeConverter(dataType, state.reactingDataType()) != nullptr;
-          }
-        }
+        //{
+        //if (portType == PortType::In)
+        //{
+        //typeConvertable = scene.registry().getTypeConverter(state.reactingDataType(), dataType) != nullptr;
+        //}
+        //else
+        //{
+        //typeConvertable = scene.registry().getTypeConverter(dataType, state.reactingDataType()) != nullptr;
+        //}
+        //}
 
         if (state.reactingDataType().id == dataType.id || typeConvertable)
         {
           double const thres = 40.0;
           r = (dist < thres) ?
-                (2.0 - dist / thres ) :
-                1.0;
+              (2.0 - dist / thres ) :
+              1.0;
         }
         else
         {
           double const thres = 80.0;
           r = (dist < thres) ?
-                (dist / thres) :
-                1.0;
+              (dist / thres) :
+              1.0;
         }
       }
 
@@ -183,35 +196,50 @@ drawConnectionPoints(QPainter* painter,
                            reducedDiameter * r,
                            reducedDiameter * r);
     }
-  };
+  }
+  ;
 }
 
 
 void
 NodePainter::
 drawFilledConnectionPoints(QPainter * painter,
-                           NodeGeometry const & geom,
-                           NodeState const & state,
-                           NodeDataModel const * model)
+                           NodeGraphicsObject const &ngo)
 {
-  NodeStyle const& nodeStyle       = model->nodeStyle();
-  auto const     & connectionStyle = StyleCollection::connectionStyle();
+  GraphModel const &model = ngo.graphModel();
+  NodeId const nodeId     = ngo.nodeId();
+  NodeGeometry geom(ngo);
+
+  QJsonDocument json =
+    QJsonDocument::fromVariant(model.nodeData(nodeId, NodeRole::Style));
+  NodeStyle nodeStyle(json);
 
   auto diameter = nodeStyle.ConnectionPointDiameter;
 
-  for(PortType portType: {PortType::Out, PortType::In})
+  for (PortType portType: {PortType::Out, PortType::In})
   {
-    size_t n = state.getEntries(portType).size();
+    size_t const n =
+      model.nodeData(nodeId,
+                     (portType == PortType::Out) ?
+                     NodeRole::NumberOfOutPorts :
+                     NodeRole::NumberOfInPorts).toUInt();
 
-    for (size_t i = 0; i < n; ++i)
+    for (PortIndex portIndex = 0; portIndex < n; ++portIndex)
     {
-      QPointF p = geom.portScenePosition(i, portType);
+      QPointF p = geom.portNodePosition(portType, portIndex);
 
-      if (!state.getEntries(portType)[i].empty())
+      auto const &connectedNodes =
+        model.connectedNodes(nodeId, portType, portIndex);
+
+      if (!connectedNodes.empty())
       {
-        auto const & dataType =
-          model->dataType(portType, static_cast<int>(i));
+        auto const &dataType =
+          model.portData(nodeId,
+                         portType,
+                         portIndex,
+                         PortRole::DataType).value<NodeDataType>();
 
+        auto const &connectionStyle = StyleCollection::connectionStyle();
         if (connectionStyle.useDataDefinedColors())
         {
           QColor const c = connectionStyle.normalColor(dataType.id);
@@ -235,30 +263,31 @@ drawFilledConnectionPoints(QPainter * painter,
 
 void
 NodePainter::
-drawModelName(QPainter * painter,
-              NodeGeometry const & geom,
-              NodeState const & state,
-              NodeDataModel const * model)
+drawNodeCaption(QPainter * painter,
+                NodeGraphicsObject const &ngo)
 {
-  NodeStyle const& nodeStyle = model->nodeStyle();
+  GraphModel const &model = ngo.graphModel();
+  NodeId const nodeId     = ngo.nodeId();
+  NodeGeometry geom(ngo);
 
-  Q_UNUSED(state);
-
-  if (!model->captionVisible())
+  if (!model.nodeData(nodeId, NodeRole::CaptionVisible).toBool())
     return;
 
-  QString const &name = model->caption();
+  QString const name = model.nodeData(nodeId, NodeRole::Caption).toString();
 
   QFont f = painter->font();
-
   f.setBold(true);
 
   QFontMetrics metrics(f);
+  auto rect  = metrics.boundingRect(name);
+  QSize size = geom.size();
 
-  auto rect = metrics.boundingRect(name);
+  QPointF position((size.width() - rect.width()) / 2.0,
+                   (geom.verticalSpacing() + geom.entryHeight()) / 3.0);
 
-  QPointF position((geom.width() - rect.width()) / 2.0,
-                   (geom.spacing() + geom.entryHeight()) / 3.0);
+  QJsonDocument json =
+    QJsonDocument::fromVariant(model.nodeData(nodeId, NodeRole::Style));
+  NodeStyle nodeStyle(json);
 
   painter->setFont(f);
   painter->setPen(nodeStyle.FontColor);
@@ -272,57 +301,69 @@ drawModelName(QPainter * painter,
 void
 NodePainter::
 drawEntryLabels(QPainter * painter,
-                NodeGeometry const & geom,
-                NodeState const & state,
-                NodeDataModel const * model)
+                NodeGraphicsObject const &ngo)
 {
-  QFontMetrics const & metrics =
-    painter->fontMetrics();
+  GraphModel const &model = ngo.graphModel();
+  NodeId const nodeId     = ngo.nodeId();
+  NodeGeometry geom(ngo);
 
-  for(PortType portType: {PortType::Out, PortType::In})
+  QJsonDocument json =
+    QJsonDocument::fromVariant(model.nodeData(nodeId, NodeRole::Style));
+  NodeStyle nodeStyle(json);
+
+  QSize size = geom.size();
+
+  for (PortType portType: {PortType::Out, PortType::In})
   {
-    auto const &nodeStyle = model->nodeStyle();
+    size_t const n =
+      model.nodeData(nodeId,
+                     (portType == PortType::Out) ?
+                     NodeRole::NumberOfOutPorts :
+                     NodeRole::NumberOfInPorts).toUInt();
 
-    auto& entries = state.getEntries(portType);
-
-    size_t n = entries.size();
-
-    for (size_t i = 0; i < n; ++i)
+    for (PortIndex portIndex = 0; portIndex < n; ++portIndex)
     {
-      QPointF p = geom.portScenePosition(i, portType);
+      auto const &connectedNodes =
+        model.connectedNodes(nodeId, portType, portIndex);
 
-      if (entries[i].empty())
+      QPointF p = geom.portNodePosition(portType, portIndex);
+
+      if (connectedNodes.empty())
         painter->setPen(nodeStyle.FontColorFaded);
       else
         painter->setPen(nodeStyle.FontColor);
 
       QString s;
 
-      if (model->portCaptionVisible(portType, i))
+      if (model.portData(nodeId, portType, portIndex, PortRole::CaptionVisible).toBool())
       {
-        s = model->portCaption(portType, i);
+        s = model.portData(nodeId, portType, portIndex, PortRole::Caption).toString();
       }
       else
       {
-        s = model->dataType(portType, static_cast<int>(i)).name;
+        auto portData =
+          model.portData(nodeId, portType, portIndex, PortRole::DataType);
+
+        s = portData.value<NodeDataType>().name;
       }
 
+      QFontMetrics const &metrics = painter->fontMetrics();
       auto rect = metrics.boundingRect(s);
 
       p.setY(p.y() + rect.height() / 4.0);
 
       switch (portType)
       {
-      case PortType::In:
-        p.setX(5.0);
-        break;
+        case PortType::In:
+          p.setX(5.0);
+          break;
 
-      case PortType::Out:
-        p.setX(geom.width() - 5.0 - rect.width());
-        break;
+        case PortType::Out:
+          p.setX(size.width() - 5.0 - rect.width());
+          break;
 
-      default:
-        break;
+        default:
+          break;
       }
 
       painter->drawText(p, s);
@@ -334,10 +375,13 @@ drawEntryLabels(QPainter * painter,
 void
 NodePainter::
 drawResizeRect(QPainter * painter,
-               NodeGeometry const & geom,
-               NodeDataModel const * model)
+               NodeGraphicsObject const &ngo)
 {
-  if (model->resizable())
+  GraphModel const &model = ngo.graphModel();
+  NodeId const nodeId     = ngo.nodeId();
+  NodeGeometry geom(ngo);
+
+  if (model.nodeFlags(nodeId) & NodeFlag::Resizable)
   {
     painter->setBrush(Qt::gray);
 
@@ -346,71 +390,4 @@ drawResizeRect(QPainter * painter,
 }
 
 
-void
-NodePainter::
-drawValidationRect(QPainter * painter,
-                   NodeGeometry const & geom,
-                   NodeDataModel const * model,
-                   NodeGraphicsObject const & graphicsObject)
-{
-  auto modelValidationState = model->validationState();
-
-  if (modelValidationState != NodeValidationState::Valid)
-  {
-    NodeStyle const& nodeStyle = model->nodeStyle();
-
-    auto color = graphicsObject.isSelected()
-                 ? nodeStyle.SelectedBoundaryColor
-                 : nodeStyle.NormalBoundaryColor;
-
-    if (geom.hovered())
-    {
-      QPen p(color, nodeStyle.HoveredPenWidth);
-      painter->setPen(p);
-    }
-    else
-    {
-      QPen p(color, nodeStyle.PenWidth);
-      painter->setPen(p);
-    }
-
-    //Drawing the validation message background
-    if (modelValidationState == NodeValidationState::Error)
-    {
-      painter->setBrush(nodeStyle.ErrorColor);
-    }
-    else
-    {
-      painter->setBrush(nodeStyle.WarningColor);
-    }
-
-    double const radius = 3.0;
-
-    float diam = nodeStyle.ConnectionPointDiameter;
-
-    QRectF boundary(-diam,
-                    -diam + geom.height() - geom.validationHeight(),
-                    2.0 * diam + geom.width(),
-                    2.0 * diam + geom.validationHeight());
-
-    painter->drawRoundedRect(boundary, radius, radius);
-
-    painter->setBrush(Qt::gray);
-
-    //Drawing the validation message itself
-    QString const &errorMsg = model->validationMessage();
-
-    QFont f = painter->font();
-
-    QFontMetrics metrics(f);
-
-    auto rect = metrics.boundingRect(errorMsg);
-
-    QPointF position((geom.width() - rect.width()) / 2.0,
-                     geom.height() - (geom.validationHeight() - diam) / 2.0);
-
-    painter->setFont(f);
-    painter->setPen(nodeStyle.FontColor);
-    painter->drawText(position, errorMsg);
-  }
 }

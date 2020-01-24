@@ -52,38 +52,22 @@ outData(PortIndex)
 
 void
 NumberDisplayDataModel::
-setInData(std::shared_ptr<NodeData> data, int)
+setInData(std::shared_ptr<NodeData> data, PortIndex portIndex)
 {
   auto numberData = std::dynamic_pointer_cast<DecimalData>(data);
 
   if (numberData)
   {
-    modelValidationState = NodeValidationState::Valid;
-    modelValidationError = QString();
+    //modelValidationState = NodeValidationState::Valid;
+    //modelValidationError = QString();
     _label->setText(numberData->numberAsText());
   }
   else
   {
-    modelValidationState = NodeValidationState::Warning;
-    modelValidationError = QStringLiteral("Missing or incorrect inputs");
+    //modelValidationState = NodeValidationState::Warning;
+    //modelValidationError = QStringLiteral("Missing or incorrect inputs");
     _label->clear();
   }
 
   _label->adjustSize();
-}
-
-
-NodeValidationState
-NumberDisplayDataModel::
-validationState() const
-{
-  return modelValidationState;
-}
-
-
-QString
-NumberDisplayDataModel::
-validationMessage() const
-{
-  return modelValidationError;
 }

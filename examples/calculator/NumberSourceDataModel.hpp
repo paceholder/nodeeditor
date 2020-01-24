@@ -14,7 +14,6 @@ using QtNodes::PortIndex;
 using QtNodes::NodeData;
 using QtNodes::NodeDataType;
 using QtNodes::NodeDataModel;
-using QtNodes::NodeValidationState;
 
 /// The model dictates the number of inputs and outputs for the Node.
 /// In this example it has no logic.
@@ -63,11 +62,12 @@ public:
   outData(PortIndex port) override;
 
   void
-  setInData(std::shared_ptr<NodeData>, int) override
-  { }
+  setInData(std::shared_ptr<NodeData>, PortIndex) override
+  {}
 
   QWidget *
-  embeddedWidget() override { return _lineEdit; }
+  embeddedWidget() override
+  { return _lineEdit; }
 
 private Q_SLOTS:
 

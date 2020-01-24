@@ -1,28 +1,17 @@
 #pragma once
 
+#include <memory>
 
 #include <QtWidgets/QWidget>
 
-#include "PortType.hpp"
-#include "NodeData.hpp"
-#include "Serializable.hpp"
-#include "NodeGeometry.hpp"
-#include "NodeStyle.hpp"
-#include "NodePainterDelegate.hpp"
+#include "Definitions.hpp"
 #include "Export.hpp"
-#include "memory.hpp"
+#include "NodeData.hpp"
+#include "NodeStyle.hpp"
+#include "Serializable.hpp"
 
 namespace QtNodes
 {
-
-enum class NodeValidationState
-{
-  Valid,
-  Warning,
-  Error
-};
-
-class Connection;
 
 class StyleCollection;
 
@@ -39,24 +28,29 @@ public:
   virtual
   ~NodeDataModel() = default;
 
-  /// Caption is used in GUI
-  virtual QString
-  caption() const = 0;
-
   /// It is possible to hide caption in GUI
-  virtual bool
+  virtual
+  bool
   captionVisible() const { return true; }
 
-  /// Port caption is used in GUI to label individual ports
-  virtual QString
-  portCaption(PortType, PortIndex) const { return QString(); }
+  /// Caption is used in GUI
+  virtual
+  QString
+  caption() const = 0;
 
   /// It is possible to hide port caption in GUI
-  virtual bool
+  virtual
+  bool
   portCaptionVisible(PortType, PortIndex) const { return false; }
 
+  /// Port caption is used in GUI to label individual ports
+  virtual
+  QString
+  portCaption(PortType, PortIndex) const { return QString(); }
+
   /// Name makes this model unique
-  virtual QString
+  virtual
+  QString
   name() const = 0;
 
 public:
@@ -67,18 +61,14 @@ public:
 public:
 
   virtual
-  unsigned int nPorts(PortType portType) const = 0;
+  unsigned int
+  nPorts(PortType portType) const = 0;
 
   virtual
-  NodeDataType dataType(PortType portType, PortIndex portIndex) const = 0;
+  NodeDataType
+  dataType(PortType portType, PortIndex portIndex) const = 0;
 
 public:
-
-  enum class ConnectionPolicy
-  {
-    One,
-    Many,
-  };
 
   virtual
   ConnectionPolicy
@@ -87,11 +77,12 @@ public:
     return ConnectionPolicy::Many;
   }
 
-  NodeStyle const&
+
+  NodeStyle const &
   nodeStyle() const;
 
   void
-  setNodeStyle(NodeStyle const& style);
+  setNodeStyle(NodeStyle const &style);
 
 public:
 
@@ -99,11 +90,11 @@ public:
   virtual
   void
   setInData(std::shared_ptr<NodeData> nodeData,
-            PortIndex port) = 0;
+            PortIndex const port) = 0;
 
   virtual
   std::shared_ptr<NodeData>
-  outData(PortIndex port) = 0;
+  outData(PortIndex const port) = 0;
 
   virtual
   QWidget *
@@ -113,46 +104,35 @@ public:
   bool
   resizable() const { return false; }
 
-  virtual
-  NodeValidationState
-  validationState() const { return NodeValidationState::Valid; }
-
-  virtual
-  QString
-  validationMessage() const { return QString(""); }
-
-  virtual
-  NodePainterDelegate* painterDelegate() const { return nullptr; }
-
 public Q_SLOTS:
 
   virtual void
-  inputConnectionCreated(Connection const&)
-  {
-  }
+  inputConnectionCreated(ConnectionId const &)
+  {}
+
 
   virtual void
-  inputConnectionDeleted(Connection const&)
-  {
-  }
+  inputConnectionDeleted(ConnectionId const &)
+  {}
+
 
   virtual void
-  outputConnectionCreated(Connection const&)
-  {
-  }
+  outputConnectionCreated(ConnectionId const &)
+  {}
+
 
   virtual void
-  outputConnectionDeleted(Connection const&)
-  {
-  }
+  outputConnectionDeleted(ConnectionId const &)
+  {}
+
 
 Q_SIGNALS:
 
   void
-  dataUpdated(PortIndex index);
+  dataUpdated(PortIndex const index);
 
   void
-  dataInvalidated(PortIndex index);
+  dataInvalidated(PortIndex const index);
 
   void
   computingStarted();
@@ -160,10 +140,13 @@ Q_SIGNALS:
   void
   computingFinished();
 
-  void embeddedWidgetSizeUpdated();
+  void
+  embeddedWidgetSizeUpdated();
 
 private:
 
   NodeStyle _nodeStyle;
 };
+
+
 }

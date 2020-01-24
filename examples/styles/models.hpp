@@ -12,10 +12,9 @@ using QtNodes::PortIndex;
 using QtNodes::NodeData;
 using QtNodes::NodeDataType;
 using QtNodes::NodeDataModel;
-using QtNodes::NodeValidationState;
 
-/// The class can potentially incapsulate any user data which
-/// need to be transferred within the Node Editor graph
+/// The class can potentially incapsulate any user data which need to
+/// be transferred within the Node Editor graph
 class MyNodeData : public NodeData
 {
 public:
@@ -32,11 +31,9 @@ public:
 class MyDataModel : public NodeDataModel
 {
   Q_OBJECT
-
 public:
 
-  virtual
-  ~MyDataModel() {}
+  ~MyDataModel() = default;
 
 public:
 
@@ -67,13 +64,13 @@ public:
 public:
 
   unsigned int
-  nPorts(PortType) const override
+  nPorts(PortType const) const override
   {
     return 3;
   }
 
   NodeDataType
-  dataType(PortType, PortIndex) const override
+  dataType(PortType const, PortIndex const) const override
   {
     return MyNodeData().type();
   }
@@ -85,10 +82,8 @@ public:
   }
 
   void
-  setInData(std::shared_ptr<NodeData>, int) override
-  {
-    //
-  }
+  setInData(std::shared_ptr<NodeData>, PortIndex const) override
+  {}
 
   QWidget *
   embeddedWidget() override { return nullptr; }

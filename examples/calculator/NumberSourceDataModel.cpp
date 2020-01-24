@@ -5,6 +5,7 @@
 
 #include "DecimalData.hpp"
 
+
 NumberSourceDataModel::
 NumberSourceDataModel()
   : _lineEdit(new QLineEdit())
@@ -43,7 +44,7 @@ restore(QJsonObject const &p)
   {
     QString strNum = v.toString();
 
-    bool   ok;
+    bool ok;
     double d = strNum.toDouble(&ok);
     if (ok)
     {
@@ -114,3 +115,4 @@ outData(PortIndex)
 {
   return _number;
 }
+

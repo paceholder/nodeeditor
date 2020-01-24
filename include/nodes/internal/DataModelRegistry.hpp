@@ -10,19 +10,18 @@
 
 #include <QtCore/QString>
 
-#include "NodeDataModel.hpp"
-#include "TypeConverter.hpp"
 #include "Export.hpp"
+#include "NodeData.hpp"
+#include "NodeDataModel.hpp"
 #include "QStringStdHash.hpp"
-#include "memory.hpp"
 
 namespace QtNodes
 {
 
 inline
 bool
-operator<(QtNodes::NodeDataType const & d1,
-          QtNodes::NodeDataType const & d2)
+operator<(NodeDataType const &d1,
+          NodeDataType const &d2)
 {
   return d1.id < d2.id;
 }
@@ -36,11 +35,11 @@ public:
 
   using RegistryItemPtr     = std::unique_ptr<NodeDataModel>;
   using RegistryItemCreator = std::function<RegistryItemPtr()>;
-  using RegisteredModelCreatorsMap = std::unordered_map<QString, RegistryItemCreator>;
+  using RegisteredModelCreatorsMap  = std::unordered_map<QString, RegistryItemCreator>;
   using RegisteredModelsCategoryMap = std::unordered_map<QString, QString>;
   using CategoriesSet = std::set<QString>;
 
-  using RegisteredTypeConvertersMap = std::map<TypeConverterId, TypeConverter>;
+  //using RegisteredTypeConvertersMap = std::map<TypeConverterId, TypeConverter>;
 
   DataModelRegistry()  = default;
   ~DataModelRegistry() = default;
@@ -48,16 +47,20 @@ public:
   DataModelRegistry(DataModelRegistry const &) = delete;
   DataModelRegistry(DataModelRegistry &&)      = default;
 
-  DataModelRegistry&operator=(DataModelRegistry const &) = delete;
-  DataModelRegistry&operator=(DataModelRegistry &&)      = default;
+  DataModelRegistry &
+  operator=(DataModelRegistry const &) = delete;
+
+  DataModelRegistry &
+  operator=(DataModelRegistry &&) = default;
 
 public:
 
   template<typename ModelType>
-  void registerModel(RegistryItemCreator creator,
-                     QString const &category = "Nodes")
+  void
+  registerModel(RegistryItemCreator creator,
+                QString const &category = "Nodes")
   {
-    const QString name = computeName<ModelType>(HasStaticMethodName<ModelType>{}, creator);
+    QString const name = computeName<ModelType>(HasStaticMethodName<ModelType>{}, creator);
     if (!_registeredItemCreators.count(name))
     {
       _registeredItemCreators[name] = std::move(creator);
@@ -67,48 +70,64 @@ public:
   }
 
   template<typename ModelType>
-  void registerModel(QString const &category = "Nodes")
+  void
+  registerModel(QString const &category = "Nodes")
   {
     RegistryItemCreator creator = [](){ return std::make_unique<ModelType>(); };
     registerModel<ModelType>(std::move(creator), category);
   }
 
+#if 0
   template<typename ModelType>
-  void registerModel(QString const &category,
-                     RegistryItemCreator creator)
+  void
+  registerModel(RegistryItemCreator creator,
+                QString const &category = "Nodes")
   {
     registerModel<ModelType>(std::move(creator), category);
   }
 
   template <typename ModelCreator>
-  void registerModel(ModelCreator&& creator, QString const& category = "Nodes")
+  void
+  registerModel(ModelCreator&& creator, QString const& category = "Nodes")
   {
     using ModelType = compute_model_type_t<decltype(creator())>;
     registerModel<ModelType>(std::forward<ModelCreator>(creator), category);
   }
 
   template <typename ModelCreator>
-  void registerModel(QString const& category, ModelCreator&& creator)
+  void
+  registerModel(QString const& category, ModelCreator&& creator)
   {
     registerModel(std::forward<ModelCreator>(creator), category);
   }
 
-  void registerTypeConverter(TypeConverterId const & id,
-                             TypeConverter typeConverter)
+  void
+  registerTypeConverter(TypeConverterId const &id,
+                        TypeConverter typeConverter)
   {
     _registeredTypeConverters[id] = std::move(typeConverter);
   }
 
-  std::unique_ptr<NodeDataModel>create(QString const &modelName);
+#endif
 
-  RegisteredModelCreatorsMap const &registeredModelCreators() const;
 
-  RegisteredModelsCategoryMap const &registeredModelsCategoryAssociation() const;
+  std::unique_ptr<NodeDataModel>
+  create(QString const &modelName);
 
-  CategoriesSet const &categories() const;
+  RegisteredModelCreatorsMap const &
+  registeredModelCreators() const;
 
-  TypeConverter getTypeConverter(NodeDataType const & d1,
-                                 NodeDataType const & d2) const;
+  RegisteredModelsCategoryMap const &
+  registeredModelsCategoryAssociation() const;
+
+  CategoriesSet const &
+  categories() const;
+
+#if 0
+  TypeConverter
+  getTypeConverter(NodeDataType const &d1,
+                   NodeDataType const &d2) const;
+#endif
 
 private:
 
@@ -118,27 +137,24 @@ private:
 
   RegisteredModelCreatorsMap _registeredItemCreators;
 
+#if 0
   RegisteredTypeConvertersMap _registeredTypeConverters;
+#endif
 
 private:
 
   // If the registered ModelType class has the static member method
-  //
-  //      static Qstring Name();
-  //
-  // use it. Otherwise use the non-static method:
-  //
-  //       virtual QString name() const;
-
-  template <typename T, typename = void>
+  // `static QString Name();`, use it. Otherwise use the non-static
+  // method: `virtual QString name() const;`
+  template<typename T, typename = void>
   struct HasStaticMethodName
-      : std::false_type
+    : std::false_type
   {};
 
   template <typename T>
-  struct HasStaticMethodName<T,
-          typename std::enable_if<std::is_same<decltype(T::Name()), QString>::value>::type>
-      : std::true_type
+  struct HasStaticMethodName<T, typename std::enable_if<std::is_same<decltype(T::Name()),
+                                                                     QString>::value>::type>
+    : std::true_type
   {};
 
   template <typename ModelType>
@@ -176,7 +192,6 @@ private:
   template <typename CreatorResult>
   using compute_model_type_t = typename UnwrapUniquePtr<CreatorResult>::type;
 };
-
 
 
 }

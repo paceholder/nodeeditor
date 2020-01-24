@@ -68,24 +68,25 @@ private:
 
     if (n2 && (n2->number() == 0.0))
     {
-      modelValidationState = NodeValidationState::Error;
-      modelValidationError = QStringLiteral("Division by zero error");
+      //modelValidationState = NodeValidationState::Error;
+      //modelValidationError = QStringLiteral("Division by zero error");
       _result.reset();
     }
     else if (n1 && n2)
     {
-      modelValidationState = NodeValidationState::Valid;
-      modelValidationError = QString();
+      //modelValidationState = NodeValidationState::Valid;
+      //modelValidationError = QString();
       _result = std::make_shared<DecimalData>(n1->number() /
                                               n2->number());
     }
     else
     {
-      modelValidationState = NodeValidationState::Warning;
-      modelValidationError = QStringLiteral("Missing or incorrect inputs");
+      //modelValidationState = NodeValidationState::Warning;
+      //modelValidationError = QStringLiteral("Missing or incorrect inputs");
       _result.reset();
     }
 
     Q_EMIT dataUpdated(outPortIndex);
   }
+
 };

@@ -1,0 +1,305 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_OUTPUT_FILESEP	slash	/slash or backslash/
+!_TAG_OUTPUT_MODE	u-ctags	/u-ctags or e-ctags/
+!_TAG_PROGRAM_AUTHOR	Universal Ctags Team	//
+!_TAG_PROGRAM_NAME	Universal Ctags	/Derived from Exuberant Ctags/
+!_TAG_PROGRAM_URL	https://ctags.io/	/official site/
+!_TAG_PROGRAM_VERSION	0.0.0	/a3c87ab5/
+CONNECTION_STYLE_CHECK_UNDEFINED_VALUE	ConnectionStyle.cpp	/^  #define CONNECTION_STYLE_CHECK_UNDEFINED_VALUE(/;"	d	file:
+CONNECTION_STYLE_READ_BOOL	ConnectionStyle.cpp	/^#define CONNECTION_STYLE_READ_BOOL(/;"	d	file:
+CONNECTION_STYLE_READ_COLOR	ConnectionStyle.cpp	/^#define CONNECTION_STYLE_READ_COLOR(/;"	d	file:
+CONNECTION_STYLE_READ_FLOAT	ConnectionStyle.cpp	/^#define CONNECTION_STYLE_READ_FLOAT(/;"	d	file:
+CONNECTION_STYLE_WRITE_BOOL	ConnectionStyle.cpp	/^#define CONNECTION_STYLE_WRITE_BOOL(/;"	d	file:
+CONNECTION_STYLE_WRITE_COLOR	ConnectionStyle.cpp	/^#define CONNECTION_STYLE_WRITE_COLOR(/;"	d	file:
+CONNECTION_STYLE_WRITE_FLOAT	ConnectionStyle.cpp	/^#define CONNECTION_STYLE_WRITE_FLOAT(/;"	d	file:
+CONNECTION_VALUE_EXISTS	ConnectionStyle.cpp	/^#define CONNECTION_VALUE_EXISTS(/;"	d	file:
+Connection	Connection.cpp	/^Connection(Node&         nodeIn,$/;"	f	class:Connection
+Connection	Connection.cpp	/^Connection(PortType  portType,$/;"	f	class:Connection
+ConnectionBlurEffect	ConnectionBlurEffect.cpp	/^ConnectionBlurEffect(ConnectionGraphicsObject*)$/;"	f	class:ConnectionBlurEffect
+ConnectionBlurEffect	ConnectionBlurEffect.hpp	/^class ConnectionBlurEffect : public QGraphicsBlurEffect$/;"	c	namespace:QtNodes
+ConnectionGraphicsObject	ConnectionGraphicsObject.cpp	/^ConnectionGraphicsObject(NodeGraphicsScene & scene,$/;"	f	class:QtNodes::ConnectionGraphicsObject
+ConnectionPainter	ConnectionPainter.hpp	/^class ConnectionPainter$/;"	c	namespace:QtNodes
+ConnectionStyle	ConnectionStyle.cpp	/^ConnectionStyle()$/;"	f	class:ConnectionStyle
+ConnectionStyle	ConnectionStyle.cpp	/^ConnectionStyle(QString jsonText)$/;"	f	class:ConnectionStyle
+FLOW_VIEW_STYLE_CHECK_UNDEFINED_VALUE	GraphicsViewStyle.cpp	/^  #define FLOW_VIEW_STYLE_CHECK_UNDEFINED_VALUE(/;"	d	file:
+FLOW_VIEW_STYLE_READ_COLOR	GraphicsViewStyle.cpp	/^#define FLOW_VIEW_STYLE_READ_COLOR(/;"	d	file:
+FLOW_VIEW_STYLE_WRITE_COLOR	GraphicsViewStyle.cpp	/^#define FLOW_VIEW_STYLE_WRITE_COLOR(/;"	d	file:
+FlowScene	FlowScene.cpp	/^FlowScene(QObject * parent)$/;"	f	class:FlowScene
+FlowScene	FlowScene.cpp	/^FlowScene(std::shared_ptr<DataModelRegistry> registry,$/;"	f	class:FlowScene
+GraphicsView	GraphicsView.cpp	/^GraphicsView(NodeGraphicsScene *scene, QWidget *parent)$/;"	f	class:GraphicsView
+GraphicsView	GraphicsView.cpp	/^GraphicsView(QWidget *parent)$/;"	f	class:GraphicsView
+GraphicsViewStyle	GraphicsViewStyle.cpp	/^GraphicsViewStyle()$/;"	f	class:GraphicsViewStyle
+GraphicsViewStyle	GraphicsViewStyle.cpp	/^GraphicsViewStyle(QString jsonText)$/;"	f	class:GraphicsViewStyle
+NODE_STYLE_CHECK_UNDEFINED_VALUE	NodeStyle.cpp	/^  #define NODE_STYLE_CHECK_UNDEFINED_VALUE(/;"	d	file:
+NODE_STYLE_READ_COLOR	NodeStyle.cpp	/^#define NODE_STYLE_READ_COLOR(/;"	d	file:
+NODE_STYLE_READ_FLOAT	NodeStyle.cpp	/^#define NODE_STYLE_READ_FLOAT(/;"	d	file:
+NODE_STYLE_WRITE_COLOR	NodeStyle.cpp	/^#define NODE_STYLE_WRITE_COLOR(/;"	d	file:
+NODE_STYLE_WRITE_FLOAT	NodeStyle.cpp	/^#define NODE_STYLE_WRITE_FLOAT(/;"	d	file:
+Node	Node.cpp	/^Node(std::unique_ptr<NodeDataModel> && dataModel)$/;"	f	class:Node
+NodeConnectionInteraction	NodeConnectionInteraction.cpp	/^NodeConnectionInteraction(NodeGraphicsObject & ngo,$/;"	f	class:QtNodes::NodeConnectionInteraction
+NodeConnectionInteraction	NodeConnectionInteraction.hpp	/^class NodeConnectionInteraction$/;"	c	namespace:QtNodes
+NodeGeometry	NodeGeometry.cpp	/^NodeGeometry(NodeGraphicsObject const & ngo)$/;"	f	class:QtNodes::NodeGeometry
+NodeGraphicsObject	NodeGraphicsObject.cpp	/^NodeGraphicsObject(NodeGraphicsScene & scene,$/;"	f	class:NodeGraphicsObject
+NodeGraphicsScene	NodeGraphicsScene.cpp	/^NodeGraphicsScene(GraphModel & graphModel)$/;"	f	class:QtNodes::NodeGraphicsScene
+NodePainter	NodePainter.hpp	/^class NodePainter$/;"	c	namespace:QtNodes
+NodeState	NodeState.cpp	/^NodeState(NodeGraphicsObject & ngo)$/;"	f	class:QtNodes::NodeState
+NodeStyle	NodeStyle.cpp	/^NodeStyle()$/;"	f	class:NodeStyle
+NodeStyle	NodeStyle.cpp	/^NodeStyle(QJsonDocument const & json)$/;"	f	class:NodeStyle
+NodeStyle	NodeStyle.cpp	/^NodeStyle(QString jsonText)$/;"	f	class:NodeStyle
+Properties	Properties.hpp	/^class NODE_EDITOR_PUBLIC Properties$/;"	c	namespace:QtNodes
+QtNodes	ConnectionBlurEffect.hpp	/^namespace QtNodes$/;"	n
+QtNodes	ConnectionGraphicsObject.cpp	/^namespace QtNodes$/;"	n	file:
+QtNodes	ConnectionPainter.cpp	/^namespace QtNodes$/;"	n	file:
+QtNodes	ConnectionPainter.hpp	/^namespace QtNodes$/;"	n
+QtNodes	ConnectionState.cpp	/^namespace QtNodes$/;"	n	file:
+QtNodes	FlowScene.cpp	/^namespace QtNodes$/;"	n	file:
+QtNodes	GraphModel.cpp	/^namespace QtNodes$/;"	n	file:
+QtNodes	NodeConnectionInteraction.cpp	/^namespace QtNodes$/;"	n	file:
+QtNodes	NodeConnectionInteraction.hpp	/^namespace QtNodes$/;"	n
+QtNodes	NodeGeometry.cpp	/^namespace QtNodes$/;"	n	file:
+QtNodes	NodeGraphicsScene.cpp	/^namespace QtNodes$/;"	n	file:
+QtNodes	NodePainter.cpp	/^namespace QtNodes$/;"	n	file:
+QtNodes	NodePainter.hpp	/^namespace QtNodes$/;"	n
+QtNodes	NodeState.cpp	/^namespace QtNodes$/;"	n	file:
+QtNodes	Properties.hpp	/^namespace QtNodes$/;"	n
+QtNodes	locateNode.cpp	/^namespace QtNodes$/;"	n	file:
+__anon02e536940102	locateNode.cpp	/^               {$/;"	f	function:QtNodes::locateNodeAt	file:
+__anon041d5cdc0102	FlowScene.cpp	/^          [this](Connection const& c) {$/;"	f	function:FlowScene::createConnection	file:
+__anon041d5cdc0202	FlowScene.cpp	/^                      {$/;"	f	function:FlowScene::restoreConnection	file:
+__anon041d5cdc0302	FlowScene.cpp	/^    {$/;"	f	function:FlowScene::iterateOverNodeDataDependentOrder	file:
+__anon041d5cdc0402	FlowScene.cpp	/^    {$/;"	f	function:FlowScene::iterateOverNodeDataDependentOrder	file:
+__anon041d5cdc0502	FlowScene.cpp	/^                 [](std::pair<QUuid const, std::unique_ptr<Node>> const & p) { return p.second.g/;"	f	function:FlowScene::allNodes	file:
+__anon041d5cdc0602	FlowScene.cpp	/^               {$/;"	f	function:QtNodes::locateNodeAt	file:
+__anon6200d0c20102	GraphicsView.cpp	/^    {$/;"	f	function:GraphicsView::drawBackground	file:
+__anon9e6298a60102	Connection.cpp	/^                         {$/;"	f	function:Connection::save	file:
+__anond52af8a40102	NodeGraphicsObject.cpp	/^    {$/;"	f	function:NodeGraphicsObject::moveConnections	file:
+__anonfe21dd4e0102	ConnectionGraphicsObject.cpp	/^    {$/;"	f	function:QtNodes::ConnectionGraphicsObject::move	file:
+_cgo	NodeConnectionInteraction.hpp	/^  ConnectionGraphicsObject & _cgo;$/;"	m	class:QtNodes::NodeConnectionInteraction	typeref:typename:ConnectionGraphicsObject &
+_ngo	NodeConnectionInteraction.hpp	/^  NodeGraphicsObject & _ngo;$/;"	m	class:QtNodes::NodeConnectionInteraction	typeref:typename:NodeGraphicsObject &
+_scene	NodeConnectionInteraction.hpp	/^  NodeGraphicsScene & _scene;$/;"	m	class:QtNodes::NodeConnectionInteraction	typeref:typename:NodeGraphicsScene &
+_values	Properties.hpp	/^  QVariantMap _values;$/;"	m	class:QtNodes::Properties	typeref:typename:QVariantMap
+addConnection	GraphModel.cpp	/^addConnection(ConnectionId const connectionId)$/;"	f	class:QtNodes::GraphModel	typeref:typename:void
+addGraphicsEffect	ConnectionGraphicsObject.cpp	/^addGraphicsEffect()$/;"	f	class:QtNodes::ConnectionGraphicsObject	typeref:typename:void
+allNodeIds	GraphModel.cpp	/^allNodeIds() const$/;"	f	class:QtNodes::GraphModel	typeref:typename:std::unordered_set<NodeId>
+allNodes	FlowScene.cpp	/^allNodes() const$/;"	f	class:FlowScene	typeref:typename:std::vector<Node * >
+boundingRect	ConnectionGraphicsObject.cpp	/^boundingRect() const$/;"	f	class:QtNodes::ConnectionGraphicsObject	typeref:typename:QRectF
+boundingRect	NodeGeometry.cpp	/^boundingRect() const$/;"	f	class:QtNodes::NodeGeometry	typeref:typename:QRectF
+boundingRect	NodeGraphicsObject.cpp	/^boundingRect() const$/;"	f	class:NodeGraphicsObject	typeref:typename:QRectF
+canConnect	NodeConnectionInteraction.cpp	/^canConnect(PortIndex &portIndex) const$/;"	f	class:QtNodes::NodeConnectionInteraction	typeref:typename:bool
+captionHeight	NodeGeometry.cpp	/^captionHeight() const$/;"	f	class:QtNodes::NodeGeometry	typeref:typename:unsigned int
+captionWidth	NodeGeometry.cpp	/^captionWidth() const$/;"	f	class:QtNodes::NodeGeometry	typeref:typename:unsigned int
+checkHitScenePoint	NodeGeometry.cpp	/^checkHitScenePoint(PortType portType,$/;"	f	class:QtNodes::NodeGeometry	typeref:typename:PortIndex
+clearNode	Connection.cpp	/^clearNode(PortType portType)$/;"	f	class:Connection	typeref:typename:void
+clearScene	FlowScene.cpp	/^clearScene()$/;"	f	class:FlowScene	typeref:typename:void
+clearScene	NodeGraphicsScene.cpp	/^clearScene()$/;"	f	class:QtNodes::NodeGraphicsScene	typeref:typename:void
+clearSelectionAction	GraphicsView.cpp	/^clearSelectionAction() const$/;"	f	class:GraphicsView	typeref:typename:QAction *
+complete	Connection.cpp	/^complete() const$/;"	f	class:Connection	typeref:typename:bool
+connectedNodes	GraphModel.cpp	/^connectedNodes(NodeId    nodeId,$/;"	f	class:QtNodes::GraphModel	typeref:typename:std::unordered_set<std::pair<PortIndex,NodeId>>
+connectionEndScenePosition	NodeConnectionInteraction.cpp	/^connectionEndScenePosition(PortType portType) const$/;"	f	class:QtNodes::NodeConnectionInteraction	typeref:typename:QPointF
+connectionGraphicsObject	NodeGraphicsScene.cpp	/^connectionGraphicsObject(ConnectionId connectionId)$/;"	f	class:QtNodes::NodeGraphicsScene	typeref:typename:ConnectionGraphicsObject *
+connectionId	ConnectionGraphicsObject.cpp	/^connectionId() const$/;"	f	class:QtNodes::ConnectionGraphicsObject	typeref:typename:ConnectionId
+connectionRequiredPort	NodeConnectionInteraction.cpp	/^connectionRequiredPort() const$/;"	f	class:QtNodes::NodeConnectionInteraction	typeref:typename:PortType
+connectionState	Connection.cpp	/^connectionState() const$/;"	f	class:Connection	typeref:typename:ConnectionState const &
+connectionState	Connection.cpp	/^connectionState()$/;"	f	class:Connection	typeref:typename:ConnectionState &
+connectionState	ConnectionGraphicsObject.cpp	/^connectionState() const$/;"	f	class:QtNodes::ConnectionGraphicsObject	typeref:typename:ConnectionState const &
+connectionState	ConnectionGraphicsObject.cpp	/^connectionState()$/;"	f	class:QtNodes::ConnectionGraphicsObject	typeref:typename:ConnectionState &
+connectionStyle	StyleCollection.cpp	/^connectionStyle()$/;"	f	class:StyleCollection	typeref:typename:ConnectionStyle const &
+connections	FlowScene.cpp	/^connections() const$/;"	f	class:FlowScene	typeref:typename:std::unordered_map<QUuid,std::shared_ptr<Connection>> const &
+constructionColor	ConnectionStyle.cpp	/^constructionColor() const$/;"	f	class:ConnectionStyle	typeref:typename:QColor
+constructionLineWidth	ConnectionStyle.cpp	/^constructionLineWidth() const$/;"	f	class:ConnectionStyle	typeref:typename:float
+contextMenuEvent	GraphicsView.cpp	/^contextMenuEvent(QContextMenuEvent *event)$/;"	f	class:GraphicsView	typeref:typename:void
+contextMenuEvent	NodeGraphicsObject.cpp	/^contextMenuEvent(QGraphicsSceneContextMenuEvent * event)$/;"	f	class:NodeGraphicsObject	typeref:typename:void
+createConnection	FlowScene.cpp	/^createConnection(Node&     nodeIn,$/;"	f	class:FlowScene	typeref:typename:std::shared_ptr<Connection>
+createConnection	FlowScene.cpp	/^createConnection(PortType  connectedPort,$/;"	f	class:FlowScene	typeref:typename:std::shared_ptr<Connection>
+createConnection	NodeGraphicsScene.cpp	/^createConnection(NodeId const    nodeId,$/;"	f	class:QtNodes::NodeGraphicsScene	typeref:typename:ConnectionGraphicsObject &
+createNode	FlowScene.cpp	/^createNode(std::unique_ptr<NodeDataModel> && dataModel)$/;"	f	class:FlowScene	typeref:typename:Node &
+cubicPath	ConnectionPainter.cpp	/^cubicPath(ConnectionGraphicsObject const & connection)$/;"	f	namespace:QtNodes	typeref:typename:QPainterPath	file:
+dataType	Connection.cpp	/^dataType(PortType portType) const$/;"	f	class:Connection	typeref:typename:NodeDataType
+debugDrawing	ConnectionPainter.cpp	/^debugDrawing(QPainter * painter,$/;"	f	namespace:QtNodes	typeref:typename:void	file:
+deleteConnection	FlowScene.cpp	/^deleteConnection(Connection& connection)$/;"	f	class:FlowScene	typeref:typename:void
+deleteConnection	GraphModel.cpp	/^deleteConnection(ConnectionId const connectionId)$/;"	f	class:QtNodes::GraphModel	typeref:typename:bool
+deleteConnection	NodeGraphicsScene.cpp	/^deleteConnection(ConnectionId const connectionId)$/;"	f	class:QtNodes::NodeGraphicsScene	typeref:typename:std::unique_ptr<ConnectionGraphicsObject>
+deleteNode	GraphModel.cpp	/^deleteNode(NodeId const nodeId)$/;"	f	class:QtNodes::GraphModel	typeref:typename:bool
+deleteNode	NodeGraphicsScene.cpp	/^deleteNode(NodeId const nodeId)$/;"	f	class:QtNodes::NodeGraphicsScene	typeref:typename:void
+deleteSelectedNodes	GraphicsView.cpp	/^deleteSelectedNodes()$/;"	f	class:GraphicsView	typeref:typename:void
+deleteSelectionAction	GraphicsView.cpp	/^deleteSelectionAction() const$/;"	f	class:GraphicsView	typeref:typename:QAction *
+disconnect	NodeConnectionInteraction.cpp	/^disconnect(PortType portToDisconnect) const$/;"	f	class:QtNodes::NodeConnectionInteraction	typeref:typename:bool
+draw	ConnectionBlurEffect.cpp	/^draw(QPainter* painter)$/;"	f	class:ConnectionBlurEffect	typeref:typename:void
+drawBackground	GraphicsView.cpp	/^drawBackground(QPainter* painter, const QRectF & r)$/;"	f	class:GraphicsView	typeref:typename:void
+drawConnectionPoints	NodePainter.cpp	/^drawConnectionPoints(QPainter * painter,$/;"	f	class:QtNodes::NodePainter	typeref:typename:void
+drawEntryLabels	NodePainter.cpp	/^drawEntryLabels(QPainter * painter,$/;"	f	class:QtNodes::NodePainter	typeref:typename:void
+drawFilledConnectionPoints	NodePainter.cpp	/^drawFilledConnectionPoints(QPainter * painter,$/;"	f	class:QtNodes::NodePainter	typeref:typename:void
+drawHoveredOrSelected	ConnectionPainter.cpp	/^drawHoveredOrSelected(QPainter * painter,$/;"	f	namespace:QtNodes	typeref:typename:void	file:
+drawNodeCaption	NodePainter.cpp	/^drawNodeCaption(QPainter * painter,$/;"	f	class:QtNodes::NodePainter	typeref:typename:void
+drawNodeRect	NodePainter.cpp	/^drawNodeRect(QPainter * painter,$/;"	f	class:QtNodes::NodePainter	typeref:typename:void
+drawNormalLine	ConnectionPainter.cpp	/^drawNormalLine(QPainter * painter,$/;"	f	namespace:QtNodes	typeref:typename:void	file:
+drawResizeRect	NodePainter.cpp	/^drawResizeRect(QPainter * painter,$/;"	f	class:QtNodes::NodePainter	typeref:typename:void
+drawSketchLine	ConnectionPainter.cpp	/^drawSketchLine(QPainter * painter,$/;"	f	namespace:QtNodes	typeref:typename:void	file:
+embedQWidget	NodeGraphicsObject.cpp	/^embedQWidget()$/;"	f	class:NodeGraphicsObject	typeref:typename:void
+endPoint	ConnectionGraphicsObject.cpp	/^endPoint(PortType portType) const$/;"	f	class:QtNodes::ConnectionGraphicsObject	typeref:typename:QPointF const &
+entryHeight	NodeGeometry.cpp	/^entryHeight() const$/;"	f	class:QtNodes::NodeGeometry	typeref:typename:unsigned int
+equivalentWidgetHeight	NodeGeometry.cpp	/^equivalentWidgetHeight() const$/;"	f	class:QtNodes::NodeGeometry	typeref:typename:int
+flowViewStyle	StyleCollection.cpp	/^flowViewStyle()$/;"	f	class:StyleCollection	typeref:typename:GraphicsViewStyle const &
+get	Properties.hpp	/^  get(QString name, T* v) const$/;"	f	class:QtNodes::Properties	typeref:typename:bool
+getConnectionGraphicsObject	Connection.cpp	/^getConnectionGraphicsObject() const$/;"	f	class:Connection	typeref:typename:ConnectionGraphicsObject &
+getNode	Connection.cpp	/^getNode(PortType portType) const$/;"	f	class:Connection	typeref:typename:Node *
+getNode	Connection.cpp	/^getNode(PortType portType)$/;"	f	class:Connection	typeref:typename:Node * &
+getNodePosition	FlowScene.cpp	/^getNodePosition(const Node& node) const$/;"	f	class:FlowScene	typeref:typename:QPointF
+getNodeSize	FlowScene.cpp	/^getNodeSize(const Node& node) const$/;"	f	class:FlowScene	typeref:typename:QSizeF
+getPainterStroke	ConnectionPainter.cpp	/^getPainterStroke(ConnectionGraphicsObject const & connection)$/;"	f	class:QtNodes::ConnectionPainter	typeref:typename:QPainterPath
+getPortIndex	Connection.cpp	/^getPortIndex(PortType portType) const$/;"	f	class:Connection	typeref:typename:PortIndex
+graphModel	NodeGraphicsScene.cpp	/^graphModel() const$/;"	f	class:QtNodes::NodeGraphicsScene	typeref:typename:GraphModel const &
+graphModel	NodeGraphicsScene.cpp	/^graphModel()$/;"	f	class:QtNodes::NodeGraphicsScene	typeref:typename:GraphModel &
+hoverEnterEvent	ConnectionGraphicsObject.cpp	/^hoverEnterEvent(QGraphicsSceneHoverEvent * event)$/;"	f	class:QtNodes::ConnectionGraphicsObject	typeref:typename:void
+hoverEnterEvent	NodeGraphicsObject.cpp	/^hoverEnterEvent(QGraphicsSceneHoverEvent * event)$/;"	f	class:NodeGraphicsObject	typeref:typename:void
+hoverLeaveEvent	ConnectionGraphicsObject.cpp	/^hoverLeaveEvent(QGraphicsSceneHoverEvent * event)$/;"	f	class:QtNodes::ConnectionGraphicsObject	typeref:typename:void
+hoverLeaveEvent	NodeGraphicsObject.cpp	/^hoverLeaveEvent(QGraphicsSceneHoverEvent * event)$/;"	f	class:NodeGraphicsObject	typeref:typename:void
+hoverMoveEvent	NodeGraphicsObject.cpp	/^hoverMoveEvent(QGraphicsSceneHoverEvent * event)$/;"	f	class:NodeGraphicsObject	typeref:typename:void
+hoveredColor	ConnectionStyle.cpp	/^hoveredColor() const$/;"	f	class:ConnectionStyle	typeref:typename:QColor
+id	Connection.cpp	/^id() const$/;"	f	class:Connection	typeref:typename:QUuid
+id	Node.cpp	/^id() const$/;"	f	class:Node	typeref:typename:QUuid
+initResources	ConnectionStyle.cpp	/^inline void initResources() { Q_INIT_RESOURCE(resources); }$/;"	f	typeref:typename:void
+initResources	GraphicsViewStyle.cpp	/^initResources() { Q_INIT_RESOURCE(resources); }$/;"	f	typeref:typename:void
+initResources	NodeStyle.cpp	/^inline void initResources() { Q_INIT_RESOURCE(resources); }$/;"	f	typeref:typename:void
+initializePosition	ConnectionGraphicsObject.cpp	/^initializePosition()$/;"	f	class:QtNodes::ConnectionGraphicsObject	typeref:typename:void
+insertDanglingConnection	NodeGraphicsScene.cpp	/^insertDanglingConnection(std::unique_ptr<ConnectionGraphicsObject> && cgo,$/;"	f	class:QtNodes::NodeGraphicsScene	typeref:typename:bool
+instance	StyleCollection.cpp	/^instance()$/;"	f	class:StyleCollection	typeref:typename:StyleCollection &
+interactWithNode	ConnectionState.cpp	/^interactWithNode(NodeId const nodeId)$/;"	f	class:QtNodes::ConnectionState	typeref:typename:void
+isReacting	NodeState.cpp	/^isReacting() const$/;"	f	class:QtNodes::NodeState	typeref:typename:bool
+itemChange	NodeGraphicsObject.cpp	/^itemChange(GraphicsItemChange change, const QVariant & value)$/;"	f	class:NodeGraphicsObject	typeref:typename:QVariant
+iterateOverNodeData	FlowScene.cpp	/^iterateOverNodeData(std::function<void(NodeDataModel*)> const & visitor)$/;"	f	class:FlowScene	typeref:typename:void
+iterateOverNodeDataDependentOrder	FlowScene.cpp	/^iterateOverNodeDataDependentOrder(std::function<void(NodeDataModel*)> const & visitor)$/;"	f	class:FlowScene	typeref:typename:void
+iterateOverNodes	FlowScene.cpp	/^iterateOverNodes(std::function<void(Node*)> const & visitor)$/;"	f	class:FlowScene	typeref:typename:void
+keyPressEvent	GraphicsView.cpp	/^keyPressEvent(QKeyEvent *event)$/;"	f	class:GraphicsView	typeref:typename:void
+keyReleaseEvent	GraphicsView.cpp	/^keyReleaseEvent(QKeyEvent *event)$/;"	f	class:GraphicsView	typeref:typename:void
+lineWidth	ConnectionStyle.cpp	/^lineWidth() const$/;"	f	class:ConnectionStyle	typeref:typename:float
+load	FlowScene.cpp	/^load()$/;"	f	class:FlowScene	typeref:typename:void
+loadFromMemory	FlowScene.cpp	/^loadFromMemory(const QByteArray& data)$/;"	f	class:FlowScene	typeref:typename:void
+loadJson	ConnectionStyle.cpp	/^loadJson(QJsonDocument const & json)$/;"	f	class:ConnectionStyle	typeref:typename:void
+loadJson	GraphicsViewStyle.cpp	/^loadJson(QJsonDocument const & json)$/;"	f	class:GraphicsViewStyle	typeref:typename:void
+loadJson	NodeStyle.cpp	/^loadJson(QJsonDocument const & json)$/;"	f	class:NodeStyle	typeref:typename:void
+locateNodeAt	FlowScene.cpp	/^locateNodeAt(QPointF scenePoint, FlowScene &scene,$/;"	f	namespace:QtNodes	typeref:typename:Node *
+locateNodeAt	locateNode.cpp	/^locateNodeAt(QPointF scenePoint,$/;"	f	namespace:QtNodes	typeref:typename:NodeGraphicsObject *
+makeDraftConnection	NodeGraphicsScene.cpp	/^makeDraftConnection(std::unique_ptr<ConnectionGraphicsObject> && cgo,$/;"	f	class:QtNodes::NodeGraphicsScene	typeref:typename:bool
+mouseDoubleClickEvent	NodeGraphicsObject.cpp	/^mouseDoubleClickEvent(QGraphicsSceneMouseEvent * event)$/;"	f	class:NodeGraphicsObject	typeref:typename:void
+mouseMoveEvent	ConnectionGraphicsObject.cpp	/^mouseMoveEvent(QGraphicsSceneMouseEvent * event)$/;"	f	class:QtNodes::ConnectionGraphicsObject	typeref:typename:void
+mouseMoveEvent	GraphicsView.cpp	/^mouseMoveEvent(QMouseEvent *event)$/;"	f	class:GraphicsView	typeref:typename:void
+mouseMoveEvent	NodeGraphicsObject.cpp	/^mouseMoveEvent(QGraphicsSceneMouseEvent * event)$/;"	f	class:NodeGraphicsObject	typeref:typename:void
+mousePressEvent	ConnectionGraphicsObject.cpp	/^mousePressEvent(QGraphicsSceneMouseEvent * event)$/;"	f	class:QtNodes::ConnectionGraphicsObject	typeref:typename:void
+mousePressEvent	GraphicsView.cpp	/^mousePressEvent(QMouseEvent *event)$/;"	f	class:GraphicsView	typeref:typename:void
+mousePressEvent	NodeGraphicsObject.cpp	/^mousePressEvent(QGraphicsSceneMouseEvent * event)$/;"	f	class:NodeGraphicsObject	typeref:typename:void
+mouseReleaseEvent	ConnectionGraphicsObject.cpp	/^mouseReleaseEvent(QGraphicsSceneMouseEvent * event)$/;"	f	class:QtNodes::ConnectionGraphicsObject	typeref:typename:void
+mouseReleaseEvent	NodeGraphicsObject.cpp	/^mouseReleaseEvent(QGraphicsSceneMouseEvent * event)$/;"	f	class:NodeGraphicsObject	typeref:typename:void
+move	ConnectionGraphicsObject.cpp	/^move()$/;"	f	class:QtNodes::ConnectionGraphicsObject	typeref:typename:void
+moveConnections	NodeGraphicsObject.cpp	/^moveConnections() const$/;"	f	class:NodeGraphicsObject	typeref:typename:void
+moveEndPointBy	ConnectionGraphicsObject.cpp	/^moveEndPointBy(PortType portType, QPointF const & offset)$/;"	f	class:QtNodes::ConnectionGraphicsObject	typeref:typename:void
+nodeData	GraphModel.cpp	/^nodeData(NodeId nodeId, NodeRole role) const$/;"	f	class:QtNodes::GraphModel	typeref:typename:QVariant
+nodeDataModel	Node.cpp	/^nodeDataModel() const$/;"	f	class:Node	typeref:typename:NodeDataModel *
+nodeFlags	GraphModel.cpp	/^nodeFlags(NodeId nodeId) const$/;"	f	class:QtNodes::GraphModel	typeref:typename:NodeFlags
+nodeGeometry	Node.cpp	/^nodeGeometry() const$/;"	f	class:Node	typeref:typename:NodeGeometry const &
+nodeGeometry	Node.cpp	/^nodeGeometry()$/;"	f	class:Node	typeref:typename:NodeGeometry &
+nodeGraphicsObject	Node.cpp	/^nodeGraphicsObject() const$/;"	f	class:Node	typeref:typename:NodeGraphicsObject const &
+nodeGraphicsObject	Node.cpp	/^nodeGraphicsObject()$/;"	f	class:Node	typeref:typename:NodeGraphicsObject &
+nodeGraphicsObject	NodeGraphicsScene.cpp	/^nodeGraphicsObject(NodeId nodeId)$/;"	f	class:QtNodes::NodeGraphicsScene	typeref:typename:NodeGraphicsObject *
+nodePortIndexUnderScenePoint	NodeConnectionInteraction.cpp	/^nodePortIndexUnderScenePoint(PortType portType,$/;"	f	class:QtNodes::NodeConnectionInteraction	typeref:typename:PortIndex
+nodePortIsEmpty	NodeConnectionInteraction.cpp	/^nodePortIsEmpty(PortType portType, PortIndex portIndex) const$/;"	f	class:QtNodes::NodeConnectionInteraction	typeref:typename:bool
+nodePortScenePosition	NodeConnectionInteraction.cpp	/^nodePortScenePosition(PortType portType, PortIndex portIndex) const$/;"	f	class:QtNodes::NodeConnectionInteraction	typeref:typename:QPointF
+nodeScene	ConnectionGraphicsObject.cpp	/^nodeScene() const$/;"	f	class:QtNodes::ConnectionGraphicsObject	typeref:typename:NodeGraphicsScene *
+nodeScene	NodeGraphicsObject.cpp	/^nodeScene() const$/;"	f	class:NodeGraphicsObject	typeref:typename:NodeGraphicsScene *
+nodeState	Node.cpp	/^nodeState() const$/;"	f	class:Node	typeref:typename:NodeState const &
+nodeState	Node.cpp	/^nodeState()$/;"	f	class:Node	typeref:typename:NodeState &
+nodeStyle	StyleCollection.cpp	/^nodeStyle()$/;"	f	class:StyleCollection	typeref:typename:NodeStyle const &
+nodes	FlowScene.cpp	/^nodes() const$/;"	f	class:FlowScene	typeref:typename:std::unordered_map<QUuid,std::unique_ptr<Node>> const &
+normalColor	ConnectionStyle.cpp	/^normalColor() const$/;"	f	class:ConnectionStyle	typeref:typename:QColor
+normalColor	ConnectionStyle.cpp	/^normalColor(QString typeId) const$/;"	f	class:ConnectionStyle	typeref:typename:QColor
+onDataUpdated	Node.cpp	/^onDataUpdated(PortIndex index)$/;"	f	class:Node	typeref:typename:void
+onNodeSizeUpdated	Node.cpp	/^onNodeSizeUpdated()$/;"	f	class:Node	typeref:typename:void
+paint	ConnectionGraphicsObject.cpp	/^paint(QPainter * painter,$/;"	f	class:QtNodes::ConnectionGraphicsObject	typeref:typename:void
+paint	ConnectionPainter.cpp	/^paint(QPainter * painter,$/;"	f	class:QtNodes::ConnectionPainter	typeref:typename:void
+paint	NodeGraphicsObject.cpp	/^paint(QPainter * painter,$/;"	f	class:NodeGraphicsObject	typeref:typename:void
+paint	NodePainter.cpp	/^paint(QPainter * painter,$/;"	f	class:QtNodes::NodePainter	typeref:typename:void
+pointDiameter	ConnectionStyle.cpp	/^pointDiameter() const$/;"	f	class:ConnectionStyle	typeref:typename:float
+pointsC1C2	ConnectionGraphicsObject.cpp	/^pointsC1C2() const$/;"	f	class:QtNodes::ConnectionGraphicsObject	typeref:typename:std::pair<QPointF,QPointF>
+portData	GraphModel.cpp	/^portData(NodeId    nodeId,$/;"	f	class:QtNodes::GraphModel	typeref:typename:QVariant
+portNodePosition	NodeGeometry.cpp	/^portNodePosition(PortType  const portType,$/;"	f	class:QtNodes::NodeGeometry	typeref:typename:QPointF
+portScenePosition	NodeGeometry.cpp	/^portScenePosition(PortType  const portType,$/;"	f	class:QtNodes::NodeGeometry	typeref:typename:QPointF
+portWidth	NodeGeometry.cpp	/^portWidth(PortType portType) const$/;"	f	class:QtNodes::NodeGeometry	typeref:typename:unsigned int
+propagateData	Connection.cpp	/^propagateData(std::shared_ptr<NodeData> nodeData) const$/;"	f	class:Connection	typeref:typename:void
+propagateData	Node.cpp	/^propagateData(std::shared_ptr<NodeData> nodeData,$/;"	f	class:Node	typeref:typename:void
+propagateEmptyData	Connection.cpp	/^propagateEmptyData() const$/;"	f	class:Connection	typeref:typename:void
+put	Properties.cpp	/^put(QString const &name, QVariant const &v)$/;"	f	class:Properties	typeref:typename:void
+reactToPossibleConnection	NodeState.cpp	/^reactToPossibleConnection(PortType reactingPortType,$/;"	f	class:QtNodes::NodeState	typeref:typename:void
+reactingDataType	NodeState.cpp	/^reactingDataType() const$/;"	f	class:QtNodes::NodeState	typeref:typename:NodeDataType
+reactingPortType	NodeState.cpp	/^reactingPortType() const$/;"	f	class:QtNodes::NodeState	typeref:typename:PortType
+reaction	NodeState.cpp	/^reaction() const$/;"	f	class:QtNodes::NodeState	typeref:typename:NodeState::ReactToConnectionState
+recalculateSize	NodeGeometry.cpp	/^recalculateSize() const$/;"	f	class:QtNodes::NodeGeometry	typeref:typename:QSize
+recalculateSizeIfFontChanged	NodeGeometry.cpp	/^recalculateSizeIfFontChanged(QFont const & font) const$/;"	f	class:QtNodes::NodeGeometry	typeref:typename:QSize
+registry	FlowScene.cpp	/^registry() const$/;"	f	class:FlowScene	typeref:typename:DataModelRegistry &
+removeFromNodes	Connection.cpp	/^removeFromNodes() const$/;"	f	class:Connection	typeref:typename:void
+removeNode	FlowScene.cpp	/^removeNode(Node& node)$/;"	f	class:FlowScene	typeref:typename:void
+requiredPort	ConnectionState.cpp	/^requiredPort() const$/;"	f	class:QtNodes::ConnectionState	typeref:typename:PortType
+requiresPort	ConnectionState.cpp	/^requiresPort() const$/;"	f	class:QtNodes::ConnectionState	typeref:typename:bool
+resetLastHoveredNode	ConnectionState.cpp	/^resetLastHoveredNode()$/;"	f	class:QtNodes::ConnectionState	typeref:typename:void
+resetReactionToConnection	NodeState.cpp	/^resetReactionToConnection()$/;"	f	class:QtNodes::NodeState	typeref:typename:void
+resizeRect	NodeGeometry.cpp	/^resizeRect() const$/;"	f	class:QtNodes::NodeGeometry	typeref:typename:QRect
+resizing	NodeState.cpp	/^resizing() const$/;"	f	class:QtNodes::NodeState	typeref:typename:bool
+restore	Node.cpp	/^restore(QJsonObject const & json)$/;"	f	class:Node	typeref:typename:void
+restoreConnection	FlowScene.cpp	/^restoreConnection(QJsonObject const &connectionJson)$/;"	f	class:FlowScene	typeref:typename:std::shared_ptr<Connection>
+restoreNode	FlowScene.cpp	/^restoreNode(QJsonObject const& nodeJson)$/;"	f	class:FlowScene	typeref:typename:Node &
+save	Connection.cpp	/^save() const$/;"	f	class:Connection	typeref:typename:QJsonObject
+save	FlowScene.cpp	/^save() const$/;"	f	class:FlowScene	typeref:typename:void
+save	Node.cpp	/^save() const$/;"	f	class:Node	typeref:typename:QJsonObject
+saveToMemory	FlowScene.cpp	/^saveToMemory() const$/;"	f	class:FlowScene	typeref:typename:QByteArray
+scaleDown	GraphicsView.cpp	/^scaleDown()$/;"	f	class:GraphicsView	typeref:typename:void
+scaleUp	GraphicsView.cpp	/^scaleUp()$/;"	f	class:GraphicsView	typeref:typename:void
+scene	GraphicsView.cpp	/^scene()$/;"	f	class:GraphicsView	typeref:typename:NodeGraphicsScene *
+selectedColor	ConnectionStyle.cpp	/^selectedColor() const$/;"	f	class:ConnectionStyle	typeref:typename:QColor
+selectedHaloColor	ConnectionStyle.cpp	/^selectedHaloColor() const$/;"	f	class:ConnectionStyle	typeref:typename:QColor
+selectedNodes	FlowScene.cpp	/^selectedNodes() const$/;"	f	class:FlowScene	typeref:typename:std::vector<Node * >
+selectedNodes	NodeGraphicsScene.cpp	/^selectedNodes() const$/;"	f	class:QtNodes::NodeGraphicsScene	typeref:typename:std::vector<NodeId>
+sendConnectionCreatedToNodes	FlowScene.cpp	/^sendConnectionCreatedToNodes(Connection const& c)$/;"	f	class:FlowScene	typeref:typename:void
+sendConnectionDeletedToNodes	FlowScene.cpp	/^sendConnectionDeletedToNodes(Connection const& c)$/;"	f	class:FlowScene	typeref:typename:void
+setConnectionId	ConnectionGraphicsObject.cpp	/^setConnectionId(ConnectionId const connectionId)$/;"	f	class:QtNodes::ConnectionGraphicsObject	typeref:typename:void
+setConnectionStyle	ConnectionStyle.cpp	/^setConnectionStyle(QString jsonText)$/;"	f	class:ConnectionStyle	typeref:typename:void
+setConnectionStyle	StyleCollection.cpp	/^setConnectionStyle(ConnectionStyle connectionStyle)$/;"	f	class:StyleCollection	typeref:typename:void
+setEndPoint	ConnectionGraphicsObject.cpp	/^setEndPoint(PortType portType, QPointF const & point)$/;"	f	class:QtNodes::ConnectionGraphicsObject	typeref:typename:void
+setGeometryChanged	ConnectionGraphicsObject.cpp	/^setGeometryChanged()$/;"	f	class:QtNodes::ConnectionGraphicsObject	typeref:typename:void
+setGeometryChanged	NodeGraphicsObject.cpp	/^setGeometryChanged()$/;"	f	class:NodeGraphicsObject	typeref:typename:void
+setGraphicsObject	Connection.cpp	/^setGraphicsObject(std::unique_ptr<ConnectionGraphicsObject>&& graphics)$/;"	f	class:Connection	typeref:typename:void
+setGraphicsObject	Node.cpp	/^setGraphicsObject(std::unique_ptr<NodeGraphicsObject> && graphics)$/;"	f	class:Node	typeref:typename:void
+setGraphicsViewStyle	StyleCollection.cpp	/^setGraphicsViewStyle(GraphicsViewStyle flowViewStyle)$/;"	f	class:StyleCollection	typeref:typename:void
+setLastHoveredNode	ConnectionState.cpp	/^setLastHoveredNode(NodeId const nodeId)$/;"	f	class:QtNodes::ConnectionState	typeref:typename:void
+setNodeData	GraphModel.cpp	/^setNodeData(NodeId nodeId, NodeRole role, QVariant value)$/;"	f	class:QtNodes::GraphModel	typeref:typename:bool
+setNodePosition	FlowScene.cpp	/^setNodePosition(Node& node, const QPointF& pos) const$/;"	f	class:FlowScene	typeref:typename:void
+setNodeStyle	NodeStyle.cpp	/^setNodeStyle(QString jsonText)$/;"	f	class:NodeStyle	typeref:typename:void
+setNodeStyle	StyleCollection.cpp	/^setNodeStyle(NodeStyle nodeStyle)$/;"	f	class:StyleCollection	typeref:typename:void
+setNodeToPort	Connection.cpp	/^setNodeToPort(Node&     node,$/;"	f	class:Connection	typeref:typename:void
+setPortData	GraphModel.cpp	/^setPortData(NodeId    nodeId,$/;"	f	class:QtNodes::GraphModel	typeref:typename:bool
+setReaction	NodeState.cpp	/^setReaction(ReactToConnectionState reaction,$/;"	f	class:QtNodes::NodeState	typeref:typename:void
+setRegistry	FlowScene.cpp	/^setRegistry(std::shared_ptr<DataModelRegistry> registry)$/;"	f	class:FlowScene	typeref:typename:void
+setRequiredPort	Connection.cpp	/^setRequiredPort(PortType dragging)$/;"	f	class:Connection	typeref:typename:void
+setResizing	NodeState.cpp	/^setResizing(bool resizing)$/;"	f	class:QtNodes::NodeState	typeref:typename:void
+setScene	GraphicsView.cpp	/^GraphicsView::setScene(NodeGraphicsScene *scene)$/;"	f	class:GraphicsView	typeref:typename:void
+setStyle	GraphicsViewStyle.cpp	/^setStyle(QString jsonText)$/;"	f	class:GraphicsViewStyle	typeref:typename:void
+setTypeConverter	Connection.cpp	/^setTypeConverter(TypeConverter converter)$/;"	f	class:Connection	typeref:typename:void
+setupConnectionSignals	FlowScene.cpp	/^setupConnectionSignals(Connection const& c)$/;"	f	class:FlowScene	typeref:typename:void
+shape	ConnectionGraphicsObject.cpp	/^shape() const$/;"	f	class:QtNodes::ConnectionGraphicsObject	typeref:typename:QPainterPath
+showEvent	GraphicsView.cpp	/^showEvent(QShowEvent *event)$/;"	f	class:GraphicsView	typeref:typename:void
+toJson	ConnectionStyle.cpp	/^toJson() const$/;"	f	class:ConnectionStyle	typeref:typename:QJsonDocument
+toJson	GraphicsViewStyle.cpp	/^toJson() const$/;"	f	class:GraphicsViewStyle	typeref:typename:QJsonDocument
+toJson	NodeStyle.cpp	/^toJson() const$/;"	f	class:NodeStyle	typeref:typename:QJsonDocument
+traverseGraphAndPopulateGraphicsObjects	NodeGraphicsScene.cpp	/^traverseGraphAndPopulateGraphicsObjects()$/;"	f	class:QtNodes::NodeGraphicsScene	typeref:typename:void
+tryConnect	NodeConnectionInteraction.cpp	/^tryConnect() const$/;"	f	class:QtNodes::NodeConnectionInteraction	typeref:typename:bool
+useDataDefinedColors	ConnectionStyle.cpp	/^useDataDefinedColors() const$/;"	f	class:ConnectionStyle	typeref:typename:bool
+values	Properties.hpp	/^  values() const$/;"	f	class:QtNodes::Properties	typeref:typename:QVariantMap const &
+values	Properties.hpp	/^  values()$/;"	f	class:QtNodes::Properties	typeref:typename:QVariantMap &
+verticalSpacing	NodeGeometry.cpp	/^verticalSpacing() const$/;"	f	class:QtNodes::NodeGeometry	typeref:typename:unsigned int
+wheelEvent	GraphicsView.cpp	/^wheelEvent(QWheelEvent *event)$/;"	f	class:GraphicsView	typeref:typename:void
+widgetPosition	NodeGeometry.cpp	/^widgetPosition() const$/;"	f	class:QtNodes::NodeGeometry	typeref:typename:QPointF
+~Connection	Connection.cpp	/^~Connection()$/;"	f	class:Connection
+~ConnectionGraphicsObject	ConnectionGraphicsObject.cpp	/^~ConnectionGraphicsObject()$/;"	f	class:QtNodes::ConnectionGraphicsObject
+~ConnectionState	ConnectionState.cpp	/^~ConnectionState()$/;"	f	class:QtNodes::ConnectionState
+~FlowScene	FlowScene.cpp	/^~FlowScene()$/;"	f	class:FlowScene
+~NodeGraphicsObject	NodeGraphicsObject.cpp	/^~NodeGraphicsObject()$/;"	f	class:NodeGraphicsObject
+~NodeGraphicsScene	NodeGraphicsScene.cpp	/^~NodeGraphicsScene()$/;"	f	class:QtNodes::NodeGraphicsScene
