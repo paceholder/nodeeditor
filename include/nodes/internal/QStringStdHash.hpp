@@ -1,5 +1,11 @@
 #pragma once
 
+#include <QtGlobal>
+
+#if (QT_VERSION < QT_VERSION_CHECK(5, 14, 0))
+
+// As of 5.14 there is a specialization std::hash<QString>
+
 #include <functional>
 
 #include <QtCore/QString>
@@ -17,3 +23,5 @@ struct hash<QString>
   }
 };
 }
+
+#endif
