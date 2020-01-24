@@ -2,15 +2,18 @@ clone_depth: 5
 
 environment:
   matrix:
-    - GENERATOR : "Visual Studio 15 2017 Win64"
-      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-      QTDIR: C:\Qt\5.12.2\msvc2017_64
+    - GENERATOR : "Visual Studio 16 2019"
+      ARCHITECTURE : "-A x64"
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+      QTDIR: C:\Qt\5.14.0\msvc2017_64
       PLATFORM: x64
     - GENERATOR : "Visual Studio 15 2017"
+      ARCHITECTURE : ""
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-      QTDIR: C:\Qt\5.12.2\msvc2017
+      QTDIR: C:\Qt\5.13.2\msvc2017
       PLATFORM: Win32
     - GENERATOR : "MinGW Makefiles"
+      ARCHITECTURE : ""
       QTDIR: C:\Qt\5.11.3\mingw53_32
       PLATFORM: x86
       CMAKE_CXX_FLAGS_INIT: -DCATCH_CONFIG_NO_CPP11_TO_STRING
@@ -30,7 +33,7 @@ before_build:
   - cd build
   - mkdir bin
   - set OUTPUT_DIR=%cd%\bin
-  - cmake "-G%GENERATOR%"
+  - cmake "-G%GENERATOR%" %ARCHITECTURE%
     -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG="%OUTPUT_DIR%"
     -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE="%OUTPUT_DIR%"
     -DCMAKE_CXX_FLAGS_INIT="%CMAKE_CXX_FLAGS_INIT%"
