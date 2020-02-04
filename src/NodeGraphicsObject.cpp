@@ -184,8 +184,10 @@ void
 NodeGraphicsObject::
 paint(QPainter * painter,
       QStyleOptionGraphicsItem const* option,
-      QWidget* )
+      QWidget* widget)
 {
+  Q_UNUSED(widget);
+
   painter->setClipRect(option->exposedRect);
 
   NodePainter::paint(painter, _node, _scene);
@@ -424,6 +426,7 @@ hoverEnterEvent(QGraphicsSceneHoverEvent * event)
   {
     if (auto group = qgraphicsitem_cast<GroupGraphicsObject*>(item))
     {
+      Q_UNUSED(group);
       continue;
     }
     if (item->zValue() > 0.0)
