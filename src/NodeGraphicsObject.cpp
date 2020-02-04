@@ -186,7 +186,7 @@ paint(QPainter * painter,
       QStyleOptionGraphicsItem const* option,
       QWidget* widget)
 {
-  (void)(widget);
+  Q_UNUSED(widget);
 
   painter->setClipRect(option->exposedRect);
 
@@ -426,7 +426,7 @@ hoverEnterEvent(QGraphicsSceneHoverEvent * event)
   {
     if (auto group = qgraphicsitem_cast<GroupGraphicsObject*>(item))
     {
-      (void)(group);
+      Q_UNUSED(group);
       continue;
     }
     if (item->zValue() > 0.0)

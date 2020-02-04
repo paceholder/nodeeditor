@@ -242,7 +242,7 @@ void
 GroupGraphicsObject::
 hoverEnterEvent(QGraphicsSceneHoverEvent* event)
 {
-  (void)(event);
+  Q_UNUSED(event);
   setHovered(true);
 }
 
@@ -250,7 +250,7 @@ void
 GroupGraphicsObject::
 hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
 {
-  (void)(event);
+  Q_UNUSED(event);
   setHovered(false);
 }
 
@@ -282,7 +282,7 @@ paint(QPainter* painter,
       const QStyleOptionGraphicsItem* option,
       QWidget* widget)
 {
-  (void)(widget);
+  Q_UNUSED(widget);
   setRect(boundingRect());
   positionLockedIcon();
   painter->setClipRect(option->exposedRect);
