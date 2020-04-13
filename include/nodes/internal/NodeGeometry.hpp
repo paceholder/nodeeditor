@@ -193,9 +193,6 @@ private:
 
   bool _hovered;
 
-  unsigned int _nSources;
-  unsigned int _nSinks;
-
   QPointF _draggingPos;
 
   std::unique_ptr<NodeDataModel> const &_dataModel;
