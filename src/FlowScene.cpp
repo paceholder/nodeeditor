@@ -866,16 +866,36 @@ loadGroupFile()
 
 void
 FlowScene::
-nodePortsChanged(const QUuid& nodeId, const QtNodes::PortType type, int nPorts)
+nodePortsChanged(const QUuid& nodeId,
+                 const QtNodes::PortType portType,
+                 unsigned int nPorts)
 {
   auto nodeIt = _nodes.find(nodeId);
   if (nodeIt != _nodes.end())
   {
     auto node = nodeIt->second.get();
+    auto previousNPorts = node->nodeState().getEntries(portType).size();
 
-    /** @todo routine that adds/removes ports from nodeState in a loop */
+    /** @todo as of now, the nPorts() method of the node isn't changed and
+     * must be handled externally by the final node class. This could be
+     * changed to improve consistency. */
 
-  } else {
+    int diff = nPorts - previousNPorts;
+    bool positiveDiff = diff > 0;
+
+    for (int i = 0; i < abs(diff); i++)
+    {
+      positiveDiff?
+      node->nodeState().addPort(portType):
+      node->nodeState().removePort(portType);
+    }
+    node->nodeGraphicsObject().setGeometryChanged();
+    node->nodeGeometry().recalculateSize();
+    node->nodeGraphicsObject().update();
+    node->nodeGraphicsObject().moveConnections();
+  }
+  else
+  {
     qDebug() << "Error changing number of ports! Node ID not found.";
   }
 }

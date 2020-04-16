@@ -202,8 +202,8 @@ public Q_SLOTS:
   * @param nPorts New number of ports of the selected type
   */
  void nodePortsChanged(const QUuid& nodeId,
-                       const QtNodes::PortType type,
-                       int nPorts);
+                       const QtNodes::PortType portType,
+                       unsigned int nPorts);
 
 Q_SIGNALS:
 
