@@ -193,6 +193,18 @@ public:
    */
   std::weak_ptr<NodeGroup> loadGroupFile();
 
+public Q_SLOTS:
+ /**
+  * @brief Slot called when the quantity of inputs or outputs of a node
+  * changes.
+  * @param nodeId ID of the altered node
+  * @param type Type of port that was changed (input/output)
+  * @param nPorts New number of ports of the selected type
+  */
+ void nodePortsChanged(const QUuid& nodeId,
+                       const QtNodes::PortType type,
+                       int nPorts);
+
 Q_SIGNALS:
 
   /**

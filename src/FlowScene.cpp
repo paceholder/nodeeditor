@@ -864,6 +864,13 @@ loadGroupFile()
   return restoreGroup(fileJson);
 }
 
+void
+FlowScene::
+nodePortsChanged(const QUuid& nodeId, const QtNodes::PortType type, int nPorts)
+{
+
+}
+
 
 void
 FlowScene::
