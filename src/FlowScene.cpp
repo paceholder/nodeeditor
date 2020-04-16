@@ -868,7 +868,16 @@ void
 FlowScene::
 nodePortsChanged(const QUuid& nodeId, const QtNodes::PortType type, int nPorts)
 {
+  auto nodeIt = _nodes.find(nodeId);
+  if (nodeIt != _nodes.end())
+  {
+    auto node = nodeIt->second.get();
 
+    /** @todo routine that adds/removes ports from nodeState in a loop */
+
+  } else {
+    qDebug() << "Error changing number of ports! Node ID not found.";
+  }
 }
 
 

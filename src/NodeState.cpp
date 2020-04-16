@@ -136,3 +136,13 @@ resizing() const
 {
   return _resizing;
 }
+
+void NodeState::addPort(const QtNodes::PortType portType)
+{
+
+}
+
+void NodeState::removePort(const QtNodes::PortType portType)
+{
+
+}
