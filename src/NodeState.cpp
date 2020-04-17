@@ -137,31 +137,19 @@ resizing() const
   return _resizing;
 }
 
-void NodeState::addPort(const QtNodes::PortType portType)
+void
+NodeState::
+addPort(const QtNodes::PortType portType)
 {
   ConnectionPtrSet new_connection_set{};
-  switch(portType){
-    case PortType::In:
-      _inConnections.push_back(new_connection_set);
-      break;
-    case PortType::Out:
-      _outConnections.push_back(new_connection_set);
-      break;
-    case PortType::None:
-      break;
-  }
+  auto& entries = getEntries(portType);
+  entries.push_back(new_connection_set);
 }
 
-void NodeState::removePort(const QtNodes::PortType portType)
+void
+NodeState::
+removePort(const QtNodes::PortType portType)
 {
-  switch(portType){
-    case PortType::In:
-      _inConnections.pop_back();
-    break;
-    case PortType::Out:
-      _outConnections.pop_back();
-      break;
-    case PortType::None:
-      break;
-  }
+  auto& entries = getEntries(portType);
+  entries.pop_back();
 }
