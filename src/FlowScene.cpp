@@ -881,17 +881,21 @@ nodePortsChanged(const QUuid& nodeId,
      * changed to improve consistency. */
 
     int diff = nPorts - previousNPorts;
-    bool positiveDiff = diff > 0;
     auto& nodePorts = node->nodeState().getEntries(portType);
 
-    for (int i = 0; i < abs(diff); i++)
+    if (diff > 0)
     {
-      if (positiveDiff)
-      {
-        NodeState::ConnectionPtrSet newConnectionSet{};
-        nodePorts.push_back(newConnectionSet);
-      }
-      else
+      std::vector<NodeState::ConnectionPtrSet>
+          newConnectionSets(diff, NodeState::ConnectionPtrSet());
+
+      // appends the new ConnectionPtrSets to the port's vector
+      nodePorts.insert(nodePorts.end(),
+                       newConnectionSets.begin(),
+                       newConnectionSets.end());
+    }
+    else
+    {
+      for (int i = 0; i > diff; i--)
       {
         while (!nodePorts.back().empty())
         {
