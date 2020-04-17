@@ -882,12 +882,23 @@ nodePortsChanged(const QUuid& nodeId,
 
     int diff = nPorts - previousNPorts;
     bool positiveDiff = diff > 0;
+    auto& nodePorts = node->nodeState().getEntries(portType);
 
     for (int i = 0; i < abs(diff); i++)
     {
-      positiveDiff?
-      node->nodeState().addPort(portType):
-      node->nodeState().removePort(portType);
+      if (positiveDiff)
+      {
+        NodeState::ConnectionPtrSet newConnectionSet{};
+        nodePorts.push_back(newConnectionSet);
+      }
+      else
+      {
+        while (!nodePorts.back().empty())
+        {
+          deleteConnection(*nodePorts.back().begin()->second);
+        }
+        nodePorts.pop_back();
+      }
     }
     node->nodeGraphicsObject().setGeometryChanged();
     node->nodeGeometry().recalculateSize();

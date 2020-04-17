@@ -83,12 +83,6 @@ public:
   bool
   resizing() const;
 
-  void
-  addPort(const PortType portType);
-
-  void
-  removePort(const PortType portType);
-
 private:
 
   std::vector<ConnectionPtrSet> _inConnections;

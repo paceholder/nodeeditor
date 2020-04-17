@@ -136,20 +136,3 @@ resizing() const
 {
   return _resizing;
 }
-
-void
-NodeState::
-addPort(const QtNodes::PortType portType)
-{
-  ConnectionPtrSet new_connection_set{};
-  auto& entries = getEntries(portType);
-  entries.push_back(new_connection_set);
-}
-
-void
-NodeState::
-removePort(const QtNodes::PortType portType)
-{
-  auto& entries = getEntries(portType);
-  entries.pop_back();
-}
