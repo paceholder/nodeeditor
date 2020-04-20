@@ -904,10 +904,7 @@ nodePortsChanged(const QUuid& nodeId,
         nodePorts.pop_back();
       }
     }
-    node->nodeGraphicsObject().setGeometryChanged();
-    node->nodeGeometry().recalculateSize();
-    node->nodeGraphicsObject().update();
-    node->nodeGraphicsObject().moveConnections();
+    node->nodeGraphicsObject().updateGeometry();
   }
   else
   {

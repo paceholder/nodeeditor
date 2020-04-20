@@ -61,6 +61,13 @@ public:
   void
   lock(bool locked);
 
+  /**
+   * @brief Method that updates the graphical object accounting for changes in
+   * the node's geometry and ports.
+   */
+  void
+  updateGeometry();
+
 protected:
   void
   paint(QPainter*                       painter,

@@ -179,6 +179,16 @@ lock(bool locked)
   setFlag(QGraphicsItem::ItemIsSelectable, !locked);
 }
 
+void
+NodeGraphicsObject::
+updateGeometry()
+{
+  setGeometryChanged();
+  node().nodeGeometry().recalculateSize();
+  moveConnections();
+  update();
+}
+
 
 void
 NodeGraphicsObject::
