@@ -136,3 +136,23 @@ resizing() const
 {
   return _resizing;
 }
+
+void
+NodeState::
+insertPort(const QtNodes::PortType& portType,
+           const size_t index)
+{
+  auto& ports = getEntries(portType);
+  assert(index <= ports.size());
+  ports.emplace(std::next(ports.begin(), index));
+}
+
+void
+NodeState::
+erasePort(const QtNodes::PortType portType,
+           const size_t index)
+{
+  auto& ports = getEntries(portType);
+  assert(index < ports.size());
+  ports.erase(std::next(ports.begin(), index));
+}

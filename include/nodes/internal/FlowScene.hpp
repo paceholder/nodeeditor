@@ -205,6 +205,14 @@ public Q_SLOTS:
                        const QtNodes::PortType portType,
                        unsigned int nPorts);
 
+ void insertNodePort(const QUuid& nodeId,
+                     const QtNodes::PortType portType,
+                     size_t portPos);
+
+ void removeNodePort(const QUuid& nodeId,
+                     const QtNodes::PortType portType,
+                     size_t portPos);
+
 Q_SIGNALS:
 
   /**

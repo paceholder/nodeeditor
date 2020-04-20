@@ -880,28 +880,18 @@ nodePortsChanged(const QUuid& nodeId,
      * must be handled externally by the final node class. This could be
      * changed to improve consistency. */
 
-    int diff = nPorts - previousNPorts;
-    auto& nodePorts = node->nodeState().getEntries(portType);
-
-    if (diff > 0)
+    if (nPorts > previousNPorts)
     {
-      std::vector<NodeState::ConnectionPtrSet>
-          newConnectionSets(diff, NodeState::ConnectionPtrSet());
-
-      // appends the new ConnectionPtrSets to the port's vector
-      nodePorts.insert(nodePorts.end(),
-                       newConnectionSets.begin(),
-                       newConnectionSets.end());
-    }
-    else
-    {
-      for (int i = 0; i > diff; i--)
+      for (unsigned int i = previousNPorts; i < nPorts; i++)
       {
-        while (!nodePorts.back().empty())
-        {
-          deleteConnection(*nodePorts.back().begin()->second);
-        }
-        nodePorts.pop_back();
+        insertNodePort(nodeId, portType, i);
+      }
+    }
+    else if (nPorts < previousNPorts)
+    {
+      for (unsigned int i = previousNPorts; i >= nPorts; i--)
+      {
+        removeNodePort(nodeId, portType, i - 1);
       }
     }
     node->nodeGraphicsObject().updateGeometry();
@@ -909,6 +899,55 @@ nodePortsChanged(const QUuid& nodeId,
   else
   {
     qDebug() << "Error changing number of ports! Node ID not found.";
+  }
+}
+
+void
+FlowScene::
+insertNodePort(const QUuid& nodeId,
+               const QtNodes::PortType portType,
+               size_t portPos)
+{
+  auto nodeIt = _nodes.find(nodeId);
+  if (nodeIt != _nodes.end())
+  {
+    auto node = nodeIt->second.get();
+    node->nodeState().insertPort(portType, portPos);
+  }
+  else
+  {
+    qDebug() << "Error inserting node port! Node ID not found.";
+  }
+}
+
+void
+FlowScene::
+removeNodePort(const QUuid& nodeId,
+               const QtNodes::PortType portType,
+               size_t portPos)
+{
+  auto nodeIt = _nodes.find(nodeId);
+  if (nodeIt != _nodes.end())
+  {
+    auto node = nodeIt->second.get();
+    auto deletedPort = node->nodeState().getEntries(portType)[portPos];
+
+    std::vector<Connection*> portConnections{};
+    portConnections.reserve(deletedPort.size());
+    for (const auto& entry : deletedPort)
+    {
+      portConnections.push_back(entry.second);
+    }
+
+    for (auto& connection : portConnections) {
+      deleteConnection(*connection);
+    }
+
+    node->nodeState().erasePort(portType, portPos);
+  }
+  else
+  {
+    qDebug() << "Error removing node port! Node ID not found.";
   }
 }
 
