@@ -891,7 +891,7 @@ nodePortsChanged(const QUuid& nodeId,
     {
       for (unsigned int i = previousNPorts; i >= nPorts; i--)
       {
-        removeNodePort(nodeId, portType, i - 1);
+        eraseNodePort(nodeId, portType, i - 1);
       }
     }
     node->nodeGraphicsObject().updateGeometry();
@@ -906,13 +906,13 @@ void
 FlowScene::
 insertNodePort(const QUuid& nodeId,
                const QtNodes::PortType portType,
-               size_t portPos)
+               size_t index)
 {
   auto nodeIt = _nodes.find(nodeId);
   if (nodeIt != _nodes.end())
   {
     auto node = nodeIt->second.get();
-    node->nodeState().insertPort(portType, portPos);
+    node->nodeState().insertPort(portType, index);
   }
   else
   {
@@ -922,15 +922,15 @@ insertNodePort(const QUuid& nodeId,
 
 void
 FlowScene::
-removeNodePort(const QUuid& nodeId,
+eraseNodePort(const QUuid& nodeId,
                const QtNodes::PortType portType,
-               size_t portPos)
+               size_t index)
 {
   auto nodeIt = _nodes.find(nodeId);
   if (nodeIt != _nodes.end())
   {
     auto node = nodeIt->second.get();
-    auto deletedPort = node->nodeState().getEntries(portType)[portPos];
+    auto deletedPort = node->nodeState().getEntries(portType)[index];
 
     std::vector<Connection*> portConnections{};
     portConnections.reserve(deletedPort.size());
@@ -943,7 +943,7 @@ removeNodePort(const QUuid& nodeId,
       deleteConnection(*connection);
     }
 
-    node->nodeState().erasePort(portType, portPos);
+    node->nodeState().erasePort(portType, index);
   }
   else
   {

@@ -205,13 +205,27 @@ public Q_SLOTS:
                        const QtNodes::PortType portType,
                        unsigned int nPorts);
 
+ /**
+  * @brief Slot called to insert an input/output port at a specific
+  * index of the desired node.
+  * @param nodeId ID of the altered node
+  * @param portType Type of port (input/output)
+  * @param index Index at which the new port will be placed
+  */
  void insertNodePort(const QUuid& nodeId,
                      const QtNodes::PortType portType,
-                     size_t portPos);
+                     size_t index);
 
- void removeNodePort(const QUuid& nodeId,
+ /**
+  * @brief Slot called to erase an input/output port at a specific
+  * index of the desired node.
+  * @param nodeId ID of the altered node
+  * @param portType Type of port (input/output)
+  * @param index Index at which the port will be removed
+  */
+ void eraseNodePort(const QUuid& nodeId,
                      const QtNodes::PortType portType,
-                     size_t portPos);
+                     size_t index);
 
 Q_SIGNALS:
 
