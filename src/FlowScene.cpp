@@ -894,7 +894,6 @@ nodePortsChanged(const QUuid& nodeId,
         eraseNodePort(nodeId, portType, i - 1);
       }
     }
-    node->nodeGraphicsObject().updateGeometry();
   }
   else
   {
@@ -913,6 +912,7 @@ insertNodePort(const QUuid& nodeId,
   {
     auto node = nodeIt->second.get();
     node->nodeState().insertPort(portType, index);
+    node->nodeGraphicsObject().updateGeometry();
   }
   else
   {
@@ -944,6 +944,7 @@ eraseNodePort(const QUuid& nodeId,
     }
 
     node->nodeState().erasePort(portType, index);
+    node->nodeGraphicsObject().updateGeometry();
   }
   else
   {
