@@ -889,7 +889,7 @@ nodePortsChanged(const QUuid& nodeId,
     }
     else if (nPorts < previousNPorts)
     {
-      for (unsigned int i = previousNPorts; i >= nPorts; i--)
+      for (unsigned int i = previousNPorts; i > nPorts; i--)
       {
         eraseNodePort(nodeId, portType, i - 1);
       }
