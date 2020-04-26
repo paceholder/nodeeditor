@@ -145,6 +145,15 @@ insertPort(const QtNodes::PortType& portType,
   auto& ports = getEntries(portType);
   assert(index <= ports.size());
   ports.emplace(std::next(ports.begin(), index));
+
+  // updates the index of each moved connection
+  for (size_t i = index + 1; i < ports.size(); i++)
+  {
+    for (const auto& entry : ports[i])
+    {
+      entry.second->setPortIndex(portType, i);
+    }
+  }
 }
 
 void
