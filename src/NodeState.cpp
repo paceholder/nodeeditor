@@ -139,33 +139,32 @@ resizing() const
 
 void
 NodeState::
-insertPort(const QtNodes::PortType& portType,
+insertPort(const PortType& portType,
            const size_t index)
 {
   auto& ports = getEntries(portType);
   assert(index <= ports.size());
   ports.emplace(std::next(ports.begin(), index));
-
-  // updates the index of each moved connection
-  for (size_t i = index + 1; i < ports.size(); i++)
-  {
-    for (const auto& entry : ports[i])
-    {
-      entry.second->setPortIndex(portType, i);
-    }
-  }
+  updateConnectionIndices(portType, index + 1);
 }
 
 void
 NodeState::
-erasePort(const QtNodes::PortType portType,
-           const size_t index)
+erasePort(const PortType portType,
+          const size_t index)
 {
   auto& ports = getEntries(portType);
   assert(index < ports.size());
   ports.erase(std::next(ports.begin(), index));
+  updateConnectionIndices(portType, index);
+}
 
-  // updates the index of each moved connection
+void
+NodeState::
+updateConnectionIndices(const PortType portType,
+                        const size_t index)
+{
+  auto& ports = getEntries(portType);
   for (size_t i = index; i < ports.size(); i++)
   {
     for (const auto& entry : ports[i])
