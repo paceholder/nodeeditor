@@ -116,6 +116,10 @@ public:
   getPortIndex(PortType portType) const;
 
   void
+  setPortIndex(const PortType portType,
+               const PortIndex portIndex);
+
+  void
   clearNode(PortType portType);
 
   NodeDataType

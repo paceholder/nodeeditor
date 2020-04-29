@@ -136,3 +136,40 @@ resizing() const
 {
   return _resizing;
 }
+
+void
+NodeState::
+insertPort(const PortType& portType,
+           const size_t index)
+{
+  auto& ports = getEntries(portType);
+  assert(index <= ports.size());
+  ports.emplace(std::next(ports.begin(), index));
+  updateConnectionIndices(portType, index + 1);
+}
+
+void
+NodeState::
+erasePort(const PortType portType,
+          const size_t index)
+{
+  auto& ports = getEntries(portType);
+  assert(index < ports.size());
+  ports.erase(std::next(ports.begin(), index));
+  updateConnectionIndices(portType, index);
+}
+
+void
+NodeState::
+updateConnectionIndices(const PortType portType,
+                        const size_t index)
+{
+  auto& ports = getEntries(portType);
+  for (size_t i = index; i < ports.size(); i++)
+  {
+    for (const auto& entry : ports[i])
+    {
+      entry.second->setPortIndex(portType, i);
+    }
+  }
+}

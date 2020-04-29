@@ -83,6 +83,35 @@ public:
   bool
   resizing() const;
 
+  /**
+   * @brief Adds a new input/output port at the desired index.
+   * @param portType Type of port (input or output)
+   * @param index Index at which the new port will be placed
+   */
+  void
+  insertPort(const PortType& portType,
+             const size_t index);
+
+  /**
+   * @brief Removes the input/output port at the given index.
+   * @param portType Type of port (input or output)
+   * @param index Index at which the port will be removed
+   */
+  void
+  erasePort(const PortType portType,
+            const size_t index);
+
+  /**
+   * @brief Updates the indices of all connections of this
+   * node's ports, starting at the given index. Useful when
+   * inserting or removing ports from a node.
+   * @param portType Type of port (input or output)
+   * @param index Starting index to update
+   */
+  void
+  updateConnectionIndices(const PortType portType,
+                          const size_t index);
+
 private:
 
   std::vector<ConnectionPtrSet> _inConnections;

@@ -864,6 +864,94 @@ loadGroupFile()
   return restoreGroup(fileJson);
 }
 
+void
+FlowScene::
+nodePortsChanged(const QUuid& nodeId,
+                 const QtNodes::PortType portType,
+                 unsigned int nPorts)
+{
+  auto nodeIt = _nodes.find(nodeId);
+  if (nodeIt != _nodes.end())
+  {
+    auto node = nodeIt->second.get();
+    auto previousNPorts = node->nodeState().getEntries(portType).size();
+
+    /** @todo as of now, the nPorts() method of the node isn't changed and
+     * must be handled externally by the final node class. This could be
+     * changed to improve consistency. */
+
+    if (nPorts > previousNPorts)
+    {
+      for (unsigned int i = previousNPorts; i < nPorts; i++)
+      {
+        insertNodePort(nodeId, portType, i);
+      }
+    }
+    else if (nPorts < previousNPorts)
+    {
+      for (unsigned int i = previousNPorts; i > nPorts; i--)
+      {
+        eraseNodePort(nodeId, portType, i - 1);
+      }
+    }
+  }
+  else
+  {
+    qDebug() << "Error changing number of ports! Node ID not found.";
+  }
+}
+
+void
+FlowScene::
+insertNodePort(const QUuid& nodeId,
+               const QtNodes::PortType portType,
+               size_t index)
+{
+  auto nodeIt = _nodes.find(nodeId);
+  if (nodeIt != _nodes.end())
+  {
+    auto node = nodeIt->second.get();
+    node->nodeState().insertPort(portType, index);
+    node->nodeGraphicsObject().updateGeometry();
+  }
+  else
+  {
+    qDebug() << "Error inserting node port! Node ID not found.";
+  }
+}
+
+void
+FlowScene::
+eraseNodePort(const QUuid& nodeId,
+               const QtNodes::PortType portType,
+               size_t index)
+{
+  auto nodeIt = _nodes.find(nodeId);
+  if (nodeIt != _nodes.end())
+  {
+    auto node = nodeIt->second.get();
+    auto deletedPort = node->nodeState().getEntries(portType)[index];
+
+    std::vector<Connection*> portConnections{};
+    portConnections.reserve(deletedPort.size());
+    for (const auto& entry : deletedPort)
+    {
+      portConnections.push_back(entry.second);
+    }
+
+    for (auto& connection : portConnections) {
+      deleteConnection(*connection);
+    }
+
+    node->nodeState().erasePort(portType, index);
+    node->nodeGraphicsObject().updateGeometry();
+  }
+  else
+  {
+    qDebug() << "Error removing node port! Node ID not found.";
+  }
+}
+
 
 void
 FlowScene::

@@ -228,6 +228,26 @@ getPortIndex(PortType portType) const
   return result;
 }
 
+void
+Connection::
+setPortIndex(const PortType portType,
+             const PortIndex portIndex)
+{
+  switch (portType)
+  {
+  case PortType::In:
+    _inPortIndex = portIndex;
+    return;
+
+  case PortType::Out:
+    _outPortIndex = portIndex;
+    return;
+
+  default:
+    return;
+  }
+}
+
 
 void
 Connection::
