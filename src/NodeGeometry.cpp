@@ -24,6 +24,8 @@ NodeGeometry(std::unique_ptr<NodeDataModel> const &dataModel)
   , _inputPortWidth(70)
   , _outputPortWidth(70)
   , _entryHeight(20)
+  , _statusIconWidth(30)
+  , _statusIconHeight(30)
   , _spacing(20)
   , _hovered(false)
   , _draggingPos(-1000, -1000)
@@ -86,7 +88,7 @@ recalculateSize() const
   {
     unsigned int maxNumOfEntries = std::max(nSinks(), nSources());
     unsigned int step = _entryHeight + _spacing;
-    _height = step * maxNumOfEntries;
+    _height = step * maxNumOfEntries + _statusIconHeight;
   }
 
   if (auto w = _dataModel->embeddedWidget())
@@ -99,8 +101,8 @@ recalculateSize() const
   _inputPortWidth  = portWidth(PortType::In);
   _outputPortWidth = portWidth(PortType::Out);
 
-  _width = _inputPortWidth +
-           _outputPortWidth +
+  _width = std::max(_inputPortWidth + _outputPortWidth,
+                    _statusIconWidth) +
            2 * _spacing;
 
   if (auto w = _dataModel->embeddedWidget())

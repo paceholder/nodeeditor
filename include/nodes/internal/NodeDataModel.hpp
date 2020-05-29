@@ -22,6 +22,14 @@ enum class NodeValidationState
   Error
 };
 
+enum class NodeThreadState
+{
+  UpToDate,
+  Processing,
+  Pending,
+  Invalid,
+};
+
 class Connection;
 
 class StyleCollection;

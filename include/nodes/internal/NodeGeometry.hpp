@@ -189,6 +189,8 @@ private:
   mutable unsigned int _inputPortWidth;
   mutable unsigned int _outputPortWidth;
   mutable unsigned int _entryHeight;
+  unsigned int _statusIconWidth;
+  unsigned int _statusIconHeight;
   unsigned int _spacing;
 
   bool _hovered;
