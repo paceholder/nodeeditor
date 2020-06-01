@@ -24,10 +24,10 @@ enum class NodeValidationState
 
 enum class NodeThreadState
 {
-  UpToDate,
+  Updated,
   Processing,
   Pending,
-  Invalid,
+  Invalid
 };
 
 class Connection;

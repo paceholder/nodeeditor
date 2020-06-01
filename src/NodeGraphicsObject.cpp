@@ -13,7 +13,6 @@
 #include "NodePainter.hpp"
 
 #include "Node.hpp"
-#include "NodeDataModel.hpp"
 #include "NodeConnectionInteraction.hpp"
 
 #include "NodeGroup.hpp"
@@ -24,6 +23,17 @@
 using QtNodes::NodeGraphicsObject;
 using QtNodes::Node;
 using QtNodes::FlowScene;
+using QtNodes::ThreadStatusIcon;
+using QtNodes::NodeThreadState;
+
+const std::map<NodeThreadState, QPixmap>
+ThreadStatusIcon::_pixmaps =
+{
+    {NodeThreadState::Updated, QPixmap{"://status_icons/updated.png"}},
+    {NodeThreadState::Processing, QPixmap{"://status_icons/processing.png"}},
+    {NodeThreadState::Pending, QPixmap{"://status_icons/pending.png"}},
+    {NodeThreadState::Invalid, QPixmap{"://status_icons/invalid.png"}}
+};
 
 NodeGraphicsObject::
 NodeGraphicsObject(FlowScene &scene,
