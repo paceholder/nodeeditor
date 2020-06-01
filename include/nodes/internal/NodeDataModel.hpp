@@ -22,12 +22,12 @@ enum class NodeValidationState
   Error
 };
 
-enum class NodeThreadState
+enum class NodeProcessingStatus
 {
   Updated,
   Processing,
   Pending,
-  Invalid
+  Invalid,
 };
 
 class Connection;
@@ -158,6 +158,29 @@ public:
     return nullptr;
   }
 
+  virtual
+  NodeProcessingStatus
+  processingStatus() const
+  {
+    return NodeProcessingStatus::Pending;
+  }
+
+  QPixmap
+  processingStatusIcon() const
+  {
+    switch(processingStatus())
+    {
+      case NodeProcessingStatus::Updated:
+        return _statusUpdated;
+      case NodeProcessingStatus::Processing:
+        return _statusProcessing;
+      case NodeProcessingStatus::Pending:
+        return _statusPending;
+      case NodeProcessingStatus::Invalid:
+        return _statusInvalid;
+    }
+  }
+
 public Q_SLOTS:
 
   virtual void
@@ -195,6 +218,12 @@ Q_SIGNALS:
   computingFinished();
 
   void embeddedWidgetSizeUpdated();
+
+public:
+  const QPixmap _statusUpdated{"://status_icons/updated.png"};
+  const QPixmap _statusProcessing{"://status_icons/processing.png"};
+  const QPixmap _statusPending{"://status_icons/pending.png"};
+  const QPixmap _statusInvalid{"://status_icons/invalid.png"};
 
 private:
 

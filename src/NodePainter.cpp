@@ -50,6 +50,8 @@ paint(QPainter* painter,
 
   drawResizeRect(painter, geom, model);
 
+  drawStatusIcon(painter, geom, model);
+
   drawValidationRect(painter, geom, model, graphicsObject);
 
   /// call custom painter
@@ -182,7 +184,7 @@ drawConnectionPoints(QPainter* painter,
                            reducedDiameter * r,
                            reducedDiameter * r);
     }
-  };
+  }
 }
 
 
@@ -410,5 +412,15 @@ drawValidationRect(QPainter * painter,
     painter->setFont(f);
     painter->setPen(nodeStyle.FontColor);
     painter->drawText(position, errorMsg);
-  }
+    }
+}
+
+void
+NodePainter::
+drawStatusIcon(QPainter *painter,
+               NodeGeometry const & geom,
+               NodeDataModel const * model)
+{
+  painter->drawPixmap(geom.statusIconRect(),
+                      model->processingStatusIcon());
 }

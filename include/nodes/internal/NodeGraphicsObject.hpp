@@ -5,7 +5,6 @@
 
 #include "Connection.hpp"
 
-#include "NodeDataModel.hpp"
 #include "NodeGeometry.hpp"
 #include "NodeState.hpp"
 
@@ -13,30 +12,6 @@ class QGraphicsProxyWidget;
 
 namespace QtNodes
 {
-
-class ThreadStatusIcon : public QGraphicsPixmapItem
-{
-public:
-  ThreadStatusIcon(int iconSize,
-                   QGraphicsItem* parent = nullptr);
-
-  void
-  setStatus(const NodeThreadState state);
-
-  void
-  setIconSize(int iconSize);
-
-  void
-  updateScaleFactor();
-
-private:
-  int _iconSize;
-
-  const QPixmap _statusUpdated{"://status_icons/updated.png"};
-  const QPixmap _statusProcessing{"://status_icons/processing.png"};
-  const QPixmap _statusPending{"://status_icons/pending.png"};
-  const QPixmap _statusInvalid{"://status_icons/invalid.png"};
-};
 
 class FlowScene;
 class FlowItemEntry;
@@ -143,8 +118,6 @@ private:
   GroupGraphicsObject* _possibleGroup;
 
   QRectF _originalGroupSize;
-
-  std::unique_ptr<ThreadStatusIcon> _statusIcon;
 
   // either nullptr or owned by parent QGraphicsItem
   QGraphicsProxyWidget * _proxyWidget;

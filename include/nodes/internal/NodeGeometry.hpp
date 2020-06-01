@@ -165,6 +165,13 @@ public:
   calculateNodePositionBetweenNodePorts(PortIndex targetPortIndex, PortType targetPort, Node* targetNode,
                                         PortIndex sourcePortIndex, PortType sourcePort, Node* sourceNode,
                                         Node& newNode);
+
+  int
+  statusIconSize() const;
+
+  QRect
+  statusIconRect() const;
+
 private:
 
   unsigned int
@@ -189,8 +196,7 @@ private:
   mutable unsigned int _inputPortWidth;
   mutable unsigned int _outputPortWidth;
   mutable unsigned int _entryHeight;
-  unsigned int _statusIconWidth;
-  unsigned int _statusIconHeight;
+  int _statusIconSize;
   unsigned int _spacing;
 
   bool _hovered;

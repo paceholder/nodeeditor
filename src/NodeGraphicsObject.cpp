@@ -13,6 +13,7 @@
 #include "NodePainter.hpp"
 
 #include "Node.hpp"
+#include "NodeDataModel.hpp"
 #include "NodeConnectionInteraction.hpp"
 
 #include "NodeGroup.hpp"
@@ -23,54 +24,14 @@
 using QtNodes::NodeGraphicsObject;
 using QtNodes::Node;
 using QtNodes::FlowScene;
-using QtNodes::ThreadStatusIcon;
-using QtNodes::NodeThreadState;
 
-ThreadStatusIcon::
-ThreadStatusIcon(int iconSize,
-                 QGraphicsItem *parent)
-    : QGraphicsPixmapItem(parent)
-{
-  setStatus(NodeThreadState::Invalid);
-  setIconSize(iconSize);
-}
-
-void
-ThreadStatusIcon::
-setStatus(const NodeThreadState state)
-{
-  switch(state){
-    case NodeThreadState::Updated:
-      setPixmap(_statusUpdated);
-    break;
-    case NodeThreadState::Processing:
-      setPixmap(_statusProcessing);
-    break;
-    case NodeThreadState::Pending:
-      setPixmap(_statusPending);
-    break;
-    case NodeThreadState::Invalid:
-      setPixmap(_statusInvalid);
-    break;
-  }
-  updateScaleFactor();
-}
-
-void
-ThreadStatusIcon::
-setIconSize(int iconSize)
-{
-  _iconSize = iconSize;
-  updateScaleFactor();
-}
-
-void ThreadStatusIcon::updateScaleFactor()
-{
-  double scaleFactor = static_cast<double>(_iconSize) /
-                       std::max(pixmap().size().width(),
-                                pixmap().size().height());
-  setScale(scaleFactor);
-}
+//void ThreadStatusIcon::updateScaleFactor()
+//{
+//  double scaleFactor = static_cast<double>(_iconSize) /
+//                       std::max(pixmap().size().width(),
+//                                pixmap().size().height());
+//  setScale(scaleFactor);
+//}
 
 NodeGraphicsObject::
 NodeGraphicsObject(FlowScene &scene,
@@ -81,7 +42,6 @@ NodeGraphicsObject(FlowScene &scene,
   , _draggingIntoGroup(false)
   , _possibleGroup(nullptr)
   , _originalGroupSize(QRectF())
-//  , _statusIcon(std::make_unique<ThreadStatusIcon>(30, this))
   , _proxyWidget(nullptr)
 {
   _scene.addItem(this);

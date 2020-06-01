@@ -75,5 +75,11 @@ public:
                      NodeGeometry const & geom,
                      NodeDataModel const * model,
                      NodeGraphicsObject const & graphicsObject);
+
+  static
+  void
+  drawStatusIcon(QPainter * painter,
+                 NodeGeometry const & geom,
+                 NodeDataModel const * model);
 };
 }
