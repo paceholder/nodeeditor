@@ -166,9 +166,17 @@ public:
                                         PortIndex sourcePortIndex, PortType sourcePort, Node* sourceNode,
                                         Node& newNode);
 
+  /**
+   * @brief Returns the size (width or height) of the icon that indicates the node's
+   * current processing status. The icon is assumed to be square.
+   */
   int
   statusIconSize() const;
 
+  /**
+   * @brief Returns the dimensions of the icon that indicates the node's
+   * current processing status. The icon is assumed to be square.
+   */
   QRect
   statusIconRect() const;
 

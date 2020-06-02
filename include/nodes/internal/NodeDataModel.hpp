@@ -22,6 +22,11 @@ enum class NodeValidationState
   Error
 };
 
+/**
+ * @brief The NodeProcessingStatus enum defines a node's state in the data topology.
+ * It should be used when managing the topology's data flow and should be propagated
+ * to subsequent nodes before and after each computation.
+ */
 enum class NodeProcessingStatus
 {
   Updated,
@@ -158,6 +163,9 @@ public:
     return nullptr;
   }
 
+  /**
+   * @brief Returns the node's current processing status.
+   */
   virtual
   NodeProcessingStatus
   processingStatus() const
@@ -165,6 +173,10 @@ public:
     return NodeProcessingStatus::Pending;
   }
 
+  /**
+   * @brief Returns the pixmap associated with the node's
+   * current processing status.
+   */
   QPixmap
   processingStatusIcon() const
   {
@@ -220,6 +232,9 @@ Q_SIGNALS:
   void embeddedWidgetSizeUpdated();
 
 public:
+  /**
+   * @brief Pixmaps for the processing status icons
+   */
   const QPixmap _statusUpdated{"://status_icons/updated.png"};
   const QPixmap _statusProcessing{"://status_icons/processing.png"};
   const QPixmap _statusPending{"://status_icons/pending.png"};

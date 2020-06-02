@@ -25,14 +25,6 @@ using QtNodes::NodeGraphicsObject;
 using QtNodes::Node;
 using QtNodes::FlowScene;
 
-//void ThreadStatusIcon::updateScaleFactor()
-//{
-//  double scaleFactor = static_cast<double>(_iconSize) /
-//                       std::max(pixmap().size().width(),
-//                                pixmap().size().height());
-//  setScale(scaleFactor);
-//}
-
 NodeGraphicsObject::
 NodeGraphicsObject(FlowScene &scene,
                    Node& node)
