@@ -347,9 +347,11 @@ QRect
 NodeGeometry::
 statusIconRect() const
 {
-  auto iconPos = portScenePosition(std::max(nSources(), nSinks()) + 1,
+  auto spacing = static_cast<int>(_spacing) / 2;
+  auto iconPos = portScenePosition(std::max(nSources(), nSinks()),
                                    PortType::Out).toPoint()
-                 - QPoint{int(statusIconSize()),0};
+                 + QPoint{- statusIconSize() - spacing,
+                          - statusIconSize() + spacing};
 
   return QRect{iconPos.x(), iconPos.y(),statusIconSize(), statusIconSize()};
 }
