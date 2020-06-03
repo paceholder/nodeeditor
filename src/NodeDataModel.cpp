@@ -52,7 +52,7 @@ processingStatusIcon() const
       return _statusProcessing;
     case NodeProcessingStatus::Pending:
       return _statusPending;
-    case NodeProcessingStatus::Invalid:
+    case NodeProcessingStatus::Failed:
       return _statusInvalid;
     }
 }

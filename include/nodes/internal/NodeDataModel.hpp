@@ -171,7 +171,7 @@ public:
   NodeProcessingStatus
   processingStatus() const
   {
-    return NodeProcessingStatus::Failed;
+    return NodeProcessingStatus::Updated;
   }
 
   /**
@@ -226,7 +226,7 @@ public:
   const QIcon _statusUpdated{"://status_icons/updated.svg"};
   const QIcon _statusProcessing{"://status_icons/processing.svg"};
   const QIcon _statusPending{"://status_icons/pending.svg"};
-  const QIcon _statusInvalid{"://status_icons/invalid.svg"};
+  const QIcon _statusInvalid{"://status_icons/failed.svg"};
 
 private:
 
