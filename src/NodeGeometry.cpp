@@ -24,7 +24,7 @@ NodeGeometry(std::unique_ptr<NodeDataModel> const &dataModel)
   , _inputPortWidth(70)
   , _outputPortWidth(70)
   , _entryHeight(20)
-  , _statusIconSize(32)
+  , _statusIconSize(32, 32)
   , _spacing(20)
   , _hovered(false)
   , _draggingPos(-1000, -1000)
@@ -87,7 +87,7 @@ recalculateSize() const
   {
     unsigned int maxNumOfEntries = std::max(nSinks(), nSources());
     unsigned int step = _entryHeight + _spacing;
-    _height = step * maxNumOfEntries + _statusIconSize;
+    _height = step * maxNumOfEntries + _statusIconSize.height();
   }
 
   if (auto w = _dataModel->embeddedWidget())
@@ -101,7 +101,7 @@ recalculateSize() const
   _outputPortWidth = portWidth(PortType::Out);
 
   _width = std::max(_inputPortWidth + _outputPortWidth,
-                    static_cast<unsigned int>(_statusIconSize)) +
+                    static_cast<unsigned int>(_statusIconSize.width())) +
            2 * _spacing;
 
   if (auto w = _dataModel->embeddedWidget())
@@ -336,7 +336,7 @@ calculateNodePositionBetweenNodePorts(PortIndex targetPortIndex, PortType target
   return converterNodePos;
 }
 
-int
+QSize
 NodeGeometry::
 statusIconSize() const
 {
@@ -347,13 +347,15 @@ QRect
 NodeGeometry::
 statusIconRect() const
 {
-  auto spacing = static_cast<int>(_spacing) / 2;
+  auto spacing = static_cast<int>(_spacing);
   auto iconPos = portScenePosition(std::max(nSources(), nSinks()),
                                    PortType::Out).toPoint()
-                 + QPoint{- statusIconSize() - spacing,
-                          - statusIconSize() + spacing};
+                 + QPoint{-statusIconSize().width() - spacing / 2, - spacing};
 
-  return QRect{iconPos.x(), iconPos.y(),statusIconSize(), statusIconSize()};
+  return QRect{iconPos.x(),
+               iconPos.y(),
+               statusIconSize().width(),
+               statusIconSize().height()};
 }
 
 

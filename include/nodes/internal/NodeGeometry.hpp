@@ -167,10 +167,10 @@ public:
                                         Node& newNode);
 
   /**
-   * @brief Returns the size (width or height) of the icon that indicates the node's
+   * @brief Returns the size (width and height) of the icon that indicates the node's
    * current processing status. The icon is assumed to be square.
    */
-  int
+  QSize
   statusIconSize() const;
 
   /**
@@ -204,7 +204,7 @@ private:
   mutable unsigned int _inputPortWidth;
   mutable unsigned int _outputPortWidth;
   mutable unsigned int _entryHeight;
-  int _statusIconSize;
+  QSize _statusIconSize;
   unsigned int _spacing;
 
   bool _hovered;

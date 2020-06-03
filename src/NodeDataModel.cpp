@@ -39,3 +39,20 @@ setNodeStyle(NodeStyle const& style)
 {
   _nodeStyle = style;
 }
+
+QIcon
+NodeDataModel::
+processingStatusIcon() const
+{
+  switch(processingStatus())
+    {
+    case NodeProcessingStatus::Updated:
+      return _statusUpdated;
+    case NodeProcessingStatus::Processing:
+      return _statusProcessing;
+    case NodeProcessingStatus::Pending:
+      return _statusPending;
+    case NodeProcessingStatus::Invalid:
+      return _statusInvalid;
+    }
+}

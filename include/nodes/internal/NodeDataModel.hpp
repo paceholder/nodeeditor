@@ -2,6 +2,7 @@
 
 
 #include <QtWidgets/QWidget>
+#include <QIcon>
 
 #include "PortType.hpp"
 #include "NodeData.hpp"
@@ -174,24 +175,11 @@ public:
   }
 
   /**
-   * @brief Returns the pixmap associated with the node's
+   * @brief Returns the icon associated with the node's
    * current processing status.
    */
-  QPixmap
-  processingStatusIcon() const
-  {
-    switch(processingStatus())
-    {
-      case NodeProcessingStatus::Updated:
-        return _statusUpdated;
-      case NodeProcessingStatus::Processing:
-        return _statusProcessing;
-      case NodeProcessingStatus::Pending:
-        return _statusPending;
-      case NodeProcessingStatus::Failed:
-        return _statusFailed;
-    }
-  }
+  QIcon
+  processingStatusIcon() const;
 
 public Q_SLOTS:
 
@@ -233,12 +221,12 @@ Q_SIGNALS:
 
 public:
   /**
-   * @brief Pixmaps for the processing status icons
+   * @brief Processing status icons
    */
-  const QPixmap _statusUpdated{"://status_icons/updated.png"};
-  const QPixmap _statusProcessing{"://status_icons/processing.png"};
-  const QPixmap _statusPending{"://status_icons/pending.png"};
-  const QPixmap _statusFailed{"://status_icons/failed.png"};
+  const QIcon _statusUpdated{"://status_icons/updated.svg"};
+  const QIcon _statusProcessing{"://status_icons/processing.svg"};
+  const QIcon _statusPending{"://status_icons/pending.svg"};
+  const QIcon _statusInvalid{"://status_icons/invalid.svg"};
 
 private:
 

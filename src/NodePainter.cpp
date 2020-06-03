@@ -422,5 +422,5 @@ drawStatusIcon(QPainter *painter,
                NodeDataModel const * model)
 {
   painter->drawPixmap(geom.statusIconRect(),
-                      model->processingStatusIcon());
+                      model->processingStatusIcon().pixmap(geom.statusIconSize()));
 }
