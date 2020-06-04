@@ -4,17 +4,20 @@
 #include <QtCore/QPointF>
 #include <QtGui/QTransform>
 #include <QtGui/QFontMetrics>
+#include <QIcon>
 
 #include "PortType.hpp"
 #include "Export.hpp"
 #include "memory.hpp"
 
+
 namespace QtNodes
 {
 
-class NodeState;
 class NodeDataModel;
+class NodeState;
 class Node;
+enum class NodeProcessingStatus;
 /**
  * @brief The NodeGeometry class holds the aspects of a node's graphical object
  * geometry in the FlowScene, such as the position of each port within a node.
@@ -168,17 +171,23 @@ public:
 
   /**
    * @brief Returns the size (width and height) of the icon that indicates the node's
-   * current processing status. The icon is assumed to be square.
+   * current processing status.
    */
   QSize
   statusIconSize() const;
 
   /**
    * @brief Returns the dimensions of the icon that indicates the node's
-   * current processing status. The icon is assumed to be square.
+   * current processing status.
    */
   QRect
   statusIconRect() const;
+
+  /**
+   * @brief Returns the icon associated with the given processing status.
+   */
+  QIcon
+  processingStatusIcon(const NodeProcessingStatus status) const;
 
 private:
 
@@ -215,5 +224,13 @@ private:
 
   mutable QFontMetrics _fontMetrics;
   mutable QFontMetrics _boldFontMetrics;
+
+  /**
+   * @brief Processing status icons
+   */
+  const QIcon _statusUpdated{"://status_icons/updated.svg"};
+  const QIcon _statusProcessing{"://status_icons/processing.svg"};
+  const QIcon _statusPending{"://status_icons/pending.svg"};
+  const QIcon _statusInvalid{"://status_icons/failed.svg"};
 };
 }

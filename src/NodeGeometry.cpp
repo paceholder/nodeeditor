@@ -358,6 +358,23 @@ statusIconRect() const
                statusIconSize().height()};
 }
 
+QIcon
+NodeGeometry::
+processingStatusIcon(const NodeProcessingStatus status) const
+{
+  switch(status)
+    {
+    case NodeProcessingStatus::Updated:
+      return _statusUpdated;
+    case NodeProcessingStatus::Processing:
+      return _statusProcessing;
+    case NodeProcessingStatus::Pending:
+      return _statusPending;
+    case NodeProcessingStatus::Failed:
+      return _statusInvalid;
+    }
+}
+
 
 unsigned int
 NodeGeometry::

@@ -2,7 +2,6 @@
 
 
 #include <QtWidgets/QWidget>
-#include <QIcon>
 
 #include "PortType.hpp"
 #include "NodeData.hpp"
@@ -174,13 +173,6 @@ public:
     return NodeProcessingStatus::Updated;
   }
 
-  /**
-   * @brief Returns the icon associated with the node's
-   * current processing status.
-   */
-  QIcon
-  processingStatusIcon() const;
-
 public Q_SLOTS:
 
   virtual void
@@ -218,15 +210,6 @@ Q_SIGNALS:
   computingFinished();
 
   void embeddedWidgetSizeUpdated();
-
-public:
-  /**
-   * @brief Processing status icons
-   */
-  const QIcon _statusUpdated{"://status_icons/updated.svg"};
-  const QIcon _statusProcessing{"://status_icons/processing.svg"};
-  const QIcon _statusPending{"://status_icons/pending.svg"};
-  const QIcon _statusInvalid{"://status_icons/failed.svg"};
 
 private:
 
