@@ -85,7 +85,6 @@ public:
   static
   void
   drawStatusIcon(QPainter * painter,
-                 NodeGeometry const & geom,
-                 NodeDataModel const * model);
+                 NodeGeometry const & geom);
 };
 }

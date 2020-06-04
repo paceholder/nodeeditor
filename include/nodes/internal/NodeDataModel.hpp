@@ -29,10 +29,11 @@ enum class NodeValidationState
  */
 enum class NodeProcessingStatus
 {
-  Updated,
-  Processing,
-  Pending,
-  Failed,
+  NoStatus   = 0,
+  Updated    = 1,
+  Processing = 2,
+  Pending    = 3,
+  Failed     = 4,
 };
 
 class Connection;
@@ -170,7 +171,7 @@ public:
   NodeProcessingStatus
   processingStatus() const
   {
-    return NodeProcessingStatus::Updated;
+    return NodeProcessingStatus::NoStatus;
   }
 
 public Q_SLOTS:

@@ -170,8 +170,15 @@ public:
                                         Node& newNode);
 
   /**
-   * @brief Returns the size (width and height) of the icon that indicates the node's
-   * current processing status.
+   * @brief Updates the space reserved for the status icon based on the
+   * model's current status.
+   */
+  void
+  updateStatusIconSize() const;
+
+  /**
+   * @brief Returns the size (width and height) of the icon that indicates
+   * the node's current processing status.
    */
   QSize
   statusIconSize() const;
@@ -184,10 +191,10 @@ public:
   statusIconRect() const;
 
   /**
-   * @brief Returns the icon associated with the given processing status.
+   * @brief Returns the icon associated with the model's current processing status.
    */
-  QIcon
-  processingStatusIcon(const NodeProcessingStatus status) const;
+  const QIcon&
+  processingStatusIcon() const;
 
 private:
 
@@ -213,10 +220,16 @@ private:
   mutable unsigned int _inputPortWidth;
   mutable unsigned int _outputPortWidth;
   mutable unsigned int _entryHeight;
-  QSize _statusIconSize;
+  mutable QSize _statusIconSize;
   unsigned int _spacing;
 
   bool _hovered;
+
+  /**
+   * @brief Flag indicating whether the processing status icon should be part
+   * of the node's geometry.
+   */
+  mutable bool _statusIconActive;
 
   QPointF _draggingPos;
 

@@ -50,7 +50,7 @@ paint(QPainter* painter,
 
   drawResizeRect(painter, geom, model);
 
-  drawStatusIcon(painter, geom, model);
+  drawStatusIcon(painter, geom);
 
   drawValidationRect(painter, geom, model, graphicsObject);
 
@@ -417,11 +417,10 @@ drawValidationRect(QPainter * painter,
 
 void
 NodePainter::
-drawStatusIcon(QPainter *painter,
-               NodeGeometry const & geom,
-               NodeDataModel const * model)
+drawStatusIcon(QPainter * painter,
+               QtNodes::NodeGeometry const & geom)
 {
+  geom.updateStatusIconSize();
   painter->drawPixmap(geom.statusIconRect(),
-                      geom.processingStatusIcon(model->processingStatus())
-                      .pixmap(geom.statusIconSize()));
+                      geom.processingStatusIcon().pixmap(geom.statusIconSize() * 3));
 }

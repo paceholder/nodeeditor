@@ -24,7 +24,6 @@ NodeGeometry(std::unique_ptr<NodeDataModel> const &dataModel)
   , _inputPortWidth(70)
   , _outputPortWidth(70)
   , _entryHeight(20)
-  , _statusIconSize(32, 32)
   , _spacing(20)
   , _hovered(false)
   , _draggingPos(-1000, -1000)
@@ -36,6 +35,10 @@ NodeGeometry(std::unique_ptr<NodeDataModel> const &dataModel)
   f.setBold(true);
 
   _boldFontMetrics = QFontMetrics(f);
+
+  _statusIconActive = _dataModel->processingStatus() != NodeProcessingStatus::NoStatus;
+  _statusIconSize.setWidth(_statusIconActive? 32 : 0);
+  _statusIconSize.setHeight(_statusIconActive? 32 : 0);
 }
 
 unsigned int
@@ -336,6 +339,21 @@ calculateNodePositionBetweenNodePorts(PortIndex targetPortIndex, PortType target
   return converterNodePos;
 }
 
+void
+NodeGeometry::
+updateStatusIconSize() const
+{
+  bool oldStatus = _statusIconActive;
+  _statusIconActive =
+      _dataModel->processingStatus() != NodeProcessingStatus::NoStatus;
+
+  if (oldStatus != _statusIconActive)
+  {
+    _statusIconSize.setWidth(_statusIconActive? 32 : 0);
+    _statusIconSize.setHeight(_statusIconActive? 32 : 0);
+  }
+}
+
 QSize
 NodeGeometry::
 statusIconSize() const
@@ -358,12 +376,13 @@ statusIconRect() const
                statusIconSize().height()};
 }
 
-QIcon
+const QIcon&
 NodeGeometry::
-processingStatusIcon(const NodeProcessingStatus status) const
+processingStatusIcon() const
 {
-  switch(status)
+  switch(_dataModel->processingStatus())
     {
+    case NodeProcessingStatus::NoStatus:
     case NodeProcessingStatus::Updated:
       return _statusUpdated;
     case NodeProcessingStatus::Processing:
