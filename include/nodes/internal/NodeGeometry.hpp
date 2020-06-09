@@ -4,17 +4,20 @@
 #include <QtCore/QPointF>
 #include <QtGui/QTransform>
 #include <QtGui/QFontMetrics>
+#include <QIcon>
 
 #include "PortType.hpp"
 #include "Export.hpp"
 #include "memory.hpp"
 
+
 namespace QtNodes
 {
 
-class NodeState;
 class NodeDataModel;
+class NodeState;
 class Node;
+enum class NodeProcessingStatus;
 /**
  * @brief The NodeGeometry class holds the aspects of a node's graphical object
  * geometry in the FlowScene, such as the position of each port within a node.
@@ -165,6 +168,34 @@ public:
   calculateNodePositionBetweenNodePorts(PortIndex targetPortIndex, PortType targetPort, Node* targetNode,
                                         PortIndex sourcePortIndex, PortType sourcePort, Node* sourceNode,
                                         Node& newNode);
+
+  /**
+   * @brief Updates the space reserved for the status icon based on the
+   * model's current status.
+   */
+  void
+  updateStatusIconSize() const;
+
+  /**
+   * @brief Returns the size (width and height) of the icon that indicates
+   * the node's current processing status.
+   */
+  QSize
+  statusIconSize() const;
+
+  /**
+   * @brief Returns the dimensions of the icon that indicates the node's
+   * current processing status.
+   */
+  QRect
+  statusIconRect() const;
+
+  /**
+   * @brief Returns the icon associated with the model's current processing status.
+   */
+  const QIcon&
+  processingStatusIcon() const;
+
 private:
 
   unsigned int
@@ -189,9 +220,16 @@ private:
   mutable unsigned int _inputPortWidth;
   mutable unsigned int _outputPortWidth;
   mutable unsigned int _entryHeight;
+  mutable QSize _statusIconSize;
   unsigned int _spacing;
 
   bool _hovered;
+
+  /**
+   * @brief Flag indicating whether the processing status icon should be part
+   * of the node's geometry.
+   */
+  mutable bool _statusIconActive;
 
   QPointF _draggingPos;
 
@@ -199,5 +237,13 @@ private:
 
   mutable QFontMetrics _fontMetrics;
   mutable QFontMetrics _boldFontMetrics;
+
+  /**
+   * @brief Processing status icons
+   */
+  const QIcon _statusUpdated{"://status_icons/updated.svg"};
+  const QIcon _statusProcessing{"://status_icons/processing.svg"};
+  const QIcon _statusPending{"://status_icons/pending.svg"};
+  const QIcon _statusInvalid{"://status_icons/failed.svg"};
 };
 }

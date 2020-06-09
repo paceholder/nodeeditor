@@ -22,6 +22,20 @@ enum class NodeValidationState
   Error
 };
 
+/**
+ * @brief The NodeProcessingStatus enum defines a node's state in the data topology.
+ * It should be used when managing the topology's data flow and should be propagated
+ * to subsequent nodes before and after each computation.
+ */
+enum class NodeProcessingStatus
+{
+  NoStatus   = 0,
+  Updated    = 1,
+  Processing = 2,
+  Pending    = 3,
+  Failed     = 4,
+};
+
 class Connection;
 
 class StyleCollection;
@@ -148,6 +162,16 @@ public:
   NodePainterDelegate* painterDelegate() const
   {
     return nullptr;
+  }
+
+  /**
+   * @brief Returns the node's current processing status.
+   */
+  virtual
+  NodeProcessingStatus
+  processingStatus() const
+  {
+    return NodeProcessingStatus::NoStatus;
   }
 
 public Q_SLOTS:
