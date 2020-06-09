@@ -226,10 +226,10 @@ drawNormalLine(QPainter * painter,
   {
     painter->setBrush(Qt::NoBrush);
 
-    QColor c = normalColorOut; 
+    QColor col = normalColorOut;
     if (selected)
-      c = c.darker(200);
-    p.setColor(c);
+      col = col.darker(200);
+    p.setColor(col);
     painter->setPen(p);
 
     unsigned int const segments = 60;
