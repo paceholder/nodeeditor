@@ -33,7 +33,8 @@ enum class NodeProcessingStatus
   Updated    = 1,
   Processing = 2,
   Pending    = 3,
-  Failed     = 4,
+  Empty      = 4,
+  Failed     = 5,
 };
 
 class Connection;
