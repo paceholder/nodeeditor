@@ -35,6 +35,10 @@ NodeGeometry(std::unique_ptr<NodeDataModel> const &dataModel)
   f.setBold(true);
 
   _boldFontMetrics = QFontMetrics(f);
+
+  _statusIconActive = _dataModel->processingStatus() != NodeProcessingStatus::NoStatus;
+  _statusIconSize.setWidth(_statusIconActive? 32 : 0);
+  _statusIconSize.setHeight(_statusIconActive? 32 : 0);
 }
 
 unsigned int
@@ -86,7 +90,7 @@ recalculateSize() const
   {
     unsigned int maxNumOfEntries = std::max(nSinks(), nSources());
     unsigned int step = _entryHeight + _spacing;
-    _height = step * maxNumOfEntries;
+    _height = step * maxNumOfEntries + _statusIconSize.height();
   }
 
   if (auto w = _dataModel->embeddedWidget())
@@ -99,8 +103,8 @@ recalculateSize() const
   _inputPortWidth  = portWidth(PortType::In);
   _outputPortWidth = portWidth(PortType::Out);
 
-  _width = _inputPortWidth +
-           _outputPortWidth +
+  _width = std::max(_inputPortWidth + _outputPortWidth,
+                    static_cast<unsigned int>(_statusIconSize.width())) +
            2 * _spacing;
 
   if (auto w = _dataModel->embeddedWidget())
@@ -333,6 +337,61 @@ calculateNodePositionBetweenNodePorts(PortIndex targetPortIndex, PortType target
   converterNodePos.setX(converterNodePos.x() - newNode.nodeGeometry().width() / 2.0f);
   converterNodePos.setY(converterNodePos.y() - newNode.nodeGeometry().height() / 2.0f);
   return converterNodePos;
+}
+
+void
+NodeGeometry::
+updateStatusIconSize() const
+{
+  bool oldStatus = _statusIconActive;
+  _statusIconActive =
+      _dataModel->processingStatus() != NodeProcessingStatus::NoStatus;
+
+  if (oldStatus != _statusIconActive)
+  {
+    _statusIconSize.setWidth(_statusIconActive? 32 : 0);
+    _statusIconSize.setHeight(_statusIconActive? 32 : 0);
+  }
+}
+
+QSize
+NodeGeometry::
+statusIconSize() const
+{
+  return _statusIconSize;
+}
+
+QRect
+NodeGeometry::
+statusIconRect() const
+{
+  auto spacing = static_cast<int>(_spacing);
+  auto iconPos = portScenePosition(std::max(nSources(), nSinks()),
+                                   PortType::Out).toPoint()
+                 + QPoint{-statusIconSize().width() - spacing / 2, - spacing};
+
+  return QRect{iconPos.x(),
+               iconPos.y(),
+               statusIconSize().width(),
+               statusIconSize().height()};
+}
+
+const QIcon&
+NodeGeometry::
+processingStatusIcon() const
+{
+  switch(_dataModel->processingStatus())
+    {
+    case NodeProcessingStatus::NoStatus:
+    case NodeProcessingStatus::Updated:
+      return _statusUpdated;
+    case NodeProcessingStatus::Processing:
+      return _statusProcessing;
+    case NodeProcessingStatus::Pending:
+      return _statusPending;
+    case NodeProcessingStatus::Failed:
+      return _statusInvalid;
+    }
 }
 
 

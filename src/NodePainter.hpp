@@ -75,5 +75,16 @@ public:
                      NodeGeometry const & geom,
                      NodeDataModel const * model,
                      NodeGraphicsObject const & graphicsObject);
+
+  /**
+   * @brief Draws the icon indicating the node's current processing status.
+   * @param painter Painter to be used
+   * @param geom Node geometry
+   * @param model Node model
+   */
+  static
+  void
+  drawStatusIcon(QPainter * painter,
+                 NodeGeometry const & geom);
 };
 }
