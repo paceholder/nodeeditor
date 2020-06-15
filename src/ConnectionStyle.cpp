@@ -7,7 +7,7 @@
 #include <QtCore/QJsonObject>
 #include <QtCore/QJsonValueRef>
 #include <QtCore/QJsonArray>
-
+#include <QRandomGenerator>
 #include <QDebug>
 
 #include "StyleCollection.hpp"
@@ -162,14 +162,14 @@ QColor
 ConnectionStyle::
 normalColor(QString typeId) const
 {
-  std::size_t hash = qHash(typeId);
+  qint32 hash = qHash(typeId);
 
-  std::size_t const hue_range = 0xFF;
+  qint32 const hue_range = 0xFF;
 
-  qsrand(hash);
-  std::size_t hue = qrand() % hue_range;
+  auto rng = QRandomGenerator(hash);
+  qint32 hue = rng.bounded(hue_range);
 
-  std::size_t sat = 120 + hash % 129;
+  qint32 sat = 120 + hash % 129;
 
   return QColor::fromHsl(hue,
                          sat,
