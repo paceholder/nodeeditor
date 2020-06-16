@@ -394,6 +394,7 @@ processingStatusIcon() const
     case NodeProcessingStatus::Failed:
       return _statusInvalid;
     }
+  return _statusInvalid;
 }
 
 
