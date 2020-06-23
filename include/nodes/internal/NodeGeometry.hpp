@@ -245,5 +245,7 @@ private:
   const QIcon _statusProcessing{"://status_icons/processing.svg"};
   const QIcon _statusPending{"://status_icons/pending.svg"};
   const QIcon _statusInvalid{"://status_icons/failed.svg"};
+  const QIcon _statusEmpty{"://status_icons/empty.svg"};
+
 };
 }
