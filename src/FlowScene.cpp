@@ -931,30 +931,21 @@ eraseNodePort(const QUuid& nodeId,
   if (nodeIt != _nodes.end())
   {
     auto node = nodeIt->second.get();
-    auto nodeEntries = node->nodeState().getEntries(portType);
+    auto deletedPort = node->nodeState().getEntries(portType)[index];
 
-    if (index < nodeEntries.size())
+    std::vector<Connection*> portConnections{};
+    portConnections.reserve(deletedPort.size());
+    for (const auto& entry : deletedPort)
     {
-      auto deletedPort = node->nodeState().getEntries(portType)[index];
-
-      std::vector<Connection*> portConnections{};
-      portConnections.reserve(deletedPort.size());
-      for (const auto& entry : deletedPort)
-      {
-        portConnections.push_back(entry.second);
-      }
-
-      for (auto& connection : portConnections) {
-        deleteConnection(*connection);
-      }
-
-      node->nodeState().erasePort(portType, index);
-      node->nodeGraphicsObject().updateGeometry();
+      portConnections.push_back(entry.second);
     }
-    else
-    {
-      qDebug() << "Error removing node port! Invalid port index.";
+
+    for (auto& connection : portConnections) {
+      deleteConnection(*connection);
     }
+
+    node->nodeState().erasePort(portType, index);
+    node->nodeGraphicsObject().updateGeometry();
   }
   else
   {
