@@ -83,8 +83,13 @@ void
 Node::
 restore(QJsonObject const& json)
 {
-  _uid = QUuid(json["id"].toString());
+  restoreID(json);
   clone(json);
+}
+
+void Node::restoreID(const QJsonObject &json)
+{
+  _uid = QUuid(json["id"].toString());
 }
 
 void

@@ -270,9 +270,10 @@ loadNodeToMap(const QJsonObject& nodeJson,
   auto ngo  = detail::make_unique<NodeGraphicsObject>(*this, *node);
   node->setGraphicsObject(std::move(ngo));
 
+  auto nodePtr = node.get();
+  nodeRestored(*nodePtr);
   restore? node->restore(nodeJson) : node->clone(nodeJson);
 
-  auto nodePtr = node.get();
   map[node->id()] = std::move(node);
 
   nodePlaced(*nodePtr);
@@ -930,21 +931,30 @@ eraseNodePort(const QUuid& nodeId,
   if (nodeIt != _nodes.end())
   {
     auto node = nodeIt->second.get();
-    auto deletedPort = node->nodeState().getEntries(portType)[index];
+    auto nodeEntries = node->nodeState().getEntries(portType);
 
-    std::vector<Connection*> portConnections{};
-    portConnections.reserve(deletedPort.size());
-    for (const auto& entry : deletedPort)
+    if (index < nodeEntries.size())
     {
-      portConnections.push_back(entry.second);
-    }
+      auto deletedPort = node->nodeState().getEntries(portType)[index];
 
-    for (auto& connection : portConnections) {
-      deleteConnection(*connection);
-    }
+      std::vector<Connection*> portConnections{};
+      portConnections.reserve(deletedPort.size());
+      for (const auto& entry : deletedPort)
+      {
+        portConnections.push_back(entry.second);
+      }
 
-    node->nodeState().erasePort(portType, index);
-    node->nodeGraphicsObject().updateGeometry();
+      for (auto& connection : portConnections) {
+        deleteConnection(*connection);
+      }
+
+      node->nodeState().erasePort(portType, index);
+      node->nodeGraphicsObject().updateGeometry();
+    }
+    else
+    {
+      qDebug() << "Error removing node port! Invalid port index.";
+    }
   }
   else
   {
