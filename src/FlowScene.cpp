@@ -952,7 +952,7 @@ eraseNodePort(const QUuid& nodeId,
     }
     else
     {
-      qDebug() << "Error removing node port! Node ID not found.";
+      qDebug() << "Error removing node port! Invalid port index.";
     }
   }
   else
