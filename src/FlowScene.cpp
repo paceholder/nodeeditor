@@ -270,14 +270,13 @@ loadNodeToMap(const QJsonObject& nodeJson,
   auto ngo  = detail::make_unique<NodeGraphicsObject>(*this, *node);
   node->setGraphicsObject(std::move(ngo));
 
-  auto nodeID = node->id();
   restore? node->restoreID(nodeJson) : node->clone(nodeJson);
+  auto nodeID = node->id();
   map[nodeID] = std::move(node);
   auto nodePtr = map[nodeID].get();
   nodeRestored(*nodePtr);
   if(restore) nodePtr->restore(nodeJson);
 
-  nodePlaced(*nodePtr);
   nodeCreated(*nodePtr);
   return *nodePtr;
 }
