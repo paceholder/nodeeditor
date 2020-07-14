@@ -274,10 +274,10 @@ loadNodeToMap(const QJsonObject& nodeJson,
   auto nodeID = node->id();
   map[nodeID] = std::move(node);
   auto nodePtr = map[nodeID].get();
-  nodeRestored(*nodePtr);
+  nodeCreated(*nodePtr);
   if(restore) nodePtr->restore(nodeJson);
 
-  nodeCreated(*nodePtr);
+  nodePlaced(*nodePtr);
   return *nodePtr;
 }
 

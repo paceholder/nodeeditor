@@ -244,8 +244,6 @@ Q_SIGNALS:
 
   void nodeDeleted(Node &n);
 
-  void nodeRestored(Node &n);
-
   void connectionCreated(Connection const &c);
   void connectionDeleted(Connection const &c);
 
