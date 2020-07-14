@@ -943,7 +943,8 @@ eraseNodePort(const QUuid& nodeId,
         portConnections.push_back(entry.second);
       }
 
-      for (auto& connection : portConnections) {
+      for (auto& connection : portConnections)
+      {
         deleteConnection(*connection);
       }
 
