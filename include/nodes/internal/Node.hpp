@@ -60,9 +60,6 @@ public:
   void
   restoreID(QJsonObject const &json);
 
-  void
-  clone(QJsonObject const &json);
-
 public:
 
   QUuid

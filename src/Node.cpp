@@ -78,15 +78,6 @@ save() const
   return nodeJson;
 }
 
-
-void
-Node::
-restore(QJsonObject const& json)
-{
-  restoreID(json);
-  clone(json);
-}
-
 void Node::restoreID(const QJsonObject &json)
 {
   _uid = QUuid(json["id"].toString());
@@ -94,7 +85,7 @@ void Node::restoreID(const QJsonObject &json)
 
 void
 Node::
-clone(QJsonObject const& json)
+restore(QJsonObject const& json)
 {
   QJsonObject positionJson = json["position"].toObject();
   QPointF     point(positionJson["x"].toDouble(),
