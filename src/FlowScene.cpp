@@ -375,37 +375,32 @@ std::weak_ptr<NodeGroup>
 FlowScene::
 restoreGroup(QJsonObject const& groupJson)
 {
-  std::unordered_map<QUuid, std::unique_ptr<Node>> nodesMap{};
-  std::unordered_map<QUuid, std::shared_ptr<QtNodes::Connection> > connectionsMap{};
-  std::vector<Node*> children{};
-
   // since the new nodes will have the same IDs as in the file and the connections
   // need these old IDs to be restored, we must create new IDs and map them to the
   // old ones so the connections are properly restored
   std::unordered_map<QUuid, QUuid> IDsMap{};
 
+  std::vector<Node*> group_children{};
+
   QJsonArray nodesJson = groupJson["nodes"].toArray();
   for (const QJsonValueRef nodeJson : nodesJson)
   {
     auto oldID = QUuid(nodeJson.toObject()["id"].toString());
-    auto& nodeRef = loadNodeToMap(nodeJson.toObject(), nodesMap, false);
+    auto& nodeRef = loadNodeToMap(nodeJson.toObject(), _nodes, false);
 
     auto newID = nodeRef.id();
 
     IDsMap[oldID] = newID;
-    children.push_back(&nodeRef);
+    group_children.push_back(&nodeRef);
   }
 
   QJsonArray connectionJsonArray = groupJson["connections"].toArray();
   for (auto connection : connectionJsonArray)
   {
-    loadConnectionToMap(connection.toObject(), nodesMap, connectionsMap, IDsMap);
+    loadConnectionToMap(connection.toObject(), _nodes, _connections, IDsMap);
   }
 
-  _nodes.merge(nodesMap);
-  _connections.merge(connectionsMap);
-
-  return createGroup(children, QUuid::createUuid(), groupJson["name"].toString());
+  return createGroup(group_children, QUuid::createUuid(), groupJson["name"].toString());
 }
 
 void
