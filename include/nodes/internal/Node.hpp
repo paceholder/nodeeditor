@@ -58,7 +58,7 @@ public:
    * @param json JSON object containing the node's parameters.
    */
   void
-  restoreID(QJsonObject const &json);
+  retrieveID(QJsonObject const &json);
 
 public:
 

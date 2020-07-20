@@ -78,7 +78,7 @@ save() const
   return nodeJson;
 }
 
-void Node::restoreID(const QJsonObject &json)
+void Node::retrieveID(const QJsonObject &json)
 {
   _uid = QUuid(json["id"].toString());
 }
