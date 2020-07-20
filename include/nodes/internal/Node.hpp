@@ -53,8 +53,12 @@ public:
   void
   restore(QJsonObject const &json) override;
 
+  /**
+   * @brief Method that restores only the ID of the node from a JSON object.
+   * @param json JSON object containing the node's parameters.
+   */
   void
-  clone(QJsonObject const &json);
+  retrieveID(QJsonObject const &json);
 
 public:
 
