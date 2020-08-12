@@ -60,6 +60,8 @@ save() const
   obj["x"] = _nodeGraphicsObject->pos().x();
   obj["y"] = _nodeGraphicsObject->pos().y();
   nodeJson["position"] = obj;
+  nodeJson["in"]  = (int)_nodeDataModel->nPorts(PortType::In);
+  nodeJson["out"] = (int)_nodeDataModel->nPorts(PortType::Out);
 
   return nodeJson;
 }
@@ -77,6 +79,11 @@ restore(QJsonObject const& json)
   _nodeGraphicsObject->setPos(point);
 
   _nodeDataModel->restore(json["model"].toObject());
+
+  if(json.contains("in"))
+    _nodeState._inConnections.resize(json["in"].toInt());
+  if(json.contains("out"))
+    _nodeState._outConnections.resize(json["out"].toInt());
 }
 
 
