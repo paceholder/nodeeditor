@@ -57,6 +57,17 @@ protected:
 
   FlowScene * scene();
 
+  /**
+   * MIME type used to copy/paste and drag n drop nodes.
+   * You will likely want to override it with your own type.
+   * This defaults to 'application/x-nodeeditor-nodes'.
+   */
+  virtual QString nodeMimeType() const;
+
+private:
+   void copy();
+   void paste();
+
 private:
 
   QAction* _clearSelectionAction;

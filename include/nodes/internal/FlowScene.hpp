@@ -93,17 +93,23 @@ public:
 
   void clearScene();
 
-  //! Open a FileDialog to save the scene in a .flow file
+  /// Open a FileDialog to save the scene in a .flow file
   void save() const;
 
-  //! Load a FileDialog to open a scene from a .flow file
+  /// Load a FileDialog to open a scene from a .flow file
   void load();
 
-  //! Dump the scene on a JSON QByteArray
+  /// Dump the scene on a JSON QByteArray
   QByteArray saveToMemory(QJsonDocument::JsonFormat format = QJsonDocument::Indented) const;
 
-  //! Load a scene from a JSON QByteArray
+  /// Load a scene from a JSON QByteArray
   void loadFromMemory(const QByteArray& data);
+
+  /// Save only a subset of the nodes to memory, as well as the connections that link two nodes lying within this subset.
+  QByteArray copyNodes(const std::vector<Node*> & nodes) const;
+
+  //! Paste selected nodes to the scene replacing uuids with new ones with a certain offset from the original position.
+  void pasteNodes(const QByteArray& data, const QPointF& pointOffset = QPointF(0,0));
 
 Q_SIGNALS:
 
@@ -140,7 +146,6 @@ Q_SIGNALS:
   void nodeContextMenu(Node& n, const QPointF& pos);
 
 private:
-
   using SharedConnection = std::shared_ptr<Connection>;
   using UniqueNode       = std::unique_ptr<Node>;
 

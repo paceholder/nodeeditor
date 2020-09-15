@@ -287,6 +287,20 @@ keyPressEvent(QKeyEvent *event)
       setDragMode(QGraphicsView::RubberBandDrag);
       break;
 
+    case Qt::Key_C:
+       if (event->modifiers() & Qt::ControlModifier) {
+          copy();
+          return;
+       }
+       break;
+
+    case Qt::Key_V:
+       if (event->modifiers() & Qt::ControlModifier) {
+          paste();
+          return;
+       }
+       break;
+
     default:
       break;
   }
@@ -406,5 +420,34 @@ FlowScene *
 FlowView::
 scene()
 {
-  return _scene;
+   return _scene;
+}
+
+QString FlowView::nodeMimeType() const
+{
+   return "application/x-nodeeditor-nodes";
+}
+
+void FlowView::copy()
+{
+   QClipboard *clipboard = QApplication::clipboard();
+   QMimeData *mimeData = new QMimeData();
+
+   QByteArray data = scene()->copyNodes(scene()->selectedNodes());
+   mimeData->setData(nodeMimeType(), data);
+   mimeData->setText(data);
+
+   clipboard->setMimeData(mimeData);
+}
+
+void FlowView::paste()
+{
+   const QClipboard *clipboard = QApplication::clipboard();
+   const QMimeData *mimeData = clipboard->mimeData();
+
+   if (mimeData->hasFormat(nodeMimeType())) {
+      scene()->pasteNodes(mimeData->data(nodeMimeType()), mapToScene(QCursor::pos()));
+   } else if (mimeData->hasText()) {
+      scene()->pasteNodes(mimeData->text().toUtf8(), mapToScene(QCursor::pos()));
+   }
 }

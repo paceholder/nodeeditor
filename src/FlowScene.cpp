@@ -552,7 +552,6 @@ saveToMemory(QJsonDocument::JsonFormat format) const
   return document.toJson(format);
 }
 
-
 void
 FlowScene::
 loadFromMemory(const QByteArray& data)
@@ -573,6 +572,112 @@ loadFromMemory(const QByteArray& data)
     restoreConnection(connection.toObject());
   }
 }
+
+QByteArray
+FlowScene::
+copyNodes(const std::vector<QtNodes::Node*>& nodes) const
+{
+   QJsonObject sceneJson;
+   QSet<QUuid> nodeIds;
+   QJsonArray nodesJsonArray;
+
+   // center of gravity
+   std::vector<int> cogX;
+   std::vector<int> cogY;
+
+   for (auto const & n : nodes)
+   {
+      auto nodeJson = n->save();
+      nodesJsonArray.append(nodeJson);
+      nodeIds.insert(n->id());
+
+      auto nodePosition = nodeJson = nodeJson["position"].toObject();
+      cogX.emplace_back(nodePosition["x"].toDouble());
+      cogY.emplace_back(nodePosition["y"].toDouble());
+   }
+
+   sceneJson["nodes"] = nodesJsonArray;
+
+   QJsonArray connectionJsonArray;
+   for (auto const & pair : connections())
+   {
+      auto const &connection = pair.second;
+
+      auto inNodeId = connection->getNode(PortType::In)->id();
+      auto outNodeId = connection->getNode(PortType::Out)->id();
+      if (nodeIds.contains(inNodeId) && nodeIds.contains(outNodeId))
+      {
+         QJsonObject connectionJson = connection->save();
+         if (!connectionJson.isEmpty())
+            connectionJsonArray.append(connectionJson);
+      }
+   }
+
+   sceneJson["connections"] = connectionJsonArray;
+
+   // save center of gravity too
+   if(cogX.size() > 0){
+      QJsonObject jsonCog;
+      jsonCog["x"] = std::accumulate(cogX.begin(), cogX.end(), 0) / static_cast<double>(cogX.size());
+      jsonCog["y"] = std::accumulate(cogY.begin(), cogY.end(), 0) / static_cast<double>(cogY.size());
+      sceneJson["cog"] = jsonCog;
+   }
+
+   QJsonDocument document(sceneJson);
+
+   return document.toJson();
+}
+
+void FlowScene::pasteNodes(const QByteArray& data, const QPointF& pointOffset)
+{
+   QMap<QUuid,QUuid> newIdsMap;
+   QJsonObject jsonDocument = QJsonDocument::fromJson(data).object();
+
+   // if exists a center of gravity, take it
+   auto jsonCog = jsonDocument["cog"].toObject();
+   double offsetX = pointOffset.x() - jsonCog["x"].toDouble();
+   double offsetY = pointOffset.y() - jsonCog["y"].toDouble();
+
+   QJsonArray nodesJsonArray = jsonDocument["nodes"].toArray();
+   for (auto node : nodesJsonArray)
+   {
+      auto nodeJson = node.toObject();
+
+      QString oldId = nodeJson["id"].toString();
+      if (!newIdsMap.contains(oldId))
+         newIdsMap[oldId] = QUuid::createUuid();
+
+      nodeJson["id"] = newIdsMap[oldId].toString();
+
+      // update position of the copy of the nodes
+      auto nodePosition = nodeJson["position"].toObject();
+      nodePosition["x"] = nodePosition["x"].toDouble() + offsetX;
+      nodePosition["y"] = nodePosition["y"].toDouble() + offsetY;
+      nodeJson["position"] = nodePosition;
+
+      node = nodeJson;
+   }
+   jsonDocument["nodes"] = nodesJsonArray;
+
+   QJsonArray connectionJsonArray = jsonDocument["connections"].toArray();
+   for (QJsonValueRef connection : connectionJsonArray)
+   {
+      auto connectionJson = connection.toObject();
+
+      QString oldId = connectionJson["in_id"].toString();
+      if (newIdsMap.contains(oldId))
+         connectionJson["in_id"] = newIdsMap[oldId].toString();
+
+      oldId = connectionJson["out_id"].toString();
+      if (newIdsMap.contains(oldId))
+         connectionJson["out_id"] = newIdsMap[oldId].toString();
+
+      connection = connectionJson;
+   }
+   jsonDocument["connections"] = connectionJsonArray;
+
+   loadFromMemory(QJsonDocument(jsonDocument).toJson());
+ }
 
 
 void
