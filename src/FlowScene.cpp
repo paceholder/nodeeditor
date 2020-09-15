@@ -10,7 +10,6 @@
 #include <QtCore/QDataStream>
 #include <QtCore/QFile>
 
-#include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
 #include <QtCore/QJsonArray>
 #include <QtCore/QtGlobal>
@@ -457,7 +456,7 @@ void
 FlowScene::
 clearScene()
 {
-  //Manual node cleanup. Simply clearing the holding datastructures doesn't work, the code crashes when
+  // Manual node cleanup. Simply clearing the holding datastructures doesn't work, the code crashes when
   // there are both nodes and connections in the scene. (The data propagation internal logic tries to propagate
   // data through already freed connections.)
   while (_connections.size() > 0)
@@ -520,7 +519,7 @@ load()
 
 QByteArray
 FlowScene::
-saveToMemory() const
+saveToMemory(QJsonDocument::JsonFormat format) const
 {
   QJsonObject sceneJson;
 
@@ -550,7 +549,7 @@ saveToMemory() const
 
   QJsonDocument document(sceneJson);
 
-  return document.toJson();
+  return document.toJson(format);
 }
 
 

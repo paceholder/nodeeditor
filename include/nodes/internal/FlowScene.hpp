@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QtCore/QUuid>
+#include <QtCore/QJsonDocument>
 #include <QtWidgets/QGraphicsScene>
 
 #include <unordered_map>
@@ -36,7 +37,7 @@ public:
 
   FlowScene(QObject * parent = Q_NULLPTR);
 
-  ~FlowScene();
+  ~FlowScene() override;
 
 public:
 
@@ -92,12 +93,16 @@ public:
 
   void clearScene();
 
+  //! Open a FileDialog to save the scene in a .flow file
   void save() const;
 
+  //! Load a FileDialog to open a scene from a .flow file
   void load();
 
-  QByteArray saveToMemory() const;
+  //! Dump the scene on a JSON QByteArray
+  QByteArray saveToMemory(QJsonDocument::JsonFormat format = QJsonDocument::Indented) const;
 
+  //! Load a scene from a JSON QByteArray
   void loadFromMemory(const QByteArray& data);
 
 Q_SIGNALS:
