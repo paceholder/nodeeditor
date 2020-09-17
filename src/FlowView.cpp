@@ -213,18 +213,29 @@ contextMenuEvent(QContextMenuEvent *event)
     modelMenu.close();
   });
 
+  auto depthSearch = [] (QTreeWidgetItem* item, const QString& text) -> void {
+     auto search = [](QTreeWidgetItem* item, const QString& text, const auto& func) -> void {
+        if(item->childCount() == 0){
+           const auto modelName = item->data(0, Qt::UserRole).toString();
+           const bool match = modelName.contains(text, Qt::CaseInsensitive);
+           item->setHidden(!match);
+        }
+        else {
+           for(int i = 0; i<item->childCount(); ++i){
+              func(item->child(i), text, func);
+           }
+        }
+     };
+
+     search(item, text, search);
+  };
+
   //Setup filtering
-  connect(txtBox, &QLineEdit::textChanged, [&](const QString &text)
+  connect(txtBox, &QLineEdit::textChanged, this, [topLevelItems, depthSearch](const QString &text)
   {
-    for (auto& topLvlItem : topLevelItems)
+    for(auto& topLvlItem : topLevelItems)
     {
-      for (int i = 0; i < topLvlItem->childCount(); ++i)
-      {
-        auto child = topLvlItem->child(i);
-        auto modelName = child->data(0, Qt::UserRole).toString();
-        const bool match = (modelName.contains(text, Qt::CaseInsensitive));
-        child->setHidden(!match);
-      }
+       depthSearch(topLvlItem, text);
     }
   });
 
