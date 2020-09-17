@@ -676,7 +676,14 @@ void FlowScene::pasteNodes(const QByteArray& data, const QPointF& pointOffset)
    }
    jsonDocument["connections"] = connectionJsonArray;
 
-   loadFromMemory(QJsonDocument(jsonDocument).toJson());
+   try {
+      loadFromMemory(QJsonDocument(jsonDocument).toJson());
+   } catch (const std::logic_error& e) {
+      // prevent pasting if receving scene has not registered the source node
+      // it can be happens copying and pasting between different scenes
+
+      qDebug() << "cannot copy selected nodes";
+   }
  }
 
 
