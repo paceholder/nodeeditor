@@ -476,9 +476,10 @@ void FlowView::paste()
    const QClipboard *clipboard = QApplication::clipboard();
    const QMimeData *mimeData = clipboard->mimeData();
 
+   auto mousePos = mapToScene(mapFromGlobal(QCursor::pos()));
    if (mimeData->hasFormat(nodeMimeType())) {
-      scene()->pasteNodes(mimeData->data(nodeMimeType()), mapToScene(QCursor::pos()));
+      scene()->pasteNodes(mimeData->data(nodeMimeType()), mousePos);
    } else if (mimeData->hasText()) {
-      scene()->pasteNodes(mimeData->text().toUtf8(), mapToScene(QCursor::pos()));
+      scene()->pasteNodes(mimeData->text().toUtf8(), mousePos);
    }
 }
