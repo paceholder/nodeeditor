@@ -1,3 +1,9 @@
+### About this Fork
+
+This repository keeps master branch aligned with the original repository [paceholder/nodeeditor](https://github.com/paceholder/nodeeditor).
+In the develop branch can be found some fix or feature never merged in the original repository and some additional feature.
+
+
 ### Purpose
 
 **NodeEditor** is conceived as a general-purpose Qt-based library aimed at
