@@ -31,9 +31,9 @@ static std::shared_ptr<DataModelRegistry>
 registerDataModels()
 {
   auto ret = std::make_shared<DataModelRegistry>();
-  ret->registerModel<NumberSourceDataModel>("Sources");
+  ret->registerModel<NumberSourceDataModel>("I/O//Sources");
 
-  ret->registerModel<NumberDisplayDataModel>("Displays");
+  ret->registerModel<NumberDisplayDataModel>("I/O//Displays");
 
   ret->registerModel<AdditionModel>("Operators");
 

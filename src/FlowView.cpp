@@ -115,7 +115,7 @@ contextMenuEvent(QContextMenuEvent *event)
   //Add filterbox to the context menu
   auto *txtBox = new QLineEdit(&modelMenu);
 
-  txtBox->setPlaceholderText(QStringLiteral("Filter"));
+  txtBox->setPlaceholderText(QStringLiteral("Search"));
   txtBox->setClearButtonEnabled(true);
 
   auto *txtBoxAction = new QWidgetAction(&modelMenu);
@@ -135,10 +135,41 @@ contextMenuEvent(QContextMenuEvent *event)
   QMap<QString, QTreeWidgetItem*> topLevelItems;
   for (auto const &cat : _scene->registry().categories())
   {
-    auto item = new QTreeWidgetItem(treeView);
-    item->setText(0, cat);
-    item->setData(0, Qt::UserRole, skipText);
-    topLevelItems[cat] = item;
+    // Allows subcategories if separeted by "//"
+    QStringList splittedCategories = cat.split("//");
+
+    if (splittedCategories.count() == 1) {
+       auto item = new QTreeWidgetItem(treeView);
+       item->setText(0, cat);
+       item->setData(0, Qt::UserRole, skipText);
+       topLevelItems[cat] = item;
+    }
+    else {
+       QString partialCategory = splittedCategories.at(0);
+       QTreeWidgetItem* parent = nullptr;
+
+       if (!topLevelItems.contains(partialCategory)) {
+          auto item = new QTreeWidgetItem(treeView);
+          item->setText(0, partialCategory);
+          item->setData(0, Qt::UserRole, partialCategory);
+          topLevelItems[partialCategory] = item;
+          parent = item;
+       }
+       else {
+          parent = topLevelItems[partialCategory];
+       }
+
+       for (int i=1; i<splittedCategories.count(); ++i) {
+          partialCategory += "//" + splittedCategories.at(i);
+
+          auto childItem = new QTreeWidgetItem(parent);
+          childItem->setText(0, splittedCategories.at(i));
+          childItem->setData(0, Qt::UserRole, splittedCategories.at(i));
+          topLevelItems[partialCategory] = childItem;
+
+          parent = childItem;
+       }
+    }
   }
 
   for (auto const &assoc : _scene->registry().registeredModelsCategoryAssociation())
