@@ -105,6 +105,9 @@ public:
   /// Load a scene from a JSON QByteArray
   void loadFromMemory(const QByteArray& data);
 
+  /// Load a scene from a JSON Object
+  void loadFromMemory(const QJsonObject& data);
+
   /// Save only a subset of the nodes to memory, as well as the connections that link two nodes lying within this subset.
   QByteArray copyNodes(const std::vector<Node*> & nodes) const;
 

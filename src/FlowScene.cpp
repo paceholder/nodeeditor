@@ -556,21 +556,25 @@ void
 FlowScene::
 loadFromMemory(const QByteArray& data)
 {
-  QJsonObject const jsonDocument = QJsonDocument::fromJson(data).object();
+  const QJsonObject jsonDocument = QJsonDocument::fromJson(data).object();
+  loadFromMemory(jsonDocument);
+}
 
-  QJsonArray nodesJsonArray = jsonDocument["nodes"].toArray();
+void FlowScene::loadFromMemory(const QJsonObject& data)
+{
+   QJsonArray nodesJsonArray = data["nodes"].toArray();
 
-  for (QJsonValueRef node : nodesJsonArray)
-  {
-    restoreNode(node.toObject());
-  }
+   for (QJsonValueRef node : nodesJsonArray)
+   {
+      restoreNode(node.toObject());
+   }
 
-  QJsonArray connectionJsonArray = jsonDocument["connections"].toArray();
+   QJsonArray connectionJsonArray = data["connections"].toArray();
 
-  for (QJsonValueRef connection : connectionJsonArray)
-  {
-    restoreConnection(connection.toObject());
-  }
+   for (QJsonValueRef connection : connectionJsonArray)
+   {
+      restoreConnection(connection.toObject());
+   }
 }
 
 QByteArray
