@@ -39,6 +39,8 @@ FlowView(QWidget *parent)
 {
   setDragMode(QGraphicsView::ScrollHandDrag);
   setRenderHint(QPainter::Antialiasing);
+  setRenderHint(QPainter::TextAntialiasing);
+  setRenderHint(QPainter::SmoothPixmapTransform);
 
   auto const &flowViewStyle = StyleCollection::flowViewStyle();
 
