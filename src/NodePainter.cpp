@@ -100,7 +100,7 @@ drawNodeRect(QPainter* painter,
 
   QRectF boundary( -diam, -diam, 2.0 * diam + geom.width(), 2.0 * diam + geom.height());
 
-  double const radius = 3.0;
+  double const radius = 12.0;
 
   painter->drawRoundedRect(boundary, radius, radius);
 }
