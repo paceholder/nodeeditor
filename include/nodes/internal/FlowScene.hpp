@@ -85,7 +85,7 @@ public:
 
   Node&createNode(std::unique_ptr<NodeDataModel> && dataModel);
 
-  Node&restoreNode(QJsonObject const& nodeJson);
+  Node&restoreNode(QJsonObject const& nodeJson, bool keep_id = true);
 
   Node&loadNodeToMap(QJsonObject const& nodeJson,
                      std::unordered_map<QUuid, std::unique_ptr<Node>>& map,
@@ -179,7 +179,9 @@ public:
 
   QByteArray saveToMemory() const;
 
-  void loadFromMemory(const QByteArray& data);
+  void loadFromMemory(const QByteArray& data, bool keep_ids = true);
+
+  QByteArray saveSelectedItems() const;
 
   /**
    * @brief Saves a group in a file specified by the user.

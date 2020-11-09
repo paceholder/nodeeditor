@@ -59,6 +59,9 @@ protected:
    */
   void nodeContextMenu(QContextMenuEvent *event, NodeGraphicsObject* ngo);
 
+  void copySelectionToClipboard();
+  void pasteFromClipboard();
+
   void contextMenuEvent(QContextMenuEvent *event) override;
 
   void wheelEvent(QWheelEvent *event) override;
@@ -84,8 +87,13 @@ private:
   QAction* _clearSelectionAction;
   QAction* _deleteSelectionAction;
 
+  QAction* _copySelectionAction;
+  QAction* _pasteSelectionAction;
+
   QPointF _clickPos;
 
   FlowScene* _scene;
+
+  QByteArray _clipboard;
 };
 }

@@ -246,9 +246,9 @@ createNode(std::unique_ptr<NodeDataModel> && dataModel)
 
 Node&
 FlowScene::
-restoreNode(QJsonObject const& nodeJson)
+restoreNode(QJsonObject const& nodeJson, bool keep_id)
 {
-  return loadNodeToMap(nodeJson, _nodes, true);
+  return loadNodeToMap(nodeJson, _nodes, keep_id);
 }
 
 
@@ -757,7 +757,7 @@ saveToMemory() const
 
 void
 FlowScene::
-loadFromMemory(const QByteArray& data)
+loadFromMemory(const QByteArray& data, bool keep_ids)
 {
   QJsonObject const jsonDocument = QJsonDocument::fromJson(data).object();
 
@@ -769,11 +769,11 @@ loadFromMemory(const QByteArray& data)
   for (QJsonValueRef node : nodesJsonArray)
   {
     auto nodeObj = node.toObject();
-    auto& nodeRef = restoreNode(nodeObj);
+    auto& nodeRef = restoreNode(nodeObj, keep_ids);
     QJsonObject group = nodeObj["group"].toObject();
     QString groupIDStr = group["id"].toString();
     QString groupName = group["name"].toString();
-    if (groupIDStr != "")
+    if (!groupIDStr.isEmpty())
     {
       QUuid groupID(groupIDStr);
       auto groupIt = IDNodesMap.find(groupID);
@@ -802,6 +802,54 @@ loadFromMemory(const QByteArray& data)
   {
     restoreConnection(connection.toObject());
   }
+}
+
+QByteArray FlowScene::saveSelectedItems() const
+{
+  QJsonObject sceneJson;
+  QJsonArray nodesJsonArray;
+  QJsonArray connectionsJsonArray;
+
+  for (auto* item : selectedItems())
+  {
+    if (auto* ngo = qgraphicsitem_cast<NodeGraphicsObject*>(item))
+    {
+      nodesJsonArray.append(ngo->node().save());
+    }
+    else
+    {
+      if (auto* ggo = qgraphicsitem_cast<GroupGraphicsObject*>(item))
+      {
+        auto& childNodes = ggo->group().childNodes();
+        for (auto* node : childNodes)
+          nodesJsonArray.append(node->save());
+
+        auto connections = ggo->connections();
+        for (auto connectionPtr : connections)
+        {
+          QJsonObject connectionJson = connectionPtr->save();
+          if (!connectionJson.isEmpty())
+            connectionsJsonArray.append(connectionJson);
+        }
+      }
+    }
+  }
+  sceneJson["nodes"] = nodesJsonArray;
+
+  for (auto* item : selectedItems())
+  {
+    if (auto* cgo = qgraphicsitem_cast<ConnectionGraphicsObject*>(item))
+    {
+      QJsonObject connectionJson = cgo->connection().save();
+      if (!connectionJson.isEmpty())
+        connectionsJsonArray.append(connectionJson);
+    }
+  }
+  sceneJson["connections"] = connectionsJsonArray;
+
+  QJsonDocument document(sceneJson);
+
+  return document.toJson();
 }
 
 void

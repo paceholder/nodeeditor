@@ -35,6 +35,8 @@ FlowView(QWidget *parent)
   : QGraphicsView(parent)
   , _clearSelectionAction(Q_NULLPTR)
   , _deleteSelectionAction(Q_NULLPTR)
+  , _copySelectionAction(Q_NULLPTR)
+  , _pasteSelectionAction(Q_NULLPTR)
   , _scene(Q_NULLPTR)
 {
   setDragMode(QGraphicsView::ScrollHandDrag);
@@ -101,6 +103,18 @@ FlowView::setScene(FlowScene *scene)
   _deleteSelectionAction->setShortcut(Qt::Key_Delete);
   connect(_deleteSelectionAction, &QAction::triggered, this, &FlowView::deleteSelectedNodes);
   addAction(_deleteSelectionAction);
+
+  delete _copySelectionAction;
+  _copySelectionAction = new QAction(QStringLiteral("Copy"), this);
+  _copySelectionAction->setShortcut(QKeySequence::Copy);
+  connect(_copySelectionAction, &QAction::triggered, this, &FlowView::copySelectionToClipboard);
+  addAction(_copySelectionAction);
+
+  delete _pasteSelectionAction;
+  _pasteSelectionAction = new QAction(QStringLiteral("Paste"), this);
+  _pasteSelectionAction->setShortcut(QKeySequence::Paste);
+  connect(_pasteSelectionAction, &QAction::triggered, this, &FlowView::pasteFromClipboard);
+  addAction(_pasteSelectionAction);
 }
 
 void
@@ -197,6 +211,16 @@ nodeContextMenu(QContextMenuEvent* event,
     nodeMenu.addAction(createGroupAction);
   }
   nodeMenu.exec(event->globalPos());
+}
+
+void FlowView::copySelectionToClipboard()
+{
+  _clipboard = _scene->saveSelectedItems();
+}
+
+void FlowView::pasteFromClipboard()
+{
+  _scene->loadFromMemory(_clipboard, false);
 }
 
 void
