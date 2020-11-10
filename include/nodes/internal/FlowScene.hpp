@@ -175,7 +175,7 @@ public:
 
   QString save(const QString& path = QString()) const;
 
-  void load();
+  QString load();
 
   QByteArray saveToMemory() const;
 
