@@ -762,9 +762,15 @@ loadFromMemory(const QByteArray& data, bool keep_ids)
   QJsonObject const jsonDocument = QJsonDocument::fromJson(data).object();
 
   QJsonArray nodesJsonArray = jsonDocument["nodes"].toArray();
+  QJsonArray groupsJsonArray = jsonDocument["groups"].toArray();
 
   std::map<QUuid, std::vector<Node*>> IDNodesMap{};
   std::map<QUuid, QString> IDNamesMap{};
+
+  for (const auto& group: groupsJsonArray)
+  {
+    restoreGroup(group.toObject());
+  }
 
   for (QJsonValueRef node : nodesJsonArray)
   {
@@ -806,9 +812,10 @@ loadFromMemory(const QByteArray& data, bool keep_ids)
 
 QByteArray FlowScene::saveSelectedItems() const
 {
-  QJsonObject sceneJson;
+  QJsonObject selectedItemsJson;
   QJsonArray nodesJsonArray;
   QJsonArray connectionsJsonArray;
+  QJsonArray groupsJsonArray;
 
   for (auto* item : selectedItems())
   {
@@ -820,21 +827,13 @@ QByteArray FlowScene::saveSelectedItems() const
     {
       if (auto* ggo = qgraphicsitem_cast<GroupGraphicsObject*>(item))
       {
-        auto& childNodes = ggo->group().childNodes();
-        for (auto* node : childNodes)
-          nodesJsonArray.append(node->save());
-
-        auto connections = ggo->connections();
-        for (auto connectionPtr : connections)
-        {
-          QJsonObject connectionJson = connectionPtr->save();
-          if (!connectionJson.isEmpty())
-            connectionsJsonArray.append(connectionJson);
-        }
+        auto groupJson =  QJsonDocument::fromJson(ggo->group().saveToFile());
+        groupsJsonArray.append(groupJson.object());
       }
     }
   }
-  sceneJson["nodes"] = nodesJsonArray;
+  selectedItemsJson["nodes"] = nodesJsonArray;
+  selectedItemsJson["groups"] = groupsJsonArray;
 
   for (auto* item : selectedItems())
   {
@@ -845,9 +844,9 @@ QByteArray FlowScene::saveSelectedItems() const
         connectionsJsonArray.append(connectionJson);
     }
   }
-  sceneJson["connections"] = connectionsJsonArray;
+  selectedItemsJson["connections"] = connectionsJsonArray;
 
-  QJsonDocument document(sceneJson);
+  QJsonDocument document(selectedItemsJson);
 
   return document.toJson();
 }
@@ -967,8 +966,8 @@ insertNodePort(const QUuid& nodeId,
 void
 FlowScene::
 eraseNodePort(const QUuid& nodeId,
-               const QtNodes::PortType portType,
-               size_t index)
+              const QtNodes::PortType portType,
+              size_t index)
 {
   auto nodeIt = _nodes.find(nodeId);
   if (nodeIt != _nodes.end())
