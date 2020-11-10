@@ -256,7 +256,7 @@ Node&
 FlowScene::
 loadNodeToMap(const QJsonObject& nodeJson,
               std::unordered_map<QUuid, std::unique_ptr<Node>>& map,
-              bool restore)
+              bool keep_id)
 {
   QString modelName = nodeJson["model"].toObject()["name"].toString();
 
@@ -270,7 +270,7 @@ loadNodeToMap(const QJsonObject& nodeJson,
   auto ngo  = detail::make_unique<NodeGraphicsObject>(*this, *node);
   node->setGraphicsObject(std::move(ngo));
 
-  if(restore) node->retrieveID(nodeJson);
+  if(keep_id) node->retrieveID(nodeJson);
   auto nodeID = node->id();
   map[nodeID] = std::move(node);
   auto nodePtr = map[nodeID].get();
@@ -314,9 +314,7 @@ removeNode(Node& node)
 
 std::weak_ptr<NodeGroup>
 FlowScene::
-createGroup(std::vector<Node*>& nodes,
-            const QUuid& uid,
-            QString groupName)
+createGroup(std::vector<Node*>& nodes, QString groupName)
 {
   // remove nodes which already belong to a group
   for (auto nodeIt = nodes.begin(); nodeIt != nodes.end();)
@@ -331,7 +329,7 @@ createGroup(std::vector<Node*>& nodes,
   {
     groupName = "Group " + QString::number(NodeGroup::groupCount());
   }
-  auto group = std::make_shared<NodeGroup>(nodes, uid, groupName, this);
+  auto group = std::make_shared<NodeGroup>(nodes, QUuid::createUuid(), groupName, this);
   auto ggo   = std::make_unique<GroupGraphicsObject>(*this, *group);
 
   group->setGraphicsObject(std::move(ggo));
@@ -400,7 +398,7 @@ restoreGroup(QJsonObject const& groupJson)
     loadConnectionToMap(connection.toObject(), _nodes, _connections, IDsMap);
   }
 
-  return createGroup(group_children, QUuid::createUuid(), groupJson["name"].toString());
+  return createGroup(group_children, groupJson["name"].toString());
 }
 
 void
@@ -767,11 +765,6 @@ loadFromMemory(const QByteArray& data, bool keep_ids)
   std::map<QUuid, std::vector<Node*>> IDNodesMap{};
   std::map<QUuid, QString> IDNamesMap{};
 
-  for (const auto& group: groupsJsonArray)
-  {
-    restoreGroup(group.toObject());
-  }
-
   for (QJsonValueRef node : nodesJsonArray)
   {
     auto nodeObj = node.toObject();
@@ -799,7 +792,12 @@ loadFromMemory(const QByteArray& data, bool keep_ids)
   for (auto& mapEntry : IDNodesMap)
   {
     QString name = IDNamesMap.at(mapEntry.first);
-    createGroup(mapEntry.second, mapEntry.first, name);
+    createGroup(mapEntry.second, name);
+  }
+
+  for (const auto& group: groupsJsonArray)
+  {
+    restoreGroup(group.toObject());
   }
 
   QJsonArray connectionJsonArray = jsonDocument["connections"].toArray();

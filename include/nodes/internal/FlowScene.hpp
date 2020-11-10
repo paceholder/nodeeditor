@@ -89,7 +89,7 @@ public:
 
   Node&loadNodeToMap(QJsonObject const& nodeJson,
                      std::unordered_map<QUuid, std::unique_ptr<Node>>& map,
-                     bool restore = false);
+                     bool keep_id = false);
 
   void removeNode(Node& node);
 
@@ -100,7 +100,6 @@ public:
    * @return Pointer to the newly-created group.
    */
   std::weak_ptr<NodeGroup> createGroup(std::vector<Node*>& nodes,
-                                       const QUuid& uid = QUuid::createUuid(),
                                        QString name = QStringLiteral(""));
 
   /**
@@ -196,36 +195,36 @@ public:
   std::weak_ptr<NodeGroup> loadGroupFile();
 
 public Q_SLOTS:
- /**
-  * @brief Slot called when the quantity of inputs or outputs of a node
-  * changes.
-  * @param nodeId ID of the altered node
-  * @param type Type of port that was changed (input/output)
-  * @param nPorts New number of ports of the selected type
-  */
- void nodePortsChanged(const QUuid& nodeId,
-                       const QtNodes::PortType portType,
-                       unsigned int nPorts);
+  /**
+   * @brief Slot called when the quantity of inputs or outputs of a node
+   * changes.
+   * @param nodeId ID of the altered node
+   * @param type Type of port that was changed (input/output)
+   * @param nPorts New number of ports of the selected type
+   */
+  void nodePortsChanged(const QUuid& nodeId,
+                        const QtNodes::PortType portType,
+                        unsigned int nPorts);
 
- /**
-  * @brief Slot called to insert an input/output port at a specific
-  * index of the desired node.
-  * @param nodeId ID of the altered node
-  * @param portType Type of port (input/output)
-  * @param index Index at which the new port will be placed
-  */
- void insertNodePort(const QUuid& nodeId,
-                     const QtNodes::PortType portType,
-                     size_t index);
+  /**
+   * @brief Slot called to insert an input/output port at a specific
+   * index of the desired node.
+   * @param nodeId ID of the altered node
+   * @param portType Type of port (input/output)
+   * @param index Index at which the new port will be placed
+   */
+  void insertNodePort(const QUuid& nodeId,
+                      const QtNodes::PortType portType,
+                      size_t index);
 
- /**
-  * @brief Slot called to erase an input/output port at a specific
-  * index of the desired node.
-  * @param nodeId ID of the altered node
-  * @param portType Type of port (input/output)
-  * @param index Index at which the port will be removed
-  */
- void eraseNodePort(const QUuid& nodeId,
+  /**
+   * @brief Slot called to erase an input/output port at a specific
+   * index of the desired node.
+   * @param nodeId ID of the altered node
+   * @param portType Type of port (input/output)
+   * @param index Index at which the port will be removed
+   */
+  void eraseNodePort(const QUuid& nodeId,
                      const QtNodes::PortType portType,
                      size_t index);
 
