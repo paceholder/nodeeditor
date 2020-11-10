@@ -755,12 +755,11 @@ saveToMemory() const
 
 void
 FlowScene::
-loadFromMemory(const QByteArray& data, bool keep_ids)
+loadFromMemory(const QByteArray& data)
 {
   QJsonObject const jsonDocument = QJsonDocument::fromJson(data).object();
 
   QJsonArray nodesJsonArray = jsonDocument["nodes"].toArray();
-  QJsonArray groupsJsonArray = jsonDocument["groups"].toArray();
 
   std::map<QUuid, std::vector<Node*>> IDNodesMap{};
   std::map<QUuid, QString> IDNamesMap{};
@@ -768,7 +767,7 @@ loadFromMemory(const QByteArray& data, bool keep_ids)
   for (QJsonValueRef node : nodesJsonArray)
   {
     auto nodeObj = node.toObject();
-    auto& nodeRef = restoreNode(nodeObj, keep_ids);
+    auto& nodeRef = restoreNode(nodeObj, true);
     QJsonObject group = nodeObj["group"].toObject();
     QString groupIDStr = group["id"].toString();
     QString groupName = group["name"].toString();
@@ -793,11 +792,6 @@ loadFromMemory(const QByteArray& data, bool keep_ids)
   {
     QString name = IDNamesMap.at(mapEntry.first);
     createGroup(mapEntry.second, name);
-  }
-
-  for (const auto& group: groupsJsonArray)
-  {
-    restoreGroup(group.toObject());
   }
 
   QJsonArray connectionJsonArray = jsonDocument["connections"].toArray();
@@ -847,6 +841,38 @@ QByteArray FlowScene::saveSelectedItems() const
   QJsonDocument document(selectedItemsJson);
 
   return document.toJson();
+}
+
+void FlowScene::pasteItems(const QByteArray &data)
+{
+  QJsonObject const jsonDocument = QJsonDocument::fromJson(data).object();
+
+  QJsonArray groupsJsonArray = jsonDocument["groups"].toArray();
+  for (const auto& group: groupsJsonArray)
+  {
+    restoreGroup(group.toObject());
+  }
+
+  QJsonArray nodesJsonArray = jsonDocument["nodes"].toArray();
+
+  // maps the stored (old) node UIDs to their new assigned UIDs
+  std::unordered_map<QUuid, QUuid> IDMap{};
+
+  for (QJsonValueRef node : nodesJsonArray)
+  {
+    auto nodeObj = node.toObject();
+    auto& nodeRef = restoreNode(nodeObj, false);
+    QUuid oldID{nodeObj["id"].toString()};
+    QUuid newID{nodeRef.id()};
+    IDMap.insert(std::make_pair(oldID, newID));
+  }
+
+  QJsonArray connectionJsonArray = jsonDocument["connections"].toArray();
+
+  for (QJsonValueRef connection : connectionJsonArray)
+  {
+    loadConnectionToMap(connection.toObject(), _nodes, _connections, IDMap);
+  }
 }
 
 void

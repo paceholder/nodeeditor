@@ -220,7 +220,7 @@ void FlowView::copySelectionToClipboard()
 
 void FlowView::pasteFromClipboard()
 {
-  _scene->loadFromMemory(_clipboard, false);
+  _scene->pasteItems(_clipboard);
 }
 
 void

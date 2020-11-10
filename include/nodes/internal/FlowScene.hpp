@@ -178,9 +178,11 @@ public:
 
   QByteArray saveToMemory() const;
 
-  void loadFromMemory(const QByteArray& data, bool keep_ids = true);
+  void loadFromMemory(const QByteArray& data);
 
   QByteArray saveSelectedItems() const;
+
+  void pasteItems(const QByteArray& data);
 
   /**
    * @brief Saves a group in a file specified by the user.
