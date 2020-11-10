@@ -668,16 +668,14 @@ clearScene()
 }
 
 
-void
+QString
 FlowScene::
-save() const
+save(const QString& path) const
 {
-  QString fileName =
-    QFileDialog::getSaveFileName(nullptr,
-                                 tr("Open Flow Scene"),
-                                 QDir::homePath(),
-                                 tr("Flow Scene Files (*.flow)"));
-
+  QString fileName = path.isEmpty() ? QFileDialog::getSaveFileName(nullptr,
+                                                                   tr("Open Flow Scene"),
+                                                                   QDir::homePath(),
+                                                                   tr("Flow Scene Files (*.flow)")) : path;
   if (!fileName.isEmpty())
   {
     if (!fileName.endsWith("flow", Qt::CaseInsensitive))
@@ -688,7 +686,9 @@ save() const
     {
       file.write(saveToMemory());
     }
+    return fileName;
   }
+  return QString();
 }
 
 

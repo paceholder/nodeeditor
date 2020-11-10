@@ -173,7 +173,7 @@ public:
 
   void clearScene();
 
-  void save() const;
+  QString save(const QString& path = QString()) const;
 
   void load();
 
