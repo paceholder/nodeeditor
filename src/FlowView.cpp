@@ -240,14 +240,11 @@ contextMenuEvent(QContextMenuEvent *event)
   auto clickedItem = itemAt(event->pos());
   if (clickedItem)
   {
+    clickedItem->setSelected(true);
     if (auto groupGO = qgraphicsitem_cast<GroupGraphicsObject*>(clickedItem); groupGO)
-    {
       groupContextMenu(event, groupGO);
-    }
     else if (auto nodeGO = qgraphicsitem_cast<NodeGraphicsObject*>(clickedItem); nodeGO)
-    {
       nodeContextMenu(event, nodeGO);
-    }
     return;
   }
 

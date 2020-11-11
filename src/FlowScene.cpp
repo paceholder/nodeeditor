@@ -896,13 +896,9 @@ bool FlowScene::checkCopyableSelection() const
   for (const auto& item : selection)
   {
     if (auto ngo = qgraphicsitem_cast<NodeGraphicsObject*>(item); ngo)
-    {
       return true;
-    }
     if (auto ggo = qgraphicsitem_cast<GroupGraphicsObject*>(item); ggo)
-    {
       return true;
-    }
   }
   return false;
 }
