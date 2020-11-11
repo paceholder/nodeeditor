@@ -370,7 +370,9 @@ connectionsWithinGroup(const QUuid& groupID)
   return ret;
 }
 
-std::weak_ptr<NodeGroup>
+std::pair<
+std::weak_ptr<NodeGroup>,
+std::unordered_map<QUuid,QUuid>&&>
 FlowScene::
 restoreGroup(QJsonObject const& groupJson)
 {
@@ -389,7 +391,7 @@ restoreGroup(QJsonObject const& groupJson)
 
     auto newID = nodeRef.id();
 
-    IDsMap[oldID] = newID;
+    IDsMap.insert(std::make_pair(oldID, newID));
     group_children.push_back(&nodeRef);
   }
 
@@ -399,7 +401,9 @@ restoreGroup(QJsonObject const& groupJson)
     loadConnectionToMap(connection.toObject(), _nodes, _connections, IDsMap);
   }
 
-  return createGroup(group_children, groupJson["name"].toString());
+  return std::make_pair(
+           createGroup(group_children, groupJson["name"].toString()),
+           std::move(IDsMap));
 }
 
 void
@@ -866,13 +870,17 @@ pasteItems(const QByteArray &data, QPointF paste_pos)
 {
   QJsonObject const jsonDocument = QJsonDocument::fromJson(data).object();
 
+  // maps the stored (old) node UIDs to their new assigned UIDs
+  std::unordered_map<QUuid, QUuid> IDMap{};
+
   QPointF offset;
   bool offsetInitialized{false};
 
   QJsonArray groupsJsonArray = jsonDocument["groups"].toArray();
   for (const auto& group: groupsJsonArray)
   {
-    auto groupWeakPtr = restoreGroup(group.toObject());
+    auto [groupWeakPtr, groupIDsMap] = restoreGroup(group.toObject());
+    IDMap.merge(groupIDsMap);
     if (auto groupPtr = groupWeakPtr.lock(); groupPtr)
     {
       auto& ggoRef = groupPtr->groupGraphicsObject();
@@ -885,9 +893,6 @@ pasteItems(const QByteArray &data, QPointF paste_pos)
       ggoRef.moveConnections();
     }
   }
-
-  // maps the stored (old) node UIDs to their new assigned UIDs
-  std::unordered_map<QUuid, QUuid> IDMap{};
   QJsonArray nodesJsonArray = jsonDocument["nodes"].toArray();
   for (QJsonValueRef node : nodesJsonArray)
   {
@@ -983,7 +988,7 @@ loadGroupFile()
 
   const QJsonObject fileJson = QJsonDocument::fromJson(wholeFile).object();
 
-  return restoreGroup(fileJson);
+  return restoreGroup(fileJson).first;
 }
 
 void
