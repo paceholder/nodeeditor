@@ -28,6 +28,8 @@ class NODE_EDITOR_PUBLIC NodeGroup
 {
   Q_OBJECT
 
+  friend class FlowScene;
+
 public:
   /**
    * @brief Constructor to create a node group with the given nodes.

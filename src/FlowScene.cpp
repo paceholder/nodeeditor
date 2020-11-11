@@ -860,11 +860,11 @@ saveSelectedItems() const
   return document.toJson();
 }
 
-std::vector<QGraphicsObject*>
+void
 FlowScene::
-pasteItems(const QByteArray &data)
+pasteItems(const QByteArray &data, QPointF paste_pos)
 {
-  std::vector<QGraphicsObject*> pastedObjects{};
+  std::vector<QGraphicsItem*> pastedObjects{};
   QJsonObject const jsonDocument = QJsonDocument::fromJson(data).object();
 
   QJsonArray groupsJsonArray = jsonDocument["groups"].toArray();
@@ -873,16 +873,13 @@ pasteItems(const QByteArray &data)
     auto group_weak_ptr = restoreGroup(group.toObject());
     if (auto group_ptr = group_weak_ptr.lock())
     {
-      for (auto* node : group_ptr->childNodes())
-        pastedObjects.push_back(node->_nodeGraphicsObject.get());
+      pastedObjects.push_back(group_ptr->_groupGraphicsObject.get());
     }
   }
 
-  QJsonArray nodesJsonArray = jsonDocument["nodes"].toArray();
-
   // maps the stored (old) node UIDs to their new assigned UIDs
   std::unordered_map<QUuid, QUuid> IDMap{};
-
+  QJsonArray nodesJsonArray = jsonDocument["nodes"].toArray();
   for (QJsonValueRef node : nodesJsonArray)
   {
     auto nodeObj = node.toObject();
@@ -896,13 +893,30 @@ pasteItems(const QByteArray &data)
   }
 
   QJsonArray connectionJsonArray = jsonDocument["connections"].toArray();
-
   for (QJsonValueRef connection : connectionJsonArray)
   {
     loadConnectionToMap(connection.toObject(), _nodes, _connections, IDMap);
   }
 
-  return pastedObjects;
+  if (!pastedObjects.empty())
+  {
+    QPointF offset;
+    for (size_t i = 0; i < pastedObjects.size(); i++)
+    {
+      auto obj = pastedObjects.at(i);
+      if (i == 0)  offset = paste_pos - obj->pos();
+      if (auto ngo = qgraphicsitem_cast<NodeGraphicsObject*>(obj); ngo)
+      {
+        ngo->moveBy(offset.x(), offset.y());
+        ngo->moveConnections();
+      }
+      else if (auto ggo = qgraphicsitem_cast<GroupGraphicsObject*>(obj); ggo)
+      {
+        ggo->moveNodes(offset);
+        ggo->moveConnections();
+      }
+    }
+  }
 }
 
 bool
