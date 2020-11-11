@@ -173,7 +173,7 @@ public:
 
   void clearScene();
 
-  QString save(const QString& path = QString()) const;
+  void save(const QString& fileName) const;
 
   QString load();
 
