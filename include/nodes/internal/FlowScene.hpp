@@ -185,6 +185,13 @@ public:
   void pasteItems(const QByteArray& data);
 
   /**
+   * @brief Verifies whether there are any nodes or groups in the current selection,
+   * in order to enable copy and cut actions.
+   * @return true if a group or node is amongst the selected items, false otherwise
+   */
+  bool checkCopyableSelection() const;
+
+  /**
    * @brief Saves a group in a file specified by the user.
    * @param groupID ID of the group to be saved.
    */

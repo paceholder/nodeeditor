@@ -66,6 +66,10 @@ FlowView(FlowScene *scene, QWidget *parent)
   : FlowView(parent)
 {
   setScene(scene);
+  connect(_scene, &FlowScene::selectionChanged, [this]()
+  {
+    _copySelectionAction->setEnabled(_scene->checkCopyableSelection());
+  });
 }
 
 
@@ -107,12 +111,14 @@ FlowView::setScene(FlowScene *scene)
   delete _copySelectionAction;
   _copySelectionAction = new QAction(QStringLiteral("Copy"), this);
   _copySelectionAction->setShortcut(QKeySequence::Copy);
+  _copySelectionAction->setEnabled(false);
   connect(_copySelectionAction, &QAction::triggered, this, &FlowView::copySelectionToClipboard);
   addAction(_copySelectionAction);
 
   delete _pasteSelectionAction;
   _pasteSelectionAction = new QAction(QStringLiteral("Paste"), this);
   _pasteSelectionAction->setShortcut(QKeySequence::Paste);
+  _pasteSelectionAction->setEnabled(false);
   connect(_pasteSelectionAction, &QAction::triggered, this, &FlowView::pasteFromClipboard);
   addAction(_pasteSelectionAction);
 }
@@ -127,6 +133,7 @@ groupContextMenu(QContextMenuEvent* event,
   auto* saveGroupAction = new QAction(&groupMenu);
   saveGroupAction->setText(QStringLiteral("Save Group..."));
   groupMenu.addAction(saveGroupAction);
+  groupMenu.addAction(_copySelectionAction);
 
   connect(saveGroupAction, &QAction::triggered,
           [&ggo, &_scene = _scene]()
@@ -210,12 +217,14 @@ nodeContextMenu(QContextMenuEvent* event,
 
     nodeMenu.addAction(createGroupAction);
   }
+  nodeMenu.addAction(_copySelectionAction);
   nodeMenu.exec(event->globalPos());
 }
 
 void FlowView::copySelectionToClipboard()
 {
   _clipboard = _scene->saveSelectedItems();
+  _pasteSelectionAction->setEnabled(!_clipboard.isEmpty());
 }
 
 void FlowView::pasteFromClipboard()
@@ -227,6 +236,7 @@ void
 FlowView::
 contextMenuEvent(QContextMenuEvent *event)
 {
+  _pasteSelectionAction->setEnabled(!_clipboard.isEmpty());
   auto clickedItem = itemAt(event->pos());
   if (clickedItem)
   {
@@ -354,6 +364,8 @@ contextMenuEvent(QContextMenuEvent *event)
     }
   });
   modelMenu.addAction(restoreGroupAction);
+  modelMenu.addAction(_copySelectionAction);
+  modelMenu.addAction(_pasteSelectionAction);
 
   // make sure the text box gets focus so the user doesn't have to click on it
   txtBox->setFocus();
