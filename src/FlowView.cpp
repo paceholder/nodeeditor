@@ -68,7 +68,9 @@ FlowView(FlowScene *scene, QWidget *parent)
   setScene(scene);
   connect(_scene, &FlowScene::selectionChanged, [this]()
   {
-    _copySelectionAction->setEnabled(_scene->checkCopyableSelection());
+    bool isSelectionCopyable = _scene->checkCopyableSelection();
+    _copySelectionAction->setEnabled(isSelectionCopyable);
+    _cutSelectionAction->setEnabled(isSelectionCopyable);
   });
 }
 
@@ -115,6 +117,13 @@ FlowView::setScene(FlowScene *scene)
   connect(_copySelectionAction, &QAction::triggered, this, &FlowView::copySelectionToClipboard);
   addAction(_copySelectionAction);
 
+  delete _cutSelectionAction;
+  _cutSelectionAction = new QAction(QStringLiteral("Cut"), this);
+  _cutSelectionAction->setShortcut(QKeySequence::Cut);
+  _cutSelectionAction->setEnabled(false);
+  connect(_cutSelectionAction, &QAction::triggered, this, &FlowView::cutSelectionToClipboard);
+  addAction(_cutSelectionAction);
+
   delete _pasteSelectionAction;
   _pasteSelectionAction = new QAction(QStringLiteral("Paste"), this);
   _pasteSelectionAction->setShortcut(QKeySequence::Paste);
@@ -134,6 +143,7 @@ groupContextMenu(QContextMenuEvent* event,
   saveGroupAction->setText(QStringLiteral("Save Group..."));
   groupMenu.addAction(saveGroupAction);
   groupMenu.addAction(_copySelectionAction);
+  groupMenu.addAction(_cutSelectionAction);
 
   connect(saveGroupAction, &QAction::triggered,
           [&ggo, &_scene = _scene]()
@@ -218,6 +228,7 @@ nodeContextMenu(QContextMenuEvent* event,
     nodeMenu.addAction(createGroupAction);
   }
   nodeMenu.addAction(_copySelectionAction);
+  nodeMenu.addAction(_cutSelectionAction);
   nodeMenu.exec(event->globalPos());
 }
 
@@ -225,6 +236,12 @@ void FlowView::copySelectionToClipboard()
 {
   _clipboard = _scene->saveSelectedItems();
   _pasteSelectionAction->setEnabled(!_clipboard.isEmpty());
+}
+
+void FlowView::cutSelectionToClipboard()
+{
+  copySelectionToClipboard();
+  deleteSelectionAction()->trigger();
 }
 
 void FlowView::pasteFromClipboard()
@@ -362,6 +379,7 @@ contextMenuEvent(QContextMenuEvent *event)
   });
   modelMenu.addAction(restoreGroupAction);
   modelMenu.addAction(_copySelectionAction);
+  modelMenu.addAction(_cutSelectionAction);
   modelMenu.addAction(_pasteSelectionAction);
 
   // make sure the text box gets focus so the user doesn't have to click on it

@@ -60,6 +60,7 @@ protected:
   void nodeContextMenu(QContextMenuEvent *event, NodeGraphicsObject* ngo);
 
   void copySelectionToClipboard();
+  void cutSelectionToClipboard();
   void pasteFromClipboard();
 
   void contextMenuEvent(QContextMenuEvent *event) override;
@@ -89,6 +90,7 @@ private:
 
   QAction* _copySelectionAction;
   QAction* _pasteSelectionAction;
+  QAction* _cutSelectionAction;
 
   QPointF _clickPos;
 
