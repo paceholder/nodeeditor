@@ -2,6 +2,7 @@
 
 #include <stdexcept>
 #include <utility>
+#include <unordered_set>
 
 #include <QtWidgets/QGraphicsSceneMoveEvent>
 #include <QtWidgets/QFileDialog>
@@ -808,12 +809,14 @@ QByteArray FlowScene::saveSelectedItems() const
   QJsonArray nodesJsonArray;
   QJsonArray connectionsJsonArray;
   QJsonArray groupsJsonArray;
+  std::unordered_set<QUuid> selectedNodeIDs{};
 
   for (auto* item : selectedItems())
   {
     if (auto* ngo = qgraphicsitem_cast<NodeGraphicsObject*>(item))
     {
       nodesJsonArray.append(ngo->node().save());
+      selectedNodeIDs.insert(ngo->node().id());
     }
     else
     {
@@ -821,6 +824,12 @@ QByteArray FlowScene::saveSelectedItems() const
       {
         auto groupJson =  QJsonDocument::fromJson(ggo->group().saveToFile());
         groupsJsonArray.append(groupJson.object());
+
+        auto& groupChildren = ggo->group().childNodes();
+        for (const auto& node : groupChildren)
+        {
+          selectedNodeIDs.insert(node->id());
+        }
       }
     }
   }
@@ -832,8 +841,14 @@ QByteArray FlowScene::saveSelectedItems() const
     if (auto* cgo = qgraphicsitem_cast<ConnectionGraphicsObject*>(item))
     {
       QJsonObject connectionJson = cgo->connection().save();
-      if (!connectionJson.isEmpty())
+      auto inID = cgo->connection()._inNode->id();
+      auto outID = cgo->connection()._outNode->id();
+      if (!connectionJson.isEmpty()
+          && selectedNodeIDs.count(inID) != 0
+          && selectedNodeIDs.count(outID) != 0)
+      {
         connectionsJsonArray.append(connectionJson);
+      }
     }
   }
   selectedItemsJson["connections"] = connectionsJsonArray;
