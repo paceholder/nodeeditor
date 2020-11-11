@@ -264,9 +264,16 @@ void FlowView::pasteFromClipboard()
     for (size_t i = 1; i < pastedObjects.size(); i++)
     {
       auto obj = pastedObjects.at(i);
-      obj->moveBy(offset.x(), offset.y());
-      if(auto ngo = qgraphicsitem_cast<NodeGraphicsObject*>(obj); ngo)
+      if (auto ngo = qgraphicsitem_cast<NodeGraphicsObject*>(obj); ngo)
+      {
+        ngo->moveBy(offset.x(), offset.y());
         ngo->moveConnections();
+      }
+      else if (auto ggo = qgraphicsitem_cast<GroupGraphicsObject*>(obj); ggo)
+      {
+        ggo->moveNodes(offset);
+        ggo->moveConnections();
+      }
     }
   }
   _pasteSelectionAction->setData(QVariant());
