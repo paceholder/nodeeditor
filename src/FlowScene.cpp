@@ -803,7 +803,9 @@ loadFromMemory(const QByteArray& data)
   }
 }
 
-QByteArray FlowScene::saveSelectedItems() const
+QByteArray
+FlowScene::
+saveSelectedItems() const
 {
   QJsonObject selectedItemsJson;
   QJsonArray nodesJsonArray;
@@ -858,14 +860,22 @@ QByteArray FlowScene::saveSelectedItems() const
   return document.toJson();
 }
 
-void FlowScene::pasteItems(const QByteArray &data)
+std::vector<QGraphicsObject*>
+FlowScene::
+pasteItems(const QByteArray &data)
 {
+  std::vector<QGraphicsObject*> pastedObjects{};
   QJsonObject const jsonDocument = QJsonDocument::fromJson(data).object();
 
   QJsonArray groupsJsonArray = jsonDocument["groups"].toArray();
   for (const auto& group: groupsJsonArray)
   {
-    restoreGroup(group.toObject());
+    auto group_weak_ptr = restoreGroup(group.toObject());
+    if (auto group_ptr = group_weak_ptr.lock())
+    {
+      for (auto* node : group_ptr->childNodes())
+        pastedObjects.push_back(node->_nodeGraphicsObject.get());
+    }
   }
 
   QJsonArray nodesJsonArray = jsonDocument["nodes"].toArray();
@@ -877,9 +887,12 @@ void FlowScene::pasteItems(const QByteArray &data)
   {
     auto nodeObj = node.toObject();
     auto& nodeRef = restoreNode(nodeObj, false);
+
     QUuid oldID{nodeObj["id"].toString()};
     QUuid newID{nodeRef.id()};
     IDMap.insert(std::make_pair(oldID, newID));
+
+    pastedObjects.push_back(nodeRef._nodeGraphicsObject.get());
   }
 
   QJsonArray connectionJsonArray = jsonDocument["connections"].toArray();
@@ -888,9 +901,13 @@ void FlowScene::pasteItems(const QByteArray &data)
   {
     loadConnectionToMap(connection.toObject(), _nodes, _connections, IDMap);
   }
+
+  return pastedObjects;
 }
 
-bool FlowScene::checkCopyableSelection() const
+bool
+FlowScene::
+checkCopyableSelection() const
 {
   auto selection = selectedItems();
   for (const auto& item : selection)

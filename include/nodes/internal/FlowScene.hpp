@@ -182,7 +182,7 @@ public:
 
   QByteArray saveSelectedItems() const;
 
-  void pasteItems(const QByteArray& data);
+  std::vector<QGraphicsObject*> pasteItems(const QByteArray& data);
 
   /**
    * @brief Verifies whether there are any nodes or groups in the current selection,

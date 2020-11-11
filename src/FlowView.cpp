@@ -66,11 +66,15 @@ FlowView(FlowScene *scene, QWidget *parent)
   : FlowView(parent)
 {
   setScene(scene);
+
   connect(_scene, &FlowScene::selectionChanged, [this]()
   {
-    bool isSelectionCopyable = _scene->checkCopyableSelection();
-    _copySelectionAction->setEnabled(isSelectionCopyable);
-    _cutSelectionAction->setEnabled(isSelectionCopyable);
+    if(_copySelectionAction != nullptr && _cutSelectionAction != nullptr)
+    {
+      bool isSelectionCopyable = _scene->checkCopyableSelection();
+      _copySelectionAction->setEnabled(isSelectionCopyable);
+      _cutSelectionAction->setEnabled(isSelectionCopyable);
+    }
   });
 }
 
@@ -246,7 +250,26 @@ void FlowView::cutSelectionToClipboard()
 
 void FlowView::pasteFromClipboard()
 {
-  _scene->pasteItems(_clipboard);
+  QPointF paste_pos = _pasteSelectionAction->data().isValid()?
+                      _pasteSelectionAction->data().toPointF()
+                      : mapToScene(viewport()->rect().center());
+
+  auto pastedObjects = _scene->pasteItems(_clipboard);
+  if (!pastedObjects.empty())
+  {
+    auto obj = pastedObjects.at(0);
+    QPointF offset = paste_pos - obj->pos();
+    obj->moveBy(offset.x(), offset.y());
+
+    for (size_t i = 1; i < pastedObjects.size(); i++)
+    {
+      auto obj = pastedObjects.at(i);
+      obj->moveBy(offset.x(), offset.y());
+      if(auto ngo = qgraphicsitem_cast<NodeGraphicsObject*>(obj); ngo)
+        ngo->moveConnections();
+    }
+  }
+  _pasteSelectionAction->setData(QVariant());
 }
 
 void
@@ -254,6 +277,8 @@ FlowView::
 contextMenuEvent(QContextMenuEvent *event)
 {
   _pasteSelectionAction->setEnabled(!_clipboard.isEmpty());
+  _pasteSelectionAction->setData(QVariant(mapToScene(event->pos())));
+
   auto clickedItem = itemAt(event->pos());
   if (clickedItem)
   {
@@ -262,6 +287,7 @@ contextMenuEvent(QContextMenuEvent *event)
       groupContextMenu(event, groupGO);
     else if (auto nodeGO = qgraphicsitem_cast<NodeGraphicsObject*>(clickedItem); nodeGO)
       nodeContextMenu(event, nodeGO);
+    _pasteSelectionAction->setData(QVariant());
     return;
   }
 
@@ -386,6 +412,7 @@ contextMenuEvent(QContextMenuEvent *event)
   txtBox->setFocus();
 
   modelMenu.exec(event->globalPos());
+  _pasteSelectionAction->setData(QVariant());
 }
 
 
