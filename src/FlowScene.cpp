@@ -864,16 +864,25 @@ void
 FlowScene::
 pasteItems(const QByteArray &data, QPointF paste_pos)
 {
-  std::vector<QGraphicsItem*> pastedObjects{};
   QJsonObject const jsonDocument = QJsonDocument::fromJson(data).object();
+
+  QPointF offset;
+  bool offsetInitialized{false};
 
   QJsonArray groupsJsonArray = jsonDocument["groups"].toArray();
   for (const auto& group: groupsJsonArray)
   {
-    auto group_weak_ptr = restoreGroup(group.toObject());
-    if (auto group_ptr = group_weak_ptr.lock())
+    auto groupWeakPtr = restoreGroup(group.toObject());
+    if (auto groupPtr = groupWeakPtr.lock(); groupPtr)
     {
-      pastedObjects.push_back(group_ptr->_groupGraphicsObject.get());
+      auto& ggoRef = groupPtr->groupGraphicsObject();
+      if (!offsetInitialized)
+      {
+        offset = paste_pos - ggoRef.pos();
+        offsetInitialized = true;
+      }
+      ggoRef.moveNodes(offset);
+      ggoRef.moveConnections();
     }
   }
 
@@ -889,33 +898,20 @@ pasteItems(const QByteArray &data, QPointF paste_pos)
     QUuid newID{nodeRef.id()};
     IDMap.insert(std::make_pair(oldID, newID));
 
-    pastedObjects.push_back(nodeRef._nodeGraphicsObject.get());
+    auto& ngoRef = nodeRef.nodeGraphicsObject();
+    if (!offsetInitialized)
+    {
+      offset = paste_pos - ngoRef.pos();
+      offsetInitialized = true;
+    }
+    ngoRef.moveBy(offset.x(), offset.y());
+    ngoRef.moveConnections();
   }
 
   QJsonArray connectionJsonArray = jsonDocument["connections"].toArray();
   for (QJsonValueRef connection : connectionJsonArray)
   {
     loadConnectionToMap(connection.toObject(), _nodes, _connections, IDMap);
-  }
-
-  if (!pastedObjects.empty())
-  {
-    QPointF offset;
-    for (size_t i = 0; i < pastedObjects.size(); i++)
-    {
-      auto obj = pastedObjects.at(i);
-      if (i == 0)  offset = paste_pos - obj->pos();
-      if (auto ngo = qgraphicsitem_cast<NodeGraphicsObject*>(obj); ngo)
-      {
-        ngo->moveBy(offset.x(), offset.y());
-        ngo->moveConnections();
-      }
-      else if (auto ggo = qgraphicsitem_cast<GroupGraphicsObject*>(obj); ggo)
-      {
-        ggo->moveNodes(offset);
-        ggo->moveConnections();
-      }
-    }
   }
 }
 
