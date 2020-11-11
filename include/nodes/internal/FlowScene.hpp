@@ -173,9 +173,9 @@ public:
 
   void clearScene();
 
-  void save() const;
+  void save(const QString& fileName) const;
 
-  void load();
+  QString load();
 
   QByteArray saveToMemory() const;
 
