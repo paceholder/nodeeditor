@@ -115,33 +115,38 @@ FlowView::setScene(FlowScene *scene)
   QGraphicsView::setScene(_scene);
 
   // setup actions
-  delete _clearSelectionAction;
+  if (_clearSelectionAction != nullptr)
+    delete _clearSelectionAction;
   _clearSelectionAction = new QAction(QStringLiteral("Clear Selection"), this);
   _clearSelectionAction->setShortcut(Qt::Key_Escape);
   connect(_clearSelectionAction, &QAction::triggered, _scene, &QGraphicsScene::clearSelection);
   addAction(_clearSelectionAction);
 
-  delete _deleteSelectionAction;
+  if (_deleteSelectionAction != nullptr)
+    delete _deleteSelectionAction;
   _deleteSelectionAction = new QAction(QStringLiteral("Delete Selection"), this);
   _deleteSelectionAction->setShortcut(Qt::Key_Delete);
   connect(_deleteSelectionAction, &QAction::triggered, this, &FlowView::deleteSelectedNodes);
   addAction(_deleteSelectionAction);
 
-  delete _copySelectionAction;
+  if (_copySelectionAction != nullptr)
+    delete _copySelectionAction;
   _copySelectionAction = new QAction(QStringLiteral("Copy"), this);
   _copySelectionAction->setShortcut(QKeySequence::Copy);
   _copySelectionAction->setEnabled(false);
   connect(_copySelectionAction, &QAction::triggered, this, &FlowView::copySelectionToClipboard);
   addAction(_copySelectionAction);
 
-  delete _cutSelectionAction;
+  if (_cutSelectionAction != nullptr)
+    delete _cutSelectionAction;
   _cutSelectionAction = new QAction(QStringLiteral("Cut"), this);
   _cutSelectionAction->setShortcut(QKeySequence::Cut);
   _cutSelectionAction->setEnabled(false);
   connect(_cutSelectionAction, &QAction::triggered, this, &FlowView::cutSelectionToClipboard);
   addAction(_cutSelectionAction);
 
-  delete _pasteClipboardAction;
+  if (_pasteClipboardAction != nullptr)
+    delete _pasteClipboardAction;
   _pasteClipboardAction = new QAction(QStringLiteral("Paste"), this);
   _pasteClipboardAction->setShortcut(QKeySequence::Paste);
   _pasteClipboardAction->setEnabled(false);
