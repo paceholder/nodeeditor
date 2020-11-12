@@ -372,9 +372,9 @@ connectionsWithinGroup(const QUuid& groupID)
 
 std::pair<
 std::weak_ptr<NodeGroup>,
-std::unordered_map<QUuid,QUuid>&&>
-FlowScene::
-restoreGroup(QJsonObject const& groupJson)
+std::unordered_map<QUuid,QUuid>>
+                              FlowScene::
+                              restoreGroup(QJsonObject const& groupJson)
 {
   // since the new nodes will have the same IDs as in the file and the connections
   // need these old IDs to be restored, we must create new IDs and map them to the
@@ -403,7 +403,7 @@ restoreGroup(QJsonObject const& groupJson)
 
   return std::make_pair(
            createGroup(group_children, groupJson["name"].toString()),
-           std::move(IDsMap));
+           IDsMap);
 }
 
 void

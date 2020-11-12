@@ -114,11 +114,11 @@ public:
   /**
    * @brief Restores a group from a JSON object.
    * @param groupJson JSON object containing the group data.
-   * @return Pair consisting of a pointer to the newly-created group and an
-   * rvalue reference to the mapping between old and new nodes.
+   * @return Pair consisting of a pointer to the newly-created group and the mapping
+   * between old and new nodes.
    */
-  std::pair<std::weak_ptr<NodeGroup>, std::unordered_map<QUuid,QUuid>&& >
-  restoreGroup(QJsonObject const& groupJson);
+  std::pair<std::weak_ptr<NodeGroup>, std::unordered_map<QUuid,QUuid>>
+      restoreGroup(QJsonObject const& groupJson);
 
   /**
    * @brief Deletes an empty group. Does nothing if the group isn't empty.
