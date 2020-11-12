@@ -36,7 +36,7 @@ FlowView(QWidget *parent)
   , _clearSelectionAction(Q_NULLPTR)
   , _deleteSelectionAction(Q_NULLPTR)
   , _copySelectionAction(Q_NULLPTR)
-  , _pasteSelectionAction(Q_NULLPTR)
+  , _pasteClipboardAction(Q_NULLPTR)
   , _scene(Q_NULLPTR)
 {
   setDragMode(QGraphicsView::ScrollHandDrag);
@@ -67,15 +67,8 @@ FlowView(FlowScene *scene, QWidget *parent)
 {
   setScene(scene);
 
-  connect(_scene, &FlowScene::selectionChanged, [this]()
-  {
-    if(_copySelectionAction != nullptr && _cutSelectionAction != nullptr)
-    {
-      bool isSelectionCopyable = _scene->checkCopyableSelection();
-      _copySelectionAction->setEnabled(isSelectionCopyable);
-      _cutSelectionAction->setEnabled(isSelectionCopyable);
-    }
-  });
+  connect(_scene, &FlowScene::selectionChanged, this,
+          &FlowView::handleSelectionChanged);
 }
 
 
@@ -94,6 +87,26 @@ deleteSelectionAction() const
   return _deleteSelectionAction;
 }
 
+QAction*
+FlowView::
+copySelectionAction() const
+{
+  return _copySelectionAction;
+}
+
+QAction*
+FlowView::
+cutSelectionAction() const
+{
+  return _cutSelectionAction;
+}
+
+QAction*
+FlowView::
+pasteClipboardAction() const
+{
+  return _pasteClipboardAction;
+}
 
 void
 FlowView::setScene(FlowScene *scene)
@@ -128,12 +141,12 @@ FlowView::setScene(FlowScene *scene)
   connect(_cutSelectionAction, &QAction::triggered, this, &FlowView::cutSelectionToClipboard);
   addAction(_cutSelectionAction);
 
-  delete _pasteSelectionAction;
-  _pasteSelectionAction = new QAction(QStringLiteral("Paste"), this);
-  _pasteSelectionAction->setShortcut(QKeySequence::Paste);
-  _pasteSelectionAction->setEnabled(false);
-  connect(_pasteSelectionAction, &QAction::triggered, this, &FlowView::pasteFromClipboard);
-  addAction(_pasteSelectionAction);
+  delete _pasteClipboardAction;
+  _pasteClipboardAction = new QAction(QStringLiteral("Paste"), this);
+  _pasteClipboardAction->setShortcut(QKeySequence::Paste);
+  _pasteClipboardAction->setEnabled(false);
+  connect(_pasteClipboardAction, &QAction::triggered, this, &FlowView::pasteFromClipboard);
+  addAction(_pasteClipboardAction);
 }
 
 void
@@ -239,7 +252,7 @@ nodeContextMenu(QContextMenuEvent* event,
 void FlowView::copySelectionToClipboard()
 {
   _clipboard = _scene->saveSelectedItems();
-  _pasteSelectionAction->setEnabled(!_clipboard.isEmpty());
+  _pasteClipboardAction->setEnabled(!_clipboard.isEmpty());
 }
 
 void FlowView::cutSelectionToClipboard()
@@ -250,21 +263,21 @@ void FlowView::cutSelectionToClipboard()
 
 void FlowView::pasteFromClipboard()
 {
-  QPointF paste_pos = _pasteSelectionAction->data().isValid()?
-                      _pasteSelectionAction->data().toPointF()
+  QPointF paste_pos = _pasteClipboardAction->data().isValid()?
+                      _pasteClipboardAction->data().toPointF()
                       : mapToScene(viewport()->rect().center());
 
   _scene->pasteItems(_clipboard, paste_pos);
 
-  _pasteSelectionAction->setData(QVariant());
+  _pasteClipboardAction->setData(QVariant());
 }
 
 void
 FlowView::
 contextMenuEvent(QContextMenuEvent *event)
 {
-  _pasteSelectionAction->setEnabled(!_clipboard.isEmpty());
-  _pasteSelectionAction->setData(QVariant(mapToScene(event->pos())));
+  _pasteClipboardAction->setEnabled(!_clipboard.isEmpty());
+  _pasteClipboardAction->setData(QVariant(mapToScene(event->pos())));
 
   auto clickedItem = itemAt(event->pos());
   if (clickedItem)
@@ -274,7 +287,7 @@ contextMenuEvent(QContextMenuEvent *event)
       groupContextMenu(event, groupGO);
     else if (auto nodeGO = qgraphicsitem_cast<NodeGraphicsObject*>(clickedItem); nodeGO)
       nodeContextMenu(event, nodeGO);
-    _pasteSelectionAction->setData(QVariant());
+    _pasteClipboardAction->setData(QVariant());
     return;
   }
 
@@ -393,13 +406,13 @@ contextMenuEvent(QContextMenuEvent *event)
   modelMenu.addAction(restoreGroupAction);
   modelMenu.addAction(_copySelectionAction);
   modelMenu.addAction(_cutSelectionAction);
-  modelMenu.addAction(_pasteSelectionAction);
+  modelMenu.addAction(_pasteClipboardAction);
 
   // make sure the text box gets focus so the user doesn't have to click on it
   txtBox->setFocus();
 
   modelMenu.exec(event->globalPos());
-  _pasteSelectionAction->setData(QVariant());
+  _pasteClipboardAction->setData(QVariant());
 }
 
 
@@ -482,6 +495,16 @@ deleteSelectedNodes()
     {
       _scene->removeNode(n->node());
     }
+  }
+}
+
+void FlowView::handleSelectionChanged()
+{
+  if (_copySelectionAction != nullptr && _cutSelectionAction != nullptr)
+  {
+    bool isSelectionCopyable = _scene->checkCopyableSelection();
+    _copySelectionAction->setEnabled(isSelectionCopyable);
+    _cutSelectionAction->setEnabled(isSelectionCopyable);
   }
 }
 

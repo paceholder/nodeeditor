@@ -34,6 +34,21 @@ public:
 
   QAction* deleteSelectionAction() const;
 
+  /**
+   * @brief Returns the "copy selection" action.
+   */
+  QAction* copySelectionAction() const;
+
+  /**
+   * @brief Returns the "cut selection" action.
+   */
+  QAction* cutSelectionAction() const;
+
+  /**
+   * @brief Returns the "paste from clipboard" action.
+   */
+  QAction* pasteClipboardAction() const;
+
   void setScene(FlowScene *scene);
 
 public Q_SLOTS:
@@ -43,6 +58,12 @@ public Q_SLOTS:
   void scaleDown();
 
   void deleteSelectedNodes();
+
+  /**
+   * @brief Manages the available actions when there is a change in the
+   * scene's selected items.
+   */
+  void handleSelectionChanged();
 
 protected:
   /**
@@ -88,9 +109,20 @@ private:
   QAction* _clearSelectionAction;
   QAction* _deleteSelectionAction;
 
+  /**
+   * @brief _copySelectionAction Action that triggers copying the selected scene items to the clipboard.
+   */
   QAction* _copySelectionAction;
-  QAction* _pasteSelectionAction;
+
+  /**
+   * @brief _cutSelectionAction Action that triggers cutting the selected scene items to the clipboard.
+   */
   QAction* _cutSelectionAction;
+
+  /**
+   * @brief _pasteClipboardAction Action that triggers pasting of the stored clipboard on the scene.
+   */
+  QAction* _pasteClipboardAction;
 
   QPointF _clickPos;
 
