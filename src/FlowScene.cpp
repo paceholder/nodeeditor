@@ -673,29 +673,17 @@ clearScene()
 
 void
 FlowScene::
-save() const
+save(const QString& fileName) const
 {
-  QString fileName =
-    QFileDialog::getSaveFileName(nullptr,
-                                 tr("Open Flow Scene"),
-                                 QDir::homePath(),
-                                 tr("Flow Scene Files (*.flow)"));
-
-  if (!fileName.isEmpty())
-  {
-    if (!fileName.endsWith("flow", Qt::CaseInsensitive))
-      fileName += ".flow";
-
     QFile file(fileName);
     if (file.open(QIODevice::WriteOnly))
     {
       file.write(saveToMemory());
     }
-  }
 }
 
 
-void
+QString
 FlowScene::
 load()
 {
@@ -703,22 +691,24 @@ load()
   QString fileName =
     QFileDialog::getOpenFileName(nullptr,
                                  tr("Open Flow Scene"),
-                                 QDir::homePath(),
+                                 "",
                                  tr("Flow Scene Files (*.flow)"));
 
   if (!QFileInfo::exists(fileName))
-    return;
+    return QString();
 
   QFile file(fileName);
 
   if (!file.open(QIODevice::ReadOnly))
-    return;
+    return QString();
 
   clearScene();
 
   QByteArray wholeFile = file.readAll();
 
   loadFromMemory(wholeFile);
+
+  return fileName;
 }
 
 
