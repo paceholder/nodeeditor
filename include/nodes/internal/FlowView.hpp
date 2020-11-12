@@ -80,8 +80,19 @@ protected:
    */
   void nodeContextMenu(QContextMenuEvent *event, NodeGraphicsObject* ngo);
 
+  /**
+   * @brief Copies the selected scene items to the clipboard.
+   */
   void copySelectionToClipboard();
+
+  /**
+   * @brief Cuts the selected scene items to the clipboard.
+   */
   void cutSelectionToClipboard();
+
+  /**
+   * @brief Pastes the stored clipboard items to the scene.
+   */
   void pasteFromClipboard();
 
   void contextMenuEvent(QContextMenuEvent *event) override;

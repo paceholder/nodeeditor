@@ -87,6 +87,15 @@ public:
 
   Node&restoreNode(QJsonObject const& nodeJson, bool keep_id = true);
 
+  /**
+   * @brief Loads a JSON object that represents a node into the given map, with the option
+   * to keep the stored node UUID or generate a new one.
+   * @param nodeJson The JSON object representing a node
+   * @param map The map in which the loaded node should be inserted
+   * @param keep_id If true, the loaded node will have the same UUID as the one stored in
+   * the file; otherwise, a new UUID will be generated
+   * @return A reference to the loaded node.
+   */
   Node&loadNodeToMap(QJsonObject const& nodeJson,
                      std::unordered_map<QUuid, std::unique_ptr<Node>>& map,
                      bool keep_id = false);
@@ -182,8 +191,20 @@ public:
 
   void loadFromMemory(const QByteArray& data);
 
+  /**
+   * @brief Creates a JSON document with the selected scene items' info. Used in the
+   * copy/cut/paste system.
+   * @return A byte array, in the QJsonDocument format, with the data of all selected items.
+   */
   QByteArray saveSelectedItems() const;
 
+  /**
+   * @brief Loads the items in the given byte array (which should be formatted as a
+   * QJsonDocument) onto the scene at the given position, always assigning new UUIDs to the
+   * created objects.
+   * @param data
+   * @param paste_pos
+   */
   void pasteItems(const QByteArray& data, QPointF paste_pos);
 
   /**
