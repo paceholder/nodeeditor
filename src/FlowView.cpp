@@ -557,32 +557,20 @@ mousePressEvent(QMouseEvent *event)
   {
     _clickPos = mapToScene(event->pos());
 
+    auto modifiers = QApplication::keyboardModifiers();
     auto* selectedItem = _scene->itemAt(_clickPos, QTransform());
+
     if (selectedItem != nullptr &&
         selectedItem->isEnabled() &&
+        ((modifiers & Qt::ShiftModifier) || (modifiers & Qt::ControlModifier)) &&
         (selectedItem->flags() & QGraphicsItem::ItemIsSelectable))
     {
-      auto modifiers = QApplication::keyboardModifiers();
-      if (modifiers == Qt::NoModifier)
-      {
-        qDebug() << "no mod";
-        clearSelectionAction()->trigger();
-        selectedItem->setSelected(true);
-      }
-      else if (modifiers & Qt::ShiftModifier)
-      {
-        qDebug() << "shift";
-        selectedItem->setSelected(true);
-      }
-      else if (modifiers & Qt::ControlModifier)
-      {
-        qDebug() << "ctrl";
-        selectedItem->setSelected(!selectedItem->isSelected());
-      }
+      selectedItem->setSelected((modifiers & Qt::ShiftModifier)?
+                                true : !selectedItem->isSelected());
+      return;
     }
-    else QGraphicsView::mousePressEvent(event);
   }
-  else QGraphicsView::mousePressEvent(event);
+  QGraphicsView::mousePressEvent(event);
 }
 
 void
