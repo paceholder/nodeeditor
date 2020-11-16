@@ -348,6 +348,14 @@ createGroup(std::vector<Node*>& nodes, QString groupName)
   return groupWeakPtr;
 }
 
+std::weak_ptr<QtNodes::NodeGroup>
+FlowScene::
+createGroupFromSelection(QString name)
+{
+  auto nodes = selectedNodes();
+  return createGroup(nodes, name);
+}
+
 std::vector<std::shared_ptr<Connection> >
 FlowScene::
 connectionsWithinGroup(const QUuid& groupID)
@@ -675,11 +683,11 @@ void
 FlowScene::
 save(const QString& fileName) const
 {
-    QFile file(fileName);
-    if (file.open(QIODevice::WriteOnly))
-    {
-      file.write(saveToMemory());
-    }
+  QFile file(fileName);
+  if (file.open(QIODevice::WriteOnly))
+  {
+    file.write(saveToMemory());
+  }
 }
 
 

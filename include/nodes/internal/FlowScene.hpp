@@ -112,6 +112,13 @@ public:
                                        QString name = QStringLiteral(""));
 
   /**
+   * @brief Creates a group in the scene containing the currently selected nodes.
+   * @param name Group's name
+   * @return Pointer to the newly-created group.
+   */
+  std::weak_ptr<NodeGroup> createGroupFromSelection(QString name = QStringLiteral(""));
+
+  /**
    * @brief Creates a list of the connections that are incident only to nodes within a
    * given group.
    * @param groupID ID of the desired group.
