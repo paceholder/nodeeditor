@@ -553,13 +553,37 @@ void
 FlowView::
 mousePressEvent(QMouseEvent *event)
 {
-  QGraphicsView::mousePressEvent(event);
   if (event->button() == Qt::LeftButton)
   {
     _clickPos = mapToScene(event->pos());
-  }
-}
 
+    auto* selectedItem = _scene->itemAt(_clickPos, QTransform());
+    if (selectedItem != nullptr &&
+        selectedItem->isEnabled() &&
+        (selectedItem->flags() & QGraphicsItem::ItemIsSelectable))
+    {
+      auto modifiers = QApplication::keyboardModifiers();
+      if (modifiers == Qt::NoModifier)
+      {
+        qDebug() << "no mod";
+        clearSelectionAction()->trigger();
+        selectedItem->setSelected(true);
+      }
+      else if (modifiers & Qt::ShiftModifier)
+      {
+        qDebug() << "shift";
+        selectedItem->setSelected(true);
+      }
+      else if (modifiers & Qt::ControlModifier)
+      {
+        qDebug() << "ctrl";
+        selectedItem->setSelected(!selectedItem->isSelected());
+      }
+    }
+    else QGraphicsView::mousePressEvent(event);
+  }
+  else QGraphicsView::mousePressEvent(event);
+}
 
 void
 FlowView::
