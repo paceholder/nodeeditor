@@ -51,14 +51,6 @@ public:
   QAction* pasteClipboardAction() const;
 
   /**
-   * @brief Attempts to convert the clipboard data to a JSON document. The result
-   * should be checked with isEmpty() before usage.
-   * @return A byte array formatted as JSON if the contents of the clipboard
-   * were valid, an empty byte array otherwise.
-   */
-  QByteArray getClipboardAsJson() const;
-
-  /**
    * @brief Converts the given MIME data to a JSON document. The result
    * should be checked with isEmpty() before usage. This function is auxiliary to
    * the getClipboardAsJson() function and the drag/drop functionality.
@@ -66,7 +58,7 @@ public:
    * @return A byte array formatted as JSON if the contents of the given MIME data
    * were valid, an empty byte array otherwise.
    */
-  QByteArray mimeToJson(const QMimeData& mimeData) const;
+  QByteArray mimeToJson(const QMimeData* mimeData) const;
 
   void setScene(FlowScene *scene);
 
@@ -116,7 +108,7 @@ protected:
   void cutSelectionToClipboard();
 
   /**
-   * @brief Pastes the stored clipboard items to the scene.
+   * @brief Pastes the clipboard or dropped items on the scene.
    */
   void pasteFromClipboard();
 
@@ -135,6 +127,10 @@ protected:
   void drawBackground(QPainter* painter, const QRectF& r) override;
 
   void showEvent(QShowEvent *event) override;
+
+  void dragEnterEvent(QDragEnterEvent* event) override;
+
+  void dropEvent(QDropEvent* event) override;
 
 protected:
 

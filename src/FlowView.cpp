@@ -60,6 +60,8 @@ FlowView(QWidget *parent)
 
   setCacheMode(QGraphicsView::CacheBackground);
 
+  setAcceptDrops(true);
+
   //setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
 }
 
@@ -113,31 +115,21 @@ pasteClipboardAction() const
 
 QByteArray
 FlowView::
-getClipboardAsJson() const
+mimeToJson(const QMimeData *mimeData) const
 {
-  const QMimeData* clipboardData = _clipboard->mimeData();
-  if (clipboardData != nullptr)
+  if (mimeData != nullptr)
   {
-    return mimeToJson(*clipboardData);
-  }
-
-  return QByteArray();
-}
-
-QByteArray
-FlowView::
-mimeToJson(const QMimeData& mimeData) const
-{
-  if (mimeData.hasFormat(_clipboardMimeType))
-  {
-    return mimeData.data(_clipboardMimeType);
-  }
-  if (mimeData.hasText())
-  {
-    QJsonDocument jsonDoc = QJsonDocument::fromJson(mimeData.text().toUtf8());
-    if (!jsonDoc.isNull())
+    if (mimeData->hasFormat(_clipboardMimeType))
     {
-      return jsonDoc.toJson();
+      return mimeData->data(_clipboardMimeType);
+    }
+    if (mimeData->hasText())
+    {
+      QJsonDocument jsonDoc = QJsonDocument::fromJson(mimeData->text().toUtf8());
+      if (!jsonDoc.isNull())
+      {
+        return jsonDoc.toJson();
+      }
     }
   }
 
@@ -317,7 +309,7 @@ pasteFromClipboard()
                       _pasteClipboardAction->data().toPointF()
                       : mapToScene(viewport()->rect().center());
 
-  const QByteArray data = getClipboardAsJson();
+  const QByteArray data = mimeToJson(_clipboard->mimeData());
   if (!data.isEmpty())
   {
     _scene->pasteItems(data, paste_pos);
@@ -334,7 +326,7 @@ void
 FlowView::
 contextMenuEvent(QContextMenuEvent *event)
 {
-  _pasteClipboardAction->setEnabled(!getClipboardAsJson().isEmpty());
+  _pasteClipboardAction->setEnabled(!mimeToJson(_clipboard->mimeData()).isEmpty());
   _pasteClipboardAction->setData(QVariant(mapToScene(event->pos())));
 
   auto clickedItem = itemAt(event->pos());
@@ -691,6 +683,27 @@ showEvent(QShowEvent *event)
 {
   _scene->setSceneRect(this->rect());
   QGraphicsView::showEvent(event);
+}
+
+void
+FlowView::
+dragEnterEvent(QDragEnterEvent *event)
+{
+  if (!mimeToJson(event->mimeData()).isEmpty())
+  {
+    event->acceptProposedAction();
+  }
+}
+
+void
+FlowView::
+dropEvent(QDropEvent *event)
+{
+  if (!mimeToJson(event->mimeData()).isEmpty())
+  {
+
+    event->acceptProposedAction();
+  }
 }
 
 
