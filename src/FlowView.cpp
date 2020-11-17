@@ -553,6 +553,9 @@ void
 FlowView::
 mousePressEvent(QMouseEvent *event)
 {
+  QList<QGraphicsItem*> previousSelection = _scene->selectedItems();
+  QGraphicsView::mousePressEvent(event);
+
   if (event->button() == Qt::LeftButton)
   {
     _clickPos = mapToScene(event->pos());
@@ -567,10 +570,15 @@ mousePressEvent(QMouseEvent *event)
     {
       selectedItem->setSelected((modifiers & Qt::ShiftModifier)?
                                 true : !selectedItem->isSelected());
-      return;
+
+      // restores the previous selection, which in this case has been lost in the
+      // base class call to mousePressEvent.
+      for (auto* item : previousSelection)
+      {
+        item->setSelected(true);
+      }
     }
   }
-  QGraphicsView::mousePressEvent(event);
 }
 
 void
@@ -578,7 +586,8 @@ FlowView::
 mouseMoveEvent(QMouseEvent *event)
 {
   QGraphicsView::mouseMoveEvent(event);
-  if (scene()->mouseGrabberItem() == nullptr && event->buttons() == Qt::LeftButton)
+  if (scene()->mouseGrabberItem() == nullptr &&
+      event->buttons() == Qt::LeftButton)
   {
     // Make sure shift is not being pressed
     if ((event->modifiers() & Qt::ShiftModifier) == 0)

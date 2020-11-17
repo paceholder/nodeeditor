@@ -112,7 +112,8 @@ QVariant
 GroupGraphicsObject::
 itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant& value)
 {
-  if (change == ItemSelectedChange && scene())
+  // if a group is selected, all of its children become unselectable
+  if (change == ItemSelectedChange && scene() && scene()->selectedItems().empty())
   {
     for (auto* child : group().childNodes())
     {
