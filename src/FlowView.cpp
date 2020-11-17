@@ -125,7 +125,8 @@ mimeToJson(const QMimeData *mimeData) const
     }
     if (mimeData->hasText())
     {
-      QJsonDocument jsonDoc = QJsonDocument::fromJson(mimeData->text().toUtf8());
+      auto text = mimeData->data("text/plain");
+      QJsonDocument jsonDoc = QJsonDocument::fromJson(text);
       if (!jsonDoc.isNull())
       {
         return jsonDoc.toJson();
@@ -305,14 +306,14 @@ void
 FlowView::
 pasteFromClipboard()
 {
-  QPointF paste_pos = _pasteClipboardAction->data().isValid()?
-                      _pasteClipboardAction->data().toPointF()
-                      : mapToScene(viewport()->rect().center());
+  QPointF pastePos = _pasteClipboardAction->data().isValid()?
+                     _pasteClipboardAction->data().toPointF()
+                     : mapToScene(viewport()->rect().center());
 
   const QByteArray data = mimeToJson(_clipboard->mimeData());
   if (!data.isEmpty())
   {
-    _scene->pasteItems(data, paste_pos);
+    _scene->pasteItems(data, pastePos);
   }
   else
   {
@@ -689,7 +690,23 @@ void
 FlowView::
 dragEnterEvent(QDragEnterEvent *event)
 {
-  if (!mimeToJson(event->mimeData()).isEmpty())
+  // here we copy the relevant data to a local object because the reference
+  // to the event's mime data was being lost when calling mimeToJson.
+  QMimeData* mimeData = new QMimeData;
+
+  // retrieves only the data relevant to the scene
+  QList<QString> relevantTypes = {_clipboardMimeType, "text/plain"};
+  for (const auto& format : relevantTypes)
+  {
+    if (event->mimeData()->hasFormat(format))
+    {
+      auto data = event->mimeData()->data(format);
+      mimeData->setData(format, data);
+    }
+  }
+
+  if (event->proposedAction() == Qt::CopyAction &&
+      !mimeToJson(mimeData).isEmpty())
   {
     event->acceptProposedAction();
   }
@@ -697,11 +714,19 @@ dragEnterEvent(QDragEnterEvent *event)
 
 void
 FlowView::
+dragMoveEvent(QDragMoveEvent *event)
+{
+  event->acceptProposedAction();
+}
+
+void
+FlowView::
 dropEvent(QDropEvent *event)
 {
-  if (!mimeToJson(event->mimeData()).isEmpty())
+  auto droppedJson = mimeToJson(event->mimeData());
+  if (!droppedJson.isEmpty())
   {
-
+    _scene->pasteItems(droppedJson, mapToScene(event->pos()));
     event->acceptProposedAction();
   }
 }

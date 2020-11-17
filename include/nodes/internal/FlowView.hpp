@@ -108,7 +108,7 @@ protected:
   void cutSelectionToClipboard();
 
   /**
-   * @brief Pastes the clipboard or dropped items on the scene.
+   * @brief Pastes the clipboard items on the scene.
    */
   void pasteFromClipboard();
 
@@ -129,6 +129,8 @@ protected:
   void showEvent(QShowEvent *event) override;
 
   void dragEnterEvent(QDragEnterEvent* event) override;
+
+  void dragMoveEvent(QDragMoveEvent* event) override;
 
   void dropEvent(QDropEvent* event) override;
 
