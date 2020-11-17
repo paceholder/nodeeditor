@@ -108,22 +108,6 @@ boundingRect() const
   return mapRectFromScene(ret.marginsAdded(_margins));
 }
 
-QVariant
-GroupGraphicsObject::
-itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant& value)
-{
-  // if a group is selected, all of its children become unselectable
-  if (change == ItemSelectedChange && scene() && scene()->selectedItems().empty())
-  {
-    for (auto* child : group().childNodes())
-    {
-      child->nodeGraphicsObject().setFlag(ItemIsSelectable, !value.toBool());
-    }
-  }
-  return QGraphicsItem::itemChange(change, value);
-}
-
-
 void
 GroupGraphicsObject::
 setFillColor(const QColor& color)

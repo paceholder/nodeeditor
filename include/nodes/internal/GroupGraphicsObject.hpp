@@ -102,12 +102,6 @@ public:
   }
 
   /**
-   * @copydoc QGraphicsItem::itemChange(GraphicsItemChange, const QVariant&)
-   * @note Overriden here to handle selection changes.
-   */
-  QVariant itemChange(GraphicsItemChange change, const QVariant & value) override;
-
-  /**
    * @brief Sets the group's area color.
    * @param color Color to paint the group area.
    */
