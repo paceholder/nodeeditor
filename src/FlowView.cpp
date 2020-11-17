@@ -62,6 +62,11 @@ FlowView(QWidget *parent)
 
   setAcceptDrops(true);
 
+  connect(_clipboard, &QClipboard::dataChanged, [this]()
+  {
+    _pasteClipboardAction->setEnabled(!mimeToJson(_clipboard->mimeData()).isEmpty());
+  });
+
   //setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
 }
 
@@ -327,7 +332,6 @@ void
 FlowView::
 contextMenuEvent(QContextMenuEvent *event)
 {
-  _pasteClipboardAction->setEnabled(!mimeToJson(_clipboard->mimeData()).isEmpty());
   _pasteClipboardAction->setData(QVariant(mapToScene(event->pos())));
 
   auto clickedItem = itemAt(event->pos());
