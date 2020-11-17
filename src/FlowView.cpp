@@ -111,22 +111,33 @@ pasteClipboardAction() const
   return _pasteClipboardAction;
 }
 
-QByteArray FlowView::getClipboardAsJson() const
+QByteArray
+FlowView::
+getClipboardAsJson() const
 {
   const QMimeData* clipboardData = _clipboard->mimeData();
   if (clipboardData != nullptr)
   {
-    if (clipboardData->hasFormat(_clipboardMimeType))
+    return mimeToJson(*clipboardData);
+  }
+
+  return QByteArray();
+}
+
+QByteArray
+FlowView::
+mimeToJson(const QMimeData& mimeData) const
+{
+  if (mimeData.hasFormat(_clipboardMimeType))
+  {
+    return mimeData.data(_clipboardMimeType);
+  }
+  if (mimeData.hasText())
+  {
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(mimeData.text().toUtf8());
+    if (!jsonDoc.isNull())
     {
-      return clipboardData->data(_clipboardMimeType);
-    }
-    if (clipboardData->hasText())
-    {
-      QJsonDocument jsonDoc = QJsonDocument::fromJson(clipboardData->text().toUtf8());
-      if (!jsonDoc.isNull())
-      {
-        return jsonDoc.toJson();
-      }
+      return jsonDoc.toJson();
     }
   }
 
@@ -134,7 +145,8 @@ QByteArray FlowView::getClipboardAsJson() const
 }
 
 void
-FlowView::setScene(FlowScene *scene)
+FlowView::
+setScene(FlowScene *scene)
 {
   _scene = scene;
   QGraphicsView::setScene(_scene);
@@ -279,7 +291,9 @@ nodeContextMenu(QContextMenuEvent* event,
   nodeMenu.exec(event->globalPos());
 }
 
-void FlowView::copySelectionToClipboard()
+void
+FlowView::
+copySelectionToClipboard()
 {
   QMimeData* clipboardData = new QMimeData;
   clipboardData->setData(_clipboardMimeType, _scene->saveSelectedItems());
@@ -287,13 +301,17 @@ void FlowView::copySelectionToClipboard()
   _pasteClipboardAction->setEnabled(!clipboardData->data(_clipboardMimeType).isEmpty());
 }
 
-void FlowView::cutSelectionToClipboard()
+void
+FlowView::
+cutSelectionToClipboard()
 {
   copySelectionToClipboard();
   deleteSelectionAction()->trigger();
 }
 
-void FlowView::pasteFromClipboard()
+void
+FlowView::
+pasteFromClipboard()
 {
   QPointF paste_pos = _pasteClipboardAction->data().isValid()?
                       _pasteClipboardAction->data().toPointF()
@@ -538,7 +556,9 @@ deleteSelectedNodes()
   }
 }
 
-void FlowView::handleSelectionChanged()
+void
+FlowView::
+handleSelectionChanged()
 {
   if (_copySelectionAction != nullptr && _cutSelectionAction != nullptr)
   {

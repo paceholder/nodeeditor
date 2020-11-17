@@ -5,6 +5,7 @@
 #include "Export.hpp"
 
 class QMenu;
+class QMimeData;
 
 namespace QtNodes
 {
@@ -56,6 +57,16 @@ public:
    * were valid, an empty byte array otherwise.
    */
   QByteArray getClipboardAsJson() const;
+
+  /**
+   * @brief Converts the given MIME data to a JSON document. The result
+   * should be checked with isEmpty() before usage. This function is auxiliary to
+   * the getClipboardAsJson() function and the drag/drop functionality.
+   * @param data Mime data to be converted to JSON
+   * @return A byte array formatted as JSON if the contents of the given MIME data
+   * were valid, an empty byte array otherwise.
+   */
+  QByteArray mimeToJson(const QMimeData& mimeData) const;
 
   void setScene(FlowScene *scene);
 
