@@ -49,7 +49,21 @@ public:
    */
   QAction* pasteClipboardAction() const;
 
+  /**
+   * @brief Attempts to convert the clipboard data to a JSON document. The result
+   * should be checked with isEmpty() before usage.
+   * @return A byte array formatted as JSON if the contents of the clipboard
+   * were valid, an empty byte array otherwise.
+   */
+  QByteArray getClipboardAsJson() const;
+
   void setScene(FlowScene *scene);
+
+  /**
+   * @brief _clipboardMimeType Stores the MIME type that will be used by the View
+   * to copy and paste scene objects. Currently set to "application/json".
+   */
+  static const QString _clipboardMimeType;
 
 public Q_SLOTS:
 
@@ -139,6 +153,9 @@ private:
 
   FlowScene* _scene;
 
-  QByteArray _clipboard;
+  /**
+   * @brief _clipboard A pointer to the application's clipboard.
+   */
+  QClipboard* _clipboard;
 };
 }

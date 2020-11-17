@@ -30,6 +30,8 @@ using QtNodes::FlowScene;
 using QtNodes::GroupGraphicsObject;
 using QtNodes::NodeGraphicsObject;
 
+const QString FlowView::_clipboardMimeType = "application/json";
+
 FlowView::
 FlowView(QWidget *parent)
   : QGraphicsView(parent)
@@ -38,6 +40,7 @@ FlowView(QWidget *parent)
   , _copySelectionAction(Q_NULLPTR)
   , _pasteClipboardAction(Q_NULLPTR)
   , _scene(Q_NULLPTR)
+  , _clipboard(QApplication::clipboard())
 {
   setDragMode(QGraphicsView::ScrollHandDrag);
   setRenderHint(QPainter::Antialiasing);
@@ -106,6 +109,28 @@ FlowView::
 pasteClipboardAction() const
 {
   return _pasteClipboardAction;
+}
+
+QByteArray FlowView::getClipboardAsJson() const
+{
+  const QMimeData* clipboardData = _clipboard->mimeData();
+  if (clipboardData != nullptr)
+  {
+    if (clipboardData->hasFormat(_clipboardMimeType))
+    {
+      return clipboardData->data(_clipboardMimeType);
+    }
+    if (clipboardData->hasText())
+    {
+      QJsonDocument jsonDoc = QJsonDocument::fromJson(clipboardData->text().toUtf8());
+      if (!jsonDoc.isNull())
+      {
+        return jsonDoc.toJson();
+      }
+    }
+  }
+
+  return QByteArray();
 }
 
 void
@@ -256,8 +281,10 @@ nodeContextMenu(QContextMenuEvent* event,
 
 void FlowView::copySelectionToClipboard()
 {
-  _clipboard = _scene->saveSelectedItems();
-  _pasteClipboardAction->setEnabled(!_clipboard.isEmpty());
+  QMimeData* clipboardData = new QMimeData;
+  clipboardData->setData(_clipboardMimeType, _scene->saveSelectedItems());
+  _clipboard->setMimeData(clipboardData);
+  _pasteClipboardAction->setEnabled(!clipboardData->data(_clipboardMimeType).isEmpty());
 }
 
 void FlowView::cutSelectionToClipboard()
@@ -272,7 +299,15 @@ void FlowView::pasteFromClipboard()
                       _pasteClipboardAction->data().toPointF()
                       : mapToScene(viewport()->rect().center());
 
-  _scene->pasteItems(_clipboard, paste_pos);
+  const QByteArray data = getClipboardAsJson();
+  if (!data.isEmpty())
+  {
+    _scene->pasteItems(data, paste_pos);
+  }
+  else
+  {
+    qDebug() << "Failed to convert clipboard to json!";
+  }
 
   _pasteClipboardAction->setData(QVariant());
 }
@@ -281,7 +316,7 @@ void
 FlowView::
 contextMenuEvent(QContextMenuEvent *event)
 {
-  _pasteClipboardAction->setEnabled(!_clipboard.isEmpty());
+  _pasteClipboardAction->setEnabled(!getClipboardAsJson().isEmpty());
   _pasteClipboardAction->setData(QVariant(mapToScene(event->pos())));
 
   auto clickedItem = itemAt(event->pos());
