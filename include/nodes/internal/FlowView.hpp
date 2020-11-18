@@ -112,6 +112,13 @@ protected:
    */
   void pasteFromClipboard();
 
+  /**
+   * @brief Properly restores any dropped files on the scene.
+   * @param filepath Path to a .group or .flow file
+   * @param pos Desired dropped group's position. Doesn't affect .flow files.
+   */
+  void handleFileDrop(const QString& filepath, const QPointF& pos = QPointF{0,0});
+
   void contextMenuEvent(QContextMenuEvent *event) override;
 
   void wheelEvent(QWheelEvent *event) override;

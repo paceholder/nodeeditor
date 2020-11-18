@@ -330,6 +330,44 @@ pasteFromClipboard()
 
 void
 FlowView::
+handleFileDrop(const QString& filepath, const QPointF& pos)
+{
+  if (!QFileInfo::exists(filepath))
+  {
+    qDebug() << "Error! Couldn't find dropped file.";
+    return;
+  }
+
+  QFile file(filepath);
+  if (!file.open(QIODevice::ReadOnly))
+  {
+    qDebug() << "Error opening dropped file!";
+    return;
+  }
+
+  QByteArray wholeFile = file.readAll();
+
+  if (filepath.endsWith(QStringLiteral(".flow")))
+  {
+    _scene->loadFromMemory(wholeFile);
+    return;
+  }
+
+  if (filepath.endsWith(QStringLiteral(".group")))
+  {
+    const QJsonObject fileJson = QJsonDocument::fromJson(wholeFile).object();
+    auto groupWeakPtr = _scene->restoreGroup(fileJson).first;
+    if (auto groupPtr = groupWeakPtr.lock(); groupPtr)
+    {
+      auto& ggoRef = groupPtr->groupGraphicsObject();
+      ggoRef.setPosition(pos);
+    }
+  }
+
+}
+
+void
+FlowView::
 contextMenuEvent(QContextMenuEvent *event)
 {
   _pasteClipboardAction->setData(QVariant(mapToScene(event->pos())));
@@ -694,6 +732,12 @@ void
 FlowView::
 dragEnterEvent(QDragEnterEvent *event)
 {
+  if (event->mimeData()->hasUrls())
+  {
+    event->acceptProposedAction();
+    return;
+  }
+
   // here we copy the relevant data to a local object because the reference
   // to the event's mime data was being lost when calling mimeToJson.
   QMimeData* mimeData = new QMimeData;
@@ -727,11 +771,27 @@ void
 FlowView::
 dropEvent(QDropEvent *event)
 {
+  auto dropPos = mapToScene(event->pos());
+
+  // if files are being dropped
+  if (event->mimeData()->hasUrls())
+  {
+    auto urls = event->mimeData()->urls();
+    QPointF dropPosOffset{0.0, 0.0};
+    for (const auto& url : urls)
+    {
+      handleFileDrop(url.toLocalFile(), dropPos + dropPosOffset);
+      dropPosOffset += QPointF{1.0, 1.0};
+    }
+    event->acceptProposedAction();
+  }
+
+  // if a json object (or a plain text describing it) is being dropped
   auto droppedJson = mimeToJson(event->mimeData());
   if (!droppedJson.isEmpty())
   {
-    _scene->pasteItems(droppedJson, mapToScene(event->pos()));
     event->acceptProposedAction();
+    _scene->pasteItems(droppedJson, dropPos);
   }
 }
 
