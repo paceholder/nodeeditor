@@ -687,9 +687,7 @@ void
 FlowView::
 mousePressEvent(QMouseEvent *event)
 {
-  QList<QGraphicsItem*> previousSelection = _scene->selectedItems();
   QGraphicsView::mousePressEvent(event);
-
   if (event->button() == Qt::LeftButton)
   {
     _clickPos = mapToScene(event->pos());
