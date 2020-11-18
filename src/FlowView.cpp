@@ -30,6 +30,8 @@ using QtNodes::FlowScene;
 using QtNodes::GroupGraphicsObject;
 using QtNodes::NodeGraphicsObject;
 
+const QString FlowView::_clipboardMimeType = "application/json";
+
 FlowView::
 FlowView(QWidget *parent)
   : QGraphicsView(parent)
@@ -38,6 +40,7 @@ FlowView(QWidget *parent)
   , _copySelectionAction(Q_NULLPTR)
   , _pasteClipboardAction(Q_NULLPTR)
   , _scene(Q_NULLPTR)
+  , _clipboard(QApplication::clipboard())
 {
   setDragMode(QGraphicsView::ScrollHandDrag);
   setRenderHint(QPainter::Antialiasing);
@@ -56,6 +59,13 @@ FlowView(QWidget *parent)
   setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
 
   setCacheMode(QGraphicsView::CacheBackground);
+
+  setAcceptDrops(true);
+
+  connect(_clipboard, &QClipboard::dataChanged, [this]()
+  {
+    _pasteClipboardAction->setEnabled(!mimeToJson(_clipboard->mimeData()).isEmpty());
+  });
 
   //setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
 }
@@ -108,8 +118,33 @@ pasteClipboardAction() const
   return _pasteClipboardAction;
 }
 
+QByteArray
+FlowView::
+mimeToJson(const QMimeData *mimeData) const
+{
+  if (mimeData != nullptr)
+  {
+    if (mimeData->hasFormat(_clipboardMimeType))
+    {
+      return mimeData->data(_clipboardMimeType);
+    }
+    if (mimeData->hasText())
+    {
+      auto text = mimeData->data("text/plain");
+      QJsonDocument jsonDoc = QJsonDocument::fromJson(text);
+      if (!jsonDoc.isNull())
+      {
+        return jsonDoc.toJson();
+      }
+    }
+  }
+
+  return QByteArray();
+}
+
 void
-FlowView::setScene(FlowScene *scene)
+FlowView::
+setScene(FlowScene *scene)
 {
   _scene = scene;
   QGraphicsView::setScene(_scene);
@@ -254,34 +289,87 @@ nodeContextMenu(QContextMenuEvent* event,
   nodeMenu.exec(event->globalPos());
 }
 
-void FlowView::copySelectionToClipboard()
+void
+FlowView::
+copySelectionToClipboard()
 {
-  _clipboard = _scene->saveSelectedItems();
-  _pasteClipboardAction->setEnabled(!_clipboard.isEmpty());
+  QMimeData* clipboardData = new QMimeData;
+  clipboardData->setData(_clipboardMimeType, _scene->saveSelectedItems());
+  _clipboard->setMimeData(clipboardData);
+  _pasteClipboardAction->setEnabled(!clipboardData->data(_clipboardMimeType).isEmpty());
 }
 
-void FlowView::cutSelectionToClipboard()
+void
+FlowView::
+cutSelectionToClipboard()
 {
   copySelectionToClipboard();
   deleteSelectionAction()->trigger();
 }
 
-void FlowView::pasteFromClipboard()
+void
+FlowView::
+pasteFromClipboard()
 {
-  QPointF paste_pos = _pasteClipboardAction->data().isValid()?
-                      _pasteClipboardAction->data().toPointF()
-                      : mapToScene(viewport()->rect().center());
+  QPointF pastePos = _pasteClipboardAction->data().isValid()?
+                     _pasteClipboardAction->data().toPointF()
+                     : mapToScene(viewport()->rect().center());
 
-  _scene->pasteItems(_clipboard, paste_pos);
+  const QByteArray data = mimeToJson(_clipboard->mimeData());
+  if (!data.isEmpty())
+  {
+    _scene->pasteItems(data, pastePos);
+  }
+  else
+  {
+    qDebug() << "Failed to convert clipboard to json!";
+  }
 
   _pasteClipboardAction->setData(QVariant());
 }
 
 void
 FlowView::
+handleFileDrop(const QString& filepath, const QPointF& pos)
+{
+  if (!QFileInfo::exists(filepath))
+  {
+    qDebug() << "Error! Couldn't find dropped file.";
+    return;
+  }
+
+  QFile file(filepath);
+  if (!file.open(QIODevice::ReadOnly))
+  {
+    qDebug() << "Error opening dropped file!";
+    return;
+  }
+
+  QByteArray wholeFile = file.readAll();
+
+  if (filepath.endsWith(QStringLiteral(".flow")))
+  {
+    _scene->loadFromMemory(wholeFile);
+    return;
+  }
+
+  if (filepath.endsWith(QStringLiteral(".group")))
+  {
+    const QJsonObject fileJson = QJsonDocument::fromJson(wholeFile).object();
+    auto groupWeakPtr = _scene->restoreGroup(fileJson).first;
+    if (auto groupPtr = groupWeakPtr.lock(); groupPtr)
+    {
+      auto& ggoRef = groupPtr->groupGraphicsObject();
+      ggoRef.setPosition(pos);
+    }
+  }
+
+}
+
+void
+FlowView::
 contextMenuEvent(QContextMenuEvent *event)
 {
-  _pasteClipboardAction->setEnabled(!_clipboard.isEmpty());
   _pasteClipboardAction->setData(QVariant(mapToScene(event->pos())));
 
   auto clickedItem = itemAt(event->pos());
@@ -503,7 +591,9 @@ deleteSelectedNodes()
   }
 }
 
-void FlowView::handleSelectionChanged()
+void
+FlowView::
+handleSelectionChanged()
 {
   if (_copySelectionAction != nullptr && _cutSelectionAction != nullptr)
   {
@@ -663,6 +753,83 @@ showEvent(QShowEvent *event)
 {
   _scene->setSceneRect(this->rect());
   QGraphicsView::showEvent(event);
+}
+
+void
+FlowView::
+dragEnterEvent(QDragEnterEvent *event)
+{
+  // if at least one valid file is being dragged, the event is accepted.
+  // this checks neither the existence nor the contents of the files.
+  if (event->mimeData()->hasUrls())
+  {
+    auto urls = event->mimeData()->urls();
+    for (const auto& url : urls)
+    {
+      auto filepath = url.toLocalFile();
+      if (filepath.endsWith(QStringLiteral(".flow")) ||
+          filepath.endsWith(QStringLiteral(".group")))
+        event->acceptProposedAction();
+      return;
+    }
+  }
+
+  // here we copy the relevant data to a local object because the reference
+  // to the event's mime data was being lost when calling mimeToJson.
+  QMimeData* mimeData = new QMimeData;
+
+  // retrieves only the data relevant to the scene
+  QList<QString> relevantTypes = {_clipboardMimeType, "text/plain"};
+  for (const auto& format : relevantTypes)
+  {
+    if (event->mimeData()->hasFormat(format))
+    {
+      auto data = event->mimeData()->data(format);
+      mimeData->setData(format, data);
+    }
+  }
+
+  if (event->proposedAction() == Qt::CopyAction &&
+      !mimeToJson(mimeData).isEmpty())
+  {
+    event->acceptProposedAction();
+  }
+}
+
+void
+FlowView::
+dragMoveEvent(QDragMoveEvent *event)
+{
+  event->acceptProposedAction();
+}
+
+void
+FlowView::
+dropEvent(QDropEvent *event)
+{
+  auto dropPos = mapToScene(event->pos());
+
+  // if files are being dropped
+  if (event->mimeData()->hasUrls())
+  {
+    QPointF dropPosOffset{0.0, 0.0};
+
+    auto urls = event->mimeData()->urls();
+    for (const auto& url : urls)
+    {
+      handleFileDrop(url.toLocalFile(), dropPos + dropPosOffset);
+      dropPosOffset += QPointF{1.0, 1.0};
+    }
+    event->acceptProposedAction();
+  }
+
+  // if a json object (or a plain text describing it) is being dropped
+  auto droppedJson = mimeToJson(event->mimeData());
+  if (!droppedJson.isEmpty())
+  {
+    event->acceptProposedAction();
+    _scene->pasteItems(droppedJson, dropPos);
+  }
 }
 
 

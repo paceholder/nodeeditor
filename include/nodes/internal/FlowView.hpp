@@ -5,6 +5,7 @@
 #include "Export.hpp"
 
 class QMenu;
+class QMimeData;
 
 namespace QtNodes
 {
@@ -49,7 +50,23 @@ public:
    */
   QAction* pasteClipboardAction() const;
 
+  /**
+   * @brief Converts the given MIME data to a JSON document. The result
+   * should be checked with isEmpty() before usage. This function is auxiliary to
+   * the getClipboardAsJson() function and the drag/drop functionality.
+   * @param data Mime data to be converted to JSON
+   * @return A byte array formatted as JSON if the contents of the given MIME data
+   * were valid, an empty byte array otherwise.
+   */
+  QByteArray mimeToJson(const QMimeData* mimeData) const;
+
   void setScene(FlowScene *scene);
+
+  /**
+   * @brief _clipboardMimeType Stores the MIME type that will be used by the View
+   * to copy and paste scene objects. Currently set to "application/json".
+   */
+  static const QString _clipboardMimeType;
 
 public Q_SLOTS:
 
@@ -91,9 +108,17 @@ protected:
   void cutSelectionToClipboard();
 
   /**
-   * @brief Pastes the stored clipboard items to the scene.
+   * @brief Pastes the clipboard items on the scene.
    */
   void pasteFromClipboard();
+
+  /**
+   * @brief Properly restores any dropped files on the scene.
+   * @param filepath Path to a .group or .flow file
+   * @param pos Desired dropped group's position, in scene coordinates. Doesn't
+   * affect .flow files.
+   */
+  void handleFileDrop(const QString& filepath, const QPointF& pos = QPointF{0,0});
 
   void contextMenuEvent(QContextMenuEvent *event) override;
 
@@ -110,6 +135,12 @@ protected:
   void drawBackground(QPainter* painter, const QRectF& r) override;
 
   void showEvent(QShowEvent *event) override;
+
+  void dragEnterEvent(QDragEnterEvent* event) override;
+
+  void dragMoveEvent(QDragMoveEvent* event) override;
+
+  void dropEvent(QDropEvent* event) override;
 
 protected:
 
@@ -139,6 +170,9 @@ private:
 
   FlowScene* _scene;
 
-  QByteArray _clipboard;
+  /**
+   * @brief _clipboard A pointer to the application's clipboard.
+   */
+  QClipboard* _clipboard;
 };
 }
