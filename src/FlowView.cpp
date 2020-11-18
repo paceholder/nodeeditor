@@ -655,24 +655,10 @@ mousePressEvent(QMouseEvent *event)
 
     if (selectedItem != nullptr &&
         selectedItem->isEnabled() &&
-        ((modifiers & Qt::ShiftModifier) != 0 || (modifiers & Qt::ControlModifier) != 0) &&
+        (modifiers & Qt::ControlModifier) &&
         (selectedItem->flags() & QGraphicsItem::ItemIsSelectable))
     {
-      // restores the previous selection, which has been lost during the base
-      // class call to mousePressEvent.
-      if (modifiers & Qt::ShiftModifier)
-      {
-        for (auto* item : previousSelection)
-        {
-          item->setSelected(true);
-        }
-        selectedItem->setSelected(true);
-      }
-      else if (modifiers & Qt::ControlModifier)
-      {
-        selectedItem->setSelected(!selectedItem->isSelected());
-      }
-
+      selectedItem->setSelected(!selectedItem->isSelected());
     }
   }
 }

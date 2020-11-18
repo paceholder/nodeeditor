@@ -817,12 +817,6 @@ saveSelectedItems() const
 
   for (auto* item : selectedItems())
   {
-    if (auto* ngo = qgraphicsitem_cast<NodeGraphicsObject*>(item))
-    {
-      nodesJsonArray.append(ngo->node().save());
-      selectedNodeIDs.insert(ngo->node().id());
-    }
-    else
     {
       if (auto* ggo = qgraphicsitem_cast<GroupGraphicsObject*>(item))
       {
@@ -834,6 +828,17 @@ saveSelectedItems() const
         {
           selectedNodeIDs.insert(node->id());
         }
+      }
+    }
+  }
+  for (auto* item : selectedItems())
+  {
+    if (auto* ngo = qgraphicsitem_cast<NodeGraphicsObject*>(item))
+    {
+      if (selectedNodeIDs.find(ngo->node().id()) == selectedNodeIDs.end())
+      {
+        selectedNodeIDs.insert(ngo->node().id());
+        nodesJsonArray.append(ngo->node().save());
       }
     }
   }
