@@ -209,8 +209,8 @@ public:
    * @brief Loads the items in the given byte array (which should be formatted as a
    * QJsonDocument) onto the scene at the given position, always assigning new UUIDs to the
    * created objects.
-   * @param data
-   * @param paste_pos
+   * @param data Data to be pasted, as a JSON document
+   * @param paste_pos Position of the pasted items
    */
   void pasteItems(const QByteArray& data, QPointF paste_pos);
 
