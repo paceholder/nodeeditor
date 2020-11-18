@@ -732,10 +732,19 @@ void
 FlowView::
 dragEnterEvent(QDragEnterEvent *event)
 {
+  // if at least one valid file is being dragged, the event is accepted.
+  // this checks neither the existence nor the contents of the files.
   if (event->mimeData()->hasUrls())
   {
-    event->acceptProposedAction();
-    return;
+    auto urls = event->mimeData()->urls();
+    for (const auto& url : urls)
+    {
+      auto filepath = url.toLocalFile();
+      if (filepath.endsWith(QStringLiteral(".flow")) ||
+          filepath.endsWith(QStringLiteral(".group")))
+        event->acceptProposedAction();
+      return;
+    }
   }
 
   // here we copy the relevant data to a local object because the reference
@@ -776,8 +785,9 @@ dropEvent(QDropEvent *event)
   // if files are being dropped
   if (event->mimeData()->hasUrls())
   {
-    auto urls = event->mimeData()->urls();
     QPointF dropPosOffset{0.0, 0.0};
+
+    auto urls = event->mimeData()->urls();
     for (const auto& url : urls)
     {
       handleFileDrop(url.toLocalFile(), dropPos + dropPosOffset);
