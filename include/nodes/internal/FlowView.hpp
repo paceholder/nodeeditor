@@ -113,12 +113,32 @@ protected:
   void pasteFromClipboard();
 
   /**
-   * @brief Properly restores any dropped files on the scene.
+   * @brief Properly restores any pasted or dropped files on the scene.
    * @param filepath Path to a .group or .flow file
-   * @param pos Desired dropped group's position, in scene coordinates. Doesn't
+   * @param pos Desired group's position, in scene coordinates. Doesn't
    * affect .flow files.
    */
-  void handleFileDrop(const QString& filepath, const QPointF& pos = QPointF{0,0});
+  void handleFilePaste(const QString& filepath, const QPointF& pos);
+
+  /**
+   * @brief Loads to the scene any .group and .flow files in the specified
+   * mime data.
+   * @param mimeData Mime data that might contain copied files. In case
+   * there are no files, this function does nothing.
+   * @param pos Desired group's position, in scene coordinates. Doesn't
+   * affect .flow files.
+   */
+  void loadFilesFromMime(const QMimeData* mimeData, const QPointF& pos);
+
+  /**
+   * @brief Checks if the given mime data contains valid file URLs for the scene.
+   * If at least one valid file is passed, the result is true. This checks neither
+   * the existence nor the contents of the files, and is used when enabling paste
+   * and drop actions.
+   * @param mimeData Data to be checked
+   * @return true if at least one of the files is valid, false otherwise.
+   */
+  bool checkMimeFiles(const QMimeData* mimeData) const;
 
   void contextMenuEvent(QContextMenuEvent *event) override;
 
