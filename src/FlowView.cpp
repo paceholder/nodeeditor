@@ -64,7 +64,9 @@ FlowView(QWidget *parent)
 
   connect(_clipboard, &QClipboard::dataChanged, [this]()
   {
-    _pasteClipboardAction->setEnabled(!mimeToJson(_clipboard->mimeData()).isEmpty());
+    bool validClipboard = checkMimeFiles(_clipboard->mimeData())
+                          || !mimeToJson(_clipboard->mimeData()).isEmpty();
+    _pasteClipboardAction->setEnabled(validClipboard);
   });
 
   //setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
@@ -315,14 +317,21 @@ pasteFromClipboard()
                      _pasteClipboardAction->data().toPointF()
                      : mapToScene(viewport()->rect().center());
 
-  const QByteArray data = mimeToJson(_clipboard->mimeData());
-  if (!data.isEmpty())
+  if (checkMimeFiles(_clipboard->mimeData()))
   {
-    _scene->pasteItems(data, pastePos);
+    loadFilesFromMime(_clipboard->mimeData(), pastePos);
   }
   else
   {
-    qDebug() << "Failed to convert clipboard to json!";
+    const QByteArray data = mimeToJson(_clipboard->mimeData());
+    if (!data.isEmpty())
+    {
+      _scene->pasteItems(data, pastePos);
+    }
+    else
+    {
+      qDebug() << "Failed to convert clipboard to json!";
+    }
   }
 
   _pasteClipboardAction->setData(QVariant());
@@ -330,7 +339,7 @@ pasteFromClipboard()
 
 void
 FlowView::
-handleFileDrop(const QString& filepath, const QPointF& pos)
+handleFilePaste(const QString& filepath, const QPointF& pos)
 {
   if (!QFileInfo::exists(filepath))
   {
@@ -364,6 +373,41 @@ handleFileDrop(const QString& filepath, const QPointF& pos)
     }
   }
 
+}
+
+void
+FlowView::
+loadFilesFromMime(const QMimeData *mimeData, const QPointF &pos)
+{
+  if (mimeData->hasUrls())
+  {
+    QPointF dropPosOffset{0.0, 0.0};
+
+    auto urls = mimeData->urls();
+    for (const auto& url : urls)
+    {
+      handleFilePaste(url.toLocalFile(), pos + dropPosOffset);
+      dropPosOffset += QPointF{1.0, 1.0};
+    }
+  }
+}
+
+bool
+FlowView::
+checkMimeFiles(const QMimeData *mimeData) const
+{
+  if (mimeData->hasUrls())
+  {
+    auto urls = mimeData->urls();
+    for (const auto& url : urls)
+    {
+      auto filepath = url.toLocalFile();
+      if (filepath.endsWith(QStringLiteral(".flow")) ||
+          filepath.endsWith(QStringLiteral(".group")))
+        return true;
+    }
+  }
+  return false;
 }
 
 void
@@ -732,19 +776,10 @@ void
 FlowView::
 dragEnterEvent(QDragEnterEvent *event)
 {
-  // if at least one valid file is being dragged, the event is accepted.
-  // this checks neither the existence nor the contents of the files.
-  if (event->mimeData()->hasUrls())
+  if (checkMimeFiles(event->mimeData()))
   {
-    auto urls = event->mimeData()->urls();
-    for (const auto& url : urls)
-    {
-      auto filepath = url.toLocalFile();
-      if (filepath.endsWith(QStringLiteral(".flow")) ||
-          filepath.endsWith(QStringLiteral(".group")))
-        event->acceptProposedAction();
-      return;
-    }
+    event->acceptProposedAction();
+    return;
   }
 
   // here we copy the relevant data to a local object because the reference
@@ -785,14 +820,7 @@ dropEvent(QDropEvent *event)
   // if files are being dropped
   if (event->mimeData()->hasUrls())
   {
-    QPointF dropPosOffset{0.0, 0.0};
-
-    auto urls = event->mimeData()->urls();
-    for (const auto& url : urls)
-    {
-      handleFileDrop(url.toLocalFile(), dropPos + dropPosOffset);
-      dropPosOffset += QPointF{1.0, 1.0};
-    }
+    loadFilesFromMime(event->mimeData(), dropPos);
     event->acceptProposedAction();
   }
 
