@@ -350,10 +350,10 @@ createGroup(std::vector<Node*>& nodes, QString groupName)
 
 std::weak_ptr<QtNodes::NodeGroup>
 FlowScene::
-createGroupFromSelection(QString name)
+createGroupFromSelection(QString groupName)
 {
   auto nodes = selectedNodes();
-  return createGroup(nodes, name);
+  return createGroup(nodes, groupName);
 }
 
 std::vector<std::shared_ptr<Connection> >

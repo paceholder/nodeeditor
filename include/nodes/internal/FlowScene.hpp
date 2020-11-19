@@ -116,7 +116,8 @@ public:
    * @param name Group's name
    * @return Pointer to the newly-created group.
    */
-  std::weak_ptr<NodeGroup> createGroupFromSelection(QString name = QStringLiteral(""));
+  std::weak_ptr<NodeGroup>
+  createGroupFromSelection(QString groupName = QStringLiteral(""));
 
   /**
    * @brief Creates a list of the connections that are incident only to nodes within a
