@@ -643,13 +643,25 @@ selectedNodes() const
   std::vector<Node*> ret;
   ret.reserve(graphicsItems.size());
 
+  std::unordered_set<QUuid> addedIDs{};
+
   for (QGraphicsItem* item : graphicsItems)
   {
-    auto ngo = qgraphicsitem_cast<NodeGraphicsObject*>(item);
-
-    if (ngo != nullptr)
+    if (auto* ngo = qgraphicsitem_cast<NodeGraphicsObject*>(item); ngo)
     {
-      ret.push_back(&ngo->node());
+      Node* node = &ngo->node();
+      ret.push_back(node);
+      addedIDs.insert(node->id());
+    }
+    else if (auto* ggo = qgraphicsitem_cast<GroupGraphicsObject*>(item); ggo)
+    {
+      for (auto* node : ggo->group().childNodes())
+      {
+        if (addedIDs.insert(node->id()).second)
+        {
+          ret.push_back(node);
+        }
+      }
     }
   }
 

@@ -185,6 +185,10 @@ public:
 
   std::vector<Node*> allNodes() const;
 
+  /**
+   * @brief Returns the currently selected nodes. If a group of nodes is selected, its
+   * children are also returned.
+   */
   std::vector<Node*> selectedNodes() const;
 
 public:
