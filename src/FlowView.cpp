@@ -516,8 +516,7 @@ contextMenuEvent(QContextMenuEvent *event)
     }
   });
 
-  auto nodes = _scene->selectedNodes();
-  if (!nodes.empty())
+  if (_scene->checkCopyableSelection())
   {
     modelMenu.addAction(_createGroupFromSelectionAction);
   }
