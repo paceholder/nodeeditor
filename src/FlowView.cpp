@@ -684,16 +684,27 @@ mousePressEvent(QMouseEvent *event)
   if (event->button() == Qt::LeftButton)
   {
     _clickPos = mapToScene(event->pos());
+
+    auto modifiers = QApplication::keyboardModifiers();
+    auto* selectedItem = _scene->itemAt(_clickPos, QTransform());
+
+    if (selectedItem != nullptr &&
+        selectedItem->isEnabled() &&
+        (modifiers & Qt::ControlModifier) &&
+        (selectedItem->flags() & QGraphicsItem::ItemIsSelectable))
+    {
+      selectedItem->setSelected(!selectedItem->isSelected());
+    }
   }
 }
-
 
 void
 FlowView::
 mouseMoveEvent(QMouseEvent *event)
 {
   QGraphicsView::mouseMoveEvent(event);
-  if (scene()->mouseGrabberItem() == nullptr && event->buttons() == Qt::LeftButton)
+  if (scene()->mouseGrabberItem() == nullptr &&
+      event->buttons() == Qt::LeftButton)
   {
     // Make sure shift is not being pressed
     if ((event->modifiers() & Qt::ShiftModifier) == 0)
