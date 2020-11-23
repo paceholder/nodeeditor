@@ -116,7 +116,8 @@ public:
    * @param name Group's name
    * @return Pointer to the newly-created group.
    */
-  std::weak_ptr<NodeGroup> createGroupFromSelection(QString name = QStringLiteral(""));
+  std::weak_ptr<NodeGroup>
+  createGroupFromSelection(QString groupName = QStringLiteral(""));
 
   /**
    * @brief Creates a list of the connections that are incident only to nodes within a
@@ -184,6 +185,10 @@ public:
 
   std::vector<Node*> allNodes() const;
 
+  /**
+   * @brief Returns the currently selected nodes. If a group of nodes is selected, its
+   * children are also returned.
+   */
   std::vector<Node*> selectedNodes() const;
 
 public:
@@ -209,8 +214,8 @@ public:
    * @brief Loads the items in the given byte array (which should be formatted as a
    * QJsonDocument) onto the scene at the given position, always assigning new UUIDs to the
    * created objects.
-   * @param data
-   * @param paste_pos
+   * @param data Data to be pasted, as a JSON document
+   * @param paste_pos Position of the pasted items
    */
   void pasteItems(const QByteArray& data, QPointF paste_pos);
 

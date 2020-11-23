@@ -38,7 +38,9 @@ FlowView(QWidget *parent)
   , _clearSelectionAction(Q_NULLPTR)
   , _deleteSelectionAction(Q_NULLPTR)
   , _copySelectionAction(Q_NULLPTR)
+  , _cutSelectionAction(Q_NULLPTR)
   , _pasteClipboardAction(Q_NULLPTR)
+  , _createGroupFromSelectionAction(Q_NULLPTR)
   , _scene(Q_NULLPTR)
   , _clipboard(QApplication::clipboard())
 {
@@ -189,6 +191,18 @@ setScene(FlowScene *scene)
   _pasteClipboardAction->setEnabled(false);
   connect(_pasteClipboardAction, &QAction::triggered, this, &FlowView::pasteFromClipboard);
   addAction(_pasteClipboardAction);
+
+  if (_createGroupFromSelectionAction != nullptr)
+    delete _createGroupFromSelectionAction;
+  _createGroupFromSelectionAction = new QAction(
+    QStringLiteral("Create group from selection"), this);
+  _createGroupFromSelectionAction->setEnabled(false);
+  connect(_createGroupFromSelectionAction, &QAction::triggered,
+          [this]()
+  {
+    _scene->createGroupFromSelection();
+  });
+  addAction(_createGroupFromSelectionAction);
 }
 
 void
@@ -270,21 +284,7 @@ nodeContextMenu(QContextMenuEvent* event,
     groupsMenu->setEnabled(!groupActions.empty());
     nodeMenu.addMenu(groupsMenu);
 
-    auto createGroupAction = new QAction(&nodeMenu);
-    createGroupAction->setText(QStringLiteral("Create group"));
-    auto createGroup = [&_scene = _scene, &ngo]()
-    {
-      auto nodes = _scene->selectedNodes();
-      Node* currentNode = &ngo->node();
-      if (std::find(nodes.begin(), nodes.end(), currentNode) == nodes.end())
-      {
-        nodes.push_back(currentNode);
-      }
-      _scene->createGroup(nodes);
-    };
-    connect(createGroupAction, &QAction::triggered, createGroup);
-
-    nodeMenu.addAction(createGroupAction);
+    nodeMenu.addAction(_createGroupFromSelectionAction);
   }
   nodeMenu.addAction(_copySelectionAction);
   nodeMenu.addAction(_cutSelectionAction);
@@ -516,17 +516,9 @@ contextMenuEvent(QContextMenuEvent *event)
     }
   });
 
-  auto nodes = _scene->selectedNodes();
-  if (!nodes.empty())
+  if (_scene->checkCopyableSelection())
   {
-    auto createGroupAction = new QAction(&modelMenu);
-    createGroupAction->setText(QStringLiteral("Create group from selection"));
-    connect(createGroupAction, &QAction::triggered,
-            [&_scene = _scene, &nodes]()
-    {
-      _scene->createGroup(nodes);
-    });
-    modelMenu.addAction(createGroupAction);
+    modelMenu.addAction(_createGroupFromSelectionAction);
   }
 
   auto restoreGroupAction = new QAction(&modelMenu);
@@ -639,12 +631,13 @@ void
 FlowView::
 handleSelectionChanged()
 {
-  if (_copySelectionAction != nullptr && _cutSelectionAction != nullptr)
-  {
-    bool isSelectionCopyable = _scene->checkCopyableSelection();
+  bool isSelectionCopyable = _scene->checkCopyableSelection();
+  if (_copySelectionAction != nullptr)
     _copySelectionAction->setEnabled(isSelectionCopyable);
+  if (_cutSelectionAction != nullptr)
     _cutSelectionAction->setEnabled(isSelectionCopyable);
-  }
+  if (_createGroupFromSelectionAction != nullptr)
+    _createGroupFromSelectionAction->setEnabled(isSelectionCopyable);
 }
 
 

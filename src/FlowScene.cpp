@@ -317,14 +317,15 @@ std::weak_ptr<NodeGroup>
 FlowScene::
 createGroup(std::vector<Node*>& nodes, QString groupName)
 {
-  // remove nodes which already belong to a group
-  for (auto nodeIt = nodes.begin(); nodeIt != nodes.end();)
-  {
-    (*nodeIt)->nodeGroup().expired() ? ++nodeIt : nodes.erase(nodeIt);
-  }
-
   if (nodes.empty())
     return std::weak_ptr<NodeGroup>();
+
+  // remove nodes from their previous group
+  for (auto* node : nodes)
+  {
+    if (!node->nodeGroup().expired())
+      removeNodeFromGroup(node->id());
+  }
 
   if (groupName == QStringLiteral(""))
   {
@@ -350,10 +351,10 @@ createGroup(std::vector<Node*>& nodes, QString groupName)
 
 std::weak_ptr<QtNodes::NodeGroup>
 FlowScene::
-createGroupFromSelection(QString name)
+createGroupFromSelection(QString groupName)
 {
   auto nodes = selectedNodes();
-  return createGroup(nodes, name);
+  return createGroup(nodes, groupName);
 }
 
 std::vector<std::shared_ptr<Connection> >
@@ -378,11 +379,9 @@ connectionsWithinGroup(const QUuid& groupID)
   return ret;
 }
 
-std::pair<
-std::weak_ptr<NodeGroup>,
-std::unordered_map<QUuid,QUuid>>
-                              FlowScene::
-                              restoreGroup(QJsonObject const& groupJson)
+std::pair<std::weak_ptr<NodeGroup>,std::unordered_map<QUuid,QUuid> >
+FlowScene::
+restoreGroup(QJsonObject const& groupJson)
 {
   // since the new nodes will have the same IDs as in the file and the connections
   // need these old IDs to be restored, we must create new IDs and map them to the
@@ -644,13 +643,25 @@ selectedNodes() const
   std::vector<Node*> ret;
   ret.reserve(graphicsItems.size());
 
+  std::unordered_set<QUuid> addedIDs{};
+
   for (QGraphicsItem* item : graphicsItems)
   {
-    auto ngo = qgraphicsitem_cast<NodeGraphicsObject*>(item);
-
-    if (ngo != nullptr)
+    if (auto* ngo = qgraphicsitem_cast<NodeGraphicsObject*>(item); ngo)
     {
-      ret.push_back(&ngo->node());
+      Node* node = &ngo->node();
+      ret.push_back(node);
+      addedIDs.insert(node->id());
+    }
+    else if (auto* ggo = qgraphicsitem_cast<GroupGraphicsObject*>(item); ggo)
+    {
+      for (auto* node : ggo->group().childNodes())
+      {
+        if (addedIDs.insert(node->id()).second)
+        {
+          ret.push_back(node);
+        }
+      }
     }
   }
 

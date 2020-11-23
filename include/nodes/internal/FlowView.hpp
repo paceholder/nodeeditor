@@ -186,6 +186,12 @@ private:
    */
   QAction* _pasteClipboardAction;
 
+  /**
+   * @brief _createGroupFromSelectionAction Action that triggers the creation of a new group from the
+   * selected items.
+   */
+  QAction* _createGroupFromSelectionAction;
+
   QPointF _clickPos;
 
   FlowScene* _scene;
