@@ -122,6 +122,13 @@ pasteClipboardAction() const
   return _pasteClipboardAction;
 }
 
+QAction*
+FlowView::
+createGroupFromSelectionAction() const
+{
+  return _createGroupFromSelectionAction;
+}
+
 QByteArray
 FlowView::
 mimeToJson(const QMimeData *mimeData) const
