@@ -217,7 +217,6 @@ private:
 
   FlowScene* _scene;
 
-
   /**
    * @brief _clipboard A pointer to the application's clipboard.
    */
