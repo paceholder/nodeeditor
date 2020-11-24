@@ -889,6 +889,7 @@ pasteItems(const QByteArray &data, QPointF paste_pos)
 
   QPointF offset;
   bool offsetInitialized{false};
+  clearSelection();
 
   QJsonArray groupsJsonArray = jsonDocument["groups"].toArray();
   for (const auto& group: groupsJsonArray)
@@ -905,6 +906,7 @@ pasteItems(const QByteArray &data, QPointF paste_pos)
       }
       ggoRef.moveNodes(offset);
       ggoRef.moveConnections();
+      ggoRef.setSelected(true);
     }
   }
   QJsonArray nodesJsonArray = jsonDocument["nodes"].toArray();
@@ -925,12 +927,19 @@ pasteItems(const QByteArray &data, QPointF paste_pos)
     }
     ngoRef.moveBy(offset.x(), offset.y());
     ngoRef.moveConnections();
+    ngoRef.setSelected(true);
   }
 
   QJsonArray connectionJsonArray = jsonDocument["connections"].toArray();
   for (QJsonValueRef connection : connectionJsonArray)
   {
-    loadConnectionToMap(connection.toObject(), _nodes, _connections, IDMap);
+    auto connPtr = loadConnectionToMap(connection.toObject(), _nodes,
+                                       _connections, IDMap);
+    if (connPtr)
+    {
+      connPtr->getConnectionGraphicsObject().setSelected(true);
+    }
+
   }
 }
 
