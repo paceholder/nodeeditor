@@ -320,10 +320,30 @@ void
 FlowView::
 pasteFromClipboard()
 {
-  QPointF pastePos = _pasteClipboardAction->data().isValid()?
-                     _pasteClipboardAction->data().toPointF()
-                     : mapToScene(viewport()->rect().center());
+  QPointF pastePos;
+  constexpr QPointF posOffset{5.0, 5.0};
 
+  // if the paste action comes from a defined position (e.g. right-click context menu)
+  if (_pasteClipboardAction->data().isValid())
+  {
+    pastePos = _pasteClipboardAction->data().toPointF();
+  }
+  else
+  {
+    pastePos = mapToScene(viewport()->rect().center());
+
+    // if the viewport center hasn't changed since the last paste action
+    if (pastePos == _lastPastePos)
+    {
+      _pasteCount++;
+      pastePos += _pasteCount * posOffset;
+    }
+    else
+    {
+      _pasteCount = 0;
+      _lastPastePos = pastePos;
+    }
+  }
   if (checkMimeFiles(_clipboard->mimeData()))
   {
     loadFilesFromMime(_clipboard->mimeData(), pastePos);

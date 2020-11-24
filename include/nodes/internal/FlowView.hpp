@@ -197,9 +197,26 @@ private:
    */
   QAction* _createGroupFromSelectionAction;
 
+  /**
+   * @brief _clickPos Stores the last mouse press position.
+   */
   QPointF _clickPos;
 
+  /**
+   * @brief _lastPastePos Stores the last viewport center of a paste action, if the action wasn't
+   * triggered on a specific scene position. Used to avoid overlapping items when multiple paste
+   * actions are taken without changing the viewport.
+   */
+  QPointF _lastPastePos{};
+
+  /**
+   * @brief _pasteCount Counts the number of paste actions taken in a row without moving the scene
+   * viewport. Used to avoid overlapping items.
+   */
+  int _pasteCount{};
+
   FlowScene* _scene;
+
 
   /**
    * @brief _clipboard A pointer to the application's clipboard.
