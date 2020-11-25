@@ -85,11 +85,20 @@ public:
 
   Node&createNode(std::unique_ptr<NodeDataModel> && dataModel);
 
-  Node&restoreNode(QJsonObject const& nodeJson);
+  Node&restoreNode(QJsonObject const& nodeJson, bool keep_id = true);
 
+  /**
+   * @brief Loads a JSON object that represents a node into the given map, with the option
+   * to keep the stored node UUID or generate a new one.
+   * @param nodeJson The JSON object representing a node
+   * @param map The map in which the loaded node should be inserted
+   * @param keep_id If true, the loaded node will have the same UUID as the one stored in
+   * the file; otherwise, a new UUID will be generated
+   * @return A reference to the loaded node.
+   */
   Node&loadNodeToMap(QJsonObject const& nodeJson,
                      std::unordered_map<QUuid, std::unique_ptr<Node>>& map,
-                     bool restore = false);
+                     bool keep_id = false);
 
   void removeNode(Node& node);
 
@@ -100,8 +109,15 @@ public:
    * @return Pointer to the newly-created group.
    */
   std::weak_ptr<NodeGroup> createGroup(std::vector<Node*>& nodes,
-                                       const QUuid& uid = QUuid::createUuid(),
                                        QString name = QStringLiteral(""));
+
+  /**
+   * @brief Creates a group in the scene containing the currently selected nodes.
+   * @param name Group's name
+   * @return Pointer to the newly-created group.
+   */
+  std::weak_ptr<NodeGroup>
+  createGroupFromSelection(QString groupName = QStringLiteral(""));
 
   /**
    * @brief Creates a list of the connections that are incident only to nodes within a
@@ -115,9 +131,11 @@ public:
   /**
    * @brief Restores a group from a JSON object.
    * @param groupJson JSON object containing the group data.
-   * @return Pointer to the newly-created group.
+   * @return Pair consisting of a pointer to the newly-created group and the mapping
+   * between old and new nodes.
    */
-  std::weak_ptr<NodeGroup> restoreGroup(QJsonObject const& groupJson);
+  std::pair<std::weak_ptr<NodeGroup>, std::unordered_map<QUuid,QUuid>>
+      restoreGroup(QJsonObject const& groupJson);
 
   /**
    * @brief Deletes an empty group. Does nothing if the group isn't empty.
@@ -167,6 +185,10 @@ public:
 
   std::vector<Node*> allNodes() const;
 
+  /**
+   * @brief Returns the currently selected nodes. If a group of nodes is selected, its
+   * children are also returned.
+   */
   std::vector<Node*> selectedNodes() const;
 
 public:
@@ -182,6 +204,29 @@ public:
   void loadFromMemory(const QByteArray& data);
 
   /**
+   * @brief Creates a JSON document with the selected scene items' info. Used in the
+   * copy/cut/paste system.
+   * @return A byte array, in the QJsonDocument format, with the data of all selected items.
+   */
+  QByteArray saveSelectedItems() const;
+
+  /**
+   * @brief Loads the items in the given byte array (which should be formatted as a
+   * QJsonDocument) onto the scene at the given position, always assigning new UUIDs to the
+   * created objects.
+   * @param data Data to be pasted, as a JSON document
+   * @param paste_pos Position of the pasted items
+   */
+  void pasteItems(const QByteArray& data, QPointF paste_pos);
+
+  /**
+   * @brief Verifies whether there are any nodes or groups in the current selection,
+   * in order to enable copy and cut actions.
+   * @return true if a group or node is amongst the selected items, false otherwise
+   */
+  bool checkCopyableSelection() const;
+
+  /**
    * @brief Saves a group in a file specified by the user.
    * @param groupID ID of the group to be saved.
    */
@@ -194,36 +239,36 @@ public:
   std::weak_ptr<NodeGroup> loadGroupFile();
 
 public Q_SLOTS:
- /**
-  * @brief Slot called when the quantity of inputs or outputs of a node
-  * changes.
-  * @param nodeId ID of the altered node
-  * @param type Type of port that was changed (input/output)
-  * @param nPorts New number of ports of the selected type
-  */
- void nodePortsChanged(const QUuid& nodeId,
-                       const QtNodes::PortType portType,
-                       unsigned int nPorts);
+  /**
+   * @brief Slot called when the quantity of inputs or outputs of a node
+   * changes.
+   * @param nodeId ID of the altered node
+   * @param type Type of port that was changed (input/output)
+   * @param nPorts New number of ports of the selected type
+   */
+  void nodePortsChanged(const QUuid& nodeId,
+                        const QtNodes::PortType portType,
+                        unsigned int nPorts);
 
- /**
-  * @brief Slot called to insert an input/output port at a specific
-  * index of the desired node.
-  * @param nodeId ID of the altered node
-  * @param portType Type of port (input/output)
-  * @param index Index at which the new port will be placed
-  */
- void insertNodePort(const QUuid& nodeId,
-                     const QtNodes::PortType portType,
-                     size_t index);
+  /**
+   * @brief Slot called to insert an input/output port at a specific
+   * index of the desired node.
+   * @param nodeId ID of the altered node
+   * @param portType Type of port (input/output)
+   * @param index Index at which the new port will be placed
+   */
+  void insertNodePort(const QUuid& nodeId,
+                      const QtNodes::PortType portType,
+                      size_t index);
 
- /**
-  * @brief Slot called to erase an input/output port at a specific
-  * index of the desired node.
-  * @param nodeId ID of the altered node
-  * @param portType Type of port (input/output)
-  * @param index Index at which the port will be removed
-  */
- void eraseNodePort(const QUuid& nodeId,
+  /**
+   * @brief Slot called to erase an input/output port at a specific
+   * index of the desired node.
+   * @param nodeId ID of the altered node
+   * @param portType Type of port (input/output)
+   * @param index Index at which the port will be removed
+   */
+  void eraseNodePort(const QUuid& nodeId,
                      const QtNodes::PortType portType,
                      size_t index);
 

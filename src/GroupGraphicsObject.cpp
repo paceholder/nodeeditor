@@ -108,7 +108,6 @@ boundingRect() const
   return mapRectFromScene(ret.marginsAdded(_margins));
 }
 
-
 void
 GroupGraphicsObject::
 setFillColor(const QColor& color)

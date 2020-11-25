@@ -30,12 +30,19 @@ using QtNodes::FlowScene;
 using QtNodes::GroupGraphicsObject;
 using QtNodes::NodeGraphicsObject;
 
+const QString FlowView::_clipboardMimeType = "application/json";
+
 FlowView::
 FlowView(QWidget *parent)
   : QGraphicsView(parent)
   , _clearSelectionAction(Q_NULLPTR)
   , _deleteSelectionAction(Q_NULLPTR)
+  , _copySelectionAction(Q_NULLPTR)
+  , _cutSelectionAction(Q_NULLPTR)
+  , _pasteClipboardAction(Q_NULLPTR)
+  , _createGroupFromSelectionAction(Q_NULLPTR)
   , _scene(Q_NULLPTR)
+  , _clipboard(QApplication::clipboard())
 {
   setDragMode(QGraphicsView::ScrollHandDrag);
   setRenderHint(QPainter::Antialiasing);
@@ -55,6 +62,15 @@ FlowView(QWidget *parent)
 
   setCacheMode(QGraphicsView::CacheBackground);
 
+  setAcceptDrops(true);
+
+  connect(_clipboard, &QClipboard::dataChanged, [this]()
+  {
+    bool validClipboard = checkMimeFiles(_clipboard->mimeData())
+                          || !mimeToJson(_clipboard->mimeData()).isEmpty();
+    _pasteClipboardAction->setEnabled(validClipboard);
+  });
+
   //setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
 }
 
@@ -64,6 +80,9 @@ FlowView(FlowScene *scene, QWidget *parent)
   : FlowView(parent)
 {
   setScene(scene);
+
+  connect(_scene, &FlowScene::selectionChanged, this,
+          &FlowView::handleSelectionChanged);
 }
 
 
@@ -82,25 +101,115 @@ deleteSelectionAction() const
   return _deleteSelectionAction;
 }
 
+QAction*
+FlowView::
+copySelectionAction() const
+{
+  return _copySelectionAction;
+}
+
+QAction*
+FlowView::
+cutSelectionAction() const
+{
+  return _cutSelectionAction;
+}
+
+QAction*
+FlowView::
+pasteClipboardAction() const
+{
+  return _pasteClipboardAction;
+}
+
+QAction*
+FlowView::
+createGroupFromSelectionAction() const
+{
+  return _createGroupFromSelectionAction;
+}
+
+QByteArray
+FlowView::
+mimeToJson(const QMimeData *mimeData) const
+{
+  if (mimeData != nullptr)
+  {
+    if (mimeData->hasFormat(_clipboardMimeType))
+    {
+      return mimeData->data(_clipboardMimeType);
+    }
+    if (mimeData->hasText())
+    {
+      auto text = mimeData->data("text/plain");
+      QJsonDocument jsonDoc = QJsonDocument::fromJson(text);
+      if (!jsonDoc.isNull())
+      {
+        return jsonDoc.toJson();
+      }
+    }
+  }
+
+  return QByteArray();
+}
 
 void
-FlowView::setScene(FlowScene *scene)
+FlowView::
+setScene(FlowScene *scene)
 {
   _scene = scene;
   QGraphicsView::setScene(_scene);
 
   // setup actions
-  delete _clearSelectionAction;
+  if (_clearSelectionAction != nullptr)
+    delete _clearSelectionAction;
   _clearSelectionAction = new QAction(QStringLiteral("Clear Selection"), this);
   _clearSelectionAction->setShortcut(Qt::Key_Escape);
   connect(_clearSelectionAction, &QAction::triggered, _scene, &QGraphicsScene::clearSelection);
   addAction(_clearSelectionAction);
 
-  delete _deleteSelectionAction;
+  if (_deleteSelectionAction != nullptr)
+    delete _deleteSelectionAction;
   _deleteSelectionAction = new QAction(QStringLiteral("Delete Selection"), this);
   _deleteSelectionAction->setShortcut(Qt::Key_Delete);
   connect(_deleteSelectionAction, &QAction::triggered, this, &FlowView::deleteSelectedNodes);
   addAction(_deleteSelectionAction);
+
+  if (_copySelectionAction != nullptr)
+    delete _copySelectionAction;
+  _copySelectionAction = new QAction(QStringLiteral("Copy"), this);
+  _copySelectionAction->setShortcut(QKeySequence::Copy);
+  _copySelectionAction->setEnabled(false);
+  connect(_copySelectionAction, &QAction::triggered, this, &FlowView::copySelectionToClipboard);
+  addAction(_copySelectionAction);
+
+  if (_cutSelectionAction != nullptr)
+    delete _cutSelectionAction;
+  _cutSelectionAction = new QAction(QStringLiteral("Cut"), this);
+  _cutSelectionAction->setShortcut(QKeySequence::Cut);
+  _cutSelectionAction->setEnabled(false);
+  connect(_cutSelectionAction, &QAction::triggered, this, &FlowView::cutSelectionToClipboard);
+  addAction(_cutSelectionAction);
+
+  if (_pasteClipboardAction != nullptr)
+    delete _pasteClipboardAction;
+  _pasteClipboardAction = new QAction(QStringLiteral("Paste"), this);
+  _pasteClipboardAction->setShortcut(QKeySequence::Paste);
+  _pasteClipboardAction->setEnabled(false);
+  connect(_pasteClipboardAction, &QAction::triggered, this, &FlowView::pasteFromClipboard);
+  addAction(_pasteClipboardAction);
+
+  if (_createGroupFromSelectionAction != nullptr)
+    delete _createGroupFromSelectionAction;
+  _createGroupFromSelectionAction = new QAction(
+    QStringLiteral("Create group from selection"), this);
+  _createGroupFromSelectionAction->setEnabled(false);
+  connect(_createGroupFromSelectionAction, &QAction::triggered,
+          [this]()
+  {
+    _scene->createGroupFromSelection();
+  });
+  addAction(_createGroupFromSelectionAction);
 }
 
 void
@@ -113,6 +222,8 @@ groupContextMenu(QContextMenuEvent* event,
   auto* saveGroupAction = new QAction(&groupMenu);
   saveGroupAction->setText(QStringLiteral("Save Group..."));
   groupMenu.addAction(saveGroupAction);
+  groupMenu.addAction(_copySelectionAction);
+  groupMenu.addAction(_cutSelectionAction);
 
   connect(saveGroupAction, &QAction::triggered,
           [&ggo, &_scene = _scene]()
@@ -180,40 +291,171 @@ nodeContextMenu(QContextMenuEvent* event,
     groupsMenu->setEnabled(!groupActions.empty());
     nodeMenu.addMenu(groupsMenu);
 
-    auto createGroupAction = new QAction(&nodeMenu);
-    createGroupAction->setText(QStringLiteral("Create group"));
-    auto createGroup = [&_scene = _scene, &ngo]()
-    {
-      auto nodes = _scene->selectedNodes();
-      Node* currentNode = &ngo->node();
-      if (std::find(nodes.begin(), nodes.end(), currentNode) == nodes.end())
-      {
-        nodes.push_back(currentNode);
-      }
-      _scene->createGroup(nodes);
-    };
-    connect(createGroupAction, &QAction::triggered, createGroup);
-
-    nodeMenu.addAction(createGroupAction);
+    nodeMenu.addAction(_createGroupFromSelectionAction);
   }
+  nodeMenu.addAction(_copySelectionAction);
+  nodeMenu.addAction(_cutSelectionAction);
   nodeMenu.exec(event->globalPos());
+}
+
+void
+FlowView::
+copySelectionToClipboard()
+{
+  QMimeData* clipboardData = new QMimeData;
+  clipboardData->setData(_clipboardMimeType, _scene->saveSelectedItems());
+  _clipboard->setMimeData(clipboardData);
+  _pasteClipboardAction->setEnabled(!clipboardData->data(_clipboardMimeType).isEmpty());
+}
+
+void
+FlowView::
+cutSelectionToClipboard()
+{
+  copySelectionToClipboard();
+  deleteSelectionAction()->trigger();
+}
+
+void
+FlowView::
+pasteFromClipboard()
+{
+  QPointF pastePos;
+  constexpr QPointF posOffset{_pastePosOffset, _pastePosOffset};
+
+  // if the paste action comes from a defined position (e.g. right-click context menu)
+  if (_pasteClipboardAction->data().isValid())
+  {
+    pastePos = _pasteClipboardAction->data().toPointF();
+  }
+  else
+  {
+    pastePos = mapToScene(viewport()->rect().center());
+
+    // if the viewport center hasn't changed since the last paste action
+    if (pastePos == _lastPastePos)
+    {
+      _pasteCount++;
+      pastePos += _pasteCount * posOffset;
+    }
+    else
+    {
+      _pasteCount = 0;
+      _lastPastePos = pastePos;
+    }
+  }
+  if (checkMimeFiles(_clipboard->mimeData()))
+  {
+    loadFilesFromMime(_clipboard->mimeData(), pastePos);
+  }
+  else
+  {
+    const QByteArray data = mimeToJson(_clipboard->mimeData());
+    if (!data.isEmpty())
+    {
+      _scene->pasteItems(data, pastePos);
+    }
+    else
+    {
+      qDebug() << "Failed to convert clipboard to json!";
+    }
+  }
+
+  _pasteClipboardAction->setData(QVariant());
+}
+
+void
+FlowView::
+handleFilePaste(const QString& filepath, const QPointF& pos)
+{
+  if (!QFileInfo::exists(filepath))
+  {
+    qDebug() << "Error! Couldn't find dropped file.";
+    return;
+  }
+
+  QFile file(filepath);
+  if (!file.open(QIODevice::ReadOnly))
+  {
+    qDebug() << "Error opening dropped file!";
+    return;
+  }
+
+  QByteArray wholeFile = file.readAll();
+
+  if (filepath.endsWith(QStringLiteral(".flow")))
+  {
+    clearSelectionAction()->trigger();
+    _scene->loadFromMemory(wholeFile);
+    return;
+  }
+
+  if (filepath.endsWith(QStringLiteral(".group")))
+  {
+    clearSelectionAction()->trigger();
+    const QJsonObject fileJson = QJsonDocument::fromJson(wholeFile).object();
+    auto groupWeakPtr = _scene->restoreGroup(fileJson).first;
+    if (auto groupPtr = groupWeakPtr.lock(); groupPtr)
+    {
+      auto& ggoRef = groupPtr->groupGraphicsObject();
+      ggoRef.setPosition(pos);
+      ggoRef.setSelected(true);
+    }
+  }
+
+}
+
+void
+FlowView::
+loadFilesFromMime(const QMimeData *mimeData, const QPointF &pos)
+{
+  if (mimeData->hasUrls())
+  {
+    QPointF dropPosOffset{_pastePosOffset, _pastePosOffset};
+    int fileCounter{0};
+
+    auto urls = mimeData->urls();
+    for (const auto& url : urls)
+    {
+      handleFilePaste(url.toLocalFile(), pos + fileCounter * dropPosOffset);
+      fileCounter++;
+    }
+  }
+}
+
+bool
+FlowView::
+checkMimeFiles(const QMimeData *mimeData) const
+{
+  if (mimeData->hasUrls())
+  {
+    auto urls = mimeData->urls();
+    for (const auto& url : urls)
+    {
+      auto filepath = url.toLocalFile();
+      if (filepath.endsWith(QStringLiteral(".flow")) ||
+          filepath.endsWith(QStringLiteral(".group")))
+        return true;
+    }
+  }
+  return false;
 }
 
 void
 FlowView::
 contextMenuEvent(QContextMenuEvent *event)
 {
+  _pasteClipboardAction->setData(QVariant(mapToScene(event->pos())));
+
   auto clickedItem = itemAt(event->pos());
   if (clickedItem)
   {
+    clickedItem->setSelected(true);
     if (auto groupGO = qgraphicsitem_cast<GroupGraphicsObject*>(clickedItem); groupGO)
-    {
       groupContextMenu(event, groupGO);
-    }
     else if (auto nodeGO = qgraphicsitem_cast<NodeGraphicsObject*>(clickedItem); nodeGO)
-    {
       nodeContextMenu(event, nodeGO);
-    }
+    _pasteClipboardAction->setData(QVariant());
     return;
   }
 
@@ -305,17 +547,9 @@ contextMenuEvent(QContextMenuEvent *event)
     }
   });
 
-  auto nodes = _scene->selectedNodes();
-  if (!nodes.empty())
+  if (_scene->checkCopyableSelection())
   {
-    auto createGroupAction = new QAction(&modelMenu);
-    createGroupAction->setText(QStringLiteral("Create group from selection"));
-    connect(createGroupAction, &QAction::triggered,
-            [&_scene = _scene, &nodes]()
-    {
-      _scene->createGroup(nodes);
-    });
-    modelMenu.addAction(createGroupAction);
+    modelMenu.addAction(_createGroupFromSelectionAction);
   }
 
   auto restoreGroupAction = new QAction(&modelMenu);
@@ -330,11 +564,15 @@ contextMenuEvent(QContextMenuEvent *event)
     }
   });
   modelMenu.addAction(restoreGroupAction);
+  modelMenu.addAction(_copySelectionAction);
+  modelMenu.addAction(_cutSelectionAction);
+  modelMenu.addAction(_pasteClipboardAction);
 
   // make sure the text box gets focus so the user doesn't have to click on it
   txtBox->setFocus();
 
   modelMenu.exec(event->globalPos());
+  _pasteClipboardAction->setData(QVariant());
 }
 
 
@@ -420,6 +658,19 @@ deleteSelectedNodes()
   }
 }
 
+void
+FlowView::
+handleSelectionChanged()
+{
+  bool isSelectionCopyable = _scene->checkCopyableSelection();
+  if (_copySelectionAction != nullptr)
+    _copySelectionAction->setEnabled(isSelectionCopyable);
+  if (_cutSelectionAction != nullptr)
+    _cutSelectionAction->setEnabled(isSelectionCopyable);
+  if (_createGroupFromSelectionAction != nullptr)
+    _createGroupFromSelectionAction->setEnabled(isSelectionCopyable);
+}
+
 
 void
 FlowView::
@@ -464,16 +715,27 @@ mousePressEvent(QMouseEvent *event)
   if (event->button() == Qt::LeftButton)
   {
     _clickPos = mapToScene(event->pos());
+
+    auto modifiers = QApplication::keyboardModifiers();
+    auto* selectedItem = _scene->itemAt(_clickPos, QTransform());
+
+    if (selectedItem != nullptr &&
+        selectedItem->isEnabled() &&
+        (modifiers & Qt::ControlModifier) &&
+        (selectedItem->flags() & QGraphicsItem::ItemIsSelectable))
+    {
+      selectedItem->setSelected(!selectedItem->isSelected());
+    }
   }
 }
-
 
 void
 FlowView::
 mouseMoveEvent(QMouseEvent *event)
 {
   QGraphicsView::mouseMoveEvent(event);
-  if (scene()->mouseGrabberItem() == nullptr && event->buttons() == Qt::LeftButton)
+  if (scene()->mouseGrabberItem() == nullptr &&
+      event->buttons() == Qt::LeftButton)
   {
     // Make sure shift is not being pressed
     if ((event->modifiers() & Qt::ShiftModifier) == 0)
@@ -543,6 +805,67 @@ showEvent(QShowEvent *event)
 {
   _scene->setSceneRect(this->rect());
   QGraphicsView::showEvent(event);
+}
+
+void
+FlowView::
+dragEnterEvent(QDragEnterEvent *event)
+{
+  if (checkMimeFiles(event->mimeData()))
+  {
+    event->acceptProposedAction();
+    return;
+  }
+
+  // here we copy the relevant data to a local object because the reference
+  // to the event's mime data was being lost when calling mimeToJson.
+  QMimeData* mimeData = new QMimeData;
+
+  // retrieves only the data relevant to the scene
+  QList<QString> relevantTypes = {_clipboardMimeType, "text/plain"};
+  for (const auto& format : relevantTypes)
+  {
+    if (event->mimeData()->hasFormat(format))
+    {
+      auto data = event->mimeData()->data(format);
+      mimeData->setData(format, data);
+    }
+  }
+
+  if (event->proposedAction() == Qt::CopyAction &&
+      !mimeToJson(mimeData).isEmpty())
+  {
+    event->acceptProposedAction();
+  }
+}
+
+void
+FlowView::
+dragMoveEvent(QDragMoveEvent *event)
+{
+  event->acceptProposedAction();
+}
+
+void
+FlowView::
+dropEvent(QDropEvent *event)
+{
+  auto dropPos = mapToScene(event->pos());
+
+  // if files are being dropped
+  if (event->mimeData()->hasUrls())
+  {
+    loadFilesFromMime(event->mimeData(), dropPos);
+    event->acceptProposedAction();
+  }
+
+  // if a json object (or a plain text describing it) is being dropped
+  auto droppedJson = mimeToJson(event->mimeData());
+  if (!droppedJson.isEmpty())
+  {
+    event->acceptProposedAction();
+    _scene->pasteItems(droppedJson, dropPos);
+  }
 }
 
 
