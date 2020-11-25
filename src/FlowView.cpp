@@ -321,7 +321,7 @@ FlowView::
 pasteFromClipboard()
 {
   QPointF pastePos;
-  constexpr QPointF posOffset{5.0, 5.0};
+  constexpr QPointF posOffset{_pastePosOffset, _pastePosOffset};
 
   // if the paste action comes from a defined position (e.g. right-click context menu)
   if (_pasteClipboardAction->data().isValid())
@@ -385,18 +385,21 @@ handleFilePaste(const QString& filepath, const QPointF& pos)
 
   if (filepath.endsWith(QStringLiteral(".flow")))
   {
+    clearSelectionAction()->trigger();
     _scene->loadFromMemory(wholeFile);
     return;
   }
 
   if (filepath.endsWith(QStringLiteral(".group")))
   {
+    clearSelectionAction()->trigger();
     const QJsonObject fileJson = QJsonDocument::fromJson(wholeFile).object();
     auto groupWeakPtr = _scene->restoreGroup(fileJson).first;
     if (auto groupPtr = groupWeakPtr.lock(); groupPtr)
     {
       auto& ggoRef = groupPtr->groupGraphicsObject();
       ggoRef.setPosition(pos);
+      ggoRef.setSelected(true);
     }
   }
 
@@ -408,13 +411,14 @@ loadFilesFromMime(const QMimeData *mimeData, const QPointF &pos)
 {
   if (mimeData->hasUrls())
   {
-    QPointF dropPosOffset{0.0, 0.0};
+    QPointF dropPosOffset{_pastePosOffset, _pastePosOffset};
+    int fileCounter{0};
 
     auto urls = mimeData->urls();
     for (const auto& url : urls)
     {
-      handleFilePaste(url.toLocalFile(), pos + dropPosOffset);
-      dropPosOffset += QPointF{1.0, 1.0};
+      handleFilePaste(url.toLocalFile(), pos + fileCounter * dropPosOffset);
+      fileCounter++;
     }
   }
 }

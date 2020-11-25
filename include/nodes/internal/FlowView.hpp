@@ -221,5 +221,11 @@ private:
    * @brief _clipboard A pointer to the application's clipboard.
    */
   QClipboard* _clipboard;
+
+  /**
+   * @brief _pastePosOffset Determines the position offset when the paste action is taken several
+   * times in a row.
+   */
+  static constexpr int _pastePosOffset{20};
 };
 }
