@@ -214,16 +214,20 @@ contextMenuEvent(QContextMenuEvent *event)
   });
 
   auto depthSearch = [] (QTreeWidgetItem* item, const QString& text) -> void {
-     auto search = [](QTreeWidgetItem* item, const QString& text, const auto& func) -> void {
+     auto search = [](QTreeWidgetItem* item, const QString& text, const auto& func) -> bool {
         if(item->childCount() == 0){
            const auto modelName = item->data(0, Qt::UserRole).toString();
            const bool match = modelName.contains(text, Qt::CaseInsensitive);
            item->setHidden(!match);
+           return match;
         }
         else {
+           bool matchAtLeastOneChild = false;
            for(int i = 0; i<item->childCount(); ++i){
-              func(item->child(i), text, func);
+              matchAtLeastOneChild |= func(item->child(i), text, func);
            }
+           item->setHidden(!matchAtLeastOneChild);
+           return matchAtLeastOneChild;
         }
      };
 
