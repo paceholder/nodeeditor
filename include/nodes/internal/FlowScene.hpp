@@ -204,11 +204,18 @@ public:
   void loadFromMemory(const QByteArray& data);
 
   /**
-   * @brief Creates a JSON document with the selected scene items' info. Used in the
+   * @brief Creates a JSON document with the given scene items' info. Used in the
    * copy/cut/paste system.
    * @return A byte array, in the QJsonDocument format, with the data of all selected items.
    */
-  QByteArray saveSelectedItems() const;
+  QByteArray saveItems(const QList<QGraphicsItem*>& items) const;
+
+  /**
+   * @copydoc saveItems(const QList<QGraphicsItem*>&)
+   * @note This is an overloaded function for passing a single item as argument without
+   * having to explicitly create a list.
+   */
+  QByteArray saveItems(QGraphicsItem* item) const;
 
   /**
    * @brief Loads the items in the given byte array (which should be formatted as a

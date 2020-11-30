@@ -706,7 +706,6 @@ QString
 FlowScene::
 load()
 {
-
   QString fileName =
     QFileDialog::getOpenFileName(nullptr,
                                  tr("Open Flow Scene"),
@@ -735,35 +734,7 @@ QByteArray
 FlowScene::
 saveToMemory() const
 {
-  QJsonObject sceneJson;
-
-  QJsonArray nodesJsonArray;
-
-  for (auto const & pair : _nodes)
-  {
-    auto const &node = pair.second;
-
-    nodesJsonArray.append(node->save());
-  }
-
-  sceneJson["nodes"] = nodesJsonArray;
-
-  QJsonArray connectionJsonArray;
-  for (auto const & pair : _connections)
-  {
-    auto const &connection = pair.second;
-
-    QJsonObject connectionJson = connection->save();
-
-    if (!connectionJson.isEmpty())
-      connectionJsonArray.append(connectionJson);
-  }
-
-  sceneJson["connections"] = connectionJsonArray;
-
-  QJsonDocument document(sceneJson);
-
-  return document.toJson();
+  return saveItems(items());
 }
 
 
@@ -818,15 +789,15 @@ loadFromMemory(const QByteArray& data)
 
 QByteArray
 FlowScene::
-saveSelectedItems() const
+saveItems(const QList<QGraphicsItem *> &items) const
 {
-  QJsonObject selectedItemsJson;
+  QJsonObject itemsJson;
   QJsonArray nodesJsonArray;
   QJsonArray connectionsJsonArray;
   QJsonArray groupsJsonArray;
-  std::unordered_set<QUuid> selectedNodeIDs{};
+  std::unordered_set<QUuid> savedNodeIDs{};
 
-  for (auto* item : selectedItems())
+  for (auto* item : items)
   {
     {
       if (auto* ggo = qgraphicsitem_cast<GroupGraphicsObject*>(item))
@@ -837,26 +808,26 @@ saveSelectedItems() const
         auto& groupChildren = ggo->group().childNodes();
         for (const auto& node : groupChildren)
         {
-          selectedNodeIDs.insert(node->id());
+          savedNodeIDs.insert(node->id());
         }
       }
     }
   }
-  for (auto* item : selectedItems())
+  for (auto* item : items)
   {
     if (auto* ngo = qgraphicsitem_cast<NodeGraphicsObject*>(item))
     {
-      if (selectedNodeIDs.find(ngo->node().id()) == selectedNodeIDs.end())
+      if (savedNodeIDs.find(ngo->node().id()) == savedNodeIDs.end())
       {
-        selectedNodeIDs.insert(ngo->node().id());
+        savedNodeIDs.insert(ngo->node().id());
         nodesJsonArray.append(ngo->node().save());
       }
     }
   }
-  selectedItemsJson["nodes"] = nodesJsonArray;
-  selectedItemsJson["groups"] = groupsJsonArray;
+  itemsJson["nodes"] = nodesJsonArray;
+  itemsJson["groups"] = groupsJsonArray;
 
-  for (auto* item : selectedItems())
+  for (auto* item : items)
   {
     if (auto* cgo = qgraphicsitem_cast<ConnectionGraphicsObject*>(item))
     {
@@ -864,23 +835,31 @@ saveSelectedItems() const
       auto inID = cgo->connection()._inNode->id();
       auto outID = cgo->connection()._outNode->id();
       if (!connectionJson.isEmpty()
-          && selectedNodeIDs.count(inID) != 0
-          && selectedNodeIDs.count(outID) != 0)
+          && savedNodeIDs.count(inID) != 0
+          && savedNodeIDs.count(outID) != 0)
       {
         connectionsJsonArray.append(connectionJson);
       }
     }
   }
-  selectedItemsJson["connections"] = connectionsJsonArray;
+  itemsJson["connections"] = connectionsJsonArray;
 
-  QJsonDocument document(selectedItemsJson);
+  QJsonDocument document(itemsJson);
 
   return document.toJson();
 }
 
+QByteArray
+FlowScene::
+saveItems(QGraphicsItem *item) const
+{
+  QList<QGraphicsItem*> dummyList({item});
+  return saveItems(dummyList);
+}
+
 void
 FlowScene::
-pasteItems(const QByteArray &data, QPointF paste_pos)
+pasteItems(const QByteArray& data, QPointF paste_pos)
 {
   QJsonObject const jsonDocument = QJsonDocument::fromJson(data).object();
 
@@ -973,16 +952,21 @@ saveGroupFile(const QUuid& groupID)
     if (!fileName.endsWith("group", Qt::CaseInsensitive))
       fileName += ".group";
 
-    auto group = _groups.find(groupID);
-
-    QFile file(fileName);
-    if (file.open(QIODevice::WriteOnly))
+    if (auto groupIt = _groups.find(groupID); groupIt != _groups.end())
     {
-      file.write(group->second->saveToFile());
+      QFile file(fileName);
+      if (file.open(QIODevice::WriteOnly))
+      {
+        file.write(groupIt->second->saveToFile());
+      }
+      else
+      {
+        qDebug() << "Error saving group file!";
+      }
     }
     else
     {
-      qDebug() << "Error saving group file!";
+      qDebug() << "Error! Couldn't find group while saving.";
     }
   }
 }

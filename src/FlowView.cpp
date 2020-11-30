@@ -303,7 +303,8 @@ FlowView::
 copySelectionToClipboard()
 {
   QMimeData* clipboardData = new QMimeData;
-  clipboardData->setData(_clipboardMimeType, _scene->saveSelectedItems());
+  auto selection = _scene->selectedItems();
+  clipboardData->setData(_clipboardMimeType, _scene->saveItems(selection));
   _clipboard->setMimeData(clipboardData);
   _pasteClipboardAction->setEnabled(!clipboardData->data(_clipboardMimeType).isEmpty());
 }

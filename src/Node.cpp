@@ -58,18 +58,6 @@ save() const
 
   nodeJson["model"] = _nodeDataModel->save();
 
-  QJsonObject groupJson;
-  QString groupID = "";
-  QString groupName = "";
-  if (auto group = _nodeGroup.lock(); group)
-  {
-    groupID = group->id().toString();
-    groupName = group->name();
-  }
-  groupJson["id"] = groupID;
-  groupJson["name"] = groupName;
-  nodeJson["group"] = groupJson;
-
   QJsonObject obj;
   obj["x"] = _nodeGraphicsObject->pos().x();
   obj["y"] = _nodeGraphicsObject->pos().y();
@@ -220,8 +208,7 @@ nodeGroup()
 
 bool Node::isInGroup() const
 {
-  auto group = _nodeGroup.lock();
-  return group? true : false;
+  return !_nodeGroup.expired();
 }
 
 void
