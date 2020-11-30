@@ -742,49 +742,8 @@ void
 FlowScene::
 loadFromMemory(const QByteArray& data)
 {
-  QJsonObject const jsonDocument = QJsonDocument::fromJson(data).object();
-
-  QJsonArray nodesJsonArray = jsonDocument["nodes"].toArray();
-
-  std::map<QUuid, std::vector<Node*>> IDNodesMap{};
-  std::map<QUuid, QString> IDNamesMap{};
-
-  for (QJsonValueRef node : nodesJsonArray)
-  {
-    auto nodeObj = node.toObject();
-    auto& nodeRef = restoreNode(nodeObj, true);
-    QJsonObject group = nodeObj["group"].toObject();
-    QString groupIDStr = group["id"].toString();
-    QString groupName = group["name"].toString();
-    if (!groupIDStr.isEmpty())
-    {
-      QUuid groupID(groupIDStr);
-      auto groupIt = IDNodesMap.find(groupID);
-      if (groupIt == IDNodesMap.end())
-      {
-        std::vector<Node*> groupNodes{1, &nodeRef};
-        IDNodesMap[groupID] = groupNodes;
-        IDNamesMap[groupID] = groupName;
-      }
-      else
-      {
-        groupIt->second.push_back(&nodeRef);
-      }
-    }
-  }
-
-  for (auto& mapEntry : IDNodesMap)
-  {
-    QString name = IDNamesMap.at(mapEntry.first);
-    createGroup(mapEntry.second, name);
-  }
-
-  QJsonArray connectionJsonArray = jsonDocument["connections"].toArray();
-
-  for (QJsonValueRef connection : connectionJsonArray)
-  {
-    restoreConnection(connection.toObject());
-  }
+  loadItems(data, QPointF(), false);
+  clearSelection();
 }
 
 QByteArray
@@ -859,7 +818,7 @@ saveItems(QGraphicsItem *item) const
 
 void
 FlowScene::
-pasteItems(const QByteArray& data, QPointF paste_pos)
+loadItems(const QByteArray& data, QPointF pastePos, bool usePastePos)
 {
   QJsonObject const jsonDocument = QJsonDocument::fromJson(data).object();
 
@@ -878,12 +837,15 @@ pasteItems(const QByteArray& data, QPointF paste_pos)
     if (auto groupPtr = groupWeakPtr.lock(); groupPtr)
     {
       auto& ggoRef = groupPtr->groupGraphicsObject();
-      if (!offsetInitialized)
+      if (usePastePos && !offsetInitialized)
       {
-        offset = paste_pos - ggoRef.pos();
+        offset = pastePos - ggoRef.pos();
         offsetInitialized = true;
       }
-      ggoRef.moveNodes(offset);
+      if (usePastePos)
+      {
+        ggoRef.moveNodes(offset);
+      }
       ggoRef.moveConnections();
       ggoRef.setSelected(true);
     }
@@ -899,12 +861,15 @@ pasteItems(const QByteArray& data, QPointF paste_pos)
     IDMap.insert(std::make_pair(oldID, newID));
 
     auto& ngoRef = nodeRef.nodeGraphicsObject();
-    if (!offsetInitialized)
+    if (usePastePos && !offsetInitialized)
     {
-      offset = paste_pos - ngoRef.pos();
+      offset = pastePos - ngoRef.pos();
       offsetInitialized = true;
     }
-    ngoRef.moveBy(offset.x(), offset.y());
+    if (usePastePos)
+    {
+      ngoRef.moveBy(offset.x(), offset.y());
+    }
     ngoRef.moveConnections();
     ngoRef.setSelected(true);
   }
@@ -918,7 +883,6 @@ pasteItems(const QByteArray& data, QPointF paste_pos)
     {
       connPtr->getConnectionGraphicsObject().setSelected(true);
     }
-
   }
 }
 

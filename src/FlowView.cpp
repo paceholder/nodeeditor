@@ -354,7 +354,7 @@ pasteFromClipboard()
     const QByteArray data = mimeToJson(_clipboard->mimeData());
     if (!data.isEmpty())
     {
-      _scene->pasteItems(data, pastePos);
+      _scene->loadItems(data, pastePos);
     }
     else
     {
@@ -866,7 +866,7 @@ dropEvent(QDropEvent *event)
   if (!droppedJson.isEmpty())
   {
     event->acceptProposedAction();
-    _scene->pasteItems(droppedJson, dropPos);
+    _scene->loadItems(droppedJson, dropPos);
   }
 }
 

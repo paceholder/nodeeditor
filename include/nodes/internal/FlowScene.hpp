@@ -222,9 +222,12 @@ public:
    * QJsonDocument) onto the scene at the given position, always assigning new UUIDs to the
    * created objects.
    * @param data Data to be pasted, as a JSON document
-   * @param paste_pos Position of the pasted items
+   * @param pastePos Position of the pasted items
+   * @param usePastePos Flag indicating whether the pastePos argument should be used. When
+   * set to false, each item's position will be determined by the value saved in the JSON
+   * document.
    */
-  void pasteItems(const QByteArray& data, QPointF paste_pos);
+  void loadItems(const QByteArray& data, QPointF pastePos, bool usePastePos = true);
 
   /**
    * @brief Verifies whether there are any nodes or groups in the current selection,
