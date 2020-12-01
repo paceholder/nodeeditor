@@ -387,7 +387,7 @@ handleFilePaste(const QString& filepath, const QPointF& pos)
   if (filepath.endsWith(QStringLiteral(".flow")))
   {
     clearSelectionAction()->trigger();
-    _scene->loadFromMemory(wholeFile);
+    _scene->loadItems(wholeFile, pos);
     return;
   }
 
