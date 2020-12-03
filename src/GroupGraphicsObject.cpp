@@ -282,6 +282,7 @@ paint(QPainter* painter,
       QWidget* widget)
 {
   Q_UNUSED(widget);
+  prepareGeometryChange();
   setRect(boundingRect());
   positionLockedIcon();
   painter->setClipRect(option->exposedRect);
