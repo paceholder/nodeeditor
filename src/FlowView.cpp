@@ -321,7 +321,7 @@ FlowView::
 pasteFromClipboard()
 {
   QPointF pastePos;
-  constexpr QPointF posOffset{_pastePosOffset, _pastePosOffset};
+  constexpr QPointF posOffset{(double)_pastePosOffset, (double)_pastePosOffset};
 
   // if the paste action comes from a defined position (e.g. right-click context menu)
   if (_pasteClipboardAction->data().isValid())
@@ -411,7 +411,7 @@ loadFilesFromMime(const QMimeData *mimeData, const QPointF &pos)
 {
   if (mimeData->hasUrls())
   {
-    QPointF dropPosOffset{_pastePosOffset, _pastePosOffset};
+    QPointF dropPosOffset{(double)_pastePosOffset, (double)_pastePosOffset};
     int fileCounter{0};
 
     auto urls = mimeData->urls();
