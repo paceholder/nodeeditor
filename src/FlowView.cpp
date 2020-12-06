@@ -629,13 +629,6 @@ FlowView::
 deleteSelectedNodes()
 {
 
-  for (QGraphicsItem * item : _scene->selectedItems())
-  {
-    if (auto g = qgraphicsitem_cast<GroupGraphicsObject*>(item))
-    {
-      _scene->removeGroup(g->group().id());
-    }
-  }
   // Delete the selected connections first, ensuring that they won't be
   // automatically deleted when selected nodes are deleted (deleting a node
   // deletes some connections as well)
@@ -654,6 +647,14 @@ deleteSelectedNodes()
     if (auto n = qgraphicsitem_cast<NodeGraphicsObject*>(item))
     {
       _scene->removeNode(n->node());
+    }
+  }
+
+  for (QGraphicsItem * item : _scene->selectedItems())
+  {
+    if (auto g = qgraphicsitem_cast<GroupGraphicsObject*>(item))
+    {
+      _scene->removeGroup(g->group().id());
     }
   }
 }
