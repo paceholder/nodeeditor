@@ -3,11 +3,12 @@
 #include "NodeStyle.hpp"
 #include "ConnectionStyle.hpp"
 #include "FlowViewStyle.hpp"
+#include "Export.hpp"
 
 namespace QtNodes
 {
 
-class StyleCollection
+class NODE_EDITOR_PUBLIC StyleCollection
 {
 public:
 
