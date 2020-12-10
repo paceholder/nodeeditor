@@ -393,6 +393,8 @@ processingStatusIcon() const
       return _statusEmpty;
     case NodeProcessingStatus::Failed:
       return _statusInvalid;
+    case NodeProcessingStatus::Partial:
+      return _statusPartial;
     }
   return _statusInvalid;
 }
