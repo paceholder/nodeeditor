@@ -377,7 +377,15 @@ void
 FlowView::
 handleLoadGroup()
 {
+  QPointF loadPos = _loadGroupAction->data().isValid()?
+                    _pasteClipboardAction->data().toPointF() :
+                    mapToScene(viewport()->rect().center());
 
+  auto groupPtr = _scene->loadGroupFile();
+  if (auto group = groupPtr.lock(); group)
+  {
+    group->groupGraphicsObject().setPosition(loadPos);
+  }
 }
 
 void
@@ -569,18 +577,7 @@ contextMenuEvent(QContextMenuEvent *event)
     modelMenu.addAction(_createGroupFromSelectionAction);
   }
 
-  auto restoreGroupAction = new QAction(&modelMenu);
-  restoreGroupAction->setText(QStringLiteral("Load Group..."));
-  connect(restoreGroupAction, &QAction::triggered,
-          [&_scene = _scene, &menuPos]()
-  {
-    std::weak_ptr<NodeGroup> groupPtr = _scene->loadGroupFile();
-    if (auto group = groupPtr.lock(); group)
-    {
-      group->groupGraphicsObject().setPosition(menuPos);
-    }
-  });
-  modelMenu.addAction(restoreGroupAction);
+  modelMenu.addAction(_loadGroupAction);
   modelMenu.addAction(_copySelectionAction);
   modelMenu.addAction(_cutSelectionAction);
   modelMenu.addAction(_pasteClipboardAction);
@@ -590,6 +587,7 @@ contextMenuEvent(QContextMenuEvent *event)
 
   modelMenu.exec(event->globalPos());
   _pasteClipboardAction->setData(QVariant());
+  _loadGroupAction->setData(QVariant());
 }
 
 
