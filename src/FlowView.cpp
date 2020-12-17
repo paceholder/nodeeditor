@@ -41,6 +41,7 @@ FlowView(QWidget *parent)
   , _cutSelectionAction(Q_NULLPTR)
   , _pasteClipboardAction(Q_NULLPTR)
   , _createGroupFromSelectionAction(Q_NULLPTR)
+  , _loadGroupAction(Q_NULLPTR)
   , _scene(Q_NULLPTR)
   , _clipboard(QApplication::clipboard())
 {
@@ -210,6 +211,13 @@ setScene(FlowScene *scene)
     _scene->createGroupFromSelection();
   });
   addAction(_createGroupFromSelectionAction);
+
+  if (_loadGroupAction != nullptr)
+    delete _loadGroupAction;
+  _loadGroupAction = new QAction(QStringLiteral("Load Group..."), this);
+  _createGroupFromSelectionAction->setEnabled(true);
+  connect(_loadGroupAction, &QAction::triggered, this, &FlowView::handleLoadGroup);
+  addAction(_loadGroupAction);
 }
 
 void
@@ -367,6 +375,13 @@ pasteFromClipboard()
 
 void
 FlowView::
+handleLoadGroup()
+{
+
+}
+
+void
+FlowView::
 handleFilePaste(const QString& filepath, const QPointF& pos)
 {
   if (!QFileInfo::exists(filepath))
@@ -446,7 +461,11 @@ void
 FlowView::
 contextMenuEvent(QContextMenuEvent *event)
 {
-  _pasteClipboardAction->setData(QVariant(mapToScene(event->pos())));
+  auto menuPos{mapToScene(event->pos())};
+  auto menuPosVariant{QVariant(menuPos)};
+
+  _pasteClipboardAction->setData(menuPosVariant);
+  _loadGroupAction->setData(menuPosVariant);
 
   auto clickedItem = itemAt(event->pos());
   if (clickedItem)
@@ -503,9 +522,6 @@ contextMenuEvent(QContextMenuEvent *event)
 
   treeView->expandAll();
 
-  QPoint pos = event->pos();
-  QPointF posView = this->mapToScene(pos);
-
   connect(treeView, &QTreeWidget::itemClicked, [&](QTreeWidgetItem *item, int)
   {
     QString modelName = item->data(0, Qt::UserRole).toString();
@@ -521,7 +537,7 @@ contextMenuEvent(QContextMenuEvent *event)
     {
       auto& node = _scene->createNode(std::move(type));
 
-      node.nodeGraphicsObject().setPos(posView);
+      node.nodeGraphicsObject().setPos(menuPos);
 
       _scene->nodePlaced(node);
     }
@@ -556,12 +572,12 @@ contextMenuEvent(QContextMenuEvent *event)
   auto restoreGroupAction = new QAction(&modelMenu);
   restoreGroupAction->setText(QStringLiteral("Load Group..."));
   connect(restoreGroupAction, &QAction::triggered,
-          [&_scene = _scene, &posView]()
+          [&_scene = _scene, &menuPos]()
   {
     std::weak_ptr<NodeGroup> groupPtr = _scene->loadGroupFile();
     if (auto group = groupPtr.lock(); group)
     {
-      group->groupGraphicsObject().setPosition(posView);
+      group->groupGraphicsObject().setPosition(menuPos);
     }
   });
   modelMenu.addAction(restoreGroupAction);

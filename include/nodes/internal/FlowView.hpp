@@ -117,6 +117,8 @@ protected:
    */
   void pasteFromClipboard();
 
+  void handleLoadGroup();
+
   /**
    * @brief Properly restores any pasted or dropped files on the scene.
    * @param filepath Path to a .group or .flow file
@@ -196,6 +198,11 @@ private:
    * selected items.
    */
   QAction* _createGroupFromSelectionAction;
+
+  /**
+   * @brief _loadGroupAction Action to load a node group from a .group file.
+   */
+  QAction* _loadGroupAction;
 
   /**
    * @brief _clickPos Stores the last mouse press position.
