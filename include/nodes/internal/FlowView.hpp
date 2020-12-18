@@ -122,6 +122,10 @@ protected:
    */
   void pasteFromClipboard();
 
+  /**
+   * @brief Handles a "load group from file" action, setting where the group should
+   * be positioned and calling the appropriate flow scene function.
+   */
   void handleLoadGroup();
 
   /**
