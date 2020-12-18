@@ -303,7 +303,8 @@ FlowView::
 copySelectionToClipboard()
 {
   QMimeData* clipboardData = new QMimeData;
-  clipboardData->setData(_clipboardMimeType, _scene->saveSelectedItems());
+  auto selection = _scene->selectedItems();
+  clipboardData->setData(_clipboardMimeType, _scene->saveItems(selection));
   _clipboard->setMimeData(clipboardData);
   _pasteClipboardAction->setEnabled(!clipboardData->data(_clipboardMimeType).isEmpty());
 }
@@ -353,7 +354,7 @@ pasteFromClipboard()
     const QByteArray data = mimeToJson(_clipboard->mimeData());
     if (!data.isEmpty())
     {
-      _scene->pasteItems(data, pastePos);
+      _scene->loadItems(data, pastePos);
     }
     else
     {
@@ -386,7 +387,7 @@ handleFilePaste(const QString& filepath, const QPointF& pos)
   if (filepath.endsWith(QStringLiteral(".flow")))
   {
     clearSelectionAction()->trigger();
-    _scene->loadFromMemory(wholeFile);
+    _scene->loadItems(wholeFile, pos);
     return;
   }
 
@@ -865,7 +866,7 @@ dropEvent(QDropEvent *event)
   if (!droppedJson.isEmpty())
   {
     event->acceptProposedAction();
-    _scene->pasteItems(droppedJson, dropPos);
+    _scene->loadItems(droppedJson, dropPos);
   }
 }
 
