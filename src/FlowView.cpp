@@ -130,6 +130,13 @@ createGroupFromSelectionAction() const
   return _createGroupFromSelectionAction;
 }
 
+QAction*
+FlowView::
+loadGroupAction() const
+{
+  return _loadGroupAction;
+}
+
 QByteArray
 FlowView::
 mimeToJson(const QMimeData *mimeData) const

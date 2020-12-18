@@ -56,6 +56,11 @@ public:
   QAction* createGroupFromSelectionAction() const;
 
   /**
+   * @brief Returns the "load group from file" action.
+   */
+  QAction* loadGroupAction() const;
+
+  /**
    * @brief Converts the given MIME data to a JSON document. The result
    * should be checked with isEmpty() before usage. This function is auxiliary to
    * the getClipboardAsJson() function and the drag/drop functionality.
