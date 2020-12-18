@@ -54,6 +54,14 @@ paint(QPainter* painter,
 
   drawValidationRect(painter, geom, model, graphicsObject);
 
+  if (model->processingStatus() == NodeProcessingStatus::Processing)
+  {
+    if (!model->progressValue().isNull())
+    {
+      drawProgressValue(painter, geom, model);
+    }
+  }
+
   /// call custom painter
   if (auto painterDelegate = model->painterDelegate())
   {
@@ -423,4 +431,36 @@ drawStatusIcon(QPainter * painter,
   geom.updateStatusIconSize();
   painter->drawPixmap(geom.statusIconRect(),
                       geom.processingStatusIcon().pixmap(geom.statusIconSize() * 3));
+}
+
+void
+NodePainter::
+drawProgressValue(QPainter *painter,
+                  const QtNodes::NodeGeometry &geom,
+                  NodeDataModel const * model)
+{
+  NodeStyle const& nodeStyle = model->nodeStyle();
+
+  if (!model->captionVisible())
+    return;
+
+  QString const &progress = model->progressValue();
+
+  QFont f = painter->font();
+
+  f.setBold(true);
+
+  QFontMetrics metrics(f);
+
+  auto rect = metrics.boundingRect(progress);
+
+  QPointF position((geom.width() - rect.width()) / 2.0,
+                   (geom.spacing() + geom.entryHeight()) / 3.0);
+
+  painter->setFont(f);
+  painter->setPen(nodeStyle.FontColor);
+  painter->drawText(position, progress);
+
+  f.setBold(false);
+  painter->setFont(f);
 }

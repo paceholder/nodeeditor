@@ -86,5 +86,18 @@ public:
   void
   drawStatusIcon(QPainter * painter,
                  NodeGeometry const & geom);
+
+  /**
+   * @brief Draws the progress value percentage in the processing node.
+   * @param painter Painter to be used
+   * @param geom Node geometry
+   * @param model Node model
+   */
+  static
+  void
+  drawProgressValue(QPainter * painter,
+                    NodeGeometry const & geom,
+                    NodeDataModel const * model);
+
 };
 }
