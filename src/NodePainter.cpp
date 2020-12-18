@@ -454,7 +454,7 @@ drawProgressValue(QPainter *painter,
 
   auto rect = metrics.boundingRect(progress);
 
-  QPointF position((geom.width() - rect.width()) / 2.0,
+  QPointF position((geom.width() - rect.width()),
                    (geom.spacing() + geom.entryHeight()) / 3.0);
 
   painter->setFont(f);
