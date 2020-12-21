@@ -35,6 +35,7 @@ enum class NodeProcessingStatus
   Pending    = 3,
   Empty      = 4,
   Failed     = 5,
+  Partial    = 6,
 };
 
 class Connection;

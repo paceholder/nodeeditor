@@ -9,5 +9,6 @@
         <file>status_icons/processing.svg</file>
         <file>status_icons/updated.svg</file>
         <file>status_icons/empty.svg</file>
+        <file>status_icons/partial.svg</file>
     </qresource>
 </RCC>
