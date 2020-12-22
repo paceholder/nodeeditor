@@ -64,6 +64,10 @@ public:
   virtual QString
   caption() const = 0;
 
+  /// Progress is used in GUI
+  virtual QString
+  progressValue() const = 0;
+
   /// It is possible to hide caption in GUI
   virtual bool
   captionVisible() const
