@@ -101,7 +101,5 @@ public:
                     NodeStyle const & nodeStyle,
                     QString const & nodeProgress);
 
- private:
-
 };
 }
