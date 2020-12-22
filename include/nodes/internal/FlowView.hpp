@@ -56,6 +56,11 @@ public:
   QAction* createGroupFromSelectionAction() const;
 
   /**
+   * @brief Returns the "load group from file" action.
+   */
+  QAction* loadGroupAction() const;
+
+  /**
    * @brief Converts the given MIME data to a JSON document. The result
    * should be checked with isEmpty() before usage. This function is auxiliary to
    * the getClipboardAsJson() function and the drag/drop functionality.
@@ -116,6 +121,12 @@ protected:
    * @brief Pastes the clipboard items on the scene.
    */
   void pasteFromClipboard();
+
+  /**
+   * @brief Handles a "load group from file" action, setting where the group should
+   * be positioned and calling the appropriate flow scene function.
+   */
+  void handleLoadGroup();
 
   /**
    * @brief Properly restores any pasted or dropped files on the scene.
@@ -196,6 +207,11 @@ private:
    * selected items.
    */
   QAction* _createGroupFromSelectionAction;
+
+  /**
+   * @brief _loadGroupAction Action to load a node group from a .group file.
+   */
+  QAction* _loadGroupAction;
 
   /**
    * @brief _clickPos Stores the last mouse press position.
