@@ -10,6 +10,7 @@ class NodeState;
 class NodeGeometry;
 class NodeGraphicsObject;
 class NodeDataModel;
+class NodeStyle;
 class FlowItemEntry;
 class FlowScene;
 
@@ -97,7 +98,10 @@ public:
   void
   drawProgressValue(QPainter * painter,
                     NodeGeometry const & geom,
-                    NodeDataModel const * model);
+                    NodeStyle const & nodeStyle,
+                    QString const & nodeProgress);
+
+ private:
 
 };
 }
