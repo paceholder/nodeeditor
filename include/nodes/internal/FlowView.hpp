@@ -241,5 +241,11 @@ private:
    * times in a row.
    */
   static constexpr int _pastePosOffset{20};
+
+  /**
+   * @brief _initialSceneRectSize Sets the initial sceneRect size, which is expanded as the items
+   * in the scene are created or moved.
+   */
+  static constexpr QSize _initialSceneRectSize{2048, 2048};
 };
 }

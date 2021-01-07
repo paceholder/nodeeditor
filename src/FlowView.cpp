@@ -82,6 +82,11 @@ FlowView(FlowScene *scene, QWidget *parent)
 {
   setScene(scene);
 
+  constexpr QPoint sceneRectCoords{_initialSceneRectSize.width()/2,
+                                   _initialSceneRectSize.height()/2};
+  _scene->setSceneRect(_scene->itemsBoundingRect() |
+                       QRect(sceneRectCoords, _initialSceneRectSize));
+
   connect(_scene, &FlowScene::selectionChanged, this,
           &FlowView::handleSelectionChanged);
 }
@@ -613,7 +618,7 @@ wheelEvent(QWheelEvent *event)
   auto scenePos = mapToScene(event->position().toPoint());
   centerOn(scenePos);
 
-  delta.y() > 0.0 ? scaleUp() : scaleDown();
+  delta.y() > 0 ? scaleUp() : scaleDown();
 }
 
 
@@ -621,13 +626,11 @@ void
 FlowView::
 scaleUp()
 {
+  if (transform().m11() > 2.0)
+    return;
+
   double const step   = 1.2;
   double const factor = std::pow(step, 1.0);
-
-  QTransform t = transform();
-
-  if (t.m11() > 2.0)
-    return;
 
   scale(factor, factor);
 }
@@ -637,10 +640,17 @@ void
 FlowView::
 scaleDown()
 {
+  if (transform().m11() < 1e-4)
+    return;
+
   double const step   = 1.2;
   double const factor = std::pow(step, -1.0);
 
   scale(factor, factor);
+
+  auto viewportSceneRect = mapToScene(viewport()->rect()).boundingRect();
+  viewportSceneRect |= scene()->sceneRect();
+  scene()->setSceneRect(viewportSceneRect);
 }
 
 

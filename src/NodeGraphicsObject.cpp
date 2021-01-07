@@ -388,6 +388,11 @@ mouseMoveEvent(QGraphicsSceneMouseEvent * event)
     }
     event->ignore();
   }
+  QRectF r = scene()->sceneRect();
+
+  r = r.united(mapToScene(boundingRect()).boundingRect());
+
+  scene()->setSceneRect(r);
 }
 
 
