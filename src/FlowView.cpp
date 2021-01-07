@@ -81,7 +81,6 @@ FlowView(FlowScene *scene, QWidget *parent)
   : FlowView(parent)
 {
   setScene(scene);
-  qDebug() << _scene->sceneRect();
 
   connect(_scene, &FlowScene::selectionChanged, this,
           &FlowView::handleSelectionChanged);
@@ -611,12 +610,10 @@ wheelEvent(QWheelEvent *event)
     return;
   }
 
-  double const d = delta.y() / std::abs(delta.y());
+  auto scenePos = mapToScene(event->position().toPoint());
+  centerOn(scenePos);
 
-  if (d > 0.0)
-    scaleUp();
-  else
-    scaleDown();
+  delta.y() > 0.0 ? scaleUp() : scaleDown();
 }
 
 

@@ -386,11 +386,8 @@ mouseMoveEvent(QGraphicsSceneMouseEvent * event)
         }
       }
     }
-
     event->ignore();
   }
-
-  qDebug() << _scene.sceneRect();
 }
 
 
