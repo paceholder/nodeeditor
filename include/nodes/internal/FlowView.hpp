@@ -166,6 +166,8 @@ protected:
 
   void mousePressEvent(QMouseEvent *event) override;
 
+  void mouseMoveEvent(QMouseEvent *event) override;
+
   void drawBackground(QPainter* painter, const QRectF& r) override;
 
   void showEvent(QShowEvent *event) override;
@@ -241,11 +243,5 @@ private:
    * times in a row.
    */
   static constexpr int _pastePosOffset{20};
-
-  /**
-   * @brief _initialSceneRectSize Sets the initial sceneRect size, which is expanded as the items
-   * in the scene are created or moved.
-   */
-  static constexpr QSize _initialSceneRectSize{2048, 2048};
 };
 }
