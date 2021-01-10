@@ -476,6 +476,15 @@ checkMimeFiles(const QMimeData *mimeData) const
 
 void
 FlowView::
+gentleZoom(double factor)
+{
+  double newFactor{_currentZoomFactor * factor};
+  if (newFactor < _zoomLimits.first || newFactor > _zoomLimits.second)
+    return;
+}
+
+void
+FlowView::
 contextMenuEvent(QContextMenuEvent *event)
 {
   auto menuPos{mapToScene(event->pos())};
@@ -612,10 +621,10 @@ wheelEvent(QWheelEvent *event)
     return;
   }
 
+  delta.y() > 0 ? scaleUp() : scaleDown();
+
   auto scenePos = mapToScene(event->position().toPoint());
   centerOn(scenePos);
-
-  delta.y() > 0 ? scaleUp() : scaleDown();
 }
 
 

@@ -156,6 +156,8 @@ protected:
    */
   bool checkMimeFiles(const QMimeData* mimeData) const;
 
+  void gentleZoom(double factor);
+
   void contextMenuEvent(QContextMenuEvent *event) override;
 
   void wheelEvent(QWheelEvent *event) override;
@@ -237,6 +239,17 @@ private:
    * @brief _clipboard A pointer to the application's clipboard.
    */
   QClipboard* _clipboard;
+
+  double _currentZoomFactor{1.0};
+
+  double _zoomInitialFactor{};
+
+  QPointF _zoomTargetScenePos;
+  QPointF _zoomTargetViewportPos;
+
+  static constexpr double _zoomFactor{1.25};
+
+  static constexpr std::pair<double, double> _zoomLimits{0.001, 1000.0};
 
   /**
    * @brief _pastePosOffset Determines the position offset when the paste action is taken several
