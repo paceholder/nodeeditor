@@ -244,7 +244,7 @@ private:
 
   static constexpr double _zoomFactor{1.25};
 
-  static constexpr std::pair<double, double> _zoomLimits{0.01, 100.0};
+  static constexpr std::pair<double, double> _zoomLimits{0.01, 2.0};
 
   /**
    * @brief _pastePosOffset Determines the position offset when the paste action is taken several
