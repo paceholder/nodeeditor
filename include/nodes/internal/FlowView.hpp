@@ -256,12 +256,6 @@ private:
   QClipboard* _clipboard;
 
   /**
-   * @brief _currentZoomFactor Stores the current zoom factor applied to this view. The zoom factor
-   * determines how much each item on the scene is scaled in this view.
-   */
-  double _currentZoomFactor{1.0};
-
-  /**
    * @brief _zoomBaseFactor Determines the amount by which a zoom in/out action will affect the view.
    */
   static constexpr double _zoomBaseFactor{1.25};
