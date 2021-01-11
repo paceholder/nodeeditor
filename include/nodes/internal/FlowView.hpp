@@ -183,8 +183,6 @@ protected:
 
   void mousePressEvent(QMouseEvent *event) override;
 
-  void mouseMoveEvent(QMouseEvent *event) override;
-
   void drawBackground(QPainter* painter, const QRectF& r) override;
 
   void showEvent(QShowEvent *event) override;
@@ -264,7 +262,7 @@ private:
    * @brief _zoomLimits Determines the zoom limits, i.e. the minimum and maximum scale of the scene's
    * elements on this view.
    */
-  static constexpr std::pair<double, double> _zoomLimits{0.01, 2.0};
+  static constexpr std::pair<double, double> _zoomLimits{0.05, 2.0};
 
   /**
    * @brief _pastePosOffset Determines the position offset when the paste action is taken several

@@ -50,6 +50,15 @@ FlowScene(std::shared_ptr<DataModelRegistry> registry,
 {
   setItemIndexMethod(QGraphicsScene::NoIndex);
 
+  // Defines the sceneRect as the maximum rectangle achievable using int ranges. Theoretically
+  // a QGraphicsScene could have infinite area, but the area that a scroll bar can reach is in
+  // the range (INT_MIN, INT_MAX).
+  QRect maximumRect{QPoint(std::numeric_limits<int>::lowest()/2,
+                           std::numeric_limits<int>::lowest()/2),
+                    QSize(std::numeric_limits<int>::max(),
+                          std::numeric_limits<int>::max())};
+  setSceneRect(maximumRect);
+
   // This connection should come first
   connect(this, &FlowScene::connectionCreated, this, &FlowScene::setupConnectionSignals);
   connect(this, &FlowScene::connectionCreated, this, &FlowScene::sendConnectionCreatedToNodes);

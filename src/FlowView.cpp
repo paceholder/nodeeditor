@@ -82,8 +82,6 @@ FlowView(FlowScene *scene, QWidget *parent)
 {
   setScene(scene);
 
-  _scene->setSceneRect(_scene->itemsBoundingRect());
-
   connect(_scene, &FlowScene::selectionChanged, this,
           &FlowView::handleSelectionChanged);
 }
@@ -638,10 +636,6 @@ FlowView::
 scaleDown()
 {
   gentleZoom(1.0 / _zoomBaseFactor);
-
-  auto newSceneRect = mapToScene(viewport()->rect()).boundingRect();
-  newSceneRect |= scene()->sceneRect();
-  scene()->setSceneRect(newSceneRect);
 }
 
 
@@ -747,27 +741,6 @@ mousePressEvent(QMouseEvent *event)
         (selectedItem->flags() & QGraphicsItem::ItemIsSelectable))
     {
       selectedItem->setSelected(!selectedItem->isSelected());
-    }
-  }
-}
-
-void
-FlowView::
-mouseMoveEvent(QMouseEvent *event)
-{
-  QGraphicsView::mouseMoveEvent(event);
-  if (scene()->mouseGrabberItem() == nullptr &&
-      event->buttons() == Qt::LeftButton)
-  {
-    // Make sure shift is not being pressed
-    if ((event->modifiers() & Qt::ShiftModifier) == 0)
-    {
-      auto mouseScenePos = mapToScene(event->pos());
-      QPointF clickDiff = _clickPos - mouseScenePos;
-      auto newSceneRect = mapToScene(viewport()->rect()).boundingRect();
-      newSceneRect.translate(clickDiff.x(), clickDiff.y());
-      newSceneRect |= scene()->sceneRect();
-      scene()->setSceneRect(newSceneRect);
     }
   }
 }
