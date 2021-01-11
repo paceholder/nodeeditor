@@ -499,6 +499,14 @@ clipCurrentScale()
 
 void
 FlowView::
+zoomFitAll()
+{
+  fitInView(_scene->itemsBoundingRect(), Qt::KeepAspectRatio);
+  clipCurrentScale();
+}
+
+void
+FlowView::
 contextMenuEvent(QContextMenuEvent *event)
 {
   auto menuPos{mapToScene(event->pos())};
