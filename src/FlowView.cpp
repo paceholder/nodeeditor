@@ -488,15 +488,13 @@ FlowView::
 clipCurrentScale()
 {
   double currentFactor{transform().m11()};
-  qDebug() << currentFactor;
   double targetFactor{};
-  if (currentFactor < _zoomLimits.first)
-    targetFactor = _zoomLimits.first;
-  else if (currentFactor > _zoomLimits.second)
+  if (currentFactor > _zoomLimits.second)
+  {
     targetFactor = _zoomLimits.second;
-  double scalingFactor{targetFactor/currentFactor};
-  qDebug() << scalingFactor;
-  scale(scalingFactor, scalingFactor);
+    double scalingFactor{targetFactor/currentFactor};
+    scale(scalingFactor, scalingFactor);
+  }
 }
 
 void

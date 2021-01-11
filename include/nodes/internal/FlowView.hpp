@@ -73,8 +73,8 @@ public:
   void setScene(FlowScene *scene);
 
   /**
-   * @brief Changes the current scale factor so it's within the bounds defined by
-   * _zoomLimits.
+   * @brief Changes the current scale factor so it's less than the upper limit
+   * defined by _zoomLimits.second.
    */
   void clipCurrentScale();
 
