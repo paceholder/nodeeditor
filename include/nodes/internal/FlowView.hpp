@@ -73,6 +73,12 @@ public:
   void setScene(FlowScene *scene);
 
   /**
+   * @brief Changes the current scale factor so it's within the bounds defined by
+   * _zoomLimits.
+   */
+  void clipCurrentScale();
+
+  /**
    * @brief _clipboardMimeType Stores the MIME type that will be used by the View
    * to copy and paste scene objects. Currently set to "application/json".
    */
@@ -172,12 +178,6 @@ protected:
    * whereas a factor of 0.5 will halve the items' size).
    */
   void gentleZoom(double factor);
-
-  /**
-   * @brief Changes the current scale factor so it's within the bounds defined by
-   * _zoomLimits.
-   */
-  void clipCurrentScale();
 
   void contextMenuEvent(QContextMenuEvent *event) override;
 
