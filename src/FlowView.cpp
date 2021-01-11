@@ -630,9 +630,7 @@ void
 FlowView::
 scaleUp()
 {
-  ViewportAnchor anchor{transformationAnchor()};
   gentleZoom(_zoomBaseFactor);
-  setTransformationAnchor(anchor);
 }
 
 
