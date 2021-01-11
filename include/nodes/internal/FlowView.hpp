@@ -173,6 +173,12 @@ protected:
    */
   void gentleZoom(double factor);
 
+  /**
+   * @brief Changes the current scale factor so it's within the bounds defined by
+   * _zoomLimits.
+   */
+  void clipCurrentScale();
+
   void contextMenuEvent(QContextMenuEvent *event) override;
 
   void wheelEvent(QWheelEvent *event) override;

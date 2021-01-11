@@ -485,6 +485,22 @@ gentleZoom(double factor)
 
 void
 FlowView::
+clipCurrentScale()
+{
+  double currentFactor{transform().m11()};
+  qDebug() << currentFactor;
+  double targetFactor{};
+  if (currentFactor < _zoomLimits.first)
+    targetFactor = _zoomLimits.first;
+  else if (currentFactor > _zoomLimits.second)
+    targetFactor = _zoomLimits.second;
+  double scalingFactor{targetFactor/currentFactor};
+  qDebug() << scalingFactor;
+  scale(scalingFactor, scalingFactor);
+}
+
+void
+FlowView::
 contextMenuEvent(QContextMenuEvent *event)
 {
   auto menuPos{mapToScene(event->pos())};
