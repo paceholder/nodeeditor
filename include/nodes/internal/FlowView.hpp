@@ -80,10 +80,19 @@ public:
 
 public Q_SLOTS:
 
+  /**
+   * @brief Applies a "zoom in" effect on the scene.
+   */
   void scaleUp();
 
+  /**
+   * @brief Applies a "zoom out" effect on the scene.
+   */
   void scaleDown();
 
+  /**
+   * @brief Deletes the currently selected nodes.
+   */
   void deleteSelectedNodes();
 
   /**
@@ -156,6 +165,12 @@ protected:
    */
   bool checkMimeFiles(const QMimeData* mimeData) const;
 
+  /**
+   * @brief Applies a zoom to the viewed scene, according to the given zoom factor.
+   * @param factor Zoom factor. Determines the amount by which the elements on the
+   * scene will be scaled (for example, a factor of 2 will double the items' size,
+   * whereas a factor of 0.5 will halve the items' size).
+   */
   void gentleZoom(double factor);
 
   void contextMenuEvent(QContextMenuEvent *event) override;
@@ -240,10 +255,21 @@ private:
    */
   QClipboard* _clipboard;
 
+  /**
+   * @brief _currentZoomFactor Stores the current zoom factor applied to this view. The zoom factor
+   * determines how much each item on the scene is scaled in this view.
+   */
   double _currentZoomFactor{1.0};
 
-  static constexpr double _zoomFactor{1.25};
+  /**
+   * @brief _zoomBaseFactor Determines the amount by which a zoom in/out action will affect the view.
+   */
+  static constexpr double _zoomBaseFactor{1.25};
 
+  /**
+   * @brief _zoomLimits Determines the zoom limits, i.e. the minimum and maximum scale of the scene's
+   * elements on this view.
+   */
   static constexpr std::pair<double, double> _zoomLimits{0.01, 2.0};
 
   /**

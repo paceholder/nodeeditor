@@ -631,7 +631,7 @@ FlowView::
 scaleUp()
 {
   ViewportAnchor anchor{transformationAnchor()};
-  gentleZoom(_zoomFactor);
+  gentleZoom(_zoomBaseFactor);
   setTransformationAnchor(anchor);
 }
 
@@ -640,7 +640,7 @@ void
 FlowView::
 scaleDown()
 {
-  gentleZoom(1.0 / _zoomFactor);
+  gentleZoom(1.0 / _zoomBaseFactor);
 
   auto newSceneRect = mapToScene(viewport()->rect()).boundingRect();
   newSceneRect |= scene()->sceneRect();
