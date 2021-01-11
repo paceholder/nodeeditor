@@ -242,14 +242,9 @@ private:
 
   double _currentZoomFactor{1.0};
 
-  double _zoomInitialFactor{};
-
-  QPointF _zoomTargetScenePos;
-  QPointF _zoomTargetViewportPos;
-
   static constexpr double _zoomFactor{1.25};
 
-  static constexpr std::pair<double, double> _zoomLimits{0.001, 1000.0};
+  static constexpr std::pair<double, double> _zoomLimits{0.01, 100.0};
 
   /**
    * @brief _pastePosOffset Determines the position offset when the paste action is taken several

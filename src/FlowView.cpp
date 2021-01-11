@@ -481,6 +481,8 @@ gentleZoom(double factor)
   double newFactor{_currentZoomFactor * factor};
   if (newFactor < _zoomLimits.first || newFactor > _zoomLimits.second)
     return;
+  _currentZoomFactor = newFactor;
+  scale(factor, factor);
 }
 
 void
@@ -613,18 +615,14 @@ void
 FlowView::
 wheelEvent(QWheelEvent *event)
 {
-  QPoint delta = event->angleDelta();
+  auto delta = event->angleDelta().y();
 
-  if (delta.y() == 0)
+  if (delta == 0)
   {
     event->ignore();
     return;
   }
-
-  delta.y() > 0 ? scaleUp() : scaleDown();
-
-  auto scenePos = mapToScene(event->position().toPoint());
-  centerOn(scenePos);
+  delta > 0 ? scaleUp() : scaleDown();
 }
 
 
@@ -632,13 +630,9 @@ void
 FlowView::
 scaleUp()
 {
-  if (transform().m11() > 2.0)
-    return;
-
-  double const step   = 1.2;
-  double const factor = std::pow(step, 1.0);
-
-  scale(factor, factor);
+  ViewportAnchor anchor{transformationAnchor()};
+  gentleZoom(_zoomFactor);
+  setTransformationAnchor(anchor);
 }
 
 
@@ -646,17 +640,11 @@ void
 FlowView::
 scaleDown()
 {
-  if (transform().m11() < 1e-4)
-    return;
+  gentleZoom(1.0 / _zoomFactor);
 
-  double const step   = 1.2;
-  double const factor = std::pow(step, -1.0);
-
-  scale(factor, factor);
-
-  auto viewportSceneRect = mapToScene(viewport()->rect()).boundingRect();
-  viewportSceneRect |= scene()->sceneRect();
-  scene()->setSceneRect(viewportSceneRect);
+  auto newSceneRect = mapToScene(viewport()->rect()).boundingRect();
+  newSceneRect |= scene()->sceneRect();
+  scene()->setSceneRect(newSceneRect);
 }
 
 
@@ -777,12 +765,12 @@ mouseMoveEvent(QMouseEvent *event)
     // Make sure shift is not being pressed
     if ((event->modifiers() & Qt::ShiftModifier) == 0)
     {
-      QPointF difference = _clickPos - mapToScene(event->pos());
-
+      auto mouseScenePos = mapToScene(event->pos());
+      QPointF clickDiff = _clickPos - mouseScenePos;
       auto newSceneRect = mapToScene(viewport()->rect()).boundingRect();
-      newSceneRect.translate(difference.x(), difference.y());
+      newSceneRect.translate(clickDiff.x(), clickDiff.y());
       newSceneRect |= scene()->sceneRect();
-      _scene->setSceneRect(newSceneRect);
+      scene()->setSceneRect(newSceneRect);
     }
   }
 }
