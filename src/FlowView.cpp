@@ -831,7 +831,6 @@ void
 FlowView::
 showEvent(QShowEvent *event)
 {
-//  _scene->setSceneRect(this->rect());
   QGraphicsView::showEvent(event);
 }
 
