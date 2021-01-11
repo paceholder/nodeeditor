@@ -477,7 +477,8 @@ FlowView::
 gentleZoom(double factor)
 {
   double newFactor{transform().m11() * factor};
-  if (newFactor < _zoomLimits.first || newFactor > _zoomLimits.second)
+  if ((factor < 1.0 && newFactor < _zoomLimits.first) ||
+      (factor > 1.0 && newFactor > _zoomLimits.second))
     return;
   scale(factor, factor);
 }
