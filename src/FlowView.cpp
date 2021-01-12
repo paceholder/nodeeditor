@@ -474,6 +474,39 @@ checkMimeFiles(const QMimeData *mimeData) const
 
 void
 FlowView::
+gentleZoom(double factor)
+{
+  double newFactor{transform().m11() * factor};
+  if ((factor < 1.0 && newFactor < _zoomLimits.first) ||
+      (factor > 1.0 && newFactor > _zoomLimits.second))
+    return;
+  scale(factor, factor);
+}
+
+void
+FlowView::
+clipCurrentScale()
+{
+  double currentFactor{transform().m11()};
+  double targetFactor{};
+  if (currentFactor > _zoomLimits.second)
+  {
+    targetFactor = _zoomLimits.second;
+    double scalingFactor{targetFactor/currentFactor};
+    scale(scalingFactor, scalingFactor);
+  }
+}
+
+void
+FlowView::
+zoomFitAll()
+{
+  fitInView(_scene->itemsBoundingRect(), Qt::KeepAspectRatio);
+  clipCurrentScale();
+}
+
+void
+FlowView::
 contextMenuEvent(QContextMenuEvent *event)
 {
   auto menuPos{mapToScene(event->pos())};
@@ -602,20 +635,14 @@ void
 FlowView::
 wheelEvent(QWheelEvent *event)
 {
-  QPoint delta = event->angleDelta();
+  auto delta = event->angleDelta().y();
 
-  if (delta.y() == 0)
+  if (delta == 0)
   {
     event->ignore();
     return;
   }
-
-  double const d = delta.y() / std::abs(delta.y());
-
-  if (d > 0.0)
-    scaleUp();
-  else
-    scaleDown();
+  delta > 0 ? scaleUp() : scaleDown();
 }
 
 
@@ -623,15 +650,7 @@ void
 FlowView::
 scaleUp()
 {
-  double const step   = 1.2;
-  double const factor = std::pow(step, 1.0);
-
-  QTransform t = transform();
-
-  if (t.m11() > 2.0)
-    return;
-
-  scale(factor, factor);
+  gentleZoom(_zoomBaseFactor);
 }
 
 
@@ -639,10 +658,7 @@ void
 FlowView::
 scaleDown()
 {
-  double const step   = 1.2;
-  double const factor = std::pow(step, -1.0);
-
-  scale(factor, factor);
+  gentleZoom(1.0 / _zoomBaseFactor);
 }
 
 
@@ -754,24 +770,6 @@ mousePressEvent(QMouseEvent *event)
 
 void
 FlowView::
-mouseMoveEvent(QMouseEvent *event)
-{
-  QGraphicsView::mouseMoveEvent(event);
-  if (scene()->mouseGrabberItem() == nullptr &&
-      event->buttons() == Qt::LeftButton)
-  {
-    // Make sure shift is not being pressed
-    if ((event->modifiers() & Qt::ShiftModifier) == 0)
-    {
-      QPointF difference = _clickPos - mapToScene(event->pos());
-      setSceneRect(sceneRect().translated(difference.x(), difference.y()));
-    }
-  }
-}
-
-
-void
-FlowView::
 drawBackground(QPainter* painter, const QRectF& r)
 {
   QGraphicsView::drawBackground(painter, r);
@@ -826,7 +824,6 @@ void
 FlowView::
 showEvent(QShowEvent *event)
 {
-  _scene->setSceneRect(this->rect());
   QGraphicsView::showEvent(event);
 }
 
