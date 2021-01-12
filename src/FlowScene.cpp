@@ -712,26 +712,12 @@ load()
                                  "",
                                  tr("Flow Scene Files (*.flow)"));
 
-  if (!QFileInfo::exists(fileName))
-    return QString();
-
-  QFile file(fileName);
-
-  if (!file.open(QIODevice::ReadOnly))
-    return QString();
-
-  clearScene();
-
-  QByteArray wholeFile = file.readAll();
-
-  loadFromMemory(wholeFile);
-
-  return fileName;
+  return this->load(fileName);
 }
 
 QString
 FlowScene::
-load(QString& fileName) {
+load(const QString& fileName) {
   if (!QFileInfo::exists(fileName))
     return QString();
 

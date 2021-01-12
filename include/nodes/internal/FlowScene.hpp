@@ -199,7 +199,7 @@ public:
 
   QString load();
 
-  QString load(QString& fileName);
+  QString load(const QString& fileName);
   
   QByteArray saveToMemory() const;
 
