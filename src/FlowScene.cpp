@@ -721,6 +721,12 @@ load()
                                  "",
                                  tr("Flow Scene Files (*.flow)"));
 
+  return this->load(fileName);
+}
+
+QString
+FlowScene::
+load(const QString& fileName) {
   if (!QFileInfo::exists(fileName))
     return QString();
 
@@ -737,7 +743,6 @@ load()
 
   return fileName;
 }
-
 
 QByteArray
 FlowScene::
