@@ -729,6 +729,25 @@ load()
   return fileName;
 }
 
+QString
+FlowScene::
+load(QString& fileName) {
+  if (!QFileInfo::exists(fileName))
+    return QString();
+
+  QFile file(fileName);
+
+  if (!file.open(QIODevice::ReadOnly))
+    return QString();
+
+  clearScene();
+
+  QByteArray wholeFile = file.readAll();
+
+  loadFromMemory(wholeFile);
+
+  return fileName;
+}
 
 QByteArray
 FlowScene::

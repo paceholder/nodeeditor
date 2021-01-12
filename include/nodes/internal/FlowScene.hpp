@@ -199,6 +199,8 @@ public:
 
   QString load();
 
+  QString load(QString& fileName);
+  
   QByteArray saveToMemory() const;
 
   void loadFromMemory(const QByteArray& data);
