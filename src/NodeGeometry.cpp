@@ -285,7 +285,9 @@ captionHeight() const
 
   QString name = _dataModel->caption();
 
-  return _boldFontMetrics.boundingRect(name).height();
+  return _dataModel->nicknameVisible()?
+         _fontMetrics.boundingRect(name).height() :
+         _boldFontMetrics.boundingRect(name).height();
 }
 
 
@@ -298,7 +300,33 @@ captionWidth() const
 
   QString name = _dataModel->caption();
 
-  return _boldFontMetrics.boundingRect(name).width();
+  return _dataModel->nicknameVisible()?
+         _fontMetrics.boundingRect(name).width() :
+         _boldFontMetrics.boundingRect(name).width();
+}
+
+unsigned int
+NodeGeometry::
+nicknameHeight() const
+{
+  if (!_dataModel->nicknameVisible())
+    return 0;
+
+  QString nickname = _dataModel->nickname();
+
+  return _boldFontMetrics.boundingRect(nickname).height();
+}
+
+unsigned int
+NodeGeometry::
+nicknameWidth() const
+{
+  if (!_dataModel->nicknameVisible())
+    return 0;
+
+  QString nickname = _dataModel->nickname();
+
+  return _boldFontMetrics.boundingRect(nickname).width();
 }
 
 
@@ -345,7 +373,7 @@ updateStatusIconSize() const
 {
   bool oldStatus = _statusIconActive;
   _statusIconActive =
-      _dataModel->processingStatus() != NodeProcessingStatus::NoStatus;
+    _dataModel->processingStatus() != NodeProcessingStatus::NoStatus;
 
   if (oldStatus != _statusIconActive)
   {
@@ -381,21 +409,21 @@ NodeGeometry::
 processingStatusIcon() const
 {
   switch(_dataModel->processingStatus())
-    {
-    case NodeProcessingStatus::NoStatus:
-    case NodeProcessingStatus::Updated:
-      return _statusUpdated;
-    case NodeProcessingStatus::Processing:
-      return _statusProcessing;
-    case NodeProcessingStatus::Pending:
-      return _statusPending;
-    case NodeProcessingStatus::Empty:
-      return _statusEmpty;
-    case NodeProcessingStatus::Failed:
-      return _statusInvalid;
-    case NodeProcessingStatus::Partial:
-      return _statusPartial;
-    }
+  {
+  case NodeProcessingStatus::NoStatus:
+  case NodeProcessingStatus::Updated:
+    return _statusUpdated;
+  case NodeProcessingStatus::Processing:
+    return _statusProcessing;
+  case NodeProcessingStatus::Pending:
+    return _statusPending;
+  case NodeProcessingStatus::Empty:
+    return _statusEmpty;
+  case NodeProcessingStatus::Failed:
+    return _statusInvalid;
+  case NodeProcessingStatus::Partial:
+    return _statusPartial;
+  }
   return _statusInvalid;
 }
 

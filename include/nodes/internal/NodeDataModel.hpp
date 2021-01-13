@@ -68,6 +68,17 @@ public:
   virtual QString
   progressValue() const = 0;
 
+  /// Nicknames can be assigned to nodes and shown in GUI
+  virtual QString
+  nickname() const = 0;
+
+  /// It is possible to hide the nickname in GUI
+  virtual bool
+  nicknameVisible() const
+  {
+    return false;
+  }
+
   /// It is possible to hide caption in GUI
   virtual bool
   captionVisible() const
