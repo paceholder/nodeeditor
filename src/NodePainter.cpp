@@ -269,6 +269,7 @@ drawModelName(QPainter * painter,
   QFont f = painter->font();
 
   f.setBold(!model->nicknameVisible());
+  f.setItalic(model->nicknameVisible());
 
   QFontMetrics metrics(f);
 
@@ -286,6 +287,7 @@ drawModelName(QPainter * painter,
   painter->drawText(position, name);
 
   f.setBold(false);
+  f.setItalic(false);
   painter->setFont(f);
 }
 
