@@ -90,7 +90,7 @@ recalculateSize() const
   {
     unsigned int maxNumOfEntries = std::max(nSinks(), nSources());
     unsigned int step = _entryHeight + _spacing;
-    _height = step * maxNumOfEntries + _statusIconSize.height();
+    _height = step * maxNumOfEntries + _statusIconSize.height() + spacing();
   }
 
   if (auto w = _dataModel->embeddedWidget())
@@ -398,12 +398,9 @@ statusIconRect() const
   auto spacing = static_cast<int>(_spacing);
   auto iconPos = portScenePosition(std::max(nSources(), nSinks()),
                                    PortType::Out).toPoint()
-                 + QPoint{-statusIconSize().width() - spacing / 2, - spacing};
+                 + QPoint{-statusIconSize().width() - spacing / 2, 0};
 
-  return QRect{iconPos.x(),
-               iconPos.y(),
-               statusIconSize().width(),
-               statusIconSize().height()};
+  return QRect{iconPos, statusIconSize()};
 }
 
 const QIcon&
