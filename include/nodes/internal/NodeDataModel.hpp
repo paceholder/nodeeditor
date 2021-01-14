@@ -73,14 +73,14 @@ public:
   virtual QString
   nickname() const
   {
-    return "Node nickname test";
+    return QStringLiteral("");
   };
 
   /// It is possible to hide the nickname in GUI
   virtual bool
   nicknameVisible() const
   {
-    return true;
+    return false;
   }
 
   /// It is possible to hide caption in GUI
