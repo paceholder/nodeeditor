@@ -98,7 +98,7 @@ recalculateSize() const
     _height = std::max(_height, static_cast<unsigned>(w->height()));
   }
 
-  _height += captionHeight();
+  _height += captionHeight() + nicknameHeight();
 
   _inputPortWidth  = portWidth(PortType::In);
   _outputPortWidth = portWidth(PortType::Out);
@@ -157,7 +157,7 @@ portScenePosition(PortIndex index,
 
   double totalHeight = 0.0;
 
-  totalHeight += captionHeight();
+  totalHeight += captionHeight() + nicknameHeight();
 
   totalHeight += step * index;
 
@@ -247,18 +247,19 @@ widgetPosition() const
     if (w->sizePolicy().verticalPolicy() & QSizePolicy::ExpandFlag)
     {
       // If the widget wants to use as much vertical space as possible, place it immediately after the caption.
-      return QPointF(_spacing + portWidth(PortType::In), captionHeight());
+      return QPointF(_spacing + portWidth(PortType::In), captionHeight() + nicknameHeight());
     }
     else
     {
       if (_dataModel->validationState() != NodeValidationState::Valid)
       {
         return QPointF(_spacing + portWidth(PortType::In),
-                       (captionHeight() + _height - validationHeight() - _spacing - w->height()) / 2.0);
+                       (captionHeight() + nicknameHeight() + _height
+                        - validationHeight() - _spacing - w->height()) / 2.0);
       }
 
       return QPointF(_spacing + portWidth(PortType::In),
-                     (captionHeight() + _height - w->height()) / 2.0);
+                     (captionHeight() + nicknameHeight() + _height - w->height()) / 2.0);
     }
   }
   return QPointF();
@@ -270,10 +271,10 @@ equivalentWidgetHeight() const
 {
   if (_dataModel->validationState() != NodeValidationState::Valid)
   {
-    return height() - captionHeight() + validationHeight();
+    return height() - captionHeight() - nicknameHeight() + validationHeight();
   }
 
-  return height() - captionHeight();
+  return height() - captionHeight() - nicknameHeight();
 }
 
 unsigned int

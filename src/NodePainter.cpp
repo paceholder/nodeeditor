@@ -276,10 +276,10 @@ drawModelName(QPainter * painter,
 
   int nicknameOffset = model->nicknameVisible()? rect.height() : 0;
 
-  QPointF position((geom.width() - rect.width()) / 2.0,
-                   (geom.spacing() +
-                    geom.entryHeight() +
-                    nicknameOffset) / 3.0);
+  double yPos = (geom.spacing() + geom.entryHeight() + nicknameOffset) / 3.0;
+  if (model->nicknameVisible()) yPos += 2.0 * geom.spacing() / 3.0;
+
+  QPointF position((geom.width() - rect.width()) / 2.0, yPos);
 
   painter->setFont(f);
   painter->setPen(nodeStyle.FontColor);

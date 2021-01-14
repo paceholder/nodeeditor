@@ -71,13 +71,16 @@ public:
   /// Nicknames can be assigned to nodes and shown in GUI
   /// TODO: turn into pure virtual function
   virtual QString
-  nickname() const {};
+  nickname() const
+  {
+    return "Node nickname test";
+  };
 
   /// It is possible to hide the nickname in GUI
   virtual bool
   nicknameVisible() const
   {
-    return false;
+    return true;
   }
 
   /// It is possible to hide caption in GUI
