@@ -27,7 +27,7 @@ FlowViewStyle()
 
 
 FlowViewStyle::
-FlowViewStyle(const QString& jsonText)
+FlowViewStyle(QString const& jsonText)
 {
   loadJsonText(jsonText);
 }
@@ -35,7 +35,7 @@ FlowViewStyle(const QString& jsonText)
 
 void
 FlowViewStyle::
-setStyle(const QString& jsonText)
+setStyle(QString const& jsonText)
 {
   FlowViewStyle style(jsonText);
 
@@ -70,7 +70,7 @@ setStyle(const QString& jsonText)
 
 void
 FlowViewStyle::
-loadJsonFile(const QString& styleFile)
+loadJsonFile(QString const& styleFile)
 {
   QFile file(styleFile);
 
@@ -87,7 +87,7 @@ loadJsonFile(const QString& styleFile)
 
 void
 FlowViewStyle::
-loadJsonText(const QString& jsonText)
+loadJsonText(QString const& jsonText)
 {
   loadJsonFromByteArray(jsonText.toUtf8());
 }

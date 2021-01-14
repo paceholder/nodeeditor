@@ -29,7 +29,7 @@ NodeStyle()
 
 
 NodeStyle::
-NodeStyle(const QString& jsonText)
+NodeStyle(QString const& jsonText)
 {
   loadJsonText(jsonText);
 }
@@ -37,7 +37,7 @@ NodeStyle(const QString& jsonText)
 
 void
 NodeStyle::
-setNodeStyle(const QString& jsonText)
+setNodeStyle(QString const& jsonText)
 {
   NodeStyle style(jsonText);
 
@@ -79,7 +79,7 @@ setNodeStyle(const QString& jsonText)
 
 void
 NodeStyle::
-loadJsonFile(const QString& styleFile)
+loadJsonFile(QString const& styleFile)
 {
   QFile file(styleFile);
 
@@ -96,7 +96,7 @@ loadJsonFile(const QString& styleFile)
 
 void
 NodeStyle::
-loadJsonText(const QString& jsonText)
+loadJsonText(QString const& jsonText)
 {
   loadJsonFromByteArray(jsonText.toUtf8());
 }

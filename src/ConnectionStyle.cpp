@@ -30,7 +30,7 @@ ConnectionStyle()
 
 
 ConnectionStyle::
-ConnectionStyle(const QString& jsonText)
+ConnectionStyle(QString const& jsonText)
 {
   loadJsonFile(":DefaultStyle.json");
   loadJsonText(jsonText);
@@ -39,7 +39,7 @@ ConnectionStyle(const QString& jsonText)
 
 void
 ConnectionStyle::
-setConnectionStyle(const QString& jsonText)
+setConnectionStyle(QString const& jsonText)
 {
   ConnectionStyle style(jsonText);
 
@@ -94,7 +94,7 @@ setConnectionStyle(const QString& jsonText)
 
 void
 ConnectionStyle::
-loadJsonFile(const QString& styleFile)
+loadJsonFile(QString const& styleFile)
 {
   QFile file(styleFile);
 
@@ -111,7 +111,7 @@ loadJsonFile(const QString& styleFile)
 
 void
 ConnectionStyle::
-loadJsonText(const QString& jsonText)
+loadJsonText(QString const& jsonText)
 {
   loadJsonFromByteArray(jsonText.toUtf8());
 }
@@ -161,7 +161,7 @@ normalColor() const
 
 QColor
 ConnectionStyle::
-normalColor(const QString& typeId) const
+normalColor(QString const& typeId) const
 {
   std::size_t hash = qHash(typeId);
 

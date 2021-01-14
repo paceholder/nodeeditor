@@ -14,17 +14,17 @@ public:
 
   NodeStyle();
 
-  NodeStyle(const QString& jsonText);
+  NodeStyle(QString const& jsonText);
 
 public:
 
-  static void setNodeStyle(const QString& jsonText);
+  static void setNodeStyle(QString const& jsonText);
 
 private:
 
-  void loadJsonText(const QString& jsonText) override;
+  void loadJsonText(QString const& jsonText) override;
 
-  void loadJsonFile(const QString& fileName) override;
+  void loadJsonFile(QString const& fileName) override;
 
   void loadJsonFromByteArray(QByteArray const &byteArray) override;
 
