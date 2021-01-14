@@ -17,6 +17,7 @@
 #include <QtCore/QJsonArray>
 #include <QtCore/QtGlobal>
 #include <QtCore/QDebug>
+#include <QDir>
 
 #include "Node.hpp"
 #include "NodeGraphicsObject.hpp"
@@ -718,7 +719,7 @@ load()
   QString fileName =
     QFileDialog::getOpenFileName(nullptr,
                                  tr("Open Flow Scene"),
-                                 "",
+                                 QDir::currentPath(),
                                  tr("Flow Scene Files (*.flow)"));
 
   return this->load(fileName);
@@ -732,8 +733,12 @@ load(const QString& fileName) {
 
   QFile file(fileName);
 
-  if (!file.open(QIODevice::ReadOnly))
+  if (!file.open(QIODevice::ReadOnly)) 
     return QString();
+
+  QDir d = QFileInfo(fileName).absoluteDir();
+  QString absolute=d.absolutePath();
+  QDir::setCurrent(absolute);
 
   clearScene();
 
@@ -956,7 +961,7 @@ loadGroupFile()
   QString fileName =
     QFileDialog::getOpenFileName(nullptr,
                                  tr("Open Node Group"),
-                                 QDir::homePath(),
+                                 QDir::currentPath(),
                                  tr("Node Group files (*.group)"));
 
   if (!QFileInfo::exists(fileName))
@@ -968,6 +973,10 @@ loadGroupFile()
   {
     qDebug() << "Error loading group file!";
   }
+
+  QDir d = QFileInfo(fileName).absoluteDir();
+  QString absolute=d.absolutePath();
+  QDir::setCurrent(absolute);
 
   QByteArray wholeFile = file.readAll();
 
