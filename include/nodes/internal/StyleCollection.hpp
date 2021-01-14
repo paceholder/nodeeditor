@@ -28,15 +28,15 @@ public:
 
   static
   void
-  setNodeStyle(NodeStyle);
+  setNodeStyle(const NodeStyle&);
 
   static
   void
-  setConnectionStyle(ConnectionStyle);
+  setConnectionStyle(const ConnectionStyle&);
 
   static
   void
-  setFlowViewStyle(FlowViewStyle);
+  setFlowViewStyle(const FlowViewStyle&);
 
 private:
 

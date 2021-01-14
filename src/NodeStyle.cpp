@@ -29,7 +29,7 @@ NodeStyle()
 
 
 NodeStyle::
-NodeStyle(QString jsonText)
+NodeStyle(const QString& jsonText)
 {
   loadJsonText(jsonText);
 }
@@ -37,7 +37,7 @@ NodeStyle(QString jsonText)
 
 void
 NodeStyle::
-setNodeStyle(QString jsonText)
+setNodeStyle(const QString& jsonText)
 {
   NodeStyle style(jsonText);
 
@@ -79,7 +79,7 @@ setNodeStyle(QString jsonText)
 
 void
 NodeStyle::
-loadJsonFile(QString styleFile)
+loadJsonFile(const QString& styleFile)
 {
   QFile file(styleFile);
 
@@ -96,7 +96,7 @@ loadJsonFile(QString styleFile)
 
 void
 NodeStyle::
-loadJsonText(QString jsonText)
+loadJsonText(const QString& jsonText)
 {
   loadJsonFromByteArray(jsonText.toUtf8());
 }
@@ -114,23 +114,23 @@ loadJsonFromByteArray(QByteArray const &byteArray)
 
   QJsonObject obj = nodeStyleValues.toObject();
 
-  NODE_STYLE_READ_COLOR(obj, NormalBoundaryColor);
-  NODE_STYLE_READ_COLOR(obj, SelectedBoundaryColor);
-  NODE_STYLE_READ_COLOR(obj, GradientColor0);
-  NODE_STYLE_READ_COLOR(obj, GradientColor1);
-  NODE_STYLE_READ_COLOR(obj, GradientColor2);
-  NODE_STYLE_READ_COLOR(obj, GradientColor3);
-  NODE_STYLE_READ_COLOR(obj, ShadowColor);
-  NODE_STYLE_READ_COLOR(obj, FontColor);
-  NODE_STYLE_READ_COLOR(obj, FontColorFaded);
-  NODE_STYLE_READ_COLOR(obj, ConnectionPointColor);
-  NODE_STYLE_READ_COLOR(obj, FilledConnectionPointColor);
-  NODE_STYLE_READ_COLOR(obj, WarningColor);
-  NODE_STYLE_READ_COLOR(obj, ErrorColor);
+  NODE_STYLE_READ_COLOR(obj, NormalBoundaryColor)
+  NODE_STYLE_READ_COLOR(obj, SelectedBoundaryColor)
+  NODE_STYLE_READ_COLOR(obj, GradientColor0)
+  NODE_STYLE_READ_COLOR(obj, GradientColor1)
+  NODE_STYLE_READ_COLOR(obj, GradientColor2)
+  NODE_STYLE_READ_COLOR(obj, GradientColor3)
+  NODE_STYLE_READ_COLOR(obj, ShadowColor)
+  NODE_STYLE_READ_COLOR(obj, FontColor)
+  NODE_STYLE_READ_COLOR(obj, FontColorFaded)
+  NODE_STYLE_READ_COLOR(obj, ConnectionPointColor)
+  NODE_STYLE_READ_COLOR(obj, FilledConnectionPointColor)
+  NODE_STYLE_READ_COLOR(obj, WarningColor)
+  NODE_STYLE_READ_COLOR(obj, ErrorColor)
 
-  NODE_STYLE_READ_FLOAT(obj, PenWidth);
-  NODE_STYLE_READ_FLOAT(obj, HoveredPenWidth);
-  NODE_STYLE_READ_FLOAT(obj, ConnectionPointDiameter);
+  NODE_STYLE_READ_FLOAT(obj, PenWidth)
+  NODE_STYLE_READ_FLOAT(obj, HoveredPenWidth)
+  NODE_STYLE_READ_FLOAT(obj, ConnectionPointDiameter)
 
-  NODE_STYLE_READ_FLOAT(obj, Opacity);
+  NODE_STYLE_READ_FLOAT(obj, Opacity)
 }

@@ -27,7 +27,7 @@ FlowViewStyle()
 
 
 FlowViewStyle::
-FlowViewStyle(QString jsonText)
+FlowViewStyle(const QString& jsonText)
 {
   loadJsonText(jsonText);
 }
@@ -35,7 +35,7 @@ FlowViewStyle(QString jsonText)
 
 void
 FlowViewStyle::
-setStyle(QString jsonText)
+setStyle(const QString& jsonText)
 {
   FlowViewStyle style(jsonText);
 
@@ -70,7 +70,7 @@ setStyle(QString jsonText)
 
 void
 FlowViewStyle::
-loadJsonFile(QString styleFile)
+loadJsonFile(const QString& styleFile)
 {
   QFile file(styleFile);
 
@@ -87,7 +87,7 @@ loadJsonFile(QString styleFile)
 
 void
 FlowViewStyle::
-loadJsonText(QString jsonText)
+loadJsonText(const QString& jsonText)
 {
   loadJsonFromByteArray(jsonText.toUtf8());
 }
@@ -105,7 +105,7 @@ loadJsonFromByteArray(QByteArray const &byteArray)
 
   QJsonObject obj = nodeStyleValues.toObject();
 
-  FLOW_VIEW_STYLE_READ_COLOR(obj, BackgroundColor);
-  FLOW_VIEW_STYLE_READ_COLOR(obj, FineGridColor);
-  FLOW_VIEW_STYLE_READ_COLOR(obj, CoarseGridColor);
+  FLOW_VIEW_STYLE_READ_COLOR(obj, BackgroundColor)
+  FLOW_VIEW_STYLE_READ_COLOR(obj, FineGridColor)
+  FLOW_VIEW_STYLE_READ_COLOR(obj, CoarseGridColor)
 }

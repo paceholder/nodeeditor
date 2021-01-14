@@ -58,6 +58,7 @@ oppositePort(PortType port)
       result = PortType::In;
       break;
 
+    case PortType::None:
     default:
       break;
   }

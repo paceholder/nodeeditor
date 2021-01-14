@@ -51,7 +51,7 @@ public:
   Connection(const Connection&) = delete;
   Connection operator=(const Connection&) = delete;
 
-  ~Connection();
+  ~Connection() override;
 
 public:
 
@@ -132,10 +132,10 @@ public: // data propagation
 Q_SIGNALS:
 
   void
-  connectionCompleted(Connection const&) const;
+  connectionCompleted(QtNodes::Connection const&);
 
   void
-  connectionMadeIncomplete(Connection const&) const;
+  connectionMadeIncomplete(QtNodes::Connection const&);
 
 private:
 
@@ -161,6 +161,6 @@ private:
 Q_SIGNALS:
 
   void
-  updated(Connection& conn) const;
+  updated(Connection& conn);
 };
 }

@@ -36,9 +36,6 @@ public:
 
   NodeDataModel();
 
-  virtual
-  ~NodeDataModel() = default;
-
   /// Caption is used in GUI
   virtual QString
   caption() const = 0;
@@ -127,32 +124,32 @@ public:
 public Q_SLOTS:
 
   virtual void
-  inputConnectionCreated(Connection const&)
+  inputConnectionCreated(QtNodes::Connection const&)
   {
   }
 
   virtual void
-  inputConnectionDeleted(Connection const&)
+  inputConnectionDeleted(QtNodes::Connection const&)
   {
   }
 
   virtual void
-  outputConnectionCreated(Connection const&)
+  outputConnectionCreated(QtNodes::Connection const&)
   {
   }
 
   virtual void
-  outputConnectionDeleted(Connection const&)
+  outputConnectionDeleted(QtNodes::Connection const&)
   {
   }
 
 Q_SIGNALS:
 
   void
-  dataUpdated(PortIndex index);
+  dataUpdated(QtNodes::PortIndex index);
 
   void
-  dataInvalidated(PortIndex index);
+  dataInvalidated(QtNodes::PortIndex index);
 
   void
   computingStarted();
@@ -160,7 +157,8 @@ Q_SIGNALS:
   void
   computingFinished();
 
-  void embeddedWidgetSizeUpdated();
+  void
+  embeddedWidgetSizeUpdated();
 
 private:
 

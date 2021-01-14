@@ -9,6 +9,7 @@
 #include <QtCore/QJsonArray>
 
 #include <QDebug>
+#include <QRandomGenerator>
 
 #include "StyleCollection.hpp"
 
@@ -29,7 +30,7 @@ ConnectionStyle()
 
 
 ConnectionStyle::
-ConnectionStyle(QString jsonText)
+ConnectionStyle(const QString& jsonText)
 {
   loadJsonFile(":DefaultStyle.json");
   loadJsonText(jsonText);
@@ -38,7 +39,7 @@ ConnectionStyle(QString jsonText)
 
 void
 ConnectionStyle::
-setConnectionStyle(QString jsonText)
+setConnectionStyle(const QString& jsonText)
 {
   ConnectionStyle style(jsonText);
 
@@ -93,7 +94,7 @@ setConnectionStyle(QString jsonText)
 
 void
 ConnectionStyle::
-loadJsonFile(QString styleFile)
+loadJsonFile(const QString& styleFile)
 {
   QFile file(styleFile);
 
@@ -110,7 +111,7 @@ loadJsonFile(QString styleFile)
 
 void
 ConnectionStyle::
-loadJsonText(QString jsonText)
+loadJsonText(const QString& jsonText)
 {
   loadJsonFromByteArray(jsonText.toUtf8());
 }
@@ -128,17 +129,17 @@ loadJsonFromByteArray(QByteArray const &byteArray)
 
   QJsonObject obj = nodeStyleValues.toObject();
 
-  CONNECTION_STYLE_READ_COLOR(obj, ConstructionColor);
-  CONNECTION_STYLE_READ_COLOR(obj, NormalColor);
-  CONNECTION_STYLE_READ_COLOR(obj, SelectedColor);
-  CONNECTION_STYLE_READ_COLOR(obj, SelectedHaloColor);
-  CONNECTION_STYLE_READ_COLOR(obj, HoveredColor);
+  CONNECTION_STYLE_READ_COLOR(obj, ConstructionColor)
+  CONNECTION_STYLE_READ_COLOR(obj, NormalColor)
+  CONNECTION_STYLE_READ_COLOR(obj, SelectedColor)
+  CONNECTION_STYLE_READ_COLOR(obj, SelectedHaloColor)
+  CONNECTION_STYLE_READ_COLOR(obj, HoveredColor)
 
-  CONNECTION_STYLE_READ_FLOAT(obj, LineWidth);
-  CONNECTION_STYLE_READ_FLOAT(obj, ConstructionLineWidth);
-  CONNECTION_STYLE_READ_FLOAT(obj, PointDiameter);
+  CONNECTION_STYLE_READ_FLOAT(obj, LineWidth)
+  CONNECTION_STYLE_READ_FLOAT(obj, ConstructionLineWidth)
+  CONNECTION_STYLE_READ_FLOAT(obj, PointDiameter)
 
-  CONNECTION_STYLE_READ_BOOL(obj, UseDataDefinedColors);
+  CONNECTION_STYLE_READ_BOOL(obj, UseDataDefinedColors)
 }
 
 
@@ -160,14 +161,14 @@ normalColor() const
 
 QColor
 ConnectionStyle::
-normalColor(QString typeId) const
+normalColor(const QString& typeId) const
 {
   std::size_t hash = qHash(typeId);
 
   std::size_t const hue_range = 0xFF;
 
-  qsrand(hash);
-  std::size_t hue = qrand() % hue_range;
+  QRandomGenerator rand(hash);
+  std::size_t hue = rand.generate() % hue_range;
 
   std::size_t sat = 120 + hash % 129;
 

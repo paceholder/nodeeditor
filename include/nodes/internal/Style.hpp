@@ -15,10 +15,10 @@ public:
 private:
 
   virtual void
-  loadJsonText(QString jsonText) = 0;
+  loadJsonText(const QString& jsonText) = 0;
 
   virtual void
-  loadJsonFile(QString fileName) = 0;
+  loadJsonFile(const QString& fileName) = 0;
 
   virtual void
   loadJsonFromByteArray(QByteArray const &byteArray) = 0;

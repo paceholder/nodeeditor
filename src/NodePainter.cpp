@@ -182,7 +182,7 @@ drawConnectionPoints(QPainter* painter,
                            reducedDiameter * r,
                            reducedDiameter * r);
     }
-  };
+  }
 }
 
 
@@ -240,7 +240,7 @@ drawModelName(QPainter * painter,
 {
   NodeStyle const& nodeStyle = model->nodeStyle();
 
-  Q_UNUSED(state);
+  Q_UNUSED(state)
 
   if (!model->captionVisible())
     return;

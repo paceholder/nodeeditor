@@ -66,7 +66,10 @@ Connection(Node& nodeIn,
 Connection::
 ~Connection()
 {
-  if (complete()) connectionMadeIncomplete(*this);
+  if (complete())
+  {
+    Q_EMIT connectionMadeIncomplete(*this);
+  }
   propagateEmptyData();
 
   if (_inNode)
@@ -249,9 +252,9 @@ setNodeToPort(Node& node,
 
   _connectionState.setNoRequiredPort();
 
-  updated(*this);
+  Q_EMIT updated(*this);
   if (complete() && wasIncomplete) {
-    connectionCompleted(*this);
+    Q_EMIT connectionCompleted(*this);
   }
 }
 
@@ -316,14 +319,12 @@ getNode(PortType portType) const
   {
     case PortType::In:
       return _inNode;
-      break;
 
     case PortType::Out:
       return _outNode;
-      break;
 
+    case PortType::None:
     default:
-      // not possible
       break;
   }
   return nullptr;
@@ -338,12 +339,11 @@ getNode(PortType portType)
   {
     case PortType::In:
       return _inNode;
-      break;
 
     case PortType::Out:
       return _outNode;
-      break;
 
+    case PortType::None:
     default:
       // not possible
       break;
@@ -356,8 +356,9 @@ void
 Connection::
 clearNode(PortType portType)
 {
-  if (complete()) {
-    connectionMadeIncomplete(*this);
+  if (complete())
+  {
+    Q_EMIT connectionMadeIncomplete(*this);
   }
 
   getNode(portType) = nullptr;

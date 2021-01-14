@@ -36,8 +36,7 @@ public:
   /// NodeDataModel should be an rvalue and is moved into the Node
   Node(std::unique_ptr<NodeDataModel> && dataModel);
 
-  virtual
-  ~Node();
+  ~Node() override;
 
 public:
 
@@ -90,12 +89,12 @@ public Q_SLOTS: // data propagation
   /// Propagates incoming data to the underlying model.
   void
   propagateData(std::shared_ptr<NodeData> nodeData,
-                PortIndex inPortIndex) const;
+                QtNodes::PortIndex inPortIndex) const;
 
   /// Fetches data from model's OUT #index port
   /// and propagates it to the connection
   void
-  onDataUpdated(PortIndex index);
+  onDataUpdated(QtNodes::PortIndex index);
 
   /// update the graphic part if the size of the embeddedwidget changes
   void
