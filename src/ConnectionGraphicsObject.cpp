@@ -205,7 +205,7 @@ mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
   event->accept();
 
   auto node = locateNodeAt(event->scenePos(), _scene,
-                           _scene.views()[0]->transform());
+                           _scene.views().at(0)->transform());
 
   NodeConnectionInteraction interaction(*node, _connection, _scene);
 
@@ -228,7 +228,7 @@ hoverEnterEvent(QGraphicsSceneHoverEvent* event)
   _connection.connectionGeometry().setHovered(true);
 
   update();
-  _scene.connectionHovered(connection(), event->screenPos());
+  Q_EMIT _scene.connectionHovered(connection(), event->screenPos());
   event->accept();
 }
 
@@ -240,7 +240,7 @@ hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
   _connection.connectionGeometry().setHovered(false);
 
   update();
-  _scene.connectionHoverLeft(connection());
+  Q_EMIT _scene.connectionHoverLeft(connection());
   event->accept();
 }
 

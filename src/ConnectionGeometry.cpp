@@ -42,6 +42,7 @@ setEndPoint(PortType portType, QPointF const& point)
       _in = point;
       break;
 
+    case PortType::None:
     default:
       break;
   }
@@ -62,6 +63,7 @@ moveEndPoint(PortType portType, QPointF const &offset)
       _in += offset;
       break;
 
+    case PortType::None:
     default:
       break;
   }

@@ -14,17 +14,17 @@ public:
 
   FlowViewStyle();
 
-  FlowViewStyle(QString jsonText);
+  FlowViewStyle(QString const& jsonText);
 
 public:
 
-  static void setStyle(QString jsonText);
+  static void setStyle(QString const& jsonText);
 
 private:
 
-  void loadJsonText(QString jsonText) override;
+  void loadJsonText(QString const& jsonText) override;
 
-  void loadJsonFile(QString fileName) override;
+  void loadJsonFile(QString const& fileName) override;
 
   void loadJsonFromByteArray(QByteArray const &byteArray) override;
 

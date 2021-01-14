@@ -31,7 +31,7 @@ flowViewStyle()
 
 void
 StyleCollection::
-setNodeStyle(NodeStyle nodeStyle)
+setNodeStyle(const QtNodes::NodeStyle& nodeStyle)
 {
   instance()._nodeStyle = nodeStyle;
 }
@@ -39,7 +39,7 @@ setNodeStyle(NodeStyle nodeStyle)
 
 void
 StyleCollection::
-setConnectionStyle(ConnectionStyle connectionStyle)
+setConnectionStyle(const QtNodes::ConnectionStyle& connectionStyle)
 {
   instance()._connectionStyle = connectionStyle;
 }
@@ -47,7 +47,7 @@ setConnectionStyle(ConnectionStyle connectionStyle)
 
 void
 StyleCollection::
-setFlowViewStyle(FlowViewStyle flowViewStyle)
+setFlowViewStyle(const QtNodes::FlowViewStyle& flowViewStyle)
 {
   instance()._flowViewStyle = flowViewStyle;
 }

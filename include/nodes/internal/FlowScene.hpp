@@ -36,7 +36,7 @@ public:
 
   FlowScene(QObject * parent = Q_NULLPTR);
 
-  ~FlowScene();
+  ~FlowScene() override;
 
 public:
 
@@ -106,33 +106,46 @@ Q_SIGNALS:
    * @brief Node has been created but not on the scene yet.
    * @see nodePlaced()
    */
-  void nodeCreated(Node &n);
+  void
+  nodeCreated(QtNodes::Node &n);
 
   /**
    * @brief Node has been added to the scene.
    * @details Connect to this signal if need a correct position of node.
    * @see nodeCreated()
    */
-  void nodePlaced(Node &n);
+  void
+  nodePlaced(QtNodes::Node &n);
 
-  void nodeDeleted(Node &n);
+  void
+  nodeDeleted(QtNodes::Node &n);
 
-  void connectionCreated(Connection const &c);
-  void connectionDeleted(Connection const &c);
+  void
+  connectionCreated(QtNodes::Connection const &c);
 
-  void nodeMoved(Node& n, const QPointF& newLocation);
+  void
+  connectionDeleted(QtNodes::Connection const &c);
 
-  void nodeDoubleClicked(Node& n);
+  void
+  nodeMoved(QtNodes::Node& n, const QPointF& newLocation);
 
-  void connectionHovered(Connection& c, QPoint screenPos);
+  void
+  nodeDoubleClicked(QtNodes::Node& n);
 
-  void nodeHovered(Node& n, QPoint screenPos);
+  void
+  connectionHovered(QtNodes::Connection& c, QPoint screenPos);
 
-  void connectionHoverLeft(Connection& c);
+  void
+  nodeHovered(QtNodes::Node& n, QPoint screenPos);
 
-  void nodeHoverLeft(Node& n);
+  void
+  connectionHoverLeft(QtNodes::Connection& c);
 
-  void nodeContextMenu(Node& n, const QPointF& pos);
+  void
+  nodeHoverLeft(QtNodes::Node& n);
+
+  void
+  nodeContextMenu(QtNodes::Node& n, const QPointF& pos);
 
 private:
 
@@ -145,10 +158,10 @@ private:
 
 private Q_SLOTS:
 
-  void setupConnectionSignals(Connection const& c);
+  void setupConnectionSignals(QtNodes::Connection const& c);
 
-  void sendConnectionCreatedToNodes(Connection const& c);
-  void sendConnectionDeletedToNodes(Connection const& c);
+  void sendConnectionCreatedToNodes(QtNodes::Connection const& c);
+  void sendConnectionDeletedToNodes(QtNodes::Connection const& c);
 
 };
 

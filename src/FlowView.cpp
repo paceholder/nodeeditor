@@ -151,7 +151,7 @@ contextMenuEvent(QContextMenuEvent *event)
 
   treeView->expandAll();
 
-  connect(treeView, &QTreeWidget::itemClicked, [&](QTreeWidgetItem *item, int)
+  connect(treeView, &QTreeWidget::itemClicked, &modelMenu, [&](QTreeWidgetItem *item, int)
   {
     QString modelName = item->data(0, Qt::UserRole).toString();
 
@@ -172,7 +172,7 @@ contextMenuEvent(QContextMenuEvent *event)
 
       node.nodeGraphicsObject().setPos(posView);
 
-      _scene->nodePlaced(node);
+      Q_EMIT _scene->nodePlaced(node);
     }
     else
     {
@@ -378,8 +378,6 @@ drawBackground(QPainter* painter, const QRectF& r)
     };
 
   auto const &flowViewStyle = StyleCollection::flowViewStyle();
-
-  QBrush bBrush = backgroundBrush();
 
   QPen pfine(flowViewStyle.FineGridColor, 1.0);
 

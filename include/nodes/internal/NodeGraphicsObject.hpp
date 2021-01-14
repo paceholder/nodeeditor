@@ -26,8 +26,7 @@ public:
   NodeGraphicsObject(FlowScene &scene,
                      Node& node);
 
-  virtual
-  ~NodeGraphicsObject();
+  ~NodeGraphicsObject() override;
 
   Node&
   node();

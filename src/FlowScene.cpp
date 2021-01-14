@@ -90,7 +90,7 @@ createConnection(PortType connectedPort,
           &Connection::connectionCompleted,
           this,
           [this](Connection const& c) {
-            connectionCreated(c);
+            Q_EMIT connectionCreated(c);
           });
 
   return connection;
@@ -125,7 +125,7 @@ createConnection(Node& nodeIn,
 
   _connections[connection->id()] = connection;
 
-  connectionCreated(*connection);
+  Q_EMIT connectionCreated(*connection);
 
   return connection;
 }
@@ -204,7 +204,7 @@ createNode(std::unique_ptr<NodeDataModel> && dataModel)
   auto nodePtr = node.get();
   _nodes[node->id()] = std::move(node);
 
-  nodeCreated(*nodePtr);
+  Q_EMIT nodeCreated(*nodePtr);
   return *nodePtr;
 }
 
@@ -230,8 +230,8 @@ restoreNode(QJsonObject const& nodeJson)
   auto nodePtr = node.get();
   _nodes[node->id()] = std::move(node);
 
-  nodePlaced(*nodePtr);
-  nodeCreated(*nodePtr);
+  Q_EMIT nodePlaced(*nodePtr);
+  Q_EMIT nodeCreated(*nodePtr);
   return *nodePtr;
 }
 
@@ -241,7 +241,7 @@ FlowScene::
 removeNode(Node& node)
 {
   // call signal
-  nodeDeleted(node);
+  Q_EMIT nodeDeleted(node);
 
   for(auto portType: {PortType::In,PortType::Out})
   {

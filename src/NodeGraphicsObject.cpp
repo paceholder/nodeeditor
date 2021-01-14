@@ -61,7 +61,7 @@ NodeGraphicsObject(FlowScene &scene,
 
   // connect to the move signals to emit the move signals in FlowScene
   auto onMoveSlot = [this] {
-    _scene.nodeMoved(_node, pos());
+    Q_EMIT _scene.nodeMoved(_node, pos());
   };
   connect(this, &QGraphicsObject::xChanged, this, onMoveSlot);
   connect(this, &QGraphicsObject::yChanged, this, onMoveSlot);
@@ -360,7 +360,7 @@ hoverEnterEvent(QGraphicsSceneHoverEvent * event)
 
   _node.nodeGeometry().setHovered(true);
   update();
-  _scene.nodeHovered(node(), event->screenPos());
+  Q_EMIT _scene.nodeHovered(node(), event->screenPos());
   event->accept();
 }
 
@@ -371,7 +371,7 @@ hoverLeaveEvent(QGraphicsSceneHoverEvent * event)
 {
   _node.nodeGeometry().setHovered(false);
   update();
-  _scene.nodeHoverLeft(node());
+  Q_EMIT _scene.nodeHoverLeft(node());
   event->accept();
 }
 
@@ -403,7 +403,7 @@ mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
 {
   QGraphicsItem::mouseDoubleClickEvent(event);
 
-  _scene.nodeDoubleClicked(node());
+  Q_EMIT _scene.nodeDoubleClicked(node());
 }
 
 
@@ -411,5 +411,5 @@ void
 NodeGraphicsObject::
 contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
 {
-  _scene.nodeContextMenu(node(), mapToScene(event->pos()));
+  Q_EMIT _scene.nodeContextMenu(node(), mapToScene(event->pos()));
 }

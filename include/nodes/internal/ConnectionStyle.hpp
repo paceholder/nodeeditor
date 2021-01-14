@@ -14,17 +14,17 @@ public:
 
   ConnectionStyle();
 
-  ConnectionStyle(QString jsonText);
+  ConnectionStyle(QString const& jsonText);
 
 public:
 
-  static void setConnectionStyle(QString jsonText);
+  static void setConnectionStyle(QString const& jsonText);
 
 private:
 
-  void loadJsonText(QString jsonText) override;
+  void loadJsonText(QString const& jsonText) override;
 
-  void loadJsonFile(QString fileName) override;
+  void loadJsonFile(QString const& fileName) override;
 
   void loadJsonFromByteArray(QByteArray const &byteArray) override;
 
@@ -32,7 +32,7 @@ public:
 
   QColor constructionColor() const;
   QColor normalColor() const;
-  QColor normalColor(QString typeId) const;
+  QColor normalColor(QString const& typeId) const;
   QColor selectedColor() const;
   QColor selectedHaloColor() const;
   QColor hoveredColor() const;

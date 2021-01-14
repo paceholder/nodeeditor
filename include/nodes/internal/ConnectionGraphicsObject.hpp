@@ -25,8 +25,7 @@ public:
   ConnectionGraphicsObject(FlowScene &scene,
                            Connection &connection);
 
-  virtual
-  ~ConnectionGraphicsObject();
+  ~ConnectionGraphicsObject() override;
 
   enum { Type = UserType + 2 };
   int
