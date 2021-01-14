@@ -113,6 +113,7 @@ recalculateSize() const
   }
 
   _width = std::max(_width, captionWidth());
+  _width = std::max(_width, nicknameWidth());
 
   if (_dataModel->validationState() != NodeValidationState::Valid)
   {
