@@ -69,8 +69,7 @@ public:
   progressValue() const = 0;
 
   /// Nicknames can be assigned to nodes and shown in GUI
-  /// TODO: turn into pure virtual function
-  virtual QString
+  QString
   nickname() const
   {
     return _nickname;
@@ -247,6 +246,10 @@ private:
 
   NodeStyle _nodeStyle;
 
+  /**
+   * @brief Nickname of the node, which can be edited by the user and is
+   * shown as the node title if visible.
+   */
   QString _nickname;
 };
 }
