@@ -73,7 +73,7 @@ public:
   virtual QString
   nickname() const
   {
-    return QStringLiteral("");
+    return _nickname;
   };
 
   /// It is possible to hide the nickname in GUI
@@ -195,6 +195,16 @@ public:
     return NodeProcessingStatus::NoStatus;
   }
 
+  /**
+   * @brief Sets the node's nickname.
+   * @param nickname New nickname
+   */
+  void
+  setNickname(const QString& nickname)
+  {
+    _nickname = nickname;
+  }
+
 public Q_SLOTS:
 
   virtual void
@@ -236,5 +246,7 @@ Q_SIGNALS:
 private:
 
   NodeStyle _nodeStyle;
+
+  QString _nickname;
 };
 }

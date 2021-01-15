@@ -8,6 +8,7 @@ using QtNodes::NodeStyle;
 NodeDataModel::
 NodeDataModel()
   : _nodeStyle(StyleCollection::nodeStyle())
+  , _nickname(QString())
 {
   // Derived classes can initialize specific style here
 }
@@ -20,6 +21,7 @@ save() const
   QJsonObject modelJson;
 
   modelJson["name"] = name();
+  modelJson["nickname"] = nickname();
 
   return modelJson;
 }
