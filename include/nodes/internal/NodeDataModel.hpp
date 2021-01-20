@@ -242,14 +242,16 @@ Q_SIGNALS:
 
   void embeddedWidgetSizeUpdated();
 
-private:
-
-  NodeStyle _nodeStyle;
-
+protected:
   /**
    * @brief Nickname of the node, which can be edited by the user and is
    * shown as the node title if visible.
    */
   QString _nickname;
+
+private:
+
+  NodeStyle _nodeStyle;
+
 };
 }
