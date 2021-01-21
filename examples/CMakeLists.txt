@@ -1,5 +1,7 @@
 add_subdirectory(connection_colors)
 
+add_subdirectory(dynamic_node)
+
 add_subdirectory(example2)
 
 add_subdirectory(calculator)
