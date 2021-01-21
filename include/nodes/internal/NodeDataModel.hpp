@@ -148,8 +148,15 @@ public Q_SLOTS:
 
 Q_SIGNALS:
 
+  /// Emit this when the output 'index' needs to be recomputed/queried by a
+  /// call to ouData
   void
   dataUpdated(PortIndex index);
+
+  /// Emit when the number of input or output ports has changed, or when their
+  /// data type changed.
+  void
+  portCountChanged();
 
   void
   dataInvalidated(PortIndex index);
@@ -160,7 +167,8 @@ Q_SIGNALS:
   void
   computingFinished();
 
-  void embeddedWidgetSizeUpdated();
+  void
+  embeddedWidgetSizeUpdated();
 
 private:
 
