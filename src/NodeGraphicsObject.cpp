@@ -337,6 +337,8 @@ mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 
   // position connections precisely after fast node move
   moveConnections();
+
+  _scene.nodeClicked(node());
 }
 
 
