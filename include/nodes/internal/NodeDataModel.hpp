@@ -198,7 +198,7 @@ public:
    * @brief Sets the node's nickname.
    * @param nickname New nickname
    */
-  void
+  virtual void
   setNickname(const QString& nickname)
   {
     _nickname = nickname;
