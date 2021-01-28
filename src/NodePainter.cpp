@@ -266,12 +266,12 @@ drawModelName(QPainter * painter,
 
   QString const &name = model->caption();
 
-  QFont f = painter->font();
+  QFont font = painter->font();
 
-  f.setBold(!model->nicknameVisible());
-  f.setItalic(model->nicknameVisible());
+  font.setBold(!model->nicknameVisible());
+  font.setItalic(model->nicknameVisible());
 
-  QFontMetrics metrics(f);
+  QFontMetrics metrics(font);
 
   auto rect = metrics.boundingRect(name);
 
@@ -282,13 +282,13 @@ drawModelName(QPainter * painter,
 
   QPointF position((geom.width() - rect.width()) / 2.0, yPos);
 
-  painter->setFont(f);
+  painter->setFont(font);
   painter->setPen(nodeStyle.FontColor);
   painter->drawText(position, name);
 
-  f.setBold(false);
-  f.setItalic(false);
-  painter->setFont(f);
+  font.setBold(false);
+  font.setItalic(false);
+  painter->setFont(font);
 }
 
 void
@@ -304,23 +304,23 @@ drawModelNickname(QPainter * painter,
 
   const QString& nickname = model->nickname();
 
-  QFont f = painter->font();
+  QFont font = painter->font();
 
-  f.setBold(true);
+  font.setBold(true);
 
-  QFontMetrics metrics(f);
+  QFontMetrics metrics(font);
 
   auto rect = metrics.boundingRect(nickname);
 
   QPointF position((geom.width() - rect.width()) / 2.0,
                    (geom.spacing() + geom.entryHeight()) / 3.0);
 
-  painter->setFont(f);
+  painter->setFont(font);
   painter->setPen(nodeStyle.FontColor);
   painter->drawText(position, nickname);
 
-  f.setBold(false);
-  painter->setFont(f);
+  font.setBold(false);
+  painter->setFont(font);
 }
 
 
@@ -455,16 +455,16 @@ drawValidationRect(QPainter * painter,
     //Drawing the validation message itself
     QString const &errorMsg = model->validationMessage();
 
-    QFont f = painter->font();
+    QFont font = painter->font();
 
-    QFontMetrics metrics(f);
+    QFontMetrics metrics(font);
 
     auto rect = metrics.boundingRect(errorMsg);
 
     QPointF position((geom.width() - rect.width()) / 2.0,
                      geom.height() - (geom.validationHeight() - diam) / 2.0);
 
-    painter->setFont(f);
+    painter->setFont(font);
     painter->setPen(nodeStyle.FontColor);
     painter->drawText(position, errorMsg);
   }
@@ -487,21 +487,21 @@ drawProgressValue(QPainter * painter,
                   NodeStyle const & nodeStyle,
                   QString const & nodeProgress)
 {
-  QFont f = painter->font();
+  QFont font = painter->font();
 
-  f.setBold(true);
+  font.setBold(true);
 
-  QFontMetrics metrics(f);
+  QFontMetrics metrics(font);
 
   auto rect = metrics.boundingRect(nodeProgress);
 
   QPointF position((geom.width() - rect.width()),
                    (geom.spacing() + geom.entryHeight()) / 3.0);
 
-  painter->setFont(f);
+  painter->setFont(font);
   painter->setPen(nodeStyle.FontColor);
   painter->drawText(position, nodeProgress);
 
-  f.setBold(false);
-  painter->setFont(f);
+  font.setBold(false);
+  painter->setFont(font);
 }
