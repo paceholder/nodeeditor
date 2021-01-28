@@ -334,10 +334,7 @@ drawEntryLabels(QPainter * painter,
   QFontMetrics const & metrics =
     painter->fontMetrics();
 
-  for(PortType portType:
-      {
-        PortType::Out, PortType::In
-      })
+  for (PortType portType: {PortType::Out, PortType::In})
   {
     auto const &nodeStyle = model->nodeStyle();
 
