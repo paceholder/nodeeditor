@@ -302,7 +302,7 @@ drawModelNickname(QPainter * painter,
 
   NodeStyle const& nodeStyle = model->nodeStyle();
 
-  const QString& nickname = model->nickname();
+  QString const& nickname = model->nickname();
 
   QFont font = painter->font();
 
