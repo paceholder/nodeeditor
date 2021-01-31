@@ -1,11 +1,11 @@
 ### Purpose
 
-**NodeEditor** is conceived as a general-purpose Qt-based library aimed at
+**QtNodes** is conceived as a general-purpose Qt-based library aimed at
 graph-controlled data processing.  Nodes represent algorithms with certain inputs
 and outputs. Connections transfer data from the output (source) of the first node
 to the input (sink) of the second one.
 
-**NodeEditor** framework is a Visual [Dataflow
+**QtNodes** framework is a Visual [Dataflow
 Programming](https://en.wikipedia.org/wiki/Dataflow_programming) tool.  A library
 client defines models and registers them in the data model registry.  Further
 work is driven by events taking place in DataModels and Nodes.  The model
