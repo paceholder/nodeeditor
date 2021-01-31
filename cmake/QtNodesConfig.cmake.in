@@ -1,4 +1,4 @@
-get_filename_component(NodeEditor_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+get_filename_component(QtNodes_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
 
 include(CMakeFindDependencyMacro)
 
@@ -10,8 +10,8 @@ find_package(Qt5 REQUIRED COMPONENTS
              Gui
              OpenGL)
 
-if(NOT TARGET NodeEditor::nodes)
-    include("${NodeEditor_CMAKE_DIR}/NodeEditorTargets.cmake")
+if(NOT TARGET QtNodes::nodes)
+    include("${QtNodes_CMAKE_DIR}/QtNodesTargets.cmake")
 endif()
 
-set(NodeEditor_LIBRARIES NodeEditor::nodes)
+set(QtNodes_LIBRARIES QtNodes::nodes)
