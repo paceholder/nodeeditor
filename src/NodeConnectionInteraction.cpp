@@ -147,8 +147,7 @@ disconnect(PortType portToDisconnect) const
   auto const & draftConnection =
     _scene.makeDraftConnection(incompleteConnectionId);
 
-  QPointF looseEndPos = draftConnection->mapFromScene(scenePos);
-
+  QPointF const looseEndPos = draftConnection->mapFromScene(scenePos);
   draftConnection->setEndPoint(portToDisconnect, looseEndPos);
 
   // Repaint connection points.
