@@ -9,12 +9,10 @@
 #include <tuple>
 #include <unordered_map>
 
-//#include "DataModelRegistry.hpp"
 #include "Definitions.hpp"
 #include "Export.hpp"
 #include "GraphModel.hpp"
 #include "ConnectionIdHash.hpp"
-//#include "TypeConverter.hpp"
 
 #include "QUuidStdHash.hpp"
 
@@ -26,13 +24,13 @@ class GraphModel;
 class NodeGraphicsObject;
 class NodeStyle;
 
-/// Scene holds connections and nodes.
+/// An instance of QGraphicsScene, holds connections and nodes.
 class NODE_EDITOR_PUBLIC BasicGraphicsScene : public QGraphicsScene
 {
   Q_OBJECT
 public:
 
-  BasicGraphicsScene(GraphModel & graphModel,
+  BasicGraphicsScene(GraphModel &graphModel,
                      QObject *    parent = nullptr);
 
   // Scenes without models are not supported
@@ -42,6 +40,7 @@ public:
 
 public:
 
+  /// @returns associated GraphModel.
   GraphModel const &
   graphModel() const;
 
@@ -50,13 +49,10 @@ public:
 
 public:
 
-  //ConnectionGraphicsObject *
-  //draftConnection() const;
-
-  /// Creates instance of "disconnected" ConnectionGraphicsObject.
+  /// Creates a "draft" instance of ConnectionGraphicsObject.
   /**
-   * We store a "draft" connection which has one loose end.
-   * After attachment the "draft" instance is removed and instead a
+   * The scene caches a "draft" connection which has one loose end.
+   * After attachment the "draft" instance is deleted and instead a
    * normal "full" connection is created.
    * Function @returns the "draft" instance for further geometry
    * manipulations.
@@ -64,22 +60,41 @@ public:
   std::unique_ptr<ConnectionGraphicsObject> const &
   makeDraftConnection(ConnectionId const newConnectionId);
 
+  /// Deletes "draft" connection.
+  /**
+   * The function is called when user releases the mouse button during
+   * the construction of the new connection without attaching it to any
+   * node.
+   */
   void
   resetDraftConnection();
 
+  /// Deletes all the nodes. Connections are removed automatically.
   void
   clearScene();
 
 public:
 
+  /// @returns NodeGraphicsObject associated with the given nodeId.
+  /**
+   * @returns nullptr when the object is not found.
+   */
   NodeGraphicsObject *
   nodeGraphicsObject(NodeId nodeId);
 
+  /// @returns ConnectionGraphicsObject corresponding to `connectionId`.
+  /**
+   * @returns `nullptr` when the object is not found.
+   */
   ConnectionGraphicsObject *
   connectionGraphicsObject(ConnectionId connectionId);
 
 public:
 
+  /// Can @return an instance of the scene context menu in subclass.
+  /**
+   * Default implementation returns `nullptr`.
+   */
   virtual
   QMenu *
   createSceneMenu(QPointF const scenePos);
@@ -87,9 +102,7 @@ public:
 Q_SIGNALS:
 
   void
-  connectionCreated(ConnectionId const connectionId);
-
-  //void nodeMoved(Node& n, const QPointF& newLocation);
+  nodeMoved(NodeId const nodeId, QPointF const & newLocation);
 
   void
   nodeClicked(NodeId const nodeId);
@@ -98,45 +111,45 @@ Q_SIGNALS:
   nodeDoubleClicked(NodeId const nodeId);
 
   void
-  connectionHovered(ConnectionId const connectionId, QPoint const screenPos);
-
-  void
   nodeHovered(NodeId const nodeId, QPoint const screenPos);
-
-  void
-  connectionHoverLeft(ConnectionId const connectionId);
 
   void
   nodeHoverLeft(NodeId const nodeId);
 
+  void
+  connectionHovered(ConnectionId const connectionId, QPoint const screenPos);
+
+  void
+  connectionHoverLeft(ConnectionId const connectionId);
+
+  /// Signal allows showing custom context menu upon clicking a node.
   void
   nodeContextMenu(NodeId const nodeId, QPointF const pos);
 
 private:
 
   /// @brief Creates Node and Connection graphics objects.
-  /** We perform depth-first graph traversal. The connections are
-   * created by checking non-empyt node's Out ports.
+  /**
+   * Function is used to populate an empty scene in the constructor. We
+   * perform depth-first GraphModel traversal. The connections are
+   * created by checking non-empty node `Out` ports.
    */
   void
   traverseGraphAndPopulateGraphicsObjects();
 
+  /// Redraws adjacent nodes for given `connectionId`
   void
   updateAttachedNodes(ConnectionId const connectionId,
-                      PortType const     portType);
+                      PortType const portType);
 
 private Q_SLOTS:
 
 
-  /// Deletes the object from the main connection object set.
-  /**
-   * The function returns a unique pointer to the graphics object. If
-   * the pointer is not stored somewhere, the object is automatically
-   * destroyed and removed from the scene.
-   */
+  /// Slot called when the `connectionId` is erased form the GraphModel.
   void
   onConnectionDeleted(ConnectionId const connectionId);
 
+  /// Slot called when the `connectionId` is created in the GraphModel.
   void
   onConnectionCreated(ConnectionId const connectionId);
 
@@ -150,30 +163,30 @@ private Q_SLOTS:
   onNodePositionUpdated(NodeId const nodeId);
 
   void
-  onPortsAboutToBeDeleted(NodeId const   nodeId,
+  onPortsAboutToBeDeleted(NodeId const nodeId,
                           PortType const portType,
-                          std::unordered_set<PortIndex> const & portIndexSet);
+                          std::unordered_set<PortIndex> const &portIndexSet);
 
   void
-  onPortsDeleted(NodeId const   nodeId,
+  onPortsDeleted(NodeId const nodeId,
                  PortType const portType,
-                 std::unordered_set<PortIndex> const & portIndexSet);
+                 std::unordered_set<PortIndex> const &portIndexSet);
 
   void
-  onPortsAboutToBeInserted(NodeId const   nodeId,
+  onPortsAboutToBeInserted(NodeId const nodeId,
                            PortType const portType,
-                           std::unordered_set<PortIndex> const & portIndexSet);
+                           std::unordered_set<PortIndex> const &portIndexSet);
 
   void
-  onPortsInserted(NodeId const   nodeId,
+  onPortsInserted(NodeId const nodeId,
                   PortType const portType,
-                  std::unordered_set<PortIndex> const & portIndexSet);
+                  std::unordered_set<PortIndex> const &portIndexSet);
 
 
 private:
 
   // TODO shared pointer?
-  GraphModel & _graphModel;
+  GraphModel &_graphModel;
 
 
   using UniqueNodeGraphicsObject =
@@ -190,10 +203,7 @@ private:
   _connectionGraphicsObjects;
 
 
-  //std::shared_ptr<DataModelRegistry>          _registry;
-
   std::unique_ptr<ConnectionGraphicsObject> _draftConnection;
-
 };
 
 

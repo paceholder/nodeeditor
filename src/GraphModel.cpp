@@ -130,7 +130,7 @@ addConnection(ConnectionId const connectionId)
 {
   Q_UNUSED(connectionId);
 
-  Q_EMIT connectionCreated(connectionId);
+ Q_EMIT connectionCreated(connectionId);
 }
 
 
@@ -240,7 +240,7 @@ portData(NodeId    nodeId,
       return QVariant();
       break;
 
-    case PortRole::ConnectionPolicy:
+    case PortRole::ConnectionPolicyRole:
       return QVariant::fromValue(ConnectionPolicy::One);
       break;
 
