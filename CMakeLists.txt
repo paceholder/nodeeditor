@@ -77,7 +77,6 @@ set(CMAKE_AUTOMOC ON)
 
 set(CPP_SOURCE_FILES
   src/BasicGraphicsScene.cpp
-  src/ConnectionBlurEffect.cpp
   src/ConnectionGraphicsObject.cpp
   src/ConnectionPainter.cpp
   src/ConnectionState.cpp

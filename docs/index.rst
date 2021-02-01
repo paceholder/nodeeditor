@@ -1,5 +1,13 @@
-QtNodes Docs
-===================================
+QtNodes Documentation
+=====================
 
-.. doxygenstruct:: QtNodes::NodeDataType
-   :members:
+.. toctree::
+    :maxdepth: 2
+
+    overview
+    classes
+
+Index
+==================
+
+* :ref:`genindex`
