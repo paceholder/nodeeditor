@@ -88,6 +88,9 @@ isPortTypeValid(PortType portType)
 }
 
 
+/**
+ * Creates a connection Id instance filled just on one side.
+ */
 inline
 ConnectionId
 makeIncompleteConnectionId(PortType const  connectedPort,
@@ -101,7 +104,10 @@ makeIncompleteConnectionId(PortType const  connectedPort,
                          InvalidNodeId, InvalidPortIndex);
 }
 
-
+/**
+ * Turns a full connection Id into an incomplete one by removing the
+ * data on the given side
+ */
 inline
 ConnectionId
 makeIncompleteConnectionId(ConnectionId   connectionId,

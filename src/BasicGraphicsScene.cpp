@@ -70,9 +70,7 @@ BasicGraphicsScene(GraphModel &graphModel,
 
 
 BasicGraphicsScene::
-~BasicGraphicsScene()
-{}
-
+~BasicGraphicsScene() = default;
 
 GraphModel const &
 BasicGraphicsScene::

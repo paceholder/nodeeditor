@@ -142,7 +142,7 @@ drawConnectionPoints(QPainter * painter,
          model.portData(nodeId,
                         portType,
                         portIndex,
-                        PortRole::ConnectionPolicy).value<ConnectionPolicy>() == ConnectionPolicy::Many);
+                        PortRole::ConnectionPolicyRole).value<ConnectionPolicy>() == ConnectionPolicy::Many);
 
       double r = 1.0;
 

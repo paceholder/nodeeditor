@@ -147,8 +147,7 @@ disconnect(PortType portToDisconnect) const
   auto const & draftConnection =
     _scene.makeDraftConnection(incompleteConnectionId);
 
-  QPointF looseEndPos = draftConnection->mapFromScene(scenePos);
-
+  QPointF const looseEndPos = draftConnection->mapFromScene(scenePos);
   draftConnection->setEndPoint(portToDisconnect, looseEndPos);
 
   // Repaint connection points.
@@ -221,7 +220,7 @@ nodePortIsEmpty(PortType portType, PortIndex portIndex) const
     model.portData(_ngo.nodeId(),
                    portType,
                    portIndex,
-                   PortRole::ConnectionPolicy).value<ConnectionPolicy>();
+                   PortRole::ConnectionPolicyRole).value<ConnectionPolicy>();
 
   return (portType == PortType::Out &&
           outPolicy == ConnectionPolicy::Many);
