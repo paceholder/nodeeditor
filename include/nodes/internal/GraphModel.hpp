@@ -73,8 +73,7 @@ public:
 
   /// @brief Returns node-related data for requested NodeRole.
   /**
-   * Returns: Node Caption, Node Caption Visibility,
-   * Node Position etc.
+   * @returns Node Caption, Node Caption Visibility, Node Position etc.
    */
   virtual
   QVariant
@@ -95,7 +94,7 @@ public:
 
   /// @brief Returns port-related data for requested NodeRole.
   /**
-   * Returns: Port Data Type, Port Data, Connection Policy, Port
+   * @returns Port Data Type, Port Data, Connection Policy, Port
    * Caption.
    */
   virtual
