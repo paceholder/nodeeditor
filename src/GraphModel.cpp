@@ -130,7 +130,7 @@ addConnection(ConnectionId const connectionId)
 {
   Q_UNUSED(connectionId);
 
-  Q_EMIT connectionCreated(connectionId);
+ Q_EMIT connectionCreated(connectionId);
 }
 
 

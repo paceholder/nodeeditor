@@ -15,6 +15,16 @@
 namespace QtNodes
 {
 
+/**
+ * The central class in the Model-View approach. It delivers all kinds
+ * of information from the backing user data structures that represent
+ * the graph. The class allows to modify the graph structure: create
+ * and remove nodes and connections.
+ *
+ * We use two types of the unique ids for graph manipulations:
+ *   - NodeId
+ *   - ConnectionId
+ */
 class NODE_EDITOR_PUBLIC GraphModel : public QObject
 {
   Q_OBJECT
@@ -45,11 +55,21 @@ public:
                  PortIndex index) const;
 
 
+  /// Checks if two nodes with the given `connectionId` are connected.
   virtual
   bool
   connectionExists(ConnectionId const connectionId) const;
 
 
+  /// Creates a new node instance in the derived class.
+  /**
+   * The model is responsile for generating a unique `NodeId`.
+   * @param[in] nodeType is free to be used and interpreted by the
+   * model on its own, it helps to distinguish between possible node
+   * types and create a correct instance inside.
+   *
+   * Default implementation returns `InvalidNodeId`.
+   */
   virtual
   NodeId
   addNode(QString const nodeType = QString());
@@ -57,15 +77,30 @@ public:
   /// Model decides if a conection with given connection Id possible.
   /**
    * The default implementation compares corresponding data types.
+   *
+   * It is possible to override the function and connect non-equal
+   * data types.
    */
   virtual
   bool
   connectionPossible(ConnectionId const connectionId);
 
+  /// Creates a new connection between two nodes.
+  /**
+   * Default implementation emits signal
+   * `connectionCreated(connectionId)`
+   *
+   * In the derived classes user must emite the signal to notify the
+   * scene about the changes.
+   */
   virtual
   void
   addConnection(ConnectionId const connectionId);
 
+  /**
+   * @returns `true` if there is data in the model associated with the
+   * given `nodeId`.
+   */
   virtual
   bool
   nodeExists(NodeId const nodeId) const;
