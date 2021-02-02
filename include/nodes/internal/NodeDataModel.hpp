@@ -68,20 +68,6 @@ public:
   virtual QString
   progressValue() const = 0;
 
-  /// Nicknames can be assigned to nodes and shown in GUI
-  QString
-  nickname() const
-  {
-    return _nickname;
-  };
-
-  /// It is possible to hide the nickname in GUI
-  virtual bool
-  nicknameVisible() const
-  {
-    return false;
-  }
-
   /// It is possible to hide caption in GUI
   virtual bool
   captionVisible() const
@@ -106,6 +92,17 @@ public:
   /// Name makes this model unique
   virtual QString
   name() const = 0;
+
+  /// Nicknames can be assigned to nodes and shown in GUI
+  virtual QString
+  nickname() const = 0;
+
+  /// It is possible to hide the nickname in GUI
+  virtual bool
+  nicknameVisible() const
+  {
+    return false;
+  }
 
 public:
 
@@ -194,16 +191,6 @@ public:
     return NodeProcessingStatus::NoStatus;
   }
 
-  /**
-   * @brief Sets the node's nickname.
-   * @param nickname New nickname
-   */
-  virtual void
-  setNickname(const QString& nickname)
-  {
-    _nickname = nickname;
-  }
-
 public Q_SLOTS:
 
   virtual void
@@ -241,13 +228,6 @@ Q_SIGNALS:
   computingFinished();
 
   void embeddedWidgetSizeUpdated();
-
-protected:
-  /**
-   * @brief Nickname of the node, which can be edited by the user and is
-   * shown as the node title if visible.
-   */
-  QString _nickname;
 
 private:
 

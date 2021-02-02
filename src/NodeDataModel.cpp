@@ -8,7 +8,6 @@ using QtNodes::NodeStyle;
 NodeDataModel::
 NodeDataModel()
   : _nodeStyle(StyleCollection::nodeStyle())
-  , _nickname(QString())
 {
   // Derived classes can initialize specific style here
 }
