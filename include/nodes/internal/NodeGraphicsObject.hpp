@@ -11,7 +11,7 @@ namespace QtNodes
 {
 
 class BasicGraphicsScene;
-class GraphModel;
+class AbstractGraphModel;
 
 class NodeGraphicsObject : public QGraphicsObject
 {
@@ -31,7 +31,7 @@ public:
 
 public:
 
-  GraphModel &
+  AbstractGraphModel &
   graphModel() const;
 
   BasicGraphicsScene *
@@ -104,7 +104,7 @@ private:
 
   NodeId _nodeId;
 
-  GraphModel &_graphModel;
+  AbstractGraphModel &_graphModel;
 
   NodeState _nodeState;
 

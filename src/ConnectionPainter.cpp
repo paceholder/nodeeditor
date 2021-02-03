@@ -2,10 +2,10 @@
 
 #include <QtGui/QIcon>
 
+#include "AbstractGraphModel.hpp"
 #include "ConnectionGraphicsObject.hpp"
 #include "ConnectionState.hpp"
 #include "Definitions.hpp"
-#include "GraphModel.hpp"
 #include "NodeData.hpp"
 #include "StyleCollection.hpp"
 
@@ -171,7 +171,7 @@ drawNormalLine(QPainter * painter,
 
   bool useGradientColor = false;
 
-  GraphModel const &graphModel = cgo.graphModel();
+  AbstractGraphModel const &graphModel = cgo.graphModel();
 
   if (connectionStyle.useDataDefinedColors())
   {
