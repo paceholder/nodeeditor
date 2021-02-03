@@ -220,7 +220,7 @@ nodePortIsEmpty(PortType portType, PortIndex portIndex) const
     model.portData(_ngo.nodeId(),
                    portType,
                    portIndex,
-                   PortRole::ConnectionPolicy).value<ConnectionPolicy>();
+                   PortRole::ConnectionPolicyRole).value<ConnectionPolicy>();
 
   return (portType == PortType::Out &&
           outPolicy == ConnectionPolicy::Many);

@@ -1,8 +1,8 @@
 QtNodes Class Reference
------------------------
+=======================
 
 Basic Classes
-^^^^^^^^^^^^^
+-------------
 
 .. doxygenclass:: QtNodes::GraphModel
    :members:
@@ -49,11 +49,10 @@ Basic Classes
 .. doxygenclass:: QtNodes::NodeConnectionInteraction
    :members:
 
-
 Dataflow Classes
-^^^^^^^^^^^^^^^^
+----------------
 
-.. doxygenclass:: QtNodes::DataFlowGraphicsView
+.. doxygenclass:: QtNodes::DataFlowGraphicsScene
    :members:
 
 .. doxygenclass:: QtNodes::DataFlowGraphModel
@@ -64,3 +63,20 @@ Dataflow Classes
 
 .. doxygenclass:: QtNodes::DataModelRegistry
    :members:
+
+Definitions
+-----------
+
+.. doxygentypedef:: QtNodes::ConnectionId
+
+.. doxygentypedef:: QtNodes::NodeId
+
+.. doxygenenum:: QtNodes::NodeRole
+
+.. doxygenenum:: QtNodes::NodeFlag
+
+.. doxygenenum:: QtNodes::PortRole
+
+.. doxygenenum:: QtNodes::ConnectionPolicy
+
+.. doxygenenum:: QtNodes::PortType

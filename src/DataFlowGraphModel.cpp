@@ -255,7 +255,7 @@ portData(NodeId    nodeId,
       result = QVariant::fromValue(model->dataType(portType, portIndex));
       break;
 
-    case PortRole::ConnectionPolicy:
+    case PortRole::ConnectionPolicyRole:
       if (portType == PortType::Out)
         result = QVariant::fromValue(model->portOutConnectionPolicy(portIndex));
       else

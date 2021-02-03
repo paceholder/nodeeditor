@@ -205,7 +205,7 @@ public:
         return QVariant();
         break;
 
-      case PortRole::ConnectionPolicy:
+      case PortRole::ConnectionPolicyRole:
         return QVariant::fromValue(ConnectionPolicy::One);
         break;
 

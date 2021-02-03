@@ -5,3 +5,8 @@ QtNodes Documentation
    :maxdepth: 2
 
    classes
+
+Index
+==================
+
+* :ref:`genindex`

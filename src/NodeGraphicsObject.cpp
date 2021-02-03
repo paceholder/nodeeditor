@@ -278,7 +278,7 @@ mousePressEvent(QGraphicsSceneMouseEvent * event)
             _graphModel.portData(_nodeId,
                                  portToCheck,
                                  portIndex,
-                                 PortRole::ConnectionPolicy).value<ConnectionPolicy>();
+                                 PortRole::ConnectionPolicyRole).value<ConnectionPolicy>();
 
           if (!connectedNodes.empty() &&
               outPolicy == ConnectionPolicy::One)
