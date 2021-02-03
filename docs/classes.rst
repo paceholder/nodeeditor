@@ -4,7 +4,7 @@ QtNodes Class Reference
 Basic Classes
 -------------
 
-.. doxygenclass:: QtNodes::GraphModel
+.. doxygenclass:: QtNodes::AbstractGraphModel
    :members:
 
 .. doxygenstruct:: QtNodes::NodeDataType
