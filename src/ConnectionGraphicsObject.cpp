@@ -8,15 +8,15 @@
 
 #include <QtCore/QDebug>
 
+#include "AbstractGraphModel.hpp"
+#include "BasicGraphicsScene.hpp"
 #include "ConnectionIdUtils.hpp"
 #include "ConnectionPainter.hpp"
 #include "ConnectionState.hpp"
 #include "ConnectionStyle.hpp"
-#include "GraphModel.hpp"
 #include "NodeConnectionInteraction.hpp"
 #include "NodeGeometry.hpp"
 #include "NodeGraphicsObject.hpp"
-#include "BasicGraphicsScene.hpp"
 #include "StyleCollection.hpp"
 #include "locateNode.hpp"
 
@@ -87,7 +87,7 @@ initializePosition()
 }
 
 
-GraphModel &
+AbstractGraphModel &
 ConnectionGraphicsObject::
 graphModel() const
 {

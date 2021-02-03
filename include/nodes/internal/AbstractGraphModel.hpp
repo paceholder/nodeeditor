@@ -25,7 +25,7 @@ namespace QtNodes
  *   - NodeId
  *   - ConnectionId
  */
-class NODE_EDITOR_PUBLIC GraphModel : public QObject
+class NODE_EDITOR_PUBLIC AbstractGraphModel : public QObject
 {
   Q_OBJECT
 public:
@@ -38,11 +38,11 @@ public:
    */
   virtual
   std::unordered_set<NodeId>
-  allNodeIds() const;
+  allNodeIds() const = 0;
 
   virtual
   std::unordered_set<ConnectionId>
-  allConnectionIds(NodeId const nodeId) const;
+  allConnectionIds(NodeId const nodeId) const = 0;
 
   /// @brief Returns all connected Node Ids for given port.
   /**
@@ -51,15 +51,15 @@ public:
    */
   virtual
   std::unordered_set<std::pair<NodeId, PortIndex>>
-  connectedNodes(NodeId nodeId,
-                 PortType portType,
-                 PortIndex index) const;
+  connectedNodes(NodeId    nodeId,
+                 PortType  portType,
+                 PortIndex index) const = 0;
 
 
   /// Checks if two nodes with the given `connectionId` are connected.
   virtual
   bool
-  connectionExists(ConnectionId const connectionId) const;
+  connectionExists(ConnectionId const connectionId) const = 0;
 
 
   /// Creates a new node instance in the derived class.
@@ -73,7 +73,7 @@ public:
    */
   virtual
   NodeId
-  addNode(QString const nodeType = QString());
+  addNode(QString const nodeType = QString()) = 0;
 
   /// Model decides if a conection with a given connection Id possible.
   /**
@@ -84,7 +84,7 @@ public:
    */
   virtual
   bool
-  connectionPossible(ConnectionId const connectionId);
+  connectionPossible(ConnectionId const connectionId) const = 0;
 
   /// Creates a new connection between two nodes.
   /**
@@ -96,7 +96,7 @@ public:
    */
   virtual
   void
-  addConnection(ConnectionId const connectionId);
+  addConnection(ConnectionId const connectionId) = 0;
 
   /**
    * @returns `true` if there is data in the model associated with the
@@ -104,7 +104,7 @@ public:
    */
   virtual
   bool
-  nodeExists(NodeId const nodeId) const;
+  nodeExists(NodeId const nodeId) const = 0;
 
 
   /// @brief Returns node-related data for requested NodeRole.
@@ -113,11 +113,15 @@ public:
    */
   virtual
   QVariant
-  nodeData(NodeId nodeId, NodeRole role) const;
+  nodeData(NodeId nodeId, NodeRole role) const = 0;
 
   virtual
   NodeFlags
-  nodeFlags(NodeId nodeId) const;
+  nodeFlags(NodeId nodeId) const
+  {
+    Q_UNUSED(nodeId);
+    return NodeFlag::NoFlags;
+  }
 
   /// @brief Sets node properties.
   /**
@@ -127,7 +131,9 @@ public:
    */
   virtual
   bool
-  setNodeData(NodeId nodeId, NodeRole role, QVariant value);
+  setNodeData(NodeId   nodeId,
+              NodeRole role,
+              QVariant value) = 0;
 
   /// @brief Returns port-related data for requested NodeRole.
   /**
@@ -136,25 +142,25 @@ public:
    */
   virtual
   QVariant
-  portData(NodeId nodeId,
-           PortType portType,
+  portData(NodeId    nodeId,
+           PortType  portType,
            PortIndex index,
-           PortRole role) const;
+           PortRole  role) const = 0;
 
   virtual
   bool
-  setPortData(NodeId nodeId,
-              PortType portType,
+  setPortData(NodeId    nodeId,
+              PortType  portType,
               PortIndex index,
-              PortRole role) const;
+              PortRole  role) const = 0;
 
   virtual
   bool
-  deleteConnection(ConnectionId const connectionId);
+  deleteConnection(ConnectionId const connectionId) = 0;
 
   virtual
   bool
-  deleteNode(NodeId const nodeId);
+  deleteNode(NodeId const nodeId) = 0;
 
 Q_SIGNALS:
 
@@ -174,8 +180,8 @@ Q_SIGNALS:
   nodePositonUpdated(NodeId const nodeId);
 
   void
-  portDataSet(NodeId const nodeId,
-              PortType const portType,
+  portDataSet(NodeId const    nodeId,
+              PortType const  portType,
               PortIndex const portIndex);
 
   /**
@@ -183,7 +189,7 @@ Q_SIGNALS:
    * Clients must destroy existing connections to these ports.
    */
   void
-  portsAboutToBeDeleted(NodeId const nodeId,
+  portsAboutToBeDeleted(NodeId const   nodeId,
                         PortType const portType,
                         std::unordered_set<PortIndex> const &portIndexSet);
 
@@ -192,7 +198,7 @@ Q_SIGNALS:
    * with the given port indices.
    */
   void
-  portsDeleted(NodeId const nodeId,
+  portsDeleted(NodeId const   nodeId,
                PortType const portType,
                std::unordered_set<PortIndex> const &portIndexSet);
 
@@ -201,7 +207,7 @@ Q_SIGNALS:
    * data.
    */
   void
-  portsAboutToBeInserted(NodeId const nodeId,
+  portsAboutToBeInserted(NodeId const   nodeId,
                          PortType const portType,
                          std::unordered_set<PortIndex> const &portIndexSet);
 
@@ -211,7 +217,7 @@ Q_SIGNALS:
    * conection ends to their new positions.
    */
   void
-  portsInserted(NodeId const nodeId,
+  portsInserted(NodeId const   nodeId,
                 PortType const portType,
                 std::unordered_set<PortIndex> const &portIndexSet);
 };

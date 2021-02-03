@@ -36,7 +36,7 @@ DataFlowGraphicsScene(DataFlowGraphModel &graphModel,
   : BasicGraphicsScene(graphModel, parent)
   , _graphModel(graphModel)
 {
-  connect(&_graphModel, &GraphModel::portDataSet,
+  connect(&_graphModel, &AbstractGraphModel::portDataSet,
           this, &DataFlowGraphicsScene::onPortDataSet);
 }
 
@@ -367,10 +367,13 @@ loadFromMemory(const QByteArray &data)
 
 void
 DataFlowGraphicsScene::
-onPortDataSet(NodeId const nodeId,
-              PortType const portType,
+onPortDataSet(NodeId const    nodeId,
+              PortType const  portType,
               PortIndex const portIndex)
 {
+  Q_UNUSED(portType);
+  Q_UNUSED(portIndex);
+
   auto node = nodeGraphicsObject(nodeId);
 
   if (node)
