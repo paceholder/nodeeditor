@@ -7,7 +7,7 @@ Overview
 QtNodes is a Qt5-based library designed for graphical representation of
 the node graphs and performing various operations on them.
 
-.. image ../pictures/calculator.png
+.. image:: /_static/calculator.png
 
 The project is built with the CMake configurator. Therefore it is
 quite easy to incorporate the library into any CMake-based Qt project.
