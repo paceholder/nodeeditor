@@ -13,8 +13,8 @@ class QGraphicsSceneMouseEvent;
 namespace QtNodes
 {
 
+class AbstractGraphModel;
 class BasicGraphicsScene;
-class GraphModel;
 
 /// Graphic Object for connection. Adds itself to scene
 class ConnectionGraphicsObject : public QGraphicsObject
@@ -39,7 +39,7 @@ public:
   void
   initializePosition();
 
-  GraphModel &
+  AbstractGraphModel &
   graphModel() const;
 
   BasicGraphicsScene *
@@ -112,7 +112,7 @@ private:
 
   ConnectionId _connectionId;
 
-  GraphModel &_graphModel;
+  AbstractGraphModel &_graphModel;
 
   ConnectionState _connectionState;
 

@@ -9,18 +9,18 @@
 #include <tuple>
 #include <unordered_map>
 
+#include "AbstractGraphModel.hpp"
+#include "ConnectionIdHash.hpp"
 #include "Definitions.hpp"
 #include "Export.hpp"
-#include "GraphModel.hpp"
-#include "ConnectionIdHash.hpp"
 
 #include "QUuidStdHash.hpp"
 
 namespace QtNodes
 {
 
+class AbstractGraphModel;
 class ConnectionGraphicsObject;
-class GraphModel;
 class NodeGraphicsObject;
 class NodeStyle;
 
@@ -30,7 +30,7 @@ class NODE_EDITOR_PUBLIC BasicGraphicsScene : public QGraphicsScene
   Q_OBJECT
 public:
 
-  BasicGraphicsScene(GraphModel &graphModel,
+  BasicGraphicsScene(AbstractGraphModel &graphModel,
                      QObject *    parent = nullptr);
 
   // Scenes without models are not supported
@@ -40,11 +40,11 @@ public:
 
 public:
 
-  /// @returns associated GraphModel.
-  GraphModel const &
+  /// @returns associated AbstractGraphModel.
+  AbstractGraphModel const &
   graphModel() const;
 
-  GraphModel &
+  AbstractGraphModel &
   graphModel();
 
 public:
@@ -131,7 +131,7 @@ private:
   /// @brief Creates Node and Connection graphics objects.
   /**
    * Function is used to populate an empty scene in the constructor. We
-   * perform depth-first GraphModel traversal. The connections are
+   * perform depth-first AbstractGraphModel traversal. The connections are
    * created by checking non-empty node `Out` ports.
    */
   void
@@ -145,11 +145,11 @@ private:
 private Q_SLOTS:
 
 
-  /// Slot called when the `connectionId` is erased form the GraphModel.
+  /// Slot called when the `connectionId` is erased form the AbstractGraphModel.
   void
   onConnectionDeleted(ConnectionId const connectionId);
 
-  /// Slot called when the `connectionId` is created in the GraphModel.
+  /// Slot called when the `connectionId` is created in the AbstractGraphModel.
   void
   onConnectionCreated(ConnectionId const connectionId);
 
@@ -186,7 +186,7 @@ private Q_SLOTS:
 private:
 
   // TODO shared pointer?
-  GraphModel &_graphModel;
+  AbstractGraphModel &_graphModel;
 
 
   using UniqueNodeGraphicsObject =

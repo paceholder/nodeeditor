@@ -11,13 +11,13 @@
 namespace QtNodes
 {
 
-class GraphModel;
+class AbstractGraphModel;
 class NodeGraphicsObject;
 
 /**
  * A helper-class for manipulating the node's geometry.
  * It is designed to be constructed on stack and used in-place.
- * The class is in essense a wrapper around the GraphModel.
+ * The class is in essense a wrapper around the AbstractGraphModel.
  */
 class NODE_EDITOR_PUBLIC NodeGeometry
 {
@@ -79,7 +79,7 @@ private:
 private:
 
   NodeGraphicsObject const & _ngo;
-  GraphModel & _graphModel;
+  AbstractGraphModel & _graphModel;
 
   // some variables are mutable because
   // we need to change drawing metrics

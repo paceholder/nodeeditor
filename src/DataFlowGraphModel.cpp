@@ -27,6 +27,43 @@ allNodeIds() const
 }
 
 
+std::unordered_set<ConnectionId>
+DataFlowGraphModel::
+allConnectionIds(NodeId const nodeId) const
+{
+  std::unordered_set<ConnectionId> result;
+
+  for (auto & c : _connectivity)
+  {
+    if (std::get<0>(c.first) != nodeId)
+      continue;
+
+    PortType const portType = std::get<1>(c.first);
+    PortIndex const portIndex = std::get<2>(c.first);
+
+    for (auto & target : c.second)
+    {
+      if (portType == PortType::Out)
+      {
+        result.insert(std::make_tuple(nodeId,
+                                      portIndex,
+                                      target.first,
+                                      target.second));
+      }
+      else
+      {
+        result.insert(std::make_tuple(target.first,
+                                      target.second,
+                                      nodeId,
+                                      portIndex));
+      }
+    }
+  }
+
+  return result;
+}
+
+
 std::unordered_set<std::pair<NodeId, PortIndex>>
 DataFlowGraphModel::
 connectedNodes(NodeId    nodeId,
@@ -43,6 +80,19 @@ connectedNodes(NodeId    nodeId,
     result = it->second;
 
   return result;
+}
+
+
+bool
+DataFlowGraphModel::
+connectionExists(ConnectionId const connectionId) const
+{
+  auto key =
+    std::make_tuple(getNodeId(PortType::Out, connectionId),
+                    PortType::Out,
+                    getPortIndex(PortType::Out, connectionId));
+
+  return (_connectivity.find(key) != _connectivity.end());
 }
 
 
@@ -72,6 +122,24 @@ addNode(QString const nodeType)
 }
 
 
+bool
+DataFlowGraphModel::
+connectionPossible(ConnectionId const connectionId)
+{
+  auto getDataType =
+    [&](PortType const portType)
+    {
+      return portData(getNodeId(portType, connectionId),
+                      portType,
+                      getPortIndex(portType, connectionId),
+                      PortRole::DataType).value<NodeDataType>();
+
+    };
+
+  return getDataType(PortType::Out).id == getDataType(PortType::In).id;
+}
+
+
 void
 DataFlowGraphModel::
 addConnection(ConnectionId const connectionId)
@@ -79,9 +147,9 @@ addConnection(ConnectionId const connectionId)
   auto connect =
     [&](PortType portType)
     {
-      auto key = std::make_tuple(getNodeId(portType, connectionId),
+      auto key = ConnectivityKey{getNodeId(portType, connectionId),
                                  portType,
-                                 getPortIndex(portType, connectionId));
+                                 getPortIndex(portType, connectionId)};
 
       PortType opposite = oppositePort(portType);
 
@@ -96,6 +164,14 @@ addConnection(ConnectionId const connectionId)
 
   onNodeDataUpdated(getNodeId(PortType::Out, connectionId),
                     getPortIndex(PortType::Out, connectionId));
+}
+
+
+bool
+DataFlowGraphModel::
+nodeExists(NodeId const nodeId) const
+{
+  return (_models.find(nodeId) != _models.end());
 }
 
 
@@ -169,7 +245,7 @@ nodeFlags(NodeId nodeId) const
   if (it != _models.end() && it->second->resizable())
     return NodeFlag::Resizable;
 
-  return GraphModel::nodeFlags(nodeId);
+  return NodeFlag::NoFlags;
 }
 
 
@@ -301,9 +377,9 @@ deleteConnection(ConnectionId const connectionId)
   auto disconnect =
     [&](PortType portType)
     {
-      auto key = std::make_tuple(getNodeId(portType, connectionId),
+      auto key = ConnectivityKey{getNodeId(portType, connectionId),
                                  portType,
-                                 getPortIndex(portType, connectionId));
+                                 getPortIndex(portType, connectionId)};
       auto it = _connectivity.find(key);
 
       if (it != _connectivity.end())

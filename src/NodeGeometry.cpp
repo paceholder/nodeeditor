@@ -1,7 +1,7 @@
 #include "NodeGeometry.hpp"
 
+#include "AbstractGraphModel.hpp"
 #include "Definitions.hpp"
-#include "GraphModel.hpp"
 #include "NodeGraphicsObject.hpp"
 #include "StyleCollection.hpp"
 
@@ -14,7 +14,7 @@ namespace QtNodes
 {
 
 NodeGeometry::
-NodeGeometry(NodeGraphicsObject const &ngo)
+NodeGeometry(NodeGraphicsObject const& ngo)
   : _ngo(ngo)
   , _graphModel(ngo.graphModel())
   , _defaultInPortWidth(70)
@@ -67,8 +67,8 @@ boundingRect() const
 {
   NodeId nodeId = _ngo.nodeId();
 
-  auto const &style     = _graphModel.nodeData(nodeId, NodeRole::Style);
-  auto const &nodeStyle = StyleCollection::nodeStyle();
+  auto const& style = _graphModel.nodeData(nodeId, NodeRole::Style);
+  auto const& nodeStyle = StyleCollection::nodeStyle();
 
   double addon = 4 * nodeStyle.ConnectionPointDiameter;
 
@@ -121,7 +121,7 @@ recalculateSize() const
 
   height += captionHeight();
 
-  unsigned int inPortWidth  = portWidth(PortType::In);
+  unsigned int inPortWidth = portWidth(PortType::In);
   unsigned int outPortWidth = portWidth(PortType::Out);
 
   unsigned int width = inPortWidth + outPortWidth + 2 * _verticalSpacing;
@@ -143,7 +143,7 @@ recalculateSize() const
 
 QSize
 NodeGeometry::
-recalculateSizeIfFontChanged(QFont const &font) const
+recalculateSizeIfFontChanged(QFont const& font) const
 {
   QFontMetrics fontMetrics(font);
   QFont boldFont = font;
@@ -154,7 +154,7 @@ recalculateSizeIfFontChanged(QFont const &font) const
 
   if (_boldFontMetrics != boldFontMetrics)
   {
-    _fontMetrics     = fontMetrics;
+    _fontMetrics = fontMetrics;
     _boldFontMetrics = boldFontMetrics;
 
   }
@@ -165,10 +165,10 @@ recalculateSizeIfFontChanged(QFont const &font) const
 
 QPointF
 NodeGeometry::
-portNodePosition(PortType const portType,
+portNodePosition(PortType const  portType,
                  PortIndex const index) const
 {
-  auto const &nodeStyle = StyleCollection::nodeStyle();
+  auto const& nodeStyle = StyleCollection::nodeStyle();
 
   unsigned int step = _entryHeight + _verticalSpacing;
 
@@ -214,9 +214,9 @@ portNodePosition(PortType const portType,
 
 QPointF
 NodeGeometry::
-portScenePosition(PortType const portType,
-                  PortIndex const index,
-                  QTransform const &t) const
+portScenePosition(PortType const    portType,
+                  PortIndex const   index,
+                  QTransform const& t) const
 {
   QPointF result = portNodePosition(portType, index);
 
@@ -227,11 +227,11 @@ portScenePosition(PortType const portType,
 // TODO check implementation
 PortIndex
 NodeGeometry::
-checkHitScenePoint(PortType portType,
-                   QPointF const scenePoint,
-                   QTransform const &sceneTransform) const
+checkHitScenePoint(PortType          portType,
+                   QPointF const     scenePoint,
+                   QTransform const& sceneTransform) const
 {
-  auto const &nodeStyle = StyleCollection::nodeStyle();
+  auto const& nodeStyle = StyleCollection::nodeStyle();
 
   PortIndex result = InvalidPortIndex;
 
@@ -252,7 +252,7 @@ checkHitScenePoint(PortType portType,
   {
     auto pp = portScenePosition(portType, portIndex, sceneTransform);
 
-    QPointF p     = pp - scenePoint;
+    QPointF p = pp - scenePoint;
     auto distance = std::sqrt(QPointF::dotProduct(p, p));
 
     if (distance < tolerance)
