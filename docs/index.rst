@@ -2,9 +2,10 @@ QtNodes Documentation
 =====================
 
 .. toctree::
-   :maxdepth: 2
+    :maxdepth: 2
 
-   classes
+    usage
+    classes
 
 Index
 ==================
