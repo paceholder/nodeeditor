@@ -71,6 +71,7 @@ qt_add_resources(RESOURCES ./resources/resources.qrc)
 set(CMAKE_AUTOMOC ON)
 
 set(CPP_SOURCE_FILES
+  src/AbstractGraphModel.cpp
   src/BasicGraphicsScene.cpp
   src/ConnectionGraphicsObject.cpp
   src/ConnectionPainter.cpp
@@ -79,7 +80,6 @@ set(CPP_SOURCE_FILES
   src/DataFlowGraphModel.cpp
   src/DataFlowGraphicsScene.cpp
   src/DataModelRegistry.cpp
-  src/GraphModel.cpp
   src/GraphicsView.cpp
   src/GraphicsViewStyle.cpp
   src/NodeConnectionInteraction.cpp

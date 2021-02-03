@@ -1,6 +1,9 @@
 #pragma once
 
-#include <nodes/GraphModel>
+#include <QtCore/QPointF>
+#include <QtCore/QSize>
+
+#include <nodes/AbstractGraphModel>
 #include <nodes/StyleCollection>
 #include <nodes/ConnectionIdUtils>
 
@@ -8,7 +11,6 @@
 using ConnectionId     = QtNodes::ConnectionId;
 using ConnectionPolicy = QtNodes::ConnectionPolicy;
 using NodeFlag        = QtNodes::NodeFlag;
-using NodeFlags       = QtNodes::NodeFlags;
 using NodeId          = QtNodes::NodeId;
 using NodeRole        = QtNodes::NodeRole;
 using PortIndex       = QtNodes::PortIndex;
@@ -18,8 +20,9 @@ using StyleCollection = QtNodes::StyleCollection;
 using QtNodes::InvalidNodeId;
 
 
-class CustomGraphModel : public QtNodes::GraphModel
+class CustomGraphModel : public QtNodes::AbstractGraphModel
 {
+  Q_OBJECT
 public:
 
   struct NodeGeometryData
@@ -31,278 +34,71 @@ public:
 
 public:
 
-  CustomGraphModel()
-    : _lastNodeId{0}
-  {}
+  CustomGraphModel();
+
+  ~CustomGraphModel() override;
 
 
   std::unordered_set<NodeId>
-  allNodeIds() const override
-  {
-    return _nodeIds;
-  }
+  allNodeIds() const override;
+
+  std::unordered_set<ConnectionId>
+  allConnectionIds(NodeId const nodeId) const override;
 
   std::unordered_set<std::pair<NodeId, PortIndex>>
   connectedNodes(NodeId    nodeId,
                  PortType  portType,
-                 PortIndex portIndex) const override
-  {
-    return _connectivity[std::make_tuple(nodeId,
-                                         portType,
-                                         portIndex)];
-  }
+                 PortIndex portIndex) const override;
+
+  bool
+  connectionExists(ConnectionId const connectionId) const override;
 
   NodeId
-  addNode(QString const nodeType = QString()) override
-  {
-    NodeId newId = _lastNodeId++;
-    // Create new node.
-    _nodeIds.insert(newId);
+  addNode(QString const nodeType = QString()) override;
 
-    Q_EMIT nodeCreated(newId);
-
-    return newId;
-  }
+  /**
+   * Connection is possible when graph contains no connectivity data
+   * in both directions `Out -> In` and `In -> Out`.
+   */
+  bool
+  connectionPossible(ConnectionId const connectionId) override;
 
   void
-  addConnection(ConnectionId const connectionId) override
-  {
-    auto connect =
-      [&](PortType portType)
-      {
-        auto key = std::make_tuple(getNodeId(portType, connectionId),
-                                   portType,
-                                   getPortIndex(portType, connectionId));
+  addConnection(ConnectionId const connectionId) override;
 
-        PortType opposite = oppositePort(portType);
-
-        _connectivity[key].insert(std::make_pair(getNodeId(opposite, connectionId),
-                                                 getPortIndex(opposite, connectionId)));
-      };
-
-    connect(PortType::Out);
-    connect(PortType::In);
-
-    Q_EMIT connectionCreated(connectionId);
-  }
+  bool
+  nodeExists(NodeId const nodeId) const override;
 
   QVariant
-  nodeData(NodeId nodeId, NodeRole role) const override
-  {
-    Q_UNUSED(nodeId);
-
-    QVariant result;
-
-    switch (role)
-    {
-      case NodeRole::Type:
-        result = QString("Default Node Type");
-        break;
-
-      case NodeRole::Position:
-        result = _nodeGeometryData[nodeId].pos;
-        break;
-
-      case NodeRole::Size:
-        result = _nodeGeometryData[nodeId].size;
-        break;
-
-      case NodeRole::CaptionVisible:
-        result = true;
-        break;
-
-      case NodeRole::Caption:
-        result = QString("Node");
-        break;
-
-      case NodeRole::Style:
-        {
-          auto style = StyleCollection::nodeStyle();
-          result = style.toJson().toVariant();
-        }
-        break;
-
-      case NodeRole::NumberOfInPorts:
-        result = 1u;
-        break;
-
-      case NodeRole::NumberOfOutPorts:
-        result = 1u;
-        break;
-
-      case NodeRole::Widget:
-        result = QVariant();
-        break;
-    }
-
-    return result;
-  }
+  nodeData(NodeId nodeId, NodeRole role) const override;
 
   bool
   setNodeData(NodeId   nodeId,
               NodeRole role,
-              QVariant value) override
-  {
-    bool result = false;
-
-    switch (role)
-    {
-      case NodeRole::Type:
-        break;
-      case NodeRole::Position:
-        {
-          _nodeGeometryData[nodeId].pos = value.value<QPointF>();
-
-          Q_EMIT nodePositonUpdated(nodeId);
-
-          result = true;
-        }
-        break;
-
-      case NodeRole::Size:
-        {
-
-          _nodeGeometryData[nodeId].size = value.value<QSize>();
-          result = true;
-        }
-        break;
-
-      case NodeRole::CaptionVisible:
-        break;
-
-      case NodeRole::Caption:
-        break;
-
-      case NodeRole::Style:
-        break;
-
-      case NodeRole::NumberOfInPorts:
-        break;
-
-      case NodeRole::NumberOfOutPorts:
-        break;
-
-      case NodeRole::Widget:
-        break;
-    }
-
-    return result;
-  }
+              QVariant value) override;
 
   QVariant
   portData(NodeId    nodeId,
            PortType  portType,
            PortIndex portIndex,
-           PortRole  role) const override
-  {
-    switch (role)
-    {
-      case PortRole::Data:
-        return QVariant();
-        break;
-
-      case PortRole::DataType:
-        return QVariant();
-        break;
-
-      case PortRole::ConnectionPolicyRole:
-        return QVariant::fromValue(ConnectionPolicy::One);
-        break;
-
-      case PortRole::CaptionVisible:
-        return true;
-        break;
-
-      case PortRole::Caption:
-        if (portType == PortType::In)
-          return QString::fromUtf8("Port In");
-        else
-          return QString::fromUtf8("Port Out");
-
-        break;
-    }
-
-    return QVariant();
-  }
+           PortRole  role) const override;
 
   bool
   setPortData(NodeId    nodeId,
               PortType  portType,
               PortIndex portIndex,
-              PortRole  role) const override
-  {
-    Q_UNUSED(nodeId);
-    Q_UNUSED(portType);
-    Q_UNUSED(portIndex);
-    Q_UNUSED(role);
-
-    return false;
-  }
+              PortRole  role) const override;
 
   bool
-  deleteConnection(ConnectionId const connectionId) override
-  {
-    bool disconnected = false;
-
-    auto disconnect =
-      [&](PortType portType)
-      {
-        auto key = std::make_tuple(getNodeId(portType, connectionId),
-                                   portType,
-                                   getPortIndex(portType, connectionId));
-        auto it = _connectivity.find(key);
-
-        if (it != _connectivity.end())
-        {
-          disconnected = true;
-
-          PortType opposite = oppositePort(portType);
-
-          auto oppositePair =
-            std::make_pair(getNodeId(opposite, connectionId),
-                           getPortIndex(opposite, connectionId));
-          it->second.erase(oppositePair);
-
-          if (it->second.empty())
-          {
-            _connectivity.erase(it);
-          }
-        }
-
-      };
-
-    disconnect(PortType::Out);
-    disconnect(PortType::In);
-
-    if (disconnected)
-      Q_EMIT connectionDeleted(connectionId);
-
-    return disconnected;
-  }
+  deleteConnection(ConnectionId const connectionId) override;
 
   bool
-  deleteNode(NodeId const nodeId) override
-  {
-    // Delete connections to this node first.
-    auto connectionIds = allConnectionIds(nodeId);
-    for (auto & cId : connectionIds)
-    {
-      deleteConnection(cId);
-    }
-
-    _nodeIds.erase(nodeId);
-    _nodeGeometryData.erase(nodeId);
-
-    Q_EMIT nodeDeleted(nodeId);
-
-    return true;
-  }
+  deleteNode(NodeId const nodeId) override;
 
 private:
 
   std::unordered_set<NodeId> _nodeIds;
 
-  mutable
   std::unordered_map<std::tuple<NodeId, PortType, PortIndex>,
                      std::unordered_set<std::pair<NodeId, PortIndex>>>
   _connectivity;
