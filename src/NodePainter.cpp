@@ -44,7 +44,6 @@ paint(QPainter* painter,
 
   drawFilledConnectionPoints(painter, geom, state, model);
 
-
   drawEntryLabels(painter, geom, state, model);
 
   drawResizeRect(painter, geom, model);
@@ -55,6 +54,7 @@ paint(QPainter* painter,
 
   if (model->captionVisible())
   {
+    drawModelNickname(painter, geom, model);
     drawModelName(painter, geom, state, model);
 
     if (model->processingStatus() == NodeProcessingStatus::Processing)
@@ -131,7 +131,10 @@ drawConnectionPoints(QPainter* painter,
   float diameter = nodeStyle.ConnectionPointDiameter;
   auto  reducedDiameter = diameter * 0.6;
 
-  for(PortType portType: {PortType::Out, PortType::In})
+  for(PortType portType:
+      {
+        PortType::Out, PortType::In
+      })
   {
     size_t n = state.getEntries(portType).size();
 
@@ -170,15 +173,15 @@ drawConnectionPoints(QPainter* painter,
         {
           double const thres = 40.0;
           r = (dist < thres) ?
-                (2.0 - dist / thres ) :
-                1.0;
+              (2.0 - dist / thres ) :
+              1.0;
         }
         else
         {
           double const thres = 80.0;
           r = (dist < thres) ?
-                (dist / thres) :
-                1.0;
+              (dist / thres) :
+              1.0;
         }
       }
 
@@ -211,7 +214,10 @@ drawFilledConnectionPoints(QPainter * painter,
 
   auto diameter = nodeStyle.ConnectionPointDiameter;
 
-  for(PortType portType: {PortType::Out, PortType::In})
+  for(PortType portType:
+      {
+        PortType::Out, PortType::In
+      })
   {
     size_t n = state.getEntries(portType).size();
 
@@ -260,23 +266,61 @@ drawModelName(QPainter * painter,
 
   QString const &name = model->caption();
 
-  QFont f = painter->font();
+  QFont font = painter->font();
 
-  f.setBold(true);
+  font.setBold(!model->nicknameVisible());
+  font.setItalic(model->nicknameVisible());
 
-  QFontMetrics metrics(f);
+  QFontMetrics metrics(font);
 
   auto rect = metrics.boundingRect(name);
+
+  int nicknameOffset = model->nicknameVisible()? rect.height() : 0;
+
+  double yPos = (geom.spacing() + geom.entryHeight() + nicknameOffset) / 3.0;
+  if (model->nicknameVisible()) yPos += 2.0 * geom.spacing() / 3.0;
+
+  QPointF position((geom.width() - rect.width()) / 2.0, yPos);
+
+  painter->setFont(font);
+  painter->setPen(nodeStyle.FontColor);
+  painter->drawText(position, name);
+
+  font.setBold(false);
+  font.setItalic(false);
+  painter->setFont(font);
+}
+
+void
+NodePainter::
+drawModelNickname(QPainter * painter,
+                  NodeGeometry const & geom,
+                  NodeDataModel const * model)
+{
+  if (!model->nicknameVisible())
+    return;
+
+  NodeStyle const& nodeStyle = model->nodeStyle();
+
+  QString const& nickname = model->nickname();
+
+  QFont font = painter->font();
+
+  font.setBold(true);
+
+  QFontMetrics metrics(font);
+
+  auto rect = metrics.boundingRect(nickname);
 
   QPointF position((geom.width() - rect.width()) / 2.0,
                    (geom.spacing() + geom.entryHeight()) / 3.0);
 
-  painter->setFont(f);
+  painter->setFont(font);
   painter->setPen(nodeStyle.FontColor);
-  painter->drawText(position, name);
+  painter->drawText(position, nickname);
 
-  f.setBold(false);
-  painter->setFont(f);
+  font.setBold(false);
+  painter->setFont(font);
 }
 
 
@@ -290,7 +334,7 @@ drawEntryLabels(QPainter * painter,
   QFontMetrics const & metrics =
     painter->fontMetrics();
 
-  for(PortType portType: {PortType::Out, PortType::In})
+  for (PortType portType: {PortType::Out, PortType::In})
   {
     auto const &nodeStyle = model->nodeStyle();
 
@@ -411,19 +455,19 @@ drawValidationRect(QPainter * painter,
     //Drawing the validation message itself
     QString const &errorMsg = model->validationMessage();
 
-    QFont f = painter->font();
+    QFont font = painter->font();
 
-    QFontMetrics metrics(f);
+    QFontMetrics metrics(font);
 
     auto rect = metrics.boundingRect(errorMsg);
 
     QPointF position((geom.width() - rect.width()) / 2.0,
                      geom.height() - (geom.validationHeight() - diam) / 2.0);
 
-    painter->setFont(f);
+    painter->setFont(font);
     painter->setPen(nodeStyle.FontColor);
     painter->drawText(position, errorMsg);
-    }
+  }
 }
 
 void
@@ -443,21 +487,21 @@ drawProgressValue(QPainter * painter,
                   NodeStyle const & nodeStyle,
                   QString const & nodeProgress)
 {
-  QFont f = painter->font();
+  QFont font = painter->font();
 
-  f.setBold(true);
+  font.setBold(true);
 
-  QFontMetrics metrics(f);
+  QFontMetrics metrics(font);
 
   auto rect = metrics.boundingRect(nodeProgress);
 
   QPointF position((geom.width() - rect.width()),
                    (geom.spacing() + geom.entryHeight()) / 3.0);
 
-  painter->setFont(f);
+  painter->setFont(font);
   painter->setPen(nodeStyle.FontColor);
   painter->drawText(position, nodeProgress);
 
-  f.setBold(false);
-  painter->setFont(f);
+  font.setBold(false);
+  painter->setFont(font);
 }

@@ -205,6 +205,12 @@ private:
   captionWidth() const;
 
   unsigned int
+  nicknameHeight() const;
+
+  unsigned int
+  nicknameWidth() const;
+
+  unsigned int
   portWidth(PortType portType) const;
 
 private:

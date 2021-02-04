@@ -90,7 +90,7 @@ recalculateSize() const
   {
     unsigned int maxNumOfEntries = std::max(nSinks(), nSources());
     unsigned int step = _entryHeight + _spacing;
-    _height = step * maxNumOfEntries + _statusIconSize.height();
+    _height = step * maxNumOfEntries + _statusIconSize.height() + spacing();
   }
 
   if (auto w = _dataModel->embeddedWidget())
@@ -98,7 +98,7 @@ recalculateSize() const
     _height = std::max(_height, static_cast<unsigned>(w->height()));
   }
 
-  _height += captionHeight();
+  _height += captionHeight() + nicknameHeight();
 
   _inputPortWidth  = portWidth(PortType::In);
   _outputPortWidth = portWidth(PortType::Out);
@@ -113,6 +113,7 @@ recalculateSize() const
   }
 
   _width = std::max(_width, captionWidth());
+  _width = std::max(_width, nicknameWidth());
 
   if (_dataModel->validationState() != NodeValidationState::Valid)
   {
@@ -157,7 +158,7 @@ portScenePosition(PortIndex index,
 
   double totalHeight = 0.0;
 
-  totalHeight += captionHeight();
+  totalHeight += captionHeight() + nicknameHeight();
 
   totalHeight += step * index;
 
@@ -247,18 +248,19 @@ widgetPosition() const
     if (w->sizePolicy().verticalPolicy() & QSizePolicy::ExpandFlag)
     {
       // If the widget wants to use as much vertical space as possible, place it immediately after the caption.
-      return QPointF(_spacing + portWidth(PortType::In), captionHeight());
+      return QPointF(_spacing + portWidth(PortType::In), captionHeight() + nicknameHeight());
     }
     else
     {
       if (_dataModel->validationState() != NodeValidationState::Valid)
       {
         return QPointF(_spacing + portWidth(PortType::In),
-                       (captionHeight() + _height - validationHeight() - _spacing - w->height()) / 2.0);
+                       (captionHeight() + nicknameHeight() + _height
+                        - validationHeight() - _spacing - w->height()) / 2.0);
       }
 
       return QPointF(_spacing + portWidth(PortType::In),
-                     (captionHeight() + _height - w->height()) / 2.0);
+                     (captionHeight() + nicknameHeight() + _height - w->height()) / 2.0);
     }
   }
   return QPointF();
@@ -270,10 +272,10 @@ equivalentWidgetHeight() const
 {
   if (_dataModel->validationState() != NodeValidationState::Valid)
   {
-    return height() - captionHeight() + validationHeight();
+    return height() - captionHeight() - nicknameHeight() + validationHeight();
   }
 
-  return height() - captionHeight();
+  return height() - captionHeight() - nicknameHeight();
 }
 
 unsigned int
@@ -285,7 +287,9 @@ captionHeight() const
 
   QString name = _dataModel->caption();
 
-  return _boldFontMetrics.boundingRect(name).height();
+  return _dataModel->nicknameVisible()?
+         _fontMetrics.boundingRect(name).height() :
+         _boldFontMetrics.boundingRect(name).height();
 }
 
 
@@ -298,7 +302,33 @@ captionWidth() const
 
   QString name = _dataModel->caption();
 
-  return _boldFontMetrics.boundingRect(name).width();
+  return _dataModel->nicknameVisible()?
+         _fontMetrics.boundingRect(name).width() :
+         _boldFontMetrics.boundingRect(name).width();
+}
+
+unsigned int
+NodeGeometry::
+nicknameHeight() const
+{
+  if (!_dataModel->nicknameVisible())
+    return 0;
+
+  QString nickname = _dataModel->nickname();
+
+  return _boldFontMetrics.boundingRect(nickname).height();
+}
+
+unsigned int
+NodeGeometry::
+nicknameWidth() const
+{
+  if (!_dataModel->nicknameVisible())
+    return 0;
+
+  QString nickname = _dataModel->nickname();
+
+  return _boldFontMetrics.boundingRect(nickname).width();
 }
 
 
@@ -345,7 +375,7 @@ updateStatusIconSize() const
 {
   bool oldStatus = _statusIconActive;
   _statusIconActive =
-      _dataModel->processingStatus() != NodeProcessingStatus::NoStatus;
+    _dataModel->processingStatus() != NodeProcessingStatus::NoStatus;
 
   if (oldStatus != _statusIconActive)
   {
@@ -368,12 +398,9 @@ statusIconRect() const
   auto spacing = static_cast<int>(_spacing);
   auto iconPos = portScenePosition(std::max(nSources(), nSinks()),
                                    PortType::Out).toPoint()
-                 + QPoint{-statusIconSize().width() - spacing / 2, - spacing};
+                 + QPoint{-statusIconSize().width() - spacing / 2, 0};
 
-  return QRect{iconPos.x(),
-               iconPos.y(),
-               statusIconSize().width(),
-               statusIconSize().height()};
+  return QRect{iconPos, statusIconSize()};
 }
 
 const QIcon&
@@ -381,21 +408,21 @@ NodeGeometry::
 processingStatusIcon() const
 {
   switch(_dataModel->processingStatus())
-    {
-    case NodeProcessingStatus::NoStatus:
-    case NodeProcessingStatus::Updated:
-      return _statusUpdated;
-    case NodeProcessingStatus::Processing:
-      return _statusProcessing;
-    case NodeProcessingStatus::Pending:
-      return _statusPending;
-    case NodeProcessingStatus::Empty:
-      return _statusEmpty;
-    case NodeProcessingStatus::Failed:
-      return _statusInvalid;
-    case NodeProcessingStatus::Partial:
-      return _statusPartial;
-    }
+  {
+  case NodeProcessingStatus::NoStatus:
+  case NodeProcessingStatus::Updated:
+    return _statusUpdated;
+  case NodeProcessingStatus::Processing:
+    return _statusProcessing;
+  case NodeProcessingStatus::Pending:
+    return _statusPending;
+  case NodeProcessingStatus::Empty:
+    return _statusEmpty;
+  case NodeProcessingStatus::Failed:
+    return _statusInvalid;
+  case NodeProcessingStatus::Partial:
+    return _statusPartial;
+  }
   return _statusInvalid;
 }
 

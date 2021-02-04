@@ -20,6 +20,7 @@ save() const
   QJsonObject modelJson;
 
   modelJson["name"] = name();
+  modelJson["nickname"] = nickname();
 
   return modelJson;
 }
