@@ -4,7 +4,7 @@ QtNodes Documentation
 .. toctree::
     :maxdepth: 2
 
-    usage
+    overview
     classes
 
 Index
