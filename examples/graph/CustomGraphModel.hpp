@@ -61,7 +61,7 @@ public:
    * in both directions `Out -> In` and `In -> Out`.
    */
   bool
-  connectionPossible(ConnectionId const connectionId) override;
+  connectionPossible(ConnectionId const connectionId) const override;
 
   void
   addConnection(ConnectionId const connectionId) override;

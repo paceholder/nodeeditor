@@ -272,28 +272,13 @@ mouseMoveEvent(QGraphicsSceneMouseEvent * event)
                            view->transform());
   if (ngo)
   {
-    _connectionState.interactWithNode(ngo->nodeId());
+    ngo->reactToConnection(this);
 
-    PortType knownPortType = oppositePort(_connectionState.requiredPort());
-
-    NodeId knownNodeId = (knownPortType == PortType::Out) ?
-                         std::get<0>(_connectionId) :
-                         std::get<2>(_connectionId);
-
-    PortIndex knownPortIndex = (knownPortType ==  PortType::Out) ?
-                               std::get<1>(_connectionId) :
-                               std::get<3>(_connectionId);
-
-    NodeDataType knownDataType =
-      _graphModel.portData(knownNodeId,
-                           knownPortType,
-                           knownPortIndex,
-                           PortRole::DataType).value<NodeDataType>();
-
-    // Sets node's mouse dragging position in nodes coordinates.
-    ngo->nodeState().reactToPossibleConnection(_connectionState.requiredPort(),
-                                               knownDataType,
-                                               event->scenePos());
+    _connectionState.setLastHoveredNode(ngo->nodeId());
+  }
+  else
+  {
+    _connectionState.resetLastHoveredNode();
   }
 
   //-------------------

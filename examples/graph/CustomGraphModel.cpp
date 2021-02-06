@@ -107,7 +107,7 @@ addNode(QString const nodeType)
 
 bool
 CustomGraphModel::
-connectionPossible(ConnectionId const connectionId)
+connectionPossible(ConnectionId const connectionId) const
 {
   auto keyOut = std::make_tuple(getNodeId(PortType::Out, connectionId),
                                 PortType::Out,

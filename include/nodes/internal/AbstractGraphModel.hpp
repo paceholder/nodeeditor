@@ -83,7 +83,7 @@ public:
    */
   virtual
   bool
-  connectionPossible(ConnectionId const connectionId) = 0;
+  connectionPossible(ConnectionId const connectionId) const = 0;
 
   /// Creates a new connection between two nodes.
   /**

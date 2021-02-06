@@ -199,6 +199,16 @@ moveConnections() const
 
 void
 NodeGraphicsObject::
+reactToConnection(ConnectionGraphicsObject const * cgo)
+{
+  _nodeState.storeConnectionForReaction(cgo);
+
+  update();
+}
+
+
+void
+NodeGraphicsObject::
 paint(QPainter * painter,
       QStyleOptionGraphicsItem const * option,
       QWidget *)

@@ -143,6 +143,8 @@ makeCompleteConnectionId(ConnectionId    incompleteConnectionId,
 }
 
 
+
+
 inline
 std::ostream &
 operator<<(std::ostream & ostr, ConnectionId const connectionId)
