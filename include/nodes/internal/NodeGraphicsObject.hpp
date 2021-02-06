@@ -44,6 +44,7 @@ public:
 
   NodeState &
   nodeState() { return _nodeState; }
+
   NodeState const &
   nodeState() const { return _nodeState; }
 
@@ -58,7 +59,13 @@ public:
   void
   moveConnections() const;
 
+
+  /// Repaints the node once with reacting ports.
+  void
+  reactToConnection(ConnectionGraphicsObject const * cgo);
+
 protected:
+
   void
   paint(QPainter* painter,
         QStyleOptionGraphicsItem const* option,
@@ -95,10 +102,6 @@ private:
 
   void
   embedQWidget();
-
-//private Q_SLOTS:
-
-  //void onNodeSizeUpdated();
 
 private:
 
