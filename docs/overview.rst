@@ -36,24 +36,24 @@ Examples
 
 The examples could be found in the folder ``examples``:
 
-  - ``graph``. Demonstrates usage of AbstractGraphModel for general
-    graph visulalization and editing.
-  - "legacy" examples from the vertsion ``<3.0``:
+- ``graph``. Demonstrates usage of AbstractGraphModel for general
+  graph visulalization and editing.
+- "legacy" examples from the vertsion ``<3.0``:
 
-    - ``text``. Text is propagated between the nodes.
-    - ``calculator``. Dataflow-based implementation of the simplest
-      calculator. We use an advanced model
-      :cpp:type:`QtNodes::DataFlowGraphModel` capable of storing the registry of
-      NodeDataModel and propagating user data beween the nodes.
-    - ``connection_colors``. Demonstrates the ability to color the
-      connections in correspondence to the connected data types.
-    - ``images``. Another dataflow example where images are propagated
-      between the nodes.
-    - ``styles``. The example demonstrates graph style customization.
+  - ``text``. Text is propagated between the nodes.
+  - ``calculator``. Dataflow-based implementation of the simplest
+    calculator. We use an advanced model
+    :cpp:type:`QtNodes::DataFlowGraphModel` capable of storing the registry of
+    NodeDataModel and propagating user data beween the nodes.
+  - ``connection_colors``. Demonstrates the ability to color the
+    connections in correspondence to the connected data types.
+  - ``images``. Another dataflow example where images are propagated
+    between the nodes.
+  - ``styles``. The example demonstrates graph style customization.
 
 
-TODOs:
-------
+TODOs
+-----
 
 1. Dynamic ports
 2.  `NodeGeometryDelegate`, `NodePaintDelegate`
@@ -98,16 +98,16 @@ Node Geometry
 
 
 
-Size recalculated when
-^^^^^^^^^^^^^^^^^^^^^^
+Size is recalculated when
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 0. After construction.
 1. Embedding the widget.
 2. After resizing.
 3. Before painting (conditional, depends on whether the font metrics
-was changed).
+   was changed).
 4. When incoming data changed (could trigger size changes, maybe in
-captions).
+   captions).
 5. When embedded widget changes its size.
 
 
