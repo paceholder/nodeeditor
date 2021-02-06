@@ -5,6 +5,8 @@
 #include <QtCore/QMargins>
 
 #include "AbstractGraphModel.hpp"
+#include "ConnectionGraphicsObject.hpp"
+#include "ConnectionIdUtils.hpp"
 #include "NodeGeometry.hpp"
 #include "NodeGraphicsObject.hpp"
 #include "NodeState.hpp"
@@ -18,7 +20,7 @@ namespace QtNodes
 void
 NodePainter::
 paint(QPainter * painter,
-      NodeGraphicsObject const &ngo)
+      NodeGraphicsObject & ngo)
 {
   NodeGeometry geometry(ngo);
   geometry.recalculateSizeIfFontChanged(painter->font());
@@ -40,7 +42,7 @@ paint(QPainter * painter,
 void
 NodePainter::
 drawNodeRect(QPainter * painter,
-             NodeGraphicsObject const &ngo)
+             NodeGraphicsObject &ngo)
 {
   AbstractGraphModel const &model = ngo.graphModel();
 
@@ -94,7 +96,7 @@ drawNodeRect(QPainter * painter,
 void
 NodePainter::
 drawConnectionPoints(QPainter * painter,
-                     NodeGraphicsObject const &ngo)
+                     NodeGraphicsObject &ngo)
 {
   AbstractGraphModel const &model = ngo.graphModel();
   NodeId const nodeId     = ngo.nodeId();
@@ -127,40 +129,45 @@ drawConnectionPoints(QPainter * painter,
                        portIndex,
                        PortRole::DataType).value<NodeDataType>();
 
-      auto const &connectedNodes =
-        model.connectedNodes(nodeId, portType, portIndex);
-
-      bool canConnect =
-        (connectedNodes.empty() ||
-         model.portData(nodeId,
-                        portType,
-                        portIndex,
-                        PortRole::ConnectionPolicyRole).value<ConnectionPolicy>() == ConnectionPolicy::Many);
-
       double r = 1.0;
 
       NodeState const &state = ngo.nodeState();
 
-      if (state.isReacting() &&
-          canConnect &&
-          portType == state.reactingPortType())
+      if (auto const * cgo = state.connectionForReaction())
       {
-        auto diff   = state.draggingPos() - p;
-        double dist = std::sqrt(QPointF::dotProduct(diff, diff));
+        PortType requiredPort =
+          cgo->connectionState().requiredPort();
 
-        if (state.reactingDataType().id == dataType.id)
+        if (requiredPort == portType)
         {
-          double const thres = 40.0;
-          r = (dist < thres) ?
-              (2.0 - dist / thres ) :
-              1.0;
-        }
-        else
-        {
-          double const thres = 80.0;
-          r = (dist < thres) ?
-              (dist / thres) :
-              1.0;
+
+          ConnectionId possibleConnectionId =
+            makeCompleteConnectionId(cgo->connectionId(),
+                                     nodeId,
+                                     portIndex);
+
+          bool const possible = model.connectionPossible(possibleConnectionId);
+
+          auto cp = cgo->sceneTransform().map(cgo->endPoint(requiredPort));
+          cp = ngo.sceneTransform().inverted().map(cp);
+
+          auto diff   = cp - p;
+          double dist = std::sqrt(QPointF::dotProduct(diff, diff));
+
+          if (possible)
+          {
+            double const thres = 40.0;
+            r = (dist < thres) ?
+                (2.0 - dist / thres ) :
+                1.0;
+          }
+          else
+          {
+            double const thres = 80.0;
+            r = (dist < thres) ?
+                (dist / thres) :
+                1.0;
+          }
         }
       }
 
@@ -178,14 +185,18 @@ drawConnectionPoints(QPainter * painter,
                            reducedDiameter * r);
     }
   }
-  ;
+
+  if (ngo.nodeState().connectionForReaction())
+  {
+    ngo.nodeState().resetConnectionForReaction();
+  }
 }
 
 
 void
 NodePainter::
 drawFilledConnectionPoints(QPainter * painter,
-                           NodeGraphicsObject const &ngo)
+                           NodeGraphicsObject &ngo)
 {
   AbstractGraphModel const &model = ngo.graphModel();
   NodeId const nodeId     = ngo.nodeId();
@@ -245,7 +256,7 @@ drawFilledConnectionPoints(QPainter * painter,
 void
 NodePainter::
 drawNodeCaption(QPainter * painter,
-                NodeGraphicsObject const &ngo)
+                NodeGraphicsObject &ngo)
 {
   AbstractGraphModel const &model = ngo.graphModel();
   NodeId const nodeId     = ngo.nodeId();
@@ -282,7 +293,7 @@ drawNodeCaption(QPainter * painter,
 void
 NodePainter::
 drawEntryLabels(QPainter * painter,
-                NodeGraphicsObject const &ngo)
+                NodeGraphicsObject &ngo)
 {
   AbstractGraphModel const &model = ngo.graphModel();
   NodeId const nodeId     = ngo.nodeId();
@@ -356,7 +367,7 @@ drawEntryLabels(QPainter * painter,
 void
 NodePainter::
 drawResizeRect(QPainter * painter,
-               NodeGraphicsObject const &ngo)
+               NodeGraphicsObject &ngo)
 {
   AbstractGraphModel const &model = ngo.graphModel();
   NodeId const nodeId     = ngo.nodeId();

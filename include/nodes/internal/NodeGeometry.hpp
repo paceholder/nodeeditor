@@ -25,66 +25,71 @@ public:
   NodeGeometry(NodeGraphicsObject const & ngo);
 
 public:
+  unsigned int
+  entryHeight() const;
 
-  unsigned int entryHeight() const;
-
-  unsigned int verticalSpacing() const;
+  unsigned int
+  verticalSpacing() const;
 
 public:
-  QRectF boundingRect() const;
+  QRectF
+  boundingRect() const;
 
-  QSize size() const;
+  QSize
+  size() const;
 
   /// Updates size unconditionally
-  QSize recalculateSize() const;
+  QSize
+  recalculateSize() const;
 
   /// Updates size if the QFontMetrics is changed
-  QSize recalculateSizeIfFontChanged(QFont const & font) const;
+  QSize
+  recalculateSizeIfFontChanged(QFont const & font) const;
 
-  QPointF portNodePosition(PortType const portType,
-                           PortIndex const index) const;
+  QPointF
+  portNodePosition(PortType const  portType,
+                   PortIndex const index) const;
 
-  QPointF portScenePosition(PortType const portType,
-                            PortIndex const index,
-                            QTransform const & t) const;
+  QPointF
+  portScenePosition(PortType const     portType,
+                    PortIndex const    index,
+                    QTransform const & t) const;
 
-  PortIndex checkHitScenePoint(PortType portType,
-                               QPointF point,
-                               QTransform const & t = QTransform()) const;
+  PortIndex
+  checkHitScenePoint(PortType portType,
+                     QPointF  point,
+                     QTransform const & t = QTransform()) const;
 
-  QRect resizeRect() const;
+  QRect
+  resizeRect() const;
 
   /// Returns the position of a widget on the Node surface
-  QPointF widgetPosition() const;
+  QPointF
+  widgetPosition() const;
 
   /// Returns the maximum height a widget can be without causing the node to grow.
-  int equivalentWidgetHeight() const;
+  int
+  maxInitialWidgetHeight() const;
 
-  //unsigned int validationHeight() const;
-
-  //unsigned int validationWidth() const;
-
-  //static
-  //QPointF calculateNodePositionBetweenNodePorts(PortIndex targetPortIndex, PortType targetPort, Node * targetNode,
-  //PortIndex sourcePortIndex, PortType sourcePort, Node * sourceNode,
-  //Node & newNode);
 private:
 
-  unsigned int captionHeight() const;
+  unsigned int
+  captionHeight() const;
 
-  unsigned int captionWidth() const;
+  unsigned int
+  captionWidth() const;
 
-  unsigned int portWidth(PortType portType) const;
+  unsigned int
+  portWidth(PortType portType) const;
 
 private:
 
   NodeGraphicsObject const & _ngo;
   AbstractGraphModel & _graphModel;
 
-  // some variables are mutable because
-  // we need to change drawing metrics
-  // corresponding to fontMetrics
-  // but this doesn't change constness of Node
+  // Some variables are mutable because we need to change drawing
+  // metrics corresponding to fontMetrics but this doesn't change
+  // constness of the Node.
 
   mutable unsigned int _defaultInPortWidth;
   mutable unsigned int _defaultOutPortWidth;
@@ -92,15 +97,6 @@ private:
   unsigned int _verticalSpacing;
   mutable QFontMetrics _fontMetrics;
   mutable QFontMetrics _boldFontMetrics;
-
-  //unsigned int _entryWidth; // TODO: where was is used?
-
-  //unsigned int _nSources; // TODO: where was it used?
-  //unsigned int _nSinks;
-
-  //QPointF _draggingPos;
-
-  //std::unique_ptr<NodeDataModel> const & _dataModel;
-
 };
+
 }

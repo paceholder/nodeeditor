@@ -124,7 +124,7 @@ addNode(QString const nodeType)
 
 bool
 DataFlowGraphModel::
-connectionPossible(ConnectionId const connectionId)
+connectionPossible(ConnectionId const connectionId) const
 {
   auto getDataType =
     [&](PortType const portType)
@@ -136,7 +136,23 @@ connectionPossible(ConnectionId const connectionId)
 
     };
 
-  return getDataType(PortType::Out).id == getDataType(PortType::In).id;
+  auto portVacant =
+    [&](PortType const portType)
+    {
+      NodeId const nodeId = getNodeId(portType, connectionId);
+      PortIndex const portIndex = getPortIndex(portType, connectionId);
+      auto const connected = connectedNodes(nodeId, portType, portIndex);
+
+      auto policy = portData(nodeId,
+                             portType,
+                             portIndex,
+                             PortRole::ConnectionPolicyRole).value<ConnectionPolicy>();
+
+      return connected.empty() || (policy == ConnectionPolicy::Many);
+    };
+
+  return getDataType(PortType::Out).id == getDataType(PortType::In).id &&
+         portVacant(PortType::Out) && portVacant(PortType::In);
 }
 
 
