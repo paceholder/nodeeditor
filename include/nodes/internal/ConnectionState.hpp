@@ -38,31 +38,36 @@ public:
   ConnectionState(ConnectionState const&) = delete;
   ConnectionState(ConnectionState &&) = delete;
 
-  ConnectionState& operator=(ConnectionState const&) = delete;
-  ConnectionState& operator=(ConnectionState &&) = delete;
+  ConnectionState&
+  operator=(ConnectionState const&) = delete;
+  ConnectionState&
+  operator=(ConnectionState &&) = delete;
 
   ~ConnectionState();
 
 public:
 
-  PortType requiredPort() const;
-  bool requiresPort() const;
+  PortType
+  requiredPort() const;
+  bool
+  requiresPort() const;
 
-  bool hovered() const { return _hovered; }
-  void setHovered(bool hovered) { _hovered = hovered; }
+  bool
+  hovered() const;
+  void
+  setHovered(bool hovered);
 
 public:
 
   /// Caches NodeId for further interaction.
-  void interactWithNode(NodeId const nodeId);
-
-  void setLastHoveredNode(NodeId const nodeId);
+  void
+  setLastHoveredNode(NodeId const nodeId);
 
   NodeId
-  lastHoveredNode() const
-  { return _lastHoveredNode; }
+  lastHoveredNode() const;
 
-  void resetLastHoveredNode();
+  void
+  resetLastHoveredNode();
 
 private:
 

@@ -13,7 +13,7 @@ namespace QtNodes
 ConnectionState::
 ~ConnectionState()
 {
-  resetLastHoveredNode();
+  //resetLastHoveredNode();
 }
 
 
@@ -46,18 +46,19 @@ requiresPort() const
 }
 
 
+bool
+ConnectionState::
+hovered() const
+{
+  return _hovered;
+}
+
+
 void
 ConnectionState::
-interactWithNode(NodeId const nodeId)
+setHovered(bool hovered)
 {
-  if (nodeId != InvalidNodeId)
-  {
-    _lastHoveredNode = nodeId;
-  }
-  else
-  {
-    resetLastHoveredNode();
-  }
+  _hovered = hovered;
 }
 
 
@@ -69,14 +70,23 @@ setLastHoveredNode(NodeId const nodeId)
 }
 
 
+NodeId
+ConnectionState::
+lastHoveredNode() const
+{
+  return _lastHoveredNode;
+}
+
+
 void
 ConnectionState::
 resetLastHoveredNode()
 {
   if (_lastHoveredNode != InvalidNodeId)
   {
-    auto & ngo = *_cgo.nodeScene()->nodeGraphicsObject(_lastHoveredNode);
-    ngo.nodeState().resetReactionToConnection();
+    auto ngo =
+      _cgo.nodeScene()->nodeGraphicsObject(_lastHoveredNode);
+    ngo->update();
   }
 
   _lastHoveredNode = InvalidNodeId;

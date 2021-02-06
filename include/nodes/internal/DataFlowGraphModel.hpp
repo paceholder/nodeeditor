@@ -51,7 +51,7 @@ public:
   addNode(QString const nodeType) override;
 
   bool
-  connectionPossible(ConnectionId const connectionId) override;
+  connectionPossible(ConnectionId const connectionId) const override;
 
   void
   addConnection(ConnectionId const connectionId) override;

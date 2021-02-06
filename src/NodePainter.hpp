@@ -24,29 +24,29 @@ public:
 
   static
   void paint(QPainter * painter,
-             NodeGraphicsObject const & ngo);
+             NodeGraphicsObject  & ngo);
 
   static
   void drawNodeRect(QPainter * painter,
-                    NodeGraphicsObject const & ngo);
+                    NodeGraphicsObject  & ngo);
 
   static
   void drawConnectionPoints(QPainter * painter,
-                            NodeGraphicsObject const & ngo);
+                            NodeGraphicsObject  & ngo);
   static
   void drawFilledConnectionPoints(QPainter * painter,
-                                  NodeGraphicsObject const & ngo);
+                                  NodeGraphicsObject  & ngo);
 
   static
   void drawNodeCaption(QPainter * painter,
-                       NodeGraphicsObject const & ngo);
+                       NodeGraphicsObject  & ngo);
 
   static
   void drawEntryLabels(QPainter * painter,
-                       NodeGraphicsObject const & ngo);
+                       NodeGraphicsObject  & ngo);
 
   static
   void drawResizeRect(QPainter * painter,
-                      NodeGraphicsObject const & ngo);
+                      NodeGraphicsObject  & ngo);
 };
 }
