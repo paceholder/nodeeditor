@@ -28,17 +28,12 @@ public:
   type() const override { return Type; }
 
 public:
-
   ConnectionGraphicsObject(BasicGraphicsScene &scene,
                            ConnectionId const  connectionId);
 
   ~ConnectionGraphicsObject() = default;
 
 public:
-
-  void
-  initializePosition();
-
   AbstractGraphModel &
   graphModel() const;
 
@@ -69,15 +64,13 @@ public:
   void
   setEndPoint(PortType portType, QPointF const &point);
 
-  void
-  setGeometryChanged();
-
   /// Updates the position of both ends
   void
   move();
 
   ConnectionState const &
   connectionState() const;
+
   ConnectionState &
   connectionState();
 
@@ -104,6 +97,9 @@ protected:
   hoverLeaveEvent(QGraphicsSceneHoverEvent * event) override;
 
 private:
+
+  void
+  initializePosition();
 
   void
   addGraphicsEffect();

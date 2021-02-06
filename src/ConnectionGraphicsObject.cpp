@@ -179,14 +179,6 @@ setEndPoint(PortType portType, QPointF const &point)
 
 void
 ConnectionGraphicsObject::
-setGeometryChanged()
-{
-  prepareGeometryChange();
-}
-
-
-void
-ConnectionGraphicsObject::
 move()
 {
   auto moveEnd =
@@ -215,7 +207,7 @@ move()
   moveEnd(_connectionId, PortType::Out);
   moveEnd(_connectionId, PortType::In);
 
-  setGeometryChanged();
+  prepareGeometryChange();
 
   update();
 }
