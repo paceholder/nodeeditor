@@ -9,6 +9,7 @@ However the main changes involve:
 * Allow multiple connection for a single input port.
 * Subcategories for nodes.
 * Dynamic ports nodes.
+* Fixed cyclic loop crash.
 
 ### Purpose
 
