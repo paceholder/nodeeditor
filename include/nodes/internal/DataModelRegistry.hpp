@@ -93,21 +93,27 @@ public:
     registerModel(std::forward<ModelCreator>(creator), category);
   }
 
+  void unregisterModel(QString const &name)
+  {
+	  _registeredItemCreators.erase(name);
+	  _registeredModelsCategory.erase(name);
+  }
+
   void registerTypeConverter(TypeConverterId const & id,
                              TypeConverter typeConverter)
   {
     _registeredTypeConverters[id] = std::move(typeConverter);
   }
 
-  std::unique_ptr<NodeDataModel>create(QString const &modelName);
+  virtual std::unique_ptr<NodeDataModel>create(QString const &modelName);
 
-  RegisteredModelCreatorsMap const &registeredModelCreators() const;
+  virtual RegisteredModelCreatorsMap const &registeredModelCreators() const;
 
-  RegisteredModelsCategoryMap const &registeredModelsCategoryAssociation() const;
+  virtual RegisteredModelsCategoryMap const &registeredModelsCategoryAssociation() const;
 
-  CategoriesSet const &categories() const;
+  virtual CategoriesSet const &categories() const;
 
-  TypeConverter getTypeConverter(NodeDataType const & d1,
+  virtual TypeConverter getTypeConverter(NodeDataType const & d1,
                                  NodeDataType const & d2) const;
 
 private:
