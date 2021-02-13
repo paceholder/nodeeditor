@@ -128,6 +128,12 @@ drawConnectionPoints(QPainter* painter,
 
       auto const & dataType = model->dataType(portType, i);
 
+      // Empty data types are not drawn.
+      if (dataType.id.isEmpty())
+      {
+        continue;
+      }
+
       bool canConnect = (state.getEntries(portType)[i].empty() ||
                          (portType == PortType::Out &&
                           model->portOutConnectionPolicy(i) == NodeDataModel::ConnectionPolicy::Many) );

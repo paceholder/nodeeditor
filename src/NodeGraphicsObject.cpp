@@ -223,6 +223,16 @@ mousePressEvent(QGraphicsSceneMouseEvent * event)
     {
       NodeState const & nodeState = _node.nodeState();
 
+      // Ports with no data type cannot make a connection.
+      {
+        const NodeDataModel* model = _node.nodeDataModel();
+        const NodeDataType dataType = model->dataType(portToCheck, portIndex);
+        if (dataType.id.isEmpty())
+        {
+          continue;
+        }
+      }
+      
       std::unordered_map<QUuid, Connection*> connections =
         nodeState.connections(portToCheck, portIndex);
 
