@@ -98,7 +98,19 @@ public:
 
   QByteArray saveToMemory() const;
 
+  /**
+   * Save only a subset of the nodes to memory, as well as the connections that
+   * link two nodes lying within this subset.
+   */
+  QByteArray saveToMemory(const std::vector<Node*> & nodes) const;
+
   void loadFromMemory(const QByteArray& data);
+
+  /**
+   * Load from memory but replaces uuids in data by new ones to avoid conflit
+   * with existing nodes.
+   */
+  void loadCopyFromMemory(const QByteArray& data);
 
 Q_SIGNALS:
 
