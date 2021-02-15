@@ -93,5 +93,7 @@ private:
   NodeDataType _reactingDataType;
 
   bool _resizing;
+
+  friend class Node;
 };
 }
