@@ -36,6 +36,7 @@ public:
   QColor selectedColor() const;
   QColor selectedHaloColor() const;
   QColor hoveredColor() const;
+  QColor freezedColor() const;
 
   float lineWidth() const;
   float constructionLineWidth() const;
@@ -50,6 +51,7 @@ private:
   QColor SelectedColor;
   QColor SelectedHaloColor;
   QColor HoveredColor;
+  QColor FreezedColor;
 
   float LineWidth;
   float ConstructionLineWidth;

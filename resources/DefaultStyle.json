@@ -32,6 +32,7 @@
     "SelectedColor": [100, 100, 100],
     "SelectedHaloColor": "orange",
     "HoveredColor": [255, 120, 0],
+    "FreezedColor": "blue",
 
     "LineWidth": 3.0,
     "ConstructionLineWidth": 2.0,

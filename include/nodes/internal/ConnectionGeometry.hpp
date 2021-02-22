@@ -60,10 +60,23 @@ public:
   {
     return _hovered;
   }
+
+  bool
+  freezed() const
+  {
+    return _freezed;
+  }
+
   void
   setHovered(bool hovered)
   {
     _hovered = hovered;
+  }
+
+  void
+  setFreezed(bool freezed)
+  {
+    _freezed = freezed;
   }
 
 private:
@@ -76,5 +89,8 @@ private:
   double _lineWidth;
 
   bool _hovered;
+
+  bool _freezed;
+
 };
 }
