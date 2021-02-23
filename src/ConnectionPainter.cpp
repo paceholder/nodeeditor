@@ -169,36 +169,6 @@ drawHoveredOrSelected(QPainter * painter,
 
 static
 void
-drawFreezedLine(QPainter * painter,
-                Connection const & connection)
-{
-  using QtNodes::ConnectionGeometry;
-
-  ConnectionGeometry const& geom = connection.connectionGeometry();
-  bool const freezed = geom.freezed();
-
-  // drawn as a gray background
-  if (freezed)
-  {
-    QPen p;
-
-    auto const &connectionStyle =
-      QtNodes::StyleCollection::connectionStyle();
-    p.setColor(connectionStyle.freezedColor());
-
-    painter->setPen(p);
-    painter->setBrush(Qt::NoBrush);
-
-    // cubic spline
-    auto cubic = cubicPath(geom);
-    painter->drawPath(cubic);
-  }
-}
-
-
-
-static
-void
 drawNormalLine(QPainter * painter,
                Connection const & connection)
 {
@@ -218,6 +188,7 @@ drawNormalLine(QPainter * painter,
   QColor normalColorOut  = connectionStyle.normalColor();
   QColor normalColorIn   = connectionStyle.normalColor();
   QColor selectedColor = connectionStyle.selectedColor();
+  QColor freezedColor = connectionStyle.freezedColor();
 
   bool gradientColor = false;
 
@@ -233,6 +204,8 @@ drawNormalLine(QPainter * painter,
     normalColorOut  = connectionStyle.normalColor(dataTypeOut.id);
     normalColorIn   = connectionStyle.normalColor(dataTypeIn.id);
     selectedColor = normalColorOut.darker(200);
+    freezedColor = normalColorOut.darker(200);
+
   }
 
   // geometry
@@ -248,7 +221,7 @@ drawNormalLine(QPainter * painter,
 
   auto const& graphicsObject = connection.getConnectionGraphicsObject();
   bool const selected = graphicsObject.isSelected();
-
+  bool const freezed = geom.freezed();
 
   auto cubic = cubicPath(geom);
   if (gradientColor)
@@ -256,8 +229,15 @@ drawNormalLine(QPainter * painter,
     painter->setBrush(Qt::NoBrush);
 
     QColor col = normalColorOut;
+    if (freezed)
+    {
+      col = freezedColor;
+      p.setStyle(Qt::PenStyle::DotLine);
+    }
+
     if (selected)
       col = col.darker(200);
+
     p.setColor(col);
     painter->setPen(p);
 
@@ -271,12 +251,19 @@ drawNormalLine(QPainter * painter,
       if (i == segments / 2)
       {
         QColor c = normalColorIn; 
+        if (freezed)
+        {
+          c = freezedColor;
+          p.setStyle(Qt::PenStyle::DotLine);
+        }
+
         if (selected)
           c = c.darker(200);
 
         p.setColor(c);
         painter->setPen(p);
       }
+
       painter->drawLine(cubic.pointAtPercent(ratioPrev),
                         cubic.pointAtPercent(ratio));
     }
@@ -288,7 +275,6 @@ drawNormalLine(QPainter * painter,
       painter->drawPixmap(cubic.pointAtPercent(0.50) - QPoint(pixmap.width()/2,
                                                               pixmap.height()/2),
                           pixmap);
-
     }
   }
   else
@@ -298,6 +284,12 @@ drawNormalLine(QPainter * painter,
     if (selected)
     {
       p.setColor(selectedColor);
+    }
+
+    else if (freezed)
+    {
+      p.setColor(freezedColor);
+      p.setStyle(Qt::PenStyle::DotLine);
     }
 
     painter->setPen(p);
@@ -318,8 +310,6 @@ paint(QPainter* painter,
   drawSketchLine(painter, connection);
 
   drawNormalLine(painter, connection);
-
-  drawFreezedLine(painter, connection);
 
 #ifdef NODE_DEBUG_DRAWING
   debugDrawing(painter, connection);

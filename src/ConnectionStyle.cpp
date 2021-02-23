@@ -205,7 +205,7 @@ QColor
 ConnectionStyle::
 freezedColor() const
 {
-  return HoveredColor;
+  return FreezedColor;
 }
 
 float
