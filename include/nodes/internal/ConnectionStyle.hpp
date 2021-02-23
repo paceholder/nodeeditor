@@ -42,6 +42,8 @@ public:
   float constructionLineWidth() const;
   float pointDiameter() const;
 
+  Qt::PenStyle freezedStyle() const;
+
   bool useDataDefinedColors() const;
 
 private:

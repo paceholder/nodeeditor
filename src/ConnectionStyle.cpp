@@ -228,7 +228,12 @@ float
 ConnectionStyle::
 pointDiameter() const
 {
-  return PointDiameter;
+    return PointDiameter;
+}
+
+Qt::PenStyle ConnectionStyle::freezedStyle() const
+{
+    return Qt::PenStyle::DotLine;
 }
 
 

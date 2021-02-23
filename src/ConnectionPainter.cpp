@@ -232,7 +232,7 @@ drawNormalLine(QPainter * painter,
     if (freezed)
     {
       col = freezedColor;
-      p.setStyle(Qt::PenStyle::DotLine);
+      p.setStyle(connectionStyle.freezedStyle());
     }
 
     if (selected)
@@ -254,7 +254,7 @@ drawNormalLine(QPainter * painter,
         if (freezed)
         {
           c = freezedColor;
-          p.setStyle(Qt::PenStyle::DotLine);
+          p.setStyle(connectionStyle.freezedStyle());
         }
 
         if (selected)
@@ -289,7 +289,7 @@ drawNormalLine(QPainter * painter,
     else if (freezed)
     {
       p.setColor(freezedColor);
-      p.setStyle(Qt::PenStyle::DotLine);
+      p.setStyle(connectionStyle.freezedStyle());
     }
 
     painter->setPen(p);
