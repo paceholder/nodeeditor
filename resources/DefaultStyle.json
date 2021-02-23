@@ -24,7 +24,7 @@
 
     "ConnectionPointDiameter": 8.0,
 
-    "Opacity": 1
+    "Opacity": 0.85
   },
   "ConnectionStyle": {
     "ConstructionColor": "gray",
