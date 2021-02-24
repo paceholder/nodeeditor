@@ -133,7 +133,7 @@ loadJsonFromByteArray(QByteArray const &byteArray)
   CONNECTION_STYLE_READ_COLOR(obj, SelectedColor);
   CONNECTION_STYLE_READ_COLOR(obj, SelectedHaloColor);
   CONNECTION_STYLE_READ_COLOR(obj, HoveredColor);
-  CONNECTION_STYLE_READ_COLOR(obj, FreezedColor);
+  CONNECTION_STYLE_READ_COLOR(obj, FrozenColor);
 
   CONNECTION_STYLE_READ_FLOAT(obj, LineWidth);
   CONNECTION_STYLE_READ_FLOAT(obj, ConstructionLineWidth);
@@ -203,9 +203,9 @@ hoveredColor() const
 
 QColor
 ConnectionStyle::
-freezedColor() const
+frozenColor() const
 {
-  return FreezedColor;
+  return FrozenColor;
 }
 
 float
@@ -231,7 +231,7 @@ pointDiameter() const
     return PointDiameter;
 }
 
-Qt::PenStyle ConnectionStyle::freezedStyle() const
+Qt::PenStyle ConnectionStyle::frozenStyle() const
 {
     return Qt::PenStyle::DotLine;
 }

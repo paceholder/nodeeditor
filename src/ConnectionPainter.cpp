@@ -188,7 +188,7 @@ drawNormalLine(QPainter * painter,
   QColor normalColorOut  = connectionStyle.normalColor();
   QColor normalColorIn   = connectionStyle.normalColor();
   QColor selectedColor = connectionStyle.selectedColor();
-  QColor freezedColor = connectionStyle.freezedColor();
+  QColor frozenColor = connectionStyle.frozenColor();
 
   bool gradientColor = false;
 
@@ -204,7 +204,7 @@ drawNormalLine(QPainter * painter,
     normalColorOut  = connectionStyle.normalColor(dataTypeOut.id);
     normalColorIn   = connectionStyle.normalColor(dataTypeIn.id);
     selectedColor = normalColorOut.darker(200);
-    freezedColor = normalColorOut.darker(200);
+    frozenColor = normalColorOut.darker(200);
 
   }
 
@@ -221,7 +221,7 @@ drawNormalLine(QPainter * painter,
 
   auto const& graphicsObject = connection.getConnectionGraphicsObject();
   bool const selected = graphicsObject.isSelected();
-  bool const freezed = geom.freezed();
+  bool const frozen = geom.frozen();
 
   auto cubic = cubicPath(geom);
   if (gradientColor)
@@ -229,10 +229,10 @@ drawNormalLine(QPainter * painter,
     painter->setBrush(Qt::NoBrush);
 
     QColor col = normalColorOut;
-    if (freezed)
+    if (frozen)
     {
-      col = freezedColor;
-      p.setStyle(connectionStyle.freezedStyle());
+      col = frozenColor;
+      p.setStyle(connectionStyle.frozenStyle());
     }
 
     if (selected)
@@ -251,10 +251,10 @@ drawNormalLine(QPainter * painter,
       if (i == segments / 2)
       {
         QColor c = normalColorIn; 
-        if (freezed)
+        if (frozen)
         {
-          c = freezedColor;
-          p.setStyle(connectionStyle.freezedStyle());
+          c = frozenColor;
+          p.setStyle(connectionStyle.frozenStyle());
         }
 
         if (selected)
@@ -286,10 +286,10 @@ drawNormalLine(QPainter * painter,
       p.setColor(selectedColor);
     }
 
-    else if (freezed)
+    else if (frozen)
     {
-      p.setColor(freezedColor);
-      p.setStyle(connectionStyle.freezedStyle());
+      p.setColor(frozenColor);
+      p.setStyle(connectionStyle.frozenStyle());
     }
 
     painter->setPen(p);
