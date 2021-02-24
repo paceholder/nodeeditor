@@ -14,6 +14,7 @@ ConnectionGeometry()
   //, _animationPhase(0)
   , _lineWidth(3.0)
   , _hovered(false)
+  , _frozen(false)
 { }
 
 QPointF const&

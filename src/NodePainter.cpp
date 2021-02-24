@@ -129,7 +129,7 @@ drawConnectionPoints(QPainter* painter,
   auto const     &connectionStyle = StyleCollection::connectionStyle();
 
   float diameter = nodeStyle.ConnectionPointDiameter;
-  auto  reducedDiameter = diameter * 0.6;
+  auto  reducedDiameter = diameter * 0.8;
 
   for(PortType portType:
       {
@@ -173,7 +173,7 @@ drawConnectionPoints(QPainter* painter,
         {
           double const thres = 40.0;
           r = (dist < thres) ?
-              (2.0 - dist / thres ) :
+              (1.5 - dist / thres ) :
               1.0;
         }
         else
@@ -242,8 +242,8 @@ drawFilledConnectionPoints(QPainter * painter,
         }
 
         painter->drawEllipse(p,
-                             diameter * 0.4,
-                             diameter * 0.4);
+                             diameter * 0.8,
+                             diameter * 0.8);
       }
     }
   }

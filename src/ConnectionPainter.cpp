@@ -167,7 +167,6 @@ drawHoveredOrSelected(QPainter * painter,
   }
 }
 
-
 static
 void
 drawNormalLine(QPainter * painter,
@@ -189,6 +188,7 @@ drawNormalLine(QPainter * painter,
   QColor normalColorOut  = connectionStyle.normalColor();
   QColor normalColorIn   = connectionStyle.normalColor();
   QColor selectedColor = connectionStyle.selectedColor();
+  QColor frozenColor = connectionStyle.frozenColor();
 
   bool gradientColor = false;
 
@@ -204,6 +204,8 @@ drawNormalLine(QPainter * painter,
     normalColorOut  = connectionStyle.normalColor(dataTypeOut.id);
     normalColorIn   = connectionStyle.normalColor(dataTypeIn.id);
     selectedColor = normalColorOut.darker(200);
+    frozenColor = normalColorOut.darker(200);
+
   }
 
   // geometry
@@ -219,7 +221,7 @@ drawNormalLine(QPainter * painter,
 
   auto const& graphicsObject = connection.getConnectionGraphicsObject();
   bool const selected = graphicsObject.isSelected();
-
+  bool const frozen = geom.frozen();
 
   auto cubic = cubicPath(geom);
   if (gradientColor)
@@ -227,8 +229,15 @@ drawNormalLine(QPainter * painter,
     painter->setBrush(Qt::NoBrush);
 
     QColor col = normalColorOut;
+    if (frozen)
+    {
+      col = frozenColor;
+      p.setStyle(connectionStyle.frozenStyle());
+    }
+
     if (selected)
       col = col.darker(200);
+
     p.setColor(col);
     painter->setPen(p);
 
@@ -242,12 +251,19 @@ drawNormalLine(QPainter * painter,
       if (i == segments / 2)
       {
         QColor c = normalColorIn; 
+        if (frozen)
+        {
+          c = frozenColor;
+          p.setStyle(connectionStyle.frozenStyle());
+        }
+
         if (selected)
           c = c.darker(200);
 
         p.setColor(c);
         painter->setPen(p);
       }
+
       painter->drawLine(cubic.pointAtPercent(ratioPrev),
                         cubic.pointAtPercent(ratio));
     }
@@ -259,7 +275,6 @@ drawNormalLine(QPainter * painter,
       painter->drawPixmap(cubic.pointAtPercent(0.50) - QPoint(pixmap.width()/2,
                                                               pixmap.height()/2),
                           pixmap);
-
     }
   }
   else
@@ -269,6 +284,12 @@ drawNormalLine(QPainter * painter,
     if (selected)
     {
       p.setColor(selectedColor);
+    }
+
+    else if (frozen)
+    {
+      p.setColor(frozenColor);
+      p.setStyle(connectionStyle.frozenStyle());
     }
 
     painter->setPen(p);

@@ -2,11 +2,11 @@
   "FlowViewStyle": {
     "BackgroundColor": [53, 53, 53],
     "FineGridColor": [60, 60, 60],
-    "CoarseGridColor": [25, 25, 25]
+    "CoarseGridColor": [44, 44, 44]
   },
   "NodeStyle": {
-    "NormalBoundaryColor": [255, 255, 255],
-    "SelectedBoundaryColor": [255, 165, 0],
+    "NormalBoundaryColor": [120, 120, 120],
+    "SelectedBoundaryColor": [250, 250, 250],
     "GradientColor0": [130, 130, 130],
     "GradientColor1": [80, 80, 80],
     "GradientColor2": [64, 64, 64],
@@ -14,28 +14,29 @@
     "ShadowColor": [20, 20, 20],
     "FontColor" : "white",
     "FontColorFaded" : [200, 200, 200],
-    "ConnectionPointColor": [169, 169, 169],
-    "FilledConnectionPointColor": [240, 67, 0],
-    "ErrorColor": "red",
+    "ConnectionPointColor": [143, 143, 143],
+    "FilledConnectionPointColor": [36, 161, 72],
+    "ErrorColor": [120, 0, 0],
     "WarningColor": [120, 0, 0],
 
-    "PenWidth": 1.0,
-    "HoveredPenWidth": 1.5,
+    "PenWidth": 1.5,
+    "HoveredPenWidth": 2.0,
 
     "ConnectionPointDiameter": 8.0,
 
-    "Opacity": 0.8
+    "Opacity": 0.85
   },
   "ConnectionStyle": {
     "ConstructionColor": "gray",
-    "NormalColor": [240, 67, 0],
+    "NormalColor": [36, 161, 72],
     "SelectedColor": [100, 100, 100],
     "SelectedHaloColor": "orange",
     "HoveredColor": [255, 120, 0],
+    "FrozenColor": [143, 143, 143],
 
     "LineWidth": 3.0,
     "ConstructionLineWidth": 2.0,
-    "PointDiameter": 10.0,
+    "PointDiameter": 12.0,
 
     "UseDataDefinedColors": false
   }
