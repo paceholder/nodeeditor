@@ -62,9 +62,9 @@ public:
   }
 
   bool
-  freezed() const
+  frozen() const
   {
-    return _freezed;
+    return _frozen;
   }
 
   void
@@ -74,9 +74,9 @@ public:
   }
 
   void
-  setFreezed(bool freezed)
+  setFrozen(bool frozen)
   {
-    _freezed = freezed;
+    _frozen = frozen;
   }
 
 private:
@@ -90,7 +90,7 @@ private:
 
   bool _hovered;
 
-  bool _freezed;
+  bool _frozen;
 
 };
 }

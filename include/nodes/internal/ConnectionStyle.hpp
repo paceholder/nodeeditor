@@ -36,13 +36,13 @@ public:
   QColor selectedColor() const;
   QColor selectedHaloColor() const;
   QColor hoveredColor() const;
-  QColor freezedColor() const;
+  QColor frozenColor() const;
 
   float lineWidth() const;
   float constructionLineWidth() const;
   float pointDiameter() const;
 
-  Qt::PenStyle freezedStyle() const;
+  Qt::PenStyle frozenStyle() const;
 
   bool useDataDefinedColors() const;
 
@@ -53,7 +53,7 @@ private:
   QColor SelectedColor;
   QColor SelectedHaloColor;
   QColor HoveredColor;
-  QColor FreezedColor;
+  QColor FrozenColor;
 
   float LineWidth;
   float ConstructionLineWidth;
