@@ -770,6 +770,23 @@ mousePressEvent(QMouseEvent *event)
 
 void
 FlowView::
+mouseMoveEvent(QMouseEvent *event)
+{
+  QGraphicsView::mouseMoveEvent(event);
+  if (scene()->mouseGrabberItem() == nullptr &&
+      event->buttons() == Qt::LeftButton)
+  {
+    // Make sure shift is not being pressed
+    if ((event->modifiers() & Qt::ShiftModifier) == 0)
+    {
+      QPointF difference = _clickPos - mapToScene(event->pos());
+      setSceneRect(sceneRect().translated(difference.x(), difference.y()));
+    }
+  }
+}
+
+void
+FlowView::
 drawBackground(QPainter* painter, const QRectF& r)
 {
   QGraphicsView::drawBackground(painter, r);
