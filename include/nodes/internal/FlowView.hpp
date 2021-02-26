@@ -194,6 +194,8 @@ protected:
 
   void mousePressEvent(QMouseEvent *event) override;
 
+  void mouseMoveEvent(QMouseEvent *event) override;
+
   void drawBackground(QPainter* painter, const QRectF& r) override;
 
   void showEvent(QShowEvent *event) override;
