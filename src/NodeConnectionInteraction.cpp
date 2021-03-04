@@ -227,12 +227,19 @@ bool
 NodeConnectionInteraction::
 nodePortIsEmpty(PortType portType, PortIndex portIndex) const
 {
+  if (portType == PortType::None)
+  {
+    return false;
+  }
+
   NodeState const & nodeState = _node->nodeState();
 
   auto const & entries = nodeState.getEntries(portType);
 
   if (entries[portIndex].empty()) return true;
 
-  const auto outPolicy = _node->nodeDataModel()->portOutConnectionPolicy(portIndex);
-  return ( portType == PortType::Out && outPolicy == NodeDataModel::ConnectionPolicy::Many);
+  if (portType == PortType::In)
+    return _node->nodeDataModel()->portInConnectionPolicy(portIndex) == NodeDataModel::ConnectionPolicy::Many;
+
+  return _node->nodeDataModel()->portOutConnectionPolicy(portIndex) == NodeDataModel::ConnectionPolicy::Many;
 }

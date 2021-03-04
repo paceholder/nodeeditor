@@ -1,3 +1,4 @@
 *.py
 *.pyc
+_build
 CMakeLists.txt.user

@@ -115,6 +115,8 @@ public:
   NodeDataType
   dataType(PortType portType) const;
 
+  TypeConverter getTypeConverter() const;
+
   void
   setTypeConverter(TypeConverter converter);
 
@@ -124,7 +126,7 @@ public:
 public: // data propagation
 
   void
-  propagateData(std::shared_ptr<NodeData> nodeData) const;
+  propagateData() const;
 
   void
   propagateEmptyData() const;

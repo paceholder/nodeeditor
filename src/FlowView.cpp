@@ -9,7 +9,6 @@
 #include <QtCore/QRectF>
 #include <QtCore/QPointF>
 
-#include <QtOpenGL>
 #include <QtWidgets>
 
 #include <QDebug>
