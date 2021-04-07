@@ -30,6 +30,7 @@
 
 using QtNodes::FlowScene;
 using QtNodes::Node;
+using QtNodes::Group;
 using QtNodes::NodeGraphicsObject;
 using QtNodes::Connection;
 using QtNodes::DataModelRegistry;
@@ -49,9 +50,17 @@ FlowScene(std::shared_ptr<DataModelRegistry> registry)
   
   auto UpdateLamda = [this](Node& n, const QPointF& p)
   {
+    resolveGroups(n);
 	  UpdateHistory();
   };
   connect(this, &FlowScene::nodeMoveFinished, this, UpdateLamda);
+  
+  auto GroupUpdateLamda = [this](Group& g, const QPointF& p)
+  {
+    resolveGroups(g);
+	  UpdateHistory();
+  };
+  connect(this, &FlowScene::groupMoveFinished, this, GroupUpdateLamda);
 
   anchors.resize(10);  
 }
@@ -132,6 +141,14 @@ restoreConnection(QJsonObject const &connectionJson)
   auto nodeIn  = _nodes[nodeInId].get();
   auto nodeOut = _nodes[nodeOutId].get();
 
+  std::vector<NodeState::ConnectionPtrSet> connIn = nodeIn->nodeState().getEntries(PortType::In);
+  std::vector<NodeState::ConnectionPtrSet> connOut = nodeOut->nodeState().getEntries(PortType::Out);
+  int numConnectionsIn = connIn.size();
+  int numConnectionsOut = connOut.size();
+
+  portIndexIn = std::min(numConnectionsIn - 1, portIndexIn);
+  portIndexOut = std::min(numConnectionsOut - 1, portIndexOut);
+
   return createConnection(*nodeIn, portIndexIn, *nodeOut, portIndexOut);
 }
 
@@ -147,6 +164,7 @@ void FlowScene::pasteConnection(QJsonObject const &connectionJson, QUuid newIn, 
   auto nodeOut = _nodes[newOut].get();
 
   createConnection(*nodeIn, portIndexIn, *nodeOut, portIndexOut);
+
 }
 
 
@@ -178,17 +196,33 @@ createNode(std::unique_ptr<NodeDataModel> && dataModel)
 }
 
 void FlowScene::createGroup() {
+  auto group = std::make_shared<Group>(*this);
+  auto ggo  = std::make_shared<GroupGraphicsObject>(*this, *group);
 
-  std::vector<std::shared_ptr<Node>> selection =  selectedNodes();
-  auto group = std::make_unique<Group>(*this);
-  
-  for(int i=0; i<selection.size(); i++) {
-    group->AddNode(selection[i]);
-  }
-  
-  _groups[group->id()] = std::move(group);
+  QUuid id = group->id();
+  auto groupPtr = group.get();
+  group->setGraphicsObject(ggo);
+  _groups[id] = group;
+
+  // return *groupPtr;
 }
 
+
+Group&
+FlowScene::
+restoreGroup(QJsonObject const& nodeJson) {
+  auto group = std::make_shared<Group>(*this);
+  auto ggo  = std::make_shared<GroupGraphicsObject>(*this, *group);
+
+  group->setGraphicsObject(ggo);
+  group->restore(nodeJson);
+
+  QUuid id = group->id();
+  _groups[id] = group;
+
+  auto groupPtr = group.get();
+  return *groupPtr;
+}
 
 Node&
 FlowScene::
@@ -200,13 +234,16 @@ restoreNode(QJsonObject const& nodeJson)
   if (!dataModel)
     throw std::logic_error(std::string("No registered model with name ") +
                             modelName.toLocal8Bit().data());
-  auto node = std::make_unique<Node>(std::move(dataModel));
+  auto node = std::make_shared<Node>(std::move(dataModel));
   auto ngo  = std::make_unique<NodeGraphicsObject>(*this, *node);
   node->setGraphicsObject(std::move(ngo));
   node->restore(nodeJson);
 
   auto nodePtr = node.get();
   _nodes[node->id()] = std::move(node);
+
+  resolveGroups(*nodePtr);
+
   nodeCreated(*nodePtr);
   return *nodePtr;
 }
@@ -265,6 +302,7 @@ removeNode(Node& node)
   deleteConnections(PortType::In);
   deleteConnections(PortType::Out);
 
+  
   _nodes.erase(node.id());
 }
 
@@ -406,6 +444,93 @@ getNodeSize(const Node& node) const
   return QSizeF(node.nodeGeometry().width(), node.nodeGeometry().height());
 }
 
+void 
+FlowScene::
+resolveGroups(Group& group) {
+  GroupGraphicsObject& ggo = group.groupGraphicsObject();
+  QRectF groupRect = ggo.mapRectToScene(ggo.boundingRect());
+  
+  //Check if the nodes that were inside the group still are (When resizing)
+  for(int i=ggo.childItems().size()-1; i>=0; i--) {
+    QGraphicsObject* node = (QGraphicsObject*) ggo.childItems()[i];
+    QRectF nodeRect = node->mapRectToScene(node->boundingRect());
+    if(!groupRect.contains(nodeRect)) {
+      QPointF scenePos = node->scenePos();
+      node->setParentItem(nullptr);
+      ggo.childItems().removeAt(i);
+      node->setPos(scenePos);
+    }
+  }
+
+  //Check all the the other things that collide the group at its new location
+  QList<QGraphicsItem*>others =  collidingItems(&ggo, Qt::IntersectsItemBoundingRect);
+  for(int i=0; i<others.size(); i++) {
+    QGraphicsItem* other = others[i];
+    NodeGraphicsObject* ngo = dynamic_cast<NodeGraphicsObject*>(other);
+    GroupGraphicsObject* ggo1 = dynamic_cast<GroupGraphicsObject*>(other);
+    if(ngo || ggo1) {
+      std::cout << " OK " << std::endl;
+      QRectF otherRect = other->mapRectToScene(other->boundingRect());
+      
+      //checks what is inside
+      if(groupRect.contains(otherRect)) {
+        QPointF scenePos = other->scenePos();
+        QPointF parentPos = ggo.mapFromScene(scenePos);
+        if(!other->isAncestorOf(&ggo)) {
+          other->setParentItem(&ggo);
+          other->setPos(parentPos);
+        }
+      } else if(otherRect.contains(groupRect)) { // Checks inside of what it is
+        QPointF scenePos = ggo.scenePos();
+        QPointF parentPos = other->mapFromScene(scenePos);
+        if(!ggo.isAncestorOf(other)) {
+          ggo.setParentItem(other);
+          ggo.setPos(parentPos);
+        }
+      }
+    } else {
+      std::cout << "NO OK " << std::endl;
+    }
+
+
+  }
+  ggo.moveConnections();
+}
+
+void 
+FlowScene::
+resolveGroups(Node& n) {
+  NodeGraphicsObject& c = n.nodeGraphicsObject();
+  bool hasIntersect = false;
+  
+  //Check if the final position is inside a group
+  for (auto& group : _groups)
+  {
+    auto groupPtr = group.second.get();
+    GroupGraphicsObject* ggo = (GroupGraphicsObject*) groupPtr->_groupGraphicsObject.get();
+    
+    QRectF groupRect = ggo->mapRectToScene(ggo->boundingRect());
+    QRectF nodeRect = c.mapRectToScene(c.boundingRect());
+
+    if(groupRect.contains(nodeRect)) {
+      hasIntersect = true;
+      if(c.parentItem() != ggo) {
+        QPointF scenePos = c.scenePos();
+        QPointF parentPos = ggo->mapFromScene(scenePos);
+        c.setParentItem(ggo);
+        c.setPos(parentPos);
+      }
+    }
+  }
+
+  //Check if it went out of a group
+  if(!hasIntersect && c.parentItem() != nullptr ) {
+    QPointF newPos = c.parentItem()->mapToScene(c.pos());
+    c.setParentItem(nullptr);
+    c.setPos(newPos);
+  }
+}
+
 
 std::unordered_map<QUuid, std::shared_ptr<Node> > const &
 FlowScene::
@@ -431,6 +556,7 @@ selectedNodes() const
 
   std::vector<std::shared_ptr<Node>> ret;
   ret.reserve(graphicsItems.size());
+  
 
   for (QGraphicsItem* item : graphicsItems)
   {
@@ -528,15 +654,21 @@ saveToMemory() const
 {
   QJsonObject sceneJson;
 
-  QJsonArray nodesJsonArray;
+  QJsonArray groupsJsonArray;
+  for (auto const & pair : _groups)
+  {
+    auto const &group = pair.second;
+    groupsJsonArray.append(group->save());
+  }
+  sceneJson["groups"] = groupsJsonArray;
 
+  QJsonArray nodesJsonArray;
   for (auto const & pair : _nodes)
   {
     auto const &node = pair.second;
 
     nodesJsonArray.append(node->save());
   }
-
   sceneJson["nodes"] = nodesJsonArray;
 
   QJsonArray connectionJsonArray;
@@ -579,6 +711,12 @@ FlowScene::
 loadFromMemory(const QByteArray& data)
 {
   QJsonObject const jsonDocument = QJsonDocument::fromJson(data).object();
+
+  QJsonArray groupsJsonArray = jsonDocument["groups"].toArray();
+  for (int i = 0; i < groupsJsonArray.size(); ++i)
+  {
+    restoreGroup(groupsJsonArray[i].toObject());
+  }
 
   QJsonArray nodesJsonArray = jsonDocument["nodes"].toArray();
 

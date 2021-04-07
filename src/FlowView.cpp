@@ -23,8 +23,13 @@
 #include "ConnectionGraphicsObject.hpp"
 #include "StyleCollection.hpp"
 
+#include "Connection.hpp"
+#include "NodeConnectionInteraction.hpp"
+
 using QtNodes::FlowView;
 using QtNodes::FlowScene;
+using QtNodes::Connection;
+using QtNodes::NodeConnectionInteraction;
 
 FlowView::
 FlowView(QWidget *parent)
@@ -184,7 +189,7 @@ FlowView::setScene(FlowScene *scene)
   }
 }
 
-void
+void 
 FlowView::
 contextMenuEvent(QContextMenuEvent *event)
 {
@@ -193,7 +198,7 @@ contextMenuEvent(QContextMenuEvent *event)
     QGraphicsView::contextMenuEvent(event);
     return;
   }
-
+  
   QMenu modelMenu;
 
   auto skipText = QStringLiteral("skip me");
@@ -255,9 +260,8 @@ contextMenuEvent(QContextMenuEvent *event)
       QPoint pos = event->pos();
 
       QPointF posView = this->mapToScene(pos);
-
       node.nodeGraphicsObject().setPos(posView);
-	  
+
 	  _scene->UpdateHistory();
     }
     else
@@ -294,7 +298,6 @@ contextMenuEvent(QContextMenuEvent *event)
 
   // make sure the text box gets focus so the user doesn't have to click on it
   txtBox->setFocus();
-
   modelMenu.exec(event->globalPos());
 }
 
@@ -351,26 +354,22 @@ void
 FlowView::
 deleteSelectedNodes()
 {
-  //std::cout << "deleteSelectedNodes" << std::endl; 
-  // delete the nodes, this will delete many of the connections
-  std::vector<std::shared_ptr<Node>> nodeItems = _scene->selectedNodes();
-  for(int i = 0; i < nodeItems.size(); i++)
+
+  for (QGraphicsItem * item : _scene->selectedItems())
   {
-    Node* item = nodeItems[i].get(); 
     if(item)
     {
-      _scene->removeNode(*item);
+	  if (auto c = qgraphicsitem_cast<NodeGraphicsObject*>(item))
+	  {
+        _scene->removeNode(c->node());
+	  }
+	  else if (auto c = qgraphicsitem_cast<ConnectionGraphicsObject*>(item))
+	  {
+        _scene->deleteConnection(c->connection());      
+	  }
+      
     }
   }
-
-  // for (QGraphicsItem * item : _scene->selectedItems())
-  // {
-  //   if(item)
-  //   {
-  //     if (auto c = qgraphicsitem_cast<ConnectionGraphicsObject*>(item))
-  //       _scene->deleteConnection(c->connection());
-  //   }
-  // }
   
   _scene->UpdateHistory(); 
 }

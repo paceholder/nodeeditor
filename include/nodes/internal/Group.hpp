@@ -14,7 +14,6 @@
 #include "NodeState.hpp"
 #include "NodeGeometry.hpp"
 #include "NodeData.hpp"
-#include "NodeGraphicsObject.hpp"
 #include "GroupGraphicsObject.hpp"
 #include "ConnectionGraphicsObject.hpp"
 #include "Serializable.hpp"
@@ -22,26 +21,47 @@
 namespace QtNodes
 {
 
+class GroupGraphicsObject;
+
 class NODE_EDITOR_PUBLIC Group
     : public QObject
     , public Serializable
 {
     Q_OBJECT
 public: 
+  GroupGraphicsObject &
+  groupGraphicsObject() {
+      return *_groupGraphicsObject.get();
+  }
+  
+  GroupGraphicsObject const &
+  groupGraphicsObject() const {
+      return *_groupGraphicsObject.get();
+  }
 
   Group(FlowScene &scene): _scene(scene),
-                          _id(QUuid::createUuid())
-  {
-    _groupGraphicsObject = std::make_unique<GroupGraphicsObject>(scene);
-  }
+                          _id(QUuid::createUuid()),
+                          _groupGraphicsObject(nullptr),
+                          _name("New Group")
+  {  }
 
   void AddNode(std::shared_ptr<Node> node) {
     nodes.push_back(node);
   }
 
 
+  void
+  setGraphicsObject(std::shared_ptr<GroupGraphicsObject> graphics) {
+    // _groupGraphicsObject = std::move(graphics);
+    _groupGraphicsObject = graphics;
+  }
+
+
   virtual
   ~Group(){};
+
+  void SetName(QString _name);
+  QString GetName();
 
 public:
 
@@ -50,16 +70,43 @@ public:
   id() const;
 
   QJsonObject save() const override{
-    QJsonObject object;
-    return object;
+    QJsonObject groupJson;
+    groupJson["name"] = _name;
+
+    QJsonObject posObj;
+    posObj["x"] = _groupGraphicsObject->pos().x();
+    posObj["y"] = _groupGraphicsObject->pos().y();
+    groupJson["position"] = posObj;    
+
+    QJsonObject colObj;
+    colObj["r"] = _groupGraphicsObject->r;
+    colObj["g"] = _groupGraphicsObject->g;
+    colObj["b"] = _groupGraphicsObject->b;
+    groupJson["color"] = colObj;    
+    return groupJson;
   };
 
-  void restore(QJsonObject const &json) override{};
+  void restore(QJsonObject const &json) override{
+    _id = QUuid(json["id"].toString());
 
+    QJsonObject positionJson = json["position"].toObject();
+    QPointF     point(positionJson["x"].toDouble(),
+                      positionJson["y"].toDouble());
+    _groupGraphicsObject->setPos(point);
+
+    QJsonObject colorJson = json["color"].toObject();
+    _groupGraphicsObject->r = colorJson["r"].toInt();
+    _groupGraphicsObject->g = colorJson["g"].toInt();
+    _groupGraphicsObject->b = colorJson["b"].toInt();
+
+    _name = json["name"].toString();
+  };
+
+  std::shared_ptr<GroupGraphicsObject> _groupGraphicsObject;
+  QString _name;
 private:
 
     FlowScene & _scene;
-    std::unique_ptr<GroupGraphicsObject> _groupGraphicsObject;
     std::vector<std::shared_ptr<Node>> nodes;
 
     QUuid _id;

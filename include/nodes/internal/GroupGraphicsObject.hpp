@@ -15,6 +15,7 @@ namespace QtNodes
 
 class FlowScene;
 class FlowItemEntry;
+class Group;
 
 /// Class reacts on GUI events, mouse clicks and
 /// forwards painting operation.
@@ -23,16 +24,28 @@ class GroupGraphicsObject : public QGraphicsObject
   Q_OBJECT
 
 public:
-  GroupGraphicsObject(FlowScene &scene);
+  GroupGraphicsObject(FlowScene &scene, Group& group);
 
   virtual
   ~GroupGraphicsObject();
+
+  Group&
+  group();
+
+  Group const&
+  group() const;
+
 
   QRectF
   boundingRect() const override;
 
   void
   setGeometryChanged();
+
+  /// Visits all attached connections and corrects
+  /// their corresponding end points.
+  void
+  moveConnections() const;
 
   enum { Type = UserType + 1 };
 
@@ -42,6 +55,7 @@ public:
   void
   lock(bool locked);
 
+  uint8_t r, g, b;
 protected:
   void
   paint(QPainter*                       painter,
@@ -75,8 +89,16 @@ protected:
   void
   contextMenuEvent(QGraphicsSceneContextMenuEvent* event) override;
 
-
 private:
   FlowScene & _scene;
+  Group& _group;
+
+  bool isResizingX=false;
+  bool isResizingY=false;
+  bool isResizingXY=false;
+
+  int sizeX=1000;  
+  int sizeY=1000;  
+
 };
 }

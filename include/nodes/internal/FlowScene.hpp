@@ -67,6 +67,8 @@ public:
   void createGroup();
 
   Node&restoreNode(QJsonObject const& nodeJson);
+  
+  Group& restoreGroup(QJsonObject const& nodeJson);
 
   QUuid pasteNode(QJsonObject &json, QPointF nodeGroupCentroid, QPointF mousePos);
   
@@ -89,6 +91,11 @@ public:
   void setNodePosition(Node& node, const QPointF& pos) const;
 
   QSizeF getNodeSize(const Node& node) const;
+
+  void resolveGroups(Group& node);
+
+  void resolveGroups(Node& n);
+
 public:
 
   std::unordered_map<QUuid, std::shared_ptr<Node> > const &nodes() const;
@@ -124,17 +131,26 @@ public:
 signals:
 
   void nodeCreated(Node &n);
+  
+  void groupCreated(Group &g);
 
   void nodeDeleted(Node &n);
 
   void connectionCreated(Connection &c);
+
   void connectionDeleted(Connection &c);
 
   void nodeMoved(Node& n, const QPointF& newLocation);
+
+  void groupMoved(Group& n, const QPointF& newLocation);
   
   void nodeMoveFinished(Node& n, const QPointF& newLocation);
+  
+  void groupMoveFinished(Group& g, const QPointF& newLocation);
 
   void nodeDoubleClicked(Node& n);
+  
+  void groupDoubleClicked(Group& g);
 
   void connectionHovered(Connection& c, QPoint screenPos);
 
@@ -158,7 +174,7 @@ private:
   std::unordered_map<QUuid, SharedConnection> _connections;
   std::unordered_map<QUuid, UniqueNode>       _nodes;
   std::shared_ptr<DataModelRegistry>          _registry;
-  std::unordered_map<QUuid, std::unique_ptr<Group>> _groups;
+  std::unordered_map<QUuid, std::shared_ptr<Group>> _groups;
 
   int historyInx; 
   bool writeToHistory; 
