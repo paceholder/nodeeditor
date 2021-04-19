@@ -232,8 +232,12 @@ restoreNode(QJsonObject const& nodeJson)
   auto dataModel = registry().create(modelName); //This is where it looks for the node by name
 
   if (!dataModel)
-    throw std::logic_error(std::string("No registered model with name ") +
-                            modelName.toLocal8Bit().data());
+  {
+	  dataModel = registry().create("DeletedNode");
+  }
+    /*throw std::logic_error(std::string("No registered model with name ") +
+                         modelName.toLocal8Bit().data());
+*/
   auto node = std::make_shared<Node>(std::move(dataModel));
   auto ngo  = std::make_unique<NodeGraphicsObject>(*this, *node);
   node->setGraphicsObject(std::move(ngo));
