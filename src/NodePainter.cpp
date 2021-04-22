@@ -492,7 +492,7 @@ drawProgressValue(QPainter * painter,
 
   auto rect = QFontMetrics(font).boundingRect(nodeProgress);
 
-  QPointF position(0, geom.height() - rect.height());
+  QPointF position(rect.width() / 2, geom.height() - rect.height());
 
   painter->setFont(font);
   painter->setPen(nodeStyle.FontColor);
