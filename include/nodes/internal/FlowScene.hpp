@@ -100,6 +100,10 @@ public:
 
   void loadFromMemory(const QByteArray& data);
 
+  void loadFromObject(const QJsonObject& object);
+
+  void saveToObject(QJsonObject& object) const;
+
 Q_SIGNALS:
 
   /**
