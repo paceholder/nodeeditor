@@ -527,11 +527,7 @@ QByteArray
 FlowScene::
 saveToMemory() const
 {
-  QJsonObject sceneJson;
-
-  saveToObject(sceneJson);
-
-  QJsonDocument document(sceneJson);
+  QJsonDocument document(saveToObject());
 
   return document.toJson();
 }
@@ -545,10 +541,12 @@ loadFromMemory(const QByteArray& data)
 }
 
 
-void
+QJsonObject
 FlowScene::
-saveToObject(QJsonObject& object) const
+saveToObject() const
 {
+  QJsonObject object;
+
   QJsonArray nodesJsonArray;
 
   for (auto const & pair : _nodes)
@@ -572,6 +570,8 @@ saveToObject(QJsonObject& object) const
   }
 
   object["connections"] = connectionJsonArray;
+
+  return object;
 }
 
 

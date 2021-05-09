@@ -102,7 +102,7 @@ public:
 
   void loadFromObject(const QJsonObject& object);
 
-  void saveToObject(QJsonObject& object) const;
+  QJsonObject saveToObject() const;
 
 Q_SIGNALS:
 
