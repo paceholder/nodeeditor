@@ -18,6 +18,7 @@ set(NE_DEVELOPER_DEFAULTS "${is_root_project}" CACHE BOOL "Turns on default sett
 option(BUILD_TESTING "Build tests" "${NE_DEVELOPER_DEFAULTS}")
 option(BUILD_EXAMPLES "Build Examples" "${NE_DEVELOPER_DEFAULTS}")
 option(BUILD_SHARED_LIBS "Build as shared library" ON)
+option(BUILD_DEBUG_POSTFIX_D "Append d suffix to debug libraries" OFF)
 option(NE_FORCE_TEST_COLOR "Force colorized unit test output" OFF)
 
 enable_testing()
@@ -29,6 +30,10 @@ if(NE_DEVELOPER_DEFAULTS)
   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
   set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
   set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
+endif()
+
+if(BUILD_DEBUG_POSTFIX_D)
+  set(CMAKE_DEBUG_POSTFIX d)
 endif()
 
 add_subdirectory(external)

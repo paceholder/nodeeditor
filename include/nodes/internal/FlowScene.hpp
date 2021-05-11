@@ -302,6 +302,7 @@ Q_SIGNALS:
   void nodeDeleted(Node &n);
 
   void connectionCreated(Connection const &c);
+
   void connectionDeleted(Connection const &c);
 
   void nodeMoved(Node& n, const QPointF& newLocation);
@@ -326,16 +327,22 @@ private:
   using UniqueNode       = std::unique_ptr<Node>;
   using SharedGroup      = std::shared_ptr<NodeGroup>;
 
+  // DO NOT reorder this member to go after the others.
+  // This should outlive all the connections and nodes of
+  // the graph, so that nodes can potentially have pointers into it,
+  // which is why it comes first in the class.
+  std::shared_ptr<DataModelRegistry>          _registry{};
+
   std::unordered_map<QUuid, SharedConnection> _connections{};
   std::unordered_map<QUuid, UniqueNode>       _nodes{};
   std::unordered_map<QUuid, SharedGroup>      _groups{};
-  std::shared_ptr<DataModelRegistry>          _registry{};
 
 private Q_SLOTS:
 
   void setupConnectionSignals(Connection const& c);
 
   void sendConnectionCreatedToNodes(Connection const& c);
+
   void sendConnectionDeletedToNodes(Connection const& c);
 
 };

@@ -742,6 +742,8 @@ load(const QString& fileName) {
 
   clearScene();
 
+  clearScene();
+
   QByteArray wholeFile = file.readAll();
 
   loadFromMemory(wholeFile);
