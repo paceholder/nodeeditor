@@ -570,7 +570,7 @@ contextMenuEvent(QContextMenuEvent *event)
 
   treeView->expandAll();
 
-  connect(treeView, &QTreeWidget::itemClicked, [&](QTreeWidgetItem *item, int)
+  auto selection_handler_fun =  [&](QTreeWidgetItem *item, int)
   {
     QString modelName = item->data(0, Qt::UserRole).toString();
 
@@ -595,7 +595,11 @@ contextMenuEvent(QContextMenuEvent *event)
     }
 
     modelMenu.close();
-  });
+  };
+  // A node is created by both clicking with the mouse or pressing "Enter"
+  connect(treeView, &QTreeWidget::itemClicked, selection_handler_fun);
+
+  connect(treeView, &QTreeWidget::itemActivated, selection_handler_fun);
 
   //Setup filtering
   connect(txtBox, &QLineEdit::textChanged, [&](const QString &text)
