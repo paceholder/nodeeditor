@@ -23,7 +23,12 @@ matrix:
       dist: xenial
       sudo: false
       compiler: gcc
-      env: CXX=g++-7 CC=gcc-7 QT=512
+      env:
+        - CXX=g++-7 CC=gcc-7 QT=512
+        - CXXFLAGS="-fsanitize=address -fno-omit-frame-pointer"
+        - LDFLAGS=-fsanitize=address
+           # Too many false positive leaks:
+        - ASAN_OPTIONS=detect_leaks=0
       addons:
         apt:
           sources:

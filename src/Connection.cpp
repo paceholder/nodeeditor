@@ -70,6 +70,7 @@ Connection::
   {
     Q_EMIT connectionMadeIncomplete(*this);
   }
+
   propagateEmptyData();
 
   if (_inNode)
