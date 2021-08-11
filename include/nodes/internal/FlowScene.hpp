@@ -54,7 +54,7 @@ public:
 
   std::shared_ptr<Connection> restoreConnection(QJsonObject const &connectionJson);
 
-  void deleteConnection(Connection& connection);
+  void deleteConnection(Connection const& connection);
 
   Node&createNode(std::unique_ptr<NodeDataModel> && dataModel);
 
@@ -123,6 +123,8 @@ Q_SIGNALS:
   void nodeMoved(Node& n, const QPointF& newLocation);
 
   void nodeDoubleClicked(Node& n);
+
+  void nodeClicked(Node& n);
 
   void connectionHovered(Connection& c, QPoint screenPos);
 
