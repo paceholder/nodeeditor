@@ -232,6 +232,12 @@ contextMenuEvent(QContextMenuEvent *event)
     topLevelItems[cat] = item;
   }
 
+  //Add templates category
+  auto templatesCategory = new QTreeWidgetItem(treeView);
+  templatesCategory->setText(0, "Templates");
+  templatesCategory->setData(0, Qt::UserRole, "Templates");
+  topLevelItems["Templates"] = templatesCategory;
+
   for (auto const &assoc : _scene->registry().registeredModelsCategoryAssociation())
   {
     auto parent = topLevelItems[assoc.second];
@@ -239,8 +245,18 @@ contextMenuEvent(QContextMenuEvent *event)
     item->setText(0, assoc.first);
     item->setData(0, Qt::UserRole, assoc.first);
   }
+  
+  for (auto const &assoc : _scene->registry().RegisteredTemplates())
+  {
+    QString name = assoc.first;
+    auto item   = new QTreeWidgetItem(templatesCategory);
+    item->setText(0, name);
+    item->setData(0, Qt::UserRole, name);
+  }
+  
 
   treeView->expandAll();
+
 
   connect(treeView, &QTreeWidget::itemActivated, [&](QTreeWidgetItem *item, int)
   {
@@ -249,6 +265,26 @@ contextMenuEvent(QContextMenuEvent *event)
     if (modelName == skipText)
     {
       return;
+    }
+
+    QString parent = item->parent()->data(0, Qt::UserRole).toString();
+	  std::cout << parent.toStdString() << std::endl;
+    if(parent == "Templates")
+    {
+      DataModelRegistry::RegisteredTemplatesMap map = _scene->registry().RegisteredTemplates();
+      QString fileName = map[modelName];
+
+      QFile file;
+      file.setFileName(fileName);
+      file.open(QIODevice::ReadOnly | QIODevice::Text);
+      QString val = file.readAll();
+      file.close();
+      qWarning() << val;
+      QJsonDocument d = QJsonDocument::fromJson(val.toUtf8());
+      QJsonObject sett2 = d.object();
+      jsonToScene(sett2);
+
+	  modelMenu.close();
     }
 
     auto type = _scene->registry().create(modelName);
@@ -375,38 +411,7 @@ deleteSelectedNodes()
 }
 
 void FlowView::copySelectedNodes() {
-  QJsonObject sceneJson;
-  QJsonArray nodesJsonArray;
-  std::vector<QUuid> addedIds;
-  
-  for (QGraphicsItem * item : _scene->selectedItems())
-	{
-		if (auto n = qgraphicsitem_cast<NodeGraphicsObject*>(item))
-		{
-        Node& node = n->node();
-        nodesJsonArray.append(node.save());
-        addedIds.push_back(node.id());
-    }
-  }
-
-  QJsonArray connectionJsonArray;
-  for (QGraphicsItem * item : _scene->selectedItems())
-	{
-    if (auto c = qgraphicsitem_cast<ConnectionGraphicsObject*>(item)) {
-        Connection& connection = c->connection();
-
-        if( std::find(addedIds.begin(), addedIds.end(), connection.getNode(PortType::In)->id())  != addedIds.end() && 
-            std::find(addedIds.begin(), addedIds.end(), connection.getNode(PortType::Out)->id()) != addedIds.end() ) {
-          QJsonObject connectionJson = connection.save();
-          
-          if (!connectionJson.isEmpty())
-            connectionJsonArray.append(connectionJson);
-        }
-    }
-  }
-
-  sceneJson["nodes"] = nodesJsonArray;
-  sceneJson["connections"] = connectionJsonArray;
+  QJsonObject sceneJson = selectionToJson();
 
   QJsonDocument document(sceneJson);
   std::string json = document.toJson().toStdString();
@@ -415,11 +420,8 @@ void FlowView::copySelectedNodes() {
   p_Clipboard->setText( QString::fromStdString(json));
 }
 
-void FlowView::pasteSelectedNodes() {
-    QClipboard *p_Clipboard = QApplication::clipboard();  
-    QByteArray text = p_Clipboard->text().toUtf8();
-
-    QJsonObject const jsonDocument = QJsonDocument::fromJson(text).object();
+void FlowView::jsonToScene(QJsonObject jsonDocument)
+{
     QJsonArray nodesJsonArray = jsonDocument["nodes"].toArray();
 
     std::map<QUuid, QUuid> addedIds;
@@ -470,6 +472,52 @@ void FlowView::pasteSelectedNodes() {
     }
     
     _scene->UpdateHistory();
+}
+
+QJsonObject FlowView::selectionToJson()
+{
+  QJsonObject sceneJson;
+  QJsonArray nodesJsonArray;
+  std::vector<QUuid> addedIds;
+  
+  for (QGraphicsItem * item : _scene->selectedItems())
+	{
+		if (auto n = qgraphicsitem_cast<NodeGraphicsObject*>(item))
+		{
+        Node& node = n->node();
+        nodesJsonArray.append(node.save());
+        addedIds.push_back(node.id());
+    }
+  }
+
+  QJsonArray connectionJsonArray;
+  for (QGraphicsItem * item : _scene->selectedItems())
+	{
+    if (auto c = qgraphicsitem_cast<ConnectionGraphicsObject*>(item)) {
+        Connection& connection = c->connection();
+
+        if( std::find(addedIds.begin(), addedIds.end(), connection.getNode(PortType::In)->id())  != addedIds.end() && 
+            std::find(addedIds.begin(), addedIds.end(), connection.getNode(PortType::Out)->id()) != addedIds.end() ) {
+          QJsonObject connectionJson = connection.save();
+          
+          if (!connectionJson.isEmpty())
+            connectionJsonArray.append(connectionJson);
+        }
+    }
+  }
+
+  sceneJson["nodes"] = nodesJsonArray;
+  sceneJson["connections"] = connectionJsonArray;
+
+  return sceneJson;
+}
+
+void FlowView::pasteSelectedNodes() {
+    QClipboard *p_Clipboard = QApplication::clipboard();  
+    QByteArray text = p_Clipboard->text().toUtf8();
+
+    QJsonObject const jsonDocument = QJsonDocument::fromJson(text).object();
+    jsonToScene(jsonDocument);
 }
 
 void FlowView::createGroup() {

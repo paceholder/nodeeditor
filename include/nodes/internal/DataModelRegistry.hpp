@@ -24,6 +24,8 @@ public:
   using RegisteredModelsCategoryMap = std::unordered_map<QString, QString>;
   using CategoriesSet               = std::set<QString>;
 
+  using RegisteredTemplatesMap      = std::unordered_map<QString, QString>;
+  
   struct TypeConverterItem
   {
     RegistryItemPtr Model{};
@@ -82,9 +84,22 @@ public:
       converter->DestinationType = converter->Model->dataType(PortType::Out, 0);
 
       auto typeConverterKey = std::make_pair(converter->SourceType.id, converter->DestinationType.id);
-	  _registeredTypeConverters[typeConverterKey] = std::move(converter);
+	    _registeredTypeConverters[typeConverterKey] = std::move(converter);
     }
   }
+
+  void
+  registerTemplate(QString templateName, QString templateFilePath)
+  {
+      _registeredTemplates[templateName] = templateFilePath;
+  }
+
+  void 
+  removeTemplate(QString templateName)
+  {
+    _registeredTemplates.erase(templateName);
+  }
+
 
   //Parameter order alias, so a category can be set without forcing to manually pass a model instance
   template<typename ModelType, bool TypeConverter = false>
@@ -103,6 +118,9 @@ public:
   RegisteredModelsCategoryMap const &
   registeredModelsCategoryAssociation() const;
   
+  RegisteredTemplatesMap &
+  RegisteredTemplates();
+  
   CategoriesSet const &
   categories() const;
 
@@ -116,5 +134,7 @@ private:
   CategoriesSet _categories{};
   RegisteredModelsMap _registeredModels{};
   RegisteredTypeConvertersMap _registeredTypeConverters{};
+
+  RegisteredTemplatesMap _registeredTemplates{};
 };
 }

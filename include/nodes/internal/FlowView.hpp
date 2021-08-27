@@ -3,7 +3,7 @@
 #include <QtWidgets/QGraphicsView>
 
 #include "Export.hpp"
-
+  
 namespace QtNodes
 {
 
@@ -27,12 +27,16 @@ public:
 
   void setScene(FlowScene *scene);
 
+  QJsonObject selectionToJson();
+
+  void jsonToScene(QJsonObject object);
+
 public slots:
 
   void scaleUp();
 
   void scaleDown();
-
+  
   void deleteSelectedNodes();
   
   void duplicateSelectedNode();

@@ -29,6 +29,14 @@ registeredModels() const
 }
 
 
+DataModelRegistry::RegisteredTemplatesMap &
+DataModelRegistry::RegisteredTemplates()
+{
+  return _registeredTemplates;
+}
+
+
+
 DataModelRegistry::RegisteredModelsCategoryMap const &
 DataModelRegistry::
 registeredModelsCategoryAssociation() const
