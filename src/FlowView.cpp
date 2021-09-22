@@ -19,6 +19,7 @@
 #include "FlowScene.hpp"
 #include "DataModelRegistry.hpp"
 #include "Node.hpp"
+#include "Group.hpp"
 #include "NodeGraphicsObject.hpp"
 #include "ConnectionGraphicsObject.hpp"
 #include "StyleCollection.hpp"
@@ -149,12 +150,6 @@ FlowView::setScene(FlowScene *scene)
   connect(_pastemultiplenodes, &QAction::triggered, this, &FlowView::pasteSelectedNodes);
   addAction(_pastemultiplenodes);
     
-  _createGroup = new QAction(QStringLiteral("Create Node Group"), this);
-  _createGroup->setShortcut(QKeySequence(tr("Ctrl+G")));
-  _createGroup->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-  connect(_createGroup, &QAction::triggered, this, &FlowView::createGroup);
-  addAction(_createGroup);
-
   _undoAction = new QAction(QStringLiteral("Undo"), this);
   _undoAction->setShortcut(QKeySequence(tr("Ctrl+Z")));
   _undoAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
@@ -253,6 +248,17 @@ contextMenuEvent(QContextMenuEvent *event)
     item->setText(0, name);
     item->setData(0, Qt::UserRole, name);
   }
+
+  //Add templates category
+  // auto GroupsCategory = new QTreeWidgetItem(treeView);
+  // GroupsCategory->setText(0, "Groups");
+  // GroupsCategory->setData(0, Qt::UserRole, "Groups");
+  // topLevelItems["Groups"] = GroupsCategory;
+
+  auto groupItem   = new QTreeWidgetItem(treeView);
+  groupItem->setText(0, "Group");
+  groupItem->setData(0, Qt::UserRole, "Group");
+  topLevelItems["Group"] = groupItem;
   
 
   treeView->expandAll();
@@ -264,6 +270,16 @@ contextMenuEvent(QContextMenuEvent *event)
 
     if (modelName == skipText)
     {
+      return;
+    }
+
+    if(modelName == "Group")
+    {
+      Group& group = _scene->createGroup();
+      QPoint pos = event->pos();
+      QPointF posView = this->mapToScene(pos);
+      group.groupGraphicsObject().setPos(posView);
+      modelMenu.close();
       return;
     }
 
@@ -284,7 +300,7 @@ contextMenuEvent(QContextMenuEvent *event)
       QJsonObject sett2 = d.object();
       jsonToScene(sett2);
 
-	  modelMenu.close();
+	    modelMenu.close();
     }
 
     auto type = _scene->registry().create(modelName);
@@ -328,6 +344,12 @@ contextMenuEvent(QContextMenuEvent *event)
           child->setHidden(true);
         }
       }
+      auto catName = topLvlItem->data(0, Qt::UserRole).toString();
+      if(catName.contains(text, Qt::CaseInsensitive))
+      {
+        shouldHideCategory=false;
+      }
+
       topLvlItem->setHidden(shouldHideCategory);
     }
   });
@@ -391,23 +413,34 @@ FlowView::
 deleteSelectedNodes()
 {
 
+  std::cout << "DELETEGROUP 0" << _scene->selectedItems().size() << std::endl;
   for (QGraphicsItem * item : _scene->selectedItems())
   {
+    std::cout << "DELETEGROUP 1" << std::endl;
     if(item)
     {
-	  if (auto c = qgraphicsitem_cast<NodeGraphicsObject*>(item))
-	  {
-        _scene->removeNode(c->node());
-	  }
-	  else if (auto c = qgraphicsitem_cast<ConnectionGraphicsObject*>(item))
-	  {
-        _scene->deleteConnection(c->connection());      
-	  }
-      
+      std::cout << "DELETEGROUP 2" << std::endl;
+      if (auto c = qgraphicsitem_cast<GroupGraphicsObject*>(item))
+      {
+        std::cout << "DELETEGROUP 5" << std::endl;
+        _scene->removeGroup(c->group());      
+      }
+      else if (auto c = qgraphicsitem_cast<NodeGraphicsObject*>(item))
+      {
+        std::cout << "DELETEGROUP 3" << std::endl;
+          _scene->removeNode(c->node());
+      }
+      else if (auto c = qgraphicsitem_cast<ConnectionGraphicsObject*>(item))
+      {
+        std::cout << "DELETEGROUP 4" << std::endl;
+          _scene->deleteConnection(c->connection());      
+      }
     }
   }
   
+  std::cout << "DELETEGROUP 6" << std::endl;
   _scene->UpdateHistory(); 
+  std::cout << "DELETEGROUP 7" << std::endl;
 }
 
 void FlowView::copySelectedNodes() {
@@ -520,9 +553,6 @@ void FlowView::pasteSelectedNodes() {
     jsonToScene(jsonDocument);
 }
 
-void FlowView::createGroup() {
-  _scene->createGroup();
-}
 
 
 void FlowView::duplicateSelectedNode()

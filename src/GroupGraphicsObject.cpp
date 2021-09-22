@@ -45,12 +45,12 @@ GroupGraphicsObject(FlowScene &scene, Group& group)
 
   r = g = b = 135;
 
-  QGraphicsProxyWidget* _proxyWidget = new QGraphicsProxyWidget(this);
+  _proxyWidget = new QGraphicsProxyWidget(this);
   
   QString name = group.GetName();
-  QLineEdit* l = new QLineEdit(name);
-  l->setAlignment(Qt::AlignHCenter);
-  l->setStyleSheet("\
+  nameLineEdit = new QLineEdit(name);
+  nameLineEdit->setAlignment(Qt::AlignHCenter);
+  nameLineEdit->setStyleSheet("\
   QLineEdit {\
     border: 0px solid gray;\
     border-radius: 0px;\
@@ -65,13 +65,11 @@ GroupGraphicsObject(FlowScene &scene, Group& group)
   }\
   ");
 
-  connect(l, &QLineEdit::textChanged, this, [&group](const QString &text) {
-    group.SetName("wuh");
-    std::cout << "HERE" << std::endl;
+  connect(nameLineEdit, &QLineEdit::textChanged, this, [&group](const QString &text) {
+    group.SetName(text);
   });
 
-
-  _proxyWidget->setWidget(l);
+  _proxyWidget->setWidget(nameLineEdit);
   _proxyWidget->setPos(pos() + QPointF(sizeX/2 - _proxyWidget->size().width()/2, 0));
 }
 
@@ -155,6 +153,13 @@ void
 GroupGraphicsObject::
 mousePressEvent(QGraphicsSceneMouseEvent * event)
 {
+  std::cout << "OEFIJWOEFJW " << std::endl;
+  if(QApplication::keyboardModifiers().testFlag(Qt::ShiftModifier))
+  {
+    event->ignore();
+    return;
+  }  
+
   // deselect all other items after this one is selected
   if (!isSelected() &&
       !(event->modifiers() & Qt::ControlModifier))
@@ -185,7 +190,6 @@ mouseMoveEvent(QGraphicsSceneMouseEvent * event)
     prepareGeometryChange();
     sizeX += diff;
     update();
-    // ngo->moveConnections();
     event->accept();
   }
   else if(isResizingY) {
@@ -193,7 +197,7 @@ mouseMoveEvent(QGraphicsSceneMouseEvent * event)
     prepareGeometryChange();
     sizeY += diff;
     update();
-    // ngo->moveConnections();
+    _proxyWidget->setPos(pos() + QPointF(sizeX/2 - _proxyWidget->size().width()/2, 0));
     event->accept();
   } else if(isResizingXY) {
     auto diff = event->pos() - event->lastPos();
@@ -201,7 +205,7 @@ mouseMoveEvent(QGraphicsSceneMouseEvent * event)
     sizeX += diff.x();
     sizeY += diff.y();
     update();
-    // ngo->moveConnections();
+    _proxyWidget->setPos(pos() + QPointF(sizeX/2 - _proxyWidget->size().width()/2, 0));
     event->accept();    
   } else {
     _scene.groupMoved(_group, pos());
@@ -281,4 +285,5 @@ void
 GroupGraphicsObject::
 contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
 {
+
 }

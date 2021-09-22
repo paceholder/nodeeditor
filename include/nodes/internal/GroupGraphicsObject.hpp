@@ -7,6 +7,7 @@
 
 #include "NodeGeometry.hpp"
 #include "NodeState.hpp"
+#include <QtWidgets/QLineEdit>
 
 class QGraphicsProxyWidget;
 
@@ -47,7 +48,7 @@ public:
   void
   moveConnections() const;
 
-  enum { Type = UserType + 1 };
+  enum { Type = UserType + 3 };
 
   int
   type() const override { return Type; }
@@ -56,6 +57,15 @@ public:
   lock(bool locked);
 
   uint8_t r, g, b;
+  QLineEdit* nameLineEdit;
+  QGraphicsProxyWidget* _proxyWidget;
+
+  int getSizeX() {return sizeX;}
+  int getSizeY() {return sizeY;}
+
+  void setSizeX(int size) {sizeX = size;}
+  void setSizeY(int size) {sizeY = size;}
+
 protected:
   void
   paint(QPainter*                       painter,

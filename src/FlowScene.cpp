@@ -195,7 +195,7 @@ createNode(std::unique_ptr<NodeDataModel> && dataModel)
   return *nodePtr;
 }
 
-void FlowScene::createGroup() {
+Group& FlowScene::createGroup() {
   auto group = std::make_shared<Group>(*this);
   auto ggo  = std::make_shared<GroupGraphicsObject>(*this, *group);
 
@@ -204,7 +204,7 @@ void FlowScene::createGroup() {
   group->setGraphicsObject(ggo);
   _groups[id] = group;
 
-  // return *groupPtr;
+  return *groupPtr;
 }
 
 
@@ -214,13 +214,15 @@ restoreGroup(QJsonObject const& nodeJson) {
   auto group = std::make_shared<Group>(*this);
   auto ggo  = std::make_shared<GroupGraphicsObject>(*this, *group);
 
+  QUuid id = group->id();
+  auto groupPtr = group.get();
+  
   group->setGraphicsObject(ggo);
+  _groups[id] = group;
+  
+  
   group->restore(nodeJson);
 
-  QUuid id = group->id();
-  _groups[id] = group;
-
-  auto groupPtr = group.get();
   return *groupPtr;
 }
 
@@ -308,6 +310,13 @@ removeNode(Node& node)
 
   
   _nodes.erase(node.id());
+}
+
+void
+FlowScene::
+removeGroup(Group& group)
+{ 
+  _groups.erase(group.id());
 }
 
 
@@ -473,7 +482,6 @@ resolveGroups(Group& group) {
     NodeGraphicsObject* ngo = dynamic_cast<NodeGraphicsObject*>(other);
     GroupGraphicsObject* ggo1 = dynamic_cast<GroupGraphicsObject*>(other);
     if(ngo || ggo1) {
-      std::cout << " OK " << std::endl;
       QRectF otherRect = other->mapRectToScene(other->boundingRect());
       
       //checks what is inside
@@ -493,7 +501,6 @@ resolveGroups(Group& group) {
         }
       }
     } else {
-      std::cout << "NO OK " << std::endl;
     }
 
 
@@ -597,6 +604,12 @@ clearScene()
   {
     removeNode(*node);
   }
+
+  _groups.clear();
+  // for (auto& group : _groups)
+  // {
+  //   _groups.erase(group.first);
+  // }
 }
 
 

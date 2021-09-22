@@ -64,7 +64,7 @@ public:
 
   Node&createNode(std::unique_ptr<NodeDataModel> && dataModel);
 
-  void createGroup();
+  Group& createGroup();
 
   Node&restoreNode(QJsonObject const& nodeJson);
   
@@ -75,6 +75,8 @@ public:
   void pasteConnection(QJsonObject const &connectionJson, QUuid newIn, QUuid newOut);
 
   void removeNode(Node& node);
+
+  void removeGroup(Group& node);
 
   DataModelRegistry&registry() const;
 
