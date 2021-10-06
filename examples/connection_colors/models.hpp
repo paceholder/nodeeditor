@@ -61,8 +61,23 @@ public:
   }
 
   QString
+  progressValue() const override
+  {
+    return QString();
+  }
+
+  QString
   name() const override
-  { return QString("NaiveDataModel"); }
+  {
+    return QString("NaiveDataModel");
+  }
+
+  QString
+  nickname() const override
+  {
+    return QString("NaiveDataModel");
+  }
+
 
 public:
 
