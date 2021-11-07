@@ -1,7 +1,7 @@
 if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/single_include/catch2/catch.hpp")
-  file(DOWNLOAD https://raw.githubusercontent.com/catchorg/Catch2/v2.4.1/single_include/catch2/catch.hpp
+  file(DOWNLOAD https://raw.githubusercontent.com/catchorg/Catch2/v2.13.7/single_include/catch2/catch.hpp
     "${CMAKE_CURRENT_BINARY_DIR}/single_include/catch2/catch.hpp"
-    EXPECTED_HASH SHA256=a4b90030cb813f0452bb00e97c92ca6c2ecf9386a2f000b6effb8e265a53959e
+    EXPECTED_HASH SHA256=ea379c4a3cb5799027b1eb451163dff065a3d641aaba23bf4e24ee6b536bd9bc
   )
 endif()
 
