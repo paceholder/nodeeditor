@@ -69,7 +69,7 @@ connectedNodes(NodeId    nodeId,
 
   auto connectivityKey = std::make_tuple(nodeId, portType, portIndex);
 
-  auto it =_connectivity.find(connectivityKey);
+  auto it = _connectivity.find(connectivityKey);
 
   if (it != _connectivity.end())
     return it->second;
@@ -187,11 +187,11 @@ nodeData(NodeId nodeId, NodeRole role) const
       break;
 
     case NodeRole::Style:
-      {
-        auto style = StyleCollection::nodeStyle();
-        result = style.toJson().toVariant();
-      }
-      break;
+    {
+      auto style = StyleCollection::nodeStyle();
+      result = style.toJson().toVariant();
+    }
+    break;
 
     case NodeRole::NumberOfInPorts:
       result = 1u;
@@ -223,22 +223,22 @@ setNodeData(NodeId   nodeId,
     case NodeRole::Type:
       break;
     case NodeRole::Position:
-      {
-        _nodeGeometryData[nodeId].pos = value.value<QPointF>();
+    {
+      _nodeGeometryData[nodeId].pos = value.value<QPointF>();
 
-        Q_EMIT nodePositonUpdated(nodeId);
+      Q_EMIT nodePositonUpdated(nodeId);
 
-        result = true;
-      }
-      break;
+      result = true;
+    }
+    break;
 
     case NodeRole::Size:
-      {
+    {
 
-        _nodeGeometryData[nodeId].size = value.value<QSize>();
-        result = true;
-      }
-      break;
+      _nodeGeometryData[nodeId].size = value.value<QSize>();
+      result = true;
+    }
+    break;
 
     case NodeRole::CaptionVisible:
       break;
@@ -378,4 +378,3 @@ deleteNode(NodeId const nodeId)
 
   return true;
 }
-

@@ -4,19 +4,33 @@ QtNodes
 Introduction
 ============
 
-QtNodes is conceived as a general-purpose Qt-based library aimed at developing Node Editors for various applications. The library could be used for simple graph visualization and editing or extended further for using the Dataflow paradigm.
+QtNodes is conceived as a general-purpose Qt-based library aimed at
+developing Node Editors for various applications. The library could be
+used for simple graph visualization and editing or extended further for
+using the Dataflow paradigm.
 
-The library is written using the Model-View approach. The whole graph structure is defined by the user-provided ``GraphModel`` class. It is possible to create or add Nodes and Connections. The underlying data structures could be of any arbitrary type or representation.
+The library is written using the Model-View approach. The whole graph
+structure is defined by the user-provided ``GraphModel`` class. It is
+possible to create or add Nodes and Connections. The underlying data
+structures could be of any arbitrary type or representation.
 
-The ``GraphModel`` could or could not be attached to specialized ``QGraphicsScene`` and ``QGraphicsView`` objects. I.e. the so-called "headless" `modus operandi` is possible.
+The ``GraphModel`` could or could not be attached to specialized
+``QGraphicsScene`` and ``QGraphicsView`` objects. I.e. the so-called
+"headless" `modus operandi` is possible.
 
 
 Data Flow Paradigm
 ==================
 
-The extended model class ``DataFlowGraphModel`` allows to register "processing algorithms" represented by nodes and is equipped with a set of Qt's signals and slots for propagating the data though the nodes.
+The extended model class ``DataFlowGraphModel`` allows to register
+"processing algorithms" represented by nodes and is equipped with a set
+of Qt's signals and slots for propagating the data though the nodes.
 
-The node's algorithm is triggered upon arriving of any new input data. The computed result is propagated to the output connections. Each new connection fetches available data and propagates is further. Each change in the source node is immediately propagated through all the connections updating the whole graph.
+The node's algorithm is triggered upon arriving of any new input data.
+The computed result is propagated to the output connections. Each new
+connection fetches available data and propagates is further. Each
+change in the source node is immediately propagated through all the
+connections updating the whole graph.
 
 Supported Platforms
 ===================
@@ -73,12 +87,12 @@ Roadmap
 =======
 
 
-1. Extend Unit-Tests                                                           
-2. Python Wrapper using Shiboken                                        
-3. Python examples                                                      
-4. QML front-end                                                        
+1. Extend Unit-Tests
+2. Python Wrapper using Shiboken
+3. Python examples
+4. QML front-end
 5. NodePaintDelegate & NodeGeometryDelegate
-6. ConnectionPaintDelegate                                              
+6. ConnectionPaintDelegate
 7. Documentation & Tutorial
 8. Implement grouping nodes
 
@@ -110,7 +124,8 @@ If you like the project you could donate me on PayPal |ImagePaypal|_
 .. _ImagePaypal: https://www.paypal.com/paypalme/DmitryPinaev
 
 
-If you send more than $10, I'll forward the money to some fund supporting sick children and report to you back.
+If you send more than $10, I'll forward the money to some fund
+supporting sick children and report to you back.
 
 
 Showcase

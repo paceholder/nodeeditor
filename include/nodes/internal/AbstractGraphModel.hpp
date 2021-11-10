@@ -31,9 +31,10 @@ class NODE_EDITOR_PUBLIC AbstractGraphModel : public QObject
 public:
   /// @brief Returns the full set of unique Node Ids.
   /**
-   * Users are responsible for generating unique unsigned int Ids for
-   * all the nodes in the graph. From an Id it should be possible to
-   * trace back to the model's internal representation of the node.
+   * Model creator is responsible for generating unique `unsigned int`
+   * Ids for all the nodes in the graph. From an Id it should be
+   * possible to trace back to the model's internal representation of
+   * the node.
    */
   virtual
   std::unordered_set<NodeId>
@@ -74,7 +75,7 @@ public:
   NodeId
   addNode(QString const nodeType = QString()) = 0;
 
-  /// Model decides if a conection with given connection Id possible.
+  /// Model decides if a conection with a given connection Id possible.
   /**
    * The default implementation compares corresponding data types.
    *
@@ -126,6 +127,7 @@ public:
   /**
    * Sets: Node Caption, Node Caption Visibility,
    * Shyle, State, Node Position etc.
+   * @see NodeRole.
    */
   virtual
   bool

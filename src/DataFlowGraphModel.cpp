@@ -226,11 +226,11 @@ nodeData(NodeId nodeId, NodeRole role) const
       break;
 
     case NodeRole::Style:
-      {
-        auto style = StyleCollection::nodeStyle();
-        result = style.toJson().toVariant();
-      }
-      break;
+    {
+      auto style = StyleCollection::nodeStyle();
+      result = style.toJson().toVariant();
+    }
+    break;
 
     case NodeRole::NumberOfInPorts:
       result = model->nPorts(PortType::In);
@@ -241,11 +241,11 @@ nodeData(NodeId nodeId, NodeRole role) const
       break;
 
     case NodeRole::Widget:
-      {
-        auto w = model->embeddedWidget();
-        result = QVariant::fromValue(w);
-      }
-      break;
+    {
+      auto w = model->embeddedWidget();
+      result = QVariant::fromValue(w);
+    }
+    break;
   }
 
   return result;
@@ -282,21 +282,21 @@ setNodeData(NodeId   nodeId,
     case NodeRole::Type:
       break;
     case NodeRole::Position:
-      {
-        _nodeGeometryData[nodeId].pos = value.value<QPointF>();
+    {
+      _nodeGeometryData[nodeId].pos = value.value<QPointF>();
 
-        Q_EMIT nodePositonUpdated(nodeId);
+      Q_EMIT nodePositonUpdated(nodeId);
 
-        result = true;
-      }
-      break;
+      result = true;
+    }
+    break;
 
     case NodeRole::Size:
-      {
-        _nodeGeometryData[nodeId].size = value.value<QSize>();
-        result = true;
-      }
-      break;
+    {
+      _nodeGeometryData[nodeId].size = value.value<QSize>();
+      result = true;
+    }
+    break;
 
     case NodeRole::CaptionVisible:
       break;
@@ -463,13 +463,13 @@ onNodeDataUpdated(NodeId const    nodeId,
     connectedNodes(nodeId, PortType::Out, portIndex);
 
   // TODO: Should we pull the data through the model?
-  /*
-     auto outPortData =
-     portData(nodeId,
-     PortType::Out,
-     portIndex,
-     PortRole::Data).value<std::shared_ptr<NodeData>>();
-   */
+#if 0
+  auto outPortData =
+    portData(nodeId,
+             PortType::Out,
+             portIndex,
+             PortRole::Data).value<std::shared_ptr<NodeData>>();
+#endif
 
   auto const outPortData =
     _models[nodeId]->outData(portIndex);

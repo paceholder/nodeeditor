@@ -95,7 +95,10 @@ using NodeId = unsigned int;
 static constexpr NodeId InvalidNodeId =
   std::numeric_limits<NodeId>::max();
 
-/// A unique connection identificator that stores a tuple made of (out `NodeId`, out `PortIndex`, in `NodeId`, in * `PortIndex`)
+/**
+ * A unique connection identificator that stores a tuple made of
+ * (out `NodeId`, out `PortIndex`, in `NodeId`, in * `PortIndex`)
+ */
 using ConnectionId = std::tuple<NodeId, PortIndex,  // Port Out
                                 NodeId, PortIndex>; // Port In
 

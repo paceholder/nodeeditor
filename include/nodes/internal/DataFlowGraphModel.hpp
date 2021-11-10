@@ -96,11 +96,16 @@ private:
 
 private Q_SLOTS:
 
+  /**
+   * Fuction is called by NodeDataModel when a node has new data to
+   * propagate.
+   */
   void
   onNodeDataUpdated(NodeId const    nodeId,
                     PortIndex const portIndex);
 
 
+  /// Function is called after detaching a connection.
   void
   propagateEmptyDataTo(NodeId const    nodeId,
                        PortIndex const portIndex);
