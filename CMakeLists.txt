@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.8)
 
+cmake_policy(SET CMP0072 NEW)
+
 project(QtNodes CXX)
 
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
