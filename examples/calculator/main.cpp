@@ -10,6 +10,8 @@
 #include <QtWidgets/QVBoxLayout>
 #include <QtGui/QScreen>
 
+#include <QtGui/QScreen>
+
 #include "AdditionModel.hpp"
 #include "DivisionModel.hpp"
 #include "MultiplicationModel.hpp"
