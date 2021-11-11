@@ -65,22 +65,25 @@ initializePosition()
     PortType attachedPort = oppositePort(_connectionState.requiredPort());
 
     PortIndex portIndex = getPortIndex(attachedPort, _connectionId);
-    NodeId nodeId       = getNodeId(attachedPort, _connectionId);
+    NodeId nodeId = getNodeId(attachedPort, _connectionId);
 
     NodeGraphicsObject * ngo =
       nodeScene()->nodeGraphicsObject(nodeId);
 
-    QTransform nodeSceneTransform =
-      ngo->sceneTransform();
+    if (ngo)
+    {
+      QTransform nodeSceneTransform =
+        ngo->sceneTransform();
 
-    NodeGeometry geometry(*ngo);
+      NodeGeometry geometry(*ngo);
 
-    QPointF pos =
-      geometry.portScenePosition(attachedPort,
-                                 portIndex,
-                                 nodeSceneTransform);
+      QPointF pos =
+        geometry.portScenePosition(attachedPort,
+                                   portIndex,
+                                   nodeSceneTransform);
 
-    this->setPos(pos);
+      this->setPos(pos);
+    }
   }
 
   move();
@@ -192,16 +195,19 @@ move()
       NodeGraphicsObject * ngo =
         nodeScene()->nodeGraphicsObject(nodeId);
 
-      NodeGeometry nodeGeometry(*ngo);
+      if (ngo)
+      {
+        NodeGeometry nodeGeometry(*ngo);
 
-      QPointF scenePos =
-        nodeGeometry.portScenePosition(portType,
-                                       getPortIndex(portType, cId),
-                                       ngo->sceneTransform());
+        QPointF scenePos =
+          nodeGeometry.portScenePosition(portType,
+                                         getPortIndex(portType, cId),
+                                         ngo->sceneTransform());
 
-      QPointF connectionPos = sceneTransform().inverted().map(scenePos);
+        QPointF connectionPos = sceneTransform().inverted().map(scenePos);
 
-      setEndPoint(portType, connectionPos);
+        setEndPoint(portType, connectionPos);
+      }
     };
 
   moveEnd(_connectionId, PortType::Out);
