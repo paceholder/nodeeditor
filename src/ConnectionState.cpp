@@ -27,7 +27,7 @@ requiredPort() const
   {
     t = PortType::Out;
   }
-  else
+  else if (std::get<2>(_cgo.connectionId()) == InvalidNodeId)
   {
     t = PortType::In;
   }
