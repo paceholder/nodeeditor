@@ -186,8 +186,8 @@ moveConnections() const
 
           auto cgo = nodeScene()->connectionGraphicsObject(connectionId);
 
-          // TODO: Directly move the connection's end?
-          cgo->move();
+          if (cgo)
+            cgo->move();
         }
       }
     };
