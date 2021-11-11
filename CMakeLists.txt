@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.8)
 
+cmake_policy(SET CMP0072 NEW)
+
 project(QtNodes CXX)
 
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
@@ -62,7 +64,6 @@ endif()
 if (NOT (Qt6_FOUND OR Qt5_FOUND))
   message(FATAL_ERRROR "Qt libraries were not found.")
 endif()
-
 
 qt_add_resources(RESOURCES ./resources/resources.qrc)
 
