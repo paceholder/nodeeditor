@@ -4,8 +4,8 @@
 #include <nodes/StyleCollection>
 
 #include <QtWidgets/QApplication>
-#include <QtGui/QScreen>
 #include <QtGui/QAction>
+#include <QtGui/QScreen>
 
 #include "CustomGraphModel.hpp"
 
