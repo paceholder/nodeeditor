@@ -168,6 +168,9 @@ public:
 
   std::vector<Anchor> anchors;  
 
+  int gridSize=1;
+  bool snapping=false;
+
 private:
 
   using SharedConnection = std::shared_ptr<Connection>;

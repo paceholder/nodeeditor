@@ -182,14 +182,40 @@ paint(QPainter * painter,
   NodePainter::paint(painter, _node, _scene);
 }
 
+int closestMultiple(int n, int x)
+{  
+  int sign = (n < 0) ? -1 : 1;
+  int absN = std::abs(n);
+
+  if(x>absN)
+      return x;
+
+  absN = absN + x/2;
+  absN = absN - (absN%x);
+  return absN * sign;
+}
 
 QVariant
 NodeGraphicsObject::
 itemChange(GraphicsItemChange change, const QVariant &value)
 {
+  
   if (change == ItemPositionChange && scene())
   {
     moveConnections();
+    QPointF newPos = value.toPointF();
+    if(_scene.snapping)
+    {
+      int xi = (int)round(newPos.x());
+      int yi = (int)round(newPos.y());
+      qreal xF = (qreal)closestMultiple(xi, 15 * _scene.gridSize) - 2;
+      qreal yF = (qreal)closestMultiple(yi, 15 * _scene.gridSize) - 2;
+      return QPointF(xF, yF);
+    }
+    else
+    {
+        return newPos;
+    }
   }
 
   return QGraphicsItem::itemChange(change, value);
