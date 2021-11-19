@@ -42,8 +42,7 @@ add_subdirectory(external)
 find_package(Qt5 5.3 COMPONENTS
              Core
              Widgets
-             Gui
-             OpenGL)
+             Gui)
 
 qt5_add_resources(RESOURCES ./resources/resources.qrc)
 
@@ -97,7 +96,6 @@ target_link_libraries(nodes
     Qt5::Core
     Qt5::Widgets
     Qt5::Gui
-    Qt5::OpenGL
 )
 
 target_compile_definitions(nodes
@@ -159,6 +157,7 @@ if(BUILD_TESTING)
   add_subdirectory(test)
 endif()
 
+if (NOT ${CMAKE_DISABLE_INSTALL_TARGETS})
 ###############
 # Installation
 ##
@@ -192,3 +191,4 @@ install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/NodeEditorConfig.cmake
   DESTINATION ${INSTALL_CONFIGDIR}
 )
+endif()

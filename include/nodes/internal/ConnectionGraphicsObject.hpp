@@ -3,6 +3,7 @@
 #include <QtCore/QUuid>
 
 #include <QtWidgets/QGraphicsObject>
+#include "Export.hpp"
 
 class QGraphicsSceneMouseEvent;
 
@@ -15,7 +16,7 @@ class ConnectionGeometry;
 class Node;
 
 /// Graphic Object for connection. Adds itself to scene
-class ConnectionGraphicsObject
+class NODE_EDITOR_PUBLIC ConnectionGraphicsObject
   : public QGraphicsObject
 {
   Q_OBJECT

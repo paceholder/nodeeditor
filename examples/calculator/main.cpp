@@ -36,6 +36,7 @@ registerDataModels()
   ret->registerModel<NumberDisplayDataModel>("Displays");
 
   ret->registerModel<AdditionModel>("Operators");
+  ret->registerModel<MultiAdditionModel>("Operators");
 
   ret->registerModel<SubtractionModel>("Operators");
 

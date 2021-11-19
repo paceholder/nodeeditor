@@ -184,9 +184,28 @@ nodeDataModel() const
 
 void
 Node::
-propagateData(std::shared_ptr<NodeData> nodeData,
-              PortIndex inPortIndex) const
+propagateData(PortIndex inPortIndex) const
 {
+  NodeState const& state = nodeState();
+  NodeState::ConnectionPtrSet connections = state.connections(PortType::In, inPortIndex);
+
+  std::vector<std::shared_ptr<NodeData>> nodeData;
+  nodeData.reserve(connections.size());
+  for (const auto& connection : connections)
+  {
+      Connection* c = connection.second;
+      Node* outNode = c->getNode(PortType::Out);
+      PortIndex outNodeIndex = c->getPortIndex(PortType::Out);
+      std::shared_ptr<NodeData> outData = outNode->nodeDataModel()->outData(outNodeIndex);
+      TypeConverter converter = c->getTypeConverter();
+      if (converter != nullptr)
+      {
+          outData = converter(outData);
+      }
+
+      nodeData.push_back(outData);
+  }
+
   _nodeDataModel->setInData(std::move(nodeData), inPortIndex);
 
   //Recalculate the nodes visuals. A data change can result in the node taking more space than before, so this forces a recalculate+repaint on the affected node
@@ -201,13 +220,11 @@ void
 Node::
 onDataUpdated(PortIndex index)
 {
-  auto nodeData = _nodeDataModel->outData(index);
-
   auto connections =
     _nodeState.connections(PortType::Out, index);
 
   for (auto const & c : connections)
-    c.second->propagateData(nodeData);
+      c.second->propagateData();
 }
 
 void
