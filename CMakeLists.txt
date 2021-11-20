@@ -81,6 +81,7 @@ set(CPP_SOURCE_FILES
   src/DataFlowGraphModel.cpp
   src/DataFlowGraphicsScene.cpp
   src/DataModelRegistry.cpp
+  src/Definitions.cpp
   src/GraphicsView.cpp
   src/GraphicsViewStyle.cpp
   src/NodeConnectionInteraction.cpp
