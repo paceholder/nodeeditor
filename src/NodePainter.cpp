@@ -10,7 +10,6 @@
 #include "NodeGeometry.hpp"
 #include "NodeGraphicsObject.hpp"
 #include "NodeState.hpp"
-#include "PortType.hpp"
 #include "StyleCollection.hpp"
 
 
