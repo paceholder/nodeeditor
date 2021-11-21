@@ -1,8 +1,10 @@
 #pragma once
 
-#include <limits>
+#include "Export.hpp"
 
 #include <QtCore/QMetaObject>
+
+#include <limits>
 
 /**
  * @file
@@ -11,7 +13,7 @@
 
 namespace QtNodes
 {
-Q_NAMESPACE
+Q_NAMESPACE_EXPORT(NODE_EDITOR_PUBLIC)
 
 /**
  * Constants used for fetching QVariant data from GraphModel.
