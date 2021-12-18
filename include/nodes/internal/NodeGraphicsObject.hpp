@@ -39,6 +39,7 @@ public:
 
   NodeId
   nodeId() { return _nodeId; }
+
   NodeId
   nodeId() const { return _nodeId; }
 
