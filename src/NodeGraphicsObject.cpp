@@ -228,7 +228,7 @@ itemChange(GraphicsItemChange change, const QVariant &value)
     moveConnections();
   }
 
-  return QGraphicsItem::itemChange(change, value);
+  return QGraphicsObject::itemChange(change, value);
 }
 
 
@@ -245,8 +245,6 @@ mousePressEvent(QGraphicsSceneMouseEvent * event)
   {
     scene()->clearSelection();
   }
-
-  BasicGraphicsScene * nodeScene = this->nodeScene();
 
   for (PortType portToCheck: {PortType::In, PortType::Out})
   {
@@ -275,8 +273,8 @@ mousePressEvent(QGraphicsSceneMouseEvent * event)
 
         NodeConnectionInteraction
           interaction(*this,
-                      *nodeScene->connectionGraphicsObject(connectionId),
-                      *nodeScene);
+                      *nodeScene()->connectionGraphicsObject(connectionId),
+                      *nodeScene());
 
         interaction.disconnect(portToCheck);
       }
@@ -306,7 +304,7 @@ mousePressEvent(QGraphicsSceneMouseEvent * event)
         ConnectionId const incompleteConnectionId =
           makeIncompleteConnectionId(portToCheck, _nodeId, portIndex);
 
-        nodeScene->makeDraftConnection(incompleteConnectionId);
+        nodeScene()->makeDraftConnection(incompleteConnectionId);
       }
     }
   }
@@ -318,6 +316,13 @@ mousePressEvent(QGraphicsSceneMouseEvent * event)
     auto pos = event->pos();
     bool const hit = geometry.resizeRect().contains(QPoint(pos.x(), pos.y()));
     _nodeState.setResizing(hit);
+  }
+
+  QGraphicsObject::mousePressEvent(event);
+
+  if (isSelected())
+  {
+    Q_EMIT nodeScene()->nodeSelected(_nodeId);
   }
 }
 
@@ -411,8 +416,7 @@ hoverEnterEvent(QGraphicsSceneHoverEvent * event)
 
   update();
 
-  // Signal
-  nodeScene()->nodeHovered(_nodeId, event->screenPos());
+  Q_EMIT nodeScene()->nodeHovered(_nodeId, event->screenPos());
 
   event->accept();
 }
@@ -426,8 +430,7 @@ hoverLeaveEvent(QGraphicsSceneHoverEvent * event)
 
   update();
 
-  // Signal
-  nodeScene()->nodeHoverLeft(_nodeId);
+  Q_EMIT nodeScene()->nodeHoverLeft(_nodeId);
 
   event->accept();
 }
