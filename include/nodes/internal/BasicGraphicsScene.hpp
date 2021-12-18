@@ -108,6 +108,9 @@ Q_SIGNALS:
   nodeClicked(NodeId const nodeId);
 
   void
+  nodeSelected(NodeId const nodeId);
+
+  void
   nodeDoubleClicked(NodeId const nodeId);
 
   void
