@@ -1,5 +1,5 @@
 find_package(Catch2 2.3.0 REQUIRED)
-find_package(Qt5 COMPONENTS Test)
+find_package(Qt6 COMPONENTS Test)
 
 add_executable(test_nodes
   test_main.cpp
@@ -21,7 +21,7 @@ target_link_libraries(test_nodes
   PRIVATE
     NodeEditor::nodes
     Catch2::Catch2
-    Qt5::Test
+    Qt::Test
 )
 
 add_test(

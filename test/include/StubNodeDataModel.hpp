@@ -14,9 +14,21 @@ public:
   }
 
   QString
+  nickname() const override
+  {
+    return QString();
+  }
+
+  QString
   caption() const override
   {
     return _caption;
+  }
+
+  QString
+  progressValue() const override
+  {
+    return QString();
   }
 
   unsigned int nPorts(QtNodes::PortType) const override

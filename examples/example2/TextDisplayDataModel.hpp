@@ -43,6 +43,14 @@ public:
   name() const override
   { return TextDisplayDataModel::Name(); }
 
+  QString
+  nickname() const override
+  { return QString(); }
+
+  QString
+  progressValue() const override
+  { return QString(); }
+
 public:
 
   unsigned int

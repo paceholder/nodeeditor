@@ -52,6 +52,18 @@ public:
     return QString("MyDataModel");
   }
 
+  QString
+  nickname() const override
+  {
+    return QString();
+  }
+
+  QString
+  progressValue() const override
+  {
+    return QString();
+  }
+
 public:
 
   QJsonObject
