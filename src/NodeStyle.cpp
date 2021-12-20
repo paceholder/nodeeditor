@@ -120,6 +120,12 @@ loadJsonFromByteArray(QByteArray const &byteArray)
   NODE_STYLE_READ_COLOR(obj, GradientColor1);
   NODE_STYLE_READ_COLOR(obj, GradientColor2);
   NODE_STYLE_READ_COLOR(obj, GradientColor3);
+
+  NODE_STYLE_READ_COLOR(obj, SelectedGradientColor0);
+  NODE_STYLE_READ_COLOR(obj, SelectedGradientColor1);
+  NODE_STYLE_READ_COLOR(obj, SelectedGradientColor2);
+  NODE_STYLE_READ_COLOR(obj, SelectedGradientColor3);
+
   NODE_STYLE_READ_COLOR(obj, ShadowColor);
   NODE_STYLE_READ_COLOR(obj, FontColor);
   NODE_STYLE_READ_COLOR(obj, FontColorFaded);

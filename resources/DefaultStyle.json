@@ -6,11 +6,17 @@
   },
   "NodeStyle": {
     "NormalBoundaryColor": [120, 120, 120],
-    "SelectedBoundaryColor": [250, 250, 250],
-    "GradientColor0": [130, 130, 130],
+    "SelectedBoundaryColor": [237, 174, 154],
+    "GradientColor0": [80, 80, 80],
     "GradientColor1": [80, 80, 80],
-    "GradientColor2": [64, 64, 64],
-    "GradientColor3": [58, 58, 58],
+    "GradientColor2": [80, 80, 80],
+    "GradientColor3": [80, 80, 80],
+
+    "SelectedGradientColor0": [239, 67, 0],
+    "SelectedGradientColor1": [239, 67, 0],
+    "SelectedGradientColor2": [239, 67, 0],
+    "SelectedGradientColor3": [239, 67, 0],
+
     "ShadowColor": [20, 20, 20],
     "FontColor" : "white",
     "FontColorFaded" : [200, 200, 200],
@@ -29,7 +35,7 @@
   "ConnectionStyle": {
     "ConstructionColor": "gray",
     "NormalColor": [36, 161, 72],
-    "SelectedColor": [100, 100, 100],
+    "SelectedColor": "orange",
     "SelectedHaloColor": "orange",
     "HoveredColor": [255, 120, 0],
     "FrozenColor": [143, 143, 143],

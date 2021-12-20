@@ -36,6 +36,10 @@ public:
   QColor GradientColor1;
   QColor GradientColor2;
   QColor GradientColor3;
+  QColor SelectedGradientColor0;
+  QColor SelectedGradientColor1;
+  QColor SelectedGradientColor2;
+  QColor SelectedGradientColor3;  
   QColor ShadowColor;
   QColor FontColor;
   QColor FontColorFaded;

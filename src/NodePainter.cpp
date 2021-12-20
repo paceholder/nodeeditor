@@ -86,6 +86,22 @@ drawNodeRect(QPainter* painter,
                ? nodeStyle.SelectedBoundaryColor
                : nodeStyle.NormalBoundaryColor;
 
+  auto fill_color0 = graphicsObject.isSelected()
+               ? nodeStyle.SelectedGradientColor0
+               : nodeStyle.GradientColor0;
+
+  auto fill_color1 = graphicsObject.isSelected()
+               ? nodeStyle.SelectedGradientColor1
+               : nodeStyle.GradientColor1;
+
+  auto fill_color2 = graphicsObject.isSelected()
+               ? nodeStyle.SelectedGradientColor2
+               : nodeStyle.GradientColor2;
+
+  auto fill_color3 = graphicsObject.isSelected()
+                ? nodeStyle.SelectedGradientColor3
+                : nodeStyle.GradientColor3;
+
   if (geom.hovered())
   {
     QPen p(color, nodeStyle.HoveredPenWidth);
@@ -100,10 +116,10 @@ drawNodeRect(QPainter* painter,
   QLinearGradient gradient(QPointF(0.0, 0.0),
                            QPointF(2.0, geom.height()));
 
-  gradient.setColorAt(0.0, nodeStyle.GradientColor0);
-  gradient.setColorAt(0.03, nodeStyle.GradientColor1);
-  gradient.setColorAt(0.97, nodeStyle.GradientColor2);
-  gradient.setColorAt(1.0, nodeStyle.GradientColor3);
+  gradient.setColorAt(0.0, fill_color0);
+  gradient.setColorAt(0.03, fill_color1);
+  gradient.setColorAt(0.97, fill_color2);
+  gradient.setColorAt(1.0, fill_color3);
 
   painter->setBrush(gradient);
 
