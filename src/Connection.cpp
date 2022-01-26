@@ -14,6 +14,8 @@
 #include "NodeGraphicsObject.hpp"
 #include "NodeDataModel.hpp"
 
+#include "Group.hpp"
+
 #include "ConnectionState.hpp"
 #include "ConnectionGeometry.hpp"
 #include "ConnectionGraphicsObject.hpp"
@@ -27,6 +29,7 @@ using QtNodes::NodeData;
 using QtNodes::NodeDataType;
 using QtNodes::ConnectionGraphicsObject;
 using QtNodes::ConnectionGeometry;
+using QtNodes::Group;
 
 Connection::
 Connection(PortType portType,
@@ -212,6 +215,30 @@ getPortIndex(PortType portType) const
   return result;
 }
 
+PortIndex
+Connection::
+getGroupPortIndex(PortType portType) const
+{
+  PortIndex result = INVALID;
+
+  switch (portType)
+  {
+    case PortType::In:
+      result = _inGroupPortIndex;
+      break;
+
+    case PortType::Out:
+      result = _outGroupPortIndex;
+
+      break;
+
+    default:
+      break;
+  }
+
+  return result;
+}
+
 
 void
 Connection::
@@ -231,6 +258,21 @@ setNodeToPort(Node& node,
   _connectionState.setNoRequiredPort();
 
   updated(*this);
+}
+
+void
+Connection::
+setGroup(Group* group, PortType portType, PortIndex portIndex)
+{
+  if(portType==PortType::In) {
+    _inGroup = group;
+    _inGroupPortIndex = portIndex;
+  }
+  else
+  {
+    _outGroup = group;  
+    _outGroupPortIndex = portIndex;
+  } 
 }
 
 
@@ -298,6 +340,27 @@ getNode(PortType portType) const
 
     case PortType::Out:
       return _outNode;
+      break;
+
+    default:
+      // not possible
+      break;
+  }
+  return nullptr;
+}
+
+Group*
+Connection::
+getGroup(PortType portType) const
+{
+  switch (portType)
+  {
+    case PortType::In:
+      return _inGroup;
+      break;
+
+    case PortType::Out:
+      return _outGroup;
       break;
 
     default:

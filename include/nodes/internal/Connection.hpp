@@ -23,6 +23,7 @@ namespace QtNodes
 class Node;
 class NodeData;
 class ConnectionGraphicsObject;
+class Group;
 
 ///
 class NODE_EDITOR_PUBLIC Connection
@@ -79,6 +80,10 @@ public:
   setNodeToPort(Node& node,
                 PortType portType,
                 PortIndex portIndex);
+  void
+  setGroup(Group* group,
+                PortType portType, 
+                PortIndex portIndex);
 
   void
   removeFromNodes() const;
@@ -105,8 +110,14 @@ public:
   Node*&
   getNode(PortType portType);
 
+  Group*
+  getGroup(PortType portType) const;
+
   PortIndex
   getPortIndex(PortType portType) const;
+  
+  PortIndex
+  getGroupPortIndex(PortType portType) const;
 
   void
   clearNode(PortType portType);
@@ -132,6 +143,12 @@ private:
 
   PortIndex _outPortIndex;
   PortIndex _inPortIndex;
+
+  Group* _outGroup = nullptr;
+  Group* _inGroup  = nullptr;
+  
+  PortIndex _outGroupPortIndex;
+  PortIndex _inGroupPortIndex;
 
 private:
 

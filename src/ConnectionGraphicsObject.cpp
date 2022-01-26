@@ -15,12 +15,15 @@
 #include "ConnectionBlurEffect.hpp"
 
 #include "NodeGraphicsObject.hpp"
+#include "GroupGraphicsObject.hpp"
 
 #include "NodeConnectionInteraction.hpp"
 
 #include "Node.hpp"
+#include "Group.hpp"
 
 using QtNodes::ConnectionGraphicsObject;
+using QtNodes::GroupGraphicsObject;
 using QtNodes::Connection;
 using QtNodes::FlowScene;
 
@@ -129,8 +132,49 @@ move()
     }
   };
 
-  moveEndPoint(PortType::In);
-  moveEndPoint(PortType::Out);
+  auto MoveEndPointGroup =
+  [this] (PortType portType)
+  {
+    if (auto group = _connection.getGroup(portType))
+    {
+      GroupGraphicsObject const &groupGraphics = group->groupGraphicsObject();
+
+      QPointF scenePos = groupGraphics.portScenePosition(_connection.getGroupPortIndex(portType),
+                                   portType);
+
+      {
+        //localToScene transform
+        QTransform sceneTransform = this->sceneTransform();
+
+        //Map from scene position to local position
+        QPointF connectionPos = sceneTransform.inverted().map(scenePos);
+        _connection.connectionGeometry().setEndPoint(portType,
+                                                     connectionPos);
+
+        _connection.getConnectionGraphicsObject().setGeometryChanged();
+        _connection.getConnectionGraphicsObject().update();
+      }
+    }
+  };
+
+  if(_connection.getGroup(PortType::In)!=nullptr)
+  {
+    MoveEndPointGroup(PortType::In);
+  }
+  else
+  {
+    moveEndPoint(PortType::In);
+  }
+
+  if(_connection.getGroup(PortType::Out)!=nullptr)
+  {
+    MoveEndPointGroup(PortType::Out);
+  }
+  else
+  {
+    moveEndPoint(PortType::Out);
+  }
+
 }
 
 void ConnectionGraphicsObject::lock(bool locked)
@@ -218,11 +262,39 @@ mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
   if (node && interaction.tryConnect())
   {
     node->resetReactionToConnection();
+	  return;
   }
-  else if (_connection.connectionState().requiresPort())
+  
+  // Get node in the group it's connected to
+  auto group = locateGroupAt(event->scenePos(), _scene, _scene.views()[0]->transform());
+  if(group != nullptr)
   {
+    int hitPoint = group->groupGraphicsObject().checkHitScenePoint(PortType::In,
+                    event->scenePos(),
+                    this->sceneTransform());
 
-    _scene.deleteConnection(_connection);
+    if(hitPoint>=0)
+    {
+      Node *outNode = group->groupGraphicsObject().inOutNodes[(int)PortType::In][hitPoint];
+      int outPort = group->groupGraphicsObject().inOutPorts[(int)PortType::In][hitPoint];
+      Node *inNode = _connection.getNode(PortType::Out);
+      int inPort = _connection.getPortIndex(PortType::Out);
+
+      _scene.createConnection(*outNode, outPort, *inNode, inPort);
+      
+      //Expands
+      group->groupGraphicsObject().Collapse();
+
+      //Collapses back
+      group->groupGraphicsObject().Collapse();
+      _scene.deleteConnection(_connection);  
+	    return;
+    }
+  }
+
+  if (_connection.connectionState().requiresPort())
+  {
+	  _scene.deleteConnection(_connection);
   }
 }
 

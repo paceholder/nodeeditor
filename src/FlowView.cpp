@@ -284,7 +284,6 @@ contextMenuEvent(QContextMenuEvent *event)
     }
 
     QString parent = item->parent()->data(0, Qt::UserRole).toString();
-	  std::cout << parent.toStdString() << std::endl;
     if(parent == "Templates")
     {
       DataModelRegistry::RegisteredTemplatesMap map = _scene->registry().RegisteredTemplates();
@@ -412,35 +411,25 @@ void
 FlowView::
 deleteSelectedNodes()
 {
-
-  std::cout << "DELETEGROUP 0" << _scene->selectedItems().size() << std::endl;
   for (QGraphicsItem * item : _scene->selectedItems())
   {
-    std::cout << "DELETEGROUP 1" << std::endl;
     if(item)
     {
-      std::cout << "DELETEGROUP 2" << std::endl;
       if (auto c = qgraphicsitem_cast<GroupGraphicsObject*>(item))
       {
-        std::cout << "DELETEGROUP 5" << std::endl;
         _scene->removeGroup(c->group());      
       }
       else if (auto c = qgraphicsitem_cast<NodeGraphicsObject*>(item))
       {
-        std::cout << "DELETEGROUP 3" << std::endl;
           _scene->removeNode(c->node());
       }
       else if (auto c = qgraphicsitem_cast<ConnectionGraphicsObject*>(item))
       {
-        std::cout << "DELETEGROUP 4" << std::endl;
           _scene->deleteConnection(c->connection());      
       }
     }
-  }
-  
-  std::cout << "DELETEGROUP 6" << std::endl;
+  } 
   _scene->UpdateHistory(); 
-  std::cout << "DELETEGROUP 7" << std::endl;
 }
 
 void FlowView::copySelectedNodes() {
@@ -504,6 +493,12 @@ void FlowView::jsonToScene(QJsonObject jsonDocument)
       _scene->pasteConnection(connectionJsonArray[i].toObject(), newIn, newOut );
     }
     
+    QJsonArray groupsJsonArray = jsonDocument["groups"].toArray();
+    for (int i = 0; i < groupsJsonArray.size(); ++i)
+    {
+      _scene->pasteGroup(groupsJsonArray[i].toObject(), centroid, posViewMouse);
+    }
+
     _scene->UpdateHistory();
 }
 
@@ -538,9 +533,48 @@ QJsonObject FlowView::selectionToJson()
         }
     }
   }
+  
+  QJsonArray groupJsonArray;
+  for (QGraphicsItem * item : _scene->selectedItems())
+	{
+    if (auto c = qgraphicsitem_cast<GroupGraphicsObject*>(item)) {
+        Group& group = c->group();
+
+        //If collapsed
+        if(group.groupGraphicsObject().isCollapsed())
+        {
+          //Add all child items to nodes array
+          for(int i=0; i<group.groupGraphicsObject().childItems().size(); i++)
+          {
+            NodeGraphicsObject* ngo = dynamic_cast<NodeGraphicsObject*>(group.groupGraphicsObject().childItems()[i]);
+            if(ngo!=nullptr)
+            {
+              Node& node = ngo->node();
+              nodesJsonArray.append(node.save());
+            }
+          }
+
+          //Add all connections to nodes array
+          for(int i=0; i<group.groupGraphicsObject().inOutConnections.size(); i++)
+          {
+            for(int j=0; j<group.groupGraphicsObject().inOutConnections[i].size(); j++)
+            {
+              QJsonObject connectionJson = group.groupGraphicsObject().inOutConnections[i][j]->save();
+              if (!connectionJson.isEmpty())
+                connectionJsonArray.append(connectionJson);              
+            }
+          }
+        }
+
+        QJsonObject groupJson = group.save();
+        if (!groupJson.isEmpty())
+          groupJsonArray.append(groupJson);
+    }
+  }
 
   sceneJson["nodes"] = nodesJsonArray;
   sceneJson["connections"] = connectionJsonArray;
+  sceneJson["groups"] = groupJsonArray;
 
   return sceneJson;
 }

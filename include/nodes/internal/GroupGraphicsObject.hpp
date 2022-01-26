@@ -3,12 +3,13 @@
 #include <QtCore/QUuid>
 #include <QtWidgets/QGraphicsObject>
 
-#include "Connection.hpp"
 
 #include "NodeGeometry.hpp"
 #include "NodeState.hpp"
+#include "PortType.hpp"
 #include <QtWidgets/QLineEdit>
-
+#include <QtWidgets/QPushButton>
+#include <array>
 class QGraphicsProxyWidget;
 
 namespace QtNodes
@@ -17,6 +18,7 @@ namespace QtNodes
 class FlowScene;
 class FlowItemEntry;
 class Group;
+class Connection;
 
 /// Class reacts on GUI events, mouse clicks and
 /// forwards painting operation.
@@ -40,6 +42,9 @@ public:
   QRectF
   boundingRect() const override;
 
+  bool 
+  isCollapsed() {return collapsed;}
+
   void
   setGeometryChanged();
 
@@ -48,7 +53,7 @@ public:
   void
   moveConnections() const;
 
-  enum { Type = UserType + 3 };
+  enum { Type = UserType + 5 };
 
   int
   type() const override { return Type; }
@@ -59,13 +64,34 @@ public:
   uint8_t r, g, b;
   QLineEdit* nameLineEdit;
   QGraphicsProxyWidget* _proxyWidget;
+  QGraphicsProxyWidget* _collapseButton;
+  QPushButton *collapseButtonWidget;
 
   int getSizeX() {return sizeX;}
   int getSizeY() {return sizeY;}
+  int getSavedSizeX() {return savedSizeX;}
+  int getSavedSizeY() {return savedSizeY;}
 
   void setSizeX(int size) {sizeX = size;}
   void setSizeY(int size) {sizeY = size;}
 
+  void Collapse();
+  
+  QPointF portScenePosition(int i, PortType type) const;
+  
+  QPointF portPosition(int i, PortType type) const;
+
+  int
+    checkHitScenePoint(PortType portType,
+                      QPointF const point,
+                      QTransform t = QTransform()) const;
+
+
+  std::array<std::vector<Node*>, 3> inOutNodes;
+  std::array<std::vector<int>, 3> inOutPorts;
+  
+  //Store pointers to connections from in and out.
+  std::array<std::vector<Connection*>, 3> inOutConnections;
 protected:
   void
   paint(QPainter*                       painter,
@@ -108,7 +134,25 @@ private:
   bool isResizingXY=false;
 
   int sizeX=1000;  
-  int sizeY=1000;  
+  int sizeY=1000; 
+  
+
+  float inputSize = 10;
+  float spacing = 40;
+  float topPadding = 30;
+  bool collapsed=false;
+  int savedSizeX, savedSizeY;
+  
+  //Store connections that stay strictly inside group's bound, to set them invisible when collapsing
+  std::vector<Connection*> unusedConnections;
+
+  //Store the labels of the in and out when collapsed
+  std::array<std::vector<QString>, 3> inOutLabels;
+  
+
+  
+signals:
+  void CollapseTriggered(bool state);
 
 };
 }

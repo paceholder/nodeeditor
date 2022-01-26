@@ -18,6 +18,8 @@
 #include "ConnectionGraphicsObject.hpp"
 #include "Serializable.hpp"
 #include "Node.hpp"
+#include "NodeDataModel.hpp"
+
 namespace QtNodes
 {
 
@@ -43,7 +45,9 @@ public:
                           _id(QUuid::createUuid()),
                           _groupGraphicsObject(nullptr),
                           _name("New Group")
-  {  }
+  {  
+
+  }
 
   void AddNode(std::shared_ptr<Node> node) {
     nodes.push_back(node);
@@ -52,7 +56,6 @@ public:
 
   void
   setGraphicsObject(std::shared_ptr<GroupGraphicsObject> graphics) {
-    // _groupGraphicsObject = std::move(graphics);
     _groupGraphicsObject = graphics;
   }
 
@@ -72,6 +75,8 @@ public:
   QJsonObject save() const override{
     QJsonObject groupJson;
     groupJson["name"] = _name;
+    bool collapsed = _groupGraphicsObject->isCollapsed();
+    groupJson["collapsed"] = (int)collapsed;
 
     QJsonObject posObj;
     posObj["x"] = _groupGraphicsObject->pos().x();
@@ -79,8 +84,8 @@ public:
     groupJson["position"] = posObj;    
 
     QJsonObject sizeObj;
-    sizeObj["x"] = _groupGraphicsObject->getSizeX();
-    sizeObj["y"] = _groupGraphicsObject->getSizeY();
+    sizeObj["x"] = collapsed ? _groupGraphicsObject->getSavedSizeX() : _groupGraphicsObject->getSizeX();
+    sizeObj["y"] = collapsed ? _groupGraphicsObject->getSavedSizeY() :  _groupGraphicsObject->getSizeY();
     groupJson["size"] = sizeObj;    
 
     QJsonObject colObj;
@@ -91,25 +96,9 @@ public:
     return groupJson;
   };
 
-  void restore(QJsonObject const &json) override{
-    QJsonObject positionJson = json["position"].toObject();
-    QPointF     point(positionJson["x"].toDouble(),
-                      positionJson["y"].toDouble());
-    _groupGraphicsObject->setPos(point);
-    
-    QJsonObject sizeJson = json["size"].toObject();
-    _groupGraphicsObject->setSizeX(sizeJson["x"].toDouble());
-    _groupGraphicsObject->setSizeY(sizeJson["y"].toDouble());
+  void restore(QJsonObject const &json) override;
 
-
-    QJsonObject colorJson = json["color"].toObject();
-    _groupGraphicsObject->r = colorJson["r"].toInt();
-    _groupGraphicsObject->g = colorJson["g"].toInt();
-    _groupGraphicsObject->b = colorJson["b"].toInt();
-
-    SetName(json["name"].toString());
-    _groupGraphicsObject->nameLineEdit->setText(_name);
-  };
+  void restoreAtPosition(QJsonObject const &json, QPointF position);
 
   std::shared_ptr<GroupGraphicsObject> _groupGraphicsObject;
   QString _name;

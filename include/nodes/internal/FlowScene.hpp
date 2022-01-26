@@ -65,6 +65,8 @@ public:
   Node&createNode(std::unique_ptr<NodeDataModel> && dataModel);
 
   Group& createGroup();
+  
+  Group& pasteGroup(QJsonObject const& nodeJson, QPointF nodeGroupCentroid, QPointF mousePos);
 
   Node&restoreNode(QJsonObject const& nodeJson);
   
@@ -191,5 +193,8 @@ private:
 
 Node*
 locateNodeAt(QPointF scenePoint, FlowScene &scene,
+             QTransform viewTransform);
+Group*
+locateGroupAt(QPointF scenePoint, FlowScene &scene,
              QTransform viewTransform);
 }

@@ -208,6 +208,8 @@ Group& FlowScene::createGroup() {
 }
 
 
+
+
 Group&
 FlowScene::
 restoreGroup(QJsonObject const& nodeJson) {
@@ -222,6 +224,41 @@ restoreGroup(QJsonObject const& nodeJson) {
   
   
   group->restore(nodeJson);
+
+  
+  return *groupPtr;
+}
+
+Group&
+FlowScene::
+pasteGroup(QJsonObject const& groupJson, QPointF nodeGroupCentroid, QPointF mousePos) {
+  auto group = std::make_shared<Group>(*this);
+  auto ggo  = std::make_shared<GroupGraphicsObject>(*this, *group);
+
+  QUuid id = group->id();
+  auto groupPtr = group.get();
+  
+  group->setGraphicsObject(ggo);
+  _groups[id] = group;
+  
+  QJsonObject positionJson = groupJson["position"].toObject();
+  QPointF     point(positionJson["x"].toDouble(),
+                    positionJson["y"].toDouble());
+  QPointF pos = mousePos + (point - nodeGroupCentroid);
+  group->restoreAtPosition(groupJson, pos);
+
+  
+
+  // group->groupGraphicsObject().setPos(pos);
+
+  // Group &groupRef = *(group);
+  // resolveGroups(groupRef);
+
+  // bool collapsed = (bool)groupJson["collapsed"].toInt();
+  // if(collapsed)
+  // {
+  //   group->groupGraphicsObject().Collapse();
+  // }
 
   return *groupPtr;
 }
@@ -271,9 +308,6 @@ QUuid FlowScene::pasteNode(QJsonObject &nodeJson, QPointF nodeGroupCentroid, QPo
   QUuid newId = QUuid::createUuid();
   node->paste(nodeJson, newId);
 
-  QPointF offset = node->nodeGraphicsObject().pos() - nodeGroupCentroid;
-
-
   QPointF pos = mousePos + (node->nodeGraphicsObject().pos() - nodeGroupCentroid);
   node->nodeGraphicsObject().setPos(pos);
 
@@ -315,8 +349,22 @@ removeNode(Node& node)
 void
 FlowScene::
 removeGroup(Group& group)
-{ 
-  _groups.erase(group.id());
+{
+
+	GroupGraphicsObject &ggo = group.groupGraphicsObject();
+	for(int i=ggo.childItems().size()-1; i>=0; i--)
+	{
+		QGraphicsItem *child  = ggo.childItems()[i];
+		NodeGraphicsObject* n = qgraphicsitem_cast<NodeGraphicsObject*>(child);
+		if(n != nullptr)
+		{
+			QPointF position = n->scenePos();
+			ggo.childItems()[i]->setParentItem(0);
+			n->setPos(position);
+			n->moveConnections();
+		}
+	}
+	_groups.erase(group.id());
 }
 
 
@@ -460,6 +508,8 @@ getNodeSize(const Node& node) const
 void 
 FlowScene::
 resolveGroups(Group& group) {
+  if(group.groupGraphicsObject().isCollapsed()) return;
+
   GroupGraphicsObject& ggo = group.groupGraphicsObject();
   QRectF groupRect = ggo.mapRectToScene(ggo.boundingRect());
   
@@ -729,12 +779,6 @@ loadFromMemory(const QByteArray& data)
 {
   QJsonObject const jsonDocument = QJsonDocument::fromJson(data).object();
 
-  QJsonArray groupsJsonArray = jsonDocument["groups"].toArray();
-  for (int i = 0; i < groupsJsonArray.size(); ++i)
-  {
-    restoreGroup(groupsJsonArray[i].toObject());
-  }
-
   QJsonArray nodesJsonArray = jsonDocument["nodes"].toArray();
 
   for (int i = 0; i < nodesJsonArray.size(); ++i)
@@ -748,6 +792,13 @@ loadFromMemory(const QByteArray& data)
   {
     restoreConnection(connectionJsonArray[i].toObject());
   }
+
+  QJsonArray groupsJsonArray = jsonDocument["groups"].toArray();
+  for (int i = 0; i < groupsJsonArray.size(); ++i)
+  {
+    restoreGroup(groupsJsonArray[i].toObject());
+  }
+
 
   if(jsonDocument.contains("anchors")) {
     QJsonArray anchorsJsonArray = jsonDocument["anchors"].toArray();
@@ -870,5 +921,40 @@ locateNodeAt(QPointF scenePoint, FlowScene &scene,
   }
 
   return resultNode;
+}
+
+Group*
+locateGroupAt(QPointF scenePoint, FlowScene &scene,
+             QTransform viewTransform)
+{
+  // items under cursor
+  QList<QGraphicsItem*> items =
+    scene.items(scenePoint,
+                Qt::IntersectsItemShape,
+                Qt::DescendingOrder,
+                viewTransform);
+
+  //// items convertable to GroupGraphicsObject
+  std::vector<QGraphicsItem*> filteredItems;
+
+  std::copy_if(items.begin(),
+               items.end(),
+               std::back_inserter(filteredItems),
+               [] (QGraphicsItem * item)
+    {
+      return (dynamic_cast<GroupGraphicsObject*>(item) != nullptr);
+    });
+
+  Group* resultGroup = nullptr;
+
+  if (!filteredItems.empty())
+  {
+    QGraphicsItem* graphicsItem = filteredItems.front();
+    auto ggo = dynamic_cast<GroupGraphicsObject*>(graphicsItem);
+
+    resultGroup = &ggo->group();
+  }
+
+  return resultGroup;
 }
 }
