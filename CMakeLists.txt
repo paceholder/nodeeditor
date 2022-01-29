@@ -24,8 +24,10 @@ option(NE_FORCE_TEST_COLOR "Force colorized unit test output" OFF)
 enable_testing()
 
 if(NE_DEVELOPER_DEFAULTS)
-  set(CMAKE_CXX_STANDARD 14)
-  set(CMAKE_CXX_EXTENSIONS OFF)
+  if(NOT CMAKE_CXX_STANDARD)
+    set(CMAKE_CXX_STANDARD 14)
+    set(CMAKE_CXX_EXTENSIONS OFF)
+  endif()
 
   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
   set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
@@ -119,7 +121,7 @@ target_compile_options(nodes
 
 target_compile_features(nodes
   PUBLIC
-    cxx_generic_lambdas # Require C++14
+    cxx_generic_lambdas # Require C++14 or newer
 )
 
 set_target_properties(nodes
