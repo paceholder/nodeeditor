@@ -24,9 +24,6 @@ option(NE_FORCE_TEST_COLOR "Force colorized unit test output" OFF)
 enable_testing()
 
 if(NE_DEVELOPER_DEFAULTS)
-  set(CMAKE_CXX_STANDARD 14)
-  set(CMAKE_CXX_EXTENSIONS OFF)
-
   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
   set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
   set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
@@ -130,7 +127,10 @@ target_compile_options(nodes
     $<$<CXX_COMPILER_ID:Clang>:-Wall -Wextra>
 )
 
-target_compile_features(nodes PUBLIC cxx_std_14)
+if(NE_DEVELOPER_DEFAULTS)
+  target_compile_features(nodes PUBLIC cxx_std_14)
+  set_target_properties(nodes PROPERTIES CXX_EXTENSIONS OFF)
+endif()
 
 set_target_properties(nodes
   PROPERTIES
