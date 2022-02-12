@@ -59,17 +59,31 @@ make -j && make install
 4. `Build -> Build All`
 5. Click the button `Run`
 
-### Roadmap
+### >>> Version 3 Roadmap <<<
 
-1. Extend set of examples
-2. GUI: fix scrolling for scene view window scrolling
-3. Implement grouping nodes
-4. Split graph and GUI parts
-5. Build data propagation on top of the graph code
+1. Headless mode. [done]
+   You can create, populate, modify the derivative of AbsractGraphModel
+   without adding it to the actual Flow Scene.
+   The library is now designed to be general-purpose graph
+   visualization and modification tool, without specialization on only
+   data propagation.
+2. Build data propagation on top of the graph code [done].
+   - Fix old unit-tests. [in progress].
+   - Fix save/restore. [in progress].
+   - Fix CI scriptst on travis and appveyor. [not started].
+3. Backward compatibility with Qt5 [not started/help needed].
+3. Write improved documentation based on Sphynx platform [done].
+4. Extend set of examples [partially done].
+5. Undo Redo [not started].
+6. Python wrappring using PySide [HELP NEEDED].
+7. Implement grouping nodes [not started].
+8. GUI: fix scrolling for scene view window scrolling [need to check Qt6]
+
+Any suggestions are welcome.
 
 ### Citing
 
-    Dmitry Pinaev et al, Qt5 Node Editor, (2017), GitHub repository, https://github.com/paceholder/nodeeditor
+    Dmitry Pinaev et al, Qt Node Editor, (2017), GitHub repository, https://github.com/paceholder/nodeeditor
 
 BibTeX
 
