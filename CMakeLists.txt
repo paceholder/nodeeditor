@@ -1,5 +1,4 @@
-cmake_minimum_required(VERSION 3.2)
-# version 3.4 is required as other do not work with C++14 and clang
+cmake_minimum_required(VERSION 3.8)
 
 project(NodeEditor CXX)
 
