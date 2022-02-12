@@ -1,25 +1,23 @@
 #include <QtNodes/DataFlowGraphModel>
 #include <QtNodes/DataFlowGraphicsScene>
-#include <QtNodes/DataModelRegistry>
+#include <QtNodes/NodeDelegateModelRegistry>
 #include <QtNodes/GraphicsView>
 #include <QtNodes/NodeData>
 
 #include <QtWidgets/QApplication>
-
-#include <QtNodes/DataModelRegistry>
 
 #include "TextSourceDataModel.hpp"
 #include "TextDisplayDataModel.hpp"
 
 using QtNodes::DataFlowGraphModel;
 using QtNodes::DataFlowGraphicsScene;
-using QtNodes::DataModelRegistry;
+using QtNodes::NodeDelegateModelRegistry;
 using QtNodes::GraphicsView;
 
-static std::shared_ptr<DataModelRegistry>
+static std::shared_ptr<NodeDelegateModelRegistry>
 registerDataModels()
 {
-  auto ret = std::make_shared<DataModelRegistry>();
+  auto ret = std::make_shared<NodeDelegateModelRegistry>();
 
   ret->registerModel<TextSourceDataModel>();
   ret->registerModel<TextDisplayDataModel>();
@@ -29,11 +27,11 @@ registerDataModels()
 
 
 int
-main(int argc, char *argv[])
+main(int argc, char* argv[])
 {
   QApplication app(argc, argv);
 
-  std::shared_ptr<DataModelRegistry> registry = registerDataModels();
+  std::shared_ptr<NodeDelegateModelRegistry> registry = registerDataModels();
   DataFlowGraphModel dataFlowGraphModel(registry);
 
   DataFlowGraphicsScene scene(dataFlowGraphModel);
@@ -46,3 +44,4 @@ main(int argc, char *argv[])
 
   return app.exec();
 }
+

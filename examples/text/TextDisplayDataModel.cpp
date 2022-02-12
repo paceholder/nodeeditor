@@ -46,3 +46,4 @@ outData(PortIndex)
   std::shared_ptr<NodeData> ptr;
   return ptr;
 }
+

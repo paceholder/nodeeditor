@@ -1,13 +1,13 @@
 #include "ImageShowModel.hpp"
 
+#include "PixmapData.hpp"
+
+#include <QtNodes/NodeDelegateModelRegistry>
+
 #include <QtCore/QEvent>
 #include <QtCore/QDir>
-
 #include <QtWidgets/QFileDialog>
 
-#include <QtNodes/DataModelRegistry>
-
-#include "PixmapData.hpp"
 
 ImageShowModel::
 ImageShowModel()
@@ -52,7 +52,7 @@ nPorts(PortType portType) const
 
 bool
 ImageShowModel::
-eventFilter(QObject *object, QEvent *event)
+eventFilter(QObject* object, QEvent* event)
 {
   if (object == _label)
   {

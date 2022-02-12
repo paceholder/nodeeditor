@@ -1,9 +1,9 @@
 #include "NumberSourceDataModel.hpp"
 
+#include "DecimalData.hpp"
+
 #include <QtCore/QJsonValue>
 #include <QtGui/QDoubleValidator>
-
-#include "DecimalData.hpp"
 
 
 NumberSourceDataModel::
@@ -25,7 +25,7 @@ QJsonObject
 NumberSourceDataModel::
 save() const
 {
-  QJsonObject modelJson = NodeDataModel::save();
+  QJsonObject modelJson = NodeDelegateModel::save();
 
   if (_number)
     modelJson["number"] = QString::number(_number->number());
@@ -36,7 +36,7 @@ save() const
 
 void
 NumberSourceDataModel::
-restore(QJsonObject const &p)
+restore(QJsonObject const& p)
 {
   QJsonValue v = p["number"];
 
@@ -80,7 +80,7 @@ nPorts(PortType portType) const
 
 void
 NumberSourceDataModel::
-onTextEdited(QString const &string)
+onTextEdited(QString const& string)
 {
   Q_UNUSED(string);
 

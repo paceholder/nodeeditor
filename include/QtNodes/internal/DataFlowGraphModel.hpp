@@ -1,13 +1,12 @@
 #pragma once
 
-#include <memory>
-
 #include "ConnectionIdUtils.hpp"
-#include "DataModelRegistry.hpp"
+#include "NodeDelegateModelRegistry.hpp"
 #include "Export.hpp"
 #include "AbstractGraphModel.hpp"
 #include "StyleCollection.hpp"
 
+#include <memory>
 
 namespace QtNodes
 {
@@ -26,9 +25,9 @@ public:
 
 public:
 
-  DataFlowGraphModel(std::shared_ptr<DataModelRegistry> registry);
+  DataFlowGraphModel(std::shared_ptr<NodeDelegateModelRegistry> registry);
 
-  std::shared_ptr<DataModelRegistry>
+  std::shared_ptr<NodeDelegateModelRegistry>
   dataModelRegistry() { return _registry; }
 
 public:
@@ -97,7 +96,7 @@ private:
 private Q_SLOTS:
 
   /**
-   * Fuction is called by NodeDataModel when a node has new data to
+   * Fuction is called by NodeDelegateModel when a node has new data to
    * propagate.
    */
   void
@@ -112,12 +111,12 @@ private Q_SLOTS:
 
 private:
 
-  std::shared_ptr<DataModelRegistry> _registry;
+  std::shared_ptr<NodeDelegateModelRegistry> _registry;
 
   NodeId _nextNodeId;
 
   std::unordered_map<NodeId,
-                     std::unique_ptr<NodeDataModel>>
+                     std::unique_ptr<NodeDelegateModel>>
   _models;
 
   using ConnectivityKey =

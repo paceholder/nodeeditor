@@ -1,12 +1,12 @@
-#include "NodeDataModel.hpp"
+#include "NodeDelegateModel.hpp"
 
 #include "StyleCollection.hpp"
 
 namespace QtNodes
 {
 
-NodeDataModel::
-NodeDataModel()
+NodeDelegateModel::
+NodeDelegateModel()
   : _nodeStyle(StyleCollection::nodeStyle())
 {
   // Derived classes can initialize specific style here
@@ -14,7 +14,7 @@ NodeDataModel()
 
 
 QJsonObject
-NodeDataModel::
+NodeDelegateModel::
 save() const
 {
   QJsonObject modelJson;
@@ -26,7 +26,7 @@ save() const
 
 
 NodeStyle const &
-NodeDataModel::
+NodeDelegateModel::
 nodeStyle() const
 {
   return _nodeStyle;
@@ -34,8 +34,8 @@ nodeStyle() const
 
 
 void
-NodeDataModel::
-setNodeStyle(NodeStyle const &style)
+NodeDelegateModel::
+setNodeStyle(NodeStyle const& style)
 {
   _nodeStyle = style;
 }

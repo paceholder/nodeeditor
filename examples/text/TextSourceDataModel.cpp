@@ -34,7 +34,7 @@ nPorts(PortType portType) const
 
 void
 TextSourceDataModel::
-onTextEdited(QString const &string)
+onTextEdited(QString const& string)
 {
   Q_UNUSED(string);
 
@@ -57,3 +57,4 @@ outData(PortIndex const portIndex)
   Q_UNUSED(portIndex);
   return std::make_shared<TextData>(_lineEdit->text());
 }
+

@@ -1,22 +1,22 @@
 #pragma once
 
-#include <QtCore/QObject>
-#include <QtWidgets/QLabel>
-
 #include "TextData.hpp"
 
-#include <QtNodes/NodeDataModel>
+#include <QtNodes/NodeDelegateModel>
+
+#include <QtCore/QObject>
+#include <QtWidgets/QLabel>
 
 #include <iostream>
 
 using QtNodes::PortType;
 using QtNodes::PortIndex;
 using QtNodes::NodeData;
-using QtNodes::NodeDataModel;
+using QtNodes::NodeDelegateModel;
 
 /// The model dictates the number of inputs and outputs for the Node.
 /// In this example it has no logic.
-class TextDisplayDataModel : public NodeDataModel
+class TextDisplayDataModel : public NodeDelegateModel
 {
   Q_OBJECT
 
@@ -72,10 +72,10 @@ public:
   }
 
 
-  QWidget *
+  QWidget*
   embeddedWidget() override { return _label; }
 
 private:
 
-  QLabel * _label;
+  QLabel* _label;
 };

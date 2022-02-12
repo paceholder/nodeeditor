@@ -15,7 +15,13 @@ namespace QtNodes
 
 class StyleCollection;
 
-class NODE_EDITOR_PUBLIC NodeDataModel
+/**
+ * The class wraps Node-specific data operations and propagates it to
+ * the nesting DataFlowGraphModel which is a subclass of
+ * AbstractGrapModel.
+ * This class is the same what has been called NodeDataModel before v3.
+ */
+class NODE_EDITOR_PUBLIC NodeDelegateModel
   : public QObject
   , public Serializable
 {
@@ -23,10 +29,10 @@ class NODE_EDITOR_PUBLIC NodeDataModel
 
 public:
 
-  NodeDataModel();
+  NodeDelegateModel();
 
   virtual
-  ~NodeDataModel() = default;
+  ~NodeDelegateModel() = default;
 
   /// It is possible to hide caption in GUI
   virtual
@@ -82,7 +88,7 @@ public:
   nodeStyle() const;
 
   void
-  setNodeStyle(NodeStyle const &style);
+  setNodeStyle(NodeStyle const& style);
 
 public:
 
@@ -90,14 +96,14 @@ public:
   virtual
   void
   setInData(std::shared_ptr<NodeData> nodeData,
-            PortIndex const port) = 0;
+            PortIndex const           port) = 0;
 
   virtual
   std::shared_ptr<NodeData>
   outData(PortIndex const port) = 0;
 
   virtual
-  QWidget *
+  QWidget*
   embeddedWidget() = 0;
 
   virtual
@@ -107,22 +113,22 @@ public:
 public Q_SLOTS:
 
   virtual void
-  inputConnectionCreated(ConnectionId const &)
+  inputConnectionCreated(ConnectionId const&)
   {}
 
 
   virtual void
-  inputConnectionDeleted(ConnectionId const &)
+  inputConnectionDeleted(ConnectionId const&)
   {}
 
 
   virtual void
-  outputConnectionCreated(ConnectionId const &)
+  outputConnectionCreated(ConnectionId const&)
   {}
 
 
   virtual void
-  outputConnectionDeleted(ConnectionId const &)
+  outputConnectionDeleted(ConnectionId const&)
   {}
 
 

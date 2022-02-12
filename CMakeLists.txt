@@ -80,12 +80,12 @@ set(CPP_SOURCE_FILES
   src/ConnectionStyle.cpp
   src/DataFlowGraphModel.cpp
   src/DataFlowGraphicsScene.cpp
-  src/DataModelRegistry.cpp
+  src/NodeDelegateModelRegistry.cpp
   src/Definitions.cpp
   src/GraphicsView.cpp
   src/GraphicsViewStyle.cpp
   src/NodeConnectionInteraction.cpp
-  src/NodeDataModel.cpp
+  src/NodeDelegateModel.cpp
   src/NodeGeometry.cpp
   src/NodeGraphicsObject.cpp
   src/NodePainter.cpp
