@@ -1,4 +1,4 @@
-#include <nodes/DataModelRegistry>
+#include <QtNodes/DataModelRegistry>
 
 #include <catch2/catch.hpp>
 
