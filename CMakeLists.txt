@@ -38,7 +38,7 @@ add_subdirectory(external)
 
 # Find the QtWidgets library
 find_package(Qt6
-  REQUIRED COMPONENTS
+  COMPONENTS
    Core
    Widgets
    Gui
@@ -47,12 +47,16 @@ find_package(Qt6
 
 if (NOT Qt6_FOUND)
   find_package(Qt5 5.15
-    REQUIRED COMPONENTS
+    COMPONENTS
      Core
      Widgets
      Gui
      OpenGL
   )
+endif()
+
+if (NOT (Qt6_FOUND OR Qt5_FOUND))
+  message(FATAL_ERRROR "Qt libraries were not found.")
 endif()
 
 

@@ -10,7 +10,7 @@ environment:
     - GENERATOR : "Visual Studio 15 2017"
       ARCHITECTURE : ""
       APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-      QTDIR: C:\Qt\5.13.2\msvc2017
+      QTDIR: C:\Qt\5.15.2\msvc2017
       PLATFORM: Win32
     - GENERATOR : "MinGW Makefiles"
       ARCHITECTURE : ""
