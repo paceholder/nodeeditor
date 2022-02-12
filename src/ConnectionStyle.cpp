@@ -166,12 +166,11 @@ normalColor(QString typeId) const
 
   std::size_t const hue_range = 0xFF;
 
-  std::mt19937 gen(hash);
-  std::uniform_int_distribution<> distrib(0, hue_range);
+  std::mt19937 gen(static_cast<unsigned int>(hash));
+  std::uniform_int_distribution<int> distrib(0, hue_range);
 
-  std::size_t hue = distrib(gen);
-
-  std::size_t sat = 120 + hash % 129;
+  int hue = distrib(gen);
+  int sat = 120 + hash % 129;
 
   return QColor::fromHsl(hue,
                          sat,

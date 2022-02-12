@@ -126,7 +126,8 @@ drawConnectionPoints(QPainter* painter,
     {
       QPointF p = geom.portScenePosition(i, portType);
 
-      auto const & dataType = model->dataType(portType, i);
+      auto const & dataType = 
+        model->dataType(portType, static_cast<int>(i));
 
       bool canConnect = (state.getEntries(portType)[i].empty() ||
                          (portType == PortType::Out &&
@@ -208,7 +209,8 @@ drawFilledConnectionPoints(QPainter * painter,
 
       if (!state.getEntries(portType)[i].empty())
       {
-        auto const & dataType = model->dataType(portType, i);
+        auto const & dataType =
+          model->dataType(portType, static_cast<int>(i));
 
         if (connectionStyle.useDataDefinedColors())
         {
@@ -302,7 +304,7 @@ drawEntryLabels(QPainter * painter,
       }
       else
       {
-        s = model->dataType(portType, i).name;
+        s = model->dataType(portType, static_cast<int>(i)).name;
       }
 
       auto rect = metrics.boundingRect(s);
