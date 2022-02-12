@@ -86,12 +86,12 @@ set(CPP_SOURCE_FILES
   src/ConnectionStyle.cpp
   src/DataFlowGraphModel.cpp
   src/DataFlowGraphicsScene.cpp
-  src/DataModelRegistry.cpp
+  src/NodeDelegateModelRegistry.cpp
   src/Definitions.cpp
   src/GraphicsView.cpp
   src/GraphicsViewStyle.cpp
   src/NodeConnectionInteraction.cpp
-  src/NodeDataModel.cpp
+  src/NodeDelegateModel.cpp
   src/NodeGeometry.cpp
   src/NodeGraphicsObject.cpp
   src/NodePainter.cpp
@@ -112,14 +112,14 @@ set(HPP_HEADER_FILES
   include/QtNodes/internal/ConnectionStyle.hpp
   include/QtNodes/internal/DataFlowGraphicsScene.hpp
   include/QtNodes/internal/DataFlowGraphModel.hpp
-  include/QtNodes/internal/DataModelRegistry.hpp
   include/QtNodes/internal/Definitions.hpp
   include/QtNodes/internal/Export.hpp
   include/QtNodes/internal/GraphicsView.hpp
   include/QtNodes/internal/GraphicsViewStyle.hpp
   include/QtNodes/internal/locateNode.hpp
   include/QtNodes/internal/NodeData.hpp
-  include/QtNodes/internal/NodeDataModel.hpp
+  include/QtNodes/internal/NodeDelegateModel.hpp
+  include/QtNodes/internal/NodeDelegateModelRegistry.hpp
   include/QtNodes/internal/NodeGeometry.hpp
   include/QtNodes/internal/NodeGraphicsObject.hpp
   include/QtNodes/internal/NodePainterDelegate.hpp

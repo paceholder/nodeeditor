@@ -1,9 +1,9 @@
 #pragma once
 
+#include <QtNodes/NodeDelegateModel>
+
 #include <QtCore/QObject>
 #include <QtWidgets/QLabel>
-
-#include <QtNodes/NodeDataModel>
 
 #include "MathOperationDataModel.hpp"
 
@@ -54,4 +54,6 @@ private:
 
     Q_EMIT dataUpdated(outPortIndex);
   }
+
+
 };

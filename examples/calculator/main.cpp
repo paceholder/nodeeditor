@@ -1,7 +1,7 @@
 #include <QtNodes/ConnectionStyle>
 #include <QtNodes/DataFlowGraphModel>
 #include <QtNodes/DataFlowGraphicsScene>
-#include <QtNodes/DataModelRegistry>
+#include <QtNodes/NodeDelegateModelRegistry>
 #include <QtNodes/GraphicsView>
 #include <QtNodes/NodeData>
 
@@ -22,14 +22,14 @@
 using QtNodes::ConnectionStyle;
 using QtNodes::DataFlowGraphModel;
 using QtNodes::DataFlowGraphicsScene;
-using QtNodes::DataModelRegistry;
+using QtNodes::NodeDelegateModelRegistry;
 using QtNodes::GraphicsView;
 
 
-static std::shared_ptr<DataModelRegistry>
+static std::shared_ptr<NodeDelegateModelRegistry>
 registerDataModels()
 {
-  auto ret = std::make_shared<DataModelRegistry>();
+  auto ret = std::make_shared<NodeDelegateModelRegistry>();
   ret->registerModel<NumberSourceDataModel>("Sources");
 
   ret->registerModel<NumberDisplayDataModel>("Displays");
@@ -72,21 +72,21 @@ setStyle()
 
 
 int
-main(int argc, char *argv[])
+main(int argc, char* argv[])
 {
   QApplication app(argc, argv);
 
   setStyle();
 
-  std::shared_ptr<DataModelRegistry> registry = registerDataModels();
+  std::shared_ptr<NodeDelegateModelRegistry> registry = registerDataModels();
 
   QWidget mainWidget;
 
-  auto menuBar    = new QMenuBar();
+  auto menuBar = new QMenuBar();
   auto saveAction = menuBar->addAction("Save..");
   auto loadAction = menuBar->addAction("Load..");
 
-  QVBoxLayout *l = new QVBoxLayout(&mainWidget);
+  QVBoxLayout* l = new QVBoxLayout(&mainWidget);
 
   DataFlowGraphModel dataFlowGraphModel(registry);
 

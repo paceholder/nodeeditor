@@ -58,10 +58,10 @@ Dataflow Classes
 .. doxygenclass:: QtNodes::DataFlowGraphModel
    :members:
 
-.. doxygenclass:: QtNodes::NodeDataModel
+.. doxygenclass:: QtNodes::NodeDelegateModel
    :members:
 
-.. doxygenclass:: QtNodes::DataModelRegistry
+.. doxygenclass:: QtNodes::NodeDelegateModelRegistry
    :members:
 
 Definitions

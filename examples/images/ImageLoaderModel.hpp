@@ -5,8 +5,8 @@
 #include <QtCore/QObject>
 #include <QtWidgets/QLabel>
 
-#include <QtNodes/DataModelRegistry>
-#include <QtNodes/NodeDataModel>
+#include <QtNodes/NodeDelegateModelRegistry>
+#include <QtNodes/NodeDelegateModel>
 
 #include "PixmapData.hpp"
 
@@ -14,11 +14,11 @@ using QtNodes::PortType;
 using QtNodes::PortIndex;
 using QtNodes::NodeData;
 using QtNodes::NodeDataType;
-using QtNodes::NodeDataModel;
+using QtNodes::NodeDelegateModel;
 
 /// The model dictates the number of inputs and outputs for the Node.
 /// In this example it has no logic.
-class ImageLoaderModel : public NodeDataModel
+class ImageLoaderModel : public NodeDelegateModel
 {
   Q_OBJECT
 
@@ -44,7 +44,7 @@ public:
   nPorts(PortType const portType) const override;
 
   NodeDataType
-  dataType(PortType const portType,
+  dataType(PortType const  portType,
            PortIndex const portIndex) const override;
 
   std::shared_ptr<NodeData>
@@ -54,7 +54,7 @@ public:
   setInData(std::shared_ptr<NodeData>,
             PortIndex const portIndex) override {}
 
-  QWidget *
+  QWidget*
   embeddedWidget() override { return _label; }
 
   bool
@@ -63,11 +63,11 @@ public:
 protected:
 
   bool
-  eventFilter(QObject *object, QEvent *event) override;
+  eventFilter(QObject* object, QEvent* event) override;
 
 private:
 
-  QLabel * _label;
+  QLabel* _label;
 
   QPixmap _pixmap;
 };
