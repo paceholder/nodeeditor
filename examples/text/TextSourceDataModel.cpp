@@ -2,7 +2,7 @@
 
 TextSourceDataModel::
 TextSourceDataModel()
-  : _lineEdit(new QLineEdit("Default Text")),
+  : _lineEdit(new QLineEdit("Default Text"))
 {
   connect(_lineEdit, &QLineEdit::textEdited,
           this, &TextSourceDataModel::onTextEdited);

@@ -1,12 +1,11 @@
 #pragma once
 
-#include <QtCore/QObject>
-#include <QtWidgets/QLabel>
-
 #include "TextData.hpp"
 
-#include <nodes/NodeDataModel>
-#include <nodes/Definitions>
+#include <QtNodes/NodeDataModel>
+
+#include <QtCore/QObject>
+#include <QtWidgets/QLabel>
 
 #include <iostream>
 #include <vector>

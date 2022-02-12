@@ -3,7 +3,7 @@ find_package(Doxygen)
 if(DOXYGEN_FOUND)
 
   # Find all the public headers
-  get_target_property(QT_NODES_PUBLIC_HEADER_DIR nodes INTERFACE_INCLUDE_DIRECTORIES)
+  get_target_property(QT_NODES_PUBLIC_HEADER_DIR QtNodes INTERFACE_INCLUDE_DIRECTORIES)
 
   file(GLOB_RECURSE QT_NODES_PUBLIC_HEADERS ${QT_NODES_PUBLIC_HEADER_DIR}/*.hpp)
 

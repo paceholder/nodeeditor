@@ -4,14 +4,14 @@ include(CMakeFindDependencyMacro)
 
 # NOTE Had to use find_package because find_dependency does not support COMPONENTS or MODULE until 3.8.0
 
-find_package(Qt5 REQUIRED COMPONENTS
+find_package(Qt6 REQUIRED COMPONENTS
              Core
              Widgets
              Gui
              OpenGL)
 
-if(NOT TARGET QtNodes::nodes)
+if(NOT TARGET QtNodes::QtNodes)
     include("${QtNodes_CMAKE_DIR}/QtNodesTargets.cmake")
 endif()
 
-set(QtNodes_LIBRARIES QtNodes::nodes)
+set(QtNodes_LIBRARIES QtNodes::QtNodes)

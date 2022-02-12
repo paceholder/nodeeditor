@@ -1,11 +1,11 @@
-#include <nodes/ConnectionStyle>
-#include <nodes/DataFlowGraphModel>
-#include <nodes/DataFlowGraphicsScene>
-#include <nodes/DataModelRegistry>
-#include <nodes/GraphicsView>
-#include <nodes/GraphicsViewStyle>
-#include <nodes/NodeData>
-#include <nodes/NodeStyle>
+#include <QtNodes/ConnectionStyle>
+#include <QtNodes/DataFlowGraphModel>
+#include <QtNodes/DataFlowGraphicsScene>
+#include <QtNodes/DataModelRegistry>
+#include <QtNodes/GraphicsView>
+#include <QtNodes/GraphicsViewStyle>
+#include <QtNodes/NodeData>
+#include <QtNodes/NodeStyle>
 
 #include <QtWidgets/QApplication>
 
