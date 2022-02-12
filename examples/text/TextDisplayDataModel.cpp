@@ -46,3 +46,25 @@ outData(PortIndex)
   std::shared_ptr<NodeData> ptr;
   return ptr;
 }
+
+
+void
+TextDisplayDataModel::
+setInData(std::shared_ptr<NodeData> data, 
+          PortIndex const)
+{
+  auto textData = std::dynamic_pointer_cast<TextData>(data);
+
+  if (textData)
+  {
+    _inputText = textData->text();
+  }
+  else
+  {
+    _inputText = "";
+  }
+
+  _label->setText(_inputText);
+  _label->adjustSize();
+}
+

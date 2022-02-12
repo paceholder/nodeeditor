@@ -1,23 +1,24 @@
 #pragma once
 
-#include <QtCore/QObject>
-#include <QtWidgets/QLabel>
-
 #include "TextData.hpp"
 
-#include <QtNodes/NodeDataModel>
+#include <QtNodes/NodeDelegateModel>
+
+#include <QtCore/QObject>
+#include <QtWidgets/QLabel>
 
 #include <iostream>
 #include <vector>
 
-using QtNodes::PortType;
-using QtNodes::PortIndex;
+using QtNodes::ConnectionPolicy;
 using QtNodes::NodeData;
-using QtNodes::NodeDataModel;
+using QtNodes::NodeDelegateModel;
+using QtNodes::PortIndex;
+using QtNodes::PortType;
 
 /// The model dictates the number of inputs and outputs for the Node.
 /// In this example it has no logic.
-class TextDisplayDataModel : public NodeDataModel
+class TextDisplayDataModel : public NodeDelegateModel
 {
   Q_OBJECT
 
@@ -55,54 +56,14 @@ public:
   std::shared_ptr<NodeData>
   outData(PortIndex const port) override;
 
-  ConnectionPolicy
-  portInConnectionPolicy(PortIndex) const override
-  {
-    return ConnectionPolicy::Many;
-  }
-
   void
-  setInData(std::shared_ptr<NodeData> data, PortIndex const portIndex) override
-  {
-  }
+  setInData(std::shared_ptr<NodeData> data, 
+            PortIndex const portIndex) override;
 
-  void
-  setInData(std::shared_ptr<NodeData> data, int, const QUuid& connectionId) override
-  {
-    auto textData = std::dynamic_pointer_cast<TextData>(data);
-
-    auto it = std::find_if(inputTexts.begin(), inputTexts.end(),
-        [this, &connectionId](const auto& e)
-        {
-            return e.first == connectionId;
-        });
-    if (textData)
-    {
-      if (it == inputTexts.end())
-        inputTexts.emplace_back(connectionId, textData->text());
-      else
-        it->second = textData->text();
-    }
-    else
-    {
-      inputTexts.erase(it);
-    }
-
-    QStringList textList;
-    for (auto&& entry : inputTexts) textList.push_back(entry.second);
-
-    _label->setText(QStringLiteral("%1 inputs: %2")
-        .arg(textList.size())
-        .arg(textList.join(QStringLiteral(", "))));
-    _label->adjustSize();
-  }
-
-
-  QWidget *
+  QWidget*
   embeddedWidget() override { return _label; }
 
 private:
-
   QLabel * _label;
-  std::vector<std::pair<QUuid, QString>> inputTexts;
+  QString _inputText;
 };

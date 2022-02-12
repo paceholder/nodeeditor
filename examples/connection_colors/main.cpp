@@ -3,22 +3,22 @@
 #include <QtNodes/ConnectionStyle>
 #include <QtNodes/DataFlowGraphModel>
 #include <QtNodes/DataFlowGraphicsScene>
-#include <QtNodes/DataModelRegistry>
+#include <QtNodes/NodeDelegateModelRegistry>
 #include <QtNodes/GraphicsView>
 #include <QtNodes/NodeData>
 
 #include "models.hpp"
 
-using QtNodes::DataModelRegistry;
+using QtNodes::NodeDelegateModelRegistry;
 using QtNodes::DataFlowGraphModel;
 using QtNodes::DataFlowGraphicsScene;
 using QtNodes::GraphicsView;
 using QtNodes::ConnectionStyle;
 
-static std::shared_ptr<DataModelRegistry>
+static std::shared_ptr<NodeDelegateModelRegistry>
 registerDataModels()
 {
-  auto ret = std::make_shared<DataModelRegistry>();
+  auto ret = std::make_shared<NodeDelegateModelRegistry>();
 
   ret->registerModel<NaiveDataModel>();
 
@@ -59,7 +59,7 @@ main(int argc, char* argv[])
 
   setStyle();
 
-  std::shared_ptr<DataModelRegistry> registry = registerDataModels();
+  std::shared_ptr<NodeDelegateModelRegistry> registry = registerDataModels();
   DataFlowGraphModel dataFlowGraphModel(registry);
 
   DataFlowGraphicsScene scene(dataFlowGraphModel);
@@ -72,3 +72,4 @@ main(int argc, char* argv[])
 
   return app.exec();
 }
+

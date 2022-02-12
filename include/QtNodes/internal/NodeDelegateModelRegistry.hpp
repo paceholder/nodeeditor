@@ -1,5 +1,12 @@
 #pragma once
 
+#include "Export.hpp"
+#include "NodeData.hpp"
+#include "NodeDelegateModel.hpp"
+#include "QStringStdHash.hpp"
+
+#include <QtCore/QString>
+
 #include <functional>
 #include <memory>
 #include <set>
@@ -8,57 +15,51 @@
 #include <utility>
 #include <vector>
 
-#include <QtCore/QString>
-
-#include "Export.hpp"
-#include "NodeData.hpp"
-#include "NodeDataModel.hpp"
-#include "QStringStdHash.hpp"
 
 namespace QtNodes
 {
 
 inline
 bool
-operator<(NodeDataType const &d1,
-          NodeDataType const &d2)
+operator<(NodeDataType const& d1,
+          NodeDataType const& d2)
 {
   return d1.id < d2.id;
 }
 
 
 /// Class uses map for storing models (name, model)
-class NODE_EDITOR_PUBLIC DataModelRegistry
+class NODE_EDITOR_PUBLIC NodeDelegateModelRegistry
 {
 
 public:
 
-  using RegistryItemPtr     = std::unique_ptr<NodeDataModel>;
-  using RegistryItemCreator = std::function<RegistryItemPtr()>;
-  using RegisteredModelCreatorsMap  = std::unordered_map<QString, RegistryItemCreator>;
+  using RegistryItemPtr = std::unique_ptr<NodeDelegateModel>;
+  using RegistryItemCreator = std::function<RegistryItemPtr ()>;
+  using RegisteredModelCreatorsMap = std::unordered_map<QString, RegistryItemCreator>;
   using RegisteredModelsCategoryMap = std::unordered_map<QString, QString>;
   using CategoriesSet = std::set<QString>;
 
   //using RegisteredTypeConvertersMap = std::map<TypeConverterId, TypeConverter>;
 
-  DataModelRegistry()  = default;
-  ~DataModelRegistry() = default;
+  NodeDelegateModelRegistry() = default;
+  ~NodeDelegateModelRegistry() = default;
 
-  DataModelRegistry(DataModelRegistry const &) = delete;
-  DataModelRegistry(DataModelRegistry &&)      = default;
+  NodeDelegateModelRegistry(NodeDelegateModelRegistry const&) = delete;
+  NodeDelegateModelRegistry(NodeDelegateModelRegistry&&) = default;
 
-  DataModelRegistry &
-  operator=(DataModelRegistry const &) = delete;
+  NodeDelegateModelRegistry &
+  operator=(NodeDelegateModelRegistry const&) = delete;
 
-  DataModelRegistry &
-  operator=(DataModelRegistry &&) = default;
+  NodeDelegateModelRegistry &
+  operator=(NodeDelegateModelRegistry&&) = default;
 
 public:
 
   template<typename ModelType>
   void
   registerModel(RegistryItemCreator creator,
-                QString const &category = "Nodes")
+                QString const&      category = "Nodes")
   {
     QString const name = computeName<ModelType>(HasStaticMethodName<ModelType>{}, creator);
     if (!_registeredItemCreators.count(name))
@@ -69,22 +70,25 @@ public:
     }
   }
 
+
   template<typename ModelType>
   void
-  registerModel(QString const &category = "Nodes")
+  registerModel(QString const& category = "Nodes")
   {
     RegistryItemCreator creator = [](){ return std::make_unique<ModelType>(); };
     registerModel<ModelType>(std::move(creator), category);
   }
 
+
 #if 0
   template<typename ModelType>
   void
   registerModel(RegistryItemCreator creator,
-                QString const &category = "Nodes")
+                QString const&      category = "Nodes")
   {
     registerModel<ModelType>(std::move(creator), category);
   }
+
 
   template <typename ModelCreator>
   void
@@ -94,6 +98,7 @@ public:
     registerModel<ModelType>(std::forward<ModelCreator>(creator), category);
   }
 
+
   template <typename ModelCreator>
   void
   registerModel(QString const& category, ModelCreator&& creator)
@@ -101,18 +106,20 @@ public:
     registerModel(std::forward<ModelCreator>(creator), category);
   }
 
+
   void
-  registerTypeConverter(TypeConverterId const &id,
-                        TypeConverter typeConverter)
+  registerTypeConverter(TypeConverterId const& id,
+                        TypeConverter          typeConverter)
   {
     _registeredTypeConverters[id] = std::move(typeConverter);
   }
 
+
 #endif
 
 
-  std::unique_ptr<NodeDataModel>
-  create(QString const &modelName);
+  std::unique_ptr<NodeDelegateModel>
+  create(QString const& modelName);
 
   RegisteredModelCreatorsMap const &
   registeredModelCreators() const;
@@ -125,8 +132,8 @@ public:
 
 #if 0
   TypeConverter
-  getTypeConverter(NodeDataType const &d1,
-                   NodeDataType const &d2) const;
+  getTypeConverter(NodeDataType const& d1,
+                   NodeDataType const& d2) const;
 #endif
 
 private:
@@ -164,6 +171,7 @@ private:
     return ModelType::Name();
   }
 
+
   template <typename ModelType>
   static QString
   computeName(std::false_type, RegistryItemCreator const& creator)
@@ -171,21 +179,22 @@ private:
     return creator()->name();
   }
 
+
   template <typename T>
   struct UnwrapUniquePtr
   {
     // Assert always fires, but the compiler doesn't know this:
     static_assert(!std::is_same<T, T>::value,
                   "The ModelCreator must return a std::unique_ptr<T>, where T "
-                  "inherits from NodeDataModel");
+                  "inherits from NodeDelegateModel");
   };
 
   template <typename T>
-  struct UnwrapUniquePtr<std::unique_ptr<T>>
+  struct UnwrapUniquePtr<std::unique_ptr<T> >
   {
-    static_assert(std::is_base_of<NodeDataModel, T>::value,
+    static_assert(std::is_base_of<NodeDelegateModel, T>::value,
                   "The ModelCreator must return a std::unique_ptr<T>, where T "
-                  "inherits from NodeDataModel");
+                  "inherits from NodeDelegateModel");
     using type = T;
   };
 

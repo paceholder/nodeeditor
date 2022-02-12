@@ -1,24 +1,24 @@
 #pragma once
 
+#include <QtNodes/NodeDelegateModel>
+
 #include <QtCore/QObject>
 #include <QtCore/QJsonObject>
 #include <QtWidgets/QLabel>
-
-#include <QtNodes/NodeDataModel>
 
 #include <iostream>
 
 class DecimalData;
 
 using QtNodes::NodeData;
-using QtNodes::NodeDataModel;
+using QtNodes::NodeDelegateModel;
 using QtNodes::NodeDataType;
 using QtNodes::PortIndex;
 using QtNodes::PortType;
 
 /// The model dictates the number of inputs and outputs for the Node.
 /// In this example it has no logic.
-class MathOperationDataModel : public NodeDataModel
+class MathOperationDataModel : public NodeDelegateModel
 {
   Q_OBJECT
 
@@ -32,7 +32,7 @@ public:
   nPorts(PortType portType) const override;
 
   NodeDataType
-  dataType(PortType portType,
+  dataType(PortType  portType,
            PortIndex portIndex) const override;
 
   std::shared_ptr<NodeData>
@@ -41,7 +41,7 @@ public:
   void
   setInData(std::shared_ptr<NodeData> data, PortIndex portIndex) override;
 
-  QWidget *
+  QWidget*
   embeddedWidget() override { return nullptr; }
 
 protected:

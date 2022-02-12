@@ -5,7 +5,7 @@ namespace QtNodes
 
 
 DataFlowGraphModel::
-DataFlowGraphModel(std::shared_ptr<DataModelRegistry> registry)
+DataFlowGraphModel(std::shared_ptr<NodeDelegateModelRegistry> registry)
   : _registry(registry)
   , _nextNodeId{0}
 {}
@@ -17,7 +17,7 @@ allNodeIds() const
 {
   std::unordered_set<NodeId> nodeIds;
   for_each(_models.begin(), _models.end(),
-           [&nodeIds](auto const &p)
+           [&nodeIds](auto const& p)
            {
              nodeIds.insert(p.first);
 
@@ -33,7 +33,7 @@ allConnectionIds(NodeId const nodeId) const
 {
   std::unordered_set<ConnectionId> result;
 
-  for (auto & c : _connectivity)
+  for (auto& c : _connectivity)
   {
     if (std::get<0>(c.first) != nodeId)
       continue;
@@ -41,7 +41,7 @@ allConnectionIds(NodeId const nodeId) const
     PortType const portType = std::get<1>(c.first);
     PortIndex const portIndex = std::get<2>(c.first);
 
-    for (auto & target : c.second)
+    for (auto& target : c.second)
     {
       if (portType == PortType::Out)
       {
@@ -100,14 +100,14 @@ NodeId
 DataFlowGraphModel::
 addNode(QString const nodeType)
 {
-  std::unique_ptr<NodeDataModel> model =
+  std::unique_ptr<NodeDelegateModel> model =
     _registry->create(nodeType);
 
   if (model)
   {
     NodeId newId = newNodeId();
 
-    connect(model.get(), &NodeDataModel::dataUpdated,
+    connect(model.get(), &NodeDelegateModel::dataUpdated,
             [newId, this](PortIndex const portIndex)
             { onNodeDataUpdated(newId, portIndex); });
 
@@ -201,7 +201,7 @@ nodeData(NodeId nodeId, NodeRole role) const
   if (it == _models.end())
     return result;
 
-  auto &model = it->second;
+  auto& model = it->second;
 
   switch (role)
   {
@@ -334,7 +334,7 @@ portData(NodeId    nodeId,
   if (it == _models.end())
     return result;
 
-  auto &model = it->second;
+  auto& model = it->second;
 
   switch (role)
   {
@@ -348,10 +348,9 @@ portData(NodeId    nodeId,
       break;
 
     case PortRole::ConnectionPolicyRole:
-      if (portType == PortType::Out)
-        result = QVariant::fromValue(model->portOutConnectionPolicy(portIndex));
-      else
-        result = QVariant::fromValue(ConnectionPolicy::One);
+      result =
+        QVariant::fromValue(model->portConnectionPolicy(portType,
+                                                        portIndex));
       break;
 
     case PortRole::CaptionVisible:
@@ -439,7 +438,7 @@ deleteNode(NodeId const nodeId)
 {
   // Delete connections to this node first.
   auto connectionIds = allConnectionIds(nodeId);
-  for (auto &cId : connectionIds)
+  for (auto& cId : connectionIds)
   {
     deleteConnection(cId);
   }
@@ -458,8 +457,7 @@ DataFlowGraphModel::
 onNodeDataUpdated(NodeId const    nodeId,
                   PortIndex const portIndex)
 {
-
-  auto const &connected =
+  std::unordered_set<std::pair<NodeId, PortIndex>> const& connected =
     connectedNodes(nodeId, PortType::Out, portIndex);
 
   // TODO: Should we pull the data through the model?
@@ -474,7 +472,7 @@ onNodeDataUpdated(NodeId const    nodeId,
   auto const outPortData =
     _models[nodeId]->outData(portIndex);
 
-  for (auto const &cn : connected)
+  for (auto const& cn : connected)
   {
     _models[cn.first]->setInData(outPortData, cn.second);
 

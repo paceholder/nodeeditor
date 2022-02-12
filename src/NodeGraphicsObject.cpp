@@ -327,7 +327,7 @@ mouseMoveEvent(QGraphicsSceneMouseEvent* event)
   // deselect all other items after this one is selected
   if (!isSelected())
   {
-    _scene.clearSelection();
+    scene()->clearSelection();
     setSelected(true);
   }
 

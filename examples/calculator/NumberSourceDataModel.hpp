@@ -1,8 +1,8 @@
 #pragma once
 
-#include <QtCore/QObject>
+#include <QtNodes/NodeDelegateModel>
 
-#include <QtNodes/NodeDataModel>
+#include <QtCore/QObject>
 
 #include <iostream>
 
@@ -12,14 +12,13 @@ using QtNodes::PortType;
 using QtNodes::PortIndex;
 using QtNodes::NodeData;
 using QtNodes::NodeDataType;
-using QtNodes::NodeDataModel;
+using QtNodes::NodeDelegateModel;
 
 class QLineEdit;
 
 /// The model dictates the number of inputs and outputs for the Node.
 /// In this example it has no logic.
-class NumberSourceDataModel
-  : public NodeDataModel
+class NumberSourceDataModel : public NodeDelegateModel
 {
   Q_OBJECT
 
@@ -49,7 +48,7 @@ public:
   save() const override;
 
   void
-  restore(QJsonObject const &p) override;
+  restore(QJsonObject const& p) override;
 
 public:
 
@@ -72,11 +71,11 @@ public:
 private Q_SLOTS:
 
   void
-  onTextEdited(QString const &string);
+  onTextEdited(QString const& string);
 
 private:
 
   std::shared_ptr<DecimalData> _number;
 
-  QLineEdit * _lineEdit;
+  QLineEdit* _lineEdit;
 };

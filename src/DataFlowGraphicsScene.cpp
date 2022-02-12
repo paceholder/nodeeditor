@@ -1,7 +1,10 @@
 #include "DataFlowGraphicsScene.hpp"
 
-#include <stdexcept>
-#include <utility>
+#include "ConnectionGraphicsObject.hpp"
+#include "NodeDelegateModelRegistry.hpp"
+#include "GraphicsView.hpp"
+#include "NodeGeometry.hpp"
+#include "NodeGraphicsObject.hpp"
 
 #include <QtWidgets/QFileDialog>
 #include <QtWidgets/QGraphicsSceneMoveEvent>
@@ -20,19 +23,17 @@
 #include <QtCore/QJsonObject>
 #include <QtCore/QtGlobal>
 
-#include "ConnectionGraphicsObject.hpp"
-#include "DataModelRegistry.hpp"
-#include "GraphicsView.hpp"
-#include "NodeGeometry.hpp"
-#include "NodeGraphicsObject.hpp"
+#include <stdexcept>
+#include <utility>
+
 
 namespace QtNodes
 {
 
 
 DataFlowGraphicsScene::
-DataFlowGraphicsScene(DataFlowGraphModel &graphModel,
-                      QObject * parent)
+DataFlowGraphicsScene(DataFlowGraphModel& graphModel,
+                      QObject*            parent)
   : BasicGraphicsScene(graphModel, parent)
   , _graphModel(graphModel)
 {
@@ -72,30 +73,30 @@ selectedNodes() const
 }
 
 
-QMenu *
+QMenu*
 DataFlowGraphicsScene::
 createSceneMenu(QPointF const scenePos)
 {
-  QMenu * modelMenu = new QMenu();
+  QMenu* modelMenu = new QMenu();
 
   auto skipText = QStringLiteral("skip me");
 
   // Add filterbox to the context menu
-  auto * txtBox = new QLineEdit(modelMenu);
+  auto* txtBox = new QLineEdit(modelMenu);
   txtBox->setPlaceholderText(QStringLiteral("Filter"));
   txtBox->setClearButtonEnabled(true);
 
-  auto *txtBoxAction = new QWidgetAction(modelMenu);
+  auto* txtBoxAction = new QWidgetAction(modelMenu);
   txtBoxAction->setDefaultWidget(txtBox);
 
   // 1.
   modelMenu->addAction(txtBoxAction);
 
   // Add result treeview to the context menu
-  QTreeWidget *treeView = new QTreeWidget(modelMenu);
+  QTreeWidget* treeView = new QTreeWidget(modelMenu);
   treeView->header()->close();
 
-  auto *treeViewAction = new QWidgetAction(modelMenu);
+  auto* treeViewAction = new QWidgetAction(modelMenu);
   treeViewAction->setDefaultWidget(treeView);
 
   // 2.
@@ -104,7 +105,7 @@ createSceneMenu(QPointF const scenePos)
   auto registry = _graphModel.dataModelRegistry();
 
   QMap<QString, QTreeWidgetItem*> topLevelItems;
-  for (auto const &cat : registry->categories())
+  for (auto const& cat : registry->categories())
   {
     auto item = new QTreeWidgetItem(treeView);
     item->setText(0, cat);
@@ -112,10 +113,10 @@ createSceneMenu(QPointF const scenePos)
     topLevelItems[cat] = item;
   }
 
-  for (auto const &assoc : registry->registeredModelsCategoryAssociation())
+  for (auto const& assoc : registry->registeredModelsCategoryAssociation())
   {
     auto parent = topLevelItems[assoc.second];
-    auto item   = new QTreeWidgetItem(parent);
+    auto item = new QTreeWidgetItem(parent);
     item->setText(0, assoc.first);
     item->setData(0, Qt::UserRole, assoc.first);
   }
@@ -126,7 +127,7 @@ createSceneMenu(QPointF const scenePos)
           [this,
            modelMenu,
            skipText,
-           scenePos](QTreeWidgetItem *item, int)
+           scenePos](QTreeWidgetItem* item, int)
           {
             QString modelName = item->data(0, Qt::UserRole).toString();
 
@@ -149,14 +150,14 @@ createSceneMenu(QPointF const scenePos)
 
   //Setup filtering
   connect(txtBox, &QLineEdit::textChanged,
-          [&](const QString &text)
+          [&](const QString& text)
           {
-            for (auto &topLvlItem : topLevelItems)
+            for (auto& topLvlItem : topLevelItems)
             {
               for (int i = 0; i < topLvlItem->childCount(); ++i)
               {
-                auto child       = topLvlItem->child(i);
-                auto modelName   = child->data(0, Qt::UserRole).toString();
+                auto child = topLvlItem->child(i);
+                auto modelName = child->data(0, Qt::UserRole).toString();
                 const bool match = (modelName.contains(text, Qt::CaseInsensitive));
                 child->setHidden(!match);
               }
@@ -176,15 +177,15 @@ createSceneMenu(QPointF const scenePos)
 #if 0
 std::shared_ptr<Connection>
 DataFlowGraphicsScene::
-restoreConnection(QJsonObject const &connectionJson)
+restoreConnection(QJsonObject const& connectionJson)
 {
-  QUuid nodeInId  = QUuid(connectionJson["in_id"].toString());
+  QUuid nodeInId = QUuid(connectionJson["in_id"].toString());
   QUuid nodeOutId = QUuid(connectionJson["out_id"].toString());
 
-  PortIndex portIndexIn  = connectionJson["in_index"].toInt();
+  PortIndex portIndexIn = connectionJson["in_index"].toInt();
   PortIndex portIndexOut = connectionJson["out_index"].toInt();
 
-  auto nodeIn  = _nodes[nodeInId].get();
+  auto nodeIn = _nodes[nodeInId].get();
   auto nodeOut = _nodes[nodeOutId].get();
 
   auto getConverter = [&]()
@@ -225,7 +226,7 @@ restoreConnection(QJsonObject const &connectionJson)
 
 Node &
 DataFlowGraphicsScene::
-restoreNode(QJsonObject const &nodeJson)
+restoreNode(QJsonObject const& nodeJson)
 {
   QString modelName = nodeJson["model"].toObject()["name"].toString();
 
@@ -236,7 +237,7 @@ restoreNode(QJsonObject const &nodeJson)
                            modelName.toLocal8Bit().data());
 
   auto node = detail::make_unique<Node>(std::move(dataModel));
-  auto ngo  = detail::make_unique<NodeGraphicsObject>(*this, *node);
+  auto ngo = detail::make_unique<NodeGraphicsObject>(*this, *node);
   node->setGraphicsObject(std::move(ngo));
 
   node->restore(nodeJson);
@@ -313,9 +314,9 @@ saveToMemory() const
 
   QJsonArray nodesJsonArray;
 
-  for (auto const &pair : _nodes)
+  for (auto const& pair : _nodes)
   {
-    auto const &node = pair.second;
+    auto const& node = pair.second;
 
     nodesJsonArray.append(node->save());
   }
@@ -323,9 +324,9 @@ saveToMemory() const
   sceneJson["nodes"] = nodesJsonArray;
 
   QJsonArray connectionJsonArray;
-  for (auto const &pair : _connections)
+  for (auto const& pair : _connections)
   {
-    auto const &connection = pair.second;
+    auto const& connection = pair.second;
 
     QJsonObject connectionJson = connection->save();
 
@@ -343,7 +344,7 @@ saveToMemory() const
 
 void
 DataFlowGraphicsScene::
-loadFromMemory(const QByteArray &data)
+loadFromMemory(const QByteArray& data)
 {
   QJsonObject const jsonDocument = QJsonDocument::fromJson(data).object();
 

@@ -3,7 +3,7 @@
 #include <QtCore/QObject>
 
 #include <QtNodes/NodeData>
-#include <QtNodes/NodeDataModel>
+#include <QtNodes/NodeDelegateModel>
 
 #include <memory>
 
@@ -11,7 +11,7 @@ using QtNodes::PortType;
 using QtNodes::PortIndex;
 using QtNodes::NodeData;
 using QtNodes::NodeDataType;
-using QtNodes::NodeDataModel;
+using QtNodes::NodeDelegateModel;
 
 /// The class can potentially incapsulate any user data which need to
 /// be transferred within the Node Editor graph
@@ -28,7 +28,7 @@ public:
 
 /// The model dictates the number of inputs and outputs for the Node.
 /// In this example it has no logic.
-class MyDataModel : public NodeDataModel
+class MyDataModel : public NodeDelegateModel
 {
   Q_OBJECT
 public:
@@ -43,11 +43,13 @@ public:
     return QString("My Data Model");
   }
 
+
   QString
   name() const override
   {
     return QString("MyDataModel");
   }
+
 
 public:
 
@@ -61,6 +63,7 @@ public:
     return modelJson;
   }
 
+
 public:
 
   unsigned int
@@ -69,11 +72,13 @@ public:
     return 3;
   }
 
+
   NodeDataType
   dataType(PortType const, PortIndex const) const override
   {
     return MyNodeData().type();
   }
+
 
   std::shared_ptr<NodeData>
   outData(PortIndex) override
@@ -81,10 +86,11 @@ public:
     return std::make_shared<MyNodeData>();
   }
 
+
   void
   setInData(std::shared_ptr<NodeData>, PortIndex const) override
   {}
 
-  QWidget *
+  QWidget*
   embeddedWidget() override { return nullptr; }
 };
