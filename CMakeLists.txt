@@ -46,7 +46,7 @@ find_package(Qt6
 )
 
 if (NOT Qt6_FOUND)
-  find_package(Qt5 5.15
+  find_package(Qt5 5.13
     COMPONENTS
      Core
      Widgets
