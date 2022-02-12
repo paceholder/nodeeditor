@@ -116,10 +116,7 @@ target_compile_options(nodes
     $<$<CXX_COMPILER_ID:Clang>:-Wall -Wextra>
 )
 
-target_compile_features(nodes
-  PUBLIC
-    cxx_generic_lambdas # Require C++14
-)
+target_compile_features(nodes PUBLIC cxx_std_14)
 
 set_target_properties(nodes
   PROPERTIES
