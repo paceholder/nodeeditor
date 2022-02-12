@@ -177,7 +177,7 @@ Q_SIGNALS:
   nodeDeleted(NodeId const nodeId);
 
   void
-  nodePositonUpdated(NodeId const nodeId);
+  nodePositionUpdated(NodeId const nodeId);
 
   void
   portDataSet(NodeId const    nodeId,
