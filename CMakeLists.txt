@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.8)
 
 cmake_policy(SET CMP0072 NEW)
 
-project(QtNodes CXX)
+project(QtNodesLibrary CXX)
 
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
@@ -18,18 +18,18 @@ else()
   set(is_root_project ON)
 endif()
 
-set(NODES_DEVELOPER_DEFAULTS "${is_root_project}" CACHE BOOL "Turns on default settings for development of QtNodes")
+set(QT_NODES_DEVELOPER_DEFAULTS "${is_root_project}" CACHE BOOL "Turns on default settings for development of QtNodes")
 
-option(BUILD_TESTING "Build tests" "${NODES_DEVELOPER_DEFAULTS}")
-option(BUILD_EXAMPLES "Build Examples" "${NODES_DEVELOPER_DEFAULTS}")
-option(BUILD_DOCS "Build Documentation" "${NODES_DEVELOPER_DEFAULTS}")
+option(BUILD_TESTING "Build tests" "${QT_NODES_DEVELOPER_DEFAULTS}")
+option(BUILD_EXAMPLES "Build Examples" "${QT_NODES_DEVELOPER_DEFAULTS}")
+option(BUILD_DOCS "Build Documentation" "${QT_NODES_DEVELOPER_DEFAULTS}")
 option(BUILD_SHARED_LIBS "Build as shared library" ON)
 option(BUILD_DEBUG_POSTFIX_D "Append d suffix to debug libraries" OFF)
-option(NODES_FORCE_TEST_COLOR "Force colorized unit test output" OFF)
+option(QT_NODES_FORCE_TEST_COLOR "Force colorized unit test output" OFF)
 
 enable_testing()
 
-if(NODES_DEVELOPER_DEFAULTS)
+if(QT_NODES_DEVELOPER_DEFAULTS)
   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
   set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
   set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
@@ -103,21 +103,21 @@ set(CPP_SOURCE_FILES
 
 # If we want to give the option to build a static library,
 # set BUILD_SHARED_LIBS option to OFF
-add_library(nodes ${CPP_SOURCE_FILES} ${RESOURCES})
+add_library(QtNodes ${CPP_SOURCE_FILES} ${RESOURCES})
 
-add_library(QtNodes::nodes ALIAS nodes)
+add_library(QtNodes::QtNodes ALIAS QtNodes)
 
 
-target_include_directories(nodes
+target_include_directories(QtNodes
   PUBLIC
     $<INSTALL_INTERFACE:include>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   PRIVATE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/nodes/internal>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/QtNodes/internal>
 )
 
-target_link_libraries(nodes
+target_link_libraries(QtNodes
   PUBLIC
     ${Qt}::Core
     ${Qt}::Widgets
@@ -125,7 +125,7 @@ target_link_libraries(nodes
     ${Qt}::OpenGL
 )
 
-target_compile_definitions(nodes
+target_compile_definitions(QtNodes
   PUBLIC
     NODE_EDITOR_SHARED
   PRIVATE
@@ -134,25 +134,26 @@ target_compile_definitions(nodes
     QT_NO_KEYWORDS
 )
 
-target_compile_options(nodes
+target_compile_options(QtNodes
   PRIVATE
     $<$<CXX_COMPILER_ID:MSVC>:/W4 /wd4127 /EHsc>
     $<$<CXX_COMPILER_ID:GNU>:-Wall -Wextra>
 )
 if(NOT "${CMAKE_CXX_SIMULATE_ID}" STREQUAL "MSVC")
   # Clang-Cl on MSVC identifies as "Clang" but behaves more like MSVC:
-  target_compile_options(nodes
+  target_compile_options(QtNodes
     PRIVATE
       $<$<CXX_COMPILER_ID:Clang>:-Wall -Wextra>
   )
 endif()
 
-if(NODES_DEVELOPER_DEFAULTS)
-  target_compile_features(nodes PUBLIC cxx_std_14)
-  set_target_properties(nodes PROPERTIES CXX_EXTENSIONS OFF)
+if(QT_NODES_DEVELOPER_DEFAULTS)
+  target_compile_features(QtNodes PUBLIC cxx_std_14)
+  set_target_properties(QtNodes PROPERTIES CXX_EXTENSIONS OFF)
 endif()
 
-set_target_properties(nodes
+
+set_target_properties(QtNodes
   PROPERTIES
     ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
     LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
@@ -163,23 +164,23 @@ set_target_properties(nodes
 # Moc
 ##
 
-file(GLOB_RECURSE HEADERS_TO_MOC include/nodes/internal/*.hpp)
+file(GLOB_RECURSE HEADERS_TO_MOC include/QtNodes/internal/*.hpp)
 
 if (Qt6_FOUND)
   qt_wrap_cpp(nodes_moc
       ${HEADERS_TO_MOC}
-    TARGET nodes
+      TARGET QtNodes
     OPTIONS --no-notes # Don't display a note for the headers which don't produce a moc_*.cpp
   )
 else()
   qt5_wrap_cpp(nodes_moc
   ${HEADERS_TO_MOC}
-  TARGET nodes
+  TARGET QtNodes
   OPTIONS --no-notes # Don't display a note for the headers which don't produce a moc_*.cpp
   )
 endif()
 
-target_sources(nodes PRIVATE ${nodes_moc})
+target_sources(QtNodes PRIVATE ${nodes_moc})
 
 ###########
 # Examples
@@ -209,7 +210,7 @@ include(GNUInstallDirs)
 
 set(INSTALL_CONFIGDIR ${CMAKE_INSTALL_LIBDIR}/cmake/QtNodes)
 
-install(TARGETS nodes
+install(TARGETS QtNodes
   EXPORT QtNodesTargets
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}

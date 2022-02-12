@@ -16,7 +16,7 @@ read_the_docs_build = (os.environ.get('READTHEDOCS', None) == 'True')
 breathe_projects = {}
 
 if read_the_docs_build:
-    input_dir = "../src ../include ../include/nodes/internal"
+    input_dir = "../src ../include ../include/QtNodes/internal"
     output_dir = '_build'
     configureDoxyfile(input_dir, output_dir)
     subprocess.call('doxygen', shell=True)

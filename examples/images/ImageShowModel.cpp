@@ -5,7 +5,7 @@
 
 #include <QtWidgets/QFileDialog>
 
-#include <nodes/DataModelRegistry>
+#include <QtNodes/DataModelRegistry>
 
 #include "PixmapData.hpp"
 

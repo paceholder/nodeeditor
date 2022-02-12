@@ -2,7 +2,7 @@
 
 #include <QtCore/QObject>
 
-#include <nodes/NodeDataModel>
+#include <QtNodes/NodeDataModel>
 
 #include <iostream>
 

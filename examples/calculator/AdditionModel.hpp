@@ -4,7 +4,7 @@
 
 #include <QtWidgets/QLabel>
 
-#include <nodes/NodeDataModel>
+#include <QtNodes/NodeDataModel>
 
 #include "MathOperationDataModel.hpp"
 #include "DecimalData.hpp"
