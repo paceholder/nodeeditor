@@ -4,6 +4,7 @@ project(NodeEditor CXX)
 
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 set(CMAKE_DISABLE_SOURCE_CHANGES  ON)
+set(OpenGL_GL_PREFERENCE LEGACY)
 
 get_directory_property(_has_parent PARENT_DIRECTORY)
 if(_has_parent)
@@ -37,14 +38,28 @@ endif()
 
 add_subdirectory(external)
 
-# Find the QtWidgets library
-find_package(Qt5 5.3 COMPONENTS
-             Core
-             Widgets
-             Gui
-             OpenGL)
 
-qt5_add_resources(RESOURCES ./resources/resources.qrc)
+# Find the QtWidgets library
+find_package(Qt6
+  REQUIRED COMPONENTS
+   Core
+   Widgets
+   Gui
+   OpenGL
+)
+
+if (NOT Qt6_FOUND)
+  find_package(Qt5 5.15
+    REQUIRED COMPONENTS
+     Core
+     Widgets
+     Gui
+     OpenGL
+  )
+endif()
+
+
+qt_add_resources(RESOURCES ./resources/resources.qrc)
 
 # Unfortunately, as we have a split include/src, AUTOMOC doesn't work.
 # We'll have to manually specify some files
@@ -93,15 +108,14 @@ target_include_directories(nodes
 
 target_link_libraries(nodes
   PUBLIC
-    Qt5::Core
-    Qt5::Widgets
-    Qt5::Gui
-    Qt5::OpenGL
+    Qt::Core
+    Qt::Widgets
+    Qt::Gui
+    Qt::OpenGL
 )
 
 target_compile_definitions(nodes
   PUBLIC
-    ${Qt5Widgets_DEFINITIONS}
     NODE_EDITOR_SHARED
   PRIVATE
     NODE_EDITOR_EXPORTS
@@ -131,7 +145,7 @@ set_target_properties(nodes
 
 file(GLOB_RECURSE HEADERS_TO_MOC include/nodes/internal/*.hpp)
 
-qt5_wrap_cpp(nodes_moc
+qt_wrap_cpp(nodes_moc
     ${HEADERS_TO_MOC}
   TARGET nodes
   OPTIONS --no-notes # Don't display a note for the headers which don't produce a moc_*.cpp
