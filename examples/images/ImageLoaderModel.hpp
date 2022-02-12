@@ -5,8 +5,8 @@
 #include <QtCore/QObject>
 #include <QtWidgets/QLabel>
 
-#include <nodes/DataModelRegistry>
-#include <nodes/NodeDataModel>
+#include <QtNodes/DataModelRegistry>
+#include <QtNodes/NodeDataModel>
 
 #include "PixmapData.hpp"
 

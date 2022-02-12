@@ -2,7 +2,7 @@
 
 #include <utility>
 
-#include <nodes/NodeDataModel>
+#include <QtNodes/NodeDataModel>
 
 class StubNodeDataModel : public QtNodes::NodeDataModel
 {

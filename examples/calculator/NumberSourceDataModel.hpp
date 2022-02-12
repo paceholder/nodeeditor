@@ -3,7 +3,7 @@
 #include <QtCore/QObject>
 #include <QtWidgets/QLineEdit>
 
-#include <nodes/NodeDataModel>
+#include <QtNodes/NodeDataModel>
 
 #include <iostream>
 

@@ -1,7 +1,7 @@
-#include <nodes/ConnectionStyle>
-#include <nodes/GraphicsView>
-#include <nodes/BasicGraphicsScene>
-#include <nodes/StyleCollection>
+#include <QtNodes/ConnectionStyle>
+#include <QtNodes/GraphicsView>
+#include <QtNodes/BasicGraphicsScene>
+#include <QtNodes/StyleCollection>
 
 #include <QtWidgets/QApplication>
 #include <QtGui/QAction>

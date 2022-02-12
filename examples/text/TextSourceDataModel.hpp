@@ -5,7 +5,7 @@
 
 #include "TextData.hpp"
 
-#include <nodes/NodeDataModel>
+#include <QtNodes/NodeDataModel>
 
 #include <iostream>
 

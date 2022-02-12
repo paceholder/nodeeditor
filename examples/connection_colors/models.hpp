@@ -2,8 +2,8 @@
 
 #include <QtCore/QObject>
 
-#include <nodes/NodeData>
-#include <nodes/NodeDataModel>
+#include <QtNodes/NodeData>
+#include <QtNodes/NodeDataModel>
 
 #include <memory>
 

@@ -3,9 +3,9 @@
 #include <QtCore/QPointF>
 #include <QtCore/QSize>
 
-#include <nodes/AbstractGraphModel>
-#include <nodes/StyleCollection>
-#include <nodes/ConnectionIdUtils>
+#include <QtNodes/AbstractGraphModel>
+#include <QtNodes/StyleCollection>
+#include <QtNodes/ConnectionIdUtils>
 
 
 using ConnectionId     = QtNodes::ConnectionId;

@@ -1,16 +1,16 @@
-#include <nodes/Connection>
-#include <nodes/FlowScene>
-#include <nodes/FlowView>
-#include <nodes/Node>
+#include "ApplicationSetup.hpp"
+#include "Stringify.hpp"
+#include "StubNodeDataModel.hpp"
+
+#include <QtNodes/Connection>
+#include <QtNodes/FlowScene>
+#include <QtNodes/FlowView>
+#include <QtNodes/Node>
 
 #include <catch2/catch.hpp>
 
 #include <QtTest>
 #include <QtWidgets/QApplication>
-
-#include "ApplicationSetup.hpp"
-#include "Stringify.hpp"
-#include "StubNodeDataModel.hpp"
 
 using QtNodes::Connection;
 using QtNodes::DataModelRegistry;
