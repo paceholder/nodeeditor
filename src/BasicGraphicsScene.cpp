@@ -50,7 +50,7 @@ BasicGraphicsScene(AbstractGraphModel &graphModel,
   connect(&_graphModel, &AbstractGraphModel::nodeDeleted,
           this, &BasicGraphicsScene::onNodeDeleted);
 
-  connect(&_graphModel, &AbstractGraphModel::nodePositonUpdated,
+  connect(&_graphModel, &AbstractGraphModel::nodePositionUpdated,
           this, &BasicGraphicsScene::onNodePositionUpdated);
 
   connect(&_graphModel, &AbstractGraphModel::portsAboutToBeDeleted,
