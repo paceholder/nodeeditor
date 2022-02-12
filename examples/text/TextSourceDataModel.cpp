@@ -1,11 +1,12 @@
 #include "TextSourceDataModel.hpp"
 
+#include <QtWidgets/QLineEdit>
+
 TextSourceDataModel::
 TextSourceDataModel()
-  : _lineEdit(new QLineEdit("Default Text"))
+  : _lineEdit{nullptr}
 {
-  connect(_lineEdit, &QLineEdit::textEdited,
-          this, &TextSourceDataModel::onTextEdited);
+  //
 }
 
 
@@ -34,7 +35,7 @@ nPorts(PortType portType) const
 
 void
 TextSourceDataModel::
-onTextEdited(QString const &string)
+onTextEdited(QString const& string)
 {
   Q_UNUSED(string);
 
@@ -56,4 +57,21 @@ outData(PortIndex const portIndex)
 {
   Q_UNUSED(portIndex);
   return std::make_shared<TextData>(_lineEdit->text());
+}
+
+
+QWidget*
+TextSourceDataModel::
+embeddedWidget() 
+{
+  if (!_lineEdit)
+  {
+    _lineEdit = new QLineEdit("Default Text"),
+
+    connect(_lineEdit, &QLineEdit::textEdited,
+            this, &TextSourceDataModel::onTextEdited);
+
+  }
+
+  return _lineEdit; 
 }

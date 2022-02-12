@@ -1,8 +1,8 @@
 #pragma once
 
-#include <QtCore/QObject>
+#include <QtNodes/NodeDelegateModel>
 
-#include <QtNodes/NodeDataModel>
+#include <QtCore/QObject>
 
 #include <iostream>
 
@@ -10,13 +10,13 @@ using QtNodes::PortType;
 using QtNodes::PortIndex;
 using QtNodes::NodeData;
 using QtNodes::NodeDataType;
-using QtNodes::NodeDataModel;
+using QtNodes::NodeDelegateModel;
 
 class QLabel;
 
 /// The model dictates the number of inputs and outputs for the Node.
 /// In this example it has no logic.
-class NumberDisplayDataModel : public NodeDataModel
+class NumberDisplayDataModel : public NodeDelegateModel
 {
   Q_OBJECT
 
@@ -53,10 +53,10 @@ public:
 
   void
   setInData(std::shared_ptr<NodeData> data,
-            PortIndex portIndex) override;
+            PortIndex                 portIndex) override;
 
   QWidget *
   embeddedWidget() override;
 
-  QLabel * _label;
+  QLabel* _label;
 };

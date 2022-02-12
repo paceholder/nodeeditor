@@ -3,7 +3,7 @@
 #include <QtCore/QObject>
 #include <QtWidgets/QLabel>
 
-#include <QtNodes/NodeDataModel>
+#include <QtNodes/NodeDelegateModel>
 
 #include "MathOperationDataModel.hpp"
 
@@ -31,6 +31,7 @@ public:
     return true;
   }
 
+
   virtual QString
   portCaption(PortType portType, PortIndex portIndex) const override
   {
@@ -52,6 +53,7 @@ public:
     }
     return QString();
   }
+
 
   QString
   name() const override
@@ -83,4 +85,6 @@ private:
 
     Q_EMIT dataUpdated(outPortIndex);
   }
+
+
 };
