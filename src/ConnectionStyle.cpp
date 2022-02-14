@@ -1,16 +1,14 @@
 #include "ConnectionStyle.hpp"
 
-#include <iostream>
+#include "StyleCollection.hpp"
 
 #include <QtCore/QFile>
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
 #include <QtCore/QJsonValueRef>
 #include <QtCore/QJsonArray>
-#include <QRandomGenerator>
-#include <QDebug>
 
-#include "StyleCollection.hpp"
+#include <random>
 
 using QtNodes::ConnectionStyle;
 
@@ -167,8 +165,10 @@ normalColor(QString typeId) const
 
   qint32 const hue_range = 0xFF;
 
-  auto rng = QRandomGenerator(hash);
-  qint32 hue = rng.bounded(hue_range);
+  std::mt19937 gen(hash);
+  std::uniform_int_distribution<> distrib(0, hue_range);
+
+  std::size_t hue = distrib(gen);
 
   qint32 sat = 120 + hash % 129;
 

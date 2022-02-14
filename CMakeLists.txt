@@ -1,10 +1,10 @@
-cmake_minimum_required(VERSION 3.2)
-# version 3.4 is required as other do not work with C++14 and clang
+cmake_minimum_required(VERSION 3.8)
 
 project(NodeEditor CXX)
 
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 set(CMAKE_DISABLE_SOURCE_CHANGES  ON)
+set(OpenGL_GL_PREFERENCE LEGACY)
 
 get_directory_property(_has_parent PARENT_DIRECTORY)
 if(_has_parent)
@@ -38,14 +38,32 @@ endif()
 
 add_subdirectory(external)
 
-# Find the QtWidgets library
-find_package(Qt6 COMPONENTS
-             Core
-             Widgets
-             Gui
-             OpenGL)
 
-qt6_add_resources(RESOURCES ./resources/resources.qrc)
+# Find the QtWidgets library
+find_package(Qt6
+  COMPONENTS
+   Core
+   Widgets
+   Gui
+   OpenGL
+)
+
+if (NOT Qt6_FOUND)
+  find_package(Qt5 5.15
+    COMPONENTS
+     Core
+     Widgets
+     Gui
+     OpenGL
+  )
+endif()
+
+if (NOT (Qt6_FOUND OR Qt5_FOUND))
+  message(FATAL_ERRROR "Qt libraries were not found.")
+endif()
+
+
+qt_add_resources(RESOURCES ./resources/resources.qrc)
 
 # Unfortunately, as we have a split include/src, AUTOMOC doesn't work.
 # We'll have to manually specify some files
@@ -104,7 +122,6 @@ target_link_libraries(nodes
 
 target_compile_definitions(nodes
   PUBLIC
-    ${Qt6Widgets_DEFINITIONS}
     NODE_EDITOR_SHARED
     NODE_EDITOR_EXPORTS
   PRIVATE
@@ -116,13 +133,19 @@ target_compile_options(nodes
   PRIVATE
     $<$<CXX_COMPILER_ID:MSVC>:/W4 /wd4127 /EHsc>
     $<$<CXX_COMPILER_ID:GNU>:-Wall -Wextra>
-    $<$<CXX_COMPILER_ID:Clang>:-Wall -Wextra>
 )
+if(NOT "${CMAKE_CXX_SIMULATE_ID}" STREQUAL "MSVC")
+  # Clang-Cl on MSVC identifies as "Clang" but behaves more like MSVC:
+  target_compile_options(nodes
+    PRIVATE
+      $<$<CXX_COMPILER_ID:Clang>:-Wall -Wextra>
+  )
+endif()
 
-target_compile_features(nodes
-  PUBLIC
-    cxx_generic_lambdas # Require C++14
-)
+if(NE_DEVELOPER_DEFAULTS)
+  target_compile_features(nodes PUBLIC cxx_std_14)
+  set_target_properties(nodes PROPERTIES CXX_EXTENSIONS OFF)
+endif()
 
 set_target_properties(nodes
   PROPERTIES
@@ -137,7 +160,7 @@ set_target_properties(nodes
 
 file(GLOB_RECURSE HEADERS_TO_MOC include/nodes/internal/*.hpp)
 
-qt6_wrap_cpp(nodes_moc
+qt_wrap_cpp(nodes_moc
     ${HEADERS_TO_MOC}
   TARGET nodes
   OPTIONS --no-notes # Don't display a note for the headers which don't produce a moc_*.cpp

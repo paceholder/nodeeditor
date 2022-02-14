@@ -1,5 +1,10 @@
 find_package(Catch2 2.3.0 REQUIRED)
-find_package(Qt6 COMPONENTS Test)
+
+if (Qt6_FOUND)
+  find_package(Qt6 COMPONENTS Test)
+else()
+  find_package(Qt5 COMPONENTS Test)
+endif()
 
 add_executable(test_nodes
   test_main.cpp

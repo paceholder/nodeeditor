@@ -228,17 +228,17 @@ drawNormalLine(QPainter * painter,
   {
     painter->setBrush(Qt::NoBrush);
 
-    QColor col = normalColorOut;
+    QColor cOut = normalColorOut;
     if (frozen)
     {
-      col = frozenColor;
+      cOut = frozenColor;
       p.setStyle(connectionStyle.frozenStyle());
     }
 
     if (selected)
-      col = col.darker(200);
+      cOut = cOut.darker(200);
 
-    p.setColor(col);
+    p.setColor(cOut);
     painter->setPen(p);
 
     unsigned int const segments = 60;
@@ -250,17 +250,17 @@ drawNormalLine(QPainter * painter,
 
       if (i == segments / 2)
       {
-        QColor c = normalColorIn; 
+        QColor cIn = normalColorIn; 
         if (frozen)
         {
-          c = frozenColor;
+          cIn = frozenColor;
           p.setStyle(connectionStyle.frozenStyle());
         }
 
         if (selected)
-          c = c.darker(200);
+          cIn = cIn.darker(200);
 
-        p.setColor(c);
+        p.setColor(cIn);
         painter->setPen(p);
       }
 

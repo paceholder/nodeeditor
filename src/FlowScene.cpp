@@ -202,7 +202,7 @@ loadConnectionToMap(const QJsonObject& connectionJson,
 
 void
 FlowScene::
-deleteConnection(Connection& connection)
+deleteConnection(Connection const& connection)
 {
   auto it = _connections.find(connection.id());
   if (it != _connections.end())

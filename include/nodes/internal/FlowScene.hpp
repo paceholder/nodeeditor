@@ -79,7 +79,7 @@ public:
       std::unordered_map<QUuid, std::shared_ptr<Connection>>& connectionsMap,
       const std::unordered_map<QUuid, QUuid>& IDMap = std::unordered_map<QUuid, QUuid>());
 
-  void deleteConnection(Connection& connection);
+  void deleteConnection(Connection const& connection);
 
   TypeConverter getConverter(const QJsonObject& connectionJson);
 
