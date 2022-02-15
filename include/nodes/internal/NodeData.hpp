@@ -13,6 +13,30 @@ struct NodeDataType
   QString name;
 };
 
+inline
+bool
+operator<(QtNodes::NodeDataType const & d1,
+          QtNodes::NodeDataType const & d2)
+{
+  return d1.id < d2.id;
+}
+
+inline
+bool
+operator==(QtNodes::NodeDataType const & d1,
+           QtNodes::NodeDataType const & d2)
+{
+  return d1.id == d2.id;
+}
+
+inline
+bool
+operator!=(QtNodes::NodeDataType const & d1,
+           QtNodes::NodeDataType const & d2)
+{
+  return !operator==(d1,d2);
+}
+
 /// Class represents data transferred between nodes.
 /// @param type is used for comparing the types
 /// The actual data is stored in subtypes
