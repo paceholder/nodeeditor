@@ -15,7 +15,7 @@ is quite easy to incorporate the library into any CMake-based Qt
 project.
 
 As of version `3.0` the library uses the Model-View approach. The
-central class :cpp:type:`GraphModel` is a starting point for user graph
+central class :cpp:type:`AbstractGraphModel` is a starting point for user graph
 models. It wraps the data representing the graph and forwards it
 to the `BasicGraphicsScene` -- a class responsible for populating
 `QGraphicsObject` items and showing them on the `QGraphicsView` widget.
@@ -27,7 +27,7 @@ The library could be used for two purposes:
 
 The "headless" mode is also supported. It is possible to create,
 delete, connect and disconnect nodes, as well as propagate data,
-without assigning your :cpp:type:`GraphModel` to a
+without assigning your :cpp:type:`AbstractGraphModel` derivative to a
 :cpp:type:`BasicGraphicsScene`.
 
 Examples
