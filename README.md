@@ -19,13 +19,13 @@ connections updating  the whole graph.
 ### Platforms
 
 * OSX (Apple Clang - LLVM 3.6), Linux (x64, gcc-7.0, clang-7): [![Build Status](https://travis-ci.org/paceholder/nodeeditor.svg?branch=master)](https://travis-ci.org/paceholder/nodeeditor)
-* Windows (Win32, x64, msvc2017, MinGW 5.3): [![Build status](https://ci.appveyor.com/api/projects/status/wxp47wv3uyyiujjw/branch/master?svg=true)](https://ci.appveyor.com/project/paceholder/nodeeditor/branch/master)
+* Windows (msvc2019/Qt5/Win32, msvc2019/Qt6/x64): [![Build status](https://ci.appveyor.com/api/projects/status/wxp47wv3uyyiujjw/branch/master?svg=true)](https://ci.appveyor.com/project/paceholder/nodeeditor/branch/master)
 
 
 ### Dependencies
 
-* Qt >5.2
-* CMake 3.2
+* Qt >5.15
+* CMake 3.8
 * Catch2
 
 ### Current state
