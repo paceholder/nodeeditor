@@ -89,7 +89,8 @@ setScene(BasicGraphicsScene *scene)
 
   delete _deleteSelectionAction;
   _deleteSelectionAction = new QAction(QStringLiteral("Delete Selection"), this);
-  _deleteSelectionAction->setShortcut(Qt::Key_Delete);
+  _deleteSelectionAction->setShortcutContext(Qt::ShortcutContext::WidgetShortcut);
+  _deleteSelectionAction->setShortcut(QKeySequence(QKeySequence::Delete));
   connect(_deleteSelectionAction, &QAction::triggered,
           this, &GraphicsView::deleteSelectedObjects);
   addAction(_deleteSelectionAction);
