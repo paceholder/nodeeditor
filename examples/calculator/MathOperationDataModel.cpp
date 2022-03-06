@@ -35,7 +35,8 @@ outData(PortIndex)
 
 void
 MathOperationDataModel::
-setInData(std::shared_ptr<NodeData> data, PortIndex portIndex)
+setInData(std::shared_ptr<NodeData> data, PortIndex portIndex,
+    const QUuid& connectionId)
 {
   auto numberData =
     std::dynamic_pointer_cast<DecimalData>(data);

@@ -52,7 +52,7 @@ outData(PortIndex)
 
 void
 NumberDisplayDataModel::
-setInData(std::shared_ptr<NodeData> data, int)
+setInData(std::shared_ptr<NodeData> data, int, const QUuid&)
 {
   auto numberData = std::dynamic_pointer_cast<DecimalData>(data);
 

@@ -90,7 +90,8 @@ public Q_SLOTS: // data propagation
   /// Propagates incoming data to the underlying model.
   void
   propagateData(std::shared_ptr<NodeData> nodeData,
-                PortIndex inPortIndex) const;
+                PortIndex inPortIndex,
+                const QUuid& connectionId) const;
 
   /// Fetches data from model's OUT #index port
   /// and propagates it to the connection
