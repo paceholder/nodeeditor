@@ -205,7 +205,9 @@ drawFilledConnectionPoints(QPainter * painter,
 
     for (size_t i = 0; i < n; ++i)
     {
-      QPointF p = geom.portScenePosition(i, portType);
+      QPointF p = geom.portScenePosition(
+          static_cast<PortIndex>(i),
+          static_cast<PortType>(portType));
 
       if (!state.getEntries(portType)[i].empty())
       {
@@ -289,7 +291,7 @@ drawEntryLabels(QPainter * painter,
 
     for (size_t i = 0; i < n; ++i)
     {
-      QPointF p = geom.portScenePosition(i, portType);
+      QPointF p = geom.portScenePosition(static_cast<PortIndex>(i), portType);
 
       if (entries[i].empty())
         painter->setPen(nodeStyle.FontColorFaded);
@@ -298,9 +300,9 @@ drawEntryLabels(QPainter * painter,
 
       QString s;
 
-      if (model->portCaptionVisible(portType, i))
+      if (model->portCaptionVisible(portType, static_cast<PortIndex>(i)))
       {
-        s = model->portCaption(portType, i);
+        s = model->portCaption(portType, static_cast<PortIndex>(i));
       }
       else
       {
