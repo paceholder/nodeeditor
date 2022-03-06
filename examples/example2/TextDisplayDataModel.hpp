@@ -8,6 +8,7 @@
 #include <nodes/NodeDataModel>
 
 #include <iostream>
+#include <vector>
 
 using QtNodes::PortType;
 using QtNodes::PortIndex;
@@ -54,20 +55,45 @@ public:
   std::shared_ptr<NodeData>
   outData(PortIndex port) override;
 
+  ConnectionPolicy
+  portInConnectionPolicy(PortIndex) const override
+  {
+    return ConnectionPolicy::Many;
+  }
+
   void
   setInData(std::shared_ptr<NodeData> data, int) override
   {
+  }
+
+  void
+  setInData(std::shared_ptr<NodeData> data, int, const QUuid& connectionId) override
+  {
     auto textData = std::dynamic_pointer_cast<TextData>(data);
 
+    auto it = std::find_if(inputTexts.begin(), inputTexts.end(),
+        [this, &connectionId](const auto& e)
+        {
+            return e.first == connectionId;
+        });
     if (textData)
     {
-      _label->setText(textData->text());
+      if (it == inputTexts.end())
+        inputTexts.emplace_back(connectionId, textData->text());
+      else
+        it->second = textData->text();
     }
     else
     {
-      _label->clear();
+      inputTexts.erase(it);
     }
 
+    QStringList textList;
+    for (auto&& entry : inputTexts) textList.push_back(entry.second);
+
+    _label->setText(QStringLiteral("%1 inputs: %2")
+        .arg(textList.size())
+        .arg(textList.join(QStringLiteral(", "))));
     _label->adjustSize();
   }
 
@@ -77,4 +103,5 @@ public:
 private:
 
   QLabel * _label;
+  std::vector<std::pair<QUuid, QString>> inputTexts;
 };

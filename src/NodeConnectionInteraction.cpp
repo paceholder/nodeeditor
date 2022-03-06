@@ -149,7 +149,7 @@ disconnect(PortType portToDisconnect) const
   NodeState &state = _node->nodeState();
 
   // clear pointer to Connection in the NodeState
-  state.getEntries(portToDisconnect)[portIndex].clear();
+  state.getEntries(portToDisconnect)[portIndex].erase(_connection->id());
 
   // 4) Propagate invalid data to IN node
   _connection->propagateEmptyData();
@@ -230,9 +230,37 @@ nodePortIsEmpty(PortType portType, PortIndex portIndex) const
   NodeState const & nodeState = _node->nodeState();
 
   auto const & entries = nodeState.getEntries(portType);
+  auto const & connections = entries[portIndex];
+  if (connections.empty()) return true;
 
-  if (entries[portIndex].empty()) return true;
+  // Check if the connection already exists connected to the respective
+  // input and output ports
+  auto sourcePortType = oppositePort(portType);
+  auto it = std::find_if(connections.begin(), connections.end(), 
+    [this, sourcePortType](const auto& connection)
+    {
+      const auto* const currentConn = connection.second;
+      
+      assert(_connection->getNode(sourcePortType));
+      assert(currentConn->getNode(sourcePortType));
+      return _connection->getNode(sourcePortType) == currentConn->getNode(sourcePortType) &&
+          _connection->getPortIndex(sourcePortType) == currentConn->getPortIndex(sourcePortType);
+    });
+  if (it != connections.end())
+    return false;
 
-  const auto outPolicy = _node->nodeDataModel()->portOutConnectionPolicy(portIndex);
-  return ( portType == PortType::Out && outPolicy == NodeDataModel::ConnectionPolicy::Many);
+  switch (portType)
+  {
+      case PortType::In:
+      {
+          const auto policy = _node->nodeDataModel()->portInConnectionPolicy(portIndex);
+          return policy == NodeDataModel::ConnectionPolicy::Many;
+      }
+      case PortType::Out:
+      {
+          const auto policy = _node->nodeDataModel()->portOutConnectionPolicy(portIndex);
+          return policy == NodeDataModel::ConnectionPolicy::Many;
+      }
+      default: return false;
+  }
 }

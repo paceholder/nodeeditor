@@ -18,4 +18,13 @@ using TypeConverter =
 using TypeConverterId =
   std::pair<NodeDataType, NodeDataType>;
 
+struct TypeConverterIdHash
+{
+    std::size_t operator()(const QtNodes::TypeConverterId& converter) const noexcept
+    {
+        return qHash(converter.first.id)
+            ^ qHash(converter.second.id);
+    }
+};
+
 }

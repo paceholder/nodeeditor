@@ -69,4 +69,5 @@ private Q_SLOTS:
 private:
 
   QLineEdit * _lineEdit;
+  std::shared_ptr<TextData> _textData;
 };
