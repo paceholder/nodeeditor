@@ -106,8 +106,18 @@ public:
   virtual
   void
   setInData(std::shared_ptr<NodeData> nodeData,
+            PortIndex port) = 0;
+
+  // Use this if portInConnectionPolicy returns ConnectionPolicy::Many
+  virtual
+  void
+  setInData(std::shared_ptr<NodeData> nodeData,
             PortIndex port,
-            const QUuid& connectionId) = 0;
+            const QUuid& connectionId)
+  {
+    Q_UNUSED(connectionId);
+    setInData(nodeData, port);
+  }
 
   virtual
   std::shared_ptr<NodeData>

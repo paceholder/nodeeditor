@@ -130,7 +130,7 @@ public:
   }
 
   void
-  setInData(std::shared_ptr<NodeData>, int, const QUuid&) override
+  setInData(std::shared_ptr<NodeData>, int) override
   {
     //
   }

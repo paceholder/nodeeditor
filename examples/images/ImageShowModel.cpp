@@ -90,7 +90,7 @@ outData(PortIndex)
 
 void
 ImageShowModel::
-setInData(std::shared_ptr<NodeData> nodeData, PortIndex, const QUuid&)
+setInData(std::shared_ptr<NodeData> nodeData, PortIndex)
 {
   _nodeData = nodeData;
 

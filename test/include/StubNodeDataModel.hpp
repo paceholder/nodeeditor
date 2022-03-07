@@ -37,8 +37,7 @@ public:
     return nullptr;
   }
 
-  void setInData(std::shared_ptr<QtNodes::NodeData>, QtNodes::PortIndex,
-        const QUuid&) override
+  void setInData(std::shared_ptr<QtNodes::NodeData>, QtNodes::PortIndex) override
   {
   }
 

@@ -57,7 +57,7 @@ outData(PortIndex)
 
 void
 ModuloModel::
-setInData(std::shared_ptr<NodeData> data, PortIndex portIndex, const QUuid&)
+setInData(std::shared_ptr<NodeData> data, PortIndex portIndex)
 {
   auto numberData =
     std::dynamic_pointer_cast<IntegerData>(data);

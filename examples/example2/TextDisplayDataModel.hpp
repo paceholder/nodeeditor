@@ -62,6 +62,11 @@ public:
   }
 
   void
+  setInData(std::shared_ptr<NodeData> data, int) override
+  {
+  }
+
+  void
   setInData(std::shared_ptr<NodeData> data, int, const QUuid& connectionId) override
   {
     auto textData = std::dynamic_pointer_cast<TextData>(data);

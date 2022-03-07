@@ -55,7 +55,7 @@ public:
   outData(PortIndex port) override;
 
   void
-  setInData(std::shared_ptr<NodeData>, int, const QUuid& connectionId) override
+  setInData(std::shared_ptr<NodeData>, int) override
   { }
 
   QWidget *
@@ -69,4 +69,5 @@ private Q_SLOTS:
 private:
 
   QLineEdit * _lineEdit;
+  std::shared_ptr<TextData> _textData;
 };
