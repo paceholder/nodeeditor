@@ -265,7 +265,7 @@ mousePressEvent(QGraphicsSceneMouseEvent* event)
         auto const& cn = *connectedNodes.begin();
 
         // Need "reversed" connectin id if enabled for both port types.
-        ConnectionId connectionId = {cn.first, cn.second, _nodeId, portIndex};
+        ConnectionId connectionId{cn.first, cn.second, _nodeId, portIndex};
 
         // Need ConnectionGraphicsObject
 
