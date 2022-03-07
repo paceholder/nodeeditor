@@ -106,7 +106,7 @@ nodeScene() const
 }
 
 
-ConnectionId
+const ConnectionId &
 ConnectionGraphicsObject::
 connectionId() const
 {

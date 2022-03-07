@@ -23,11 +23,11 @@ requiredPort() const
 {
   PortType t = PortType::None;
 
-  if (std::get<0>(_cgo.connectionId()) == InvalidNodeId)
+  if (_cgo.connectionId().outNodeId == InvalidNodeId)
   {
     t = PortType::Out;
   }
-  else if (std::get<2>(_cgo.connectionId()) == InvalidNodeId)
+  else if (_cgo.connectionId().inNodeId == InvalidNodeId)
   {
     t = PortType::In;
   }
@@ -40,9 +40,9 @@ bool
 ConnectionState::
 requiresPort() const
 {
-  ConnectionId id = _cgo.connectionId();
-  return std::get<0>(id) == InvalidNodeId ||
-         std::get<2>(id) == InvalidNodeId;
+  const ConnectionId& id = _cgo.connectionId();
+  return id.outNodeId == InvalidNodeId ||
+         id.inNodeId == InvalidNodeId;
 }
 
 

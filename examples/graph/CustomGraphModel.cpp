@@ -40,17 +40,13 @@ allConnectionIds(NodeId const nodeId) const
     {
       if (portType == PortType::Out)
       {
-        result.insert(std::make_tuple(nodeId,
-                                      portIndex,
-                                      target.first,
-                                      target.second));
+        result.insert({nodeId, portIndex,
+                       target.first, target.second});
       }
       else
       {
-        result.insert(std::make_tuple(target.first,
-                                      target.second,
-                                      nodeId,
-                                      portIndex));
+        result.insert({target.first, target.second,
+                       nodeId, portIndex});
       }
     }
   }

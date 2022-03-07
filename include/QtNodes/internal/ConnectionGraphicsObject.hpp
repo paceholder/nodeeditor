@@ -40,7 +40,7 @@ public:
   BasicGraphicsScene *
   nodeScene() const;
 
-  ConnectionId
+  const ConnectionId&
   connectionId() const;
 
   QRectF
