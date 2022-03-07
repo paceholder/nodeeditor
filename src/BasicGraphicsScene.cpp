@@ -203,7 +203,7 @@ traverseGraphAndPopulateGraphicsObjects()
           fifo.push(cn.first);
           allNodeIds.erase(cn.first);
 
-          ConnectionId connectionId ={nodeId, index, cn.first, cn.second};
+          ConnectionId connectionId{nodeId, index, cn.first, cn.second};
           connectionsToCreate.push_back(connectionId);
         }
       }

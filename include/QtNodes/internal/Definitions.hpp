@@ -123,7 +123,7 @@ inline bool operator!=(const ConnectionId& a, const ConnectionId& b)
 }
 
 
-inline void SwapPorts(ConnectionId& id)
+inline void invertConnection(ConnectionId& id)
 {
   std::swap(id.outNodeId, id.inNodeId);
   std::swap(id.outPortIndex, id.inPortIndex);

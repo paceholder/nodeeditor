@@ -179,9 +179,9 @@ moveConnections() const
         for (auto& cn: connectedNodes)
         {
           // out node id, out port index, in node id, in port index.
-          ConnectionId connectionId = {cn.first, cn.second, _nodeId, portIndex};
+          ConnectionId connectionId{cn.first, cn.second, _nodeId, portIndex};
           if(portType != PortType::In)
-            SwapPorts(connectionId);
+            invertConnection(connectionId);
 
           auto cgo = nodeScene()->connectionGraphicsObject(connectionId);
 
@@ -291,7 +291,7 @@ mousePressEvent(QGraphicsSceneMouseEvent* event)
           {
             for (auto& cn : connectedNodes)
             {
-              ConnectionId connectionId = {_nodeId, portIndex, cn.first, cn.second};
+              ConnectionId connectionId{_nodeId, portIndex, cn.first, cn.second};
 
               _graphModel.deleteConnection(connectionId);
             }

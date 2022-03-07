@@ -40,13 +40,13 @@ allConnectionIds(NodeId const nodeId) const
     {
       if (portType == PortType::Out)
       {
-        result.insert({nodeId, portIndex,
-                       target.first, target.second});
+        result.insert(ConnectionId{nodeId, portIndex,
+                                   target.first, target.second});
       }
       else
       {
-        result.insert({target.first, target.second,
-                       nodeId, portIndex});
+        result.insert(ConnectionId{target.first, target.second,
+                                   nodeId, portIndex});
       }
     }
   }

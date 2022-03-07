@@ -47,7 +47,7 @@ allConnectionIds(NodeId const nodeId) const
       ConnectionId conn = {nodeId, portIndex, target.first, target.second};
       if (portType == PortType::In)
       {
-        SwapPorts(conn);
+        invertConnection(conn);
       }
       result.insert(conn);
     }
