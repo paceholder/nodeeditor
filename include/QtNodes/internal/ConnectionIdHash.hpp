@@ -27,10 +27,10 @@ struct hash<QtNodes::ConnectionId>
   {
     std::size_t h = 0;
     hash_combine(h,
-                 std::get<0>(id),
-                 std::get<1>(id),
-                 std::get<2>(id),
-                 std::get<3>(id));
+                 id.outNodeId,
+                 id.outPortIndex,
+                 id.inNodeId,
+                 id.inPortIndex);
     return h;
   }
 

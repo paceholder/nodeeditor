@@ -98,10 +98,36 @@ static constexpr NodeId InvalidNodeId =
   std::numeric_limits<NodeId>::max();
 
 /**
- * A unique connection identificator that stores a tuple made of
- * (out `NodeId`, out `PortIndex`, in `NodeId`, in * `PortIndex`)
+ * A unique connection identificator that stores
+ * out `NodeId`, out `PortIndex`, in `NodeId`, in `PortIndex`
  */
-using ConnectionId = std::tuple<NodeId, PortIndex,  // Port Out
-                                NodeId, PortIndex>; // Port In
+struct ConnectionId
+{
+  NodeId outNodeId;
+  PortIndex outPortIndex;
+  NodeId inNodeId;
+  PortIndex inPortIndex;
+};
+
+inline bool operator==(const ConnectionId& a, const ConnectionId& b)
+{
+  return a.outNodeId == b.outNodeId &&
+         a.outPortIndex == b.outPortIndex &&
+         a.inNodeId == b.inNodeId &&
+         a.inPortIndex == b.inPortIndex;
+}
+
+inline bool operator!=(const ConnectionId& a, const ConnectionId& b)
+{
+  return !(a == b);
+}
+
+
+inline void invertConnection(ConnectionId& id)
+{
+  std::swap(id.outNodeId, id.inNodeId);
+  std::swap(id.outPortIndex, id.inPortIndex);
+}
+
 
 }

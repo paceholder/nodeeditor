@@ -203,8 +203,7 @@ traverseGraphAndPopulateGraphicsObjects()
           fifo.push(cn.first);
           allNodeIds.erase(cn.first);
 
-          auto connectionId = std::make_tuple(nodeId, index, cn.first, cn.second);
-
+          ConnectionId connectionId{nodeId, index, cn.first, cn.second};
           connectionsToCreate.push_back(connectionId);
         }
       }
