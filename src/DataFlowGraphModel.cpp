@@ -1,4 +1,5 @@
 #include "DataFlowGraphModel.hpp"
+#include "ConnectionIdHash.hpp"
 
 namespace QtNodes
 {
@@ -43,20 +44,12 @@ allConnectionIds(NodeId const nodeId) const
 
     for (auto& target : c.second)
     {
-      if (portType == PortType::Out)
+      ConnectionId conn = {nodeId, portIndex, target.first, target.second};
+      if (portType == PortType::In)
       {
-        result.insert(std::make_tuple(nodeId,
-                                      portIndex,
-                                      target.first,
-                                      target.second));
+        invertConnection(conn);
       }
-      else
-      {
-        result.insert(std::make_tuple(target.first,
-                                      target.second,
-                                      nodeId,
-                                      portIndex));
-      }
+      result.insert(conn);
     }
   }
 
