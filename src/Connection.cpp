@@ -71,8 +71,6 @@ Connection::
     connectionMadeIncomplete(*this);
   }
 
-  propagateEmptyData();
-
   if (_inNode)
   {
     _inNode->nodeGraphicsObject().update();
@@ -80,6 +78,7 @@ Connection::
 
   if (_outNode)
   {
+    propagateEmptyData();
     _outNode->nodeGraphicsObject().update();
   }
 }
