@@ -70,7 +70,7 @@ RiverModel::embeddedWidget() {
 void
 RiverModel::onTextEdited( const QString &s ) {
 
-    data_.reset( new RiverData( s ) );
+    *data_ = RiverData(s);
     constexpr PortIndex portIndex = 0;
     emit dataUpdated( portIndex );
 }

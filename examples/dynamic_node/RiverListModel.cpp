@@ -5,7 +5,7 @@
 RiverListModel::RiverListModel() :
     data_( new RiverListData )
 {
-    data_->addBack( "" );
+    data_->add( std::make_shared<RiverData>( "" ) );
 }
 
 
@@ -22,7 +22,7 @@ RiverListModel::nPorts( PortType portType ) const {
 
     switch ( portType ) {
         case PortType::In:
-            return data_->data().size();
+            return static_cast<int>(data_->data().size());
 
         case PortType::Out:
             return 1;
@@ -38,7 +38,7 @@ QString
 RiverListModel::portCaption( PortType portType, PortIndex portIndex ) const {
 
     if ( portType == PortType::In ) {
-        const QString text = data_->data( portIndex );
+        const QString text = data_->data( portIndex )->data();
         return QString::number( portIndex + 1 ) + ") " + text;
     }
 
@@ -78,22 +78,17 @@ RiverListModel::setInData( std::shared_ptr< NodeData > nd, PortIndex portIndex )
 
     const auto v = std::dynamic_pointer_cast< RiverData >( nd );
     if ( !v ) {
-        // data removed (disconnected)
-        // \todo We have the problems when reassign connections. Not good.
         if ( portIndex < data_->data().size() ) {
             data_->remove( portIndex );
-            emit portRemoved();
+            emit portRemoved(PortType::In, portIndex);
         }
         return;
     }
 
-    // data added (connected)
-    data_->data( portIndex ) = v->data();
-
     // always add one more river when last input port connected
-    if ( portIndex == (data_->data().size() - 1) ) {
-        data_->addBack( "" );
-        emit portAdded();
+    if (portIndex == (data_->data().size() - 1)) {
+        data_->add(v, portIndex);
+        emit portAdded(PortType::In, 1 + portIndex);
     }
 }
 

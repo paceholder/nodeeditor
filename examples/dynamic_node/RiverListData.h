@@ -2,16 +2,17 @@
 
 #include <nodes/NodeData>
 #include <QCoreApplication>
+#include <memory>
 
 
 using QtNodes::NodeData;
 using QtNodes::NodeDataType;
 
-
+class RiverData;
 class RiverListData : public NodeData {
     Q_DECLARE_TR_FUNCTIONS( RiverListData )
 
-    typedef QString d_t;
+    typedef std::shared_ptr<RiverData> d_t;
     typedef std::vector< d_t > data_t;
 
 
@@ -29,7 +30,7 @@ public:
 
     d_t &data( int i );
 
-    void addBack( const d_t & );
+    void add( const d_t &, int i = -1 );
 
     void remove( int i );
 

@@ -16,8 +16,9 @@ RiverListData::data( int i ) {
 
 
 void
-RiverListData::addBack( const d_t &d ) {
-    data_.emplace_back( d );
+RiverListData::add( const d_t &d, int i ) {
+    if ( i == -1 ) i = static_cast<int>( data_.size() );
+    data_.emplace( data_.begin() + i, d );
 }
 
 

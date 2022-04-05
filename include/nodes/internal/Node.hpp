@@ -98,15 +98,10 @@ public Q_SLOTS: // data propagation
   void
   onDataUpdated(PortIndex index);
 
-  /// Port added to the end.
-  void
-  onPortAdded();
-
-  /// Port removed from the end.
-  void
-  onPortRemoved();
-
 protected:
+  static constexpr bool PortAdded = true;
+  static constexpr bool PortRemoved = false;
+  void updatePortChange(PortType portType, PortIndex portIndex, bool portAdded);
 
   /// Recalculates the nodes images.
   /// A data change can result in the node taking more space than before,

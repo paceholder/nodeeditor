@@ -35,11 +35,11 @@ Node(std::unique_ptr<NodeDataModel> && dataModel)
 
   // propagate data: model => node
   connect(_nodeDataModel.get(), &NodeDataModel::dataUpdated,
-          this, &Node::onDataUpdated);
-  connect(_nodeDataModel.get(), &NodeDataModel::portAdded,
-          this, &Node::onPortAdded);
-  connect(_nodeDataModel.get(), &NodeDataModel::portRemoved,
-          this, &Node::onPortRemoved);
+      this, &Node::onDataUpdated);
+  connect(_nodeDataModel.get(), &NodeDataModel::portAdded, this,
+      [this](PortType type, PortIndex index) { updatePortChange(type, index, PortAdded); });
+  connect(_nodeDataModel.get(), &NodeDataModel::portRemoved, this,
+      [this](PortType type, PortIndex index) { updatePortChange(type, index, PortRemoved); });;
 }
 
 
@@ -217,46 +217,52 @@ onDataUpdated(PortIndex index)
 
 void
 Node::
-onPortAdded()
+updatePortChange(PortType portType, PortIndex portIndex, bool portAdded)
 {
-  // port In
-  const unsigned int nNewIn = _nodeDataModel->nPorts(PortType::In);
-  _nodeGeometry._nSources = nNewIn;
-  _nodeState._inConnections.resize( nNewIn );
+  Q_UNUSED(portIndex);
+  std::vector<NodeState::ConnectionPtrSet>* connections{ nullptr };
 
-  // port Out
-  const unsigned int nNewOut = _nodeDataModel->nPorts(PortType::Out);
-  _nodeGeometry._nSinks = nNewOut;
-  _nodeState._outConnections.resize( nNewOut );
+  switch (portType)
+  {
+  case PortType::In:
+      _nodeGeometry._nSources = _nodeDataModel->nPorts(portType);
+      connections = &_nodeState._inConnections;
+      break;
+  case PortType::Out:
+      _nodeGeometry._nSinks = _nodeDataModel->nPorts(portType);
+      connections = &_nodeState._outConnections;
+      break;
+  default:
+      throw std::invalid_argument("Invalid PortType in Node::onPortAdded");
+  }
+  
+  const int connectionPosDiff{ portAdded ? 1 : -1 };
 
-  //Recalculate the nodes visuals. A data change can result in the node taking more space than before, so this forces a recalculate+repaint on the affected node
-  _nodeGraphicsObject->setGeometryChanged();
-  _nodeGeometry.recalculateSize();
-  _nodeGraphicsObject->update();
+  for (auto it = connections->begin() + portIndex; it != connections->end(); ++it)
+  {
+    for (auto&& item : *it)
+    {
+      auto* connection = item.second;
+      connection->setNodeToPort(
+        *connection->getNode(portType), 
+        portType, 
+        connection->getPortIndex(portType) + connectionPosDiff);
+    }
+  }
+
+  if (portAdded)
+  {
+      connections->emplace(connections->begin() + portIndex);
+  }
+  else
+  {
+      // \todo Remove the lost connections.
+      connections->erase(connections->begin() + portIndex);
+  }
+  assert(_nodeDataModel->nPorts(portType) == connections->size());
 
   recalculateVisuals();
 }
-
-
-void
-Node::
-onPortRemoved()
-{
-  // port In
-  const unsigned int nNewIn = _nodeDataModel->nPorts(PortType::In);
-  _nodeGeometry._nSources = nNewIn;
-  _nodeState._inConnections.resize( nNewIn );
-  // \todo Remove the lost connections.
-
-  // port Out
-  const unsigned int nNewOut = _nodeDataModel->nPorts(PortType::Out);
-  _nodeGeometry._nSinks = nNewOut;
-  _nodeState._outConnections.resize( nNewOut );
-  // \todo Remove the lost connections.
-
-  recalculateVisuals();
-}
-
 
 void
 Node::

@@ -179,10 +179,10 @@ Q_SIGNALS:
   computingFinished();
 
   void
-  portAdded();
+  portAdded(PortType portType, PortIndex portIndex);
 
   void
-  portRemoved();
+  portRemoved(PortType portType, PortIndex portIndex);
 
 private:
 
