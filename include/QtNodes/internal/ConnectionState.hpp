@@ -31,7 +31,6 @@ public:
 
   ConnectionState(ConnectionGraphicsObject & cgo)
     : _cgo(cgo)
-    , _connectedState(LooseEnd::Pending)
     , _hovered(false)
   {}
 
@@ -70,10 +69,7 @@ public:
   resetLastHoveredNode();
 
 private:
-
   ConnectionGraphicsObject & _cgo;
-
-  LooseEnd _connectedState;
 
   bool _hovered;
 
