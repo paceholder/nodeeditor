@@ -13,7 +13,9 @@ NodeState(NodeGraphicsObject & ngo)
   , _hovered(false)
   , _resizing(false)
   , _connectionForReaction(nullptr)
-{}
+{
+  Q_UNUSED(_ngo);
+}
 
 
 void
