@@ -62,7 +62,7 @@ make -j && make install
 ### >>> Version 3 Roadmap <<<
 
 1. Headless mode. [done]
-   You can create, populate, modify the derivative of AbsractGraphModel
+   You can create, populate, modify the derivative of AbstractGraphModel
    without adding it to the actual Flow Scene.
    The library is now designed to be general-purpose graph
    visualization and modification tool, without specialization on only
