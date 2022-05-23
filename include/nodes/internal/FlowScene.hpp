@@ -203,7 +203,7 @@ public:
   
   QByteArray saveToMemory() const;
 
-  void loadFromMemory(const QByteArray& data);
+  std::unordered_map<QUuid, QUuid> loadFromMemory(const QByteArray& data);
 
   /**
    * @brief Creates a JSON document with the given scene items' info. Used in the
@@ -228,8 +228,11 @@ public:
    * @param usePastePos Flag indicating whether the pastePos argument should be used. When
    * set to false, each item's position will be determined by the value saved in the JSON
    * document.
+   * @return An unordered map with the saved topology ID and the new node ID.
    */
-  void loadItems(const QByteArray& data, QPointF pastePos, bool usePastePos = true);
+  std::unordered_map<QUuid, QUuid> loadItems(const QByteArray& data,
+                                             QPointF pastePos,
+                                             bool usePastePos = true);
 
   /**
    * @brief Verifies whether there are any nodes or groups in the current selection,
