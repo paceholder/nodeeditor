@@ -37,7 +37,7 @@ add_subdirectory(external)
 
 
 # Find the QtWidgets library
-find_package(Qt6
+find_package(Qt6 QUIET
   COMPONENTS
    Core
    Widgets
@@ -46,7 +46,7 @@ find_package(Qt6
 )
 
 if (NOT Qt6_FOUND)
-  find_package(Qt5 5.13
+  find_package(Qt5 QUIET
     COMPONENTS
      Core
      Widgets
@@ -59,8 +59,13 @@ if (NOT (Qt6_FOUND OR Qt5_FOUND))
   message(FATAL_ERRROR "Qt libraries were not found.")
 endif()
 
-
-qt_add_resources(RESOURCES ./resources/resources.qrc)
+if (Qt6_FOUND)
+  qt_add_resources(RESOURCES ./resources/resources.qrc)
+  set(Qt Qt)
+else()
+  qt5_add_resources(RESOURCES ./resources/resources.qrc)
+  set(Qt Qt5)
+endif()
 
 # Unfortunately, as we have a split include/src, AUTOMOC doesn't work.
 # We'll have to manually specify some files
@@ -109,10 +114,10 @@ target_include_directories(nodes
 
 target_link_libraries(nodes
   PUBLIC
-    Qt::Core
-    Qt::Widgets
-    Qt::Gui
-    Qt::OpenGL
+    ${Qt}::Core
+    ${Qt}::Widgets
+    ${Qt}::Gui
+    ${Qt}::OpenGL
 )
 
 target_compile_definitions(nodes
@@ -155,11 +160,19 @@ set_target_properties(nodes
 
 file(GLOB_RECURSE HEADERS_TO_MOC include/nodes/internal/*.hpp)
 
-qt_wrap_cpp(nodes_moc
-    ${HEADERS_TO_MOC}
+if (Qt6_FOUND)
+  qt_wrap_cpp(nodes_moc
+      ${HEADERS_TO_MOC}
+    TARGET nodes
+    OPTIONS --no-notes # Don't display a note for the headers which don't produce a moc_*.cpp
+  )
+else()
+  qt5_wrap_cpp(nodes_moc
+  ${HEADERS_TO_MOC}
   TARGET nodes
   OPTIONS --no-notes # Don't display a note for the headers which don't produce a moc_*.cpp
-)
+  )
+endif()
 
 target_sources(nodes PRIVATE ${nodes_moc})
 
