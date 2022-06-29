@@ -46,7 +46,7 @@ find_package(Qt6 QUIET
 )
 
 if (NOT Qt6_FOUND)
-  find_package(Qt5 REQUIRED
+  find_package(Qt5 QUIET
     COMPONENTS
      Core
      Widgets
