@@ -203,13 +203,6 @@ mousePressEvent(QGraphicsSceneMouseEvent * event)
   if (_locked)
     return;
 
-  // deselect all other items after this one is selected
-  if (!isSelected() &&
-      !(event->modifiers() & Qt::ControlModifier))
-  {
-    _scene.clearSelection();
-  }
-
   for (PortType portToCheck: {PortType::In, PortType::Out})
   {
     NodeGeometry const & nodeGeometry = _node.nodeGeometry();
@@ -280,6 +273,13 @@ mouseMoveEvent(QGraphicsSceneMouseEvent * event)
 {
   auto & geom  = _node.nodeGeometry();
   auto & state = _node.nodeState();
+
+  // deselect all other items after this one is selected
+  if (!isSelected())
+  {
+    _scene.clearSelection();
+    setSelected(true);
+  }
 
   if (state.resizing())
   {
