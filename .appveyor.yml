@@ -11,7 +11,7 @@ environment:
     - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
       GENERATOR : "Visual Studio 16 2019"
       ARCHITECTURE : "-A x64"
-      QTDIR: C:\Qt\6.2.2\msvc2019_64
+      QTDIR: C:\Qt\6.3\msvc2019_64
       QT_MAJOR: 6
       PLATFORM: x64
 
