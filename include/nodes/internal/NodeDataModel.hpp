@@ -176,9 +176,11 @@ public Q_SLOTS:
 
 Q_SIGNALS:
 
+  /// Triggers the updates in the nodes downstream.
   void
   dataUpdated(PortIndex index);
 
+  /// Triggers the propagation of the empty data downstream.
   void
   dataInvalidated(PortIndex index);
 
