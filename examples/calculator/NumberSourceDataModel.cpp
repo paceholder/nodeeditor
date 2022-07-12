@@ -113,8 +113,6 @@ QWidget *
 NumberSourceDataModel::
 embeddedWidget()
 {
-  return _lineEdit; 
-
   if (!_lineEdit)
   {
     _lineEdit = new QLineEdit();
