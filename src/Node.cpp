@@ -37,6 +37,9 @@ Node(std::unique_ptr<NodeDataModel> && dataModel)
   connect(_nodeDataModel.get(), &NodeDataModel::dataUpdated,
           this, &Node::onDataUpdated);
 
+  connect(_nodeDataModel.get(), &NodeDataModel::dataInvalidated,
+          this, &Node::onDataInvalidated);
+
   connect(_nodeDataModel.get(), &NodeDataModel::embeddedWidgetSizeUpdated,
           this, &Node::onNodeSizeUpdated );
 }
@@ -190,7 +193,9 @@ propagateData(std::shared_ptr<NodeData> nodeData,
 {
   _nodeDataModel->setInData(std::move(nodeData), inPortIndex, connectionId);
 
-  //Recalculate the nodes visuals. A data change can result in the node taking more space than before, so this forces a recalculate+repaint on the affected node
+  // Recalculate the nodes visuals. A data change can result in the
+  // node taking more space than before, so this forces a
+  // recalculate+repaint on the affected node.
   _nodeGraphicsObject->setGeometryChanged();
   _nodeGeometry.recalculateSize();
   _nodeGraphicsObject->update();
@@ -204,31 +209,43 @@ onDataUpdated(PortIndex index)
 {
   auto nodeData = _nodeDataModel->outData(index);
 
-  auto connections =
+  auto const &connections =
     _nodeState.connections(PortType::Out, index);
 
   for (auto const & c : connections)
     c.second->propagateData(nodeData);
 }
 
+
+void
+Node::
+onDataInvalidated(PortIndex index)
+{
+  auto const &connections =
+    _nodeState.connections(PortType::Out, index);
+
+  for (auto const & c : connections)
+    c.second->propagateEmptyData();
+}
+
 void
 Node::
 onNodeSizeUpdated()
 {
-    if( nodeDataModel()->embeddedWidget() )
+  if( nodeDataModel()->embeddedWidget() )
+  {
+    nodeDataModel()->embeddedWidget()->adjustSize();
+  }
+  nodeGeometry().recalculateSize();
+  for(PortType type: {PortType::In, PortType::Out})
+  {
+    for(auto& conn_set : nodeState().getEntries(type))
     {
-        nodeDataModel()->embeddedWidget()->adjustSize();
+      for(auto& pair: conn_set)
+      {
+        Connection* conn = pair.second;
+        conn->getConnectionGraphicsObject().move();
+      }
     }
-    nodeGeometry().recalculateSize();
-    for(PortType type: {PortType::In, PortType::Out})
-    {
-        for(auto& conn_set : nodeState().getEntries(type))
-        {
-            for(auto& pair: conn_set)
-            {
-                Connection* conn = pair.second;
-                conn->getConnectionGraphicsObject().move();
-            }
-        }
-    }
+  }
 }
