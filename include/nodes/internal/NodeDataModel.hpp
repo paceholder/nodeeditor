@@ -123,6 +123,16 @@ public:
   std::shared_ptr<NodeData>
   outData(PortIndex port) = 0;
 
+  /**
+   * It is recommented to preform a lazy initialization for the
+   * embedded widget and create it inside this function, not in the
+   * constructor of the current model.
+   *
+   * Our Model Registry is able to shortly instantiate models in order
+   * to call the non-static `Model::name()`. If the embedded widget is
+   * allocated in the constructor but not actually embedded into some
+   * QGraphicsProxyWidget, we'll gonna have a dangling pointer.
+   */
   virtual
   QWidget *
   embeddedWidget() = 0;

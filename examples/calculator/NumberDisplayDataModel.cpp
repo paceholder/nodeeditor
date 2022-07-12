@@ -2,11 +2,12 @@
 
 #include "DecimalData.hpp"
 
+#include <QtWidgets/QLabel>
+
 NumberDisplayDataModel::
 NumberDisplayDataModel()
-  : _label(new QLabel())
+  : _label{nullptr}
 {
-  _label->setMargin(3);
 }
 
 
@@ -72,6 +73,18 @@ setInData(std::shared_ptr<NodeData> data, int)
   _label->adjustSize();
 }
 
+QWidget*
+NumberDisplayDataModel::
+embeddedWidget()
+{
+  if (!_label)
+  {
+    _label = new QLabel();
+    _label->setMargin(3);
+  }
+
+  return _label; 
+}
 
 NodeValidationState
 NumberDisplayDataModel::

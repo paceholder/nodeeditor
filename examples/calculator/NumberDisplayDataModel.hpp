@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QtCore/QObject>
-#include <QtWidgets/QLabel>
 
 #include <nodes/NodeDataModel>
 
@@ -13,6 +12,8 @@ using QtNodes::NodeData;
 using QtNodes::NodeDataType;
 using QtNodes::NodeDataModel;
 using QtNodes::NodeValidationState;
+
+class QLabel;
 
 /// The model dictates the number of inputs and outputs for the Node.
 /// In this example it has no logic.
@@ -56,7 +57,7 @@ public:
   setInData(std::shared_ptr<NodeData> data, int) override;
 
   QWidget *
-  embeddedWidget() override { return _label; }
+  embeddedWidget() override;
 
   NodeValidationState
   validationState() const override;

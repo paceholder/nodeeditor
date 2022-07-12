@@ -1,22 +1,15 @@
 #include "NumberSourceDataModel.hpp"
 
+#include "DecimalData.hpp"
+
 #include <QtCore/QJsonValue>
 #include <QtGui/QDoubleValidator>
-
-#include "DecimalData.hpp"
+#include <QtWidgets/QLineEdit>
 
 NumberSourceDataModel::
 NumberSourceDataModel()
-  : _lineEdit(new QLineEdit())
+  : _lineEdit{nullptr}
 {
-  _lineEdit->setValidator(new QDoubleValidator());
-
-  _lineEdit->setMaximumSize(_lineEdit->sizeHint());
-
-  connect(_lineEdit, &QLineEdit::textChanged,
-          this, &NumberSourceDataModel::onTextEdited);
-
-  _lineEdit->setText("0.0");
 }
 
 
@@ -113,4 +106,27 @@ NumberSourceDataModel::
 outData(PortIndex)
 {
   return _number;
+}
+
+
+QWidget *
+NumberSourceDataModel::
+embeddedWidget()
+{
+  return _lineEdit; 
+
+  if (!_lineEdit)
+  {
+    _lineEdit = new QLineEdit();
+
+    _lineEdit->setValidator(new QDoubleValidator());
+    _lineEdit->setMaximumSize(_lineEdit->sizeHint());
+
+    connect(_lineEdit, &QLineEdit::textChanged,
+            this, &NumberSourceDataModel::onTextEdited);
+
+    _lineEdit->setText("0.0");
+  }
+
+  return _lineEdit;
 }

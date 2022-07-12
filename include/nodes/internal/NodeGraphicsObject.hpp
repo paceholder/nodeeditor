@@ -88,6 +88,7 @@ protected:
   contextMenuEvent(QGraphicsSceneContextMenuEvent* event) override;
 
 private:
+
   void
   embedQWidget();
 
