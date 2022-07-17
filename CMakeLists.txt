@@ -85,6 +85,8 @@ add_library(nodes
 )
 add_library(NodeEditor::nodes ALIAS nodes)
 
+
+
 target_include_directories(nodes
   PUBLIC
     $<INSTALL_INTERFACE:include>
@@ -117,6 +119,7 @@ target_compile_options(nodes
     $<$<CXX_COMPILER_ID:MSVC>:/W4 /wd4127 /EHsc>
     $<$<CXX_COMPILER_ID:GNU>:-Wall -Wextra>
     $<$<CXX_COMPILER_ID:Clang>:-Wall -Wextra>
+    $<$<PLATFORM_ID:Linux,Darwin>:-fPIC>
 )
 
 target_compile_features(nodes
