@@ -5,6 +5,7 @@ project(NodeEditor CXX)
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 set(CMAKE_DISABLE_SOURCE_CHANGES  ON)
 set(OpenGL_GL_PREFERENCE LEGACY)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 get_directory_property(_has_parent PARENT_DIRECTORY)
 if(_has_parent)
@@ -72,18 +73,18 @@ endif()
 set(CMAKE_AUTOMOC ON)
 
 set(CPP_SOURCE_FILES
-  src/Connection.cpp
+  src/BasicGraphicsScene.cpp
   src/ConnectionBlurEffect.cpp
-  src/ConnectionGeometry.cpp
   src/ConnectionGraphicsObject.cpp
   src/ConnectionPainter.cpp
   src/ConnectionState.cpp
   src/ConnectionStyle.cpp
+  src/DataFlowGraphModel.cpp
+  src/DataFlowGraphicsScene.cpp
   src/DataModelRegistry.cpp
-  src/FlowScene.cpp
-  src/FlowView.cpp
-  src/FlowViewStyle.cpp
-  src/Node.cpp
+  src/GraphModel.cpp
+  src/GraphicsView.cpp
+  src/GraphicsViewStyle.cpp
   src/NodeConnectionInteraction.cpp
   src/NodeDataModel.cpp
   src/NodeGeometry.cpp
@@ -91,17 +92,16 @@ set(CPP_SOURCE_FILES
   src/NodePainter.cpp
   src/NodeState.cpp
   src/NodeStyle.cpp
-  src/Properties.cpp
   src/StyleCollection.cpp
+  src/locateNode.cpp
 )
 
 # If we want to give the option to build a static library,
 # set BUILD_SHARED_LIBS option to OFF
-add_library(nodes
-  ${CPP_SOURCE_FILES}
-  ${RESOURCES}
-)
+add_library(nodes ${CPP_SOURCE_FILES} ${RESOURCES})
+
 add_library(NodeEditor::nodes ALIAS nodes)
+
 
 target_include_directories(nodes
   PUBLIC
@@ -189,7 +189,7 @@ endif()
 ##
 
 if(BUILD_TESTING)
-  add_subdirectory(test)
+  #add_subdirectory(test)
 endif()
 
 ###############

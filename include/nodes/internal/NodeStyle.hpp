@@ -16,17 +16,19 @@ public:
 
   NodeStyle(QString jsonText);
 
+  NodeStyle(QJsonDocument const & json);
+
+  virtual ~NodeStyle() = default;
+
 public:
 
   static void setNodeStyle(QString jsonText);
 
-private:
+public:
 
-  void loadJsonText(QString jsonText) override;
+  void loadJson(QJsonDocument const & json) override;
 
-  void loadJsonFile(QString fileName) override;
-
-  void loadJsonFromByteArray(QByteArray const &byteArray) override;
+  QJsonDocument toJson() const override;
 
 public:
 

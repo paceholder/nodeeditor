@@ -2,8 +2,8 @@
 
 #include "StyleCollection.hpp"
 
-using QtNodes::NodeDataModel;
-using QtNodes::NodeStyle;
+namespace QtNodes
+{
 
 NodeDataModel::
 NodeDataModel()
@@ -25,7 +25,7 @@ save() const
 }
 
 
-NodeStyle const&
+NodeStyle const &
 NodeDataModel::
 nodeStyle() const
 {
@@ -35,7 +35,10 @@ nodeStyle() const
 
 void
 NodeDataModel::
-setNodeStyle(NodeStyle const& style)
+setNodeStyle(NodeStyle const &style)
 {
   _nodeStyle = style;
+}
+
+
 }

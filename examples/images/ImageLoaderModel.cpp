@@ -85,7 +85,7 @@ eventFilter(QObject *object, QEvent *event)
 
 NodeDataType
 ImageLoaderModel::
-dataType(PortType, PortIndex) const
+dataType(PortType const, PortIndex const) const
 {
   return PixmapData().type();
 }

@@ -16,17 +16,17 @@ public:
 
   ConnectionStyle(QString jsonText);
 
+  ~ConnectionStyle() = default;
+
 public:
 
   static void setConnectionStyle(QString jsonText);
 
-private:
+public:
 
-  void loadJsonText(QString jsonText) override;
+  void loadJson(QJsonDocument const & json) override;
 
-  void loadJsonFile(QString fileName) override;
-
-  void loadJsonFromByteArray(QByteArray const &byteArray) override;
+  QJsonDocument toJson() const override;
 
 public:
 

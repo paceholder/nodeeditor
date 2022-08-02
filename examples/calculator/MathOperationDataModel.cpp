@@ -40,6 +40,11 @@ setInData(std::shared_ptr<NodeData> data, PortIndex portIndex)
   auto numberData =
     std::dynamic_pointer_cast<DecimalData>(data);
 
+  if (!data)
+  {
+    Q_EMIT dataInvalidated(0);
+  }
+
   if (portIndex == 0)
   {
     _number1 = numberData;
@@ -52,18 +57,3 @@ setInData(std::shared_ptr<NodeData> data, PortIndex portIndex)
   compute();
 }
 
-
-NodeValidationState
-MathOperationDataModel::
-validationState() const
-{
-  return modelValidationState;
-}
-
-
-QString
-MathOperationDataModel::
-validationMessage() const
-{
-  return modelValidationError;
-}

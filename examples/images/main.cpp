@@ -1,15 +1,21 @@
+#include <nodes/DataFlowGraphModel>
+#include <nodes/DataFlowGraphicsScene>
+#include <nodes/DataModelRegistry>
+#include <nodes/GraphicsView>
 #include <nodes/NodeData>
-#include <nodes/FlowScene>
-#include <nodes/FlowView>
 
 #include <QtWidgets/QApplication>
+#include <QtGui/QScreen>
 
 #include "ImageShowModel.hpp"
 #include "ImageLoaderModel.hpp"
 
+using QtNodes::ConnectionStyle;
+using QtNodes::DataFlowGraphModel;
+using QtNodes::DataFlowGraphicsScene;
 using QtNodes::DataModelRegistry;
-using QtNodes::FlowScene;
-using QtNodes::FlowView;
+using QtNodes::GraphicsView;
+
 
 static std::shared_ptr<DataModelRegistry>
 registerDataModels()
@@ -28,13 +34,20 @@ main(int argc, char *argv[])
 {
   QApplication app(argc, argv);
 
-  FlowScene scene(registerDataModels());
+  std::shared_ptr<DataModelRegistry> registry = registerDataModels();
 
-  FlowView view(&scene);
+  DataFlowGraphModel dataFlowGraphModel(registry);
 
-  view.setWindowTitle("Node-based flow editor");
+  DataFlowGraphicsScene scene(dataFlowGraphModel);
+
+  GraphicsView view(&scene);
+
+  view.setWindowTitle("Data Flow: Resizable Images");
   view.resize(800, 600);
+  // Center window.
+  view.move(QApplication::primaryScreen()->availableGeometry().center() - view.rect().center());
   view.show();
 
   return app.exec();
 }
+

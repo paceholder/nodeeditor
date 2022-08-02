@@ -25,3 +25,4 @@ draw(QPainter* painter)
 
   //_item->paint(painter, nullptr, nullptr);
 }
+
