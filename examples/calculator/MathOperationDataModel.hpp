@@ -10,12 +10,11 @@
 
 class DecimalData;
 
-using QtNodes::PortType;
-using QtNodes::PortIndex;
 using QtNodes::NodeData;
-using QtNodes::NodeDataType;
 using QtNodes::NodeDataModel;
-using QtNodes::NodeValidationState;
+using QtNodes::NodeDataType;
+using QtNodes::PortIndex;
+using QtNodes::PortType;
 
 /// The model dictates the number of inputs and outputs for the Node.
 /// In this example it has no logic.
@@ -25,8 +24,7 @@ class MathOperationDataModel : public NodeDataModel
 
 public:
 
-  virtual
-  ~MathOperationDataModel() {}
+  ~MathOperationDataModel() = default;
 
 public:
 
@@ -46,12 +44,6 @@ public:
   QWidget *
   embeddedWidget() override { return nullptr; }
 
-  NodeValidationState
-  validationState() const override;
-
-  QString
-  validationMessage() const override;
-
 protected:
 
   virtual void
@@ -63,7 +55,4 @@ protected:
   std::weak_ptr<DecimalData> _number2;
 
   std::shared_ptr<DecimalData> _result;
-
-  NodeValidationState modelValidationState = NodeValidationState::Warning;
-  QString modelValidationError = QString("Missing or incorrect inputs");
 };

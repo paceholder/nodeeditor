@@ -36,7 +36,7 @@ restore(QJsonObject const &p)
   {
     QString strNum = v.toString();
 
-    bool   ok;
+    bool ok;
     double d = strNum.toDouble(&ok);
     if (ok)
     {

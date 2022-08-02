@@ -13,7 +13,6 @@ using QtNodes::PortIndex;
 using QtNodes::NodeData;
 using QtNodes::NodeDataType;
 using QtNodes::NodeDataModel;
-using QtNodes::NodeValidationState;
 
 /// The model dictates the number of inputs and outputs for the Node.
 /// In this example it has no logic.
@@ -24,8 +23,7 @@ class ImageShowModel : public NodeDataModel
 public:
   ImageShowModel();
 
-  virtual
-  ~ImageShowModel() {}
+  ~ImageShowModel() = default;
 
 public:
 
@@ -44,16 +42,18 @@ public:
   { return QString("Resulting Image"); }
 
   unsigned int
-  nPorts(PortType portType) const override;
+  nPorts(PortType const portType) const override;
 
   NodeDataType
-  dataType(PortType portType, PortIndex portIndex) const override;
+  dataType(PortType const portType,
+           PortIndex const portIndex) const override;
 
   std::shared_ptr<NodeData>
-  outData(PortIndex port) override;
+  outData(PortIndex const port) override;
 
   void
-  setInData(std::shared_ptr<NodeData> nodeData, PortIndex port) override;
+  setInData(std::shared_ptr<NodeData> nodeData,
+            PortIndex const port) override;
 
   QWidget *
   embeddedWidget() override { return _label; }

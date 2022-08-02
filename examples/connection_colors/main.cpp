@@ -1,16 +1,18 @@
 #include <QtWidgets/QApplication>
 
-#include <nodes/NodeData>
-#include <nodes/FlowScene>
-#include <nodes/FlowView>
-#include <nodes/DataModelRegistry>
 #include <nodes/ConnectionStyle>
+#include <nodes/DataFlowGraphModel>
+#include <nodes/DataFlowGraphicsScene>
+#include <nodes/DataModelRegistry>
+#include <nodes/GraphicsView>
+#include <nodes/NodeData>
 
 #include "models.hpp"
 
 using QtNodes::DataModelRegistry;
-using QtNodes::FlowScene;
-using QtNodes::FlowView;
+using QtNodes::DataFlowGraphModel;
+using QtNodes::DataFlowGraphicsScene;
+using QtNodes::GraphicsView;
 using QtNodes::ConnectionStyle;
 
 static std::shared_ptr<DataModelRegistry>
@@ -57,9 +59,12 @@ main(int argc, char* argv[])
 
   setStyle();
 
-  FlowScene scene(registerDataModels());
+  std::shared_ptr<DataModelRegistry> registry = registerDataModels();
+  DataFlowGraphModel dataFlowGraphModel(registry);
 
-  FlowView view(&scene);
+  DataFlowGraphicsScene scene(dataFlowGraphModel);
+
+  GraphicsView view(&scene);
 
   view.setWindowTitle("Node-based flow editor");
   view.resize(800, 600);
