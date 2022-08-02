@@ -1,14 +1,14 @@
 #include "ConnectionState.hpp"
 
-#include <iostream>
-
+#include <QtCore/QDebug>
 #include <QtCore/QPointF>
 
-#include "FlowScene.hpp"
-#include "Node.hpp"
+#include "BasicGraphicsScene.hpp"
+#include "ConnectionGraphicsObject.hpp"
+#include "NodeGraphicsObject.hpp"
 
-using QtNodes::ConnectionState;
-using QtNodes::Node;
+namespace QtNodes
+{
 
 ConnectionState::
 ~ConnectionState()
@@ -17,13 +17,42 @@ ConnectionState::
 }
 
 
+PortType
+ConnectionState::
+requiredPort() const
+{
+  PortType t = PortType::None;
+
+  if (std::get<0>(_cgo.connectionId()) == InvalidNodeId)
+  {
+    t = PortType::Out;
+  }
+  else
+  {
+    t = PortType::In;
+  }
+
+  return t;
+}
+
+
+bool
+ConnectionState::
+requiresPort() const
+{
+  ConnectionId id = _cgo.connectionId();
+  return std::get<0>(id) == InvalidNodeId ||
+         std::get<2>(id) == InvalidNodeId;
+}
+
+
 void
 ConnectionState::
-interactWithNode(Node* node)
+interactWithNode(NodeId const nodeId)
 {
-  if (node)
+  if (nodeId != InvalidNodeId)
   {
-    _lastHoveredNode = node;
+    _lastHoveredNode = nodeId;
   }
   else
   {
@@ -34,9 +63,9 @@ interactWithNode(Node* node)
 
 void
 ConnectionState::
-setLastHoveredNode(Node* node)
+setLastHoveredNode(NodeId const nodeId)
 {
-  _lastHoveredNode = node;
+  _lastHoveredNode = nodeId;
 }
 
 
@@ -44,8 +73,14 @@ void
 ConnectionState::
 resetLastHoveredNode()
 {
-  if (_lastHoveredNode)
-    _lastHoveredNode->resetReactionToConnection();
+  if (_lastHoveredNode != InvalidNodeId)
+  {
+    auto & ngo = *_cgo.nodeScene()->nodeGraphicsObject(_lastHoveredNode);
+    ngo.nodeState().resetReactionToConnection();
+  }
 
-  _lastHoveredNode = nullptr;
+  _lastHoveredNode = InvalidNodeId;
+}
+
+
 }

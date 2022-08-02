@@ -1,5 +1,5 @@
 {
-  "FlowViewStyle": {
+  "GraphicsViewStyle": {
     "BackgroundColor": [53, 53, 53],
     "FineGridColor": [60, 60, 60],
     "CoarseGridColor": [25, 25, 25]

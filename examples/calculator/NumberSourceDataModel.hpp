@@ -13,7 +13,6 @@ using QtNodes::PortIndex;
 using QtNodes::NodeData;
 using QtNodes::NodeDataType;
 using QtNodes::NodeDataModel;
-using QtNodes::NodeValidationState;
 
 class QLineEdit;
 
@@ -64,8 +63,8 @@ public:
   outData(PortIndex port) override;
 
   void
-  setInData(std::shared_ptr<NodeData>, int) override
-  { }
+  setInData(std::shared_ptr<NodeData>, PortIndex) override
+  {}
 
   QWidget *
   embeddedWidget() override;

@@ -5,6 +5,7 @@ project(NodeEditor CXX)
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 set(CMAKE_DISABLE_SOURCE_CHANGES  ON)
 set(OpenGL_GL_PREFERENCE LEGACY)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 get_directory_property(_has_parent PARENT_DIRECTORY)
 if(_has_parent)
@@ -72,18 +73,18 @@ endif()
 set(CMAKE_AUTOMOC ON)
 
 set(CPP_SOURCE_FILES
-  src/Connection.cpp
+  src/BasicGraphicsScene.cpp
   src/ConnectionBlurEffect.cpp
-  src/ConnectionGeometry.cpp
   src/ConnectionGraphicsObject.cpp
   src/ConnectionPainter.cpp
   src/ConnectionState.cpp
   src/ConnectionStyle.cpp
+  src/DataFlowGraphModel.cpp
+  src/DataFlowGraphicsScene.cpp
   src/DataModelRegistry.cpp
-  src/FlowScene.cpp
-  src/FlowView.cpp
-  src/FlowViewStyle.cpp
-  src/Node.cpp
+  src/GraphModel.cpp
+  src/GraphicsView.cpp
+  src/GraphicsViewStyle.cpp
   src/NodeConnectionInteraction.cpp
   src/NodeDataModel.cpp
   src/NodeGeometry.cpp
@@ -91,24 +92,27 @@ set(CPP_SOURCE_FILES
   src/NodePainter.cpp
   src/NodeState.cpp
   src/NodeStyle.cpp
-  src/Properties.cpp
   src/StyleCollection.cpp
+  src/locateNode.cpp
 )
 
 set(HPP_HEADER_FILES
+  include/nodes/internal/BasicGraphicsScene.hpp
   include/nodes/internal/Compiler.hpp
-  include/nodes/internal/Connection.hpp
-  include/nodes/internal/ConnectionGeometry.hpp
   include/nodes/internal/ConnectionGraphicsObject.hpp
+  include/nodes/internal/ConnectionIdHash.hpp
+  include/nodes/internal/ConnectionIdUtils.hpp
   include/nodes/internal/ConnectionState.hpp
   include/nodes/internal/ConnectionStyle.hpp
+  include/nodes/internal/DataFlowGraphicsScene.hpp
+  include/nodes/internal/DataFlowGraphModel.hpp
   include/nodes/internal/DataModelRegistry.hpp
+  include/nodes/internal/Definitions.hpp
   include/nodes/internal/Export.hpp
-  include/nodes/internal/FlowScene.hpp
-  include/nodes/internal/FlowView.hpp
-  include/nodes/internal/FlowViewStyle.hpp
-  include/nodes/internal/memory.hpp
-  include/nodes/internal/Node.hpp
+  include/nodes/internal/GraphicsView.hpp
+  include/nodes/internal/GraphicsViewStyle.hpp
+  include/nodes/internal/GraphModel.hpp
+  include/nodes/internal/locateNode.hpp
   include/nodes/internal/NodeData.hpp
   include/nodes/internal/NodeDataModel.hpp
   include/nodes/internal/NodeGeometry.hpp
@@ -123,7 +127,9 @@ set(HPP_HEADER_FILES
   include/nodes/internal/Serializable.hpp
   include/nodes/internal/Style.hpp
   include/nodes/internal/StyleCollection.hpp
-  include/nodes/internal/TypeConverter.hpp
+  src/ConnectionPainter.hpp
+  src/NodeConnectionInteraction.hpp
+  src/NodePainter.hpp
 )
 
 # If we want to give the option to build a static library,
@@ -133,7 +139,9 @@ add_library(nodes
   ${HPP_HEADER_FILES}
   ${RESOURCES}
 )
+
 add_library(NodeEditor::nodes ALIAS nodes)
+
 
 target_include_directories(nodes
   PUBLIC
@@ -221,7 +229,7 @@ endif()
 ##
 
 if(BUILD_TESTING)
-  add_subdirectory(test)
+  #add_subdirectory(test)
 endif()
 
 ###############

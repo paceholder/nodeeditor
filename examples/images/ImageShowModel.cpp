@@ -26,6 +26,7 @@ ImageShowModel()
   _label->installEventFilter(this);
 }
 
+
 unsigned int
 ImageShowModel::
 nPorts(PortType portType) const
@@ -74,7 +75,7 @@ eventFilter(QObject *object, QEvent *event)
 
 NodeDataType
 ImageShowModel::
-dataType(PortType, PortIndex) const
+dataType(PortType const, PortIndex const) const
 {
   return PixmapData().type();
 }
@@ -90,7 +91,7 @@ outData(PortIndex)
 
 void
 ImageShowModel::
-setInData(std::shared_ptr<NodeData> nodeData, PortIndex)
+setInData(std::shared_ptr<NodeData> nodeData, PortIndex const)
 {
   _nodeData = nodeData;
 
@@ -110,3 +111,4 @@ setInData(std::shared_ptr<NodeData> nodeData, PortIndex)
 
   Q_EMIT dataUpdated(0);
 }
+

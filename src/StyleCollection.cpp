@@ -3,9 +3,9 @@
 using QtNodes::StyleCollection;
 using QtNodes::NodeStyle;
 using QtNodes::ConnectionStyle;
-using QtNodes::FlowViewStyle;
+using QtNodes::GraphicsViewStyle;
 
-NodeStyle const&
+NodeStyle const &
 StyleCollection::
 nodeStyle()
 {
@@ -13,7 +13,7 @@ nodeStyle()
 }
 
 
-ConnectionStyle const&
+ConnectionStyle const &
 StyleCollection::
 connectionStyle()
 {
@@ -21,7 +21,7 @@ connectionStyle()
 }
 
 
-FlowViewStyle const&
+GraphicsViewStyle const &
 StyleCollection::
 flowViewStyle()
 {
@@ -47,14 +47,13 @@ setConnectionStyle(ConnectionStyle connectionStyle)
 
 void
 StyleCollection::
-setFlowViewStyle(FlowViewStyle flowViewStyle)
+setGraphicsViewStyle(GraphicsViewStyle flowViewStyle)
 {
   instance()._flowViewStyle = flowViewStyle;
 }
 
 
-
-StyleCollection&
+StyleCollection &
 StyleCollection::
 instance()
 {
@@ -62,3 +61,4 @@ instance()
 
   return collection;
 }
+

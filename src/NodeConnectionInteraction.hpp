@@ -1,14 +1,17 @@
 #pragma once
 
-#include "Node.hpp"
-#include "Connection.hpp"
+#include <memory>
+
+#include <QtCore/QPointF>
+
+#include "Definitions.hpp"
 
 namespace QtNodes
 {
 
-class DataModelRegistry;
-class FlowScene;
-class NodeDataModel;
+class ConnectionGraphicsObject;
+class NodeGraphicsObject;
+class BasicGraphicsScene;
 
 /// Class performs various operations on the Node and Connection pair.
 /// An instance should be created on the stack and destroyed when
@@ -16,20 +19,21 @@ class NodeDataModel;
 class NodeConnectionInteraction
 {
 public:
-  NodeConnectionInteraction(Node& node,
-                            Connection& connection,
-                            FlowScene& scene);
+  NodeConnectionInteraction(NodeGraphicsObject & ngo,
+                            ConnectionGraphicsObject & cgo,
+                            BasicGraphicsScene & scene);
 
   /// Can connect when following conditions are met:
   /// 1) Connection 'requires' a port
   /// 2) Connection's vacant end is above the node port
   /// 3) Node port is vacant
   /// 4) Connection type equals node port type, or there is a registered type conversion that can translate between the two
-  bool canConnect(PortIndex & portIndex, 
-                  TypeConverter & converter) const;
+  //bool canConnect(PortIndex & portIndex,
+  //TypeConverter & converter) const;
+
+  bool canConnect(PortIndex * portIndex) const;
 
   /// 1)   Check conditions from 'canConnect'
-  /// 1.5) If the connection is possible but a type conversion is needed, add a converter node to the scene, and connect it properly
   /// 2)   Assign node to required port in Connection
   /// 3)   Assign Connection to empty port in NodeState
   /// 4)   Adjust Connection geometry
@@ -49,7 +53,7 @@ private:
 
   QPointF connectionEndScenePosition(PortType) const;
 
-  QPointF nodePortScenePosition(PortType portType,
+  QPointF nodePortScenePosition(PortType  portType,
                                 PortIndex portIndex) const;
 
   PortIndex nodePortIndexUnderScenePoint(PortType portType,
@@ -59,10 +63,11 @@ private:
 
 private:
 
-  Node* _node;
+  NodeGraphicsObject & _ngo;
 
-  Connection* _connection;
+  ConnectionGraphicsObject & _cgo;
 
-  FlowScene* _scene;
+  BasicGraphicsScene & _scene;
 };
+
 }

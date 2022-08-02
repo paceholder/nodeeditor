@@ -11,7 +11,6 @@ using QtNodes::PortIndex;
 using QtNodes::NodeData;
 using QtNodes::NodeDataType;
 using QtNodes::NodeDataModel;
-using QtNodes::NodeValidationState;
 
 class QLabel;
 
@@ -24,8 +23,7 @@ class NumberDisplayDataModel : public NodeDataModel
 public:
   NumberDisplayDataModel();
 
-  virtual
-  ~NumberDisplayDataModel() {}
+  ~NumberDisplayDataModel() = default;
 
 public:
 
@@ -47,28 +45,18 @@ public:
   nPorts(PortType portType) const override;
 
   NodeDataType
-  dataType(PortType portType,
+  dataType(PortType  portType,
            PortIndex portIndex) const override;
 
   std::shared_ptr<NodeData>
   outData(PortIndex port) override;
 
   void
-  setInData(std::shared_ptr<NodeData> data, int) override;
+  setInData(std::shared_ptr<NodeData> data,
+            PortIndex portIndex) override;
 
   QWidget *
   embeddedWidget() override;
-
-  NodeValidationState
-  validationState() const override;
-
-  QString
-  validationMessage() const override;
-
-private:
-
-  NodeValidationState modelValidationState = NodeValidationState::Warning;
-  QString modelValidationError = QStringLiteral("Missing or incorrect inputs");
 
   QLabel * _label;
 };
