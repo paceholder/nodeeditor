@@ -48,7 +48,7 @@ public:
   save() const override;
 
   void
-  restore(QJsonObject const& p) override;
+  load(QJsonObject const& p) override;
 
 public:
 

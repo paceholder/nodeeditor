@@ -8,6 +8,12 @@
 namespace QtNodes
 {
 
+
+/// @brief An advanced scene working with data-propagating graphs.
+/**
+ * The class represents a scene that existed in v2.x but built wit the
+ * new model-view approach in mind.
+ */
 class NODE_EDITOR_PUBLIC DataFlowGraphicsScene
   : public BasicGraphicsScene
 {
@@ -20,19 +26,15 @@ public:
   ~DataFlowGraphicsScene() = default;
 
 public:
-
   std::vector<NodeId>
   selectedNodes() const;
 
 public:
-
-
   QMenu *
   createSceneMenu(QPointF const scenePos) override;
 
 
 public Q_SLOTS:
-
   void
   save() const;
 
@@ -54,12 +56,11 @@ public Q_SLOTS:
 
   //void load();
 
-  //QByteArray saveToMemory() const;
+  QJsonDocument saveToJsonDocument() const;
 
-  //void loadFromMemory(const QByteArray & data);
+  void loadFromJsonDocument(QJsonDocument const& json);
 
 private:
-
   DataFlowGraphModel &_graphModel;
 };
 

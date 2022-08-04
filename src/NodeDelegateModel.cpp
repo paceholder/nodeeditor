@@ -25,6 +25,14 @@ save() const
 }
 
 
+void
+NodeDelegateModel::
+load(QJsonObject const &)
+{
+  //
+}
+
+
 ConnectionPolicy
 NodeDelegateModel::
 portConnectionPolicy(PortType portType, PortIndex) const
