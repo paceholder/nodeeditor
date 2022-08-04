@@ -109,7 +109,8 @@ struct ConnectionId
   PortIndex inPortIndex;
 };
 
-inline bool operator==(const ConnectionId& a, const ConnectionId& b)
+
+inline bool operator==(ConnectionId const& a, ConnectionId const& b)
 {
   return a.outNodeId == b.outNodeId &&
          a.outPortIndex == b.outPortIndex &&
@@ -117,7 +118,7 @@ inline bool operator==(const ConnectionId& a, const ConnectionId& b)
          a.inPortIndex == b.inPortIndex;
 }
 
-inline bool operator!=(const ConnectionId& a, const ConnectionId& b)
+inline bool operator!=(ConnectionId const& a, ConnectionId const& b)
 {
   return !(a == b);
 }

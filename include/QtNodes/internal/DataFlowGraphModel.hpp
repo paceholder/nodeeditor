@@ -6,6 +6,8 @@
 #include "AbstractGraphModel.hpp"
 #include "StyleCollection.hpp"
 
+#include <QJsonObject>
+
 #include <memory>
 
 namespace QtNodes
@@ -16,7 +18,6 @@ class NODE_EDITOR_PUBLIC DataFlowGraphModel : public AbstractGraphModel
   Q_OBJECT
 
 public:
-
   struct NodeGeometryData
   {
     QSize size;
@@ -24,7 +25,6 @@ public:
   };
 
 public:
-
   DataFlowGraphModel(std::shared_ptr<NodeDelegateModelRegistry> registry);
 
   std::shared_ptr<NodeDelegateModelRegistry>
@@ -88,19 +88,47 @@ public:
   bool
   deleteNode(NodeId const nodeId) override;
 
+  QJsonDocument
+  save() const;
+
+  void
+  load(QJsonDocument const &json);
 private:
 
   NodeId
   newNodeId() { return _nextNodeId++; }
 
-private Q_SLOTS:
+  /**
+   * The function could be used when we restore nodes from some file
+   * and the NodeId values are already known.
+   */
+  NodeId
+  newNodeId(NodeId const restoredNodeId)
+  {
+    _nextNodeId = restoredNodeId;
+    return _nextNodeId++;
+  }
 
+
+  QJsonObject
+  saveNode(NodeId const) const;
+
+  void
+  loadNode(QJsonObject const & nodeJson);
+
+  QJsonObject
+  saveConnection(ConnectionId const & connId) const;
+
+  void
+  loadConnection(QJsonObject const & connJson);
+
+private Q_SLOTS:
   /**
    * Fuction is called by NodeDelegateModel when a node has new data to
    * propagate.
    */
   void
-  onNodeDataUpdated(NodeId const nodeId,
+  onNodeDataUpdated(NodeId const    nodeId,
                     PortIndex const portIndex);
 
 

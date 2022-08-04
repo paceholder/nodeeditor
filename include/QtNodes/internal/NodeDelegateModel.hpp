@@ -64,6 +64,9 @@ public:
   QJsonObject
   save() const override;
 
+  void
+  load(QJsonObject const &) override;
+
 public:
 
   virtual

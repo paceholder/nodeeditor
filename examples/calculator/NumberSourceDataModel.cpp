@@ -29,7 +29,7 @@ save() const
 
 void
 NumberSourceDataModel::
-restore(QJsonObject const& p)
+load(QJsonObject const& p)
 {
   QJsonValue v = p["number"];
 
