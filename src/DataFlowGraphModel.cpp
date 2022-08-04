@@ -1,6 +1,8 @@
 #include "DataFlowGraphModel.hpp"
 #include "ConnectionIdHash.hpp"
 
+#include <QJsonArray>
+
 namespace QtNodes
 {
 
@@ -445,6 +447,157 @@ deleteNode(NodeId const nodeId)
 }
 
 
+QJsonDocument
+DataFlowGraphModel::
+save() const
+{
+  QJsonObject sceneJson;
+
+  QJsonArray nodesJsonArray;
+  for (auto const nodeId : allNodeIds())
+  {
+    nodesJsonArray.append(saveNode(nodeId));
+  }
+  sceneJson["nodes"] = nodesJsonArray;
+
+
+  QJsonArray connJsonArray;
+  for (auto const & connPair : _connectivity)
+  {
+    ConnectivityKey const & key = connPair.first;
+    auto const& otherSideConnections = connPair.second;
+
+    for (auto const & otherSide : otherSideConnections)
+    {
+      if (std::get<1>(key) == PortType::Out)
+      {
+        connJsonArray.append(
+          saveConnection(ConnectionId{std::get<0>(key),
+                                      std::get<2>(key),
+                                      otherSide.first,
+                                      otherSide.second}));
+      }
+    }
+  }
+  sceneJson["connections"] = connJsonArray;
+
+  return QJsonDocument(sceneJson);
+}
+
+
+void
+DataFlowGraphModel::
+load(QJsonDocument const &json)
+{
+  QJsonObject const jsonDocument = json.object();
+
+  QJsonArray nodesJsonArray = jsonDocument["nodes"].toArray();
+
+  for (QJsonValueRef node : nodesJsonArray)
+  {
+    loadNode(node.toObject());
+  }
+
+  QJsonArray connectionJsonArray = jsonDocument["connections"].toArray();
+
+  for (QJsonValueRef connection : connectionJsonArray)
+  {
+    loadConnection(connection.toObject());
+  }
+}
+
+
+QJsonObject
+DataFlowGraphModel::
+saveNode(NodeId const nodeId) const
+{
+  QJsonObject nodeJson;
+
+  nodeJson["id"] = static_cast<qint64>(nodeId);
+
+  nodeJson["model"] = _models.at(nodeId)->save();
+
+  QPointF const pos =
+    nodeData(nodeId, NodeRole::Position).value<QPointF>();
+
+  QJsonObject posJson;
+  posJson["x"] = pos.x();
+  posJson["y"] = pos.y();
+  nodeJson["position"] = posJson;
+
+  return nodeJson;
+}
+
+
+void
+DataFlowGraphModel::
+loadNode(QJsonObject const & nodeJson)
+{
+  NodeId nodeId = static_cast<NodeId>(nodeJson["id"].toInt());
+
+  QString delegateModelName =
+    nodeJson["model"].toObject()["name"].toString();
+
+  std::unique_ptr<NodeDelegateModel> model =
+    _registry->create(delegateModelName);
+
+  if (model)
+  {
+    NodeId newId = newNodeId(nodeId);
+
+    connect(model.get(), &NodeDelegateModel::dataUpdated,
+            [newId, this](PortIndex const portIndex)
+      {
+        onNodeDataUpdated(newId, portIndex);
+      });
+
+    _models[newId] = std::move(model);
+
+    Q_EMIT nodeCreated(newId);
+
+    QJsonObject posJson = nodeJson["position"].toObject();
+    QPointF const pos(posJson["x"].toInt(),
+                      posJson["y"].toInt());
+
+    setNodeData(nodeId,
+                NodeRole::Position,
+                pos);
+
+
+    _models[newId]->load(nodeJson["model"].toObject());
+  }
+}
+
+
+
+QJsonObject
+DataFlowGraphModel::
+saveConnection(ConnectionId const & connId) const
+{
+  QJsonObject connJson;
+
+  connJson["outNodeId"] = static_cast<qint64>(connId.outNodeId);
+  connJson["outPortIndex"] = static_cast<qint64>(connId.outPortIndex);
+  connJson["intNodeId"] = static_cast<qint64>(connId.inNodeId);
+  connJson["inPortIndex"] = static_cast<qint64>(connId.inPortIndex);
+
+  return connJson;
+}
+
+
+void
+DataFlowGraphModel::
+loadConnection(QJsonObject const & connJson)
+{
+  ConnectionId connId{connJson["outNodeId"].toInt(),
+                      connJson["outPortIndex"].toInt(),
+                      connJson["intNodeId"].toInt(),
+                      connJson["inPortIndex"].toInt()};
+
+  addConnection(connId);
+}
+
+
 void
 DataFlowGraphModel::
 onNodeDataUpdated(NodeId const    nodeId,
@@ -453,15 +606,7 @@ onNodeDataUpdated(NodeId const    nodeId,
   std::unordered_set<std::pair<NodeId, PortIndex>> const& connected =
     connectedNodes(nodeId, PortType::Out, portIndex);
 
-  // TODO: Should we pull the data through the model?
-#if 0
-  auto outPortData =
-    portData(nodeId,
-             PortType::Out,
-             portIndex,
-             PortRole::Data).value<std::shared_ptr<NodeData>>();
-#endif
-
+  // We coudl also pull the data through the model::portData
   auto const outPortData =
     _models[nodeId]->outData(portIndex);
 

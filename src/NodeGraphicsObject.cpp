@@ -60,7 +60,6 @@ NodeGraphicsObject(BasicGraphicsScene& scene,
   NodeGeometry geometry(*this);
   geometry.recalculateSize();
 
-
   QPointF const pos =
     _graphModel.nodeData(_nodeId, NodeRole::Position).value<QPointF>();
 
