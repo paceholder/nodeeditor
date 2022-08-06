@@ -221,7 +221,7 @@ QVariant
 NodeGraphicsObject::
 itemChange(GraphicsItemChange change, const QVariant& value)
 {
-  if (change == ItemPositionChange && scene())
+  if (change == ItemScenePositionHasChanged && scene())
   {
     moveConnections();
   }
