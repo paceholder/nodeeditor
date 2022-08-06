@@ -5,6 +5,7 @@
 
 #include <QtCore/QPointF>
 #include <QtCore/QUuid>
+#include <QtCore/QPointer>
 
 #include "Export.hpp"
 
@@ -57,6 +58,8 @@ private:
 
   bool _resizing;
 
-  ConnectionGraphicsObject const * _connectionForReaction;
+  // QPointer tracks the QObject inside and is automatically cleared
+  // when the object is destroyed.
+  QPointer<ConnectionGraphicsObject const> _connectionForReaction;
 };
 }

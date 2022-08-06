@@ -12,7 +12,7 @@ NodeState(NodeGraphicsObject & ngo)
   : _ngo(ngo)
   , _hovered(false)
   , _resizing(false)
-  , _connectionForReaction(nullptr)
+  , _connectionForReaction{nullptr}
 {
   Q_UNUSED(_ngo);
 }
@@ -38,7 +38,7 @@ ConnectionGraphicsObject const *
 NodeState::
 connectionForReaction() const
 {
-  return _connectionForReaction;
+  return _connectionForReaction.data();
 }
 
 
@@ -54,7 +54,7 @@ void
 NodeState::
 resetConnectionForReaction()
 {
-  _connectionForReaction = nullptr;
+  _connectionForReaction.clear();
 }
 
 
