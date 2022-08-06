@@ -94,8 +94,8 @@ isPortTypeValid(PortType portType)
  */
 inline
 ConnectionId
-makeIncompleteConnectionId(PortType const  connectedPort,
-                           NodeId const    connectedNodeId,
+makeIncompleteConnectionId(NodeId const    connectedNodeId,
+                           PortType const  connectedPort,
                            PortIndex const connectedPortIndex)
 {
   return (connectedPort == PortType::In) ?

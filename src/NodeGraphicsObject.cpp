@@ -291,7 +291,9 @@ mousePressEvent(QGraphicsSceneMouseEvent* event)
         } // if port == out
 
         ConnectionId const incompleteConnectionId =
-          makeIncompleteConnectionId(portToCheck, _nodeId, portIndex);
+          makeIncompleteConnectionId(_nodeId,
+                                     portToCheck,
+                                     portIndex);
 
         nodeScene()->makeDraftConnection(incompleteConnectionId);
       }
