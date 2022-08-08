@@ -38,7 +38,8 @@ canConnect(PortIndex * portIndex) const
   }
 
   NodeId connectedNodeId =
-    getNodeId(oppositePort(requiredPort), _cgo.connectionId());
+    getNodeId(oppositePort(requiredPort), 
+              _cgo.connectionId());
 
   // 2. Forbid connecting the node to itself.
 

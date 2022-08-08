@@ -31,7 +31,7 @@ locateNodeAt(QPointF scenePoint,
                std::back_inserter(filteredItems),
                [](QGraphicsItem * item)
                {
-                 return (dynamic_cast<NodeGraphicsObject*>(item) != nullptr);
+                 return (qgraphicsitem_cast<NodeGraphicsObject*>(item) != nullptr);
                });
 
   NodeGraphicsObject * node = nullptr;

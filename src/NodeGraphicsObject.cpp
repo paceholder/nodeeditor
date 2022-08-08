@@ -164,34 +164,15 @@ void
 NodeGraphicsObject::
 moveConnections() const
 {
-  auto moveConns =
-    [this](PortType portType, NodeRole nodeRole)
-    {
-      size_t const n =
-        _graphModel.nodeData(_nodeId, nodeRole).toUInt();
+  auto const& connected = _graphModel.allConnectionIds(_nodeId);
 
-      for (PortIndex portIndex = 0; portIndex < n; ++portIndex)
-      {
-        auto const& connectedNodes =
-          _graphModel.connectedNodes(_nodeId, portType, portIndex);
+  for (auto& cnId : connected)
+  {
+    auto cgo = nodeScene()->connectionGraphicsObject(cnId);
 
-        for (auto& cn: connectedNodes)
-        {
-          // out node id, out port index, in node id, in port index.
-          ConnectionId connectionId{cn.first, cn.second, _nodeId, portIndex};
-          if(portType != PortType::In)
-            invertConnection(connectionId);
-
-          auto cgo = nodeScene()->connectionGraphicsObject(connectionId);
-
-          if (cgo)
-            cgo->move();
-        }
-      }
-    };
-
-  moveConns(PortType::In, NodeRole::NumberOfInPorts);
-  moveConns(PortType::Out, NodeRole::NumberOfOutPorts);
+    if (cgo)
+      cgo->move();
+  }
 }
 
 
@@ -248,22 +229,19 @@ mousePressEvent(QGraphicsSceneMouseEvent* event)
 
     if (portIndex != InvalidPortIndex)
     {
-      auto const& connectedNodes =
-        _graphModel.connectedNodes(_nodeId, portToCheck, portIndex);
+      auto const& connected =
+        _graphModel.connections(_nodeId, portToCheck, portIndex);
 
       // Start dragging existing connection.
-      if (!connectedNodes.empty() && portToCheck == PortType::In)
+      if (!connected.empty() && portToCheck == PortType::In)
       {
-        auto const& cn = *connectedNodes.begin();
-
-        // Need "reversed" connectin id if enabled for both port types.
-        ConnectionId connectionId{cn.first, cn.second, _nodeId, portIndex};
+        auto const& cnId = *connected.begin();
 
         // Need ConnectionGraphicsObject
 
         NodeConnectionInteraction
           interaction(*this,
-                      *nodeScene()->connectionGraphicsObject(connectionId),
+                      *nodeScene()->connectionGraphicsObject(cnId),
                       *nodeScene());
 
         interaction.disconnect(portToCheck);
@@ -278,14 +256,12 @@ mousePressEvent(QGraphicsSceneMouseEvent* event)
                                  portIndex,
                                  PortRole::ConnectionPolicyRole).value<ConnectionPolicy>();
 
-          if (!connectedNodes.empty() &&
+          if (!connected.empty() &&
               outPolicy == ConnectionPolicy::One)
           {
-            for (auto& cn : connectedNodes)
+            for (auto& cnId : connected)
             {
-              ConnectionId connectionId{_nodeId, portIndex, cn.first, cn.second};
-
-              _graphModel.deleteConnection(connectionId);
+              _graphModel.deleteConnection(cnId);
             }
           }
         } // if port == out
