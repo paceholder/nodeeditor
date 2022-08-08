@@ -3,7 +3,7 @@
 
 CustomGraphModel::
 CustomGraphModel()
-  : _lastNodeId{0}
+  : _nextNodeId{0}
 {}
 
 
@@ -105,7 +105,7 @@ NodeId
 CustomGraphModel::
 addNode(QString const nodeType)
 {
-  NodeId newId = _lastNodeId++;
+  NodeId newId = _nextNodeId++;
   // Create new node.
   _nodeIds.insert(newId);
 
@@ -387,4 +387,72 @@ deleteNode(NodeId const nodeId)
   Q_EMIT nodeDeleted(nodeId);
 
   return true;
+}
+
+
+QJsonObject
+CustomGraphModel::
+saveNode(NodeId const nodeId) const
+{
+  QJsonObject nodeJson;
+
+  nodeJson["id"] = static_cast<qint64>(nodeId);
+
+  QPointF const pos =
+    nodeData(nodeId, NodeRole::Position).value<QPointF>();
+
+  QJsonObject posJson;
+  posJson["x"] = pos.x();
+  posJson["y"] = pos.y();
+  nodeJson["position"] = posJson;
+
+  return nodeJson;
+}
+
+
+void
+CustomGraphModel::
+loadNode(QJsonObject const & nodeJson)
+{
+  NodeId nodeId = static_cast<NodeId>(nodeJson["id"].toInt());
+
+  _nextNodeId = std::max(_nextNodeId, nodeId);
+
+  NodeId newId = addNode();
+
+  QJsonObject posJson = nodeJson["position"].toObject();
+  QPointF const pos(posJson["x"].toInt(),
+                    posJson["y"].toInt());
+
+  setNodeData(newId,
+              NodeRole::Position,
+              pos);
+}
+
+
+QJsonObject
+CustomGraphModel::
+saveConnection(ConnectionId const & connId) const
+{
+  QJsonObject connJson;
+
+  connJson["outNodeId"] = static_cast<qint64>(connId.outNodeId);
+  connJson["outPortIndex"] = static_cast<qint64>(connId.outPortIndex);
+  connJson["intNodeId"] = static_cast<qint64>(connId.inNodeId);
+  connJson["inPortIndex"] = static_cast<qint64>(connId.inPortIndex);
+
+  return connJson;
+}
+
+
+void
+CustomGraphModel::
+loadConnection(QJsonObject const & connJson)
+{
+  ConnectionId connId{connJson["outNodeId"].toInt(),
+                      connJson["outPortIndex"].toInt(),
+                      connJson["intNodeId"].toInt(),
+                      connJson["inPortIndex"].toInt()};
+
+  addConnection(connId);
 }
