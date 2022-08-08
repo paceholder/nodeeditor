@@ -14,6 +14,7 @@
 #include "NodeGeometry.hpp"
 #include "NodePainter.hpp"
 #include "StyleCollection.hpp"
+#include "UndoCommands.hpp"
 
 
 namespace QtNodes
@@ -338,9 +339,13 @@ mouseMoveEvent(QGraphicsSceneMouseEvent* event)
   }
   else
   {
-    QGraphicsObject::mouseMoveEvent(event);
+    auto diff = event->pos() - event->lastPos();
 
-    _graphModel.setNodeData(_nodeId, NodeRole::Position, pos());
+    nodeScene()->undoStack().push(new MoveNodeCommand(nodeScene(),
+                                                      _nodeId,
+                                                      diff));
+
+    event->accept();
   }
 
   QRectF r = nodeScene()->sceneRect();
