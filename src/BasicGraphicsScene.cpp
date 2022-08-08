@@ -6,6 +6,8 @@
 #include <unordered_set>
 #include <utility>
 
+#include <QtGui/QUndoStack>
+
 #include <QtWidgets/QGraphicsSceneMoveEvent>
 #include <QtWidgets/QFileDialog>
 
@@ -17,8 +19,6 @@
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
 #include <QtCore/QtGlobal>
-
-#include <QtCore/QDebug>
 
 #include "ConnectionGraphicsObject.hpp"
 #include "ConnectionIdUtils.hpp"
@@ -34,6 +34,7 @@ BasicGraphicsScene(AbstractGraphModel &graphModel,
                    QObject *   parent)
   : QGraphicsScene(parent)
   , _graphModel(graphModel)
+  , _undoStack(new QUndoStack(this))
 {
   setItemIndexMethod(QGraphicsScene::NoIndex);
 
@@ -85,6 +86,14 @@ BasicGraphicsScene::
 graphModel()
 {
   return _graphModel;
+}
+
+
+QUndoStack &
+BasicGraphicsScene::
+undoStack()
+{
+  return *_undoStack;
 }
 
 

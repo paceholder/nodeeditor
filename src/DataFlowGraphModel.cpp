@@ -113,8 +113,7 @@ NodeId
 DataFlowGraphModel::
 addNode(QString const nodeType)
 {
-  std::unique_ptr<NodeDelegateModel> model =
-    _registry->create(nodeType);
+  std::unique_ptr<NodeDelegateModel> model = _registry->create(nodeType);
 
   if (model)
   {
@@ -245,6 +244,16 @@ nodeData(NodeId nodeId, NodeRole role) const
     }
     break;
 
+    case NodeRole::InternalData:
+    {
+      QJsonObject nodeJson;
+
+      nodeJson["internal-data"] = _models.at(nodeId)->save();
+
+      result = nodeJson.toVariantMap();
+      break;
+    }
+
     case NodeRole::NumberOfInPorts:
       result = model->nPorts(PortType::In);
       break;
@@ -318,6 +327,9 @@ setNodeData(NodeId   nodeId,
       break;
 
     case NodeRole::Style:
+      break;
+
+    case NodeRole::InternalData:
       break;
 
     case NodeRole::NumberOfInPorts:
@@ -465,6 +477,30 @@ deleteNode(NodeId const nodeId)
 }
 
 
+QJsonObject
+DataFlowGraphModel::
+saveNode(NodeId const nodeId) const
+{
+  QJsonObject nodeJson;
+
+  nodeJson["id"] = static_cast<qint64>(nodeId);
+
+  nodeJson["internal-data"] = _models.at(nodeId)->save();
+
+  {
+    QPointF const pos =
+      nodeData(nodeId, NodeRole::Position).value<QPointF>();
+
+    QJsonObject posJson;
+    posJson["x"] = pos.x();
+    posJson["y"] = pos.y();
+    nodeJson["position"] = posJson;
+  }
+
+  return nodeJson;
+}
+
+
 QJsonDocument
 DataFlowGraphModel::
 save() const
@@ -505,6 +541,47 @@ save() const
 
 void
 DataFlowGraphModel::
+loadNode(QJsonObject const & nodeJson)
+{
+  NodeId restoredNodeId = static_cast<NodeId>(nodeJson["id"].toInt());
+
+  // Insert the desired next node id
+  setNextNodeId(restoredNodeId);
+
+  QJsonObject const internalDataJson = nodeJson["internal-data"].toObject();
+
+  QString delegateModelName = internalDataJson["model-name"].toString();
+
+  std::unique_ptr<NodeDelegateModel> model = _registry->create(delegateModelName);
+
+  if (model)
+  {
+    connect(model.get(), &NodeDelegateModel::dataUpdated,
+            [restoredNodeId, this](PortIndex const portIndex)
+            { onNodeDataUpdated(restoredNodeId, portIndex); });
+
+    _models[restoredNodeId] = std::move(model);
+
+    Q_EMIT nodeCreated(restoredNodeId);
+
+    //
+
+    QJsonObject posJson = nodeJson["position"].toObject();
+    QPointF const pos(posJson["x"].toDouble(),
+                      posJson["y"].toDouble());
+
+    setNodeData(restoredNodeId,
+                NodeRole::Position,
+                pos);
+
+
+    _models[restoredNodeId]->load(internalDataJson);
+  }
+}
+
+
+void
+DataFlowGraphModel::
 load(QJsonDocument const &json)
 {
   QJsonObject const jsonDocument = json.object();
@@ -521,68 +598,6 @@ load(QJsonDocument const &json)
   for (QJsonValueRef connection : connectionJsonArray)
   {
     loadConnection(connection.toObject());
-  }
-}
-
-
-QJsonObject
-DataFlowGraphModel::
-saveNode(NodeId const nodeId) const
-{
-  QJsonObject nodeJson;
-
-  nodeJson["id"] = static_cast<qint64>(nodeId);
-
-  nodeJson["model"] = _models.at(nodeId)->save();
-
-  QPointF const pos =
-    nodeData(nodeId, NodeRole::Position).value<QPointF>();
-
-  QJsonObject posJson;
-  posJson["x"] = pos.x();
-  posJson["y"] = pos.y();
-  nodeJson["position"] = posJson;
-
-  return nodeJson;
-}
-
-
-void
-DataFlowGraphModel::
-loadNode(QJsonObject const & nodeJson)
-{
-  NodeId nodeId = static_cast<NodeId>(nodeJson["id"].toInt());
-
-  QString delegateModelName =
-    nodeJson["model"].toObject()["name"].toString();
-
-  std::unique_ptr<NodeDelegateModel> model =
-    _registry->create(delegateModelName);
-
-  if (model)
-  {
-    NodeId newId = newNodeId(nodeId);
-
-    connect(model.get(), &NodeDelegateModel::dataUpdated,
-            [newId, this](PortIndex const portIndex)
-      {
-        onNodeDataUpdated(newId, portIndex);
-      });
-
-    _models[newId] = std::move(model);
-
-    Q_EMIT nodeCreated(newId);
-
-    QJsonObject posJson = nodeJson["position"].toObject();
-    QPointF const pos(posJson["x"].toInt(),
-                      posJson["y"].toInt());
-
-    setNodeData(nodeId,
-                NodeRole::Position,
-                pos);
-
-
-    _models[newId]->load(nodeJson["model"].toObject());
   }
 }
 

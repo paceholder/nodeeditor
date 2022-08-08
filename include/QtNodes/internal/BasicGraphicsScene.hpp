@@ -16,6 +16,9 @@
 
 #include "QUuidStdHash.hpp"
 
+
+class QUndoStack;
+
 namespace QtNodes
 {
 
@@ -46,6 +49,8 @@ public:
 
   AbstractGraphModel &
   graphModel();
+
+  QUndoStack& undoStack();
 
 public:
 
@@ -207,6 +212,8 @@ private:
 
 
   std::unique_ptr<ConnectionGraphicsObject> _draftConnection;
+
+  QUndoStack* _undoStack;
 };
 
 

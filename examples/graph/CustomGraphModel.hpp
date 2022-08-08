@@ -25,20 +25,16 @@ class CustomGraphModel : public QtNodes::AbstractGraphModel
 {
   Q_OBJECT
 public:
-
   struct NodeGeometryData
   {
     QSize size;
     QPointF pos;
   };
 
-
 public:
-
   CustomGraphModel();
 
   ~CustomGraphModel() override;
-
 
   std::unordered_set<NodeId>
   allNodeIds() const override;
@@ -109,7 +105,6 @@ public:
   loadConnection(QJsonObject const & connJson) override;
 
 private:
-
   std::unordered_set<NodeId> _nodeIds;
 
   std::unordered_map<std::tuple<NodeId, PortType, PortIndex>,
@@ -122,5 +117,4 @@ private:
 
 
   unsigned int _nextNodeId;
-
 };
