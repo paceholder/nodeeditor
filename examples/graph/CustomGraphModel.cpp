@@ -55,20 +55,34 @@ allConnectionIds(NodeId const nodeId) const
 }
 
 
-std::unordered_set<std::pair<NodeId, PortIndex>>
+std::unordered_set<ConnectionId>
 CustomGraphModel::
-connectedNodes(NodeId    nodeId,
-               PortType  portType,
-               PortIndex portIndex) const
+connections(NodeId    nodeId,
+            PortType  portType,
+            PortIndex portIndex) const
 {
-  std::unordered_set<std::pair<NodeId, PortIndex>> result;
+  std::unordered_set<ConnectionId> result;
 
-  auto connectivityKey = std::make_tuple(nodeId, portType, portIndex);
+  auto const connectivityKey = std::make_tuple(nodeId, portType, portIndex);
 
   auto it = _connectivity.find(connectivityKey);
 
   if (it != _connectivity.end())
-    return it->second;
+  {
+    for (auto& nodeAndPort : it->second)
+    {
+      ConnectionId conn{nodeId,
+                        portIndex,
+                        nodeAndPort.first,
+                        nodeAndPort.second};
+
+      if (portType == PortType::In)
+      {
+        invertConnection(conn);
+      }
+      result.insert(conn);
+    }
+  }
 
   return result;
 }
