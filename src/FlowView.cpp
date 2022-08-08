@@ -415,6 +415,16 @@ deleteSelectedNodes()
   {
     if(item)
     {
+      if (auto c = qgraphicsitem_cast<ConnectionGraphicsObject*>(item))
+      {
+          _scene->deleteConnection(c->connection());      
+      }
+    }
+  }
+  for (QGraphicsItem * item : _scene->selectedItems())
+  {
+    if(item)
+    {
       if (auto c = qgraphicsitem_cast<GroupGraphicsObject*>(item))
       {
         _scene->removeGroup(c->group());      
@@ -422,10 +432,6 @@ deleteSelectedNodes()
       else if (auto c = qgraphicsitem_cast<NodeGraphicsObject*>(item))
       {
           _scene->removeNode(c->node());
-      }
-      else if (auto c = qgraphicsitem_cast<ConnectionGraphicsObject*>(item))
-      {
-          _scene->deleteConnection(c->connection());      
       }
     }
   } 

@@ -56,6 +56,11 @@ public:
   paste(QJsonObject const &json, QUuid ID);
 
   
+  void 
+  updateView();
+  
+  void
+  eraseInputAtIndex(int portIndex);
 
 public:
 
@@ -96,6 +101,7 @@ public:
 
   NodeDataModel*
   nodeDataModel() const;
+
 
 public slots: // data propagation
 

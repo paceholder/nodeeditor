@@ -45,7 +45,7 @@ public:
 
   ConnectionPtrSet
   connections(PortType portType, PortIndex portIndex) const;
-
+    
   void
   setConnection(PortType portType,
                 PortIndex portIndex,
@@ -55,6 +55,11 @@ public:
   eraseConnection(PortType portType,
                   PortIndex portIndex,
                   QUuid id);
+
+
+
+  void
+  eraseInputAtIndex(PortIndex portIndex);
 
   ReactToConnectionState
   reaction() const;
@@ -81,6 +86,9 @@ public:
   bool
   resizing() const;
 
+  void
+  updateEntries();
+
 private:
 
   std::vector<ConnectionPtrSet> _inConnections;
@@ -89,6 +97,9 @@ private:
   ReactToConnectionState _reaction;
   PortType     _reactingPortType;
   NodeDataType _reactingDataType;
+
+
+  std::unique_ptr<NodeDataModel> const &_model;
 
   bool _resizing;
 };

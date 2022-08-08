@@ -177,6 +177,15 @@ deleteConnection(Connection& connection)
   _connections.erase(connection.id());
 }
 
+void
+FlowScene::
+deleteConnection(Connection* connection)
+{
+  // connectionDeleted(connection);
+  connection->removeFromNodes();
+  _connections.erase(connection->id());
+}
+
 
 Node&
 FlowScene::
@@ -280,14 +289,16 @@ restoreNode(QJsonObject const& nodeJson)
   auto node = std::make_shared<Node>(std::move(dataModel));
   auto ngo  = std::make_unique<NodeGraphicsObject>(*this, *node);
   node->setGraphicsObject(std::move(ngo));
+  
+  auto nodePtr = node.get();
+  nodeCreated(*nodePtr);
+
   node->restore(nodeJson);
 
-  auto nodePtr = node.get();
   _nodes[node->id()] = std::move(node);
 
   resolveGroups(*nodePtr);
 
-  nodeCreated(*nodePtr);
   return *nodePtr;
 }
 

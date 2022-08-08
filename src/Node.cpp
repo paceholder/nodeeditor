@@ -11,6 +11,7 @@
 
 #include "ConnectionGraphicsObject.hpp"
 #include "ConnectionState.hpp"
+#include <QtWidgets/QGraphicsView>
 
 using QtNodes::Node;
 using QtNodes::NodeGeometry;
@@ -75,6 +76,29 @@ QJsonObject Node::copyWithNewID(QUuid newId) const
   return nodeJson;
 }
 
+
+void 
+Node::
+updateView()
+{
+  nodeGeometry().recalculateInOut();
+  nodeState().updateEntries();
+
+  nodeGraphicsObject().update();
+  // QGraphicsView *view = nodeGraphicsObject().scene()->views().first();
+  // view->viewport()->repaint();
+}
+
+
+void
+Node::
+eraseInputAtIndex(int portIndex)
+{
+	std::unordered_map<QUuid, Connection*> connections = nodeState().connections(PortType::In, portIndex);
+	for (auto& connection : connections) {
+		nodeGraphicsObject().flowScene().deleteConnection(connection.second);
+	}
+}
 
 
 void

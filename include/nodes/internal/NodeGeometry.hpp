@@ -73,6 +73,7 @@ public:
   setDraggingPosition(QPointF const& pos)
   { _draggingPos = pos; }
 
+  void recalculateInOut();
 public:
 
   QRectF

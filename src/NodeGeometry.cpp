@@ -39,6 +39,14 @@ NodeGeometry(std::unique_ptr<NodeDataModel> const &dataModel)
 }
 
 
+void
+NodeGeometry::
+recalculateInOut()
+{    
+  _nSources = _dataModel->nPorts(PortType::Out);
+  _nSinks = _dataModel->nPorts(PortType::In);
+}
+
 QRectF
 NodeGeometry::
 entryBoundingRect() const

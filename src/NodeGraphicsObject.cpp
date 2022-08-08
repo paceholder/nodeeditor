@@ -88,6 +88,14 @@ node()
 }
 
 
+FlowScene&
+NodeGraphicsObject::
+flowScene()
+{
+  return _scene;
+}
+
+
 Node const&
 NodeGraphicsObject::
 node() const

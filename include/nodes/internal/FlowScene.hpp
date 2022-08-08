@@ -61,6 +61,7 @@ public:
   std::shared_ptr<Connection>restoreConnection(QJsonObject const &connectionJson);
 
   void deleteConnection(Connection& connection);
+  void deleteConnection(Connection* connection);
 
   Node&createNode(std::unique_ptr<NodeDataModel> && dataModel);
 

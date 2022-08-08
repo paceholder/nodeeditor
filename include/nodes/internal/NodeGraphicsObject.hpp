@@ -35,6 +35,9 @@ public:
   Node const&
   node() const;
 
+  FlowScene&
+  flowScene();
+
   QRectF
   boundingRect() const override;
 

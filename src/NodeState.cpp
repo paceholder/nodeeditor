@@ -18,6 +18,7 @@ NodeState(std::unique_ptr<NodeDataModel> const &model)
   , _reaction(NOT_REACTING)
   , _reactingPortType(PortType::None)
   , _resizing(false)
+  , _model(model)
 {}
 
 
@@ -41,7 +42,7 @@ getEntries(PortType portType)
   else
     return _outConnections;
 }
-
+   
 
 NodeState::ConnectionPtrSet
 NodeState::
@@ -75,6 +76,13 @@ eraseConnection(PortType portType,
   getEntries(portType)[portIndex].erase(id);
 }
 
+
+void
+NodeState::
+eraseInputAtIndex(PortIndex portIndex)
+{
+  
+}
 
 NodeState::ReactToConnectionState
 NodeState::
@@ -135,4 +143,14 @@ NodeState::
 resizing() const
 {
   return _resizing;
+}
+
+
+
+void
+NodeState::
+updateEntries()
+{
+ _inConnections.resize(_model->nPorts(PortType::In));
+ _outConnections.resize(_model->nPorts(PortType::Out)); 
 }
