@@ -47,15 +47,6 @@ public Q_SLOTS:
                 PortIndex const portIndex);
 
 
-  //std::shared_ptr<Connection> restoreConnection(QJsonObject const & connectionJson);
-
-  //Node & restoreNode(QJsonObject const & nodeJson)
-
-
-  //void save() const;
-
-  //void load();
-
   QJsonDocument saveToJsonDocument() const;
 
   void loadFromJsonDocument(QJsonDocument const& json);

@@ -1,9 +1,16 @@
 #include "GraphicsView.hpp"
 
+#include "BasicGraphicsScene.hpp"
+#include "ConnectionGraphicsObject.hpp"
+#include "NodeGraphicsObject.hpp"
+#include "StyleCollection.hpp"
+#include "UndoCommands.hpp"
+
 #include <QtWidgets/QGraphicsScene>
 
 #include <QtGui/QPen>
 #include <QtGui/QBrush>
+
 #include <QtWidgets/QMenu>
 
 #include <QtCore/QRectF>
@@ -15,11 +22,6 @@
 
 #include <iostream>
 #include <cmath>
-
-#include "ConnectionGraphicsObject.hpp"
-#include "NodeGraphicsObject.hpp"
-#include "BasicGraphicsScene.hpp"
-#include "StyleCollection.hpp"
 
 using QtNodes::GraphicsView;
 using QtNodes::BasicGraphicsScene;
@@ -103,6 +105,15 @@ setScene(BasicGraphicsScene *scene)
           &GraphicsView::onDeleteSelectedObjects);
 
   addAction(_deleteSelectionAction);
+
+
+  auto undoAction = scene->undoStack().createUndoAction(this, tr("&Undo"));
+  undoAction->setShortcuts(QKeySequence::Undo);
+  addAction(undoAction);
+
+  auto redoAction = scene->undoStack().createRedoAction(this, tr("&Redo"));
+  redoAction->setShortcuts(QKeySequence::Redo);
+  addAction(redoAction);
 }
 
 
@@ -200,29 +211,7 @@ void
 GraphicsView::
 onDeleteSelectedObjects()
 {
-  // Delete the selected connections first, ensuring that they won't be
-  // automatically deleted when selected nodes are deleted (deleting a
-  // node deletes some connections as well)
-  for (QGraphicsItem * item : scene()->selectedItems())
-  {
-    if (auto c = qgraphicsitem_cast<ConnectionGraphicsObject*>(item))
-    {
-      nodeScene()->graphModel().deleteConnection(c->connectionId());
-    }
-  }
-
-  // Delete the nodes; this will delete many of the connections.
-  // Selected connections were already deleted prior to this loop,
-  // otherwise qgraphicsitem_cast<NodeGraphicsObject*>(item) could be a
-  // use-after-free when a selected connection is deleted by deleting
-  // the node.
-  for (QGraphicsItem * item : scene()->selectedItems())
-  {
-    if (auto n = qgraphicsitem_cast<NodeGraphicsObject*>(item))
-    {
-      nodeScene()->graphModel().deleteNode(n->nodeId());
-    }
-  }
+  nodeScene()->undoStack().push(new DeleteCommand(nodeScene()));
 }
 
 

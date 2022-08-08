@@ -7,6 +7,7 @@
 
 #include <QtCore/QObject>
 #include <QtCore/QVariant>
+#include <QtCore/QJsonObject>
 
 #include "Definitions.hpp"
 #include "ConnectionIdHash.hpp"
@@ -166,15 +167,33 @@ public:
    */
   virtual
   QJsonObject
-  saveNode(NodeId const) const = 0;
+  saveNode(NodeId const) const { return {}; }
 
   /**
-   * Reimplement the function if you want to store/restore the node's
-   * inner state during undo/redo node deletion operations.
+   * Reimplement the function if you want to support:
+   *
+   *   - graph save/restore operations,
+   *   - undo/redo operations after deleting the node.
+   *
+   * QJsonObject must contain following fields:
+   * 
+   *
+   * ```
+   * {
+   *   id : 5,
+   *   position : { x : 100, y : 200 },
+   *   internal-data {
+   *     "your model specific data here"
+   *   }
+   * }
+   * ```
+   *
+   * The function must do almost exacly the same thing as the normal addNode().
+   * The main difference is in a model-specific `inner-data` processing.
    */
   virtual
   void
-  loadNode(QJsonObject const & nodeJson) = 0;
+  loadNode(QJsonObject const &) {}
 
   virtual
   QJsonObject
