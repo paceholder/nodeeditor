@@ -93,6 +93,19 @@ public:
 
   void
   load(QJsonDocument const &json);
+
+  QJsonObject
+  saveNode(NodeId const) const override;
+
+  void
+  loadNode(QJsonObject const & nodeJson) override;
+
+  QJsonObject
+  saveConnection(ConnectionId const & connId) const override;
+
+  void
+  loadConnection(QJsonObject const & connJson) override;
+
 private:
 
   NodeId
@@ -105,22 +118,9 @@ private:
   NodeId
   newNodeId(NodeId const restoredNodeId)
   {
-    _nextNodeId = restoredNodeId;
-    return _nextNodeId++;
+    _nextNodeId = std::max(_nextNodeId, restoredNodeId);
+    return restoredNodeId;
   }
-
-
-  QJsonObject
-  saveNode(NodeId const) const;
-
-  void
-  loadNode(QJsonObject const & nodeJson);
-
-  QJsonObject
-  saveConnection(ConnectionId const & connId) const;
-
-  void
-  loadConnection(QJsonObject const & connJson);
 
 private Q_SLOTS:
   /**

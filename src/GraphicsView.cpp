@@ -83,16 +83,25 @@ setScene(BasicGraphicsScene *scene)
   delete _clearSelectionAction;
   _clearSelectionAction = new QAction(QStringLiteral("Clear Selection"), this);
   _clearSelectionAction->setShortcut(Qt::Key_Escape);
-  connect(_clearSelectionAction, &QAction::triggered,
-          scene, &QGraphicsScene::clearSelection);
+
+  connect(_clearSelectionAction,
+          &QAction::triggered,
+          scene,
+          &QGraphicsScene::clearSelection);
+
   addAction(_clearSelectionAction);
+
+
 
   delete _deleteSelectionAction;
   _deleteSelectionAction = new QAction(QStringLiteral("Delete Selection"), this);
   _deleteSelectionAction->setShortcutContext(Qt::ShortcutContext::WidgetShortcut);
   _deleteSelectionAction->setShortcut(QKeySequence(QKeySequence::Delete));
-  connect(_deleteSelectionAction, &QAction::triggered,
-          this, &GraphicsView::deleteSelectedObjects);
+  connect(_deleteSelectionAction,
+          &QAction::triggered,
+          this,
+          &GraphicsView::onDeleteSelectedObjects);
+
   addAction(_deleteSelectionAction);
 }
 
@@ -189,7 +198,7 @@ scaleDown()
 
 void
 GraphicsView::
-deleteSelectedObjects()
+onDeleteSelectedObjects()
 {
   // Delete the selected connections first, ensuring that they won't be
   // automatically deleted when selected nodes are deleted (deleting a
@@ -348,4 +357,3 @@ nodeScene()
 {
   return dynamic_cast<BasicGraphicsScene*>(scene());
 }
-

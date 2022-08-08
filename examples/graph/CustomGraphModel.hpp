@@ -2,6 +2,7 @@
 
 #include <QtCore/QPointF>
 #include <QtCore/QSize>
+#include <QtCore/QJsonObject>
 
 #include <QtNodes/AbstractGraphModel>
 #include <QtNodes/StyleCollection>
@@ -95,6 +96,18 @@ public:
   bool
   deleteNode(NodeId const nodeId) override;
 
+  QJsonObject
+  saveNode(NodeId const) const override;
+
+  void
+  loadNode(QJsonObject const & nodeJson) override;
+
+  QJsonObject
+  saveConnection(ConnectionId const & connId) const override;
+
+  void
+  loadConnection(QJsonObject const & connJson) override;
+
 private:
 
   std::unordered_set<NodeId> _nodeIds;
@@ -108,6 +121,6 @@ private:
   _nodeGeometryData;
 
 
-  unsigned int _lastNodeId;
+  unsigned int _nextNodeId;
 
 };

@@ -160,6 +160,30 @@ public:
   bool
   deleteNode(NodeId const nodeId) = 0;
 
+  /**
+   * Reimplement the function if you want to store/restore the node's
+   * inner state during undo/redo node deletion operations.
+   */
+  virtual
+  QJsonObject
+  saveNode(NodeId const) const = 0;
+
+  /**
+   * Reimplement the function if you want to store/restore the node's
+   * inner state during undo/redo node deletion operations.
+   */
+  virtual
+  void
+  loadNode(QJsonObject const & nodeJson) = 0;
+
+  virtual
+  QJsonObject
+  saveConnection(ConnectionId const & connId) const = 0;
+
+  virtual
+  void
+  loadConnection(QJsonObject const & connJson) = 0;
+
 Q_SIGNALS:
 
   void
