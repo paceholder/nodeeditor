@@ -50,10 +50,10 @@ public:
    * opposite to the given `portType`.
    */
   virtual
-  std::unordered_set<std::pair<NodeId, PortIndex>>
-  connectedNodes(NodeId    nodeId,
-                 PortType  portType,
-                 PortIndex index) const = 0;
+  std::unordered_set<ConnectionId>
+  connections(NodeId    nodeId,
+              PortType  portType,
+              PortIndex index) const = 0;
 
 
   /// Checks if two nodes with the given `connectionId` are connected.
@@ -64,12 +64,10 @@ public:
 
   /// Creates a new node instance in the derived class.
   /**
-   * The model is responsile for generating a unique `NodeId`.
+   * The model is responsible for generating a unique `NodeId`.
    * @param[in] nodeType is free to be used and interpreted by the
    * model on its own, it helps to distinguish between possible node
    * types and create a correct instance inside.
-   *
-   * Default implementation returns `InvalidNodeId`.
    */
   virtual
   NodeId

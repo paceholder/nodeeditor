@@ -46,7 +46,11 @@ allConnectionIds(NodeId const nodeId) const
 
     for (auto& target : c.second)
     {
-      ConnectionId conn = {nodeId, portIndex, target.first, target.second};
+      ConnectionId conn{nodeId,
+                        portIndex,
+                        target.first,
+                        target.second};
+
       if (portType == PortType::In)
       {
         invertConnection(conn);
@@ -59,20 +63,34 @@ allConnectionIds(NodeId const nodeId) const
 }
 
 
-std::unordered_set<std::pair<NodeId, PortIndex>>
+std::unordered_set<ConnectionId>
 DataFlowGraphModel::
-connectedNodes(NodeId    nodeId,
-               PortType  portType,
-               PortIndex portIndex) const
+connections(NodeId    nodeId,
+            PortType  portType,
+            PortIndex portIndex) const
 {
-  std::unordered_set<std::pair<NodeId, PortIndex>> result;
+  std::unordered_set<ConnectionId> result;
 
   auto const key = std::make_tuple(nodeId, portType, portIndex);
 
   auto it = _connectivity.find(key);
 
   if (it != _connectivity.end())
-    result = it->second;
+  {
+    for (auto& nodeAndPort : it->second)
+    {
+      ConnectionId conn{nodeId,
+                        portIndex,
+                        nodeAndPort.first,
+                        nodeAndPort.second};
+
+      if (portType == PortType::In)
+      {
+        invertConnection(conn);
+      }
+      result.insert(conn);
+    }
+  }
 
   return result;
 }
@@ -136,7 +154,7 @@ connectionPossible(ConnectionId const connectionId) const
     {
       NodeId const nodeId = getNodeId(portType, connectionId);
       PortIndex const portIndex = getPortIndex(portType, connectionId);
-      auto const connected = connectedNodes(nodeId, portType, portIndex);
+      auto const connected = connections(nodeId, portType, portIndex);
 
       auto policy = portData(nodeId,
                              portType,
@@ -589,10 +607,10 @@ void
 DataFlowGraphModel::
 loadConnection(QJsonObject const & connJson)
 {
-  ConnectionId connId{connJson["outNodeId"].toInt(),
-                      connJson["outPortIndex"].toInt(),
-                      connJson["intNodeId"].toInt(),
-                      connJson["inPortIndex"].toInt()};
+  ConnectionId connId{static_cast<NodeId>(connJson["outNodeId"].toInt()),
+                      static_cast<PortIndex>(connJson["outPortIndex"].toInt()),
+                      static_cast<NodeId>(connJson["intNodeId"].toInt()),
+                      static_cast<PortIndex>(connJson["inPortIndex"].toInt())};
 
   addConnection(connId);
 }
@@ -603,18 +621,17 @@ DataFlowGraphModel::
 onNodeDataUpdated(NodeId const    nodeId,
                   PortIndex const portIndex)
 {
-  std::unordered_set<std::pair<NodeId, PortIndex>> const& connected =
-    connectedNodes(nodeId, PortType::Out, portIndex);
+  std::unordered_set<ConnectionId> const& connected =
+    connections(nodeId, PortType::Out, portIndex);
 
   // We coudl also pull the data through the model::portData
-  auto const outPortData =
-    _models[nodeId]->outData(portIndex);
+  auto const outPortData = _models[nodeId]->outData(portIndex);
 
   for (auto const& cn : connected)
   {
-    _models[cn.first]->setInData(outPortData, cn.second);
+    _models[cn.inNodeId]->setInData(outPortData, cn.inPortIndex);
 
-    Q_EMIT portDataSet(cn.first, PortType::In, cn.second);
+    Q_EMIT portDataSet(cn.inNodeId, PortType::In, cn.inPortIndex);
   }
 }
 

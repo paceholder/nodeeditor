@@ -38,10 +38,10 @@ public:
   std::unordered_set<ConnectionId>
   allConnectionIds(NodeId const nodeId) const override;
 
-  std::unordered_set<std::pair<NodeId, PortIndex>>
-  connectedNodes(NodeId    nodeId,
-                 PortType  portType,
-                 PortIndex portIndex) const override;
+  std::unordered_set<ConnectionId>
+  connections(NodeId    nodeId,
+              PortType  portType,
+              PortIndex portIndex) const override;
 
   bool
   connectionExists(ConnectionId const connectionId) const override;
