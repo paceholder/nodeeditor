@@ -1,4 +1,4 @@
-### Purpose
+# Qt NodeEditor
 
 **NodeEditor** is conceived as a general-purpose Qt-based library aimed at
 graph-controlled data processing.  Nodes represent algorithms with certain inputs
@@ -16,19 +16,38 @@ data and propagates is further.
 Each change in the source node is immediately propagated through all the
 connections updating  the whole graph.
 
-### Platforms
+## Navigation
+
+- [Navigation](#navigation)
+- [Platforms](#platforms)
+- [Dependencies](#dependencies)
+- [Current state](#current-state)
+- [Building](#building)
+  - [Linux](#linux)
+  - [Qt Creator](#qt-creator)
+- [>>> Version 3 Roadmap <<<](#-version-3-roadmap-)
+- [Citing](#citing)
+- [Youtube video:](#youtube-video)
+- [Now with styles](#now-with-styles)
+- [Buy me a beer](#buy-me-a-beer)
+- [Showcase](#showcase)
+  - [CANdevStudio](#candevstudio)
+  - [Chigraph](#chigraph)
+  - [Spkgen particle engine editor](#spkgen-particle-engine-editor)
+
+## Platforms
 
 * OSX (Apple Clang - LLVM 3.6), Linux (x64, gcc-7.0, clang-7): [![Build Status](https://travis-ci.org/paceholder/nodeeditor.svg?branch=master)](https://travis-ci.org/paceholder/nodeeditor)
 * Windows (msvc2019/Qt5/Win32, msvc2019/Qt6/x64): [![Build status](https://ci.appveyor.com/api/projects/status/wxp47wv3uyyiujjw/branch/master?svg=true)](https://ci.appveyor.com/project/paceholder/nodeeditor/branch/master)
 
 
-### Dependencies
+## Dependencies
 
 * Qt >5.15
 * CMake 3.8
 * Catch2
 
-### Current state
+## Current state
 
 * Model-based nodes
 * Automatic data propagation
@@ -38,9 +57,9 @@ connections updating  the whole graph.
 * JSON-based interface styles
 * Saving scenes to JSON files
 
-### Building
+## Building
 
-#### Linux
+### Linux
 
 ~~~
 git clone git@github.com:paceholder/nodeeditor.git
@@ -51,7 +70,7 @@ cmake ..
 make -j && make install
 ~~~
 
-#### Qt Creator
+### Qt Creator
 
 1. Open `CMakeLists.txt` as project.
 2. If you don't have the `Catch2` library installed, go to `Build Settings`, disable the checkbox `BUILD_TESTING`.
@@ -59,7 +78,7 @@ make -j && make install
 4. `Build -> Build All`
 5. Click the button `Run`
 
-### >>> Version 3 Roadmap <<<
+## >>> Version 3 Roadmap <<<
 
 1. Headless mode. [done]
    You can create, populate, modify the derivative of AbstractGraphModel
@@ -81,7 +100,7 @@ make -j && make install
 
 Any suggestions are welcome.
 
-### Citing
+## Citing
 
     Dmitry Pinaev et al, Qt Node Editor, (2017), GitHub repository, https://github.com/paceholder/nodeeditor
 
@@ -98,23 +117,30 @@ BibTeX
     }
 
 
-### Youtube video:
+## Youtube video:
 
-[![Youtube demonstration](https://bitbucket.org/paceholder/nodeeditor/raw/master/pictures/vid1.png)](https://www.youtube.com/watch?v=pxMXjSvlOFw)
+[![Youtube demonstration](pictures/vid1.png)](https://www.youtube.com/watch?v=pxMXjSvlOFw)
 
-### Now with styles
-
-
-[![Styles](https://bitbucket.org/paceholder/nodeeditor/raw/master/pictures/style_example.png)](https://www.youtube.com/watch?v=i_pB-Y0hCYQ)
+## Now with styles
 
 
-### Buy me a beer
+[![Styles](pictures/style_example.png)](https://www.youtube.com/watch?v=i_pB-Y0hCYQ)
+
+
+## Buy me a beer
 
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://paypal.me/DmitryPinaev)
 
-### Showcase
+## Showcase
 
-#### [Chigraph](https://github.com/chigraph/chigraph)
+### [CANdevStudio](https://github.com/GENIVI/CANdevStudio)
+
+Cost-effective, cross-platform replacement for CAN simulation software.
+CANdevStudio enables to simulate CAN signals such as ignition status, doors status or reverse gear by every automotive developer. Thanks to modularity it is easy to implement new, custom features.
+
+[![Qt Design Studio](pictures/showcase_CANdevStudio.png)](https://youtu.be/1TfAyg6DG04?t=22)
+
+### [Chigraph](https://github.com/chigraph/chigraph)
 
 Chigraph is a programming language for beginners that is unique in that it is an
 intuitive flow graph:
@@ -123,7 +149,7 @@ intuitive flow graph:
 
 It features easy bindings to C/C++, package management, and a cool interface.
 
-#### [Spkgen particle engine editor](https://github.com/fredakilla/spkgen)
+### [Spkgen particle engine editor](https://github.com/fredakilla/spkgen)
 
 ![spkgen screenshot](pictures/spkgen.png)
 
