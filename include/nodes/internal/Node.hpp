@@ -85,6 +85,8 @@ public:
   NodeDataModel*
   nodeDataModel() const;
 
+  void updateNodeState();
+
 public Q_SLOTS: // data propagation
 
   /// Propagates incoming data to the underlying model.

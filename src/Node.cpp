@@ -176,6 +176,12 @@ nodeState()
   return _nodeState;
 }
 
+void Node::updateNodeState()
+{
+  _nodeState = NodeState(_nodeDataModel);
+  _nodeGeometry.recalculateSize();
+}
+
 
 NodeDataModel*
 Node::
