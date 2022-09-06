@@ -38,8 +38,13 @@ NodeGraphicsObject(BasicGraphicsScene& scene,
 
   setCacheMode(QGraphicsItem::DeviceCoordinateCache);
 
+  QJsonObject nodeStyleJson =
+    _graphModel.nodeData(_nodeId, NodeRole::Style).toJsonObject();
+
+  NodeStyle nodeStyle(nodeStyleJson);
+
   // TODO: Take style from model.
-  auto const& nodeStyle = StyleCollection::nodeStyle();
+  //auto const& nodeStyle = StyleCollection::nodeStyle();
 
   {
     auto effect = new QGraphicsDropShadowEffect;

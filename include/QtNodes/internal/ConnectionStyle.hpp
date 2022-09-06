@@ -24,9 +24,9 @@ public:
 
 public:
 
-  void loadJson(QJsonDocument const & json) override;
+  void loadJson(QJsonObject const & json) override;
 
-  QJsonDocument toJson() const override;
+  QJsonObject toJson() const override;
 
 public:
 
