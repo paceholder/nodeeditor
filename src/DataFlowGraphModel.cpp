@@ -240,7 +240,7 @@ nodeData(NodeId nodeId, NodeRole role) const
     case NodeRole::Style:
     {
       auto style = StyleCollection::nodeStyle();
-      result = style.toJson().toVariant();
+      result = style.toJson().toVariantMap();
     }
     break;
 

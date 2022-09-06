@@ -2,7 +2,6 @@
 
 #include "StyleCollection.hpp"
 
-#include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
 #include <QtCore/QJsonValueRef>
 #include <QtCore/QJsonArray>
@@ -106,11 +105,9 @@ setConnectionStyle(QString jsonText)
 
 void
 ConnectionStyle::
-loadJson(QJsonDocument const & json)
+loadJson(QJsonObject const & json)
 {
-  QJsonObject topLevelObject = json.object();
-
-  QJsonValueRef nodeStyleValues = topLevelObject["ConnectionStyle"];
+  QJsonValue nodeStyleValues = json["ConnectionStyle"];
 
   QJsonObject obj = nodeStyleValues.toObject();
 
@@ -128,7 +125,7 @@ loadJson(QJsonDocument const & json)
 }
 
 
-QJsonDocument
+QJsonObject
 ConnectionStyle::
 toJson() const
 {
@@ -149,7 +146,7 @@ toJson() const
   QJsonObject root;
   root["ConnectionStyle"] = obj;
 
-  return QJsonDocument(root);
+  return root;
 }
 
 

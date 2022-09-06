@@ -3,6 +3,7 @@
 #include <QtCore/QDebug>
 #include <QtCore/QFile>
 #include <QtCore/QJsonDocument>
+#include <QtCore/QJsonObject>
 #include <QtCore/QObject>
 #include <QtCore/QString>
 
@@ -20,16 +21,16 @@ public:
 public:
 
   virtual
-  void loadJson(QJsonDocument const & json) = 0;
+  void loadJson(QJsonObject const & json) = 0;
 
   virtual
-  QJsonDocument toJson() const = 0;
+  QJsonObject toJson() const = 0;
 
   /// Loads from utf-8 byte array.
   virtual
   void loadJsonFromByteArray(QByteArray const & byteArray)
   {
-    QJsonDocument json(QJsonDocument::fromJson(byteArray));
+    auto json = QJsonDocument::fromJson(byteArray).object();
 
     loadJson(json);
   }

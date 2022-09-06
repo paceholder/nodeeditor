@@ -1,7 +1,6 @@
 #include "GraphicsViewStyle.hpp"
 
 #include <QtCore/QFile>
-#include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
 #include <QtCore/QJsonValueRef>
 #include <QtCore/QJsonArray>
@@ -74,11 +73,9 @@ setStyle(QString jsonText)
 
 void
 GraphicsViewStyle::
-loadJson(QJsonDocument const & json)
+loadJson(QJsonObject const & json)
 {
-  QJsonObject topLevelObject = json.object();
-
-  QJsonValueRef nodeStyleValues = topLevelObject["GraphicsViewStyle"];
+  QJsonValue nodeStyleValues = json["GraphicsViewStyle"];
 
   QJsonObject obj = nodeStyleValues.toObject();
 
@@ -88,7 +85,7 @@ loadJson(QJsonDocument const & json)
 }
 
 
-QJsonDocument
+QJsonObject
 GraphicsViewStyle::
 toJson() const
 {
@@ -101,5 +98,5 @@ toJson() const
   QJsonObject root;
   root["GraphicsViewStyle"] = obj;
 
-  return QJsonDocument(root);
+  return root;
 }

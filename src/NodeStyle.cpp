@@ -3,7 +3,6 @@
 #include <iostream>
 
 #include <QtCore/QJsonArray>
-#include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
 #include <QtCore/QJsonValueRef>
 
@@ -35,7 +34,7 @@ NodeStyle(QString jsonText)
 
 
 NodeStyle::
-NodeStyle(QJsonDocument const & json)
+NodeStyle(QJsonObject const & json)
 {
   loadJson(json);
 }
@@ -94,11 +93,9 @@ setNodeStyle(QString jsonText)
 
 void
 NodeStyle::
-loadJson(QJsonDocument const & json)
+loadJson(QJsonObject const & json)
 {
-  QJsonObject topLevelObject = json.object();
-
-  QJsonValueRef nodeStyleValues = topLevelObject["NodeStyle"];
+  QJsonValue nodeStyleValues = json["NodeStyle"];
 
   QJsonObject obj = nodeStyleValues.toObject();
 
@@ -124,7 +121,7 @@ loadJson(QJsonDocument const & json)
 }
 
 
-QJsonDocument
+QJsonObject
 NodeStyle::
 toJson() const
 {
@@ -153,6 +150,6 @@ toJson() const
   QJsonObject root;
   root["NodeStyle"] = obj;
 
-  return QJsonDocument(root);
+  return root;
 }
 

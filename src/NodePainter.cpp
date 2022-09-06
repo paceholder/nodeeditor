@@ -53,7 +53,7 @@ drawNodeRect(QPainter * painter,
   QJsonDocument json =
     QJsonDocument::fromVariant(model.nodeData(nodeId, NodeRole::Style));
 
-  NodeStyle nodeStyle(json);
+  NodeStyle nodeStyle(json.object());
 
   auto color = ngo.isSelected() ?
                nodeStyle.SelectedBoundaryColor :
@@ -103,7 +103,7 @@ drawConnectionPoints(QPainter * painter,
 
   QJsonDocument json =
     QJsonDocument::fromVariant(model.nodeData(nodeId, NodeRole::Style));
-  NodeStyle nodeStyle(json);
+  NodeStyle nodeStyle(json.object());
 
   auto const &connectionStyle = StyleCollection::connectionStyle();
 
@@ -203,7 +203,7 @@ drawFilledConnectionPoints(QPainter * painter,
 
   QJsonDocument json =
     QJsonDocument::fromVariant(model.nodeData(nodeId, NodeRole::Style));
-  NodeStyle nodeStyle(json);
+  NodeStyle nodeStyle(json.object());
 
   auto diameter = nodeStyle.ConnectionPointDiameter;
 
@@ -278,7 +278,7 @@ drawNodeCaption(QPainter * painter,
 
   QJsonDocument json =
     QJsonDocument::fromVariant(model.nodeData(nodeId, NodeRole::Style));
-  NodeStyle nodeStyle(json);
+  NodeStyle nodeStyle(json.object());
 
   painter->setFont(f);
   painter->setPen(nodeStyle.FontColor);
@@ -300,7 +300,7 @@ drawEntryLabels(QPainter * painter,
 
   QJsonDocument json =
     QJsonDocument::fromVariant(model.nodeData(nodeId, NodeRole::Style));
-  NodeStyle nodeStyle(json);
+  NodeStyle nodeStyle(json.object());
 
   QSize size = geom.size();
 

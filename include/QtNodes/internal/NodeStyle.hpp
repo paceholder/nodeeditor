@@ -11,27 +11,23 @@ namespace QtNodes
 class NODE_EDITOR_PUBLIC NodeStyle : public Style
 {
 public:
-
   NodeStyle();
 
   NodeStyle(QString jsonText);
 
-  NodeStyle(QJsonDocument const & json);
+  NodeStyle(QJsonObject const & json);
 
   virtual ~NodeStyle() = default;
 
 public:
-
   static void setNodeStyle(QString jsonText);
 
 public:
+  void loadJson(QJsonObject const & json) override;
 
-  void loadJson(QJsonDocument const & json) override;
-
-  QJsonDocument toJson() const override;
+  QJsonObject toJson() const override;
 
 public:
-
   QColor NormalBoundaryColor;
   QColor SelectedBoundaryColor;
   QColor GradientColor0;
