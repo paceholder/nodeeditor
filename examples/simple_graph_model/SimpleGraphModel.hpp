@@ -20,8 +20,11 @@ using PortType        = QtNodes::PortType;
 using StyleCollection = QtNodes::StyleCollection;
 using QtNodes::InvalidNodeId;
 
-
-class CustomGraphModel : public QtNodes::AbstractGraphModel
+/**
+ * The class implements a bare minimum required to demonstrate a model-based
+ * graph.
+ */
+class SimpleGraphModel : public QtNodes::AbstractGraphModel
 {
   Q_OBJECT
 public:
@@ -32,9 +35,9 @@ public:
   };
 
 public:
-  CustomGraphModel();
+  SimpleGraphModel();
 
-  ~CustomGraphModel() override;
+  ~SimpleGraphModel() override;
 
   std::unordered_set<NodeId>
   allNodeIds() const override;
@@ -95,6 +98,11 @@ public:
   QJsonObject
   saveNode(NodeId const) const override;
 
+  /// @brief Creates a new node based on the informatoin in `nodeJson`.
+  /**
+   * @param nodeJson conains a `NodeId`, node's position, internal node
+   * information.
+   */
   void
   loadNode(QJsonObject const & nodeJson) override;
 
@@ -107,6 +115,13 @@ public:
 private:
   std::unordered_set<NodeId> _nodeIds;
 
+  /// [Important] This is a user defined data structure backing your model.
+  /// In your case it could be anything else representing a graph, for example, a
+  /// table. Or a collection of structs with pointers to each other. Or an
+  /// abstract syntax tree, you name it.
+  ///
+  /// This data structure contains the graph connectivity information in both
+  /// directions, i.e. from Node1 to Node2 and from Node2 to Node1.
   std::unordered_map<std::tuple<NodeId, PortType, PortIndex>,
                      std::unordered_set<std::pair<NodeId, PortIndex>>>
   _connectivity;
@@ -115,6 +130,6 @@ private:
                              NodeGeometryData>
   _nodeGeometryData;
 
-
+  /// A convenience variable needed for generating unique node ids.
   unsigned int _nextNodeId;
 };

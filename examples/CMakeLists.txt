@@ -1,4 +1,4 @@
-add_subdirectory(graph)
+add_subdirectory(simple_graph_model)
 
 add_subdirectory(calculator)
 
