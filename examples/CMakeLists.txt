@@ -4,7 +4,7 @@ add_subdirectory(calculator)
 
 add_subdirectory(text)
 
-add_subdirectory(images)
+add_subdirectory(resizable_images)
 
 add_subdirectory(styles)
 
