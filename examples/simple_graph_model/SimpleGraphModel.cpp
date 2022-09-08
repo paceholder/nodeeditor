@@ -1,21 +1,21 @@
-#include "CustomGraphModel.hpp"
+#include "SimpleGraphModel.hpp"
 
 
-CustomGraphModel::
-CustomGraphModel()
+SimpleGraphModel::
+SimpleGraphModel()
   : _nextNodeId{0}
 {}
 
 
-CustomGraphModel::
-~CustomGraphModel()
+SimpleGraphModel::
+~SimpleGraphModel()
 {
   //
 }
 
 
 std::unordered_set<NodeId>
-CustomGraphModel::
+SimpleGraphModel::
 allNodeIds() const
 {
   return _nodeIds;
@@ -23,7 +23,7 @@ allNodeIds() const
 
 
 std::unordered_set<ConnectionId>
-CustomGraphModel::
+SimpleGraphModel::
 allConnectionIds(NodeId const nodeId) const
 {
   std::unordered_set<ConnectionId> result;
@@ -56,7 +56,7 @@ allConnectionIds(NodeId const nodeId) const
 
 
 std::unordered_set<ConnectionId>
-CustomGraphModel::
+SimpleGraphModel::
 connections(NodeId    nodeId,
             PortType  portType,
             PortIndex portIndex) const
@@ -89,7 +89,7 @@ connections(NodeId    nodeId,
 
 
 bool
-CustomGraphModel::
+SimpleGraphModel::
 connectionExists(ConnectionId const connectionId) const
 {
   auto key =
@@ -102,7 +102,7 @@ connectionExists(ConnectionId const connectionId) const
 
 
 NodeId
-CustomGraphModel::
+SimpleGraphModel::
 addNode(QString const nodeType)
 {
   NodeId newId = _nextNodeId++;
@@ -116,7 +116,7 @@ addNode(QString const nodeType)
 
 
 bool
-CustomGraphModel::
+SimpleGraphModel::
 connectionPossible(ConnectionId const connectionId) const
 {
   auto keyOut = std::make_tuple(getNodeId(PortType::Out, connectionId),
@@ -135,7 +135,7 @@ connectionPossible(ConnectionId const connectionId) const
 
 
 void
-CustomGraphModel::
+SimpleGraphModel::
 addConnection(ConnectionId const connectionId)
 {
   auto connect =
@@ -159,7 +159,7 @@ addConnection(ConnectionId const connectionId)
 
 
 bool
-CustomGraphModel::
+SimpleGraphModel::
 nodeExists(NodeId const nodeId) const
 {
   return (_nodeIds.find(nodeId) != _nodeIds.end());
@@ -167,7 +167,7 @@ nodeExists(NodeId const nodeId) const
 
 
 QVariant
-CustomGraphModel::
+SimpleGraphModel::
 nodeData(NodeId nodeId, NodeRole role) const
 {
   Q_UNUSED(nodeId);
@@ -224,7 +224,7 @@ nodeData(NodeId nodeId, NodeRole role) const
 
 
 bool
-CustomGraphModel::
+SimpleGraphModel::
 setNodeData(NodeId   nodeId,
             NodeRole role,
             QVariant value)
@@ -280,7 +280,7 @@ setNodeData(NodeId   nodeId,
 
 
 QVariant
-CustomGraphModel::
+SimpleGraphModel::
 portData(NodeId    nodeId,
          PortType  portType,
          PortIndex portIndex,
@@ -318,7 +318,7 @@ portData(NodeId    nodeId,
 
 
 bool
-CustomGraphModel::
+SimpleGraphModel::
 setPortData(NodeId    nodeId,
             PortType  portType,
             PortIndex portIndex,
@@ -334,7 +334,7 @@ setPortData(NodeId    nodeId,
 
 
 bool
-CustomGraphModel::
+SimpleGraphModel::
 deleteConnection(ConnectionId const connectionId)
 {
   bool disconnected = false;
@@ -376,7 +376,7 @@ deleteConnection(ConnectionId const connectionId)
 
 
 bool
-CustomGraphModel::
+SimpleGraphModel::
 deleteNode(NodeId const nodeId)
 {
   // Delete connections to this node first.
@@ -396,7 +396,7 @@ deleteNode(NodeId const nodeId)
 
 
 QJsonObject
-CustomGraphModel::
+SimpleGraphModel::
 saveNode(NodeId const nodeId) const
 {
   QJsonObject nodeJson;
@@ -417,7 +417,7 @@ saveNode(NodeId const nodeId) const
 
 
 void
-CustomGraphModel::
+SimpleGraphModel::
 loadNode(QJsonObject const & nodeJson)
 {
   NodeId restoredNodeId = static_cast<NodeId>(nodeJson["id"].toInt());
@@ -443,7 +443,7 @@ loadNode(QJsonObject const & nodeJson)
 
 
 QJsonObject
-CustomGraphModel::
+SimpleGraphModel::
 saveConnection(ConnectionId const & connId) const
 {
   QJsonObject connJson;
@@ -458,7 +458,7 @@ saveConnection(ConnectionId const & connId) const
 
 
 void
-CustomGraphModel::
+SimpleGraphModel::
 loadConnection(QJsonObject const & connJson)
 {
   ConnectionId connId{static_cast<NodeId>(connJson["outNodeId"].toInt()),
