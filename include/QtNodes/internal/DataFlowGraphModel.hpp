@@ -31,7 +31,6 @@ public:
   dataModelRegistry() { return _registry; }
 
 public:
-
   std::unordered_set<NodeId>
   allNodeIds() const override;
 
@@ -77,10 +76,11 @@ public:
            PortRole  role) const override;
 
   bool
-  setPortData(NodeId    nodeId,
-              PortType  portType,
-              PortIndex portIndex,
-              PortRole  role) const override;
+  setPortData(NodeId          nodeId,
+              PortType        portType,
+              PortIndex       portIndex,
+              QVariant const& value,
+              PortRole        role = PortRole::Data) override;
 
   bool
   deleteConnection(ConnectionId const connectionId) override;
@@ -106,6 +106,23 @@ public:
   void
   loadConnection(QJsonObject const & connJson) override;
 
+  /**
+   * Fetches the NodeDelegateModel for the given `nodeId` and tries to cast the
+   * stored pointer to the given type
+   */
+  template<typename NodeDelegateModelType>
+  NodeDelegateModelType*
+  delegateModel(NodeId const nodeId)
+  {
+    auto it = _models.find(nodeId);
+    if (it == _models.end())
+      return nullptr;
+
+    auto model = dynamic_cast<NodeDelegateModelType*>(it->second.get());
+
+    return model;
+  }
+
 private:
   NodeId
   newNodeId() { return _nextNodeId++; }
@@ -124,12 +141,18 @@ private:
 
 private Q_SLOTS:
   /**
-   * Fuction is called by NodeDelegateModel when a node has new data to
-   * propagate.
+   * Fuction is called in three cases:
+   *
+   * - By underlying NodeDelegateModel when a node has new data to propagate.
+   *   @see DataFlowGraphModel::addNode
+   * - When a new connection is created.
+   *   @see DataFlowGraphModel::addConnection
+   * - When a node restored from JSON an needs to send data downstream.
+   *   @see DataFlowGraphModel::loadNode
    */
   void
-  onNodeDataUpdated(NodeId const    nodeId,
-                    PortIndex const portIndex);
+  onOutPortDataUpdated(NodeId const    nodeId,
+                       PortIndex const portIndex);
 
 
   /// Function is called after detaching a connection.
