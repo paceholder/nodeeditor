@@ -10,6 +10,7 @@
 NumberSourceDataModel::
 NumberSourceDataModel()
   : _lineEdit{nullptr}
+  , _number(std::make_shared<DecimalData>(0.0))
 {
 }
 
@@ -20,8 +21,7 @@ save() const
 {
   QJsonObject modelJson = NodeDelegateModel::save();
 
-  if (_number)
-    modelJson["number"] = QString::number(_number->number());
+  modelJson["number"] = QString::number(_number->number());
 
   return modelJson;
 }
@@ -42,7 +42,9 @@ load(QJsonObject const& p)
     if (ok)
     {
       _number = std::make_shared<DecimalData>(d);
-      _lineEdit->setText(strNum);
+
+      if (_lineEdit)
+        _lineEdit->setText(strNum);
     }
   }
 }
@@ -73,13 +75,11 @@ nPorts(PortType portType) const
 
 void
 NumberSourceDataModel::
-onTextEdited(QString const& string)
+onTextEdited(QString const& str)
 {
-  Q_UNUSED(string);
-
   bool ok = false;
 
-  double number = _lineEdit->text().toDouble(&ok);
+  double number = str.toDouble(&ok);
 
   if (ok)
   {
@@ -124,8 +124,21 @@ embeddedWidget()
     connect(_lineEdit, &QLineEdit::textChanged,
             this, &NumberSourceDataModel::onTextEdited);
 
-    _lineEdit->setText("0.0");
+    _lineEdit->setText(QString::number(_number->number()));
   }
 
   return _lineEdit;
+}
+
+
+void 
+NumberSourceDataModel::
+setNumber(double n)
+{
+  _number = std::make_shared<DecimalData>(n);
+
+  Q_EMIT dataUpdated(0);
+
+  if(_lineEdit)
+    _lineEdit->setText(QString::number(_number->number()));
 }

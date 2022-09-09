@@ -87,7 +87,8 @@ public:
   setPortData(NodeId    nodeId,
               PortType  portType,
               PortIndex portIndex,
-              PortRole  role) const override;
+              QVariant const& value,
+              PortRole        role = PortRole::Data) override;
 
   bool
   deleteConnection(ConnectionId const connectionId) override;

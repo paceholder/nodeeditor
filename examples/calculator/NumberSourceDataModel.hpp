@@ -68,6 +68,9 @@ public:
   QWidget *
   embeddedWidget() override;
 
+public:
+  void setNumber(double number);
+
 private Q_SLOTS:
 
   void
