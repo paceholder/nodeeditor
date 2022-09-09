@@ -148,10 +148,12 @@ public:
 
   virtual
   bool
-  setPortData(NodeId    nodeId,
-              PortType  portType,
-              PortIndex index,
-              PortRole  role) const = 0;
+  setPortData(NodeId          nodeId,
+              PortType        portType,
+              PortIndex       index,
+              QVariant const& value,
+              PortRole        role = PortRole::Data
+              ) = 0;
 
   virtual
   bool
@@ -221,9 +223,9 @@ Q_SIGNALS:
   nodePositionUpdated(NodeId const nodeId);
 
   void
-  portDataSet(NodeId const    nodeId,
-              PortType const  portType,
-              PortIndex const portIndex);
+  inPortDataWasSet(NodeId const    nodeId,
+                   PortType const  portType,
+                   PortIndex const portIndex);
 
   /**
    * Signal emitted when model is about to remove port-related data.

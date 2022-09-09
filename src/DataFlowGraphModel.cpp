@@ -9,7 +9,7 @@ namespace QtNodes
 
 DataFlowGraphModel::
 DataFlowGraphModel(std::shared_ptr<NodeDelegateModelRegistry> registry)
-  : _registry(registry)
+  : _registry(std::move(registry))
   , _nextNodeId{0}
 {}
 
@@ -121,7 +121,7 @@ addNode(QString const nodeType)
 
     connect(model.get(), &NodeDelegateModel::dataUpdated,
             [newId, this](PortIndex const portIndex)
-            { onNodeDataUpdated(newId, portIndex); });
+            { onOutPortDataUpdated(newId, portIndex); });
 
     _models[newId] = std::move(model);
 
@@ -190,8 +190,8 @@ addConnection(ConnectionId const connectionId)
 
   Q_EMIT connectionCreated(connectionId);
 
-  onNodeDataUpdated(getNodeId(PortType::Out, connectionId),
-                    getPortIndex(PortType::Out, connectionId));
+  onOutPortDataUpdated(getNodeId(PortType::Out, connectionId),
+                       getPortIndex(PortType::Out, connectionId));
 }
 
 
@@ -394,15 +394,35 @@ portData(NodeId    nodeId,
 
 bool
 DataFlowGraphModel::
-setPortData(NodeId    nodeId,
-            PortType  portType,
-            PortIndex portIndex,
-            PortRole  role) const
+setPortData(NodeId          nodeId,
+            PortType        portType,
+            PortIndex       portIndex,
+            QVariant const& value,
+            PortRole        role)
 {
   Q_UNUSED(nodeId);
-  Q_UNUSED(portType);
-  Q_UNUSED(portIndex);
-  Q_UNUSED(role);
+
+
+  QVariant result;
+
+  auto it = _models.find(nodeId);
+  if (it == _models.end())
+    return false;
+
+  auto& model = it->second;
+
+  switch (role)
+  {
+    case PortRole::Data:
+      if (portType == PortType::In)
+        model->setInData(value.value<std::shared_ptr<NodeData>>(),
+                         portIndex);
+      break;
+
+    default:
+      break;
+  }
+
 
   return false;
 }
@@ -558,13 +578,11 @@ loadNode(QJsonObject const & nodeJson)
   {
     connect(model.get(), &NodeDelegateModel::dataUpdated,
             [restoredNodeId, this](PortIndex const portIndex)
-            { onNodeDataUpdated(restoredNodeId, portIndex); });
+            { onOutPortDataUpdated(restoredNodeId, portIndex); });
 
     _models[restoredNodeId] = std::move(model);
 
     Q_EMIT nodeCreated(restoredNodeId);
-
-    //
 
     QJsonObject posJson = nodeJson["position"].toObject();
     QPointF const pos(posJson["x"].toDouble(),
@@ -573,7 +591,6 @@ loadNode(QJsonObject const & nodeJson)
     setNodeData(restoredNodeId,
                 NodeRole::Position,
                 pos);
-
 
     _models[restoredNodeId]->load(internalDataJson);
   }
@@ -633,20 +650,27 @@ loadConnection(QJsonObject const & connJson)
 
 void
 DataFlowGraphModel::
-onNodeDataUpdated(NodeId const    nodeId,
-                  PortIndex const portIndex)
+onOutPortDataUpdated(NodeId const    nodeId,
+                     PortIndex const portIndex)
 {
   std::unordered_set<ConnectionId> const& connected =
     connections(nodeId, PortType::Out, portIndex);
 
-  // We coudl also pull the data through the model::portData
-  auto const outPortData = _models[nodeId]->outData(portIndex);
+  QVariant const portDataToPropagate =
+    portData(nodeId, PortType::Out, portIndex, PortRole::Data);
 
   for (auto const& cn : connected)
   {
-    _models[cn.inNodeId]->setInData(outPortData, cn.inPortIndex);
+    // When restoring a model from file, not all models are loaded simultaneously.
+    if (_models.find(cn.inNodeId) == _models.end())
+      continue;
 
-    Q_EMIT portDataSet(cn.inNodeId, PortType::In, cn.inPortIndex);
+    setPortData(cn.inNodeId, PortType::In,
+                cn.inPortIndex, portDataToPropagate,
+                PortRole::Data);
+
+    // Maybe this call should be on the receiving side.
+    Q_EMIT inPortDataWasSet(cn.inNodeId, PortType::In, cn.inPortIndex);
   }
 }
 
@@ -659,9 +683,13 @@ propagateEmptyDataTo(NodeId const    nodeId,
 {
   auto const emptyData = std::shared_ptr<NodeData>();
 
-  _models[nodeId]->setInData(emptyData, portIndex);
+  // When restoring a model from file, not all models are loaded simultaneously.
+  if (_models.find(nodeId) != _models.end())
+  {
+    _models[nodeId]->setInData(emptyData, portIndex);
 
-  Q_EMIT portDataSet(nodeId, PortType::In, portIndex);
+    Q_EMIT inPortDataWasSet(nodeId, PortType::In, portIndex);
+  }
 }
 
 
