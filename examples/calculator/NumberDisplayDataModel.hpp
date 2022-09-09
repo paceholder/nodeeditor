@@ -6,6 +6,9 @@
 
 #include <iostream>
 
+#include "DecimalData.hpp"
+
+
 using QtNodes::PortType;
 using QtNodes::PortIndex;
 using QtNodes::NodeData;
@@ -57,6 +60,12 @@ public:
 
   QWidget *
   embeddedWidget() override;
+
+  double number() const;
+
+
+private:
+  std::shared_ptr<DecimalData> _numberData;
 
   QLabel* _label;
 };

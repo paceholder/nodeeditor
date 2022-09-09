@@ -322,11 +322,13 @@ SimpleGraphModel::
 setPortData(NodeId    nodeId,
             PortType  portType,
             PortIndex portIndex,
-            PortRole  role) const
+            QVariant const& value,
+            PortRole  role)
 {
   Q_UNUSED(nodeId);
   Q_UNUSED(portType);
   Q_UNUSED(portIndex);
+  Q_UNUSED(value);
   Q_UNUSED(role);
 
   return false;
