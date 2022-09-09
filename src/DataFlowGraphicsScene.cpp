@@ -37,7 +37,7 @@ DataFlowGraphicsScene(DataFlowGraphModel& graphModel,
   : BasicGraphicsScene(graphModel, parent)
   , _graphModel(graphModel)
 {
-  connect(&_graphModel, &AbstractGraphModel::portDataSet,
+  connect(&_graphModel, &AbstractGraphModel::inPortDataWasSet,
           this, &DataFlowGraphicsScene::onPortDataSet);
 }
 
