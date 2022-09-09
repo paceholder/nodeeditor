@@ -1,7 +1,5 @@
 #include "NumberDisplayDataModel.hpp"
 
-#include "DecimalData.hpp"
-
 #include <QtWidgets/QLabel>
 
 NumberDisplayDataModel::
@@ -55,11 +53,14 @@ void
 NumberDisplayDataModel::
 setInData(std::shared_ptr<NodeData> data, PortIndex portIndex)
 {
-  auto numberData = std::dynamic_pointer_cast<DecimalData>(data);
+  _numberData = std::dynamic_pointer_cast<DecimalData>(data);
 
-  if (numberData)
+  if (!_label)
+    return;
+
+  if (_numberData)
   {
-    _label->setText(numberData->numberAsText());
+    _label->setText(_numberData->numberAsText());
   }
   else
   {
@@ -81,4 +82,15 @@ embeddedWidget()
   }
 
   return _label; 
+}
+
+
+double 
+NumberDisplayDataModel::
+number() const
+{
+  if (_numberData)
+    return _numberData->number();
+
+  return 0.0;
 }

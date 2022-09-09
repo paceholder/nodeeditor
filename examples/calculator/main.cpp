@@ -83,8 +83,9 @@ main(int argc, char* argv[])
   QWidget mainWidget;
 
   auto menuBar = new QMenuBar();
-  auto saveAction = menuBar->addAction("Save..");
-  auto loadAction = menuBar->addAction("Load..");
+  QMenu* menu = menuBar->addMenu("File");
+  auto saveAction = menu->addAction("Save Scene");
+  auto loadAction = menu->addAction("Load Scene");
 
   QVBoxLayout* l = new QVBoxLayout(&mainWidget);
 
