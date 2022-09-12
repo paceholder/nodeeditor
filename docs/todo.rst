@@ -1,12 +1,15 @@
-TODO
-====
+To Be Implemented
+=================
 
 
-- Save/restore to Json. Maybe inherit the GraphModel from Serializable.
-- Check how styles work and what needs to be done. See old
-  pull-requests.
-- Dynamic ports.
-- Python bindings.
-- QML front-end.
-- TESTS!
-- Website with documentation.
+- [✅ done] Save/restore to Json. Maybe inherit the GraphModel from Serializable
+- [➡️  work in progress] Vertical layout
+- [➡️  work in progress] Dynamic ports
+- [➡️  work in progress] Unit-Tests
+- [➡️  work in progress] Website with documentation
+- [⏸ not started] ``NodeGeometryDelegate``, ``NodePaintDelegate``
+- ``ConnectionPaintDelegate``
+- [⏸ not started] Check how styles work and what needs to be done. See old pull-requests
+- [☝ help needed] Python bindings. Maybe a wrapper using Shiboken
+  - Python examples
+- [☝ help needed] QML front-end

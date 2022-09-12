@@ -60,13 +60,11 @@ public:
   void
   moveConnections() const;
 
-
   /// Repaints the node once with reacting ports.
   void
   reactToConnection(ConnectionGraphicsObject const * cgo);
 
 protected:
-
   void
   paint(QPainter* painter,
         QStyleOptionGraphicsItem const* option,
@@ -100,12 +98,10 @@ protected:
   contextMenuEvent(QGraphicsSceneContextMenuEvent* event) override;
 
 private:
-
   void
   embedQWidget();
 
 private:
-
   NodeId _nodeId;
 
   AbstractGraphModel &_graphModel;
