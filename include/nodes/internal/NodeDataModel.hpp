@@ -15,7 +15,7 @@
 namespace QtNodes
 {
 
-    class NodePainterDelegate;
+class NodePainterDelegate;
 
 enum class NodeValidationState
 {
