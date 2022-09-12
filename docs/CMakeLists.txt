@@ -11,7 +11,8 @@ if(DOXYGEN_FOUND)
   set(DOXYGEN_INDEX_FILE ${CMAKE_CURRENT_BINARY_DIR}/html/index.html)
 
   set(DOXYGEN_INPUT_DIR ${PROJECT_SOURCE_DIR}/src
-                        ${PROJECT_SOURCE_DIR}/include)
+                        ${PROJECT_SOURCE_DIR}/include
+                        ${PROJECT_SOURCE_DIR}/examples/calculator)
   # Making string joined with " "
   list(JOIN DOXYGEN_INPUT_DIR " " DOXYGEN_INPUT_DIR_JOINED)
 

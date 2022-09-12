@@ -126,6 +126,7 @@ disconnect(PortType portToDisconnect) const
   ConnectionId incompleteConnectionId =
     makeIncompleteConnectionId(connectionId, portToDisconnect);
 
+  // Grabs the mouse
   auto const & draftConnection =
     _scene.makeDraftConnection(incompleteConnectionId);
 

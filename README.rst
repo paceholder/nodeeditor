@@ -10,13 +10,13 @@ simple graph visualization and editing or extended further for using the
 `Dataflow paradigm <https://en.wikipedia.org/wiki/Dataflow_programming>`_ .
 
 The library is written using the Model-View approach. The whole graph structure
-is defined by the user-provided ``GraphModel`` class. It is possible to create or
-add Nodes and Connections. The underlying data structures could be of any
-arbitrary type or representation.
+is defined by the user-provided class deriving from ``AbstractGraphModel`` class.
+It is possible to create or add Nodes and Connections. The underlying data
+structures could be of any arbitrary type or representation.
 
-The ``GraphModel`` could or could not be attached to specialized
-``QGraphicsScene`` and ``QGraphicsView`` objects. I.e. the so-called "headless"
-`modus operandi` is possible.
+An instance of ``AbstractGraphModel`` could or could not be attached to
+specialized ``QGraphicsScene`` and ``QGraphicsView`` objects. I.e. the so-called
+"headless" `modus operandi` is possible.
 
 
 .. contents:: Navigation
@@ -36,8 +36,11 @@ fetches available data and propagates is further. Each change in the source node
 is immediately propagated through all the connections updating the whole graph.
 
 
-Supported Platforms
-===================
+Supported Environments
+======================
+
+Platforms
+---------
 
 * Linux (x64, gcc-7.0, clang-7) |ImageLink|_
 * OSX (Apple Clang - LLVM 3.6) |ImageLink|_
@@ -52,7 +55,7 @@ Supported Platforms
 .. _AppveyorImage: https://ci.appveyor.com/project/paceholder/nodeeditor/branch/master)
 
 Dependencies
-============
+------------
 
 * Qt >5.2
 * CMake 3.2
@@ -75,7 +78,7 @@ Building
 ========
 
 Linux
-^^^^^
+-----
 
 ::
 
@@ -88,7 +91,7 @@ Linux
 
 
 Qt Creator
-^^^^^^^^^^
+----------
 
 1. Open `CMakeLists.txt` as project.
 2. If you don't have the `Catch2` library installed, go to `Build Settings`, disable the checkbox `BUILD_TESTING`.
@@ -97,8 +100,8 @@ Qt Creator
 5. Click the button `Run`
 
 
->>> Version 3 Roadmap <<<
-=========================
+Version 3 Roadmap
+=================
 
 #. Headless mode. [done]
    You can create, populate, modify the derivative of AbstractGraphModel
@@ -124,12 +127,37 @@ Qt Creator
 Any suggestions are welcome!
 
 
+Contributing
+============
+
+#. Be polite, respectful and collaborative.
+#. For submitting a bug:
+
+    #. Describe your environment (Qt version, compiler, OS etc)
+    #. Describe steps to reproduce the issue
+
+#. For submitting a pull request:
+
+   #. Create a proposal task first. We can come up with a better design together.
+   #. Create a pull-request. If applicable create a simple example to your
+         iescribe your problem in details, provide use cases,
+
+#. For submitting a development request:
+
+   #. Describe your issue in details
+   #. Provide some use cases.
+
+#. I maintain this probject in my free time, when I am not busy with my work or
+   my family. **If I do not react or do not answer for too long, please ping
+   me**.
+
+
 Citing
 ======
 
 ::
 
-    Dmitry Pinaev et al, Qt5 Node Editor, (2017), GitHub repository, https://github.com/paceholder/nodeeditor
+    Dmitry Pinaev et al, Qt Node Editor, (2017), GitHub repository, https://github.com/paceholder/nodeeditor
 
 BibTeX::
 
@@ -160,7 +188,7 @@ Showcase
 ========
 
 Youtube videos
-^^^^^^^^^^^^^^
+--------------
 
 .. image:: https://img.youtube.com/vi/pxMXjSvlOFw/0.jpg
    :target: https://www.youtube.com/watch?v=pxMXjSvlOFw
@@ -171,7 +199,7 @@ Youtube videos
    :target: https://www.youtube.com/watch?v=i_pB-Y0hCYQ
 
 CANdevStudio
-^^^^^^^^^^^^
+------------
 
 `CANdevStudio <https://github.com/GENIVI/CANdevStudio>`_ is a cost-effective,
 cross-platform replacement for CAN simulation software. CANdevStudio enables to
@@ -180,26 +208,26 @@ every automotive developer. Thanks to modularity it is easy to implement new,
 custom features.
 
 
-.. image:: pictures/showcase_CANdevStudio.png
+.. image:: docs/_static/showcase_CANdevStudio.png
 
 
 Chigraph
-^^^^^^^^
+--------
 
 `Chigraph <https://github.com/chigraph/chigraph>`_ is a visual programming
 language for beginners that is unique in that it is an intuitive flow graph:
 
-.. image:: pictures/chigraph.png
+.. image:: docs/_static/chigraph.png
 
 
 It features easy bindings to C/C++, package management, and a cool interface.
 
 
 Spkgen particle editor
-^^^^^^^^^^^^^^^^^^^^^^
+----------------------
 
 `Spkgen <https://github.com/fredakilla/spkgen>`_ is an editor for the SPARK
 particles engine that uses a node-based interface to create particles effects for
 games
 
-.. image:: pictures/spkgen.png
+.. image:: docs/_static/spkgen.png
