@@ -25,6 +25,7 @@ connections updating  the whole graph.
 - [Building](#building)
   - [Linux](#linux)
   - [Qt Creator](#qt-creator)
+  - [With Cmake using `vcpkg`](#with-cmake-using-vcpkg)
 - [>>> Version 3 Roadmap <<<](#-version-3-roadmap-)
 - [Citing](#citing)
 - [Youtube video:](#youtube-video)
@@ -78,6 +79,13 @@ make -j && make install
 4. `Build -> Build All`
 5. Click the button `Run`
 
+### With Cmake using [`vcpkg`](https://github.com/microsoft/vcpkg)
+
+1. Install `vcpkg`
+2. Add the following flag in configuration step of `CMake`
+   ```bash
+   -DCMAKE_TOOLCHAIN_FILE=<vcpkg_dir>/scripts/buildsystems/scripts/buildsystems/vcpkg.cmake
+   ```
 ## >>> Version 3 Roadmap <<<
 
 1. Headless mode. [done]
