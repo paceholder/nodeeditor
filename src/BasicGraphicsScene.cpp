@@ -1,10 +1,10 @@
 #include "BasicGraphicsScene.hpp"
 
-#include <queue>
-#include <iostream>
-#include <stdexcept>
-#include <unordered_set>
-#include <utility>
+#include "ConnectionGraphicsObject.hpp"
+#include "ConnectionIdUtils.hpp"
+#include "GraphicsView.hpp"
+#include "NodeGraphicsObject.hpp"
+#include "NodeGeometry.hpp"
 
 #include <QtGui/QUndoStack>
 
@@ -20,10 +20,11 @@
 #include <QtCore/QJsonObject>
 #include <QtCore/QtGlobal>
 
-#include "ConnectionGraphicsObject.hpp"
-#include "ConnectionIdUtils.hpp"
-#include "GraphicsView.hpp"
-#include "NodeGraphicsObject.hpp"
+#include <queue>
+#include <iostream>
+#include <stdexcept>
+#include <unordered_set>
+#include <utility>
 
 
 namespace QtNodes
@@ -54,17 +55,8 @@ BasicGraphicsScene(AbstractGraphModel &graphModel,
   connect(&_graphModel, &AbstractGraphModel::nodePositionUpdated,
           this, &BasicGraphicsScene::onNodePositionUpdated);
 
-  connect(&_graphModel, &AbstractGraphModel::portsAboutToBeDeleted,
-          this, &BasicGraphicsScene::onPortsAboutToBeDeleted);
-
-  connect(&_graphModel, &AbstractGraphModel::portsDeleted,
-          this, &BasicGraphicsScene::onPortsDeleted);
-
-  connect(&_graphModel, &AbstractGraphModel::portsAboutToBeInserted,
-          this, &BasicGraphicsScene::onPortsAboutToBeInserted);
-
-  connect(&_graphModel, &AbstractGraphModel::portsInserted,
-          this, &BasicGraphicsScene::onPortsInserted);
+  connect(&_graphModel, &AbstractGraphModel::nodeUpdated,
+          this, &BasicGraphicsScene::onNodeUpdated);
 
   traverseGraphAndPopulateGraphicsObjects();
 }
@@ -232,8 +224,7 @@ BasicGraphicsScene::
 updateAttachedNodes(ConnectionId const connectionId,
                     PortType const portType)
 {
-  auto node =
-    nodeGraphicsObject(getNodeId(portType, connectionId));
+  auto node = nodeGraphicsObject(getNodeId(portType, connectionId));
 
   if (node)
   {
@@ -314,76 +305,21 @@ onNodePositionUpdated(NodeId const nodeId)
 
 void
 BasicGraphicsScene::
-onPortsAboutToBeDeleted(NodeId const nodeId,
-                        PortType const portType,
-                        std::unordered_set<PortIndex> const &portIndexSet)
+onNodeUpdated(NodeId const nodeId)
 {
-  Q_UNUSED(nodeId);
-  Q_UNUSED(portType);
-  Q_UNUSED(portIndexSet);
-  //NodeGraphicsObject * node = nodeGraphicsObject(nodeId);
-
-  //if (node)
-  //{
-  //for (auto portIndex : portIndexSet)
-  //{
-  //auto const connectedNodes =
-  //_graphModel.connectedNodes(nodeId, portType, portIndex);
-
-  //for (auto cn : connectedNodes)
-  //{
-  //ConnectionId connectionId =
-  //(portType == PortType::In) ?
-  //std::make_tuple(cn.first, cn.second, nodeId, portIndex) :
-  //std::make_tuple(nodeId, portIndex, cn.first, cn.second);
-
-  //deleteConnection(connectionId);
-  //}
-  //}
-  //}
-}
-
-
-void
-BasicGraphicsScene::
-onPortsDeleted(NodeId const nodeId,
-               PortType const portType,
-               std::unordered_set<PortIndex> const &portIndexSet)
-{
-  Q_UNUSED(nodeId);
-  Q_UNUSED(portType);
-  Q_UNUSED(portIndexSet);
-
-  NodeGraphicsObject * node = nodeGraphicsObject(nodeId);
+  auto node = nodeGraphicsObject(nodeId);
 
   if (node)
   {
+    node->setGeometryChanged();
+
+    NodeGeometry geometry(nodeId, _graphModel);
+
+    geometry.recalculateSize();
+
     node->update();
+    node->moveConnections();
   }
-}
-
-
-void
-BasicGraphicsScene::
-onPortsAboutToBeInserted(NodeId const nodeId,
-                         PortType const portType,
-                         std::unordered_set<PortIndex> const &portIndexSet)
-{
-  Q_UNUSED(nodeId);
-  Q_UNUSED(portType);
-  Q_UNUSED(portIndexSet);
-}
-
-
-void
-BasicGraphicsScene::
-onPortsInserted(NodeId const nodeId,
-                PortType const portType,
-                std::unordered_set<PortIndex> const &portIndexSet)
-{
-  Q_UNUSED(nodeId);
-  Q_UNUSED(portType);
-  Q_UNUSED(portIndexSet);
 }
 
 }

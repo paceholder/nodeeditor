@@ -114,13 +114,13 @@ disconnect(PortType portToDisconnect) const
   _scene.undoStack().push(new DisconnectCommand(&_scene,
                                                 connectionId));
 
-  NodeGeometry nodeGeometry(_ngo);
+  NodeGeometry geometry(_ngo.nodeId(), _ngo.graphModel());
 
   QPointF scenePos =
-    nodeGeometry.portScenePosition(portToDisconnect,
-                                   getPortIndex(portToDisconnect,
-                                                connectionId),
-                                   _ngo.sceneTransform());
+    geometry.portScenePosition(portToDisconnect,
+                               getPortIndex(portToDisconnect,
+                                            connectionId),
+                               _ngo.sceneTransform());
 
   // Converted to "draft" connection with the new incomplete id.
   ConnectionId incompleteConnectionId =
@@ -162,7 +162,7 @@ QPointF
 NodeConnectionInteraction::
 nodePortScenePosition(PortType portType, PortIndex portIndex) const
 {
-  NodeGeometry geometry(_ngo);
+  NodeGeometry geometry(_ngo.nodeId(), _ngo.graphModel());
 
   QPointF p =
     geometry.portScenePosition(portType, portIndex, _ngo.sceneTransform());
@@ -176,7 +176,7 @@ NodeConnectionInteraction::
 nodePortIndexUnderScenePoint(PortType portType,
                              QPointF const & scenePoint) const
 {
-  NodeGeometry geometry(_ngo);
+  NodeGeometry geometry(_ngo.nodeId(), _ngo.graphModel());
 
   QTransform sceneTransform = _ngo.sceneTransform();
 

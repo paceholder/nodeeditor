@@ -12,7 +12,6 @@ namespace QtNodes
 {
 
 class AbstractGraphModel;
-class NodeGraphicsObject;
 
 /**
  * A helper-class for manipulating the node's geometry.
@@ -22,7 +21,8 @@ class NodeGraphicsObject;
 class NODE_EDITOR_PUBLIC NodeGeometry
 {
 public:
-  NodeGeometry(NodeGraphicsObject const & ngo);
+  NodeGeometry(NodeId const nodeId,
+               AbstractGraphModel & graphModel);
 
 public:
   unsigned int
@@ -39,11 +39,11 @@ public:
   size() const;
 
   /// Updates size unconditionally
-  QSize
+  void
   recalculateSize() const;
 
   /// Updates size if the QFontMetrics is changed
-  QSize
+  void
   recalculateSizeIfFontChanged(QFont const & font) const;
 
   QPointF
@@ -83,8 +83,8 @@ private:
   portWidth(PortType portType) const;
 
 private:
+  NodeId const _nodeId;
 
-  NodeGraphicsObject const & _ngo;
   AbstractGraphModel & _graphModel;
 
   // Some variables are mutable because we need to change drawing

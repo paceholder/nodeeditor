@@ -150,7 +150,7 @@ private:
   updateAttachedNodes(ConnectionId const connectionId,
                       PortType const portType);
 
-private Q_SLOTS:
+public Q_SLOTS:
 
 
   /// Slot called when the `connectionId` is erased form the AbstractGraphModel.
@@ -171,44 +171,21 @@ private Q_SLOTS:
   onNodePositionUpdated(NodeId const nodeId);
 
   void
-  onPortsAboutToBeDeleted(NodeId const nodeId,
-                          PortType const portType,
-                          std::unordered_set<PortIndex> const &portIndexSet);
-
-  void
-  onPortsDeleted(NodeId const nodeId,
-                 PortType const portType,
-                 std::unordered_set<PortIndex> const &portIndexSet);
-
-  void
-  onPortsAboutToBeInserted(NodeId const nodeId,
-                           PortType const portType,
-                           std::unordered_set<PortIndex> const &portIndexSet);
-
-  void
-  onPortsInserted(NodeId const nodeId,
-                  PortType const portType,
-                  std::unordered_set<PortIndex> const &portIndexSet);
-
+  onNodeUpdated(NodeId const nodeId);
 
 private:
-
-  // TODO shared pointer?
   AbstractGraphModel &_graphModel;
 
+  using UniqueNodeGraphicsObject = std::unique_ptr<NodeGraphicsObject>;
 
-  using UniqueNodeGraphicsObject =
-    std::unique_ptr<NodeGraphicsObject>;
-
-  using UniqueConnectionGraphicsObject =
-    std::unique_ptr<ConnectionGraphicsObject>;
+  using UniqueConnectionGraphicsObject = std::unique_ptr<ConnectionGraphicsObject>;
 
   std::unordered_map<NodeId, UniqueNodeGraphicsObject>
-  _nodeGraphicsObjects;
+    _nodeGraphicsObjects;
 
   std::unordered_map<ConnectionId,
                      UniqueConnectionGraphicsObject>
-  _connectionGraphicsObjects;
+    _connectionGraphicsObjects;
 
 
   std::unique_ptr<ConnectionGraphicsObject> _draftConnection;
