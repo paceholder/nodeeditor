@@ -122,9 +122,7 @@ set(HPP_HEADER_FILES
   include/QtNodes/internal/NodeData.hpp
   include/QtNodes/internal/NodeDelegateModel.hpp
   include/QtNodes/internal/NodeDelegateModelRegistry.hpp
-  include/QtNodes/internal/NodeGeometry.hpp
   include/QtNodes/internal/NodeGraphicsObject.hpp
-  include/QtNodes/internal/NodePainterDelegate.hpp
   include/QtNodes/internal/NodeState.hpp
   include/QtNodes/internal/NodeStyle.hpp
   include/QtNodes/internal/OperatingSystem.hpp
@@ -135,7 +133,6 @@ set(HPP_HEADER_FILES
   include/QtNodes/internal/StyleCollection.hpp
   src/ConnectionPainter.hpp
   src/NodeConnectionInteraction.hpp
-  src/NodePainter.hpp
 )
 
 # If we want to give the option to build a static library,

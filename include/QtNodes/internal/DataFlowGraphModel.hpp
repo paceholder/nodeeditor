@@ -123,6 +123,12 @@ public:
     return model;
   }
 
+Q_SIGNALS:
+  void
+  inPortDataWasSet(NodeId const    nodeId,
+                   PortType const  portType,
+                   PortIndex const portIndex);
+
 private:
   NodeId
   newNodeId() { return _nextNodeId++; }

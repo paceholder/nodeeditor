@@ -41,6 +41,9 @@ public:
   std::unordered_set<NodeId>
   allNodeIds() const = 0;
 
+  /**
+   * A collection of all input and output connections for the given `nodeId`.
+   */
   virtual
   std::unordered_set<ConnectionId>
   allConnectionIds(NodeId const nodeId) const = 0;
@@ -114,6 +117,17 @@ public:
   QVariant
   nodeData(NodeId nodeId, NodeRole role) const = 0;
 
+  /**
+   * A utility function that unwraps the `QVariant` value returned from the
+   * standard `QVariant AbstractGraphModel::nodeData(NodeId, NodeRole)` function.
+   */
+  template<typename T>
+  T
+  nodeData(NodeId nodeId, NodeRole role) const
+  {
+    return nodeData(nodeId, role).value<T>();
+  }
+
   virtual
   NodeFlags
   nodeFlags(NodeId nodeId) const
@@ -145,6 +159,20 @@ public:
            PortType  portType,
            PortIndex index,
            PortRole  role) const = 0;
+
+  /**
+   * A utility function that unwraps the `QVariant` value returned from the
+   * standard `QVariant AbstractGraphModel::portData(...)` function.
+   */
+  template<typename T>
+  T
+  portData(NodeId    nodeId,
+           PortType  portType,
+           PortIndex index,
+           PortRole  role) const 
+  {
+    return portData(nodeId, portType, index, role).value<T>();
+  }
 
   virtual
   bool
@@ -205,6 +233,46 @@ public:
   void
   loadConnection(QJsonObject const & connJson) = 0;
 
+public:
+  /**
+   * Function clears connections attached to the ports that are scheduled to be
+   * deleted. It must be called right before the model removes its old port data.
+   */
+  void
+  portsAboutToBeDeleted(NodeId const    nodeId,
+                        PortType const  portType,
+                        PortIndex const first,
+                        PortIndex const last);
+
+  /**
+   * Signal emitted when model no longer has the old data associated with the
+   * given port indices and when the node must be repainted.
+   */
+  void
+  portsDeleted();
+
+  /**
+   * Signal emitted when model is about to create new ports on the given node.
+   * @param first is the first index of the new port after insertion.
+   * @Param last is the last index of the new port after insertion.
+   *
+   * Function caches existing connections that are located after the `last` port
+   * index. For such connections the new "post-insertion" addresses are computed
+   * and stored until the function AbstractGraphModel::portsInserted is called.
+   */
+  void
+  portsAboutToBeInserted(NodeId const    nodeId,
+                         PortType const  portType,
+                         PortIndex const first,
+                         PortIndex const last);
+
+  /**
+   * Function re-creates the connections that were shifted during the port
+   * insertion. After that the node is updated.
+   */
+  void
+  portsInserted();
+
 Q_SIGNALS:
 
   void
@@ -220,49 +288,13 @@ Q_SIGNALS:
   nodeDeleted(NodeId const nodeId);
 
   void
+  nodeUpdated(NodeId const nodeId);
+
+  void
   nodePositionUpdated(NodeId const nodeId);
 
-  void
-  inPortDataWasSet(NodeId const    nodeId,
-                   PortType const  portType,
-                   PortIndex const portIndex);
-
-  /**
-   * Signal emitted when model is about to remove port-related data.
-   * Clients must destroy existing connections to these ports.
-   */
-  void
-  portsAboutToBeDeleted(NodeId const   nodeId,
-                        PortType const portType,
-                        std::unordered_set<PortIndex> const &portIndexSet);
-
-  /**
-   * Signal emitted when model no longer has the old data associated
-   * with the given port indices.
-   */
-  void
-  portsDeleted(NodeId const   nodeId,
-               PortType const portType,
-               std::unordered_set<PortIndex> const &portIndexSet);
-
-  /**
-   * Signal emitted when model is about to create new port-related
-   * data.
-   */
-  void
-  portsAboutToBeInserted(NodeId const   nodeId,
-                         PortType const portType,
-                         std::unordered_set<PortIndex> const &portIndexSet);
-
-  /**
-   * Signal emitted when model is ready to provide the new data for
-   * just creted ports. Clients must re-draw the nodes, move existing
-   * conection ends to their new positions.
-   */
-  void
-  portsInserted(NodeId const   nodeId,
-                PortType const portType,
-                std::unordered_set<PortIndex> const &portIndexSet);
+private:
+  std::vector<ConnectionId> _shiftedByDynamicPortsConnections;
 };
 
 }

@@ -75,7 +75,7 @@ initializePosition()
       QTransform nodeSceneTransform =
         ngo->sceneTransform();
 
-      NodeGeometry geometry(*ngo);
+      NodeGeometry geometry(nodeId, _graphModel);
 
       QPointF pos =
         geometry.portScenePosition(attachedPort,
@@ -197,7 +197,7 @@ move()
 
       if (ngo)
       {
-        NodeGeometry nodeGeometry(*ngo);
+        NodeGeometry nodeGeometry(nodeId, _graphModel);
 
         QPointF scenePos =
           nodeGeometry.portScenePosition(portType,

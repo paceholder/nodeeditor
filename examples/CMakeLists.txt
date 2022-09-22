@@ -10,3 +10,5 @@ add_subdirectory(styles)
 
 add_subdirectory(connection_colors)
 
+add_subdirectory(dynamic_ports)
+
