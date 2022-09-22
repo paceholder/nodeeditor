@@ -102,6 +102,9 @@ public:
   NodeDataModel*
   nodeDataModel() const;
 
+  int targetInputConnections=0;
+  int currentInputConnections=0;
+
 
 public slots: // data propagation
 

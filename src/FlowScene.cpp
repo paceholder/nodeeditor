@@ -149,6 +149,8 @@ restoreConnection(QJsonObject const &connectionJson)
   portIndexIn = std::min(numConnectionsIn - 1, portIndexIn);
   portIndexOut = std::min(numConnectionsOut - 1, portIndexOut);
 
+  nodeIn->currentInputConnections++;
+
   return createConnection(*nodeIn, portIndexIn, *nodeOut, portIndexOut);
 }
 
@@ -283,9 +285,7 @@ restoreNode(QJsonObject const& nodeJson)
   {
 	  dataModel = registry().create("DeletedNode");
   }
-    /*throw std::logic_error(std::string("No registered model with name ") +
-                         modelName.toLocal8Bit().data());
-*/
+
   auto node = std::make_shared<Node>(std::move(dataModel));
   auto ngo  = std::make_unique<NodeGraphicsObject>(*this, *node);
   node->setGraphicsObject(std::move(ngo));
@@ -798,6 +798,15 @@ loadFromMemory(const QByteArray& data)
   }
 
   QJsonArray connectionJsonArray = jsonDocument["connections"].toArray();
+
+  for (int i = 0; i < connectionJsonArray.size(); ++i)
+  {
+    QJsonObject jsonObject = connectionJsonArray[i].toObject();
+    QUuid nodeInId = QUuid(jsonObject["in_id"].toString());
+    auto nodeIn = _nodes[nodeInId].get();    
+    nodeIn->targetInputConnections++;
+  }
+
 
   for (int i = 0; i < connectionJsonArray.size(); ++i)
   {
