@@ -1,5 +1,7 @@
 add_subdirectory(simple_graph_model)
 
+add_subdirectory(vertical_layout)
+
 add_subdirectory(calculator)
 
 add_subdirectory(text)

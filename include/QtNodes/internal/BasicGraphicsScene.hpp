@@ -10,6 +10,7 @@
 #include <unordered_map>
 
 #include "AbstractGraphModel.hpp"
+#include "AbstractNodeGeometry.hpp"
 #include "ConnectionIdHash.hpp"
 #include "Definitions.hpp"
 #include "Export.hpp"
@@ -32,7 +33,6 @@ class NODE_EDITOR_PUBLIC BasicGraphicsScene : public QGraphicsScene
 {
   Q_OBJECT
 public:
-
   BasicGraphicsScene(AbstractGraphModel &graphModel,
                      QObject *    parent = nullptr);
 
@@ -42,7 +42,6 @@ public:
   ~BasicGraphicsScene();
 
 public:
-
   /// @returns associated AbstractGraphModel.
   AbstractGraphModel const &
   graphModel() const;
@@ -50,10 +49,12 @@ public:
   AbstractGraphModel &
   graphModel();
 
+  AbstractNodeGeometry &
+  nodeGeometry();
+
   QUndoStack& undoStack();
 
 public:
-
   /// Creates a "draft" instance of ConnectionGraphicsObject.
   /**
    * The scene caches a "draft" connection which has one loose end.
@@ -79,7 +80,6 @@ public:
   clearScene();
 
 public:
-
   /// @returns NodeGraphicsObject associated with the given nodeId.
   /**
    * @returns nullptr when the object is not found.
@@ -94,8 +94,11 @@ public:
   ConnectionGraphicsObject *
   connectionGraphicsObject(ConnectionId connectionId);
 
-public:
+  Qt::Orientation orientation() const { return _orientation; }
 
+  void setOrientation(Qt::Orientation const orientation);
+
+public:
   /// Can @return an instance of the scene context menu in subclass.
   /**
    * Default implementation returns `nullptr`.
@@ -105,7 +108,6 @@ public:
   createSceneMenu(QPointF const scenePos);
 
 Q_SIGNALS:
-
   void
   nodeMoved(NodeId const nodeId, QPointF const & newLocation);
 
@@ -135,7 +137,6 @@ Q_SIGNALS:
   nodeContextMenu(NodeId const nodeId, QPointF const pos);
 
 private:
-
   /// @brief Creates Node and Connection graphics objects.
   /**
    * Function is used to populate an empty scene in the constructor. We
@@ -151,8 +152,6 @@ private:
                       PortType const portType);
 
 public Q_SLOTS:
-
-
   /// Slot called when the `connectionId` is erased form the AbstractGraphModel.
   void
   onConnectionDeleted(ConnectionId const connectionId);
@@ -173,6 +172,9 @@ public Q_SLOTS:
   void
   onNodeUpdated(NodeId const nodeId);
 
+  void
+  onModelReset();
+
 private:
   AbstractGraphModel &_graphModel;
 
@@ -190,7 +192,11 @@ private:
 
   std::unique_ptr<ConnectionGraphicsObject> _draftConnection;
 
+  std::unique_ptr<AbstractNodeGeometry> _nodeGeometry;
+
   QUndoStack* _undoStack;
+
+  Qt::Orientation _orientation;
 };
 
 

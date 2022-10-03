@@ -27,8 +27,8 @@ enum class NodeRole
   Caption          = 4, ///< `QString` for node caption.
   Style            = 5, ///< Custom NodeStyle as QJsonDocument
   InternalData     = 6, ///< Node-stecific user data as QJsonObject
-  NumberOfInPorts  = 7, ///< `unsigned int`
-  NumberOfOutPorts = 9, ///< `unsigned int`
+  InPortCount      = 7, ///< `unsigned int`
+  OutPortCount     = 9, ///< `unsigned int`
   Widget           = 10, ///< Optional `QWidget*` or `nullptr`
 };
 Q_ENUM_NS(NodeRole)
@@ -85,6 +85,8 @@ enum class PortType
 };
 Q_ENUM_NS(PortType)
 
+
+using PortCount = unsigned int;
 
 /// ports are consecutively numbered starting from zero.
 using PortIndex = unsigned int;

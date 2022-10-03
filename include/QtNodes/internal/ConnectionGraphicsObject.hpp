@@ -75,7 +75,6 @@ public:
   connectionState();
 
 protected:
-
   void
   paint(QPainter * painter,
         QStyleOptionGraphicsItem const * option,
@@ -97,23 +96,27 @@ protected:
   hoverLeaveEvent(QGraphicsSceneHoverEvent * event) override;
 
 private:
-
   void
   initializePosition();
 
   void
   addGraphicsEffect();
 
-private:
+  std::pair<QPointF, QPointF>
+  pointsC1C2Horizontal() const;
 
+  std::pair<QPointF, QPointF>
+  pointsC1C2Vertical() const;
+
+private:
   ConnectionId _connectionId;
 
   AbstractGraphModel &_graphModel;
 
   ConnectionState _connectionState;
 
-  QPointF _out;
-  QPointF _in;
+  mutable QPointF _out;
+  mutable QPointF _in;
 };
 
 }

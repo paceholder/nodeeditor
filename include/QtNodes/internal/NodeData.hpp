@@ -10,6 +10,10 @@
 namespace QtNodes
 {
 
+/**
+ * `id` represents an internal unique data type for the given port.
+ * `name` is a normal text description.
+ */
 struct NODE_EDITOR_PUBLIC NodeDataType
 {
   QString id;

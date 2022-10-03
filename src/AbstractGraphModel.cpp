@@ -16,8 +16,8 @@ portsAboutToBeDeleted(NodeId const    nodeId,
   _shiftedByDynamicPortsConnections.clear();
 
   auto portCountRole = portType == PortType::In ?
-                       NodeRole::NumberOfInPorts :
-                       NodeRole::NumberOfOutPorts;
+                       NodeRole::InPortCount :
+                       NodeRole::OutPortCount;
 
   unsigned int portCount = nodeData(nodeId, portCountRole).toUInt();
 
@@ -88,8 +88,8 @@ portsAboutToBeInserted(NodeId const    nodeId,
   _shiftedByDynamicPortsConnections.clear();
 
   auto portCountRole = portType == PortType::In ?
-                       NodeRole::NumberOfInPorts :
-                       NodeRole::NumberOfOutPorts;
+                       NodeRole::InPortCount :
+                       NodeRole::OutPortCount;
 
   unsigned int portCount = nodeData(nodeId, portCountRole).toUInt();
 
