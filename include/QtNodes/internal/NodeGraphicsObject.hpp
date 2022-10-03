@@ -30,7 +30,6 @@ public:
   ~NodeGraphicsObject() override = default;
 
 public:
-
   AbstractGraphModel &
   graphModel() const;
 

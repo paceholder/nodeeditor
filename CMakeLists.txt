@@ -80,6 +80,7 @@ set(CMAKE_AUTOMOC ON)
 
 set(CPP_SOURCE_FILES
   src/AbstractGraphModel.cpp
+  src/AbstractNodeGeometry.cpp
   src/BasicGraphicsScene.cpp
   src/ConnectionGraphicsObject.cpp
   src/ConnectionPainter.cpp
@@ -87,13 +88,14 @@ set(CPP_SOURCE_FILES
   src/ConnectionStyle.cpp
   src/DataFlowGraphModel.cpp
   src/DataFlowGraphicsScene.cpp
-  src/NodeDelegateModelRegistry.cpp
+  src/DefaultHorizontalNodeGeometry.cpp
+  src/DefaultVerticalNodeGeometry.cpp
   src/Definitions.cpp
   src/GraphicsView.cpp
   src/GraphicsViewStyle.cpp
+  src/NodeDelegateModelRegistry.cpp
   src/NodeConnectionInteraction.cpp
   src/NodeDelegateModel.cpp
-  src/NodeGeometry.cpp
   src/NodeGraphicsObject.cpp
   src/NodePainter.cpp
   src/NodeState.cpp

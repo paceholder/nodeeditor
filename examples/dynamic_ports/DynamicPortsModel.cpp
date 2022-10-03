@@ -145,11 +145,11 @@ nodeData(NodeId nodeId, NodeRole role) const
     case NodeRole::InternalData:
       break;
 
-    case NodeRole::NumberOfInPorts:
+    case NodeRole::InPortCount:
       result = _nodePortCounts[nodeId].in;
       break;
 
-    case NodeRole::NumberOfOutPorts:
+    case NodeRole::OutPortCount:
       result = _nodePortCounts[nodeId].out;
       break;
 
@@ -215,10 +215,10 @@ setNodeData(NodeId   nodeId,
     case NodeRole::InternalData:
       break;
 
-    case NodeRole::NumberOfInPorts:
+    case NodeRole::InPortCount:
       break;
 
-    case NodeRole::NumberOfOutPorts:
+    case NodeRole::OutPortCount:
       break;
 
     case NodeRole::Widget:

@@ -6,10 +6,10 @@
 
 #include <iostream>
 
+#include "AbstractNodeGeometry.hpp"
 #include "BasicGraphicsScene.hpp"
 #include "ConnectionGraphicsObject.hpp"
 #include "ConnectionIdUtils.hpp"
-#include "NodeGeometry.hpp"
 #include "NodeGraphicsObject.hpp"
 #include "UndoCommands.hpp"
 
@@ -114,10 +114,11 @@ disconnect(PortType portToDisconnect) const
   _scene.undoStack().push(new DisconnectCommand(&_scene,
                                                 connectionId));
 
-  NodeGeometry geometry(_ngo.nodeId(), _ngo.graphModel());
+  AbstractNodeGeometry & geometry = _scene.nodeGeometry();
 
   QPointF scenePos =
-    geometry.portScenePosition(portToDisconnect,
+    geometry.portScenePosition(_ngo.nodeId(),
+                               portToDisconnect,
                                getPortIndex(portToDisconnect,
                                             connectionId),
                                _ngo.sceneTransform());
@@ -162,10 +163,12 @@ QPointF
 NodeConnectionInteraction::
 nodePortScenePosition(PortType portType, PortIndex portIndex) const
 {
-  NodeGeometry geometry(_ngo.nodeId(), _ngo.graphModel());
+  AbstractNodeGeometry & geometry = _scene.nodeGeometry();
 
-  QPointF p =
-    geometry.portScenePosition(portType, portIndex, _ngo.sceneTransform());
+  QPointF p = geometry.portScenePosition(_ngo.nodeId(),
+                                         portType,
+                                         portIndex,
+                                         _ngo.sceneTransform());
 
   return p;
 }
@@ -176,14 +179,13 @@ NodeConnectionInteraction::
 nodePortIndexUnderScenePoint(PortType portType,
                              QPointF const & scenePoint) const
 {
-  NodeGeometry geometry(_ngo.nodeId(), _ngo.graphModel());
+  AbstractNodeGeometry & geometry = _scene.nodeGeometry();
 
   QTransform sceneTransform = _ngo.sceneTransform();
 
-  PortIndex portIndex = geometry.checkHitScenePoint(portType,
-                                                    scenePoint,
-                                                    sceneTransform);
-  return portIndex;
+  QPointF nodePoint = sceneTransform.inverted().map(scenePoint);
+
+  return geometry.checkPortHit(_ngo.nodeId(), portType, nodePoint);
 }
 
 

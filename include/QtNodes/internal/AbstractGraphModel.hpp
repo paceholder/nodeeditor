@@ -274,7 +274,6 @@ public:
   portsInserted();
 
 Q_SIGNALS:
-
   void
   connectionCreated(ConnectionId const connectionId);
 
@@ -292,6 +291,9 @@ Q_SIGNALS:
 
   void
   nodePositionUpdated(NodeId const nodeId);
+
+  void
+  modelReset();
 
 private:
   std::vector<ConnectionId> _shiftedByDynamicPortsConnections;

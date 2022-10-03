@@ -26,32 +26,7 @@ std::unordered_set<ConnectionId>
 SimpleGraphModel::
 allConnectionIds(NodeId const nodeId) const
 {
-  std::unordered_set<ConnectionId> result;
-
-  for (auto & c : _connectivity)
-  {
-    if (std::get<0>(c.first) != nodeId)
-      continue;
-
-    PortType const portType = std::get<1>(c.first);
-    PortIndex const portIndex = std::get<2>(c.first);
-
-    for (auto & target : c.second)
-    {
-      if (portType == PortType::Out)
-      {
-        result.insert(ConnectionId{nodeId, portIndex,
-                                   target.first, target.second});
-      }
-      else
-      {
-        result.insert(ConnectionId{target.first, target.second,
-                                   nodeId, portIndex});
-      }
-    }
-  }
-
-  return result;
+  return _connectivity;
 }
 
 
@@ -63,26 +38,14 @@ connections(NodeId    nodeId,
 {
   std::unordered_set<ConnectionId> result;
 
-  auto const connectivityKey = std::make_tuple(nodeId, portType, portIndex);
-
-  auto it = _connectivity.find(connectivityKey);
-
-  if (it != _connectivity.end())
-  {
-    for (auto& nodeAndPort : it->second)
-    {
-      ConnectionId conn{nodeId,
-                        portIndex,
-                        nodeAndPort.first,
-                        nodeAndPort.second};
-
-      if (portType == PortType::In)
-      {
-        invertConnection(conn);
-      }
-      result.insert(conn);
-    }
-  }
+  std::copy_if(_connectivity.begin(),
+               _connectivity.end(),
+               std::inserter(result, std::end(result)),
+               [&portType, &portIndex, &nodeId](ConnectionId const & cid)
+               {
+                  return (getNodeId(portType, cid) == nodeId &&
+                          getPortIndex(portType, cid) == portIndex);
+               });
 
   return result;
 }
@@ -92,12 +55,7 @@ bool
 SimpleGraphModel::
 connectionExists(ConnectionId const connectionId) const
 {
-  auto key =
-    std::make_tuple(getNodeId(PortType::Out, connectionId),
-                    PortType::Out,
-                    getPortIndex(PortType::Out, connectionId));
-
-  return (_connectivity.find(key) != _connectivity.end());
+  return (_connectivity.find(connectionId) != _connectivity.end());
 }
 
 
@@ -119,18 +77,7 @@ bool
 SimpleGraphModel::
 connectionPossible(ConnectionId const connectionId) const
 {
-  auto keyOut = std::make_tuple(getNodeId(PortType::Out, connectionId),
-                                PortType::Out,
-                                getPortIndex(PortType::Out, connectionId));
-
-  auto keyIn = std::make_tuple(getNodeId(PortType::Out, connectionId),
-                               PortType::Out,
-                               getPortIndex(PortType::Out, connectionId));
-
-  bool result = (_connectivity.find(keyOut) == _connectivity.end() &&
-                 _connectivity.find(keyIn) == _connectivity.end());
-
-  return result;
+  return _connectivity.find(connectionId) == _connectivity.end();
 }
 
 
@@ -138,21 +85,7 @@ void
 SimpleGraphModel::
 addConnection(ConnectionId const connectionId)
 {
-  auto connect =
-    [&](PortType portType)
-    {
-      auto key = std::make_tuple(getNodeId(portType, connectionId),
-                                 portType,
-                                 getPortIndex(portType, connectionId));
-
-      PortType opposite = oppositePort(portType);
-
-      _connectivity[key].insert(std::make_pair(getNodeId(opposite, connectionId),
-                                               getPortIndex(opposite, connectionId)));
-    };
-
-  connect(PortType::Out);
-  connect(PortType::In);
+  _connectivity.insert(connectionId);
 
   Q_EMIT connectionCreated(connectionId);
 }
@@ -207,11 +140,11 @@ nodeData(NodeId nodeId, NodeRole role) const
       break;
 
     case NodeRole::InPortCount:
-      result = 1u;
+      result = 5u;
       break;
 
     case NodeRole::OutPortCount:
-      result = 1u;
+      result = 3u;
       break;
 
     case NodeRole::Widget:
@@ -341,34 +274,14 @@ deleteConnection(ConnectionId const connectionId)
 {
   bool disconnected = false;
 
-  auto disconnect =
-    [&](PortType portType)
-    {
-      auto key = std::make_tuple(getNodeId(portType, connectionId),
-                                 portType,
-                                 getPortIndex(portType, connectionId));
-      auto it = _connectivity.find(key);
+  auto it = _connectivity.find(connectionId);
 
-      if (it != _connectivity.end())
-      {
-        disconnected = true;
+  if (it != _connectivity.end())
+  {
+    disconnected = true;
 
-        PortType opposite = oppositePort(portType);
-
-        auto oppositePair = std::make_pair(getNodeId(opposite, connectionId),
-                                           getPortIndex(opposite, connectionId));
-        it->second.erase(oppositePair);
-
-        if (it->second.empty())
-        {
-          _connectivity.erase(it);
-        }
-      }
-
-    };
-
-  disconnect(PortType::Out);
-  disconnect(PortType::In);
+    _connectivity.erase(it);
+  }
 
   if (disconnected)
     Q_EMIT connectionDeleted(connectionId);

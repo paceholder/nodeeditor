@@ -9,13 +9,13 @@
 #include <QtCore/QDebug>
 
 #include "AbstractGraphModel.hpp"
+#include "AbstractNodeGeometry.hpp"
 #include "BasicGraphicsScene.hpp"
 #include "ConnectionIdUtils.hpp"
 #include "ConnectionPainter.hpp"
 #include "ConnectionState.hpp"
 #include "ConnectionStyle.hpp"
 #include "NodeConnectionInteraction.hpp"
-#include "NodeGeometry.hpp"
 #include "NodeGraphicsObject.hpp"
 #include "StyleCollection.hpp"
 #include "locateNode.hpp"
@@ -75,12 +75,12 @@ initializePosition()
       QTransform nodeSceneTransform =
         ngo->sceneTransform();
 
-      NodeGeometry geometry(nodeId, _graphModel);
+      AbstractNodeGeometry & geometry = nodeScene()->nodeGeometry();
 
-      QPointF pos =
-        geometry.portScenePosition(attachedPort,
-                                   portIndex,
-                                   nodeSceneTransform);
+      QPointF pos = geometry.portScenePosition(nodeId,
+                                               attachedPort,
+                                               portIndex,
+                                               nodeSceneTransform);
 
       this->setPos(pos);
     }
@@ -197,12 +197,13 @@ move()
 
       if (ngo)
       {
-        NodeGeometry nodeGeometry(nodeId, _graphModel);
+        AbstractNodeGeometry & geometry = nodeScene()->nodeGeometry();
 
         QPointF scenePos =
-          nodeGeometry.portScenePosition(portType,
-                                         getPortIndex(portType, cId),
-                                         ngo->sceneTransform());
+          geometry.portScenePosition(nodeId,
+                                     portType,
+                                     getPortIndex(portType, cId),
+                                     ngo->sceneTransform());
 
         QPointF connectionPos = sceneTransform().inverted().map(scenePos);
 
@@ -365,7 +366,40 @@ std::pair<QPointF, QPointF>
 ConnectionGraphicsObject::
 pointsC1C2() const
 {
-  const double defaultOffset = 200;
+  switch (nodeScene()->orientation())
+  {
+    case Qt::Horizontal:
+      return pointsC1C2Horizontal();
+      break;
+
+    case Qt::Vertical:
+      return pointsC1C2Vertical();
+      break;
+  }
+}
+
+
+void
+ConnectionGraphicsObject::
+addGraphicsEffect()
+{
+  auto effect = new QGraphicsBlurEffect;
+
+  effect->setBlurRadius(5);
+  setGraphicsEffect(effect);
+
+  //auto effect = new QGraphicsDropShadowEffect;
+  //auto effect = new ConnectionBlurEffect(this);
+  //effect->setOffset(4, 4);
+  //effect->setColor(QColor(Qt::gray).darker(800));
+}
+
+
+std::pair<QPointF, QPointF>
+ConnectionGraphicsObject::
+pointsC1C2Horizontal() const
+{
+  double const defaultOffset = 200;
 
   double xDistance = _in.x() - _out.x();
 
@@ -398,19 +432,40 @@ pointsC1C2() const
 }
 
 
-void
+std::pair<QPointF, QPointF>
 ConnectionGraphicsObject::
-addGraphicsEffect()
+pointsC1C2Vertical() const
 {
-  auto effect = new QGraphicsBlurEffect;
+  double const defaultOffset = 200;
 
-  effect->setBlurRadius(5);
-  setGraphicsEffect(effect);
+  double yDistance = _in.y() - _out.y();
 
-  //auto effect = new QGraphicsDropShadowEffect;
-  //auto effect = new ConnectionBlurEffect(this);
-  //effect->setOffset(4, 4);
-  //effect->setColor(QColor(Qt::gray).darker(800));
+  double verticalOffset = qMin(defaultOffset, std::abs(yDistance));
+
+  double horizontalOffset = 0;
+
+  double ratioY = 0.5;
+
+  if (yDistance <= 0)
+  {
+    double xDistance = _in.x() - _out.x() + 20;
+
+    double vector = xDistance < 0 ? -1.0 : 1.0;
+
+    horizontalOffset = qMin(defaultOffset, std::abs(xDistance)) * vector;
+
+    ratioY = 1.0;
+  }
+
+  verticalOffset *= ratioY;
+
+  QPointF c1(_out.x() + horizontalOffset,
+             _out.y() + verticalOffset);
+
+  QPointF c2(_in.x() - horizontalOffset,
+             _in.y() - verticalOffset);
+
+  return std::make_pair(c1, c2);
 }
 
 
