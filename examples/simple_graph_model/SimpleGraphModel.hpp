@@ -123,13 +123,10 @@ private:
   ///
   /// This data structure contains the graph connectivity information in both
   /// directions, i.e. from Node1 to Node2 and from Node2 to Node1.
-  std::unordered_map<std::tuple<NodeId, PortType, PortIndex>,
-                     std::unordered_set<std::pair<NodeId, PortIndex>>>
-  _connectivity;
+  std::unordered_set<ConnectionId> _connectivity;
 
-  mutable std::unordered_map<NodeId,
-                             NodeGeometryData>
-  _nodeGeometryData;
+  mutable std::unordered_map<NodeId, NodeGeometryData>
+    _nodeGeometryData;
 
   /// A convenience variable needed for generating unique node ids.
   unsigned int _nextNodeId;
