@@ -10,9 +10,9 @@ simple graph visualization and editing or extended further for using the
 `Dataflow paradigm <https://en.wikipedia.org/wiki/Dataflow_programming>`_ .
 
 The library is written using the Model-View approach. The whole graph structure
-is defined by the user-provided class deriving from ``AbstractGraphModel`` class.
-It is possible to create or add Nodes and Connections. The underlying data
-structures could be of any arbitrary type or representation.
+is defined by a class derived from ``AbstractGraphModel``.  It is possible to
+create or add Nodes and Connections. The underlying data structures could be of
+any arbitrary type or representation.
 
 An instance of ``AbstractGraphModel`` could or could not be attached to
 specialized ``QGraphicsScene`` and ``QGraphicsView`` objects. I.e. the so-called
