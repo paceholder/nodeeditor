@@ -1,4 +1,4 @@
-#include "NodePainter.hpp"
+#include "DefaultNodePainter.hpp"
 
 #include <cmath>
 
@@ -18,13 +18,13 @@ namespace QtNodes
 {
 
 void
-NodePainter::
+DefaultNodePainter::
 paint(QPainter * painter,
-      NodeGraphicsObject & ngo)
+      NodeGraphicsObject & ngo) const
 {
   AbstractNodeGeometry & geometry = ngo.nodeScene()->nodeGeometry();
 
-  // TODO TODO TODO TODO
+  // TODO?
   //geometry.recomputeSizeIfFontChanged(painter->font());
 
   drawNodeRect(painter, ngo);
@@ -42,9 +42,9 @@ paint(QPainter * painter,
 
 
 void
-NodePainter::
+DefaultNodePainter::
 drawNodeRect(QPainter * painter,
-             NodeGraphicsObject &ngo)
+             NodeGraphicsObject &ngo) const
 {
   AbstractGraphModel &model = ngo.graphModel();
 
@@ -97,9 +97,9 @@ drawNodeRect(QPainter * painter,
 
 
 void
-NodePainter::
+DefaultNodePainter::
 drawConnectionPoints(QPainter * painter,
-                     NodeGraphicsObject &ngo)
+                     NodeGraphicsObject &ngo) const
 {
   AbstractGraphModel &model = ngo.graphModel();
   NodeId const nodeId     = ngo.nodeId();
@@ -197,9 +197,9 @@ drawConnectionPoints(QPainter * painter,
 
 
 void
-NodePainter::
+DefaultNodePainter::
 drawFilledConnectionPoints(QPainter * painter,
-                           NodeGraphicsObject &ngo)
+                           NodeGraphicsObject &ngo) const
 {
   AbstractGraphModel &model = ngo.graphModel();
   NodeId const nodeId     = ngo.nodeId();
@@ -257,9 +257,9 @@ drawFilledConnectionPoints(QPainter * painter,
 
 
 void
-NodePainter::
+DefaultNodePainter::
 drawNodeCaption(QPainter * painter,
-                NodeGraphicsObject &ngo)
+                NodeGraphicsObject &ngo) const
 {
   AbstractGraphModel & model = ngo.graphModel();
   NodeId const nodeId     = ngo.nodeId();
@@ -289,9 +289,9 @@ drawNodeCaption(QPainter * painter,
 
 
 void
-NodePainter::
+DefaultNodePainter::
 drawEntryLabels(QPainter * painter,
-                NodeGraphicsObject &ngo)
+                NodeGraphicsObject &ngo) const
 {
   AbstractGraphModel &model = ngo.graphModel();
   NodeId const nodeId     = ngo.nodeId();
@@ -347,9 +347,9 @@ drawEntryLabels(QPainter * painter,
 
 
 void
-NodePainter::
+DefaultNodePainter::
 drawResizeRect(QPainter * painter,
-               NodeGraphicsObject &ngo)
+               NodeGraphicsObject &ngo) const
 {
   AbstractGraphModel &model = ngo.graphModel();
   NodeId const nodeId     = ngo.nodeId();
