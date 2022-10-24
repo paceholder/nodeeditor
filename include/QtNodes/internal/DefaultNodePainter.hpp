@@ -3,6 +3,7 @@
 #include <QtGui/QPainter>
 
 #include "Definitions.hpp"
+#include "AbstractNodePainter.hpp"
 
 namespace QtNodes
 {
@@ -14,39 +15,28 @@ class NodeGraphicsObject;
 class NodeState;
 
 /// @ Lightweight class incapsulating paint code.
-class NodePainter
+class NODE_EDITOR_PUBLIC DefaultNodePainter : public AbstractNodePainter
 {
 public:
-
-  NodePainter();
-
-public:
-
-  static
   void paint(QPainter * painter,
-             NodeGraphicsObject  & ngo);
+             NodeGraphicsObject  & ngo) const override;
 
-  static
   void drawNodeRect(QPainter * painter,
-                    NodeGraphicsObject  & ngo);
+                    NodeGraphicsObject  & ngo) const;
 
-  static
   void drawConnectionPoints(QPainter * painter,
-                            NodeGraphicsObject  & ngo);
-  static
+                            NodeGraphicsObject  & ngo) const;
+
   void drawFilledConnectionPoints(QPainter * painter,
-                                  NodeGraphicsObject  & ngo);
+                                  NodeGraphicsObject  & ngo) const;
 
-  static
   void drawNodeCaption(QPainter * painter,
-                       NodeGraphicsObject  & ngo);
+                       NodeGraphicsObject  & ngo) const;
 
-  static
   void drawEntryLabels(QPainter * painter,
-                       NodeGraphicsObject  & ngo);
+                       NodeGraphicsObject  & ngo) const;
 
-  static
   void drawResizeRect(QPainter * painter,
-                      NodeGraphicsObject  & ngo);
+                      NodeGraphicsObject  & ngo) const;
 };
 }
