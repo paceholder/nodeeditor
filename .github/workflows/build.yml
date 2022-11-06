@@ -55,22 +55,3 @@ jobs:
         run: |
           cmake -S . -B cbuild -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_EXAMPLES=OFF -DBUILD_STATIC=ON
           cmake --build cbuild
-          
-      - name: Create App Image
-        if: startsWith (matrix.config.os, 'ubuntu')
-        run: |
-           cmake --install cbuild --prefix=${{ github.workspace }}/cbuild/AppDir/usr/
-           cd cbuild
-           wget --no-verbose "https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage"
-           wget --no-verbose "https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-x86_64.AppImage"
-           chmod +x linuxdeploy*.AppImage
-           export OUTPUT=nodeeditor-x86_64.AppImage
-           export LD_LIBRARY_PATH=AppDir/usr/lib/:$LD_LIBRARY_PATH
-           export DEBUG=1
-           ./linuxdeploy-x86_64.AppImage --appdir AppDir --plugin qt --output appimage
-      - name: Upload AppImage
-        if: startsWith (matrix.config.os, 'ubuntu')
-        uses: actions/upload-artifact@v2
-        with:
-           name: nodeeditor-Linux-Qt${{ matrix.config.qt_version }}-cmake-AppImage
-           path: ${{ github.workspace }}/cbuild/nodeeditor-x86_64.AppImage
