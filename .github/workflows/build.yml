@@ -1,0 +1,57 @@
+name: Build Flowpad
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - "*"
+  pull_request:
+
+jobs:
+  cmake-build:
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - qt_version: "5.15.2"
+            modules: ""
+            os: ubuntu-20.04
+          - qt_version: "5.15.2"
+            modules: ""
+            os: windows-latest
+          - qt_version: "5.15.2"
+            modules: ""
+            os: macos-latest
+
+    runs-on: ${{ matrix.config.os }}
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: ${{ matrix.config.qt_version }}
+          modules: ${{ matrix.config.modules }}
+
+      # disable meanwhile, until I understand how to fix the install prefix with ninja
+      - name: Install Ninja
+        uses: seanmiddleditch/gha-setup-ninja@master
+
+      - name: Setup (Linux)
+        if: startsWith (matrix.config.os, 'ubuntu')
+        run: sudo apt-get install libxkbcommon-dev
+
+      - name: Setup VS tools (Windows)
+        if: startsWith (matrix.config.os, 'windows')
+        uses: egor-tensin/vs-shell@v2
+        with:
+          arch: x64
+
+      - name: Compile
+        run: |
+          cmake -S . -B cbuild -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_EXAMPLES=OFF -DBUILD_STATIC=ON
+          cmake --build cbuild
