@@ -35,29 +35,31 @@ endif()
 
 add_subdirectory(external)
 
+# # Find the QtWidgets library
+# find_package(Qt6 QUIET
+#   COMPONENTS
+#    Core
+#    Widgets
+#    Gui
+#    OpenGL
+# )
 
-# Find the QtWidgets library
-find_package(Qt6 QUIET
-  COMPONENTS
-   Core
-   Widgets
-   Gui
-   OpenGL
-)
-
-if (NOT Qt6_FOUND)
-  find_package(Qt5 QUIET
-    COMPONENTS
-     Core
-     Widgets
-     Gui
-     OpenGL
-  )
-endif()
+# if (NOT Qt6_FOUND)
+#   find_package(Qt5 QUIET
+#     COMPONENTS
+#      Core
+#      Widgets
+#      Gui
+#      OpenGL
+#   )
+# endif()
 
 if (NOT (Qt6_FOUND OR Qt5_FOUND))
   message(FATAL_ERRROR "Qt libraries were not found.")
 endif()
+
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
+find_package(Qt${QT_VERSION_MAJOR} QUIET REQUIRED COMPONENTS Core Widgets Gui OpenGL)
 
 if (Qt6_FOUND)
   qt_add_resources(RESOURCES ./resources/resources.qrc)
@@ -114,10 +116,14 @@ target_include_directories(nodes
 
 target_link_libraries(nodes
   PUBLIC
-    ${Qt}::Core
-    ${Qt}::Widgets
-    ${Qt}::Gui
-    ${Qt}::OpenGL
+    # ${Qt}::Core
+    # ${Qt}::Widgets
+    # ${Qt}::Gui
+    # ${Qt}::OpenGL
+    Qt${QT_VERSION_MAJOR}::Core
+    Qt${QT_VERSION_MAJOR}::Widgets
+    Qt${QT_VERSION_MAJOR}::Gui
+    Qt${QT_VERSION_MAJOR}::OpenGL
 )
 
 target_compile_definitions(nodes
