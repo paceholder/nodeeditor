@@ -1,9 +1,10 @@
-name: CI
+name: build nodeeditor
 
 on:
   push:
     branches:
       - master
+      - main
     tags:
       - "*"
   pull_request:
@@ -43,6 +44,12 @@ jobs:
             compiler: msvc
             qt_version: "5.15.2"
             modules: ""
+
+          - toolchain: windows-msvc
+            os: windows-latest
+            compiler: msvc
+            qt_version: "6.3.0"
+            modules: "qt5compat"
 
     steps:
     - name: Checkout Code
