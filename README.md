@@ -25,6 +25,7 @@ connections updating  the whole graph.
 - [Building](#building)
   - [Linux](#linux)
   - [Qt Creator](#qt-creator)
+- [With Cmake using `vcpkg`](#with-cmake-using-vcpkg)
 - [>>> Version 3 Roadmap <<<](#-version-3-roadmap-)
 - [Citing](#citing)
 - [Youtube video:](#youtube-video)
@@ -78,6 +79,15 @@ make -j && make install
 4. `Build -> Build All`
 5. Click the button `Run`
 
+### With Cmake using [`vcpkg`](https://github.com/microsoft/vcpkg)
+
+1. Install `vcpkg`
+2. Add the following flag in configuration step of `CMake`
+   ```bash
+   -DCMAKE_TOOLCHAIN_FILE=<vcpkg_dir>/scripts/buildsystems/scripts/buildsystems/vcpkg.cmake
+   ```
+
+
 ## >>> Version 3 Roadmap <<<
 
 1. Headless mode. [done]
@@ -88,12 +98,12 @@ make -j && make install
    data propagation.
 2. Build data propagation on top of the graph code [done].
    - Fix old unit-tests. [in progress].
-   - Fix save/restore. [in progress].
+   - Fix save/restore. [done].
    - Fix CI scriptst on travis and appveyor. [not started].
 3. Backward compatibility with Qt5 [not started/help needed].
 3. Write improved documentation based on Sphynx platform [done].
 4. Extend set of examples [partially done].
-5. Undo Redo [not started].
+5. Undo Redo [done].
 6. Python wrappring using PySide [HELP NEEDED].
 7. Implement grouping nodes [not started].
 8. GUI: fix scrolling for scene view window scrolling [need to check Qt6]

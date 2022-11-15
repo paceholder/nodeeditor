@@ -1,5 +1,3 @@
-find_package(Catch2 2.3.0 REQUIRED)
-
 if (Qt6_FOUND)
   find_package(Qt6 COMPONENTS Test)
   set(Qt Qt)
