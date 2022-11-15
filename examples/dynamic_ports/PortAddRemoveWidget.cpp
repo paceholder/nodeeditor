@@ -46,7 +46,7 @@ PortAddRemoveWidget::
   //
 }
 
-QHBoxLayout* 
+void
 PortAddRemoveWidget::
 populateButtons(QVBoxLayout* verticalLayout,
                 unsigned int nPorts)
@@ -85,7 +85,7 @@ addButtonGroupToLayout(QVBoxLayout * vbl,
 }
 
 
-QHBoxLayout*
+void
 PortAddRemoveWidget::
 removeButtonGroupFromLayout(QVBoxLayout * vbl,
                             unsigned int portIndex)

@@ -14,3 +14,5 @@ add_subdirectory(connection_colors)
 
 add_subdirectory(dynamic_ports)
 
+add_subdirectory(lock_nodes_and_connections)
+

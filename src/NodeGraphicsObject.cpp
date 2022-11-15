@@ -32,9 +32,8 @@ NodeGraphicsObject(BasicGraphicsScene& scene,
 
   setFlag(QGraphicsItem::ItemDoesntPropagateOpacityToChildren, true);
   setFlag(QGraphicsItem::ItemIsFocusable,                      true);
-  setFlag(QGraphicsItem::ItemIsMovable,                        true);
-  setFlag(QGraphicsItem::ItemIsSelectable,                     true);
-  setFlag(QGraphicsItem::ItemSendsScenePositionChanges,        true);
+
+  setLockedState();
 
   setCacheMode(QGraphicsItem::DeviceCoordinateCache);
 
@@ -65,6 +64,14 @@ NodeGraphicsObject(BasicGraphicsScene& scene,
   QPointF const pos = _graphModel.nodeData<QPointF>(_nodeId, NodeRole::Position);
 
   setPos(pos);
+
+  connect(&_graphModel,
+          &AbstractGraphModel::nodeFlagsUpdated,
+          [this](NodeId const nodeId)
+          {
+            if (_nodeId == nodeId)
+              setLockedState();
+          });
 }
 
 
@@ -119,6 +126,20 @@ embedQWidget()
     _proxyWidget->setOpacity(1.0);
     _proxyWidget->setFlag(QGraphicsItem::ItemIgnoresParentOpacity);
   }
+}
+
+
+void
+NodeGraphicsObject::
+setLockedState()
+{
+  NodeFlags flags = _graphModel.nodeFlags(_nodeId);
+
+  bool const locked = flags.testFlag(NodeFlag::Locked);
+
+  setFlag(QGraphicsItem::ItemIsMovable,                        !locked);
+  setFlag(QGraphicsItem::ItemIsSelectable,                     !locked);
+  setFlag(QGraphicsItem::ItemSendsScenePositionChanges,        !locked);
 }
 
 
@@ -225,7 +246,8 @@ mousePressEvent(QGraphicsSceneMouseEvent* event)
                       *nodeScene()->connectionGraphicsObject(cnId),
                       *nodeScene());
 
-        interaction.disconnect(portToCheck);
+        if (_graphModel.detachPossible(cnId))
+          interaction.disconnect(portToCheck);
       }
       else // initialize new Connection
       {

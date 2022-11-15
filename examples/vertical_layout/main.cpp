@@ -1,8 +1,5 @@
-#include <QtNodes/ConnectionStyle>
 #include <QtNodes/GraphicsView>
 #include <QtNodes/BasicGraphicsScene>
-#include <QtNodes/StyleCollection>
-
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QGroupBox>
 #include <QtWidgets/QHBoxLayout>
@@ -13,11 +10,9 @@
 #include "SimpleGraphModel.hpp"
 
 
-using QtNodes::ConnectionStyle;
 using QtNodes::GraphicsView;
 using QtNodes::BasicGraphicsScene;
 using QtNodes::NodeRole;
-using QtNodes::StyleCollection;
 
 int
 main(int argc, char *argv[])

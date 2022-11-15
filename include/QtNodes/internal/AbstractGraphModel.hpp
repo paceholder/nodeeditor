@@ -88,6 +88,11 @@ public:
   bool
   connectionPossible(ConnectionId const connectionId) const = 0;
 
+  /// Defines if detaching the connection is possible.
+  virtual
+  bool
+  detachPossible(ConnectionId const connectionId) const { return true; }
+
   /// Creates a new connection between two nodes.
   /**
    * Default implementation emits signal
@@ -288,6 +293,9 @@ Q_SIGNALS:
 
   void
   nodeUpdated(NodeId const nodeId);
+
+  void
+  nodeFlagsUpdated(NodeId const nodeId);
 
   void
   nodePositionUpdated(NodeId const nodeId);
