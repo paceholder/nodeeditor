@@ -41,6 +41,7 @@ enum NodeFlag
 {
   NoFlags   = 0x0, ///< Default NodeFlag
   Resizable = 0x1, ///< Lets the node be resizable
+  Locked    = 0x2
 };
 
 Q_DECLARE_FLAGS(NodeFlags, NodeFlag)

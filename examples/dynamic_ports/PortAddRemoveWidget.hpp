@@ -57,7 +57,7 @@ public:
    * Called from constructor, creates all button groups according to models'port
    * counts.
    */
-  QHBoxLayout*
+  void
   populateButtons(QVBoxLayout* verticalLayout, unsigned int nPorts);
 
   /**
@@ -69,7 +69,7 @@ public:
   /**
    * Removes a single `[+][-]` button group from a given layout.
    */
-  QHBoxLayout*
+  void
   removeButtonGroupFromLayout(QVBoxLayout * vbl, unsigned int portIndex);
 
 private Q_SLOTS:
