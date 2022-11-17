@@ -1,0 +1,80 @@
+name: build nodeeditor
+
+on:
+  push:
+    branches:
+      - master
+      - main
+    tags:
+      - "*"
+  pull_request:
+
+jobs:
+  build-and-test:
+
+    name: ${{ matrix.toolchain }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        toolchain:
+          - linux-gcc
+          - macos-clang
+          - windows-msvc
+
+        configuration:
+          - Release
+
+        include:
+          - toolchain: linux-gcc
+            os: ubuntu-20.04
+            compiler: gcc
+            qt_version: "5.15.2"
+            modules: ""
+
+          - toolchain: macos-clang
+            os: macos-latest
+            compiler: clang
+            qt_version: "5.15.2"
+            modules: ""
+
+          - toolchain: windows-msvc
+            os: windows-latest
+            compiler: msvc
+            qt_version: "5.15.2"
+            modules: ""
+
+          - toolchain: windows-msvc
+            os: windows-latest
+            compiler: msvc
+            qt_version: "6.3.0"
+            modules: "qt5compat"
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v2
+      with:
+        submodules: true
+
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v3
+      with:
+        version: ${{ matrix.qt_version }}
+        modules: ${{ matrix.modules }}
+
+    - name: Setup (Linux)
+      if: startsWith (matrix.os, 'ubuntu')
+      run: sudo apt-get install libxkbcommon-dev
+
+    - name: Setup VS tools (Windows)
+      if: startsWith (matrix.os, 'windows')
+      uses: egor-tensin/vs-shell@v2
+      with:
+        arch: x64
+
+    - name: Configure (${{ matrix.configuration }})
+      run: cmake -S . -Bbuild -DCMAKE_BUILD_TYPE=${{ matrix.configuration }}
+
+    - name: Build with ${{ matrix.compiler }}
+      run: cmake --build build --config ${{ matrix.configuration }}
