@@ -95,10 +95,42 @@ set(CPP_SOURCE_FILES
   src/StyleCollection.cpp
 )
 
+set(HPP_HEADER_FILES
+  include/nodes/internal/Compiler.hpp
+  include/nodes/internal/Connection.hpp
+  include/nodes/internal/ConnectionGeometry.hpp
+  include/nodes/internal/ConnectionGraphicsObject.hpp
+  include/nodes/internal/ConnectionState.hpp
+  include/nodes/internal/ConnectionStyle.hpp
+  include/nodes/internal/DataModelRegistry.hpp
+  include/nodes/internal/Export.hpp
+  include/nodes/internal/FlowScene.hpp
+  include/nodes/internal/FlowView.hpp
+  include/nodes/internal/FlowViewStyle.hpp
+  include/nodes/internal/memory.hpp
+  include/nodes/internal/Node.hpp
+  include/nodes/internal/NodeData.hpp
+  include/nodes/internal/NodeDataModel.hpp
+  include/nodes/internal/NodeGeometry.hpp
+  include/nodes/internal/NodeGraphicsObject.hpp
+  include/nodes/internal/NodePainterDelegate.hpp
+  include/nodes/internal/NodeState.hpp
+  include/nodes/internal/NodeStyle.hpp
+  include/nodes/internal/OperatingSystem.hpp
+  include/nodes/internal/PortType.hpp
+  include/nodes/internal/QStringStdHash.hpp
+  include/nodes/internal/QUuidStdHash.hpp
+  include/nodes/internal/Serializable.hpp
+  include/nodes/internal/Style.hpp
+  include/nodes/internal/StyleCollection.hpp
+  include/nodes/internal/TypeConverter.hpp
+)
+
 # If we want to give the option to build a static library,
 # set BUILD_SHARED_LIBS option to OFF
 add_library(nodes
   ${CPP_SOURCE_FILES}
+  ${HPP_HEADER_FILES}
   ${RESOURCES}
 )
 add_library(NodeEditor::nodes ALIAS nodes)
