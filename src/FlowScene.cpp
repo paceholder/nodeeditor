@@ -39,6 +39,8 @@ using QtNodes::NodeDataModel;
 using QtNodes::PortType;
 using QtNodes::PortIndex;
 
+
+
 FlowScene::
 FlowScene(std::shared_ptr<DataModelRegistry> registry)
   : _registry(registry)
@@ -51,7 +53,18 @@ FlowScene(std::shared_ptr<DataModelRegistry> registry)
   auto UpdateLamda = [this](Node& n, const QPointF& p)
   {
     resolveGroups(n);
-	  UpdateHistory();
+    actionsHistory.push(UndoRedoAction(
+      [](double v)
+      {
+        return 0;
+      },
+      [](double v)
+      {
+        return 0;
+      }
+    ));
+
+	  // UpdateHistory();
   };
   connect(this, &FlowScene::nodeMoveFinished, this, UpdateLamda);
   

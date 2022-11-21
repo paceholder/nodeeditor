@@ -11,6 +11,7 @@
 #include "QUuidStdHash.hpp"
 #include "Export.hpp"
 #include "DataModelRegistry.hpp"
+#include <stack>
 
 namespace QtNodes
 {
@@ -27,6 +28,17 @@ class NodeStyle;
 struct SceneHistory
 {
 	QByteArray data;
+};
+
+
+struct UndoRedoAction {
+
+  std::function<int(double)> undoAction;
+  std::function<int(double)> redoAction;
+  UndoRedoAction(std::function<int(double)> undoAction, std::function<int(double)> redoAction) {
+    this->undoAction = undoAction;
+    this->redoAction = redoAction;
+  };
 };
 
 
@@ -47,6 +59,7 @@ public:
 
   ~FlowScene();
 
+  std::stack<UndoRedoAction> actionsHistory;
 public:
 
   std::shared_ptr<Connection>createConnection(PortType connectedPort,
