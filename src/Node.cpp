@@ -11,6 +11,7 @@
 
 #include "ConnectionGraphicsObject.hpp"
 #include "ConnectionState.hpp"
+#include "Connection.hpp"
 #include <QtWidgets/QGraphicsView>
 
 using QtNodes::Node;
@@ -22,6 +23,8 @@ using QtNodes::NodeDataModel;
 using QtNodes::NodeGraphicsObject;
 using QtNodes::PortIndex;
 using QtNodes::PortType;
+using QtNodes::Connection;
+
 
 Node::
 Node(std::unique_ptr<NodeDataModel> && dataModel)
@@ -267,4 +270,12 @@ onDataUpdated(PortIndex index)
 
   for (auto const & c : connections)
     c.second->propagateData(nodeData);
+}
+
+void
+Node::
+onDataUpdatedConnection(PortIndex index, Connection* connection)
+{
+  auto nodeData = _nodeDataModel->outData(index);
+  connection->propagateData(nodeData);
 }

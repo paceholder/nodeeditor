@@ -102,6 +102,9 @@ public:
   NodeDataModel*
   nodeDataModel() const;
 
+  int targetInputConnections=0;
+  int currentInputConnections=0;
+
 
 public slots: // data propagation
 
@@ -114,6 +117,11 @@ public slots: // data propagation
   /// and propagates it to the connection
   void
   onDataUpdated(PortIndex index);
+
+  /// Fetches data from model's OUT #index port
+  /// and propagates it to the connection
+  void
+  onDataUpdatedConnection(PortIndex index, Connection* connection);
 
 private:
 

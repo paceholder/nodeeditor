@@ -150,7 +150,8 @@ tryConnect() const
   if (outNode)
   {
     PortIndex outPortIndex = _connection->getPortIndex(PortType::Out);
-    outNode->onDataUpdated(outPortIndex);
+    // outNode->onDataUpdated(outPortIndex);
+    outNode->onDataUpdatedConnection(outPortIndex, _connection);
   }
   
   _scene->UpdateHistory();
