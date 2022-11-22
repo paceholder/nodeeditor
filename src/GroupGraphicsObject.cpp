@@ -449,6 +449,7 @@ void
 GroupGraphicsObject::
 mousePressEvent(QGraphicsSceneMouseEvent * event)
 {
+  oldPosition = pos();
   if(QApplication::keyboardModifiers().testFlag(Qt::ShiftModifier))
   {
     event->ignore();
@@ -579,7 +580,7 @@ GroupGraphicsObject::
 mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 {
   QGraphicsObject::mouseReleaseEvent(event);
-  _scene.groupMoveFinished(_group, pos());
+  _scene.groupMoveFinished(_group, pos(), oldPosition);
 
   isResizingX=false;
   isResizingY=false;

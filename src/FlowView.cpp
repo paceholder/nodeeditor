@@ -297,7 +297,7 @@ contextMenuEvent(QContextMenuEvent *event)
       qWarning() << val;
       QJsonDocument d = QJsonDocument::fromJson(val.toUtf8());
       QJsonObject sett2 = d.object();
-      jsonToScene(sett2);
+      jsonToSceneMousePos(sett2);
 
 	    modelMenu.close();
     }
@@ -306,14 +306,28 @@ contextMenuEvent(QContextMenuEvent *event)
 
     if (type)
     {
-      auto& node = _scene->createNode(std::move(type));
-
+      Node& node = _scene->createNode(std::move(type));
       QPoint pos = event->pos();
-
       QPointF posView = this->mapToScene(pos);
       node.nodeGraphicsObject().setPos(posView);
 
-	  _scene->UpdateHistory();
+      QUuid id = node.id();
+      _scene->AddAction(UndoRedoAction(
+        [this, id](double v)
+        {
+          _scene->removeNodeWithID(id);
+          return 0;
+        },
+        [this, pos, modelName, id](double v)
+        {
+          auto type = _scene->registry().create(modelName);
+          auto& node = _scene->createNodeWithID(std::move(type), id);
+          QPointF posView = this->mapToScene(pos);
+          node.nodeGraphicsObject().setPos(posView);    
+          return 0;
+        },
+        "Created Node " + node.nodeDataModel()->name().toStdString()
+      ));
     }
     else
     {
@@ -411,6 +425,10 @@ void
 FlowView::
 deleteSelectedNodes()
 {
+	QJsonObject sceneJson = selectionToJson(true);
+
+  std::vector<QUuid> nodeIds;
+  std::vector<QUuid> connectionsIds;
   for (QGraphicsItem * item : _scene->selectedItems())
   {
     if(item)
@@ -434,8 +452,37 @@ deleteSelectedNodes()
           _scene->removeNode(c->node());
       }
     }
-  } 
-  _scene->UpdateHistory(); 
+  }
+  
+  
+  _scene->AddAction(UndoRedoAction(
+    //Undo action
+    [this, sceneJson](double v) 
+    {
+      jsonToScene(sceneJson);
+      return 0;
+    },
+    //Redo action
+    [this, sceneJson](double v)
+    {
+      deleteJsonElements(sceneJson);
+      return 0;
+    },
+    //Name
+    "Deletes nodes"
+  ));
+}
+
+void FlowView::deleteJsonElements(const QJsonObject &jsonDocument)
+{
+  QJsonArray nodesJsonArray = jsonDocument["nodes"].toArray();
+  for (int i = 0; i < nodesJsonArray.size(); ++i)
+  {
+    QJsonObject nodeJson = nodesJsonArray[i].toObject();
+    QUuid id = QUuid( nodeJson["id"].toString() );
+    _scene->removeNodeWithID(id);
+  }
+
 }
 
 void FlowView::copySelectedNodes() {
@@ -449,6 +496,34 @@ void FlowView::copySelectedNodes() {
 }
 
 void FlowView::jsonToScene(QJsonObject jsonDocument)
+{
+    QJsonArray nodesJsonArray = jsonDocument["nodes"].toArray();
+
+
+
+    for (int i = 0; i < nodesJsonArray.size(); ++i)
+    {
+      _scene->restoreNode(nodesJsonArray[i].toObject(), true);
+    }
+
+    QJsonArray connectionJsonArray = jsonDocument["connections"].toArray();
+    for (int i = 0; i < connectionJsonArray.size(); ++i)
+    {
+      QUuid in = QUuid(connectionJsonArray[i].toObject()["in_id"].toString());      
+      QUuid out = QUuid(connectionJsonArray[i].toObject()["out_id"].toString());
+
+      _scene->pasteConnection(connectionJsonArray[i].toObject(), in, out );
+    }
+    
+    QJsonArray groupsJsonArray = jsonDocument["groups"].toArray();
+    for (int i = 0; i < groupsJsonArray.size(); ++i)
+    {
+      _scene->restoreGroup(groupsJsonArray[i].toObject());
+    }
+}
+
+
+void FlowView::jsonToSceneMousePos(QJsonObject jsonDocument)
 {
     QJsonArray nodesJsonArray = jsonDocument["nodes"].toArray();
 
@@ -475,28 +550,38 @@ void FlowView::jsonToScene(QJsonObject jsonDocument)
     float centroidY = (maxy - miny) / 2.0 + miny;
     QPointF centroid(centroidX, centroidY);
 
-
     QPoint viewPointMouse = this->mapFromGlobal(QCursor::pos());
     QPointF posViewMouse = this->mapToScene(viewPointMouse);      
+  
+
+
 
     for (int i = 0; i < nodesJsonArray.size(); ++i)
     {
-      QUuid currentId = QUuid( nodesJsonArray[i].toObject()["id"].toString() );
+      QJsonObject nodeJson = nodesJsonArray[i].toObject();
+      QUuid currentId = QUuid( nodeJson["id"].toString() );
       QUuid newId = _scene->pasteNode(nodesJsonArray[i].toObject(), centroid, posViewMouse);
 
       addedIds.insert(std::pair<QUuid,QUuid>(currentId, newId));
+      nodesJsonArray[i] = _scene->nodes()[newId]->save();
     }
 
     QJsonArray connectionJsonArray = jsonDocument["connections"].toArray();
     for (int i = 0; i < connectionJsonArray.size(); ++i)
     {
-      QUuid in = QUuid(connectionJsonArray[i].toObject()["in_id"].toString());
+      QJsonObject connectionJson = connectionJsonArray[i].toObject();
+
+      QUuid in = QUuid(connectionJson["in_id"].toString());
       QUuid newIn = addedIds[in];
       
-      QUuid out = QUuid(connectionJsonArray[i].toObject()["out_id"].toString());
+      QUuid out = QUuid(connectionJson["out_id"].toString());
       QUuid newOut = addedIds[out];
 
-      _scene->pasteConnection(connectionJsonArray[i].toObject(), newIn, newOut );
+      _scene->pasteConnection(connectionJson, newIn, newOut );
+
+      connectionJson["in_id"] = newIn.toString();
+      connectionJson["out_id"] = newOut.toString();
+      connectionJsonArray[i] = connectionJson;
     }
     
     QJsonArray groupsJsonArray = jsonDocument["groups"].toArray();
@@ -504,14 +589,36 @@ void FlowView::jsonToScene(QJsonObject jsonDocument)
     {
       _scene->pasteGroup(groupsJsonArray[i].toObject(), centroid, posViewMouse);
     }
+  
 
-    _scene->UpdateHistory();
+    _scene->AddAction(UndoRedoAction(
+        [this, addedIds](double v)
+        {
+          //Delete all the created nodes
+          for(auto &id: addedIds)
+          {
+            _scene->removeNodeWithID(id.second);
+          }
+          return 0;
+        },
+        [this, jsonDocument](double v)
+        {  
+          QJsonDocument doc(jsonDocument);
+          std::string strJson= (doc.toJson(QJsonDocument::Compact)).toStdString();
+		  std::cout << strJson << std::endl;
+          jsonToScene(jsonDocument); //jsonDocument has now been updated with new IDs and new positions
+          return 0;
+        },
+        "Created Node "
+      ));
+
 }
 
-QJsonObject FlowView::selectionToJson()
+QJsonObject FlowView::selectionToJson(bool includePartialConnections)
 {
   QJsonObject sceneJson;
   QJsonArray nodesJsonArray;
+  QJsonArray connectionJsonArray;
   std::vector<QUuid> addedIds;
   
   for (QGraphicsItem * item : _scene->selectedItems())
@@ -521,17 +628,27 @@ QJsonObject FlowView::selectionToJson()
         Node& node = n->node();
         nodesJsonArray.append(node.save());
         addedIds.push_back(node.id());
+
+        if(includePartialConnections)
+        {
+          std::vector<Connection*> allConnections = node.nodeState().allConnections();
+          for(int i=0; i<allConnections.size(); i++)
+          {
+            QJsonObject connectionJson = allConnections[i]->save();
+            if (!connectionJson.isEmpty())
+              connectionJsonArray.append(connectionJson);
+          }
+        }
     }
   }
 
-  QJsonArray connectionJsonArray;
   for (QGraphicsItem * item : _scene->selectedItems())
 	{
     if (auto c = qgraphicsitem_cast<ConnectionGraphicsObject*>(item)) {
         Connection& connection = c->connection();
 
-        if( std::find(addedIds.begin(), addedIds.end(), connection.getNode(PortType::In)->id())  != addedIds.end() && 
-            std::find(addedIds.begin(), addedIds.end(), connection.getNode(PortType::Out)->id()) != addedIds.end() ) {
+        if((std::find(addedIds.begin(), addedIds.end(), connection.getNode(PortType::In)->id())  != addedIds.end() && 
+            std::find(addedIds.begin(), addedIds.end(), connection.getNode(PortType::Out)->id()) != addedIds.end()) || includePartialConnections) {
           QJsonObject connectionJson = connection.save();
           
           if (!connectionJson.isEmpty())
@@ -590,7 +707,9 @@ void FlowView::pasteSelectedNodes() {
     QByteArray text = p_Clipboard->text().toUtf8();
 
     QJsonObject const jsonDocument = QJsonDocument::fromJson(text).object();
-    jsonToScene(jsonDocument);
+    jsonToSceneMousePos(jsonDocument);
+    
+
 }
 
 
@@ -701,8 +820,8 @@ void FlowView::duplicateSelectedNode()
 	}
 	
 	
-	if(createdNodes.size() > 0)
-		_scene->UpdateHistory();
+	// if(createdNodes.size() > 0)
+		// _scene->UpdateHistory();
 }
 
 

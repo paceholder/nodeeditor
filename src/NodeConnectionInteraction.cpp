@@ -114,13 +114,13 @@ tryConnect() const
     {
       _scene->createConnection(converterNode, 0, *outNode, outNodePortIndex);
       _scene->createConnection(*_node, portIndex, converterNode, 0);
-	  _scene->UpdateHistory();
+	  // _scene->UpdateHistory();
     }
     else
     {
       _scene->createConnection(converterNode, 0, *_node, portIndex);
       _scene->createConnection(*outNode, outNodePortIndex, converterNode, 0);
-	  _scene->UpdateHistory();
+	  // _scene->UpdateHistory();
     }
 
     //Delete the users connection, we already replaced it.
@@ -154,7 +154,7 @@ tryConnect() const
     outNode->onDataUpdatedConnection(outPortIndex, _connection);
   }
   
-  _scene->UpdateHistory();
+  // _scene->UpdateHistory();
 
   return true;
 }
@@ -185,7 +185,7 @@ disconnect(PortType portToDisconnect) const
 
   _connection->getConnectionGraphicsObject().grabMouse();
 
-  _scene->UpdateHistory();
+  // _scene->UpdateHistory();
   
   return true;
 }

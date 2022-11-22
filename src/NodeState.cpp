@@ -54,6 +54,32 @@ connections(PortType portType, PortIndex portIndex) const
 }
 
 
+std::vector<Connection*>
+NodeState::
+allConnections() const
+{
+  std::vector<Connection*> res;
+  std::vector<NodeState::ConnectionPtrSet> ins = getEntries(PortType::In);
+  for(int i=0; i<ins.size(); i++)
+  {
+    for(auto &connection : ins[i])
+    {
+      res.push_back(connection.second);
+    }
+  }
+  std::vector<NodeState::ConnectionPtrSet> outs = getEntries(PortType::Out);
+  for(int i=0; i<outs.size(); i++)
+  {
+    for(auto &connection : outs[i])
+    {
+      res.push_back(connection.second);
+    }
+  }
+
+  return res;
+}
+
+
 void
 NodeState::
 setConnection(PortType portType,

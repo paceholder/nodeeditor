@@ -126,6 +126,7 @@ protected:
   contextMenuEvent(QGraphicsSceneContextMenuEvent* event) override;
 
 private:
+  QPointF oldPosition;
   FlowScene & _scene;
   Group& _group;
 

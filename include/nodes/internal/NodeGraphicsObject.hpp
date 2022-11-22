@@ -97,7 +97,7 @@ private:
 private:
 
   FlowScene & _scene;
-
+  QPointF oldPosition;
   Node& _node;
 
   bool _locked;

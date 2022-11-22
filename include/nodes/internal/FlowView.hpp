@@ -27,10 +27,10 @@ public:
 
   void setScene(FlowScene *scene);
 
-  QJsonObject selectionToJson();
-
+  QJsonObject selectionToJson(bool includePartialConnections=false);
   void jsonToScene(QJsonObject object);
-
+  void jsonToSceneMousePos(QJsonObject object);
+  void deleteJsonElements(const QJsonObject &object);
 public slots:
 
   void scaleUp();

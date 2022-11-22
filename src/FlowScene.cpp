@@ -48,30 +48,49 @@ FlowScene(std::shared_ptr<DataModelRegistry> registry)
   setItemIndexMethod(QGraphicsScene::NoIndex);
   
   ResetHistory();
-  UpdateHistory();
   
-  auto UpdateLamda = [this](Node& n, const QPointF& p)
+  auto UpdateLamda = [this](Node& n, const QPointF& newPosition, const QPointF &oldPosition)
   {
     resolveGroups(n);
-    actionsHistory.push(UndoRedoAction(
-      [](double v)
+    
+    undoActions.push_back(UndoRedoAction(
+      [&n, oldPosition](double v)
       {
+        n.nodeGraphicsObject().setPos(oldPosition);
         return 0;
       },
-      [](double v)
+      [&n, newPosition](double v)
       {
+        n.nodeGraphicsObject().setPos(newPosition);
         return 0;
-      }
+      },
+      "Moved Node " + n.nodeDataModel()->name().toStdString()
     ));
+    redoActions.clear();
 
-	  // UpdateHistory();
+    PrintActions();
   };
   connect(this, &FlowScene::nodeMoveFinished, this, UpdateLamda);
   
-  auto GroupUpdateLamda = [this](Group& g, const QPointF& p)
+  auto GroupUpdateLamda = [this](Group& g, const QPointF& newPosition, const QPointF& oldPosition)
   {
     resolveGroups(g);
-	  UpdateHistory();
+    
+    
+    undoActions.push_back(UndoRedoAction(
+      [&g, oldPosition](double v)
+      {
+        g.groupGraphicsObject().setPos(oldPosition);
+        return 0;
+      },
+      [&g, newPosition](double v)
+      {
+        g.groupGraphicsObject().setPos(newPosition);
+        return 0;
+      },
+      "Moved Group " + g.GetName().toStdString()
+    ));
+    redoActions.clear();
   };
   connect(this, &FlowScene::groupMoveFinished, this, GroupUpdateLamda);
 
@@ -219,6 +238,27 @@ createNode(std::unique_ptr<NodeDataModel> && dataModel)
   return *nodePtr;
 }
 
+
+Node&
+FlowScene::
+createNodeWithID(std::unique_ptr<NodeDataModel> && dataModel, QUuid id)
+{
+  auto node = std::make_unique<Node>(std::move(dataModel));
+  node->setId(id);
+
+  auto ngo  = std::make_unique<NodeGraphicsObject>(*this, *node);
+
+  node->setGraphicsObject(std::move(ngo));
+
+  auto nodePtr = node.get();
+  _nodes[node->id()] = std::move(node);
+
+  nodeCreated(*nodePtr);
+  
+  return *nodePtr;
+}
+
+
 Group& FlowScene::createGroup() {
   auto group = std::make_shared<Group>(*this);
   auto ggo  = std::make_shared<GroupGraphicsObject>(*this, *group);
@@ -289,7 +329,7 @@ pasteGroup(QJsonObject const& groupJson, QPointF nodeGroupCentroid, QPointF mous
 
 Node&
 FlowScene::
-restoreNode(QJsonObject const& nodeJson)
+restoreNode(QJsonObject const& nodeJson, bool keepId)
 {
   QString modelName = nodeJson["model"].toObject()["name"].toString();
   auto dataModel = registry().create(modelName); //This is where it looks for the node by name
@@ -300,6 +340,7 @@ restoreNode(QJsonObject const& nodeJson)
   }
 
   auto node = std::make_shared<Node>(std::move(dataModel));
+  if(keepId) node->setId(QUuid( nodeJson["id"].toString() ));
   auto ngo  = std::make_unique<NodeGraphicsObject>(*this, *node);
   node->setGraphicsObject(std::move(ngo));
   
@@ -369,6 +410,38 @@ removeNode(Node& node)
   
   _nodes.erase(node.id());
 }
+
+
+
+void
+FlowScene::
+removeNodeWithID(QUuid id)
+{
+  UniqueNode nodePtr = _nodes[id];
+  Node &node = *nodePtr;
+  // call signal
+  nodeDeleted(node);
+
+  auto deleteConnections =
+    [&node, this] (PortType portType)
+    {
+      auto nodeState = node.nodeState();
+      auto const & nodeEntries = nodeState.getEntries(portType);
+
+      for (auto &connections : nodeEntries)
+      {
+        for (auto const &pair : connections)
+          deleteConnection(*pair.second);
+      }
+    };
+
+  deleteConnections(PortType::In);
+  deleteConnections(PortType::Out);
+
+  
+  _nodes.erase(node.id());
+}
+
 
 void
 FlowScene::
@@ -620,6 +693,13 @@ resolveGroups(Node& n) {
 std::unordered_map<QUuid, std::shared_ptr<Node> > const &
 FlowScene::
 nodes() const
+{
+  return _nodes;
+}
+
+std::unordered_map<QUuid, std::shared_ptr<Node> > &
+FlowScene::
+nodes()
 {
   return _nodes;
 }
@@ -881,59 +961,60 @@ loadFromMemory(const QByteArray& data)
   }
 }
 
+
+void FlowScene::PrintActions()
+{
+  std::cout << "ACTIONS " << std::endl;
+  for(int i=0; i<undoActions.size(); i++)
+  {
+    std::cout << undoActions[i].name << std::endl;
+  }
+  for(int i=0; i<redoActions.size(); i++)
+  {
+    std::cout << " -  " << redoActions[i].name << std::endl;
+  }
+}
+
+void FlowScene::AddAction(QtNodes::UndoRedoAction action)
+{
+  if(writeToHistory)
+  {
+    undoActions.push_back(action);
+    redoActions.clear();
+    PrintActions();
+  }
+}
+
 void FlowScene::Undo()
 {
-	std::cout << "Undo" << std::endl; 
-	if(historyInx > 1)
-	{
-		writeToHistory = false; 
-		clearScene();
-		historyInx--;
-		loadFromMemory(history[historyInx - 1].data);
-		writeToHistory = true; 
-	}
+  PrintActions();
+  if(undoActions.size()>0)
+  {
+    writeToHistory = false; 
+    UndoRedoAction action = undoActions[undoActions.size()-1];
+    undoActions.pop_back();
+    action.undoAction(0);
+
+    redoActions.push_back(action);
+    writeToHistory = true; 
+  }
 }
   
 void FlowScene::Redo()
 {
-	std::cout << "Redo" << std::endl; 
-	writeToHistory = false; 
-	if(historyInx < history.size())
-	{
-		std::cout << "historyInx:" << historyInx << " history.size():" << history.size() << std::endl; 
-		clearScene();
-		loadFromMemory(history[historyInx].data);
-		historyInx++;
-	}
-	else
-	{
-		std::cout << "Could not redo" << std::endl;
-	}
-	writeToHistory = true;
+  PrintActions();
+  if(redoActions.size()>0)
+  {
+    writeToHistory = false; 
+    UndoRedoAction action = redoActions[redoActions.size()-1];
+    redoActions.pop_back();
+    action.redoAction(0);
+
+    undoActions.push_back(action);
+    writeToHistory = true;  
+  }
 }
 
-void FlowScene::UpdateHistory()
-{
-	if(writeToHistory)
-	{
-		std::cout << "UpdateHistory" << std::endl; 
-		
-		SceneHistory sh;
-		sh.data = saveToMemory();
-		
-		if(historyInx < history.size())
-		{
-			history.resize(historyInx);
-			history.push_back(sh);	
-		}
-		else
-		{
-			history.push_back(sh);
-		}
-		
-		historyInx++;
-	}
-}
 
 
 void FlowScene::ResetHistory()

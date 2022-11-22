@@ -46,6 +46,9 @@ public:
   ConnectionPtrSet
   connections(PortType portType, PortIndex portIndex) const;
     
+  std::vector<Connection*>
+  allConnections() const;
+
   void
   setConnection(PortType portType,
                 PortIndex portIndex,

@@ -35,9 +35,11 @@ struct UndoRedoAction {
 
   std::function<int(double)> undoAction;
   std::function<int(double)> redoAction;
-  UndoRedoAction(std::function<int(double)> undoAction, std::function<int(double)> redoAction) {
+  std::string name;
+  UndoRedoAction(std::function<int(double)> undoAction, std::function<int(double)> redoAction, std::string name) {
     this->undoAction = undoAction;
     this->redoAction = redoAction;
+    this->name = name;
   };
 };
 
@@ -59,7 +61,9 @@ public:
 
   ~FlowScene();
 
-  std::stack<UndoRedoAction> actionsHistory;
+  std::vector<UndoRedoAction> undoActions;
+  std::vector<UndoRedoAction> redoActions;
+  void PrintActions();
 public:
 
   std::shared_ptr<Connection>createConnection(PortType connectedPort,
@@ -77,12 +81,14 @@ public:
   void deleteConnection(Connection* connection);
 
   Node&createNode(std::unique_ptr<NodeDataModel> && dataModel);
+  
+  Node&createNodeWithID(std::unique_ptr<NodeDataModel> && dataModel, QUuid id);
 
   Group& createGroup();
   
   Group& pasteGroup(QJsonObject const& nodeJson, QPointF nodeGroupCentroid, QPointF mousePos);
 
-  Node&restoreNode(QJsonObject const& nodeJson);
+  Node&restoreNode(QJsonObject const& nodeJson, bool keepId=false);
   
   Group& restoreGroup(QJsonObject const& nodeJson);
 
@@ -91,6 +97,8 @@ public:
   void pasteConnection(QJsonObject const &connectionJson, QUuid newIn, QUuid newOut);
 
   void removeNode(Node& node);
+
+  void removeNodeWithID(QUuid id);
 
   void removeGroup(Group& node);
 
@@ -117,6 +125,7 @@ public:
 public:
 
   std::unordered_map<QUuid, std::shared_ptr<Node> > const &nodes() const;
+  std::unordered_map<QUuid, std::shared_ptr<Node> >  &nodes();
 
   std::unordered_map<QUuid, std::shared_ptr<Connection> > const &connections() const;
 
@@ -136,11 +145,11 @@ public:
 
   void loadFromMemory(const QByteArray& data);
   
+  void AddAction(UndoRedoAction action);
+
   void Undo();
   
   void Redo();
-  
-  void UpdateHistory();
   
   void ResetHistory();
 
@@ -162,9 +171,9 @@ signals:
 
   void groupMoved(Group& n, const QPointF& newLocation);
   
-  void nodeMoveFinished(Node& n, const QPointF& newLocation);
+  void nodeMoveFinished(Node& n, const QPointF& newLocation, const QPointF &oldLocation);
   
-  void groupMoveFinished(Group& g, const QPointF& newLocation);
+  void groupMoveFinished(Group& g, const QPointF& newLocation, const QPointF& oldLocation);
 
   void nodeDoubleClicked(Node& n);
   

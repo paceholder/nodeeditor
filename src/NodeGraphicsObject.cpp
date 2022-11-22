@@ -234,8 +234,9 @@ void
 NodeGraphicsObject::
 mousePressEvent(QGraphicsSceneMouseEvent * event)
 {
+  
   if(_locked) return;
-
+  oldPosition = pos();
   // deselect all other items after this one is selected
   if (!isSelected() &&
       !(event->modifiers() & Qt::ControlModifier))
@@ -372,7 +373,7 @@ mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 
   QGraphicsObject::mouseReleaseEvent(event);
   
-  _scene.nodeMoveFinished(_node, pos());
+  _scene.nodeMoveFinished(_node, pos(), oldPosition);
 
   // position connections precisely after fast node move
   moveConnections();
