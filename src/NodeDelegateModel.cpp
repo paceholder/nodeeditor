@@ -38,7 +38,7 @@ NodeDelegateModel::
 portConnectionPolicy(PortType portType, PortIndex) const
 {
   auto result = ConnectionPolicy::One;
-  switch(portType)
+  switch (portType)
   {
     case PortType::In:
       result = ConnectionPolicy::One;
@@ -62,10 +62,10 @@ nodeStyle() const
 
 void
 NodeDelegateModel::
-setNodeStyle(NodeStyle const& style)
+setNodeStyle(NodeStyle const & style)
 {
   _nodeStyle = style;
 }
 
 
-}
+} // namespace QtNodes

@@ -211,7 +211,7 @@ public:
    *   - undo/redo operations after deleting the node.
    *
    * QJsonObject must contain following fields:
-   * 
+   *
    *
    * ```
    * {
@@ -242,6 +242,11 @@ public:
   /**
    * Function clears connections attached to the ports that are scheduled to be
    * deleted. It must be called right before the model removes its old port data.
+   *
+   * @param nodeId Defines the node to be modified
+   * @param portType Is either PortType::In or PortType::Out
+   * @param first Index of the first port to be removed
+   * @param last Index of the last port to be removed
    */
   void
   portsAboutToBeDeleted(NodeId const    nodeId,
@@ -258,8 +263,8 @@ public:
 
   /**
    * Signal emitted when model is about to create new ports on the given node.
-   * @param first is the first index of the new port after insertion.
-   * @Param last is the last index of the new port after insertion.
+   * @param first Is the first index of the new port after insertion.
+   * @param last Is the last index of the new port after insertion.
    *
    * Function caches existing connections that are located after the `last` port
    * index. For such connections the new "post-insertion" addresses are computed

@@ -26,11 +26,11 @@ if read_the_docs_build:
 # -- Project information -----------------------------------------------------
 
 project = 'QtNodes'
-copyright = '2021, Dmitry Pinaev'
+copyright = '2022, Dmitry Pinaev'
 author = 'Dmitry Pinaev'
 
 # The full version, including alpha/beta/rc tags
-release = '3.0 alpha'
+release = '3.0'
 
 
 # -- General configuration ---------------------------------------------------
@@ -38,7 +38,8 @@ release = '3.0 alpha'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = [ "breathe" ]
+extensions = [ "breathe", "sphinx_rtd_theme" ]
+
 
 #Breathe configuration
 breathe_default_project = "QtNodes"
@@ -63,4 +64,4 @@ html_theme = 'sphinx_rtd_theme'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+html_static_path = ['_static', 'css']

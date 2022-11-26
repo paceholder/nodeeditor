@@ -119,7 +119,7 @@ main(int argc, char* argv[])
   // use the obtained `NodeId` to fetch the `NodeDelegateModel`s
   QJsonDocument sceneJson = QJsonDocument::fromJson(addingNumbersScene.toUtf8());
 
-  dataFlowGraphModel.load(sceneJson);
+  dataFlowGraphModel.load(sceneJson.object());
 
   qInfo() << "Data Flow graph was created from a json-serialized graph";
 

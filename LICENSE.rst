@@ -1,7 +1,7 @@
 BSD-3-Clause license
 ====================
 
-Copyright (c) 2017, Dmitry Pinaev
+Copyright (c) 2022, Dmitry Pinaev
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,

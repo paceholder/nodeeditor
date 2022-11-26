@@ -13,6 +13,9 @@ Basic Classes
 .. doxygenclass:: QtNodes::NodeData
    :members:
 
+.. doxygenstruct:: QtNodes::ConnectionId
+   :members:
+
 .. doxygenclass:: QtNodes::BasicGraphicsScene
    :members:
 
@@ -25,10 +28,19 @@ Basic Classes
 .. doxygenclass:: QtNodes::NodeGraphicsObject
    :members:
 
-.. doxygenclass:: QtNodes::NodePainter
+.. doxygenclass:: QtNodes::AbstractNodePainter
    :members:
 
-.. doxygenclass:: QtNodes::NodeGeometry
+.. doxygenclass:: QtNodes::DefaultNodePainter
+   :members:
+
+.. doxygenclass:: QtNodes::AbstractNodeGeometry
+   :members:
+
+.. doxygenclass:: QtNodes::DefaultHorizontalNodeGeometry
+   :members:
+
+.. doxygenclass:: QtNodes::DefaultVerticalNodeGeometry
    :members:
 
 .. doxygenclass:: QtNodes::NodeState
@@ -67,9 +79,9 @@ Dataflow Classes
 Definitions
 -----------
 
-.. doxygentypedef:: QtNodes::ConnectionId
-
 .. doxygentypedef:: QtNodes::NodeId
+
+.. doxygentypedef:: QtNodes::PortIndex
 
 .. doxygenenum:: QtNodes::NodeRole
 

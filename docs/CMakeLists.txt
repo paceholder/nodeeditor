@@ -46,8 +46,6 @@ endif()
 find_package(Sphinx)
 
 if (Sphinx_FOUND)
-
-
   set(SPHINX_SOURCE ${CMAKE_CURRENT_SOURCE_DIR})
   set(SPHINX_BUILD ${CMAKE_CURRENT_BINARY_DIR}/sphinx)
   set(SPHINX_INDEX_FILE ${SPHINX_BUILD}/index.html)
