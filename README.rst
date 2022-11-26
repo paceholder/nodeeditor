@@ -111,34 +111,31 @@ With Cmake using `vcpkg`
    -DCMAKE_TOOLCHAIN_FILE=<vcpkg_dir>/scripts/buildsystems/scripts/buildsystems/vcpkg.cmake
 
 
-Version 3 Roadmap
-=================
+Version 3 Highlights
+====================
 
-#. Headless mode. [done]
+#. Headless mode.
    You can create, populate, modify the derivative of AbstractGraphModel
    without adding it to the actual Flow Scene.
    The library is now designed to be general-purpose graph
    visualization and modification tool, without specialization on only
    data propagation.
-#. Build data propagation on top of the graph code [done].
+#. Build data propagation on top of the graph code.
+   The library coudl be used for a pure grph visualization purposes as well as
+   for originally implemented data propagation.
 
-   #. Fix old unit-tests. [in progress].
-   #. Fix save/restore. [done].
-   #. Fix CI scriptst on travis and appveyor. [partially done].
 
-#. Backward compatibility with Qt5 [not started/help needed].
-#. Write improved documentation based on Sphynx platform [done].
-#. Extend set of examples [partially done].
-#. Undo Redo [done].
-#. Delegate Node Painter [not started].
-#. Vertical Node/Connection Layout.
-#. Python wrappring using PySide [HELP NEEDED].
-#. Implement grouping nodes [not started].
+Help Needed
+===========
+
+#. Python wrappring using PySide.
+#. QML frontend.
+#. Wirting a ClangFormat config.
 
 Any suggestions are welcome!
 
 
-Contributing
+Contribution
 ============
 
 #. Be polite, respectful and collaborative.
@@ -168,11 +165,11 @@ Citing
 
 ::
 
-    Dmitry Pinaev et al, Qt Node Editor, (2017), GitHub repository, https://github.com/paceholder/nodeeditor
+    Dmitry Pinaev et al, Qt Nodes, (2022), GitHub repository, https://github.com/paceholder/nodeeditor
 
 BibTeX::
 
-    @misc{Pinaev2017,
+    @misc{Pinaev2022,
       author = {Dmitry Pinaev et al},
       title = {QtNodes. Node Editor},
       year = {2017},
@@ -193,6 +190,13 @@ If you like the project you could donate me on PayPal |ImagePaypal|_
 
 If you send more than $100, I'll forward $100 to some fund supporting sick
 children and report to you back.
+
+
+Thanks
+======
+
+The version 3 was released with a generous help of
+`Davide Faconti <https://github.com/facontidavide>`_
 
 
 Showcase

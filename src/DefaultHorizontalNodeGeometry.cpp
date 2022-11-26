@@ -28,6 +28,7 @@ DefaultHorizontalNodeGeometry(AbstractGraphModel & graphModel)
   _portSize = _fontMetrics.height();
 }
 
+
 QRectF
 DefaultHorizontalNodeGeometry::
 boundingRect(NodeId const nodeId) const

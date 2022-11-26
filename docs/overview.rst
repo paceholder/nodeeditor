@@ -29,23 +29,26 @@ The "headless" mode is also supported. It is possible to create, delete, connect
 and disconnect nodes, as well as propagate data, without assigning your
 :cpp:type:`AbstractGraphModel` derivative to a :cpp:type:`BasicGraphicsScene`.
 
-Examples
---------
+Examples Directory Layout
+-------------------------
 
-The examples could be found in the folder ``examples``:
+The examples could be found in the directory ``examples``:
 
 - ``graph``. Demonstrates usage of AbstractGraphModel for general
   graph visulalization and editing.
-- "legacy" examples from versions prior to ``3.0``:
-
+- ``dynamic_ports``. Shows what needs to be done to dynamically create and
+  destroy node ports.
+- ``lock_nodes_and_connections``. Demonstrates two capabilities of
+  "non-detachable" connectinos and "locked" nodes (non-movable, non-selectable).
+- legacy "data flow" examples from versions prior to ``3.0``:
   - ``text``. Text is propagated between the nodes.
   - ``calculator/main.cpp``. Dataflow-based implementation of the simplest
-    calculator. We use an advanced model
-    :cpp:type:`QtNodes::DataFlowGraphModel` capable of storing the registry of
-    NodeDataModel and propagating user data beween the nodes.
+    calculator. We use an advanced model :cpp:type:`QtNodes::DataFlowGraphModel`
+    capable of storing the registry of NodeDataModel and propagating user data
+    beween the nodes.
   - ``calculator/headless_main.cpp``. The example loads a scene saved by a
     GUI-based ``calculator`` example and computes several results without
-    creating any GUI elements.
+    creating GUI elements.
   - ``connection_colors``. Demonstrates the ability to color the
     connections in correspondence to the connected data types.
   - ``resizable_images``. The examples shows how to embed a widget into nodes and
@@ -54,46 +57,8 @@ The examples could be found in the folder ``examples``:
 
 
 
-Node Geometry
--------------
+Feedback Wanted
+---------------
 
-.. code-block::
-
-                         vertical spacing
-                        /
-            port width                      port width
-           |          | |                | |         |
-
-    0 _     _________________________________________    ___
-           /                 Caption                 \
-           |             ________________            |   ___  caption height
-           |             |               |           |
-           O In Name     |               |  Out Name O        entry
-           |             |               |           |   ___
-           |             |               |           |   ___  vertical spacing
-           |             |               |           |
-           O Another In  |               |  Out Name O
-           |             |               |           |
-           |             |               |           |
-           |             |               |           |
-           O             |               |           O
-           |             |               |           |
-           |             |_______________|           |
-           |                                         |
-           O                                         |
-           |                                         |
-           \_________________________________________/
-
-
-
-
-Node's size must be recalculated in following cases:
-
-  #. After construction.
-  #. Embedding the widget.
-  #. After resizing.
-  #. Before painting (conditional, depends on whether the font metrics was changed).
-  #. When incoming data changed (could trigger size changes, maybe in captions).
-  #. When embedded widget changes its size.
-
-
+Make a request on `Github <https://github.com/paceholder/nodeeditor>`_ if
+something is unclear in the code or in the documentation.

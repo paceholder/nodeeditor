@@ -28,7 +28,6 @@ class NODE_EDITOR_PUBLIC NodeDelegateModel
   Q_OBJECT
 
 public:
-
   NodeDelegateModel();
 
   virtual
@@ -60,7 +59,6 @@ public:
   name() const = 0;
 
 public:
-
   QJsonObject
   save() const override;
 
@@ -68,7 +66,6 @@ public:
   load(QJsonObject const &) override;
 
 public:
-
   virtual
   unsigned int
   nPorts(PortType portType) const = 0;
@@ -78,23 +75,20 @@ public:
   dataType(PortType portType, PortIndex portIndex) const = 0;
 
 public:
-
   virtual
   ConnectionPolicy
   portConnectionPolicy(PortType, PortIndex) const;
 
-  NodeStyle const&
+  NodeStyle const &
   nodeStyle() const;
 
   void
-  setNodeStyle(NodeStyle const& style);
+  setNodeStyle(NodeStyle const & style);
 
 public:
-
   virtual
   void
-  setInData(std::shared_ptr<NodeData> nodeData,
-            PortIndex const portIndex) = 0;
+  setInData(std::shared_ptr<NodeData> nodeData, PortIndex const portIndex) = 0;
 
   virtual
   std::shared_ptr<NodeData>
@@ -111,7 +105,7 @@ public:
    * QGraphicsProxyWidget, we'll gonna have a dangling pointer.
    */
   virtual
-  QWidget*
+  QWidget *
   embeddedWidget() = 0;
 
   virtual
@@ -120,25 +114,21 @@ public:
 
 public Q_SLOTS:
 
-  virtual void
-  inputConnectionCreated(ConnectionId const&)
-  {}
+  virtual
+  void
+  inputConnectionCreated(ConnectionId const &) {}
 
+  virtual
+  void
+  inputConnectionDeleted(ConnectionId const &) {}
 
-  virtual void
-  inputConnectionDeleted(ConnectionId const&)
-  {}
+  virtual
+  void
+  outputConnectionCreated(ConnectionId const &) {}
 
-
-  virtual void
-  outputConnectionCreated(ConnectionId const&)
-  {}
-
-
-  virtual void
-  outputConnectionDeleted(ConnectionId const&)
-  {}
-
+  virtual
+  void
+  outputConnectionDeleted(ConnectionId const &) {}
 
 Q_SIGNALS:
 
@@ -163,5 +153,4 @@ private:
   NodeStyle _nodeStyle;
 };
 
-
-}
+} // namespace QtNodes

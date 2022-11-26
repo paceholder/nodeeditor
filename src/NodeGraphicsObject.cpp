@@ -308,7 +308,6 @@ mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 
   if (_nodeState.resizing())
   {
-    qDebug() << "MouseMove: Resizing";
     auto diff = event->pos() - event->lastPos();
 
     if (auto w = _graphModel.nodeData<QWidget*>(_nodeId, NodeRole::Widget))

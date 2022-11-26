@@ -415,8 +415,15 @@ setPortData(NodeId          nodeId,
   {
     case PortRole::Data:
       if (portType == PortType::In)
+      {
         model->setInData(value.value<std::shared_ptr<NodeData>>(),
                          portIndex);
+
+        // Triggers repainting on the scene.
+        Q_EMIT inPortDataWasSet(nodeId,
+                                portType,
+                                portIndex);
+      }
       break;
 
     default:
@@ -521,7 +528,7 @@ saveNode(NodeId const nodeId) const
 }
 
 
-QJsonDocument
+QJsonObject
 DataFlowGraphModel::
 save() const
 {
@@ -555,7 +562,7 @@ save() const
   }
   sceneJson["connections"] = connJsonArray;
 
-  return QJsonDocument(sceneJson);
+  return sceneJson;
 }
 
 
@@ -599,10 +606,8 @@ loadNode(QJsonObject const & nodeJson)
 
 void
 DataFlowGraphModel::
-load(QJsonDocument const &json)
+load(QJsonObject const &jsonDocument)
 {
-  QJsonObject const jsonDocument = json.object();
-
   QJsonArray nodesJsonArray = jsonDocument["nodes"].toArray();
 
   for (QJsonValueRef node : nodesJsonArray)
@@ -661,35 +666,26 @@ onOutPortDataUpdated(NodeId const    nodeId,
 
   for (auto const& cn : connected)
   {
-    // When restoring a model from file, not all models are loaded simultaneously.
-    if (_models.find(cn.inNodeId) == _models.end())
-      continue;
-
     setPortData(cn.inNodeId, PortType::In,
                 cn.inPortIndex, portDataToPropagate,
                 PortRole::Data);
 
-    // Maybe this call should be on the receiving side.
-    Q_EMIT inPortDataWasSet(cn.inNodeId, PortType::In, cn.inPortIndex);
   }
 }
 
 
 void
-
 DataFlowGraphModel::
 propagateEmptyDataTo(NodeId const    nodeId,
                      PortIndex const portIndex)
 {
-  auto const emptyData = std::shared_ptr<NodeData>();
+  QVariant emptyData{};
 
-  // When restoring a model from file, not all models are loaded simultaneously.
-  if (_models.find(nodeId) != _models.end())
-  {
-    _models[nodeId]->setInData(emptyData, portIndex);
-
-    Q_EMIT inPortDataWasSet(nodeId, PortType::In, portIndex);
-  }
+  setPortData(nodeId,
+              PortType::In,
+              portIndex,
+              emptyData,
+              PortRole::Data);
 }
 
 

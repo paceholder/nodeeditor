@@ -2,9 +2,11 @@
 
 #include "ConnectionIdUtils.hpp"
 #include "NodeDelegateModelRegistry.hpp"
-#include "Export.hpp"
 #include "AbstractGraphModel.hpp"
 #include "StyleCollection.hpp"
+#include "Serializable.hpp"
+
+#include "Export.hpp"
 
 #include <QJsonObject>
 
@@ -13,7 +15,9 @@
 namespace QtNodes
 {
 
-class NODE_EDITOR_PUBLIC DataFlowGraphModel : public AbstractGraphModel
+class NODE_EDITOR_PUBLIC DataFlowGraphModel
+  : public AbstractGraphModel
+  , public Serializable
 {
   Q_OBJECT
 
@@ -91,14 +95,14 @@ public:
   QJsonObject
   saveNode(NodeId const) const override;
 
-  QJsonDocument
-  save() const;
+  QJsonObject
+  save() const override;
 
   void
   loadNode(QJsonObject const & nodeJson) override;
 
   void
-  load(QJsonDocument const &json);
+  load(QJsonObject const &json) override;
 
   QJsonObject
   saveConnection(ConnectionId const & connId) const override;
@@ -125,9 +129,9 @@ public:
 
 Q_SIGNALS:
   void
-  inPortDataWasSet(NodeId const    nodeId,
-                   PortType const  portType,
-                   PortIndex const portIndex);
+  inPortDataWasSet(NodeId const,
+                   PortType const,
+                   PortIndex const);
 
 private:
   NodeId

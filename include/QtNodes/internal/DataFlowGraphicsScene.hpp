@@ -41,16 +41,6 @@ public Q_SLOTS:
   void
   load();
 
-  void
-  onPortDataSet(NodeId const    nodeId,
-                PortType const  portType,
-                PortIndex const portIndex);
-
-
-  QJsonDocument saveToJsonDocument() const;
-
-  void loadFromJsonDocument(QJsonDocument const& json);
-
 private:
   DataFlowGraphModel &_graphModel;
 };
