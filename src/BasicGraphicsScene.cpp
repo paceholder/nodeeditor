@@ -9,7 +9,7 @@
 #include "GraphicsView.hpp"
 #include "NodeGraphicsObject.hpp"
 
-#include <QtGui/QUndoStack>
+#include <QUndoStack>
 
 #include <QtWidgets/QGraphicsSceneMoveEvent>
 #include <QtWidgets/QFileDialog>

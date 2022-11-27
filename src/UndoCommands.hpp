@@ -2,7 +2,7 @@
 
 #include "Definitions.hpp"
 
-#include <QtGui/QUndoCommand>
+#include <QUndoCommand>
 #include <QtCore/QPointF>
 #include <QtCore/QJsonObject>
 

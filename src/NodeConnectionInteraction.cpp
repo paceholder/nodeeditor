@@ -1,17 +1,15 @@
 #include "NodeConnectionInteraction.hpp"
 
-#include <QtCore/QDebug>
-
-#include <QtGui/QUndoStack>
-
-#include <iostream>
-
 #include "AbstractNodeGeometry.hpp"
 #include "BasicGraphicsScene.hpp"
 #include "ConnectionGraphicsObject.hpp"
 #include "ConnectionIdUtils.hpp"
 #include "NodeGraphicsObject.hpp"
 #include "UndoCommands.hpp"
+
+#include <QtCore/QDebug>
+
+#include <QUndoStack>
 
 
 namespace QtNodes
