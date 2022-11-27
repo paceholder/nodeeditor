@@ -184,6 +184,7 @@ target_compile_options(QtNodes
   PRIVATE
     $<$<CXX_COMPILER_ID:MSVC>:/W4 /wd4127 /EHsc>
     $<$<CXX_COMPILER_ID:GNU>:-Wall -Wextra>
+    $<$<CXX_COMPILER_ID:AppleClang>:-Wall -Wextra -Werror>
 )
 if(NOT "${CMAKE_CXX_SIMULATE_ID}" STREQUAL "MSVC")
   # Clang-Cl on MSVC identifies as "Clang" but behaves more like MSVC:

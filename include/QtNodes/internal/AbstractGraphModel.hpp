@@ -91,7 +91,7 @@ public:
   /// Defines if detaching the connection is possible.
   virtual
   bool
-  detachPossible(ConnectionId const connectionId) const { return true; }
+  detachPossible(ConnectionId const) const { return true; }
 
   /// Creates a new connection between two nodes.
   /**

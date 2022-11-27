@@ -46,6 +46,8 @@ portConnectionPolicy(PortType portType, PortIndex) const
     case PortType::Out:
       result = ConnectionPolicy::Many;
       break;
+    case PortType::None:
+      break;
   }
 
   return result;
