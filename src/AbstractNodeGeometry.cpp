@@ -5,6 +5,7 @@
 
 #include <QMargins>
 
+#include <cmath>
 
 namespace QtNodes
 {
