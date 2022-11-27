@@ -1,7 +1,6 @@
 #include "DefaultVerticalNodeGeometry.hpp"
 
 #include "AbstractGraphModel.hpp"
-#include "StyleCollection.hpp"
 #include "NodeData.hpp"
 
 #include <QRect>
@@ -91,10 +90,6 @@ portPosition(NodeId const    nodeId,
              PortType const  portType,
              PortIndex const portIndex) const
 {
-  auto const& nodeStyle = StyleCollection::nodeStyle();
-
-  unsigned int outPortWidth = maxPortsTextAdvance(nodeId, PortType::Out);
-
   QPointF result;
 
   QSize size = _graphModel.nodeData<QSize>(nodeId, NodeRole::Size);

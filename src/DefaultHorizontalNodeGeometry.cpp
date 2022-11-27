@@ -1,7 +1,6 @@
 #include "DefaultHorizontalNodeGeometry.hpp"
 
 #include "AbstractGraphModel.hpp"
-#include "StyleCollection.hpp"
 #include "NodeData.hpp"
 
 #include <QRect>
@@ -79,8 +78,6 @@ portPosition(NodeId const    nodeId,
              PortType const  portType,
              PortIndex const portIndex) const
 {
-  auto const& nodeStyle = StyleCollection::nodeStyle();
-
   unsigned int const step = _portSize + _portSpasing;
 
   QPointF result;
@@ -99,7 +96,6 @@ portPosition(NodeId const    nodeId,
   {
     case PortType::In:
     {
-      //double x = 0.0 - nodeStyle.ConnectionPointDiameter;
       double x = 0.0;
 
       result = QPointF(x, totalHeight);
@@ -108,7 +104,6 @@ portPosition(NodeId const    nodeId,
 
     case PortType::Out:
     {
-      //double x = size.width() + nodeStyle.ConnectionPointDiameter;
       double x = size.width();
 
       result = QPointF(x, totalHeight);
