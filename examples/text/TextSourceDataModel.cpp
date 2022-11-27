@@ -35,7 +35,7 @@ nPorts(PortType portType) const
 
 void
 TextSourceDataModel::
-onTextEdited(QString const& string)
+onTextEdited(QString const & string)
 {
   Q_UNUSED(string);
 
@@ -60,9 +60,9 @@ outData(PortIndex const portIndex)
 }
 
 
-QWidget*
+QWidget *
 TextSourceDataModel::
-embeddedWidget() 
+embeddedWidget()
 {
   if (!_lineEdit)
   {
@@ -73,5 +73,6 @@ embeddedWidget()
 
   }
 
-  return _lineEdit; 
+  return _lineEdit;
 }
+
