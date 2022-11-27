@@ -21,13 +21,13 @@ PortAddRemoveWidget(unsigned int nInPorts,
   hl->setSpacing(0);
 
   _left = new QVBoxLayout();
+  _left->setSpacing(0);
   _left->setContentsMargins(0, 0, 0, 0);
-  _left->setSpacing(5);
   _left->addStretch();
 
   _right = new QVBoxLayout();
+  _right->setSpacing(0);
   _right->setContentsMargins(0, 0, 0, 0);
-  _right->setSpacing(5);
   _right->addStretch();
 
   hl->addLayout(_left);
@@ -64,8 +64,10 @@ addButtonGroupToLayout(QVBoxLayout * vbl,
                        unsigned int portIndex)
 {
   auto l = new QHBoxLayout();
+  l->setContentsMargins(0, 0, 0, 0);
 
   auto button = new QPushButton("+");
+  button->setFixedHeight(25);
   l->addWidget(button);
   connect(button,
           &QPushButton::clicked,
@@ -73,6 +75,7 @@ addButtonGroupToLayout(QVBoxLayout * vbl,
           &PortAddRemoveWidget::onPlusClicked);
 
   button = new QPushButton("-"); 
+  button->setFixedHeight(25);
   l->addWidget(button);
   connect(button,
           &QPushButton::clicked,

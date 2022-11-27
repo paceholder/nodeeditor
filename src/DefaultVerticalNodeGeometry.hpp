@@ -18,8 +18,6 @@ public:
   DefaultVerticalNodeGeometry(AbstractGraphModel & graphModel);
 
 public:
-  QRectF boundingRect(NodeId const nodeId) const override;
-
   QSize size(NodeId const nodeId) const override;
 
   void recomputeSize(NodeId const nodeId) const override;
