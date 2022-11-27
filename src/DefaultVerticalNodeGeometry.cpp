@@ -17,7 +17,7 @@ DefaultVerticalNodeGeometry::
 DefaultVerticalNodeGeometry(AbstractGraphModel & graphModel)
   : AbstractNodeGeometry(graphModel)
   , _portSize(20)
-  , _portSpasing(20)
+  , _portSpasing(10)
   , _fontMetrics(QFont())
   , _boldFontMetrics(QFont())
 {
@@ -26,21 +26,6 @@ DefaultVerticalNodeGeometry(AbstractGraphModel & graphModel)
   _boldFontMetrics = QFontMetrics(f);
 
   _portSize = _fontMetrics.height();
-}
-
-QRectF
-DefaultVerticalNodeGeometry::
-boundingRect(NodeId const nodeId) const
-{
-  QRect r(QPoint(0, 0), size(nodeId));
-
-  auto const& nodeStyle = StyleCollection::nodeStyle();
-  double addon = 4 * nodeStyle.ConnectionPointDiameter;
-
-  return r.adjusted(-addon,
-                    -addon,
-                    +addon,
-                    +addon);
 }
 
 
@@ -67,6 +52,8 @@ recomputeSize(NodeId const nodeId) const
 
   height += capRect.height();
 
+  height += _portSpasing;
+  height += _portSpasing;
 
   PortCount nInPorts = _graphModel.nodeData<PortCount>(nodeId, NodeRole::InPortCount);
   PortCount nOutPorts = _graphModel.nodeData<PortCount>(nodeId, NodeRole::OutPortCount);
@@ -88,6 +75,9 @@ recomputeSize(NodeId const nodeId) const
   }
 
   width = std::max(width, static_cast<unsigned int>(capRect.width()));
+
+  width += _portSpasing;
+  width += _portSpasing;
 
   QSize size(width, height);
 
@@ -121,7 +111,7 @@ portPosition(NodeId const    nodeId,
 
       double x = (size.width() - (nInPorts - 1) * inPortWidth) / 2.0 + portIndex * inPortWidth;
 
-      double y = 0.0 - nodeStyle.ConnectionPointDiameter;
+      double y = 0.0;
 
       result = QPointF(x, y);
 
@@ -137,7 +127,7 @@ portPosition(NodeId const    nodeId,
 
       double x = (size.width() - (nOutPorts - 1) * outPortWidth) / 2.0 + portIndex * outPortWidth;
 
-      double y = size.height() + nodeStyle.ConnectionPointDiameter;
+      double y = size.height();
 
       result = QPointF(x, y);
 
@@ -393,6 +383,9 @@ portCaptionsHeight(NodeId const   nodeId,
         }
       }
     }
+
+    default:
+      break;
   }
 
   return h;

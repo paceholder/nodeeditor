@@ -3,6 +3,9 @@
 #include "AbstractGraphModel.hpp"
 #include "StyleCollection.hpp"
 
+#include <QMargins>
+
+
 namespace QtNodes
 {
 
@@ -14,11 +17,30 @@ AbstractNodeGeometry(AbstractGraphModel & graphModel)
 }
 
 
+QRectF
+AbstractNodeGeometry::
+boundingRect(NodeId const nodeId) const
+{
+  QSize s = size(nodeId);
+
+  double ratio = 0.20;
+
+  int widthMargin = s.width() * ratio;
+  int heightMargin = s.height() * ratio;
+
+  QMargins margins(widthMargin, heightMargin, widthMargin, heightMargin);
+
+  QRectF r(QPointF(0, 0), s);
+
+  return r.marginsAdded(margins);
+}
+
+
 QPointF
 AbstractNodeGeometry::
-portScenePosition(NodeId const       nodeId,
-                  PortType const     portType,
-                  PortIndex const    index,
+portScenePosition(NodeId const nodeId,
+                  PortType const portType,
+                  PortIndex const index,
                   QTransform const & t) const
 {
   QPointF result = portPosition(nodeId, portType, index);
@@ -29,11 +51,11 @@ portScenePosition(NodeId const       nodeId,
 
 PortIndex
 AbstractNodeGeometry::
-checkPortHit(NodeId const   nodeId,
+checkPortHit(NodeId const nodeId,
              PortType const portType,
-             QPointF const  nodePoint) const
+             QPointF const nodePoint) const
 {
-  auto const& nodeStyle = StyleCollection::nodeStyle();
+  auto const & nodeStyle = StyleCollection::nodeStyle();
 
   PortIndex result = InvalidPortIndex;
 
@@ -64,5 +86,6 @@ checkPortHit(NodeId const   nodeId,
 
   return result;
 }
+
 
 }

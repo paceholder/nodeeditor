@@ -6,18 +6,21 @@ Node Geometry
 
 .. code-block::
 
-                         vertical spacing
-                        /
-            port width                      port width
-           |          | |                | |         |
-
-    0 _     _________________________________________    ___
-           /                 Caption                 \
-           |             ________________            |   ___  caption height
+                          spacing  spacing
+   spacing               /                \           spacing
+           \     port                         port   /
+           |  | width  |  |              | | width |  |
+           0
+         0_|_________________________________________    ___
+           /                                         \   ___  spacing
+           |                                         |
+           |                 Caption                 |        caption height
+           |             ________________            |   ___
+           |             |               |           |   ___   spacing
            |             |               |           |
            O In Name     |               |  Out Name O        entry
            |             |               |           |   ___
-           |             |               |           |   ___  vertical spacing
+           |             |               |           |   ___  spacing
            |             |               |           |
            O Another In  |               |  Out Name O
            |             |               |           |

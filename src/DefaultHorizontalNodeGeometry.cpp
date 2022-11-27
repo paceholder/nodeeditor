@@ -17,7 +17,7 @@ DefaultHorizontalNodeGeometry::
 DefaultHorizontalNodeGeometry(AbstractGraphModel & graphModel)
   : AbstractNodeGeometry(graphModel)
   , _portSize(20)
-  , _portSpasing(20)
+  , _portSpasing(10)
   , _fontMetrics(QFont())
   , _boldFontMetrics(QFont())
 {
@@ -26,22 +26,6 @@ DefaultHorizontalNodeGeometry(AbstractGraphModel & graphModel)
   _boldFontMetrics = QFontMetrics(f);
 
   _portSize = _fontMetrics.height();
-}
-
-
-QRectF
-DefaultHorizontalNodeGeometry::
-boundingRect(NodeId const nodeId) const
-{
-  QRect r(QPoint(0, 0), size(nodeId));
-
-  auto const& nodeStyle = StyleCollection::nodeStyle();
-  double addon = 4 * nodeStyle.ConnectionPointDiameter;
-
-  return r.adjusted(-addon,
-                    -addon,
-                    +addon,
-                    +addon);
 }
 
 
@@ -68,10 +52,13 @@ recomputeSize(NodeId const nodeId) const
 
   height += capRect.height();
 
+  height += _portSpasing; // space above caption
+  height += _portSpasing; // space below caption
+
   unsigned int inPortWidth = maxPortsTextAdvance(nodeId, PortType::In);
   unsigned int outPortWidth = maxPortsTextAdvance(nodeId, PortType::Out);
 
-  unsigned int width = inPortWidth + outPortWidth + 2 * _portSpasing;
+  unsigned int width = inPortWidth + outPortWidth + 4 * _portSpasing;
 
   if (auto w = _graphModel.nodeData<QWidget*>(nodeId, NodeRole::Widget))
   {
@@ -101,6 +88,7 @@ portPosition(NodeId const    nodeId,
   double totalHeight = 0.0;
 
   totalHeight += captionRect(nodeId).height();
+  totalHeight += _portSpasing;
 
   totalHeight += step * portIndex;
   totalHeight += step / 2.0;
@@ -111,7 +99,8 @@ portPosition(NodeId const    nodeId,
   {
     case PortType::In:
     {
-      double x = 0.0 - nodeStyle.ConnectionPointDiameter;
+      //double x = 0.0 - nodeStyle.ConnectionPointDiameter;
+      double x = 0.0;
 
       result = QPointF(x, totalHeight);
       break;
@@ -119,7 +108,8 @@ portPosition(NodeId const    nodeId,
 
     case PortType::Out:
     {
-      double x = size.width() + nodeStyle.ConnectionPointDiameter;
+      //double x = size.width() + nodeStyle.ConnectionPointDiameter;
+      double x = size.width();
 
       result = QPointF(x, totalHeight);
       break;
@@ -151,11 +141,13 @@ portTextPosition(NodeId const   nodeId,
   switch (portType)
   {
     case PortType::In:
-      p.setX(5.0);
+      p.setX(_portSpasing);
+      //p.setX(5.0);
       break;
 
     case PortType::Out:
-      p.setX(size.width() - 5.0 - rect.width());
+      //p.setX(size.width() - 5.0 - rect.width());
+      p.setX(size.width() - _portSpasing - rect.width());
       break;
 
     default:
@@ -187,7 +179,7 @@ captionPosition(NodeId const nodeId) const
 {
   QSize size = _graphModel.nodeData<QSize>(nodeId, NodeRole::Size);
   return QPointF(0.5 * (size.width() - captionRect(nodeId).width()),
-                 0.5 * _portSpasing);
+                 0.5 * _portSpasing + captionRect(nodeId).height());
 }
 
 
@@ -222,13 +214,13 @@ QRect
 DefaultHorizontalNodeGeometry::
 resizeHandleRect(NodeId const nodeId) const
 {
-  QSize size = _graphModel.nodeData<QSize>(nodeId, 
+  QSize size = _graphModel.nodeData<QSize>(nodeId,
                                            NodeRole::Size);
 
   unsigned int rectSize = 7;
 
-  return QRect(size.width() - rectSize,
-               size.height() - rectSize,
+  return QRect(size.width() - _portSpasing,
+               size.height() - _portSpasing,
                rectSize,
                rectSize);
 }

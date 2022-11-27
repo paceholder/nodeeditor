@@ -19,10 +19,14 @@ public:
   virtual ~AbstractNodeGeometry() {}
 
   /**
-   * The node's rectangle plus some area around it needed to draw effects
-   * properly, for example, a shadow or port dots.
+   * The node's size plus some additional margin around it to account for drawing
+   * effects (for example shadows) or node's parts outside the size rectangle
+   * (for example port points).
+   *
+   * The default implementation returns QSize + 20 percent of width and heights
+   * at each side of the rectangle.
    */
-  virtual QRectF boundingRect(NodeId const nodeId) const = 0;
+  virtual QRectF boundingRect(NodeId const nodeId) const;
 
   /// A direct rectangle defining the borders of the node's rectangle.
   virtual QSize size(NodeId const nodeId) const = 0;
