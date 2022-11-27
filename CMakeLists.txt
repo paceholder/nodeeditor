@@ -107,6 +107,8 @@ set(CPP_SOURCE_FILES
 
 set(HPP_HEADER_FILES
   include/QtNodes/internal/AbstractGraphModel.hpp
+  include/QtNodes/internal/AbstractNodeGeometry.hpp
+  include/QtNodes/internal/AbstractNodePainter.hpp
   include/QtNodes/internal/BasicGraphicsScene.hpp
   include/QtNodes/internal/Compiler.hpp
   include/QtNodes/internal/ConnectionGraphicsObject.hpp
@@ -116,6 +118,7 @@ set(HPP_HEADER_FILES
   include/QtNodes/internal/ConnectionStyle.hpp
   include/QtNodes/internal/DataFlowGraphicsScene.hpp
   include/QtNodes/internal/DataFlowGraphModel.hpp
+  include/QtNodes/internal/DefaultNodePainter.hpp
   include/QtNodes/internal/Definitions.hpp
   include/QtNodes/internal/Export.hpp
   include/QtNodes/internal/GraphicsView.hpp
@@ -134,7 +137,10 @@ set(HPP_HEADER_FILES
   include/QtNodes/internal/Style.hpp
   include/QtNodes/internal/StyleCollection.hpp
   src/ConnectionPainter.hpp
+  src/DefaultHorizontalNodeGeometry.hpp
+  src/DefaultVerticalNodeGeometry.hpp
   src/NodeConnectionInteraction.hpp
+  src/UndoCommands.hpp
 )
 
 # If we want to give the option to build a static library,

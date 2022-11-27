@@ -24,11 +24,7 @@ class TextSourceDataModel : public NodeDelegateModel
 public:
   TextSourceDataModel();
 
-  virtual
-  ~TextSourceDataModel() {}
-
 public:
-
   QString
   caption() const override
   { return QString("Text Source"); }
@@ -45,7 +41,6 @@ public:
   { return TextSourceDataModel::Name(); }
 
 public:
-
   unsigned int
   nPorts(PortType portType) const override;
 
@@ -58,14 +53,14 @@ public:
   void
   setInData(std::shared_ptr<NodeData>, PortIndex const) override { }
 
-  QWidget*
+  QWidget *
   embeddedWidget() override;
 
 private Q_SLOTS:
 
   void
-  onTextEdited(QString const& string);
+  onTextEdited(QString const & string);
 
 private:
-  QLineEdit* _lineEdit;
+  QLineEdit * _lineEdit;
 };
