@@ -18,6 +18,8 @@ An instance of ``AbstractGraphModel`` could or could not be attached to
 specialized ``QGraphicsScene`` and ``QGraphicsView`` objects. I.e. the so-called
 "headless" `modus operandi` is possible.
 
+`Read the Docs for QtNodes <https://qtnodes.readthedocs.io/>`_
+
 
 .. contents:: Navigation
     :depth: 2
@@ -176,7 +178,7 @@ BibTeX::
       publisher = {GitHub},
       journal = {GitHub repository},
       howpublished = {\url{https://github.com/paceholder/nodeeditor}},
-      commit = {1d1757d09b03cea0e4921bc19659465fe6e65b9b}
+      commit = {877ddb8c447a7a061a5022e9956a3194132e3dd9}
     }
 
 Support
