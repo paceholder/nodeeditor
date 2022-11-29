@@ -18,7 +18,21 @@ An instance of ``AbstractGraphModel`` could or could not be attached to
 specialized ``QGraphicsScene`` and ``QGraphicsView`` objects. I.e. the so-called
 "headless" `modus operandi` is possible.
 
+Documentation
+=============
+
 `Read the Docs for QtNodes <https://qtnodes.readthedocs.io/>`_
+
+Warning
+  Many classes were changed in the version ``3.0``. If you had a large project
+  based on ``2.x.x``, make sure you read the documentation first and see the
+  examples before checking out the new code.
+
+Branches
+--------
+
+There are branchses ``v2`` and ``v3`` for versions ``2.x.x`` and ``3.x``
+respectively. The branch ``master`` contains the latest dev state.
 
 
 .. contents:: Navigation
