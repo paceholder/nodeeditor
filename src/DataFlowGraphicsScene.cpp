@@ -218,6 +218,8 @@ load()
   QByteArray const wholeFile = file.readAll();
 
   _graphModel.load(QJsonDocument::fromJson(wholeFile).object());
+
+  Q_EMIT sceneLoaded();
 }
 
 

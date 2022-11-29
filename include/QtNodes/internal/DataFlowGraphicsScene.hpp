@@ -41,6 +41,10 @@ public Q_SLOTS:
   void
   load();
 
+Q_SIGNALS:
+  void
+  sceneLoaded();
+
 private:
   DataFlowGraphModel &_graphModel;
 };

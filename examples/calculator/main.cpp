@@ -94,7 +94,9 @@ main(int argc, char* argv[])
   l->addWidget(menuBar);
   auto scene = new DataFlowGraphicsScene(dataFlowGraphModel,
                                          &mainWidget);
-  l->addWidget(new GraphicsView(scene));
+
+  auto view = new GraphicsView(scene);
+  l->addWidget(view);
   l->setContentsMargins(0, 0, 0, 0);
   l->setSpacing(0);
 
@@ -103,6 +105,9 @@ main(int argc, char* argv[])
 
   QObject::connect(loadAction, &QAction::triggered,
                    scene, &DataFlowGraphicsScene::load);
+
+  QObject::connect(scene, &DataFlowGraphicsScene::sceneLoaded,
+                   view, &GraphicsView::centerScene);
 
   mainWidget.setWindowTitle("Data Flow: simplest calculator");
   mainWidget.resize(800, 600);
