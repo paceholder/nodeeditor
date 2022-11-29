@@ -31,7 +31,7 @@ GraphicsView(QWidget *parent)
   : QGraphicsView(parent)
   , _clearSelectionAction(Q_NULLPTR)
   , _deleteSelectionAction(Q_NULLPTR)
-  , _scaleRange(0.3 , 2)
+  , _scaleRange{0.3 , 2}
 {
   setDragMode(QGraphicsView::ScrollHandDrag);
   setRenderHint(QPainter::Antialiasing);
@@ -183,18 +183,26 @@ wheelEvent(QWheelEvent *event)
 
 void
 GraphicsView::
-setScaleRange(double min, double max)
+setScaleRange(double minimum, double maximum)
 {
-    if(min <= max)
-    {
-        _scaleRange.setX(min < 0 ? 0 : min);
-        _scaleRange.setY(max < 0 ? 0 : max);
-    }
-    else
-    {
-        _scaleRange.setX(max < 0 ? 0 : max);
-        _scaleRange.setY(min < 0 ? 0 : min);
-    }
+  ScaleRange range{minimum, maximum};
+  setScaleRange(range);
+}
+
+void
+GraphicsView::
+setScaleRange(ScaleRange range)
+{
+  if (range.minimum <= range.maximum)
+  {
+    _scaleRange = range;
+  }
+  else
+  {
+    _scaleRange.maximum = range.minimum;
+    _scaleRange.minimum = range.maximum;
+  }
+  this->setupScale(transform().m11());
 }
 
 void
@@ -204,15 +212,15 @@ scaleUp()
   double const step   = 1.2;
   double const factor = std::pow(step, 1.0);
 
-  if (_scaleRange.y() > 0)
+  if (_scaleRange.maximum > 0)
   {
-      QTransform t = transform();
-      t.scale(factor, factor);
-      if (t.m11() >= _scaleRange.y())
-      {
-//          setupScale(t.m11());
-          return;
-      }
+     QTransform t = transform();
+     t.scale(factor, factor);
+     if (t.m11() >= _scaleRange.maximum)
+     {
+        // setupScale(t.m11());
+        return;
+     }
   }
 
   scale(factor, factor);
@@ -226,15 +234,15 @@ scaleDown()
   double const step   = 1.2;
   double const factor = std::pow(step, -1.0);
 
-  if (_scaleRange.x() > 0)
+  if (_scaleRange.minimum > 0)
   {
-      QTransform t = transform();
-      t.scale(factor, factor);
-      if (t.m11() <= _scaleRange.x())
-      {
-//          setupScale(t.m11());
-          return;
-      }
+     QTransform t = transform();
+     t.scale(factor, factor);
+     if (t.m11() <= _scaleRange.minimum)
+     {
+       // setupScale(t.m11());
+       return;
+     }
   }
 
   scale(factor, factor);
@@ -242,25 +250,21 @@ scaleDown()
 
 void GraphicsView::setupScale(double scale)
 {
-    if (scale < _scaleRange.x())
-    {
-        scale = _scaleRange.x();
-    }
-    else if (scale > _scaleRange.y() && _scaleRange.y() > 0)
-    {
-        scale = _scaleRange.y();
-    }
-    else
-    {
-        return;
-    }
+  if (scale < _scaleRange.minimum)
+  {
+    scale = _scaleRange.minimum;
+  }
+  else if (scale > _scaleRange.maximum && _scaleRange.maximum > 0)
+  {
+    scale = _scaleRange.maximum;
+  }
 
-    if (scale <= 0)
-        return;
+  if (scale <= 0)
+    return;
 
-    QTransform matrix;
-    matrix.scale(scale, scale);
-    this->setTransform(matrix, false);
+  QTransform matrix;
+  matrix.scale(scale, scale);
+  this->setTransform(matrix, false);
 }
 
 

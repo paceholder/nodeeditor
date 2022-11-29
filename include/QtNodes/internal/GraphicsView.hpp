@@ -14,6 +14,12 @@ class NODE_EDITOR_PUBLIC GraphicsView
 {
   Q_OBJECT
 public:
+  struct ScaleRange
+  {
+    double minimum = 0;
+    double maximum = 0;
+  };
+
   GraphicsView(QWidget *parent = Q_NULLPTR);
   GraphicsView(BasicGraphicsScene *scene, QWidget *parent = Q_NULLPTR);
 
@@ -33,9 +39,12 @@ public:
   void
   centerScene();
 
-  /// \brief max=0/min=0 indicates infinite zoom in/out
+  /// @brief max=0/min=0 indicates infinite zoom in/out
   void
-  setScaleRange(double min = 0, double max = 0);
+  setScaleRange(double minimum = 0, double maximum = 0);
+
+  void
+  setScaleRange(ScaleRange range);
 
 public Q_SLOTS:
   void
@@ -84,6 +93,6 @@ private:
   QAction* _deleteSelectionAction;
 
   QPointF _clickPos;
-  QPointF _scaleRange;
+  ScaleRange _scaleRange;
 };
 }
