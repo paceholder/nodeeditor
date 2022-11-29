@@ -31,6 +31,7 @@ GraphicsView(QWidget *parent)
   : QGraphicsView(parent)
   , _clearSelectionAction(Q_NULLPTR)
   , _deleteSelectionAction(Q_NULLPTR)
+  , _scaleRange(0.3 , 2)
 {
   setDragMode(QGraphicsView::ScrollHandDrag);
   setRenderHint(QPainter::Antialiasing);
@@ -182,15 +183,37 @@ wheelEvent(QWheelEvent *event)
 
 void
 GraphicsView::
+setScaleRange(double min, double max)
+{
+    if(min <= max)
+    {
+        _scaleRange.setX(min < 0 ? 0 : min);
+        _scaleRange.setY(max < 0 ? 0 : max);
+    }
+    else
+    {
+        _scaleRange.setX(max < 0 ? 0 : max);
+        _scaleRange.setY(min < 0 ? 0 : min);
+    }
+}
+
+void
+GraphicsView::
 scaleUp()
 {
   double const step   = 1.2;
   double const factor = std::pow(step, 1.0);
 
-  QTransform t = transform();
-
-  if (t.m11() > 2.0)
-    return;
+  if (_scaleRange.y() > 0)
+  {
+      QTransform t = transform();
+      t.scale(factor, factor);
+      if (t.m11() >= _scaleRange.y())
+      {
+//          setupScale(t.m11());
+          return;
+      }
+  }
 
   scale(factor, factor);
 }
@@ -203,7 +226,41 @@ scaleDown()
   double const step   = 1.2;
   double const factor = std::pow(step, -1.0);
 
+  if (_scaleRange.x() > 0)
+  {
+      QTransform t = transform();
+      t.scale(factor, factor);
+      if (t.m11() <= _scaleRange.x())
+      {
+//          setupScale(t.m11());
+          return;
+      }
+  }
+
   scale(factor, factor);
+}
+
+void GraphicsView::setupScale(double scale)
+{
+    if (scale <= 0)
+        return;
+
+    if (scale < _scaleRange.x())
+    {
+        scale = _scaleRange.x();
+    }
+    else if (scale > _scaleRange.y())
+    {
+        scale = _scaleRange.y();
+    }
+    else
+    {
+        return;
+    }
+
+    QTransform matrix;
+    matrix.scale(scale, scale);
+    this->setTransform(matrix, false);
 }
 
 

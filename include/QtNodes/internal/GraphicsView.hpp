@@ -33,12 +33,19 @@ public:
   void
   centerScene();
 
+  /// \brief max=0/min=0 indicates infinite zoom in/out
+  void
+  setScaleRange(double min = 0, double max = 0);
+
 public Q_SLOTS:
   void
   scaleUp();
 
   void
   scaleDown();
+
+  void
+  setupScale(double scale);
 
   void
   onDeleteSelectedObjects();
@@ -77,5 +84,6 @@ private:
   QAction* _deleteSelectionAction;
 
   QPointF _clickPos;
+  QPointF _scaleRange;
 };
 }
