@@ -185,24 +185,19 @@ void
 GraphicsView::
 setScaleRange(double minimum, double maximum)
 {
-  ScaleRange range{minimum, maximum};
-  setScaleRange(range);
+  if (minimum <= maximum)
+    _scaleRange = {minimum < 0 ? 0 : minimum, maximum < 0 ? 0 : maximum};
+  else
+    _scaleRange = {maximum < 0 ? 0 : maximum, minimum < 0 ? 0 : minimum};
+
+  this->setupScale(transform().m11());
 }
 
 void
 GraphicsView::
 setScaleRange(ScaleRange range)
 {
-  if (range.minimum <= range.maximum)
-  {
-    _scaleRange = range;
-  }
-  else
-  {
-    _scaleRange.maximum = range.minimum;
-    _scaleRange.minimum = range.maximum;
-  }
-  this->setupScale(transform().m11());
+  setScaleRange(range.minimum, range.maximum);
 }
 
 void
