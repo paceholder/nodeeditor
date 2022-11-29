@@ -242,14 +242,11 @@ scaleDown()
 
 void GraphicsView::setupScale(double scale)
 {
-    if (scale <= 0)
-        return;
-
     if (scale < _scaleRange.x())
     {
         scale = _scaleRange.x();
     }
-    else if (scale > _scaleRange.y())
+    else if (scale > _scaleRange.y() && _scaleRange.y() > 0)
     {
         scale = _scaleRange.y();
     }
@@ -257,6 +254,9 @@ void GraphicsView::setupScale(double scale)
     {
         return;
     }
+
+    if (scale <= 0)
+        return;
 
     QTransform matrix;
     matrix.scale(scale, scale);
