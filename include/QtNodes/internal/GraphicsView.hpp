@@ -41,10 +41,13 @@ public:
 
   /// @brief max=0/min=0 indicates infinite zoom in/out
   void
-  setScaleRange(double minimum = 0, double maximum = 0);
+  setScaleRange(const double minimum = 0, const double maximum = 0);
 
   void
-  setScaleRange(ScaleRange range);
+  setScaleRange(const ScaleRange range);
+
+  double
+  getScale() const;
 
 public Q_SLOTS:
   void
@@ -54,10 +57,14 @@ public Q_SLOTS:
   scaleDown();
 
   void
-  setupScale(double scale);
+  setupScale(const double scale);
 
   void
   onDeleteSelectedObjects();
+
+Q_SIGNALS:
+  void
+  scaleChanged(const double scale);
 
 protected:
   void
