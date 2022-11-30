@@ -31,7 +31,6 @@ GraphicsView(QWidget *parent)
   : QGraphicsView(parent)
   , _clearSelectionAction(Q_NULLPTR)
   , _deleteSelectionAction(Q_NULLPTR)
-  , _scaleRange{0.3 , 2}
 {
   setDragMode(QGraphicsView::ScrollHandDrag);
   setRenderHint(QPainter::Antialiasing);
@@ -54,6 +53,8 @@ GraphicsView(QWidget *parent)
   // re-calculation when expanding the all QGraphicsItems common rect.
   int maxSize = 32767;
   setSceneRect(-maxSize, -maxSize, (maxSize * 2), (maxSize * 2));
+
+  setScaleRange(0.3, 2);
 }
 
 
@@ -201,11 +202,19 @@ wheelEvent(QWheelEvent *event)
     scaleDown();
 }
 
+double
+GraphicsView::
+getScale() const
+{
+  return transform().m11();
+}
 
 void
 GraphicsView::
 setScaleRange(double minimum, double maximum)
 {
+  Q_ASSERT(minimum <= maximum && minimum > 0 && maximum > 0);
+
   if (minimum <= maximum)
     _scaleRange = {minimum < 0 ? 0 : minimum, maximum < 0 ? 0 : maximum};
   else
@@ -230,16 +239,17 @@ scaleUp()
 
   if (_scaleRange.maximum > 0)
   {
-     QTransform t = transform();
-     t.scale(factor, factor);
-     if (t.m11() >= _scaleRange.maximum)
-     {
-        // setupScale(t.m11());
-        return;
-     }
+    QTransform t = transform();
+    t.scale(factor, factor);
+    if (t.m11() >= _scaleRange.maximum)
+    {
+      setupScale(t.m11());
+      return;
+    }
   }
 
   scale(factor, factor);
+  Q_EMIT scaleChanged(transform().m11());
 }
 
 
@@ -252,35 +262,38 @@ scaleDown()
 
   if (_scaleRange.minimum > 0)
   {
-     QTransform t = transform();
-     t.scale(factor, factor);
-     if (t.m11() <= _scaleRange.minimum)
-     {
-       // setupScale(t.m11());
-       return;
-     }
+    QTransform t = transform();
+    t.scale(factor, factor);
+    if (t.m11() <= _scaleRange.minimum)
+    {
+      setupScale(t.m11());
+      return;
+    }
   }
 
   scale(factor, factor);
+  Q_EMIT scaleChanged(transform().m11());
 }
 
 void GraphicsView::setupScale(double scale)
 {
-  if (scale < _scaleRange.minimum)
-  {
-    scale = _scaleRange.minimum;
-  }
-  else if (scale > _scaleRange.maximum && _scaleRange.maximum > 0)
-  {
-    scale = _scaleRange.maximum;
-  }
+  Q_ASSERT(scale > 0);
 
-  if (scale <= 0)
+  if (scale < _scaleRange.minimum)
+    scale = _scaleRange.minimum;
+  else if (scale > _scaleRange.maximum) // && _scaleRange.maximum > 0
+    scale = _scaleRange.maximum;
+
+  if (scale == 0)
+    return;
+
+  if (scale == transform().m11())
     return;
 
   QTransform matrix;
   matrix.scale(scale, scale);
   this->setTransform(matrix, false);
+  Q_EMIT scaleChanged(scale);
 }
 
 

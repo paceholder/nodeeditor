@@ -46,6 +46,9 @@ public:
   void
   setScaleRange(ScaleRange range);
 
+  double
+  getScale() const;
+
 public Q_SLOTS:
   void
   scaleUp();
@@ -61,6 +64,10 @@ public Q_SLOTS:
 
   void
   onDuplicateSelectedObjects();
+
+Q_SIGNALS:
+  void
+  scaleChanged(double scale);
 
 protected:
   void
@@ -92,9 +99,9 @@ protected:
   nodeScene();
 
 private:
-  QAction* _clearSelectionAction;
-  QAction* _deleteSelectionAction;
-  QAction* _duplicateSelectionAction;
+  QAction* _clearSelectionAction = nullptr;
+  QAction* _deleteSelectionAction = nullptr;
+  QAction* _duplicateSelectionAction = nullptr;
 
   QPointF _clickPos;
   ScaleRange _scaleRange;
