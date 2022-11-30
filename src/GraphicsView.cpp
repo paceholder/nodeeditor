@@ -181,6 +181,7 @@ wheelEvent(QWheelEvent *event)
     scaleDown();
 }
 
+
 double
 GraphicsView::
 getScale() const
@@ -188,9 +189,10 @@ getScale() const
   return transform().m11();
 }
 
+
 void
 GraphicsView::
-setScaleRange(const double minimum, const double maximum)
+setScaleRange(double minimum, double maximum)
 {
   if (minimum <= maximum)
     _scaleRange = {minimum < 0 ? 0 : minimum, maximum < 0 ? 0 : maximum};
@@ -200,12 +202,14 @@ setScaleRange(const double minimum, const double maximum)
   this->setupScale(transform().m11());
 }
 
+
 void
 GraphicsView::
-setScaleRange(const ScaleRange range)
+setScaleRange(ScaleRange range)
 {
   setScaleRange(range.minimum, range.maximum);
 }
+
 
 void
 GraphicsView::
@@ -216,13 +220,13 @@ scaleUp()
 
   if (_scaleRange.maximum > 0)
   {
-     QTransform t = transform();
-     t.scale(factor, factor);
-     if (t.m11() >= _scaleRange.maximum)
-     {
-        setupScale(t.m11());
-        return;
-     }
+    QTransform t = transform();
+    t.scale(factor, factor);
+    if (t.m11() >= _scaleRange.maximum)
+    {
+      setupScale(t.m11());
+      return;
+    }
   }
 
   scale(factor, factor);
@@ -239,35 +243,37 @@ scaleDown()
 
   if (_scaleRange.minimum > 0)
   {
-     QTransform t = transform();
-     t.scale(factor, factor);
-     if (t.m11() <= _scaleRange.minimum)
-     {
-       setupScale(t.m11());
-       return;
-     }
+    QTransform t = transform();
+    t.scale(factor, factor);
+    if (t.m11() <= _scaleRange.minimum)
+    {
+      setupScale(t.m11());
+      return;
+    }
   }
 
   scale(factor, factor);
   Q_EMIT scaleChanged(transform().m11());
 }
 
-void GraphicsView::setupScale(const double scale)
+
+void GraphicsView::setupScale(double scale)
 {
-  double s = scale;
-
   if (scale < _scaleRange.minimum)
-    s = _scaleRange.minimum;
+    scale = _scaleRange.minimum;
   else if (scale > _scaleRange.maximum) // && _scaleRange.maximum > 0
-    s = _scaleRange.maximum;
+    scale = _scaleRange.maximum;
 
-  if (s <= 0)
+  if (scale <= 0)
     return;
 
+  if (scale == transform().m11())
+      return;
+
   QTransform matrix;
-  matrix.scale(s, s);
+  matrix.scale(scale, scale);
   this->setTransform(matrix, false);
-  Q_EMIT scaleChanged(s);
+  Q_EMIT scaleChanged(scale);
 }
 
 
