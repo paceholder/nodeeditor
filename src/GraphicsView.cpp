@@ -202,12 +202,14 @@ wheelEvent(QWheelEvent *event)
     scaleDown();
 }
 
+
 double
 GraphicsView::
 getScale() const
 {
   return transform().m11();
 }
+
 
 void
 GraphicsView::
@@ -223,12 +225,14 @@ setScaleRange(double minimum, double maximum)
   this->setupScale(transform().m11());
 }
 
+
 void
 GraphicsView::
 setScaleRange(ScaleRange range)
 {
   setScaleRange(range.minimum, range.maximum);
 }
+
 
 void
 GraphicsView::
@@ -274,6 +278,7 @@ scaleDown()
   scale(factor, factor);
   Q_EMIT scaleChanged(transform().m11());
 }
+
 
 void GraphicsView::setupScale(double scale)
 {
