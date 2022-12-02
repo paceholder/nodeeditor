@@ -61,6 +61,24 @@ Basic Classes
 .. doxygenclass:: QtNodes::NodeConnectionInteraction
    :members:
 
+Undo Redo
+---------
+
+.. doxygenclass:: QtNodes::DeleteCommand
+   :members:
+
+.. doxygenclass:: QtNodes::DuplicateCommand
+   :members:
+
+.. doxygenclass:: QtNodes::DisconnectCommand
+   :members:
+
+.. doxygenclass:: QtNodes::ConnectCommand
+   :members:
+
+.. doxygenclass:: QtNodes::MoveNodeCommand
+   :members:
+
 Dataflow Classes
 ----------------
 

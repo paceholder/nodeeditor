@@ -404,6 +404,8 @@ hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
 {
   _nodeState.setHovered(false);
 
+  setZValue(0.0);
+
   update();
 
   Q_EMIT nodeScene()->nodeHoverLeft(_nodeId);

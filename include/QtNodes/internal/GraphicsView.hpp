@@ -43,6 +43,9 @@ public Q_SLOTS:
   void
   onDeleteSelectedObjects();
 
+  void
+  onDuplicateSelectedObjects();
+
 protected:
   void
   contextMenuEvent(QContextMenuEvent *event) override;
@@ -75,6 +78,7 @@ protected:
 private:
   QAction* _clearSelectionAction;
   QAction* _deleteSelectionAction;
+  QAction* _duplicateSelectionAction;
 
   QPointF _clickPos;
 };
