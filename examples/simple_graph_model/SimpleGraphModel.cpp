@@ -26,7 +26,18 @@ std::unordered_set<ConnectionId>
 SimpleGraphModel::
 allConnectionIds(NodeId const nodeId) const
 {
-  return _connectivity;
+  std::unordered_set<ConnectionId> result;
+
+  std::copy_if(_connectivity.begin(),
+               _connectivity.end(),
+               std::inserter(result, std::end(result)),
+               [&nodeId](ConnectionId const & cid)
+               {
+                  return cid.inNodeId == nodeId ||
+                         cid.outNodeId == nodeId;
+               });
+
+  return result;
 }
 
 
@@ -338,7 +349,7 @@ loadNode(QJsonObject const & nodeJson)
   NodeId restoredNodeId = static_cast<NodeId>(nodeJson["id"].toInt());
 
   // Next NodeId must be larger that any id existing in the graph
-  _nextNodeId = std::max(restoredNodeId + 1, _nextNodeId);
+  _nextNodeId = std::max(_nextNodeId, restoredNodeId + 1);
 
   // Create new node.
   _nodeIds.insert(restoredNodeId);

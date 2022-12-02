@@ -26,7 +26,18 @@ std::unordered_set<ConnectionId>
 SimpleGraphModel::
 allConnectionIds(NodeId const nodeId) const
 {
-  return _connectivity;
+  std::unordered_set<ConnectionId> result;
+
+  std::copy_if(_connectivity.begin(),
+               _connectivity.end(),
+               std::inserter(result, std::end(result)),
+               [&nodeId](ConnectionId const & cid)
+               {
+                  return cid.inNodeId == nodeId ||
+                         cid.outNodeId == nodeId;
+               });
+
+  return result;
 }
 
 

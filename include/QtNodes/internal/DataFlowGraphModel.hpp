@@ -179,12 +179,7 @@ private:
                      std::unique_ptr<NodeDelegateModel>>
   _models;
 
-  using ConnectivityKey =
-    std::tuple<NodeId, PortType, PortIndex>;
-
-  std::unordered_map<ConnectivityKey,
-                     std::unordered_set<std::pair<NodeId, PortIndex>>>
-  _connectivity;
+  std::unordered_set<ConnectionId> _connectivity;
 
   mutable std::unordered_map<NodeId, NodeGeometryData>
   _nodeGeometryData;

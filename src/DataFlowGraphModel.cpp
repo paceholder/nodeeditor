@@ -36,28 +36,14 @@ allConnectionIds(NodeId const nodeId) const
 {
   std::unordered_set<ConnectionId> result;
 
-  for (auto& c : _connectivity)
-  {
-    if (std::get<0>(c.first) != nodeId)
-      continue;
-
-    PortType const portType = std::get<1>(c.first);
-    PortIndex const portIndex = std::get<2>(c.first);
-
-    for (auto& target : c.second)
-    {
-      ConnectionId conn{nodeId,
-                        portIndex,
-                        target.first,
-                        target.second};
-
-      if (portType == PortType::In)
-      {
-        invertConnection(conn);
-      }
-      result.insert(conn);
-    }
-  }
+  std::copy_if(_connectivity.begin(),
+               _connectivity.end(),
+               std::inserter(result, std::end(result)),
+               [&nodeId](ConnectionId const & cid)
+               {
+                  return cid.inNodeId == nodeId ||
+                         cid.outNodeId == nodeId;
+               });
 
   return result;
 }
@@ -71,26 +57,14 @@ connections(NodeId    nodeId,
 {
   std::unordered_set<ConnectionId> result;
 
-  auto const key = std::make_tuple(nodeId, portType, portIndex);
-
-  auto it = _connectivity.find(key);
-
-  if (it != _connectivity.end())
-  {
-    for (auto& nodeAndPort : it->second)
-    {
-      ConnectionId conn{nodeId,
-                        portIndex,
-                        nodeAndPort.first,
-                        nodeAndPort.second};
-
-      if (portType == PortType::In)
-      {
-        invertConnection(conn);
-      }
-      result.insert(conn);
-    }
-  }
+  std::copy_if(_connectivity.begin(),
+               _connectivity.end(),
+               std::inserter(result, std::end(result)),
+               [&portType, &portIndex, &nodeId](ConnectionId const & cid)
+               {
+                  return (getNodeId(portType, cid) == nodeId &&
+                          getPortIndex(portType, cid) == portIndex);
+               });
 
   return result;
 }
@@ -100,12 +74,7 @@ bool
 DataFlowGraphModel::
 connectionExists(ConnectionId const connectionId) const
 {
-  auto key =
-    std::make_tuple(getNodeId(PortType::Out, connectionId),
-                    PortType::Out,
-                    getPortIndex(PortType::Out, connectionId));
-
-  return (_connectivity.find(key) != _connectivity.end());
+  return (_connectivity.find(connectionId) != _connectivity.end());
 }
 
 
@@ -172,21 +141,7 @@ void
 DataFlowGraphModel::
 addConnection(ConnectionId const connectionId)
 {
-  auto connect =
-    [&](PortType portType)
-    {
-      auto key = ConnectivityKey{getNodeId(portType, connectionId),
-                                 portType,
-                                 getPortIndex(portType, connectionId)};
-
-      PortType opposite = oppositePort(portType);
-
-      _connectivity[key].insert(std::make_pair(getNodeId(opposite, connectionId),
-                                               getPortIndex(opposite, connectionId)));
-    };
-
-  connect(PortType::Out);
-  connect(PortType::In);
+  _connectivity.insert(connectionId);
 
   Q_EMIT connectionCreated(connectionId);
 
@@ -441,35 +396,14 @@ deleteConnection(ConnectionId const connectionId)
 {
   bool disconnected = false;
 
-  auto disconnect =
-    [&](PortType portType)
-    {
-      auto key = ConnectivityKey{getNodeId(portType, connectionId),
-                                 portType,
-                                 getPortIndex(portType, connectionId)};
-      auto it = _connectivity.find(key);
+  auto it = _connectivity.find(connectionId);
 
-      if (it != _connectivity.end())
-      {
-        disconnected = true;
+  if (it != _connectivity.end())
+  {
+    disconnected = true;
 
-        PortType opposite = oppositePort(portType);
-
-        auto oppositePair =
-          std::make_pair(getNodeId(opposite, connectionId),
-                         getPortIndex(opposite, connectionId));
-        it->second.erase(oppositePair);
-
-        if (it->second.empty())
-        {
-          _connectivity.erase(it);
-        }
-      }
-
-    };
-
-  disconnect(PortType::Out);
-  disconnect(PortType::In);
+    _connectivity.erase(it);
+  }
 
   if (disconnected)
   {
@@ -543,22 +477,9 @@ save() const
 
 
   QJsonArray connJsonArray;
-  for (auto const & connPair : _connectivity)
+  for (auto const & cid : _connectivity)
   {
-    ConnectivityKey const & key = connPair.first;
-    auto const& otherSideConnections = connPair.second;
-
-    for (auto const & otherSide : otherSideConnections)
-    {
-      if (std::get<1>(key) == PortType::Out)
-      {
-        connJsonArray.append(
-          saveConnection(ConnectionId{std::get<0>(key),
-                                      std::get<2>(key),
-                                      otherSide.first,
-                                      otherSide.second}));
-      }
-    }
+    connJsonArray.append(saveConnection(cid));
   }
   sceneJson["connections"] = connJsonArray;
 
@@ -570,10 +491,17 @@ void
 DataFlowGraphModel::
 loadNode(QJsonObject const & nodeJson)
 {
-  NodeId restoredNodeId = static_cast<NodeId>(nodeJson["id"].toInt());
+  // Possibility of the id clash when reading it from json and not generating a
+  // new value.
+  // 1. When restoring a scene from a file.
+  // Conflict is not possible because the scene must be cleared by the time of
+  // loading.
+  // 2. When undoing the deletion command.  Conflict is not possible
+  // because all the new ids were created past the removed nodes.
+  NodeId restoredNodeId = nodeJson["id"].toInt();
 
-  // Insert the desired next node id
-  setNextNodeId(restoredNodeId);
+  _nextNodeId = std::max(_nextNodeId, restoredNodeId + 1);
+
 
   QJsonObject const internalDataJson = nodeJson["internal-data"].toObject();
 
