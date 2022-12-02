@@ -106,12 +106,6 @@ public:
   void
   loadNode(QJsonObject const & nodeJson) override;
 
-  QJsonObject
-  saveConnection(ConnectionId const & connId) const override;
-
-  void
-  loadConnection(QJsonObject const & connJson) override;
-
   void
   addPort(NodeId nodeId,
           PortType portType,
@@ -121,6 +115,8 @@ public:
   removePort(NodeId nodeId,
              PortType portType,
              PortIndex first);
+
+  NodeId newNodeId() override { return _nextNodeId++; }
 
 private:
   std::unordered_set<NodeId> _nodeIds;

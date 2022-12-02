@@ -30,6 +30,9 @@ class NODE_EDITOR_PUBLIC AbstractGraphModel : public QObject
 {
   Q_OBJECT
 public:
+  /// Generates a new unique NodeId.
+  virtual NodeId newNodeId() = 0;
+
   /// @brief Returns the full set of unique Node Ids.
   /**
    * Model creator is responsible for generating unique `unsigned int`
@@ -229,14 +232,6 @@ public:
   virtual
   void
   loadNode(QJsonObject const &) {}
-
-  virtual
-  QJsonObject
-  saveConnection(ConnectionId const & connId) const = 0;
-
-  virtual
-  void
-  loadConnection(QJsonObject const & connJson) = 0;
 
 public:
   /**

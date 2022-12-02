@@ -346,7 +346,7 @@ void
 SimpleGraphModel::
 loadNode(QJsonObject const & nodeJson)
 {
-  NodeId restoredNodeId = static_cast<NodeId>(nodeJson["id"].toInt());
+  NodeId restoredNodeId = nodeJson["id"].toInt();
 
   // Next NodeId must be larger that any id existing in the graph
   _nextNodeId = std::max(restoredNodeId + 1, _nextNodeId);
@@ -365,32 +365,4 @@ loadNode(QJsonObject const & nodeJson)
                 NodeRole::Position,
                 pos);
   }
-}
-
-
-QJsonObject
-SimpleGraphModel::
-saveConnection(ConnectionId const & connId) const
-{
-  QJsonObject connJson;
-
-  connJson["outNodeId"] = static_cast<qint64>(connId.outNodeId);
-  connJson["outPortIndex"] = static_cast<qint64>(connId.outPortIndex);
-  connJson["intNodeId"] = static_cast<qint64>(connId.inNodeId);
-  connJson["inPortIndex"] = static_cast<qint64>(connId.inPortIndex);
-
-  return connJson;
-}
-
-
-void
-SimpleGraphModel::
-loadConnection(QJsonObject const & connJson)
-{
-  ConnectionId connId{static_cast<NodeId>(connJson["outNodeId"].toInt()),
-                      static_cast<PortIndex>(connJson["outPortIndex"].toInt()),
-                      static_cast<NodeId>(connJson["intNodeId"].toInt()),
-                      static_cast<PortIndex>(connJson["inPortIndex"].toInt())};
-
-  addConnection(connId);
 }

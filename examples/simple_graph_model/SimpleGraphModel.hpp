@@ -107,11 +107,7 @@ public:
   void
   loadNode(QJsonObject const & nodeJson) override;
 
-  QJsonObject
-  saveConnection(ConnectionId const & connId) const override;
-
-  void
-  loadConnection(QJsonObject const & connJson) override;
+  NodeId newNodeId() override { return _nextNodeId++; }
 
 private:
   std::unordered_set<NodeId> _nodeIds;

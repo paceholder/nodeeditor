@@ -74,7 +74,7 @@ NodeId
 SimpleGraphModel::
 addNode(QString const nodeType)
 {
-  NodeId newId = _nextNodeId++;
+  NodeId newId = newNodeId();
   // Create new node.
   _nodeIds.insert(newId);
 
@@ -307,6 +307,7 @@ deleteNode(NodeId const nodeId)
 {
   // Delete connections to this node first.
   auto connectionIds = allConnectionIds(nodeId);
+
   for (auto & cId : connectionIds)
   {
     deleteConnection(cId);
@@ -365,32 +366,4 @@ loadNode(QJsonObject const & nodeJson)
                 NodeRole::Position,
                 pos);
   }
-}
-
-
-QJsonObject
-SimpleGraphModel::
-saveConnection(ConnectionId const & connId) const
-{
-  QJsonObject connJson;
-
-  connJson["outNodeId"] = static_cast<qint64>(connId.outNodeId);
-  connJson["outPortIndex"] = static_cast<qint64>(connId.outPortIndex);
-  connJson["intNodeId"] = static_cast<qint64>(connId.inNodeId);
-  connJson["inPortIndex"] = static_cast<qint64>(connId.inPortIndex);
-
-  return connJson;
-}
-
-
-void
-SimpleGraphModel::
-loadConnection(QJsonObject const & connJson)
-{
-  ConnectionId connId{static_cast<NodeId>(connJson["outNodeId"].toInt()),
-                      static_cast<PortIndex>(connJson["outPortIndex"].toInt()),
-                      static_cast<NodeId>(connJson["intNodeId"].toInt()),
-                      static_cast<PortIndex>(connJson["inPortIndex"].toInt())};
-
-  addConnection(connId);
 }

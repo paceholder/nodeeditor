@@ -104,12 +104,6 @@ public:
   void
   load(QJsonObject const &json) override;
 
-  QJsonObject
-  saveConnection(ConnectionId const & connId) const override;
-
-  void
-  loadConnection(QJsonObject const & connJson) override;
-
   /**
    * Fetches the NodeDelegateModel for the given `nodeId` and tries to cast the
    * stored pointer to the given type
@@ -134,20 +128,7 @@ Q_SIGNALS:
                    PortIndex const);
 
 private:
-  NodeId
-  newNodeId() { return _nextNodeId++; }
-
-  /**
-   * The function could be used when we restore nodes from some file
-   * and the NodeId values are already known.  In this case we must
-   * update internal counter for unique "next" node id in order not to
-   * repeat the values when incrementing.
-   */
-  void
-  setNextNodeId(NodeId const restoredNodeId)
-  {
-    _nextNodeId = std::max(_nextNodeId, restoredNodeId + 1);
-  }
+  NodeId newNodeId() override { return _nextNodeId++; }
 
 private Q_SLOTS:
   /**

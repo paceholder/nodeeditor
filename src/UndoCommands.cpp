@@ -1,8 +1,9 @@
 #include "UndoCommands.hpp"
 
-#include "Definitions.hpp"
 #include "BasicGraphicsScene.hpp"
 #include "ConnectionGraphicsObject.hpp"
+#include "ConnectionIdUtils.hpp"
+#include "Definitions.hpp"
 #include "NodeGraphicsObject.hpp"
 
 #include <QtCore/QJsonArray>
@@ -30,7 +31,7 @@ DeleteCommand(BasicGraphicsScene* scene)
     {
       auto const& cid = c->connectionId();
 
-      connJsonArray.append(graphModel.saveConnection(cid));
+      connJsonArray.append(toJson(cid));
     }
   }
 
@@ -44,7 +45,7 @@ DeleteCommand(BasicGraphicsScene* scene)
       // saving connections attached to the selected nodes
       for (auto const & cid : graphModel.allConnectionIds(n->nodeId()))
       {
-        connJsonArray.append(graphModel.saveConnection(cid));
+        connJsonArray.append(toJson(cid));
       }
 
       nodesJsonArray.append(graphModel.saveNode(n->nodeId()));
@@ -54,6 +55,7 @@ DeleteCommand(BasicGraphicsScene* scene)
   _sceneJson["nodes"] = nodesJsonArray;
   _sceneJson["connections"] = connJsonArray;
 }
+
 
 void
 DeleteCommand::
@@ -65,14 +67,20 @@ undo()
 
   for (QJsonValueRef node : nodesJsonArray)
   {
-    graphModel.loadNode(node.toObject());
+    QJsonObject obj = node.toObject();
+    graphModel.loadNode(obj);
   }
 
   QJsonArray connectionJsonArray = _sceneJson["connections"].toArray();
 
   for (QJsonValueRef connection : connectionJsonArray)
   {
-    graphModel.loadConnection(connection.toObject());
+    QJsonObject connJson = connection.toObject();
+
+    ConnectionId connId = fromJson(connJson);
+
+    // Restore the connection
+    graphModel.addConnection(connId);
   }
 }
 
@@ -96,13 +104,7 @@ redo()
   for (QJsonValueRef connection : connectionJsonArray)
   {
     QJsonObject connJson = connection.toObject();
-
-    ConnectionId connId{static_cast<NodeId>(connJson["outNodeId"].toInt()),
-                        static_cast<PortIndex>(connJson["outPortIndex"].toInt()),
-                        static_cast<NodeId>(connJson["intNodeId"].toInt()),
-                        static_cast<PortIndex>(connJson["inPortIndex"].toInt())};
-
-    graphModel.deleteConnection(connId);
+    graphModel.deleteConnection(fromJson(connJson));
   }
 }
 

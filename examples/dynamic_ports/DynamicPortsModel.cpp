@@ -385,34 +385,6 @@ loadNode(QJsonObject const & nodeJson)
 }
 
 
-QJsonObject
-DynamicPortsModel::
-saveConnection(ConnectionId const & connId) const
-{
-  QJsonObject connJson;
-
-  connJson["outNodeId"] = static_cast<qint64>(connId.outNodeId);
-  connJson["outPortIndex"] = static_cast<qint64>(connId.outPortIndex);
-  connJson["intNodeId"] = static_cast<qint64>(connId.inNodeId);
-  connJson["inPortIndex"] = static_cast<qint64>(connId.inPortIndex);
-
-  return connJson;
-}
-
-
-void
-DynamicPortsModel::
-loadConnection(QJsonObject const & connJson)
-{
-  ConnectionId connId{static_cast<NodeId>(connJson["outNodeId"].toInt()),
-                      static_cast<PortIndex>(connJson["outPortIndex"].toInt()),
-                      static_cast<NodeId>(connJson["intNodeId"].toInt()),
-                      static_cast<PortIndex>(connJson["inPortIndex"].toInt())};
-
-  addConnection(connId);
-}
-
-
 void
 DynamicPortsModel::
 addPort(NodeId nodeId,

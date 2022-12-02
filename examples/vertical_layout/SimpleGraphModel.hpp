@@ -107,17 +107,9 @@ public:
   void
   loadNode(QJsonObject const & nodeJson) override;
 
-  /**
-   * Serializes @param connId to QJsonObject
-   */
-  QJsonObject
-  saveConnection(ConnectionId const & connId) const override;
-
-  /**
-   * Restores connection from QJsonObject and adds it to the graph.
-   */
-  void
-  loadConnection(QJsonObject const & connJson) override;
+private:
+  NodeId
+  newNodeId() override { return _nextNodeId++; }
 
 private:
   std::unordered_set<NodeId> _nodeIds;
