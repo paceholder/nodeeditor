@@ -53,7 +53,6 @@ void
 NumberDisplayDataModel::
 setInData(std::shared_ptr<NodeData> data, PortIndex portIndex)
 {
-  qWarning() << this;
   _numberData = std::dynamic_pointer_cast<DecimalData>(data);
 
   if (!_label)
