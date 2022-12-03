@@ -145,8 +145,16 @@ addConnection(ConnectionId const connectionId)
 
   Q_EMIT connectionCreated(connectionId);
 
-  onOutPortDataUpdated(getNodeId(PortType::Out, connectionId),
-                       getPortIndex(PortType::Out, connectionId));
+  QVariant const portDataToPropagate = portData(connectionId.outNodeId,
+                                                PortType::Out,
+                                                connectionId.outPortIndex,
+                                                PortRole::Data);
+
+  setPortData(connectionId.inNodeId,
+              PortType::In,
+              connectionId.inPortIndex,
+              portDataToPropagate,
+              PortRole::Data);
 }
 
 

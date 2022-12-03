@@ -85,7 +85,10 @@ onTextEdited(QString const& str)
   {
     _number = std::make_shared<DecimalData>(number);
 
+    qWarning() << "================";
+
     Q_EMIT dataUpdated(0);
+
   }
   else
   {
