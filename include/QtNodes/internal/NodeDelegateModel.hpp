@@ -149,6 +149,34 @@ Q_SIGNALS:
   void
   embeddedWidgetSizeUpdated();
 
+  /// Call this function before deleting the data associated with ports.
+  /**
+   * The function notifies the Graph Model and makes it remove and recompute the
+   * affected connection addresses.
+   */
+  void
+  portsAboutToBeDeleted(PortType const  portType,
+                        PortIndex const first,
+                        PortIndex const last);
+
+  /// Call this function when data and port moditications are finished.
+  void
+  portsDeleted();
+
+  /// Call this function before inserting the data associated with ports.
+  /**
+   * The function notifies the Graph Model and makes it recompute the affected
+   * connection addresses.
+   */
+  void
+  portsAboutToBeInserted(PortType const  portType,
+                         PortIndex const first,
+                         PortIndex const last);
+
+  /// Call this function when data and port moditications are finished.
+  void
+  portsInserted();
+
 private:
   NodeStyle _nodeStyle;
 };
