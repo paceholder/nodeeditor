@@ -55,6 +55,7 @@ GraphicsView(QWidget *parent)
   setSceneRect(-maxSize, -maxSize, (maxSize * 2), (maxSize * 2));
 
   setScaleRange(0.3, 2);
+  
 }
 
 
