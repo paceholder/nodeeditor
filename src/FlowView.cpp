@@ -565,6 +565,7 @@ void FlowView::jsonToSceneMousePos(QJsonObject jsonDocument)
       addedIds.insert(std::pair<QUuid,QUuid>(currentId, newId));
       nodesJsonArray[i] = _scene->nodes()[newId]->save();
     }
+    jsonDocument["nodes"] = nodesJsonArray;
 
     QJsonArray connectionJsonArray = jsonDocument["connections"].toArray();
     for (int i = 0; i < connectionJsonArray.size(); ++i)
@@ -583,6 +584,7 @@ void FlowView::jsonToSceneMousePos(QJsonObject jsonDocument)
       connectionJson["out_id"] = newOut.toString();
       connectionJsonArray[i] = connectionJson;
     }
+    jsonDocument["connections"] =connectionJsonArray;
     
     QJsonArray groupsJsonArray = jsonDocument["groups"].toArray();
     for (int i = 0; i < groupsJsonArray.size(); ++i)
@@ -594,7 +596,7 @@ void FlowView::jsonToSceneMousePos(QJsonObject jsonDocument)
     _scene->AddAction(UndoRedoAction(
         [this, addedIds](double v)
         {
-          //Delete all the created nodes
+          //Delete all the created nodes (and their connections)
           for(auto &id: addedIds)
           {
             _scene->removeNodeWithID(id.second);
@@ -602,10 +604,7 @@ void FlowView::jsonToSceneMousePos(QJsonObject jsonDocument)
           return 0;
         },
         [this, jsonDocument](double v)
-        {  
-          QJsonDocument doc(jsonDocument);
-          std::string strJson= (doc.toJson(QJsonDocument::Compact)).toStdString();
-		  std::cout << strJson << std::endl;
+        {       
           jsonToScene(jsonDocument); //jsonDocument has now been updated with new IDs and new positions
           return 0;
         },
@@ -716,112 +715,8 @@ void FlowView::pasteSelectedNodes() {
 
 void FlowView::duplicateSelectedNode()
 {
-	//Get Bounds of all the selected items 
-	float minx = 10000000000;
-	float miny = 10000000000;
-	float maxx = -1000000000;
-	float maxy = -1000000000;
-	for (QGraphicsItem * item : _scene->selectedItems())
-	{
-		if (auto n = qgraphicsitem_cast<NodeGraphicsObject*>(item))
-		{
-			QPointF pos = n->pos();
-			if(pos.x() < minx) minx = pos.x();
-			if(pos.y() < miny) miny = pos.y();
-			if(pos.x() > maxx) maxx = pos.x();
-			if(pos.y() > maxy) maxy = pos.y();
-		}
-	}
-	//compute centroid
-	float centroidX = (maxx - minx) / 2.0 + minx;
-	float centroidY = (maxy - miny) / 2.0 + miny;
-	QPointF centroid(centroidX, centroidY);
-	
-	//create nodes
-	std::vector<Node*> createdNodes;
-	std::vector<Node*> couterpartNode; 
-	std::vector<QJsonObject> nodeData;
-	for (QGraphicsItem * item : _scene->selectedItems())
-	{
-		if (auto n = qgraphicsitem_cast<NodeGraphicsObject*>(item))
-		{
-			QString modelName = n->node().nodeDataModel()->name(); 
-			auto type = _scene->registry().create(modelName);
-			auto& typeRef = type;
-			
-			if (typeRef)
-			{
-			  auto& node = _scene->createNode(std::move(typeRef));
-			  node.nodeDataModel()->restore(n->node().nodeDataModel()->save());
-			  createdNodes.push_back(&node);
-			  couterpartNode.push_back(&(n->node()));
-			  
-			  QPoint viewPointMouse = this->mapFromGlobal(QCursor::pos());
-			  QPointF posViewMouse = this->mapToScene(viewPointMouse);
-
-			  QPointF pos = posViewMouse + (n->pos() - centroid);
-			  
-			  node.nodeGraphicsObject().setPos(pos);
-			}
-			else
-			{
-			  qDebug() << "Model not found";
-			}
-		}
-	}
-	
-	//create connections 
-	std::vector<std::shared_ptr<Connection> > createdConnections; 
-	for (QGraphicsItem * item : _scene->selectedItems())
-	{
-	    if (auto c = qgraphicsitem_cast<ConnectionGraphicsObject*>(item))
-		{
-			//if(c->connection().connectionState().)
-			
-			Node* nodeIn = c->connection().getNode(PortType::In); 
-			PortIndex portIndexIn = c->connection().getPortIndex(PortType::In); 
-			Node* nodeOut = c->connection().getNode(PortType::Out); 
-			PortIndex portIndexOut = c->connection().getPortIndex(PortType::Out); 
-			
-			//find index of node in couterpartNode Array
-			int j = -1;
-			for(j = 0; j < couterpartNode.size(); j++)
-			{
-				if(couterpartNode[j] == nodeIn)
-					break;
-			}
-			
-			int k = -1;
-			for(k = 0; k < couterpartNode.size(); k++)
-			{
-				if(couterpartNode[k] == nodeOut)
-					break;
-			}
-			
-			if(j >=0 && k>=0 && j < couterpartNode.size() && k < couterpartNode.size())
-			{
-				auto connection = _scene->createConnection(*createdNodes[j], portIndexIn, *createdNodes[k], portIndexOut);
-				auto& connectionRef = connection; 
-				createdConnections.push_back(connection);
-			}
-		}
-	}
-
-	
-	//reset selection to nodes created
-	_scene->clearSelection();
-	for(int i = 0; i < createdNodes.size(); i++)
-	{
-		createdNodes[i]->nodeGraphicsObject().setSelected(true);
-	}
-	for(int i = 0; i < createdConnections.size(); i++)
-	{
-		createdConnections[i]->getConnectionGraphicsObject().setSelected(true);
-	}
-	
-	
-	// if(createdNodes.size() > 0)
-		// _scene->UpdateHistory();
+  QJsonObject selectionJson = selectionToJson();
+  jsonToSceneMousePos(selectionJson);
 }
 
 

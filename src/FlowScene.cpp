@@ -132,14 +132,16 @@ FlowScene::
 createConnection(Node& nodeIn,
                  PortIndex portIndexIn,
                  Node& nodeOut,
-                 PortIndex portIndexOut)
+                 PortIndex portIndexOut,
+                 QUuid *id)
 {
 
   auto connection =
     std::make_shared<Connection>(nodeIn,
                                  portIndexIn,
                                  nodeOut,
-                                 portIndexOut);
+                                 portIndexOut, 
+                                 id);
 
   auto cgo = std::make_unique<ConnectionGraphicsObject>(*this, *connection);
 
@@ -218,6 +220,15 @@ deleteConnection(Connection* connection)
   // connectionDeleted(connection);
   connection->removeFromNodes();
   _connections.erase(connection->id());
+}
+
+
+void
+FlowScene::
+deleteConnectionWithID(QUuid id)
+{
+  Connection *connection = _connections[id].get();
+  deleteConnection(connection);
 }
 
 

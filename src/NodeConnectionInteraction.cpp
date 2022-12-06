@@ -114,13 +114,11 @@ tryConnect() const
     {
       _scene->createConnection(converterNode, 0, *outNode, outNodePortIndex);
       _scene->createConnection(*_node, portIndex, converterNode, 0);
-	  // _scene->UpdateHistory();
     }
     else
     {
       _scene->createConnection(converterNode, 0, *_node, portIndex);
       _scene->createConnection(*outNode, outNodePortIndex, converterNode, 0);
-	  // _scene->UpdateHistory();
     }
 
     //Delete the users connection, we already replaced it.
@@ -155,6 +153,30 @@ tryConnect() const
   }
   
   // _scene->UpdateHistory();
+  QUuid connectionID = _connection->id();
+  FlowScene *scene = _scene;
+  Node *nodeIn = _connection->getNode(PortType::In);
+  Node *nodeOut = _connection->getNode(PortType::Out);
+  PortIndex portIn = _connection->getPortIndex(PortType::In);
+  PortIndex portOut = _connection->getPortIndex(PortType::Out);
+  _scene->AddAction(UndoRedoAction(
+    [scene, connectionID](double v)
+    {
+      scene->deleteConnectionWithID(connectionID);
+      return 0;
+    },
+    [scene, nodeIn, portIn, nodeOut, portOut, connectionID](double v)
+    {
+      QUuid id = connectionID;
+      scene->createConnection(*nodeIn,
+                              portIn,
+                              *nodeOut,
+                              portOut,
+                              &id);
+      return 0;
+    },
+    "Created Connection "
+  ));
 
   return true;
 }

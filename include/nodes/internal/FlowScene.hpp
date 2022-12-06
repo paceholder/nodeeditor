@@ -73,12 +73,14 @@ public:
   std::shared_ptr<Connection>createConnection(Node& nodeIn,
                                               PortIndex portIndexIn,
                                               Node& nodeOut,
-                                              PortIndex portIndexOut);
+                                              PortIndex portIndexOut,
+                                              QUuid *id=nullptr);
 
   std::shared_ptr<Connection>restoreConnection(QJsonObject const &connectionJson);
 
   void deleteConnection(Connection& connection);
   void deleteConnection(Connection* connection);
+  void deleteConnectionWithID(QUuid id);
 
   Node&createNode(std::unique_ptr<NodeDataModel> && dataModel);
   

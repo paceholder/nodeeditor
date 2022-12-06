@@ -45,7 +45,8 @@ public:
   Connection(Node& nodeIn,
              PortIndex portIndexIn,
              Node& nodeOut,
-             PortIndex portIndexOut);
+             PortIndex portIndexOut,
+             QUuid *id = nullptr);
 
   Connection(const Connection&) = delete;
   Connection operator=(const Connection&) = delete;

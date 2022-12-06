@@ -265,11 +265,14 @@ onDataUpdated(PortIndex index)
 {
   auto nodeData = _nodeDataModel->outData(index);
 
-  auto connections =
-    _nodeState.connections(PortType::Out, index);
+  if (_nodeState.getEntries(PortType::Out).size() > 0)
+  {
+	  auto connections =
+		_nodeState.connections(PortType::Out, index);
 
-  for (auto const & c : connections)
-    c.second->propagateData(nodeData);
+	  for (auto const & c : connections)
+		c.second->propagateData(nodeData);
+  }
 }
 
 void

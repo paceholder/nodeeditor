@@ -50,8 +50,9 @@ Connection::
 Connection(Node& nodeIn,
            PortIndex portIndexIn,
            Node& nodeOut,
-           PortIndex portIndexOut)
-  : _id(QUuid::createUuid())
+           PortIndex portIndexOut,
+           QUuid *id)
+  : _id((id ==nullptr) ? QUuid::createUuid() : *id)
   , _outNode(&nodeOut)
   , _inNode(&nodeIn)
   , _outPortIndex(portIndexOut)
@@ -61,6 +62,7 @@ Connection(Node& nodeIn,
   setNodeToPort(nodeIn, PortType::In, portIndexIn);
   setNodeToPort(nodeOut, PortType::Out, portIndexOut);
 }
+
 
 
 Connection::
@@ -77,6 +79,7 @@ Connection::
   {
     _outNode->nodeGraphicsObject().update();
   }
+  _connectionState.setLastHoveredNode(nullptr);
 }
 
 
@@ -259,6 +262,9 @@ setNodeToPort(Node& node,
 
   updated(*this);
 }
+
+
+
 
 void
 Connection::
