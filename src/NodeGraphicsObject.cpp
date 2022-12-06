@@ -318,13 +318,9 @@ mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 
       oldSize += QSize(diff.x(), diff.y());
 
-      w->setFixedSize(oldSize);
+      w->resize(oldSize);
 
       AbstractNodeGeometry & geometry = nodeScene()->nodeGeometry();
-
-      _proxyWidget->setMinimumSize(oldSize);
-      _proxyWidget->setMaximumSize(oldSize);
-      _proxyWidget->setPos(geometry.widgetPosition(_nodeId));
 
       // Passes the new size to the model.
       geometry.recomputeSize(_nodeId);
