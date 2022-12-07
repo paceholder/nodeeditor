@@ -27,6 +27,7 @@ option(BUILD_DOCS "Build Documentation" "${QT_NODES_DEVELOPER_DEFAULTS}")
 option(BUILD_SHARED_LIBS "Build as shared library" ON)
 option(BUILD_DEBUG_POSTFIX_D "Append d suffix to debug libraries" OFF)
 option(QT_NODES_FORCE_TEST_COLOR "Force colorized unit test output" OFF)
+option(QT_VERSION "Specify Qt Version" "")
 
 enable_testing()
 
@@ -44,26 +45,34 @@ add_subdirectory(external)
 
 
 # Find the QtWidgets library
+set(QT_COMPONENTS
+  Core
+  Widgets
+  Gui
+  OpenGL
+)
 find_package(Qt6 QUIET
-  COMPONENTS
-   Core
-   Widgets
-   Gui
-   OpenGL
+  COMPONENTS ${QT_COMPONENTS}
 )
 
 if (NOT Qt6_FOUND)
-  find_package(Qt5 QUIET
-    COMPONENTS
-     Core
-     Widgets
-     Gui
-     OpenGL
-  )
+  if(${QT_VERSION})
+    find_package(Qt5 ${QT_VERSION} QUIET
+      COMPONENTS ${QT_COMPONENTS}
+      PATHS ${QT_PATH}
+    )
+  else()
+    find_package(Qt5 QUIET
+      COMPONENTS ${QT_COMPONENTS}
+      PATHS ${QT_PATH}
+    )
+  endif()
 endif()
 
 if (NOT (Qt6_FOUND OR Qt5_FOUND))
-  message(FATAL_ERRROR "Qt libraries were not found.")
+  message(FATAL_ERRROR " Qt libraries were not found.")
+else()
+  message(STATUS "Compile with Qt version: ${Qt5Core_VERSION_STRING}")
 endif()
 
 if (Qt6_FOUND)

@@ -73,7 +73,7 @@ Platforms
 Dependencies
 ------------
 
-* Qt >5.2
+* Qt >5.15
 * CMake 3.2
 * Catch2
 
@@ -105,6 +105,10 @@ Linux
   cmake ..
   make -j && make install
 
+if you want to specify Qt version, use cmake param as flow:
+
+::
+   cmake -DQT_VERSION=<version> -DQT_PATH=<path-to-qt-install> ..
 
 Qt Creator
 ----------
