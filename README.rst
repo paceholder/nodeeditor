@@ -108,6 +108,7 @@ Linux
 if you want to specify Qt version, use cmake param as flow:
 
 ::
+
    cmake -DQT_VERSION=<version> -DQT_PATH=<path-to-qt-install> ..
 
 Qt Creator
