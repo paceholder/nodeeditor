@@ -78,16 +78,27 @@ Dependencies
 * Catch2
 
 
-Current State
-=============
+Current State (v3)
+==================
 
-* Model-based nodes
-* Automatic data propagation
+* Model-based graph
+* Headless mode
+  You can create, populate, modify the derivative of ``AbstractGraphModel``
+  without adding it to the actual Flow Scene.  The library is now designed to be
+  general-purpose graph visualization and modification tool, without
+  specialization on only data propagation.
+* Automatic data propagation built on top of the graph-model code
+  The library could be used for both pure graph visualization purposes and for
+  originally implemented data propagation.
+* Dynamic ports
 * Datatype-aware connections
 * Embedded Qt widgets
 * One-output to many-input connections
 * JSON-based interface styles
 * Saving scenes to JSON files
+* Custom Node Geometry
+* Vertical and Horizontal graph layouts
+* Undo/Redo, Duplication (CTRL+D)
 
 
 Building
@@ -127,20 +138,6 @@ With Cmake using `vcpkg`
    -DCMAKE_TOOLCHAIN_FILE=<vcpkg_dir>/scripts/buildsystems/scripts/buildsystems/vcpkg.cmake
 
 
-Version 3 Highlights
-====================
-
-#. Headless mode.
-   You can create, populate, modify the derivative of AbstractGraphModel
-   without adding it to the actual Flow Scene.
-   The library is now designed to be general-purpose graph
-   visualization and modification tool, without specialization on only
-   data propagation.
-#. Build data propagation on top of the graph code.
-   The library coudl be used for a pure grph visualization purposes as well as
-   for originally implemented data propagation.
-
-
 Help Needed
 ===========
 
@@ -157,14 +154,14 @@ Contribution
 #. Be polite, respectful and collaborative.
 #. For submitting a bug:
 
-    #. Describe your environment (Qt version, compiler, OS etc)
-    #. Describe steps to reproduce the issue
+   #. Describe your environment (Qt version, compiler, OS etc)
+   #. Describe steps to reproduce the issue
 
 #. For submitting a pull request:
 
    #. Create a proposal task first. We can come up with a better design together.
-   #. Create a pull-request. If applicable create a simple example to your
-         iescribe your problem in details, provide use cases,
+   #. Create a pull-request. If applicable, create a simple example for your
+      problem, describe the changes in details, provide use cases.
 
 #. For submitting a development request:
 
