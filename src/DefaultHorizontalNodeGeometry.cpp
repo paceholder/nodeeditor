@@ -137,11 +137,9 @@ portTextPosition(NodeId const   nodeId,
   {
     case PortType::In:
       p.setX(_portSpasing);
-      //p.setX(5.0);
       break;
 
     case PortType::Out:
-      //p.setX(size.width() - 5.0 - rect.width());
       p.setX(size.width() - _portSpasing - rect.width());
       break;
 
@@ -192,11 +190,11 @@ widgetPosition(NodeId const nodeId) const
     // place it immediately after the caption.
     if (w->sizePolicy().verticalPolicy() & QSizePolicy::ExpandFlag)
     {
-      return QPointF(_portSpasing + maxPortsTextAdvance(nodeId, PortType::In), captionHeight);
+      return QPointF(2.0 * _portSpasing + maxPortsTextAdvance(nodeId, PortType::In), captionHeight);
     }
     else
     {
-      return QPointF(_portSpasing + maxPortsTextAdvance(nodeId, PortType::In),
+      return QPointF(2.0 * _portSpasing + maxPortsTextAdvance(nodeId, PortType::In),
                      (captionHeight + size.height() - w->height()) / 2.0);
     }
   }

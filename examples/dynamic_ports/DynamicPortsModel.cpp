@@ -4,6 +4,8 @@
 
 #include <QtNodes/ConnectionIdUtils>
 
+#include <QJsonArray>
+
 #include <iterator>
 
 
@@ -80,7 +82,8 @@ NodeId
 DynamicPortsModel::
 addNode(QString const nodeType)
 {
-  NodeId newId = _nextNodeId++;
+  NodeId newId = newNodeId();
+
   // Create new node.
   _nodeIds.insert(newId);
 
@@ -113,6 +116,22 @@ DynamicPortsModel::
 nodeExists(NodeId const nodeId) const
 {
   return (_nodeIds.find(nodeId) != _nodeIds.end());
+}
+
+
+PortAddRemoveWidget*
+DynamicPortsModel::
+widget(NodeId nodeId) const
+{
+  auto it = _nodeWidgets.find(nodeId);
+  if (it == _nodeWidgets.end())
+  {
+    _nodeWidgets[nodeId] =
+      new PortAddRemoveWidget(0, 0, nodeId,
+                              *const_cast<DynamicPortsModel*>(this));
+  }
+
+  return _nodeWidgets[nodeId];
 }
 
 
@@ -166,16 +185,7 @@ nodeData(NodeId nodeId, NodeRole role) const
 
     case NodeRole::Widget:
     {
-      auto it = _nodeWidgets.find(nodeId);
-      if (it == _nodeWidgets.end())
-      {
-        _nodeWidgets[nodeId] =
-          new PortAddRemoveWidget(_nodePortCounts[nodeId].in,
-                                  _nodePortCounts[nodeId].out,
-                                  nodeId,
-                                  *const_cast<DynamicPortsModel*>(this));
-      }
-      result = QVariant::fromValue(_nodeWidgets[nodeId]);
+      result = QVariant::fromValue(widget(nodeId));
       break;
     }
   }
@@ -227,9 +237,13 @@ setNodeData(NodeId   nodeId,
       break;
 
     case NodeRole::InPortCount:
+      _nodePortCounts[nodeId].in = value.toUInt();
+      widget(nodeId)->populateButtons(PortType::In, value.toUInt());
       break;
 
     case NodeRole::OutPortCount:
+      _nodePortCounts[nodeId].out = value.toUInt();
+      widget(nodeId)->populateButtons(PortType::Out, value.toUInt());
       break;
 
     case NodeRole::Widget:
@@ -332,6 +346,7 @@ deleteNode(NodeId const nodeId)
   _nodeIds.erase(nodeId);
   _nodeGeometryData.erase(nodeId);
   _nodePortCounts.erase(nodeId);
+  _nodeWidgets.erase(nodeId);
 
   Q_EMIT nodeDeleted(nodeId);
 
@@ -354,9 +369,37 @@ saveNode(NodeId const nodeId) const
     posJson["x"] = pos.x();
     posJson["y"] = pos.y();
     nodeJson["position"] = posJson;
+
+    nodeJson["inPortCount"] = QString::number(_nodePortCounts[nodeId].in);
+    nodeJson["outPortCount"] = QString::number(_nodePortCounts[nodeId].out);
   }
 
   return nodeJson;
+}
+
+
+QJsonObject
+DynamicPortsModel::
+save() const
+{
+  QJsonObject sceneJson;
+
+  QJsonArray nodesJsonArray;
+  for (auto const nodeId : allNodeIds())
+  {
+    nodesJsonArray.append(saveNode(nodeId));
+  }
+  sceneJson["nodes"] = nodesJsonArray;
+
+
+  QJsonArray connJsonArray;
+  for (auto const & cid : _connectivity)
+  {
+    connJsonArray.append(QtNodes::toJson(cid));
+  }
+  sceneJson["connections"] = connJsonArray;
+
+  return sceneJson;
 }
 
 
@@ -371,7 +414,13 @@ loadNode(QJsonObject const & nodeJson)
   // Create new node.
   _nodeIds.insert(restoredNodeId);
 
-  Q_EMIT nodeCreated(restoredNodeId);
+  setNodeData(restoredNodeId,
+              NodeRole::InPortCount,
+              nodeJson["inPortCount"].toString().toUInt());
+
+  setNodeData(restoredNodeId,
+              NodeRole::OutPortCount,
+              nodeJson["outPortCount"].toString().toUInt());
 
   {
     QJsonObject posJson = nodeJson["position"].toObject();
@@ -381,6 +430,34 @@ loadNode(QJsonObject const & nodeJson)
     setNodeData(restoredNodeId,
                 NodeRole::Position,
                 pos);
+
+  }
+
+  Q_EMIT nodeCreated(restoredNodeId);
+}
+
+
+void
+DynamicPortsModel::
+load(QJsonObject const &jsonDocument)
+{
+  QJsonArray nodesJsonArray = jsonDocument["nodes"].toArray();
+
+  for (QJsonValueRef nodeJson : nodesJsonArray)
+  {
+    loadNode(nodeJson.toObject());
+  }
+
+  QJsonArray connectionJsonArray = jsonDocument["connections"].toArray();
+
+  for (QJsonValueRef connection : connectionJsonArray)
+  {
+    QJsonObject connJson = connection.toObject();
+
+    ConnectionId connId = QtNodes::fromJson(connJson);
+
+    // Restore the connection
+    addConnection(connId);
   }
 }
 

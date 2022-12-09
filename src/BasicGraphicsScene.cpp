@@ -149,8 +149,7 @@ void
 BasicGraphicsScene::
 clearScene()
 {
-  auto const &allNodeIds =
-    graphModel().allNodeIds();
+  auto const &allNodeIds = graphModel().allNodeIds();
 
   for ( auto nodeId : allNodeIds)
   {

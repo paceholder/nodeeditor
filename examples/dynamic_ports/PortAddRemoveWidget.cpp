@@ -33,10 +33,6 @@ PortAddRemoveWidget(unsigned int nInPorts,
   hl->addLayout(_left);
   hl->addSpacing(50);
   hl->addLayout(_right);
-
-  populateButtons(_left, nInPorts);
-
-  populateButtons(_right, nOutPorts);
 }
 
 
@@ -48,12 +44,27 @@ PortAddRemoveWidget::
 
 void
 PortAddRemoveWidget::
-populateButtons(QVBoxLayout* verticalLayout,
+populateButtons(PortType portType,
                 unsigned int nPorts)
 {
-  for (unsigned int i = 0; i < nPorts; ++i)
+  QVBoxLayout* vl =
+    (portType == PortType::In) ?  _left : _right;
+
+  // we use [-1} in the expression `vl->count() - 1` because
+  // one element - a spacer - is alvays present in this layout.
+
+  if (vl->count()-1 < nPorts)
+    while (vl->count()-1 < nPorts)
+    {
+      addButtonGroupToLayout(vl, 0);
+    }
+
+  if (vl->count()-1 > nPorts)
   {
-    addButtonGroupToLayout(verticalLayout, i);
+    while (vl->count()-1 > nPorts)
+    {
+      removeButtonGroupFromLayout(vl, 0);
+    }
   }
 }
 

@@ -19,6 +19,8 @@ using PortType        = QtNodes::PortType;
 using StyleCollection = QtNodes::StyleCollection;
 using QtNodes::InvalidNodeId;
 
+class PortAddRemoveWidget;
+
 /**
  * The class implements a bare minimum required to demonstrate a model-based
  * graph.
@@ -98,6 +100,9 @@ public:
   QJsonObject
   saveNode(NodeId const) const override;
 
+  QJsonObject
+  save() const;
+
   /// @brief Creates a new node based on the informatoin in `nodeJson`.
   /**
    * @param nodeJson conains a `NodeId`, node's position, internal node
@@ -105,6 +110,9 @@ public:
    */
   void
   loadNode(QJsonObject const & nodeJson) override;
+
+  void
+  load(QJsonObject const &jsonDocument);
 
   void
   addPort(NodeId nodeId,
@@ -132,12 +140,14 @@ private:
 
   struct NodePortCount
   {
-    unsigned int in = 1;
-    unsigned int out = 1;
+    unsigned int in = 0;
+    unsigned int out = 0;
   };
 
+  PortAddRemoveWidget* widget(NodeId) const;
+
   mutable std::unordered_map<NodeId, NodePortCount> _nodePortCounts;
-  mutable std::unordered_map<NodeId, QWidget*> _nodeWidgets;
+  mutable std::unordered_map<NodeId, PortAddRemoveWidget*> _nodeWidgets;
 
   /// A convenience variable needed for generating unique node ids.
   unsigned int _nextNodeId;

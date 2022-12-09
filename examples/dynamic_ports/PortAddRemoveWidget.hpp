@@ -58,7 +58,7 @@ public:
    * counts.
    */
   void
-  populateButtons(QVBoxLayout* verticalLayout, unsigned int nPorts);
+  populateButtons(PortType portType, unsigned int nPorts);
 
   /**
    * Adds a single `[+][-]` button group to a given layout.
