@@ -73,8 +73,8 @@ Platforms
 Dependencies
 ------------
 
-* Qt >5.2
-* CMake 3.2
+* Qt >5.15
+* CMake 3.8
 * Catch2
 
 
