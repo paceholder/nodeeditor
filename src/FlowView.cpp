@@ -283,24 +283,27 @@ contextMenuEvent(QContextMenuEvent *event)
       return;
     }
 
-    QString parent = item->parent()->data(0, Qt::UserRole).toString();
-    if(parent == "Templates")
-    {
-      DataModelRegistry::RegisteredTemplatesMap map = _scene->registry().RegisteredTemplates();
-      QString fileName = map[modelName];
+	if (item->parent() != nullptr)
+	{
+		QString parent = item->parent()->data(0, Qt::UserRole).toString();
+		if(parent == "Templates")
+		{
+		  DataModelRegistry::RegisteredTemplatesMap map = _scene->registry().RegisteredTemplates();
+		  QString fileName = map[modelName];
 
-      QFile file;
-      file.setFileName(fileName);
-      file.open(QIODevice::ReadOnly | QIODevice::Text);
-      QString val = file.readAll();
-      file.close();
-      qWarning() << val;
-      QJsonDocument d = QJsonDocument::fromJson(val.toUtf8());
-      QJsonObject sett2 = d.object();
-      jsonToSceneMousePos(sett2);
+		  QFile file;
+		  file.setFileName(fileName);
+		  file.open(QIODevice::ReadOnly | QIODevice::Text);
+		  QString val = file.readAll();
+		  file.close();
+		  qWarning() << val;
+		  QJsonDocument d = QJsonDocument::fromJson(val.toUtf8());
+		  QJsonObject sett2 = d.object();
+		  jsonToSceneMousePos(sett2);
 
-	    modelMenu.close();
-    }
+			modelMenu.close();
+		}
+	}
 
     auto type = _scene->registry().create(modelName);
 
@@ -313,12 +316,12 @@ contextMenuEvent(QContextMenuEvent *event)
 
       QUuid id = node.id();
       _scene->AddAction(UndoRedoAction(
-        [this, id](double v)
+        [this, id](void *ptr)
         {
           _scene->removeNodeWithID(id);
           return 0;
         },
-        [this, pos, modelName, id](double v)
+        [this, pos, modelName, id](void *ptr)
         {
           auto type = _scene->registry().create(modelName);
           auto& node = _scene->createNodeWithID(std::move(type), id);
@@ -457,13 +460,13 @@ deleteSelectedNodes()
   
   _scene->AddAction(UndoRedoAction(
     //Undo action
-    [this, sceneJson](double v) 
+    [this, sceneJson](void *ptr) 
     {
       jsonToScene(sceneJson);
       return 0;
     },
     //Redo action
-    [this, sceneJson](double v)
+    [this, sceneJson](void *ptr)
     {
       deleteJsonElements(sceneJson);
       return 0;
@@ -594,7 +597,7 @@ void FlowView::jsonToSceneMousePos(QJsonObject jsonDocument)
   
 
     _scene->AddAction(UndoRedoAction(
-        [this, addedIds](double v)
+        [this, addedIds](void *ptr)
         {
           //Delete all the created nodes (and their connections)
           for(auto &id: addedIds)
@@ -603,7 +606,7 @@ void FlowView::jsonToSceneMousePos(QJsonObject jsonDocument)
           }
           return 0;
         },
-        [this, jsonDocument](double v)
+        [this, jsonDocument](void *ptr)
         {       
           jsonToScene(jsonDocument); //jsonDocument has now been updated with new IDs and new positions
           return 0;

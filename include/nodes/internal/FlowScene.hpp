@@ -25,18 +25,14 @@ class Connection;
 class ConnectionGraphicsObject;
 class NodeStyle;
 
-struct SceneHistory
-{
-	QByteArray data;
-};
 
 
 struct UndoRedoAction {
 
-  std::function<int(double)> undoAction;
-  std::function<int(double)> redoAction;
+  std::function<int(void*)> undoAction;
+  std::function<int(void*)> redoAction;
   std::string name;
-  UndoRedoAction(std::function<int(double)> undoAction, std::function<int(double)> redoAction, std::string name) {
+  UndoRedoAction(std::function<int(void*)> undoAction, std::function<int(void*)> redoAction, std::string name) {
     this->undoAction = undoAction;
     this->redoAction = redoAction;
     this->name = name;
@@ -64,6 +60,7 @@ public:
   std::vector<UndoRedoAction> undoActions;
   std::vector<UndoRedoAction> redoActions;
   void PrintActions();
+  int historyInx; 
 public:
 
   std::shared_ptr<Connection>createConnection(PortType connectedPort,
@@ -208,10 +205,8 @@ private:
   std::shared_ptr<DataModelRegistry>          _registry;
   std::unordered_map<QUuid, std::shared_ptr<Group>> _groups;
 
-  int historyInx; 
   bool writeToHistory; 
-  std::vector< SceneHistory > history;
-
+  
 
 private: 
 };

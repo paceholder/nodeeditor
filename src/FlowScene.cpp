@@ -52,23 +52,25 @@ FlowScene(std::shared_ptr<DataModelRegistry> registry)
   auto UpdateLamda = [this](Node& n, const QPointF& newPosition, const QPointF &oldPosition)
   {
     resolveGroups(n);
-    
-    undoActions.push_back(UndoRedoAction(
-      [&n, oldPosition](double v)
-      {
-        n.nodeGraphicsObject().setPos(oldPosition);
-        return 0;
-      },
-      [&n, newPosition](double v)
-      {
-        n.nodeGraphicsObject().setPos(newPosition);
-        return 0;
-      },
-      "Moved Node " + n.nodeDataModel()->name().toStdString()
-    ));
-    redoActions.clear();
+    QUuid id = n.id();
+    AddAction(
+      UndoRedoAction(
+        [this, id, oldPosition](void *)
+        {
+          UniqueNode n = _nodes[id];
+          n->nodeGraphicsObject().setPos(oldPosition);
+          return 0;
+        },
+        [this, id, newPosition](void *)
+        {
 
-    PrintActions();
+          UniqueNode n = _nodes[id];
+          n->nodeGraphicsObject().setPos(newPosition);
+          return 0;
+        },
+        "Moved Node " + n.nodeDataModel()->name().toStdString()
+      )
+    );
   };
   connect(this, &FlowScene::nodeMoveFinished, this, UpdateLamda);
   
@@ -77,20 +79,19 @@ FlowScene(std::shared_ptr<DataModelRegistry> registry)
     resolveGroups(g);
     
     
-    undoActions.push_back(UndoRedoAction(
-      [&g, oldPosition](double v)
+    AddAction(UndoRedoAction(
+      [&g, oldPosition](void *ptr)
       {
         g.groupGraphicsObject().setPos(oldPosition);
         return 0;
       },
-      [&g, newPosition](double v)
+      [&g, newPosition](void *ptr)
       {
         g.groupGraphicsObject().setPos(newPosition);
         return 0;
       },
       "Moved Group " + g.GetName().toStdString()
     ));
-    redoActions.clear();
   };
   connect(this, &FlowScene::groupMoveFinished, this, GroupUpdateLamda);
 
@@ -926,7 +927,7 @@ loadFromMemory(const QByteArray& data)
       NodeDataModel *dm = nodeIn->nodeDataModel(); 
       nameA = dm->name();
     }
-    if(nameA == "InputVariable") return true;
+    if(QString::compare(nameA, QString("InputVariable")) == 0) return true;
 
     {
       QJsonObject objB = rhs.toObject();
@@ -939,7 +940,8 @@ loadFromMemory(const QByteArray& data)
       NodeDataModel *dm = nodeIn->nodeDataModel(); 
       nameB = dm->name();
     }
-    if(nameB == "InputVariable") return false;
+    if(QString::compare(nameB, QString("InputVariable")) == 0) return false;
+    //if(nameB == "InputVariable") return false;
 
     return posA.x() < posB.x();
   });
@@ -993,6 +995,7 @@ void FlowScene::AddAction(QtNodes::UndoRedoAction action)
     undoActions.push_back(action);
     redoActions.clear();
     PrintActions();
+    historyInx++;
   }
 }
 
@@ -1007,6 +1010,7 @@ void FlowScene::Undo()
     action.undoAction(0);
 
     redoActions.push_back(action);
+    historyInx--;
     writeToHistory = true; 
   }
 }
@@ -1023,6 +1027,7 @@ void FlowScene::Redo()
 
     undoActions.push_back(action);
     writeToHistory = true;  
+    historyInx++;
   }
 }
 
@@ -1030,16 +1035,15 @@ void FlowScene::Redo()
 
 void FlowScene::ResetHistory()
 {
-	historyInx = 0; 
-	writeToHistory = true; 
-	history.clear();
+  historyInx=0;
+  undoActions.clear();
+  redoActions.clear();
 }
+
 
 int FlowScene::GetHistoryIndex() {
   return historyInx;
 }
-
-
 
 
 //------------------------------------------------------------------------------

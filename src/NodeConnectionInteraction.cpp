@@ -152,22 +152,23 @@ tryConnect() const
     outNode->onDataUpdatedConnection(outPortIndex, _connection);
   }
   
-  // _scene->UpdateHistory();
   QUuid connectionID = _connection->id();
   FlowScene *scene = _scene;
-  Node *nodeIn = _connection->getNode(PortType::In);
-  Node *nodeOut = _connection->getNode(PortType::Out);
+  QUuid nodeInID = _connection->getNode(PortType::In)->id();
+  QUuid nodeOutID = _connection->getNode(PortType::Out)->id();
   PortIndex portIn = _connection->getPortIndex(PortType::In);
   PortIndex portOut = _connection->getPortIndex(PortType::Out);
   _scene->AddAction(UndoRedoAction(
-    [scene, connectionID](double v)
+    [scene, connectionID](void *ptr)
     {
       scene->deleteConnectionWithID(connectionID);
       return 0;
     },
-    [scene, nodeIn, portIn, nodeOut, portOut, connectionID](double v)
+    [scene, nodeInID, portIn, nodeOutID, portOut, connectionID](void *ptr)
     {
       QUuid id = connectionID;
+      Node *nodeIn = scene->nodes()[nodeInID].get();
+      Node *nodeOut = scene->nodes()[nodeOutID].get();
       scene->createConnection(*nodeIn,
                               portIn,
                               *nodeOut,
@@ -189,6 +190,14 @@ bool
 NodeConnectionInteraction::
 disconnect(PortType portToDisconnect) const
 {
+
+  QUuid connectionID = _connection->id();
+  FlowScene *scene = _scene;
+  Node *nodeIn = _connection->getNode(PortType::In);
+  Node *nodeOut = _connection->getNode(PortType::Out);
+  PortIndex portIn = _connection->getPortIndex(PortType::In);
+  PortIndex portOut = _connection->getPortIndex(PortType::Out);
+
   PortIndex portIndex =
     _connection->getPortIndex(portToDisconnect);
 
@@ -207,7 +216,24 @@ disconnect(PortType portToDisconnect) const
 
   _connection->getConnectionGraphicsObject().grabMouse();
 
-  // _scene->UpdateHistory();
+  _scene->AddAction(UndoRedoAction(
+    [scene, nodeIn, portIn, nodeOut, portOut, connectionID](void *ptr)
+    {
+      QUuid id = connectionID;
+      scene->createConnection(*nodeIn,
+                              portIn,
+                              *nodeOut,
+                              portOut,
+                              &id);
+      return 0;
+    },
+    [scene, connectionID](void *ptr)
+    {
+      scene->deleteConnectionWithID(connectionID);
+      return 0;
+    },
+    "Removed Connection "
+  ));
   
   return true;
 }
