@@ -322,7 +322,7 @@ mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 
       AbstractNodeGeometry & geometry = nodeScene()->nodeGeometry();
 
-      _proxyWidget->setPos(geometry.widgetPosition(_nodeId));
+      // _proxyWidget->setPos(geometry.widgetPosition(_nodeId));
 
       // Passes the new size to the model.
       geometry.recomputeSize(_nodeId);
