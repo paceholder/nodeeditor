@@ -76,8 +76,6 @@ createSceneMenu(QPointF const scenePos)
 {
   QMenu* modelMenu = new QMenu();
 
-  auto skipText = QStringLiteral("skip me");
-
   // Add filterbox to the context menu
   auto* txtBox = new QLineEdit(modelMenu);
   txtBox->setPlaceholderText(QStringLiteral("Filter"));
@@ -101,21 +99,23 @@ createSceneMenu(QPointF const scenePos)
 
   auto registry = _graphModel.dataModelRegistry();
 
-  QMap<QString, QTreeWidgetItem*> topLevelItems;
   for (auto const& cat : registry->categories())
   {
     auto item = new QTreeWidgetItem(treeView);
     item->setText(0, cat);
-    item->setData(0, Qt::UserRole, skipText);
-    topLevelItems[cat] = item;
+    item->setFlags(item->flags() & ~Qt::ItemIsSelectable);
   }
 
   for (auto const& assoc : registry->registeredModelsCategoryAssociation())
   {
-    auto parent = topLevelItems[assoc.second];
-    auto item = new QTreeWidgetItem(parent);
+    QList<QTreeWidgetItem*> parent = treeView->findItems(assoc.second, 
+                                                         Qt::MatchExactly);
+
+    if (parent.count() <= 0)
+      continue;
+
+    auto item = new QTreeWidgetItem(parent.first());
     item->setText(0, assoc.first);
-    item->setData(0, Qt::UserRole, assoc.first);
   }
 
   treeView->expandAll();
@@ -123,17 +123,14 @@ createSceneMenu(QPointF const scenePos)
   connect(treeView, &QTreeWidget::itemClicked,
           [this,
            modelMenu,
-           skipText,
            scenePos](QTreeWidgetItem* item, int)
           {
-            QString modelName = item->data(0, Qt::UserRole).toString();
-
-            if (modelName == skipText)
+            if(!(item->flags() & (Qt::ItemIsSelectable)))
             {
               return;
             }
 
-            NodeId nodeId = this->_graphModel.addNode(modelName);
+            NodeId nodeId = this->_graphModel.addNode(item->text(0));
 
             if (nodeId != InvalidNodeId)
             {
@@ -147,17 +144,16 @@ createSceneMenu(QPointF const scenePos)
 
   //Setup filtering
   connect(txtBox, &QLineEdit::textChanged,
-          [&](const QString& text)
+          [treeView](const QString& text)
           {
-            for (auto& topLvlItem : topLevelItems)
+            QTreeWidgetItemIterator it(treeView, QTreeWidgetItemIterator::NoChildren);
+            while (*it)
             {
-              for (int i = 0; i < topLvlItem->childCount(); ++i)
-              {
-                auto child = topLvlItem->child(i);
-                auto modelName = child->data(0, Qt::UserRole).toString();
-                const bool match = (modelName.contains(text, Qt::CaseInsensitive));
-                child->setHidden(!match);
-              }
+              auto modelName = (*it)->data(0, Qt::UserRole).toString();
+              const bool match = (modelName.contains(text, Qt::CaseInsensitive));
+              (*it)->setHidden(!match);
+
+              ++it;
             }
           });
 
