@@ -227,52 +227,32 @@ traverseGraphAndPopulateGraphicsObjects()
 {
   auto allNodeIds = _graphModel.allNodeIds();
 
-  std::vector<ConnectionId> connectionsToCreate;
-
-  while (!allNodeIds.empty())
+  // First create all the nodes.
+  for (NodeId const nodeId : allNodeIds)
   {
-    std::queue<NodeId> fifo;
-
-    auto firstId = *allNodeIds.begin();
-    allNodeIds.erase(firstId);
-
-    fifo.push(firstId);
-
-    while (!fifo.empty())
-    {
-      auto nodeId = fifo.front();
-      fifo.pop();
-
-      _nodeGraphicsObjects[nodeId] =
-        std::make_unique<NodeGraphicsObject>(*this, nodeId);
-
-      unsigned int nOutPorts =
-        _graphModel.nodeData(nodeId, NodeRole::OutPortCount).toUInt();
-
-      for (PortIndex index = 0; index < nOutPorts; ++index)
-      {
-        auto const& conns =
-          _graphModel.connections(nodeId,
-                                  PortType::Out,
-                                  index);
-
-        for (auto cn : conns)
-        {
-          fifo.push(cn.inNodeId);
-
-          allNodeIds.erase(cn.inNodeId);
-
-          connectionsToCreate.push_back(cn);
-        }
-      }
-    } // while
+    _nodeGraphicsObjects[nodeId] =
+      std::make_unique<NodeGraphicsObject>(*this, nodeId);
   }
 
-  for (auto const & connectionId : connectionsToCreate)
+  // Then for each node check output connections and insert them.
+  for (NodeId const nodeId : allNodeIds)
   {
-    _connectionGraphicsObjects[connectionId] =
-      std::make_unique<ConnectionGraphicsObject>(*this,
-                                                 connectionId);
+    unsigned int nOutPorts =
+      _graphModel.nodeData<PortCount>(nodeId, NodeRole::OutPortCount);
+
+    for (PortIndex index = 0; index < nOutPorts; ++index)
+    {
+      auto const& outConnectionIds =
+        _graphModel.connections(nodeId,
+                                PortType::Out,
+                                index);
+
+      for (auto cid : outConnectionIds)
+      {
+        _connectionGraphicsObjects[cid] =
+          std::make_unique<ConnectionGraphicsObject>(*this, cid);
+      }
+    }
   }
 }
 
