@@ -32,6 +32,7 @@ GraphicsView(QWidget* parent)
   , _clearSelectionAction(Q_NULLPTR)
   , _deleteSelectionAction(Q_NULLPTR)
   , _duplicateSelectionAction(Q_NULLPTR)
+  , _copySelectionAction(Q_NULLPTR)
 {
   setDragMode(QGraphicsView::ScrollHandDrag);
   setRenderHint(QPainter::Antialiasing);
@@ -126,6 +127,20 @@ setScene(BasicGraphicsScene* scene)
             &GraphicsView::onDuplicateSelectedObjects);
 
     addAction(_duplicateSelectionAction);
+  }
+
+  {
+    delete _copySelectionAction;
+    _copySelectionAction = new QAction(QStringLiteral("Copy Selection"), this);
+    _copySelectionAction->setShortcutContext(Qt::ShortcutContext::WidgetShortcut);
+    _copySelectionAction->setShortcut(QKeySequence(QKeySequence::Copy));
+    connect(_copySelectionAction,
+            &QAction::triggered,
+            this,
+            &GraphicsView::onCopySelectedObjects);
+
+    addAction(_copySelectionAction);
+
   }
 
 
@@ -319,6 +334,14 @@ onDuplicateSelectedObjects()
   QPointF relativeOrigin = mapToScene(origin);
 
   nodeScene()->undoStack().push(new DuplicateCommand(nodeScene(), relativeOrigin));
+}
+
+
+void
+GraphicsView::
+onCopySelectedObjects()
+{
+  nodeScene()->undoStack().push(new CopyCommand(nodeScene()));
 }
 
 

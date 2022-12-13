@@ -70,6 +70,9 @@ public Q_SLOTS:
   void
   onDuplicateSelectedObjects();
 
+  void
+  onCopySelectedObjects();
+
 Q_SIGNALS:
   void
   scaleChanged(double scale);
@@ -107,6 +110,7 @@ private:
   QAction* _clearSelectionAction = nullptr;
   QAction* _deleteSelectionAction = nullptr;
   QAction* _duplicateSelectionAction = nullptr;
+  QAction* _copySelectionAction = nullptr;
 
   QPointF _clickPos;
   ScaleRange _scaleRange;

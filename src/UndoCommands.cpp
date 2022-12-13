@@ -7,6 +7,10 @@
 #include "NodeGraphicsObject.hpp"
 
 #include <QtCore/QJsonArray>
+#include <QtCore/QJsonDocument>
+#include <QtCore/QMimeData>
+#include <QtGui/QClipboard>
+#include <QtWidgets/QApplication>
 #include <QtWidgets/QGraphicsObject>
 
 #include <typeinfo>
@@ -127,8 +131,7 @@ DuplicateCommand(BasicGraphicsScene* scene,
   std::unordered_set<NodeId> selectedNodes;
 
   QJsonArray nodesJsonArray;
-  // Delete the nodes; this will delete many of the connections.
-  // Selected connections were already deleted prior to this loop,
+
   for (QGraphicsItem * item : _scene->selectedItems())
   {
     if (auto n = qgraphicsitem_cast<NodeGraphicsObject*>(item))
@@ -140,9 +143,7 @@ DuplicateCommand(BasicGraphicsScene* scene,
   }
 
   QJsonArray connJsonArray;
-  // Delete the selected connections first, ensuring that they won't be
-  // automatically deleted when selected nodes are deleted (deleting a
-  // node deletes some connections as well)
+
   for (QGraphicsItem * item : _scene->selectedItems())
   {
     if (auto c = qgraphicsitem_cast<ConnectionGraphicsObject*>(item))
@@ -290,9 +291,78 @@ redo()
   _newSceneJson["connections"] = newConnJsonArray;
 }
 
-
 //-------------------------------------
 
+
+CopyCommand::
+CopyCommand(BasicGraphicsScene* scene)
+  : _scene(scene)
+{
+  auto & graphModel = _scene->graphModel();
+
+  std::unordered_set<NodeId> selectedNodes;
+
+  QJsonArray nodesJsonArray;
+
+  for (QGraphicsItem * item : _scene->selectedItems())
+  {
+    if (auto n = qgraphicsitem_cast<NodeGraphicsObject*>(item))
+    {
+      nodesJsonArray.append(graphModel.saveNode(n->nodeId()));
+
+      selectedNodes.insert(n->nodeId());
+    }
+  }
+
+  QJsonArray connJsonArray;
+
+  for (QGraphicsItem * item : _scene->selectedItems())
+  {
+    if (auto c = qgraphicsitem_cast<ConnectionGraphicsObject*>(item))
+    {
+      auto const& cid = c->connectionId();
+
+      if (selectedNodes.count(cid.outNodeId) > 0 &&
+          selectedNodes.count(cid.inNodeId) > 0)
+      {
+        connJsonArray.append(toJson(cid));
+      }
+    }
+  }
+
+
+  _sceneJson["nodes"] = nodesJsonArray;
+  _sceneJson["connections"] = connJsonArray;
+
+  QClipboard * clipboard = QApplication::clipboard();
+
+  QByteArray const data = QJsonDocument(_sceneJson).toJson();
+
+  QMimeData * mimeData = new QMimeData();
+  mimeData->setData("application/qt-nodes-graph", data);
+  mimeData->setText(data);
+
+  clipboard->setMimeData(mimeData);
+}
+
+
+void
+CopyCommand::
+undo()
+{
+  //
+}
+
+
+void
+CopyCommand::
+redo()
+{
+  //
+}
+
+
+//-------------------------------------
 
 
 DisconnectCommand::

@@ -16,7 +16,7 @@ class BasicGraphicsScene;
  * Selected scene objects are serialized and then removed from the scene.
  * The deleted elements could be restored in `undo`.
  */
-class DeleteCommand : public QUndoCommand 
+class DeleteCommand : public QUndoCommand
 {
 public:
   DeleteCommand(BasicGraphicsScene* scene);
@@ -59,6 +59,21 @@ private:
   QPointF const & _mouseScenePos;
   QJsonObject _sceneJson;
   QJsonObject _newSceneJson;
+};
+
+
+class CopyCommand : public QUndoCommand
+{
+public:
+  CopyCommand(BasicGraphicsScene* scene);
+
+  void undo() override;
+
+  void redo() override;
+private:
+  BasicGraphicsScene* _scene;
+
+  QJsonObject _sceneJson;
 };
 
 
