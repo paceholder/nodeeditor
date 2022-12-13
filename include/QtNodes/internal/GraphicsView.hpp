@@ -70,6 +70,12 @@ public Q_SLOTS:
   void
   onDuplicateSelectedObjects();
 
+  void
+  onCopySelectedObjects();
+
+  void
+  onPasteObjects();
+
 Q_SIGNALS:
   void
   scaleChanged(double scale);
@@ -103,10 +109,16 @@ protected:
   BasicGraphicsScene*
   nodeScene();
 
+  /// Computes scene position for pasting the copied/duplicated node groups.
+  QPointF
+  scenePastePosition();
+
 private:
   QAction* _clearSelectionAction = nullptr;
   QAction* _deleteSelectionAction = nullptr;
   QAction* _duplicateSelectionAction = nullptr;
+  QAction* _copySelectionAction = nullptr;
+  QAction* _pasteAction = nullptr;
 
   QPointF _clickPos;
   ScaleRange _scaleRange;

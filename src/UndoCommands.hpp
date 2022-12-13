@@ -16,7 +16,7 @@ class BasicGraphicsScene;
  * Selected scene objects are serialized and then removed from the scene.
  * The deleted elements could be restored in `undo`.
  */
-class DeleteCommand : public QUndoCommand 
+class DeleteCommand : public QUndoCommand
 {
 public:
   DeleteCommand(BasicGraphicsScene* scene);
@@ -29,35 +29,29 @@ private:
 };
 
 
-/**
- * A command used in `GraphicsView` when user duplicates the selected objects by
- * using Ctrl+D key combination.
- */
-class DuplicateCommand : public QUndoCommand
+class CopyCommand : public QUndoCommand
 {
 public:
-  DuplicateCommand(BasicGraphicsScene* scene,
-                   QPointF const & mouseScenePos);
+  CopyCommand(BasicGraphicsScene* scene);
+};
 
-  /**
-   * Uses the stored `_newSceneJson` variable with the serialized duplicates to
-   * delet nodes and connections.
-   */
+
+class PasteCommand : public QUndoCommand
+{
+public:
+  PasteCommand(BasicGraphicsScene* scene,
+               QPointF const & mouseScenePos);
+
   void undo() override;
-
-  /**
-   * Inserting duplicates is done via serializing the current scene selection and
-   * then de-serirializing with on-the-fly substitution of newly generated
-   * NodeIds for the inserted objects.
-   *
-   * A the same time all the new objects are stored in `_newSceneJson` in order
-   * to be able to undo the duplication.
-   */
   void redo() override;
+
+private:
+  QJsonObject takeSceneJsonFromClipboard();
+  QJsonObject makeNewNodeIdsInScene(QJsonObject const & sceneJson);
+
 private:
   BasicGraphicsScene* _scene;
   QPointF const & _mouseScenePos;
-  QJsonObject _sceneJson;
   QJsonObject _newSceneJson;
 };
 

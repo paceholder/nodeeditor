@@ -32,6 +32,8 @@ GraphicsView(QWidget* parent)
   , _clearSelectionAction(Q_NULLPTR)
   , _deleteSelectionAction(Q_NULLPTR)
   , _duplicateSelectionAction(Q_NULLPTR)
+  , _copySelectionAction(Q_NULLPTR)
+  , _pasteAction(Q_NULLPTR)
 {
   setDragMode(QGraphicsView::ScrollHandDrag);
   setRenderHint(QPainter::Antialiasing);
@@ -126,6 +128,34 @@ setScene(BasicGraphicsScene* scene)
             &GraphicsView::onDuplicateSelectedObjects);
 
     addAction(_duplicateSelectionAction);
+  }
+
+  {
+    delete _copySelectionAction;
+    _copySelectionAction = new QAction(QStringLiteral("Copy Selection"), this);
+    _copySelectionAction->setShortcutContext(Qt::ShortcutContext::WidgetShortcut);
+    _copySelectionAction->setShortcut(QKeySequence(QKeySequence::Copy));
+    connect(_copySelectionAction,
+            &QAction::triggered,
+            this,
+            &GraphicsView::onCopySelectedObjects);
+
+    addAction(_copySelectionAction);
+
+  }
+
+  {
+    delete _pasteAction;
+    _pasteAction = new QAction(QStringLiteral("Copy Selection"), this);
+    _pasteAction->setShortcutContext(Qt::ShortcutContext::WidgetShortcut);
+    _pasteAction->setShortcut(QKeySequence(QKeySequence::Paste));
+    connect(_pasteAction,
+            &QAction::triggered,
+            this,
+            &GraphicsView::onPasteObjects);
+
+    addAction(_pasteAction);
+
   }
 
 
@@ -310,15 +340,27 @@ void
 GraphicsView::
 onDuplicateSelectedObjects()
 {
-  QPoint origin = mapFromGlobal(QCursor::pos());
+  QPointF const pastePosition = scenePastePosition();
 
-  QRect const viewRect = rect();
-  if (!viewRect.contains(origin))
-    origin = viewRect.center();
+  nodeScene()->undoStack().push(new CopyCommand(nodeScene()));
+  nodeScene()->undoStack().push(new PasteCommand(nodeScene(), pastePosition));
+}
 
-  QPointF relativeOrigin = mapToScene(origin);
 
-  nodeScene()->undoStack().push(new DuplicateCommand(nodeScene(), relativeOrigin));
+void
+GraphicsView::
+onCopySelectedObjects()
+{
+  nodeScene()->undoStack().push(new CopyCommand(nodeScene()));
+}
+
+
+void
+GraphicsView::
+onPasteObjects()
+{
+  QPointF const pastePosition = scenePastePosition();
+  nodeScene()->undoStack().push(new PasteCommand(nodeScene(), pastePosition));
 }
 
 
@@ -453,3 +495,16 @@ nodeScene()
   return dynamic_cast<BasicGraphicsScene*>(scene());
 }
 
+
+QPointF
+GraphicsView::
+scenePastePosition()
+{
+  QPoint origin = mapFromGlobal(QCursor::pos());
+
+  QRect const viewRect = rect();
+  if (!viewRect.contains(origin))
+    origin = viewRect.center();
+
+  return mapToScene(origin);
+}

@@ -7,6 +7,10 @@
 #include "NodeGraphicsObject.hpp"
 
 #include <QtCore/QJsonArray>
+#include <QtCore/QJsonDocument>
+#include <QtCore/QMimeData>
+#include <QtGui/QClipboard>
+#include <QtWidgets/QApplication>
 #include <QtWidgets/QGraphicsObject>
 
 #include <typeinfo>
@@ -14,6 +18,137 @@
 
 namespace QtNodes
 {
+
+
+static
+QJsonObject
+serializeSelectedItems(BasicGraphicsScene* scene)
+{
+  QJsonObject serializedScene;
+
+  auto & graphModel = scene->graphModel();
+
+  std::unordered_set<NodeId> selectedNodes;
+
+  QJsonArray nodesJsonArray;
+
+  for (QGraphicsItem * item : scene->selectedItems())
+  {
+    if (auto n = qgraphicsitem_cast<NodeGraphicsObject*>(item))
+    {
+      nodesJsonArray.append(graphModel.saveNode(n->nodeId()));
+
+      selectedNodes.insert(n->nodeId());
+    }
+  }
+
+  QJsonArray connJsonArray;
+
+  for (QGraphicsItem * item : scene->selectedItems())
+  {
+    if (auto c = qgraphicsitem_cast<ConnectionGraphicsObject*>(item))
+    {
+      auto const& cid = c->connectionId();
+
+      if (selectedNodes.count(cid.outNodeId) > 0 &&
+          selectedNodes.count(cid.inNodeId) > 0)
+      {
+        connJsonArray.append(toJson(cid));
+      }
+    }
+  }
+
+  serializedScene["nodes"] = nodesJsonArray;
+  serializedScene["connections"] = connJsonArray;
+
+  return serializedScene;
+}
+
+
+static
+void
+insertSerializedItems(QJsonObject const & json,
+                      BasicGraphicsScene * scene)
+{
+  AbstractGraphModel & graphModel = scene->graphModel();
+
+  QJsonArray const & nodesJsonArray = json["nodes"].toArray();
+
+  for (QJsonValueConstRef node : nodesJsonArray)
+  {
+    QJsonObject obj = node.toObject();
+
+    graphModel.loadNode(obj);
+
+    auto id = obj["id"].toInt();
+    scene->nodeGraphicsObject(id)->setZValue(1.0);
+    scene->nodeGraphicsObject(id)->setSelected(true);
+  }
+
+  QJsonArray const & connJsonArray = json["connections"].toArray();
+
+  for (QJsonValueConstRef connection : connJsonArray)
+  {
+    QJsonObject connJson = connection.toObject();
+
+    ConnectionId connId = fromJson(connJson);
+
+    // Restore the connection
+    graphModel.addConnection(connId);
+  }
+}
+
+
+static
+void
+deleteSerializedItems(QJsonObject & sceneJson,
+                      AbstractGraphModel & graphModel)
+{
+  QJsonArray connectionJsonArray = sceneJson["connections"].toArray();
+
+  for (QJsonValueRef connection : connectionJsonArray)
+  {
+    QJsonObject connJson = connection.toObject();
+
+    ConnectionId connId = fromJson(connJson);
+
+    graphModel.deleteConnection(connId);
+  }
+
+
+  QJsonArray nodesJsonArray = sceneJson["nodes"].toArray();
+
+  for (QJsonValueRef node : nodesJsonArray)
+  {
+    QJsonObject nodeJson = node.toObject();
+    graphModel.deleteNode(nodeJson["id"].toInt());
+  }
+}
+
+
+static
+QPointF
+computeAverageNodePosition(QJsonObject const & sceneJson)
+{
+  QPointF averagePos(0, 0);
+
+  QJsonArray nodesJsonArray = sceneJson["nodes"].toArray();
+
+  for (QJsonValueRef node : nodesJsonArray)
+  {
+    QJsonObject nodeJson = node.toObject();
+
+    averagePos +=
+      QPointF(nodeJson["position"].toObject()["x"].toDouble(),
+              nodeJson["position"].toObject()["y"].toDouble());
+  }
+
+  averagePos /= static_cast<double>(nodesJsonArray.size());
+
+  return averagePos;
+}
+
+
 
 DeleteCommand::
 DeleteCommand(BasicGraphicsScene* scene)
@@ -61,27 +196,7 @@ void
 DeleteCommand::
 undo()
 {
-  auto & graphModel = _scene->graphModel();
-
-  QJsonArray nodesJsonArray = _sceneJson["nodes"].toArray();
-
-  for (QJsonValueRef node : nodesJsonArray)
-  {
-    QJsonObject obj = node.toObject();
-    graphModel.loadNode(obj);
-  }
-
-  QJsonArray connectionJsonArray = _sceneJson["connections"].toArray();
-
-  for (QJsonValueRef connection : connectionJsonArray)
-  {
-    QJsonObject connJson = connection.toObject();
-
-    ConnectionId connId = fromJson(connJson);
-
-    // Restore the connection
-    graphModel.addConnection(connId);
-  }
+  insertSerializedItems(_sceneJson, _scene);
 }
 
 
@@ -91,121 +206,137 @@ redo()
 {
   auto & graphModel = _scene->graphModel();
 
-  QJsonArray connectionJsonArray = _sceneJson["connections"].toArray();
-
-  for (QJsonValueRef connection : connectionJsonArray)
-  {
-    QJsonObject connJson = connection.toObject();
-
-    ConnectionId connId = fromJson(connJson);
-
-    graphModel.deleteConnection(connId);
-  }
-
-
-  QJsonArray nodesJsonArray = _sceneJson["nodes"].toArray();
-
-  for (QJsonValueRef node : nodesJsonArray)
-  {
-    QJsonObject nodeJson = node.toObject();
-    graphModel.deleteNode(static_cast<NodeId>(nodeJson["id"].toInt()));
-  }
+  deleteSerializedItems(_sceneJson, graphModel);
 }
 
 
 //-------------------------------------
 
 
-DuplicateCommand::
-DuplicateCommand(BasicGraphicsScene* scene,
-                 QPointF const & mouseScenePos)
+void
+offsetNodeGroup(QJsonObject & sceneJson, QPointF const & diff)
+{
+  QJsonArray nodesJsonArray = sceneJson["nodes"].toArray();
+
+  QJsonArray newNodesJsonArray;
+  for (QJsonValueRef node : nodesJsonArray)
+  {
+    QJsonObject obj = node.toObject();
+
+    QPointF oldPos(obj["position"].toObject()["x"].toDouble(),
+                   obj["position"].toObject()["y"].toDouble());
+
+    oldPos += diff;
+
+    QJsonObject posJson;
+    posJson["x"] = oldPos.x();
+    posJson["y"] = oldPos.y();
+    obj["position"] = posJson;
+
+    newNodesJsonArray.append(obj);
+  }
+
+  sceneJson["nodes"] = newNodesJsonArray;
+}
+
+
+//-------------------------------------
+
+
+CopyCommand::
+CopyCommand(BasicGraphicsScene* scene)
+{
+  QJsonObject sceneJson = serializeSelectedItems(scene);
+
+  QClipboard * clipboard = QApplication::clipboard();
+
+  QByteArray const data = QJsonDocument(sceneJson).toJson();
+
+  QMimeData * mimeData = new QMimeData();
+  mimeData->setData("application/qt-nodes-graph", data);
+  mimeData->setText(data);
+
+  clipboard->setMimeData(mimeData);
+
+
+  // Copy command does not have any effective redo/undo operations.
+  // It copies the data to the clipboard and could be immediately removed
+  // from the stack.
+  setObsolete(true);
+}
+
+
+//-------------------------------------
+
+
+PasteCommand::
+PasteCommand(BasicGraphicsScene* scene,
+             QPointF const & mouseScenePos)
   : _scene(scene)
   , _mouseScenePos(mouseScenePos)
 {
-  auto & graphModel = _scene->graphModel();
-
-  std::unordered_set<NodeId> selectedNodes;
-
-  QJsonArray nodesJsonArray;
-  // Delete the nodes; this will delete many of the connections.
-  // Selected connections were already deleted prior to this loop,
-  for (QGraphicsItem * item : _scene->selectedItems())
-  {
-    if (auto n = qgraphicsitem_cast<NodeGraphicsObject*>(item))
-    {
-      nodesJsonArray.append(graphModel.saveNode(n->nodeId()));
-
-      selectedNodes.insert(n->nodeId());
-    }
-  }
-
-  QJsonArray connJsonArray;
-  // Delete the selected connections first, ensuring that they won't be
-  // automatically deleted when selected nodes are deleted (deleting a
-  // node deletes some connections as well)
-  for (QGraphicsItem * item : _scene->selectedItems())
-  {
-    if (auto c = qgraphicsitem_cast<ConnectionGraphicsObject*>(item))
-    {
-      auto const& cid = c->connectionId();
-
-      if (selectedNodes.count(cid.outNodeId) > 0 &&
-          selectedNodes.count(cid.inNodeId) > 0)
-      {
-        connJsonArray.append(toJson(cid));
-      }
-    }
-  }
-
-
-  _sceneJson["nodes"] = nodesJsonArray;
-  _sceneJson["connections"] = connJsonArray;
 }
 
 
 void
-DuplicateCommand::
+PasteCommand::
 undo()
 {
-  auto & graphModel = _scene->graphModel();
-
-  QJsonArray connectionJsonArray = _newSceneJson["connections"].toArray();
-
-  for (QJsonValueRef connection : connectionJsonArray)
-  {
-    QJsonObject connJson = connection.toObject();
-
-    ConnectionId connId = fromJson(connJson);
-
-    graphModel.deleteConnection(connId);
-  }
-
-  QJsonArray nodesJsonArray = _newSceneJson["nodes"].toArray();
-
-  for (QJsonValueRef node : nodesJsonArray)
-  {
-    QJsonObject nodeJson = node.toObject();
-    graphModel.deleteNode(static_cast<NodeId>(nodeJson["id"].toInt()));
-  }
+  deleteSerializedItems(_newSceneJson, _scene->graphModel());
 }
 
 
 void
-DuplicateCommand::
+PasteCommand::
 redo()
 {
   _scene->clearSelection();
 
-  auto & graphModel = _scene->graphModel();
+  _newSceneJson = takeSceneJsonFromClipboard();
+
+  if (_newSceneJson.empty())
+    return;
+
+  _newSceneJson = makeNewNodeIdsInScene(_newSceneJson);
+
+  QPointF averagePos = computeAverageNodePosition(_newSceneJson);
+
+  offsetNodeGroup(_newSceneJson, _mouseScenePos - averagePos);
+
+  insertSerializedItems(_newSceneJson, _scene);
+}
+
+
+QJsonObject
+PasteCommand::
+takeSceneJsonFromClipboard()
+{
+  QClipboard const * clipboard = QApplication::clipboard();
+  QMimeData const * mimeData = clipboard->mimeData();
+
+  QJsonDocument json;
+  if (mimeData->hasFormat("application/qt-nodes-graph"))
+  {
+    json = QJsonDocument::fromJson(mimeData->data("application/qt-nodes-graph"));
+  }
+  else if (mimeData->hasText())
+  {
+    json = QJsonDocument::fromJson(mimeData->text().toUtf8());
+  }
+
+  return json.object();
+}
+
+
+QJsonObject
+PasteCommand::
+makeNewNodeIdsInScene(QJsonObject const & sceneJson)
+{
+  AbstractGraphModel & graphModel = _scene->graphModel();
 
   std::unordered_map<NodeId, NodeId> mapNodeIds;
 
-  QPointF averagePos;
-
-  QJsonArray nodesJsonArray = _sceneJson["nodes"].toArray();
-
-  // Cycle below replaces the NodeId with the new generated value
-  // and computes an average position of the old selected node group
+  QJsonArray nodesJsonArray = sceneJson["nodes"].toArray();
 
   QJsonArray newNodesJsonArray;
   for (QJsonValueRef node : nodesJsonArray)
@@ -213,10 +344,6 @@ redo()
     QJsonObject nodeJson = node.toObject();
 
     NodeId oldNodeId = nodeJson["id"].toInt();
-
-    averagePos +=
-      QPointF(nodeJson["position"].toObject()["x"].toDouble(),
-              nodeJson["position"].toObject()["y"].toDouble());
 
     NodeId newNodeId = graphModel.newNodeId();
 
@@ -228,12 +355,7 @@ redo()
     newNodesJsonArray.append(nodeJson);
   }
 
-  averagePos /= static_cast<double>(nodesJsonArray.size());
-
-
-  // The cycle below replaces old NodeIds in connections with the new values
-
-  QJsonArray connectionJsonArray = _sceneJson["connections"].toArray();
+  QJsonArray connectionJsonArray = sceneJson["connections"].toArray();
 
   QJsonArray newConnJsonArray;
   for (QJsonValueRef connection : connectionJsonArray)
@@ -251,48 +373,18 @@ redo()
     newConnJsonArray.append(toJson(newConnId));
   }
 
-  // Cycle below offsets the new node group to the position of the mouse cursor
-  QPointF const diff = _mouseScenePos - averagePos;
+  QJsonObject newSceneJson;
 
-  for (QJsonValueRef node : newNodesJsonArray)
-  {
-    QJsonObject obj = node.toObject();
-    NodeId const id = obj["id"].toInt();
+  newSceneJson["nodes"] = newNodesJsonArray;
+  newSceneJson["connections"] = newConnJsonArray;
 
-    QPointF oldPos(obj["position"].toObject()["x"].toDouble(),
-                   obj["position"].toObject()["y"].toDouble());
-
-    oldPos += diff;
-
-    QJsonObject posJson;
-    posJson["x"] = oldPos.x();
-    posJson["y"] = oldPos.y();
-    obj["position"] = posJson;
-
-
-    graphModel.loadNode(obj);
-
-    _scene->nodeGraphicsObject(id)->setZValue(1.0);
-  }
-
-  for (QJsonValueRef connection : newConnJsonArray)
-  {
-    QJsonObject connJson = connection.toObject();
-
-    ConnectionId connId = fromJson(connJson);
-
-    // Restore the connection
-    graphModel.addConnection(connId);
-  }
-
-
-  _newSceneJson["nodes"] = newNodesJsonArray;
-  _newSceneJson["connections"] = newConnJsonArray;
+  return newSceneJson;
 }
 
 
-//-------------------------------------
 
+
+//-------------------------------------
 
 
 DisconnectCommand::
