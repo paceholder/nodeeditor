@@ -7,90 +7,60 @@
 #include "ConnectionGraphicsObject.hpp"
 #include "NodeGraphicsObject.hpp"
 
-namespace QtNodes
-{
+namespace QtNodes {
 
-ConnectionState::
-~ConnectionState()
+ConnectionState::~ConnectionState()
 {
-  //resetLastHoveredNode();
+    //resetLastHoveredNode();
 }
 
-
-PortType
-ConnectionState::
-requiredPort() const
+PortType ConnectionState::requiredPort() const
 {
-  PortType t = PortType::None;
+    PortType t = PortType::None;
 
-  if (_cgo.connectionId().outNodeId == InvalidNodeId)
-  {
-    t = PortType::Out;
-  }
-  else if (_cgo.connectionId().inNodeId == InvalidNodeId)
-  {
-    t = PortType::In;
-  }
+    if (_cgo.connectionId().outNodeId == InvalidNodeId) {
+        t = PortType::Out;
+    } else if (_cgo.connectionId().inNodeId == InvalidNodeId) {
+        t = PortType::In;
+    }
 
-  return t;
+    return t;
 }
 
-
-bool
-ConnectionState::
-requiresPort() const
+bool ConnectionState::requiresPort() const
 {
-  const ConnectionId& id = _cgo.connectionId();
-  return id.outNodeId == InvalidNodeId ||
-         id.inNodeId == InvalidNodeId;
+    const ConnectionId &id = _cgo.connectionId();
+    return id.outNodeId == InvalidNodeId || id.inNodeId == InvalidNodeId;
 }
 
-
-bool
-ConnectionState::
-hovered() const
+bool ConnectionState::hovered() const
 {
-  return _hovered;
+    return _hovered;
 }
 
-
-void
-ConnectionState::
-setHovered(bool hovered)
+void ConnectionState::setHovered(bool hovered)
 {
-  _hovered = hovered;
+    _hovered = hovered;
 }
 
-
-void
-ConnectionState::
-setLastHoveredNode(NodeId const nodeId)
+void ConnectionState::setLastHoveredNode(NodeId const nodeId)
 {
-  _lastHoveredNode = nodeId;
+    _lastHoveredNode = nodeId;
 }
 
-
-NodeId
-ConnectionState::
-lastHoveredNode() const
+NodeId ConnectionState::lastHoveredNode() const
 {
-  return _lastHoveredNode;
+    return _lastHoveredNode;
 }
 
-
-void
-ConnectionState::
-resetLastHoveredNode()
+void ConnectionState::resetLastHoveredNode()
 {
-  if (_lastHoveredNode != InvalidNodeId)
-  {
-    auto ngo =
-      _cgo.nodeScene()->nodeGraphicsObject(_lastHoveredNode);
-    ngo->update();
-  }
+    if (_lastHoveredNode != InvalidNodeId) {
+        auto ngo = _cgo.nodeScene()->nodeGraphicsObject(_lastHoveredNode);
+        ngo->update();
+    }
 
-  _lastHoveredNode = InvalidNodeId;
+    _lastHoveredNode = InvalidNodeId;
 }
 
-
-}
+} // namespace QtNodes

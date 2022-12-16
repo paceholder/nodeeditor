@@ -10,19 +10,16 @@ using QtNodes::NodeDataType;
 class TextData : public NodeData
 {
 public:
+    TextData() {}
 
-  TextData() {}
+    TextData(QString const &text)
+        : _text(text)
+    {}
 
-  TextData(QString const &text)
-    : _text(text)
-  {}
+    NodeDataType type() const override { return NodeDataType{"text", "Text"}; }
 
-  NodeDataType type() const override
-  { return NodeDataType {"text", "Text"}; }
-
-  QString text() const { return _text; }
+    QString text() const { return _text; }
 
 private:
-
-  QString _text;
+    QString _text;
 };

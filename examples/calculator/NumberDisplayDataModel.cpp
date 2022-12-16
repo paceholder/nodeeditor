@@ -2,95 +2,70 @@
 
 #include <QtWidgets/QLabel>
 
-NumberDisplayDataModel::
-NumberDisplayDataModel()
-  : _label{nullptr}
+NumberDisplayDataModel::NumberDisplayDataModel()
+    : _label{nullptr}
+{}
+
+unsigned int NumberDisplayDataModel::nPorts(PortType portType) const
 {
-}
+    unsigned int result = 1;
 
-
-unsigned int
-NumberDisplayDataModel::
-nPorts(PortType portType) const
-{
-  unsigned int result = 1;
-
-  switch (portType)
-  {
+    switch (portType) {
     case PortType::In:
-      result = 1;
-      break;
+        result = 1;
+        break;
 
     case PortType::Out:
-      result = 0;
+        result = 0;
 
     default:
-      break;
-  }
+        break;
+    }
 
-  return result;
+    return result;
 }
 
-
-NodeDataType
-NumberDisplayDataModel::
-dataType(PortType, PortIndex) const
+NodeDataType NumberDisplayDataModel::dataType(PortType, PortIndex) const
 {
-  return DecimalData().type();
+    return DecimalData().type();
 }
 
-
-std::shared_ptr<NodeData>
-NumberDisplayDataModel::
-outData(PortIndex)
+std::shared_ptr<NodeData> NumberDisplayDataModel::outData(PortIndex)
 {
-  std::shared_ptr<NodeData> ptr;
-  return ptr;
+    std::shared_ptr<NodeData> ptr;
+    return ptr;
 }
 
-
-void
-NumberDisplayDataModel::
-setInData(std::shared_ptr<NodeData> data, PortIndex portIndex)
+void NumberDisplayDataModel::setInData(std::shared_ptr<NodeData> data, PortIndex portIndex)
 {
-  _numberData = std::dynamic_pointer_cast<DecimalData>(data);
+    _numberData = std::dynamic_pointer_cast<DecimalData>(data);
 
-  if (!_label)
-    return;
+    if (!_label)
+        return;
 
-  if (_numberData)
-  {
-    _label->setText(_numberData->numberAsText());
-  }
-  else
-  {
-    _label->clear();
-  }
+    if (_numberData) {
+        _label->setText(_numberData->numberAsText());
+    } else {
+        _label->clear();
+    }
 
-  _label->adjustSize();
+    _label->adjustSize();
 }
 
-
-QWidget*
-NumberDisplayDataModel::
-embeddedWidget()
+QWidget *NumberDisplayDataModel::embeddedWidget()
 {
-  if (!_label)
-  {
-    _label = new QLabel();
-    _label->setMargin(3);
-  }
+    if (!_label) {
+        _label = new QLabel();
+        _label->setMargin(3);
+    }
 
-  return _label; 
+    return _label;
 }
 
-
-double 
-NumberDisplayDataModel::
-number() const
+double NumberDisplayDataModel::number() const
 {
-  if (_numberData)
-    return _numberData->number();
+    if (_numberData)
+        return _numberData->number();
 
-  return 0.0;
+    return 0.0;
 }

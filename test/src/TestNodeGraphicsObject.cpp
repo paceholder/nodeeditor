@@ -10,7 +10,6 @@
 
 #include <QtTest>
 
-
 using QtNodes::FlowScene;
 using QtNodes::FlowView;
 using QtNodes::Node;
@@ -22,46 +21,45 @@ TEST_CASE("NodeDataModel::portOutConnectionPolicy(...) isn't called for input "
           "connections (issue #127)",
           "[gui]")
 {
-  class MockModel : public StubNodeDataModel
-  {
-  public:
-    unsigned int nPorts(PortType) const override { return 1; }
-
-    NodeDataModel::ConnectionPolicy
-    portOutConnectionPolicy(int index) const override
+    class MockModel : public StubNodeDataModel
     {
-      portOutConnectionPolicyCalledCount++;
-      return NodeDataModel::ConnectionPolicy::One;
-    }
+    public:
+        unsigned int nPorts(PortType) const override { return 1; }
 
-    mutable int portOutConnectionPolicyCalledCount = 0;
-  };
+        NodeDataModel::ConnectionPolicy portOutConnectionPolicy(int index) const override
+        {
+            portOutConnectionPolicyCalledCount++;
+            return NodeDataModel::ConnectionPolicy::One;
+        }
 
-  auto setup = applicationSetup();
+        mutable int portOutConnectionPolicyCalledCount = 0;
+    };
 
-  FlowScene scene;
-  FlowView  view(&scene);
+    auto setup = applicationSetup();
 
-  // Ensure we have enough size to contain the node
-  view.resize(640, 480);
+    FlowScene scene;
+    FlowView view(&scene);
 
-  view.show();
-  REQUIRE(QTest::qWaitForWindowExposed(&view));
+    // Ensure we have enough size to contain the node
+    view.resize(640, 480);
 
-  auto& node  = scene.createNode(std::make_unique<MockModel>());
-  auto& model = dynamic_cast<MockModel&>(*node.nodeDataModel());
-  auto& ngo   = node.nodeGraphicsObject();
-  auto& ngeom = node.nodeGeometry();
+    view.show();
+    REQUIRE(QTest::qWaitForWindowExposed(&view));
 
-  // Move the node to somewhere in the middle of the screen
-  ngo.setPos(QPointF(50, 50));
+    auto &node = scene.createNode(std::make_unique<MockModel>());
+    auto &model = dynamic_cast<MockModel &>(*node.nodeDataModel());
+    auto &ngo = node.nodeGraphicsObject();
+    auto &ngeom = node.nodeGeometry();
 
-  // Compute the on-screen position of the input port
-  QPointF scInPortPos = ngeom.portScenePosition(0, PortType::In, ngo.sceneTransform());
-  QPoint  vwInPortPos = view.mapFromScene(scInPortPos);
+    // Move the node to somewhere in the middle of the screen
+    ngo.setPos(QPointF(50, 50));
 
-  // Create a partial connection by clicking on the input port of the node
-  QTest::mousePress(view.windowHandle(), Qt::LeftButton, Qt::NoModifier, vwInPortPos);
+    // Compute the on-screen position of the input port
+    QPointF scInPortPos = ngeom.portScenePosition(0, PortType::In, ngo.sceneTransform());
+    QPoint vwInPortPos = view.mapFromScene(scInPortPos);
 
-  CHECK(model.portOutConnectionPolicyCalledCount == 0);
+    // Create a partial connection by clicking on the input port of the node
+    QTest::mousePress(view.windowHandle(), Qt::LeftButton, Qt::NoModifier, vwInPortPos);
+
+    CHECK(model.portOutConnectionPolicyCalledCount == 0);
 }

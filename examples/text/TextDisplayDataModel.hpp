@@ -20,50 +20,34 @@ using QtNodes::PortType;
 /// In this example it has no logic.
 class TextDisplayDataModel : public NodeDelegateModel
 {
-  Q_OBJECT
+    Q_OBJECT
 
 public:
-  TextDisplayDataModel();
+    TextDisplayDataModel();
 
-  virtual
-  ~TextDisplayDataModel() {}
-
-public:
-
-  QString
-  caption() const override
-  { return QString("Text Display"); }
-
-  bool
-  captionVisible() const override { return false; }
-
-  static QString
-  Name()
-  { return QString("TextDisplayDataModel"); }
-
-  QString
-  name() const override
-  { return TextDisplayDataModel::Name(); }
+    virtual ~TextDisplayDataModel() {}
 
 public:
+    QString caption() const override { return QString("Text Display"); }
 
-  unsigned int
-  nPorts(PortType portType) const override;
+    bool captionVisible() const override { return false; }
 
-  NodeDataType
-  dataType(PortType portType, PortIndex portIndex) const override;
+    static QString Name() { return QString("TextDisplayDataModel"); }
 
-  std::shared_ptr<NodeData>
-  outData(PortIndex const port) override;
+    QString name() const override { return TextDisplayDataModel::Name(); }
 
-  void
-  setInData(std::shared_ptr<NodeData> data, 
-            PortIndex const portIndex) override;
+public:
+    unsigned int nPorts(PortType portType) const override;
 
-  QWidget*
-  embeddedWidget() override { return _label; }
+    NodeDataType dataType(PortType portType, PortIndex portIndex) const override;
+
+    std::shared_ptr<NodeData> outData(PortIndex const port) override;
+
+    void setInData(std::shared_ptr<NodeData> data, PortIndex const portIndex) override;
+
+    QWidget *embeddedWidget() override { return _label; }
 
 private:
-  QLabel * _label;
-  QString _inputText;
+    QLabel *_label;
+    QString _inputText;
 };

@@ -4,111 +4,85 @@
 
 #include "Export.hpp"
 
-namespace QtNodes
-{
+namespace QtNodes {
 
 class BasicGraphicsScene;
-
 
 /**
  * @brief A central view able to render objects from `BasicGraphicsScene`.
  */
-class NODE_EDITOR_PUBLIC GraphicsView
-  : public QGraphicsView
+class NODE_EDITOR_PUBLIC GraphicsView : public QGraphicsView
 {
-  Q_OBJECT
+    Q_OBJECT
 public:
-  struct ScaleRange
-  {
-    double minimum = 0;
-    double maximum = 0;
-  };
+    struct ScaleRange
+    {
+        double minimum = 0;
+        double maximum = 0;
+    };
 
 public:
-  GraphicsView(QWidget* parent = Q_NULLPTR);
-  GraphicsView(BasicGraphicsScene* scene, QWidget* parent = Q_NULLPTR);
+    GraphicsView(QWidget *parent = Q_NULLPTR);
+    GraphicsView(BasicGraphicsScene *scene, QWidget *parent = Q_NULLPTR);
 
-  GraphicsView(const GraphicsView &) = delete;
-  GraphicsView
-  operator=(const GraphicsView &) = delete;
+    GraphicsView(const GraphicsView &) = delete;
+    GraphicsView operator=(const GraphicsView &) = delete;
 
-  QAction*
-  clearSelectionAction() const;
+    QAction *clearSelectionAction() const;
 
-  QAction*
-  deleteSelectionAction() const;
+    QAction *deleteSelectionAction() const;
 
-  void
-  setScene(BasicGraphicsScene* scene);
+    void setScene(BasicGraphicsScene *scene);
 
-  void
-  centerScene();
+    void centerScene();
 
-  /// @brief max=0/min=0 indicates infinite zoom in/out
-  void
-  setScaleRange(double minimum = 0, double maximum = 0);
+    /// @brief max=0/min=0 indicates infinite zoom in/out
+    void setScaleRange(double minimum = 0, double maximum = 0);
 
-  void
-  setScaleRange(ScaleRange range);
+    void setScaleRange(ScaleRange range);
 
-  double
-  getScale() const;
+    double getScale() const;
 
 public Q_SLOTS:
-  void
-  scaleUp();
+    void scaleUp();
 
-  void
-  scaleDown();
+    void scaleDown();
 
-  void
-  setupScale(double scale);
+    void setupScale(double scale);
 
-  void
-  onDeleteSelectedObjects();
+    void onDeleteSelectedObjects();
 
-  void
-  onDuplicateSelectedObjects();
+    void onDuplicateSelectedObjects();
 
 Q_SIGNALS:
-  void
-  scaleChanged(double scale);
+    void scaleChanged(double scale);
 
 protected:
-  void
-  contextMenuEvent(QContextMenuEvent* event) override;
+    void contextMenuEvent(QContextMenuEvent *event) override;
 
-  void
-  wheelEvent(QWheelEvent* event) override;
+    void wheelEvent(QWheelEvent *event) override;
 
-  void
-  keyPressEvent(QKeyEvent* event) override;
+    void keyPressEvent(QKeyEvent *event) override;
 
-  void
-  keyReleaseEvent(QKeyEvent* event) override;
+    void keyReleaseEvent(QKeyEvent *event) override;
 
-  void
-  mousePressEvent(QMouseEvent* event) override;
+    void mousePressEvent(QMouseEvent *event) override;
 
-  void
-  mouseMoveEvent(QMouseEvent* event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
 
-  void
-  drawBackground(QPainter* painter, const QRectF & r) override;
+    void drawBackground(QPainter *painter, const QRectF &r) override;
 
-  void
-  showEvent(QShowEvent* event) override;
+    void showEvent(QShowEvent *event) override;
 
 protected:
-  BasicGraphicsScene*
-  nodeScene();
+    BasicGraphicsScene *nodeScene();
 
 private:
-  QAction* _clearSelectionAction = nullptr;
-  QAction* _deleteSelectionAction = nullptr;
-  QAction* _duplicateSelectionAction = nullptr;
+    QAction *_clearSelectionAction = nullptr;
+    QAction *_deleteSelectionAction = nullptr;
+    QAction *_duplicateSelectionAction = nullptr;
 
-  QPointF _clickPos;
-  ScaleRange _scaleRange;
+    QPointF _clickPos;
+    ScaleRange _scaleRange;
 };
-}
+} // namespace QtNodes

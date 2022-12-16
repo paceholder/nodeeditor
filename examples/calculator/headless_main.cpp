@@ -8,31 +8,27 @@
 #include <QtNodes/DataFlowGraphModel>
 #include <QtNodes/NodeDelegateModelRegistry>
 
-
-using QtNodes::NodeId;
 using QtNodes::DataFlowGraphModel;
 using QtNodes::NodeDelegateModelRegistry;
+using QtNodes::NodeId;
 
-
-static std::shared_ptr<NodeDelegateModelRegistry>
-registerDataModels()
+static std::shared_ptr<NodeDelegateModelRegistry> registerDataModels()
 {
-  auto ret = std::make_shared<NodeDelegateModelRegistry>();
-  ret->registerModel<NumberSourceDataModel>("Sources");
+    auto ret = std::make_shared<NodeDelegateModelRegistry>();
+    ret->registerModel<NumberSourceDataModel>("Sources");
 
-  ret->registerModel<NumberDisplayDataModel>("Displays");
+    ret->registerModel<NumberDisplayDataModel>("Displays");
 
-  ret->registerModel<AdditionModel>("Operators");
+    ret->registerModel<AdditionModel>("Operators");
 
-  ret->registerModel<SubtractionModel>("Operators");
+    ret->registerModel<SubtractionModel>("Operators");
 
-  ret->registerModel<MultiplicationModel>("Operators");
+    ret->registerModel<MultiplicationModel>("Operators");
 
-  ret->registerModel<DivisionModel>("Operators");
+    ret->registerModel<DivisionModel>("Operators");
 
-  return ret;
+    return ret;
 }
-
 
 /**
  * This scene JSON was saved by the normal `calculator` example.
@@ -47,7 +43,7 @@ registerDataModels()
  *                     \  O[____________]
  */
 static QString addingNumbersScene(
-R"(
+    R"(
     {
         "nodes": [
             {
@@ -105,41 +101,37 @@ R"(
     }
 )");
 
-
-int
-main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
-  std::shared_ptr<NodeDelegateModelRegistry> registry = registerDataModels();
+    std::shared_ptr<NodeDelegateModelRegistry> registry = registerDataModels();
 
-  // Here we create a graph model without attaching to any view or scene.
-  DataFlowGraphModel dataFlowGraphModel(registry);
+    // Here we create a graph model without attaching to any view or scene.
+    DataFlowGraphModel dataFlowGraphModel(registry);
 
-  // Alternatively you can create the graph by yourself with the functions
-  // `DataFlowGraphModel::addNode` and `DataFlowGraphModel::addConnection` and
-  // use the obtained `NodeId` to fetch the `NodeDelegateModel`s
-  QJsonDocument sceneJson = QJsonDocument::fromJson(addingNumbersScene.toUtf8());
+    // Alternatively you can create the graph by yourself with the functions
+    // `DataFlowGraphModel::addNode` and `DataFlowGraphModel::addConnection` and
+    // use the obtained `NodeId` to fetch the `NodeDelegateModel`s
+    QJsonDocument sceneJson = QJsonDocument::fromJson(addingNumbersScene.toUtf8());
 
-  dataFlowGraphModel.load(sceneJson.object());
+    dataFlowGraphModel.load(sceneJson.object());
 
-  qInfo() << "Data Flow graph was created from a json-serialized graph";
+    qInfo() << "Data Flow graph was created from a json-serialized graph";
 
-  NodeId const nodeSource = 0;
-  NodeId const nodeResult = 2;
+    NodeId const nodeSource = 0;
+    NodeId const nodeResult = 2;
 
+    qInfo() << "========================================";
+    qInfo() << "Entering the number " << 33.3 << "to the input node";
+    dataFlowGraphModel.delegateModel<NumberSourceDataModel>(nodeSource)->setNumber(33.3);
 
-  qInfo() << "========================================";
-  qInfo() << "Entering the number " << 33.3 << "to the input node";
-  dataFlowGraphModel.delegateModel<NumberSourceDataModel>(nodeSource)->setNumber(33.3);
+    qInfo() << "Result of the addiion operation: "
+            << dataFlowGraphModel.delegateModel<NumberDisplayDataModel>(nodeResult)->number();
 
-  qInfo() << "Result of the addiion operation: "
-          << dataFlowGraphModel.delegateModel<NumberDisplayDataModel>(nodeResult)->number();
+    qInfo() << "========================================";
+    qInfo() << "Entering the number " << -5. << "to the input node";
+    dataFlowGraphModel.delegateModel<NumberSourceDataModel>(nodeSource)->setNumber(-5);
 
-  qInfo() << "========================================";
-  qInfo() << "Entering the number " << -5. << "to the input node";
-  dataFlowGraphModel.delegateModel<NumberSourceDataModel>(nodeSource)->setNumber(-5);
-
-  qInfo() << "Result of the addiion operation: "
-          << dataFlowGraphModel.delegateModel<NumberDisplayDataModel>(nodeResult)->number();
-  return 0;
+    qInfo() << "Result of the addiion operation: "
+            << dataFlowGraphModel.delegateModel<NumberDisplayDataModel>(nodeResult)->number();
+    return 0;
 }
-

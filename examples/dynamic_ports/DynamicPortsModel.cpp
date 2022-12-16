@@ -8,508 +8,403 @@
 
 #include <iterator>
 
-
-DynamicPortsModel::
-DynamicPortsModel()
-  : _nextNodeId{0}
+DynamicPortsModel::DynamicPortsModel()
+    : _nextNodeId{0}
 {}
 
-
-DynamicPortsModel::
-~DynamicPortsModel()
+DynamicPortsModel::~DynamicPortsModel()
 {
-  //
+    //
 }
 
-
-std::unordered_set<NodeId>
-DynamicPortsModel::
-allNodeIds() const
+std::unordered_set<NodeId> DynamicPortsModel::allNodeIds() const
 {
-  return _nodeIds;
+    return _nodeIds;
 }
 
-
-std::unordered_set<ConnectionId>
-DynamicPortsModel::
-allConnectionIds(NodeId const nodeId) const
+std::unordered_set<ConnectionId> DynamicPortsModel::allConnectionIds(NodeId const nodeId) const
 {
-  std::unordered_set<ConnectionId> result;
+    std::unordered_set<ConnectionId> result;
 
-  std::copy_if(_connectivity.begin(),
-               _connectivity.end(),
-               std::inserter(result, std::end(result)),
-               [&nodeId](ConnectionId const & cid)
-               {
-                  return cid.inNodeId == nodeId ||
-                         cid.outNodeId == nodeId;
-               });
+    std::copy_if(_connectivity.begin(),
+                 _connectivity.end(),
+                 std::inserter(result, std::end(result)),
+                 [&nodeId](ConnectionId const &cid) {
+                     return cid.inNodeId == nodeId || cid.outNodeId == nodeId;
+                 });
 
-  return result;
+    return result;
 }
 
-
-std::unordered_set<ConnectionId>
-DynamicPortsModel::
-connections(NodeId    nodeId,
-            PortType  portType,
-            PortIndex portIndex) const
+std::unordered_set<ConnectionId> DynamicPortsModel::connections(NodeId nodeId,
+                                                                PortType portType,
+                                                                PortIndex portIndex) const
 {
-  std::unordered_set<ConnectionId> result;
+    std::unordered_set<ConnectionId> result;
 
-  std::copy_if(_connectivity.begin(),
-               _connectivity.end(),
-               std::inserter(result, std::end(result)),
-               [&portType, &portIndex, &nodeId](ConnectionId const & cid)
-               {
-                  return (getNodeId(portType, cid) == nodeId &&
-                          getPortIndex(portType, cid) == portIndex);
-               });
+    std::copy_if(_connectivity.begin(),
+                 _connectivity.end(),
+                 std::inserter(result, std::end(result)),
+                 [&portType, &portIndex, &nodeId](ConnectionId const &cid) {
+                     return (getNodeId(portType, cid) == nodeId
+                             && getPortIndex(portType, cid) == portIndex);
+                 });
 
-  return result;
+    return result;
 }
 
-
-bool
-DynamicPortsModel::
-connectionExists(ConnectionId const connectionId) const
+bool DynamicPortsModel::connectionExists(ConnectionId const connectionId) const
 {
-  return (_connectivity.find(connectionId) != _connectivity.end());
+    return (_connectivity.find(connectionId) != _connectivity.end());
 }
 
-
-NodeId
-DynamicPortsModel::
-addNode(QString const nodeType)
+NodeId DynamicPortsModel::addNode(QString const nodeType)
 {
-  NodeId newId = newNodeId();
+    NodeId newId = newNodeId();
 
-  // Create new node.
-  _nodeIds.insert(newId);
+    // Create new node.
+    _nodeIds.insert(newId);
 
-  Q_EMIT nodeCreated(newId);
+    Q_EMIT nodeCreated(newId);
 
-  return newId;
+    return newId;
 }
 
-
-bool
-DynamicPortsModel::
-connectionPossible(ConnectionId const connectionId) const
+bool DynamicPortsModel::connectionPossible(ConnectionId const connectionId) const
 {
-  return !connectionExists(connectionId);
+    return !connectionExists(connectionId);
 }
 
-
-void
-DynamicPortsModel::
-addConnection(ConnectionId const connectionId)
+void DynamicPortsModel::addConnection(ConnectionId const connectionId)
 {
-  _connectivity.insert(connectionId);
+    _connectivity.insert(connectionId);
 
-  Q_EMIT connectionCreated(connectionId);
+    Q_EMIT connectionCreated(connectionId);
 }
 
-
-bool
-DynamicPortsModel::
-nodeExists(NodeId const nodeId) const
+bool DynamicPortsModel::nodeExists(NodeId const nodeId) const
 {
-  return (_nodeIds.find(nodeId) != _nodeIds.end());
+    return (_nodeIds.find(nodeId) != _nodeIds.end());
 }
 
-
-PortAddRemoveWidget*
-DynamicPortsModel::
-widget(NodeId nodeId) const
+PortAddRemoveWidget *DynamicPortsModel::widget(NodeId nodeId) const
 {
-  auto it = _nodeWidgets.find(nodeId);
-  if (it == _nodeWidgets.end())
-  {
-    _nodeWidgets[nodeId] =
-      new PortAddRemoveWidget(0, 0, nodeId,
-                              *const_cast<DynamicPortsModel*>(this));
-  }
+    auto it = _nodeWidgets.find(nodeId);
+    if (it == _nodeWidgets.end()) {
+        _nodeWidgets[nodeId] = new PortAddRemoveWidget(0,
+                                                       0,
+                                                       nodeId,
+                                                       *const_cast<DynamicPortsModel *>(this));
+    }
 
-  return _nodeWidgets[nodeId];
+    return _nodeWidgets[nodeId];
 }
 
-
-QVariant
-DynamicPortsModel::
-nodeData(NodeId nodeId, NodeRole role) const
+QVariant DynamicPortsModel::nodeData(NodeId nodeId, NodeRole role) const
 {
-  Q_UNUSED(nodeId);
+    Q_UNUSED(nodeId);
 
-  QVariant result;
+    QVariant result;
 
-  switch (role)
-  {
+    switch (role) {
     case NodeRole::Type:
-      result = QString("Default Node Type");
-      break;
+        result = QString("Default Node Type");
+        break;
 
     case NodeRole::Position:
-      result = _nodeGeometryData[nodeId].pos;
-      break;
+        result = _nodeGeometryData[nodeId].pos;
+        break;
 
     case NodeRole::Size:
-      result = _nodeGeometryData[nodeId].size;
-      break;
+        result = _nodeGeometryData[nodeId].size;
+        break;
 
     case NodeRole::CaptionVisible:
-      result = true;
-      break;
+        result = true;
+        break;
 
     case NodeRole::Caption:
-      result = QString("Node");
-      break;
+        result = QString("Node");
+        break;
 
-    case NodeRole::Style:
-    {
-      auto style = StyleCollection::nodeStyle();
-      result = style.toJson().toVariantMap();
-    }
-    break;
+    case NodeRole::Style: {
+        auto style = StyleCollection::nodeStyle();
+        result = style.toJson().toVariantMap();
+    } break;
 
     case NodeRole::InternalData:
-      break;
+        break;
 
     case NodeRole::InPortCount:
-      result = _nodePortCounts[nodeId].in;
-      break;
+        result = _nodePortCounts[nodeId].in;
+        break;
 
     case NodeRole::OutPortCount:
-      result = _nodePortCounts[nodeId].out;
-      break;
+        result = _nodePortCounts[nodeId].out;
+        break;
 
-    case NodeRole::Widget:
-    {
-      result = QVariant::fromValue(widget(nodeId));
-      break;
+    case NodeRole::Widget: {
+        result = QVariant::fromValue(widget(nodeId));
+        break;
     }
-  }
+    }
 
-  return result;
+    return result;
 }
 
-
-bool
-DynamicPortsModel::
-setNodeData(NodeId   nodeId,
-            NodeRole role,
-            QVariant value)
+bool DynamicPortsModel::setNodeData(NodeId nodeId, NodeRole role, QVariant value)
 {
-  bool result = false;
+    bool result = false;
 
-  switch (role)
-  {
+    switch (role) {
     case NodeRole::Type:
-      break;
-    case NodeRole::Position:
-    {
-      _nodeGeometryData[nodeId].pos = value.value<QPointF>();
+        break;
+    case NodeRole::Position: {
+        _nodeGeometryData[nodeId].pos = value.value<QPointF>();
 
-      Q_EMIT nodePositionUpdated(nodeId);
+        Q_EMIT nodePositionUpdated(nodeId);
 
-      result = true;
-    }
-    break;
+        result = true;
+    } break;
 
-    case NodeRole::Size:
-    {
-
-      _nodeGeometryData[nodeId].size = value.value<QSize>();
-      result = true;
-    }
-    break;
+    case NodeRole::Size: {
+        _nodeGeometryData[nodeId].size = value.value<QSize>();
+        result = true;
+    } break;
 
     case NodeRole::CaptionVisible:
-      break;
+        break;
 
     case NodeRole::Caption:
-      break;
+        break;
 
     case NodeRole::Style:
-      break;
+        break;
 
     case NodeRole::InternalData:
-      break;
+        break;
 
     case NodeRole::InPortCount:
-      _nodePortCounts[nodeId].in = value.toUInt();
-      widget(nodeId)->populateButtons(PortType::In, value.toUInt());
-      break;
+        _nodePortCounts[nodeId].in = value.toUInt();
+        widget(nodeId)->populateButtons(PortType::In, value.toUInt());
+        break;
 
     case NodeRole::OutPortCount:
-      _nodePortCounts[nodeId].out = value.toUInt();
-      widget(nodeId)->populateButtons(PortType::Out, value.toUInt());
-      break;
+        _nodePortCounts[nodeId].out = value.toUInt();
+        widget(nodeId)->populateButtons(PortType::Out, value.toUInt());
+        break;
 
     case NodeRole::Widget:
-      break;
-  }
+        break;
+    }
 
-  return result;
+    return result;
 }
 
-
-QVariant
-DynamicPortsModel::
-portData(NodeId    nodeId,
-         PortType  portType,
-         PortIndex portIndex,
-         PortRole  role) const
+QVariant DynamicPortsModel::portData(NodeId nodeId,
+                                     PortType portType,
+                                     PortIndex portIndex,
+                                     PortRole role) const
 {
-  switch (role)
-  {
+    switch (role) {
     case PortRole::Data:
-      return QVariant();
-      break;
+        return QVariant();
+        break;
 
     case PortRole::DataType:
-      return QVariant();
-      break;
+        return QVariant();
+        break;
 
     case PortRole::ConnectionPolicyRole:
-      return QVariant::fromValue(ConnectionPolicy::One);
-      break;
+        return QVariant::fromValue(ConnectionPolicy::One);
+        break;
 
     case PortRole::CaptionVisible:
-      return true;
-      break;
+        return true;
+        break;
 
     case PortRole::Caption:
-      if (portType == PortType::In)
-        return QString::fromUtf8("Port In");
-      else
-        return QString::fromUtf8("Port Out");
+        if (portType == PortType::In)
+            return QString::fromUtf8("Port In");
+        else
+            return QString::fromUtf8("Port Out");
 
-      break;
-  }
+        break;
+    }
 
-  return QVariant();
+    return QVariant();
 }
 
-
-bool
-DynamicPortsModel::
-setPortData(NodeId    nodeId,
-            PortType  portType,
-            PortIndex portIndex,
-            QVariant const& value,
-            PortRole  role)
+bool DynamicPortsModel::setPortData(
+    NodeId nodeId, PortType portType, PortIndex portIndex, QVariant const &value, PortRole role)
 {
-  Q_UNUSED(nodeId);
-  Q_UNUSED(portType);
-  Q_UNUSED(portIndex);
-  Q_UNUSED(value);
-  Q_UNUSED(role);
+    Q_UNUSED(nodeId);
+    Q_UNUSED(portType);
+    Q_UNUSED(portIndex);
+    Q_UNUSED(value);
+    Q_UNUSED(role);
 
-  return false;
+    return false;
 }
 
-
-bool
-DynamicPortsModel::
-deleteConnection(ConnectionId const connectionId)
+bool DynamicPortsModel::deleteConnection(ConnectionId const connectionId)
 {
-  bool disconnected = false;
+    bool disconnected = false;
 
-  auto it = _connectivity.find(connectionId);
+    auto it = _connectivity.find(connectionId);
 
-  if (it != _connectivity.end())
-  {
-    disconnected = true;
+    if (it != _connectivity.end()) {
+        disconnected = true;
 
-    _connectivity.erase(it);
-  };
+        _connectivity.erase(it);
+    };
 
-  if (disconnected)
-    Q_EMIT connectionDeleted(connectionId);
+    if (disconnected)
+        Q_EMIT connectionDeleted(connectionId);
 
-  return disconnected;
+    return disconnected;
 }
 
-
-bool
-DynamicPortsModel::
-deleteNode(NodeId const nodeId)
+bool DynamicPortsModel::deleteNode(NodeId const nodeId)
 {
-  // Delete connections to this node first.
-  auto connectionIds = allConnectionIds(nodeId);
-  for (auto & cId : connectionIds)
-  {
-    deleteConnection(cId);
-  }
+    // Delete connections to this node first.
+    auto connectionIds = allConnectionIds(nodeId);
+    for (auto &cId : connectionIds) {
+        deleteConnection(cId);
+    }
 
-  _nodeIds.erase(nodeId);
-  _nodeGeometryData.erase(nodeId);
-  _nodePortCounts.erase(nodeId);
-  _nodeWidgets.erase(nodeId);
+    _nodeIds.erase(nodeId);
+    _nodeGeometryData.erase(nodeId);
+    _nodePortCounts.erase(nodeId);
+    _nodeWidgets.erase(nodeId);
 
-  Q_EMIT nodeDeleted(nodeId);
+    Q_EMIT nodeDeleted(nodeId);
 
-  return true;
+    return true;
 }
 
-
-QJsonObject
-DynamicPortsModel::
-saveNode(NodeId const nodeId) const
+QJsonObject DynamicPortsModel::saveNode(NodeId const nodeId) const
 {
-  QJsonObject nodeJson;
+    QJsonObject nodeJson;
 
-  nodeJson["id"] = static_cast<qint64>(nodeId);
+    nodeJson["id"] = static_cast<qint64>(nodeId);
 
-  {
-    QPointF const pos = nodeData(nodeId, NodeRole::Position).value<QPointF>();
+    {
+        QPointF const pos = nodeData(nodeId, NodeRole::Position).value<QPointF>();
 
-    QJsonObject posJson;
-    posJson["x"] = pos.x();
-    posJson["y"] = pos.y();
-    nodeJson["position"] = posJson;
+        QJsonObject posJson;
+        posJson["x"] = pos.x();
+        posJson["y"] = pos.y();
+        nodeJson["position"] = posJson;
 
-    nodeJson["inPortCount"] = QString::number(_nodePortCounts[nodeId].in);
-    nodeJson["outPortCount"] = QString::number(_nodePortCounts[nodeId].out);
-  }
+        nodeJson["inPortCount"] = QString::number(_nodePortCounts[nodeId].in);
+        nodeJson["outPortCount"] = QString::number(_nodePortCounts[nodeId].out);
+    }
 
-  return nodeJson;
+    return nodeJson;
 }
 
-
-QJsonObject
-DynamicPortsModel::
-save() const
+QJsonObject DynamicPortsModel::save() const
 {
-  QJsonObject sceneJson;
+    QJsonObject sceneJson;
 
-  QJsonArray nodesJsonArray;
-  for (auto const nodeId : allNodeIds())
-  {
-    nodesJsonArray.append(saveNode(nodeId));
-  }
-  sceneJson["nodes"] = nodesJsonArray;
+    QJsonArray nodesJsonArray;
+    for (auto const nodeId : allNodeIds()) {
+        nodesJsonArray.append(saveNode(nodeId));
+    }
+    sceneJson["nodes"] = nodesJsonArray;
 
+    QJsonArray connJsonArray;
+    for (auto const &cid : _connectivity) {
+        connJsonArray.append(QtNodes::toJson(cid));
+    }
+    sceneJson["connections"] = connJsonArray;
 
-  QJsonArray connJsonArray;
-  for (auto const & cid : _connectivity)
-  {
-    connJsonArray.append(QtNodes::toJson(cid));
-  }
-  sceneJson["connections"] = connJsonArray;
-
-  return sceneJson;
+    return sceneJson;
 }
 
-
-void
-DynamicPortsModel::
-loadNode(QJsonObject const & nodeJson)
+void DynamicPortsModel::loadNode(QJsonObject const &nodeJson)
 {
-  NodeId restoredNodeId = static_cast<NodeId>(nodeJson["id"].toInt());
+    NodeId restoredNodeId = static_cast<NodeId>(nodeJson["id"].toInt());
 
-  _nextNodeId = std::max(_nextNodeId, restoredNodeId + 1);
+    _nextNodeId = std::max(_nextNodeId, restoredNodeId + 1);
 
-  // Create new node.
-  _nodeIds.insert(restoredNodeId);
+    // Create new node.
+    _nodeIds.insert(restoredNodeId);
 
-  setNodeData(restoredNodeId,
-              NodeRole::InPortCount,
-              nodeJson["inPortCount"].toString().toUInt());
-
-  setNodeData(restoredNodeId,
-              NodeRole::OutPortCount,
-              nodeJson["outPortCount"].toString().toUInt());
-
-  {
-    QJsonObject posJson = nodeJson["position"].toObject();
-    QPointF const pos(posJson["x"].toDouble(),
-                      posJson["y"].toDouble());
+    setNodeData(restoredNodeId, NodeRole::InPortCount, nodeJson["inPortCount"].toString().toUInt());
 
     setNodeData(restoredNodeId,
-                NodeRole::Position,
-                pos);
+                NodeRole::OutPortCount,
+                nodeJson["outPortCount"].toString().toUInt());
 
-  }
+    {
+        QJsonObject posJson = nodeJson["position"].toObject();
+        QPointF const pos(posJson["x"].toDouble(), posJson["y"].toDouble());
 
-  Q_EMIT nodeCreated(restoredNodeId);
+        setNodeData(restoredNodeId, NodeRole::Position, pos);
+    }
+
+    Q_EMIT nodeCreated(restoredNodeId);
 }
 
-
-void
-DynamicPortsModel::
-load(QJsonObject const &jsonDocument)
+void DynamicPortsModel::load(QJsonObject const &jsonDocument)
 {
-  QJsonArray nodesJsonArray = jsonDocument["nodes"].toArray();
+    QJsonArray nodesJsonArray = jsonDocument["nodes"].toArray();
 
-  for (QJsonValueRef nodeJson : nodesJsonArray)
-  {
-    loadNode(nodeJson.toObject());
-  }
+    for (QJsonValueRef nodeJson : nodesJsonArray) {
+        loadNode(nodeJson.toObject());
+    }
 
-  QJsonArray connectionJsonArray = jsonDocument["connections"].toArray();
+    QJsonArray connectionJsonArray = jsonDocument["connections"].toArray();
 
-  for (QJsonValueRef connection : connectionJsonArray)
-  {
-    QJsonObject connJson = connection.toObject();
+    for (QJsonValueRef connection : connectionJsonArray) {
+        QJsonObject connJson = connection.toObject();
 
-    ConnectionId connId = QtNodes::fromJson(connJson);
+        ConnectionId connId = QtNodes::fromJson(connJson);
 
-    // Restore the connection
-    addConnection(connId);
-  }
+        // Restore the connection
+        addConnection(connId);
+    }
 }
 
-
-void
-DynamicPortsModel::
-addPort(NodeId nodeId,
-        PortType portType,
-        PortIndex portIndex)
+void DynamicPortsModel::addPort(NodeId nodeId, PortType portType, PortIndex portIndex)
 {
-  // STAGE 1.
-  // Compute new addresses for the existing connections that are shifted and
-  // placed after the new ones
-  PortIndex first = portIndex;
-  PortIndex last = first;
-  portsAboutToBeInserted(nodeId, portType, first, last);
+    // STAGE 1.
+    // Compute new addresses for the existing connections that are shifted and
+    // placed after the new ones
+    PortIndex first = portIndex;
+    PortIndex last = first;
+    portsAboutToBeInserted(nodeId, portType, first, last);
 
+    // STAGE 2. Change the number of connections in your model
+    if (portType == PortType::In)
+        _nodePortCounts[nodeId].in++;
+    else
+        _nodePortCounts[nodeId].out++;
 
-  // STAGE 2. Change the number of connections in your model
-  if (portType == PortType::In)
-    _nodePortCounts[nodeId].in++;
-  else
-    _nodePortCounts[nodeId].out++;
+    // STAGE 3. Re-create previouly existed and now shifted connections
+    portsInserted();
 
-
-  // STAGE 3. Re-create previouly existed and now shifted connections
-  portsInserted();
-
-  Q_EMIT nodeUpdated(nodeId);
+    Q_EMIT nodeUpdated(nodeId);
 }
 
-
-void
-DynamicPortsModel::
-removePort(NodeId nodeId,
-           PortType portType,
-           PortIndex portIndex)
+void DynamicPortsModel::removePort(NodeId nodeId, PortType portType, PortIndex portIndex)
 {
-  // STAGE 1.
-  // Compute new addresses for the existing connections that are shifted upwards
-  // instead of the deleted ports.
-  PortIndex first = portIndex;
-  PortIndex last = first;
-  portsAboutToBeDeleted(nodeId, portType, first, last);
+    // STAGE 1.
+    // Compute new addresses for the existing connections that are shifted upwards
+    // instead of the deleted ports.
+    PortIndex first = portIndex;
+    PortIndex last = first;
+    portsAboutToBeDeleted(nodeId, portType, first, last);
 
-  // STAGE 2. Change the number of connections in your model
-  if (portType == PortType::In)
-    _nodePortCounts[nodeId].in--;
-  else
-    _nodePortCounts[nodeId].out--;
+    // STAGE 2. Change the number of connections in your model
+    if (portType == PortType::In)
+        _nodePortCounts[nodeId].in--;
+    else
+        _nodePortCounts[nodeId].out--;
 
-  portsDeleted();
+    portsDeleted();
 
-  Q_EMIT nodeUpdated(nodeId);
+    Q_EMIT nodeUpdated(nodeId);
 }
