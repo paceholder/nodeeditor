@@ -74,7 +74,7 @@ insertSerializedItems(QJsonObject const & json,
 
   QJsonArray const & nodesJsonArray = json["nodes"].toArray();
 
-  for (QJsonValueConstRef node : nodesJsonArray)
+  for (QJsonValue node : nodesJsonArray)
   {
     QJsonObject obj = node.toObject();
 
@@ -87,7 +87,7 @@ insertSerializedItems(QJsonObject const & json,
 
   QJsonArray const & connJsonArray = json["connections"].toArray();
 
-  for (QJsonValueConstRef connection : connJsonArray)
+  for (QJsonValue connection : connJsonArray)
   {
     QJsonObject connJson = connection.toObject();
 
