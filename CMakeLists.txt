@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.8)
 
-cmake_policy(SET CMP0072 NEW)
-cmake_policy(SET CMP0068 NEW)
+cmake_policy(SET CMP0072 NEW) # new in 3.11. The NEW behavior for this policy is to set OpenGL_GL_PREFERENCE to GLVND.
+cmake_policy(SET CMP0068 NEW) # new in 3.9. The NEW behavior of this policy is to ignore the RPATH settings for install_name on macOS.
+
 
 project(QtNodesLibrary CXX)
 
@@ -37,41 +38,26 @@ if(QT_NODES_DEVELOPER_DEFAULTS)
 endif()
 
 if(BUILD_DEBUG_POSTFIX_D)
-  set(CMAKE_DEBUG_POSTFIX d)
+  set(CMAKE_DEBUG_POSTFIX "d")
+  set(CMAKE_RELEASE_POSTFIX "")
+  set(CMAKE_RELWITHDEBINFO_POSTFIX "rd")
+  set(CMAKE_MINSIZEREL_POSTFIX "s")
 endif()
 
 add_subdirectory(external)
 
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Widgets Gui OpenGL)
+message(STATUS "QT_VERSION: ${QT_VERSION}, QT_DIR: ${QT_DIR}")
 
-# Find the QtWidgets library
-find_package(Qt6 QUIET
-  COMPONENTS
-   Core
-   Widgets
-   Gui
-   OpenGL
-)
-
-if (NOT Qt6_FOUND)
-  find_package(Qt5 QUIET
-    COMPONENTS
-     Core
-     Widgets
-     Gui
-     OpenGL
-  )
+if (${QT_VERSION} VERSION_LESS_EQUAL 5.9.0)
+  message(FATAL_ERROR "Requires qt version >= 5.9.0, Your current version is ${QT_VERSION}")
 endif()
 
-if (NOT (Qt6_FOUND OR Qt5_FOUND))
-  message(FATAL_ERRROR "Qt libraries were not found.")
-endif()
-
-if (Qt6_FOUND)
+if (${QT_VERSION_MAJOR} EQUAL 6)
   qt_add_resources(RESOURCES ./resources/resources.qrc)
-  set(Qt Qt)
 else()
   qt5_add_resources(RESOURCES ./resources/resources.qrc)
-  set(Qt Qt5)
 endif()
 
 # Unfortunately, as we have a split include/src, AUTOMOC doesn't work.
@@ -165,10 +151,10 @@ target_include_directories(QtNodes
 
 target_link_libraries(QtNodes
   PUBLIC
-    ${Qt}::Core
-    ${Qt}::Widgets
-    ${Qt}::Gui
-    ${Qt}::OpenGL
+    Qt${QT_VERSION_MAJOR}::Core
+    Qt${QT_VERSION_MAJOR}::Widgets
+    Qt${QT_VERSION_MAJOR}::Gui
+    Qt${QT_VERSION_MAJOR}::OpenGL
 )
 
 target_compile_definitions(QtNodes
@@ -180,9 +166,10 @@ target_compile_definitions(QtNodes
     QT_NO_KEYWORDS
 )
 
+
 target_compile_options(QtNodes
   PRIVATE
-    $<$<CXX_COMPILER_ID:MSVC>:/W4 /wd4127 /EHsc>
+    $<$<CXX_COMPILER_ID:MSVC>:/W4 /wd4127 /EHsc /utf-8>
     $<$<CXX_COMPILER_ID:GNU>:-Wall -Wextra>
     $<$<CXX_COMPILER_ID:AppleClang>:-Wall -Wextra -Werror>
 )
@@ -213,7 +200,7 @@ set_target_properties(QtNodes
 
 file(GLOB_RECURSE HEADERS_TO_MOC include/QtNodes/internal/*.hpp)
 
-if (Qt6_FOUND)
+if (${QT_VERSION_MAJOR} EQUAL 6)
   qt_wrap_cpp(nodes_moc
       ${HEADERS_TO_MOC}
       TARGET QtNodes
