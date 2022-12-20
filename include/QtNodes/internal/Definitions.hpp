@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Export.hpp"
 
@@ -13,7 +13,7 @@
 
 namespace QtNodes
 {
-Q_NAMESPACE_EXPORT(NODE_EDITOR_PUBLIC)
+NODE_EDITOR_PUBLIC Q_NAMESPACE
 
 /**
  * Constants used for fetching QVariant data from GraphModel.
