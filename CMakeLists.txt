@@ -50,8 +50,8 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets OpenGL)
 message(STATUS "QT_VERSION: ${QT_VERSION}, QT_DIR: ${QT_DIR}")
 
-if (${QT_VERSION} VERSION_LESS 5.12.0)
-  message(FATAL_ERROR "Requires qt version >= 5.12.0, Your current version is ${QT_VERSION}")
+if (${QT_VERSION} VERSION_LESS 5.11.0)
+  message(FATAL_ERROR "Requires qt version >= 5.11.0, Your current version is ${QT_VERSION}")
 endif()
 
 if (${QT_VERSION_MAJOR} EQUAL 6)
