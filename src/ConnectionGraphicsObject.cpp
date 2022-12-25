@@ -1,13 +1,5 @@
 #include "ConnectionGraphicsObject.hpp"
 
-#include <QtWidgets/QGraphicsSceneMouseEvent>
-#include <QtWidgets/QGraphicsDropShadowEffect>
-#include <QtWidgets/QGraphicsBlurEffect>
-#include <QtWidgets/QStyleOptionGraphicsItem>
-#include <QtWidgets/QGraphicsView>
-
-#include <QtCore/QDebug>
-
 #include "AbstractGraphModel.hpp"
 #include "AbstractNodeGeometry.hpp"
 #include "BasicGraphicsScene.hpp"
@@ -19,6 +11,16 @@
 #include "NodeGraphicsObject.hpp"
 #include "StyleCollection.hpp"
 #include "locateNode.hpp"
+
+#include <QtWidgets/QGraphicsSceneMouseEvent>
+#include <QtWidgets/QGraphicsDropShadowEffect>
+#include <QtWidgets/QGraphicsBlurEffect>
+#include <QtWidgets/QStyleOptionGraphicsItem>
+#include <QtWidgets/QGraphicsView>
+
+#include <QtCore/QDebug>
+
+#include <stdexcept>
 
 
 namespace QtNodes
@@ -376,6 +378,8 @@ pointsC1C2() const
       return pointsC1C2Vertical();
       break;
   }
+
+  throw std::logic_error("Unreachable code after switch statement");
 }
 
 

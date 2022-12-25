@@ -360,6 +360,7 @@ portCaptionsHeight(NodeId const   nodeId,
           break;
         }
       }
+      break;
     }
 
     case PortType::Out:
@@ -377,6 +378,7 @@ portCaptionsHeight(NodeId const   nodeId,
           break;
         }
       }
+      break;
     }
 
     default:
