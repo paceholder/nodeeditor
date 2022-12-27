@@ -6,6 +6,8 @@
 #include <QtCore/QPointF>
 #include <QtCore/QJsonObject>
 
+#include <unordered_set>
+
 namespace QtNodes
 {
 
@@ -92,7 +94,6 @@ class MoveNodeCommand : public QUndoCommand
 {
 public:
   MoveNodeCommand(BasicGraphicsScene* scene,
-                  NodeId const nodeId,
                   QPointF const &diff);
 
   void undo() override;
@@ -111,9 +112,9 @@ public:
 
 private:
   BasicGraphicsScene* _scene;
-  NodeId _nodeId;
+  std::unordered_set<NodeId> _selectedNodes;
   QPointF _diff;
 };
 
 
-}
+} // namespace QtNodes

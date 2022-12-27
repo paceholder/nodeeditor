@@ -337,7 +337,6 @@ mouseMoveEvent(QGraphicsSceneMouseEvent* event)
     auto diff = event->pos() - event->lastPos();
 
     nodeScene()->undoStack().push(new MoveNodeCommand(nodeScene(),
-                                                      _nodeId,
                                                       diff));
 
     event->accept();

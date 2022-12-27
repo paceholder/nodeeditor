@@ -445,25 +445,34 @@ redo()
 
 MoveNodeCommand::
 MoveNodeCommand(BasicGraphicsScene* scene,
-                NodeId const nodeId,
                 QPointF const &diff)
   : _scene(scene)
-  , _nodeId(nodeId)
   , _diff(diff)
 {
+  _selectedNodes.clear();
+  for (QGraphicsItem * item : _scene->selectedItems())
+  {
+    if (auto n = qgraphicsitem_cast<NodeGraphicsObject*>(item))
+    {
+      _selectedNodes.insert(n->nodeId());
+    }
+  }
 }
 
 void
 MoveNodeCommand::
 undo()
 {
-  auto oldPos = 
-    _scene->graphModel().nodeData(_nodeId,
-                                  NodeRole::Position).value<QPointF>();
+  for (auto nodeId : _selectedNodes)
+  {
+    auto oldPos = 
+      _scene->graphModel().nodeData(nodeId,
+                                    NodeRole::Position).value<QPointF>();
 
-  oldPos -= _diff;
+    oldPos -= _diff;
 
-  _scene->graphModel().setNodeData(_nodeId, NodeRole::Position, oldPos);
+    _scene->graphModel().setNodeData(nodeId, NodeRole::Position, oldPos);
+  }
 }
 
 
@@ -471,13 +480,16 @@ void
 MoveNodeCommand::
 redo()
 {
-  auto oldPos = 
-    _scene->graphModel().nodeData(_nodeId,
-                                  NodeRole::Position).value<QPointF>();
+  for (auto nodeId : _selectedNodes)
+  {
+    auto oldPos = 
+      _scene->graphModel().nodeData(nodeId,
+                                    NodeRole::Position).value<QPointF>();
 
-  oldPos += _diff;
+    oldPos += _diff;
 
-  _scene->graphModel().setNodeData(_nodeId, NodeRole::Position, oldPos);
+    _scene->graphModel().setNodeData(nodeId, NodeRole::Position, oldPos);
+  }
 }
 
 
@@ -495,10 +507,12 @@ mergeWith(QUndoCommand const *c)
 {
   auto mc = static_cast<MoveNodeCommand const*>(c);
 
-  _diff += mc->_diff;
-
-  return true;
+  if (_selectedNodes == mc->_selectedNodes)
+  {
+    _diff += mc->_diff;
+    return true;
+  }
+  return false;
 }
 
-//
-}
+} // namespace QtNodes
