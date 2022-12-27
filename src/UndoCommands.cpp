@@ -149,6 +149,42 @@ computeAverageNodePosition(QJsonObject const & sceneJson)
 }
 
 
+//-------------------------------------
+
+
+CreateCommand::
+CreateCommand(BasicGraphicsScene* scene,
+              QString const name,
+              QPointF const & mouseScenePos)
+  : _scene(scene)
+{
+  _nodeId = _scene->graphModel().addNode(name);
+  if (_nodeId != InvalidNodeId)
+  {
+    _scene->graphModel().setNodeData(_nodeId, NodeRole::Position, mouseScenePos);
+  }
+}
+
+
+void
+CreateCommand::
+undo()
+{
+  _sceneJson = _scene->graphModel().saveNode(_nodeId);
+  _scene->graphModel().deleteNode(_nodeId);
+}
+
+
+void
+CreateCommand::
+redo()
+{
+  _scene->graphModel().loadNode(_sceneJson);
+}
+
+
+//-------------------------------------
+
 
 DeleteCommand::
 DeleteCommand(BasicGraphicsScene* scene)
