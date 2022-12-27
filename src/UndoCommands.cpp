@@ -541,9 +541,12 @@ mergeWith(QUndoCommand const *c)
 {
   auto mc = static_cast<MoveNodeCommand const*>(c);
 
-  _diff += mc->_diff;
-
-  return true;
+  if (_selectedNodes == mc->_selectedNodes)
+  {
+    _diff += mc->_diff;
+    return true;
+  }
+  return false;
 }
 
 } // namespace QtNodes
