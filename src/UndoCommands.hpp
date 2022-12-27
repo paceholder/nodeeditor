@@ -6,6 +6,8 @@
 #include <QtCore/QPointF>
 #include <QtCore/QJsonObject>
 
+#include <unordered_set>
+
 namespace QtNodes
 {
 
@@ -110,6 +112,7 @@ public:
 
 private:
   BasicGraphicsScene* _scene;
+  std::unordered_set<NodeId> _selectedNodes;
   QPointF _diff;
 };
 
