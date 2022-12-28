@@ -157,11 +157,16 @@ CreateCommand(BasicGraphicsScene* scene,
               QString const name,
               QPointF const & mouseScenePos)
   : _scene(scene)
+  , _sceneJson(QJsonObject())
 {
   _nodeId = _scene->graphModel().addNode(name);
   if (_nodeId != InvalidNodeId)
   {
     _scene->graphModel().setNodeData(_nodeId, NodeRole::Position, mouseScenePos);
+  }
+  else
+  {
+    setObsolete(true);
   }
 }
 
@@ -179,6 +184,8 @@ void
 CreateCommand::
 redo()
 {
+  if(_sceneJson.isEmpty())
+    return;
   _scene->graphModel().loadNode(_sceneJson);
 }
 
@@ -222,6 +229,10 @@ DeleteCommand(BasicGraphicsScene* scene)
       nodesJsonArray.append(graphModel.saveNode(n->nodeId()));
     }
   }
+
+  // If nothing is deleted, cancel this operation
+  if(connJsonArray.isEmpty() && nodesJsonArray.isEmpty())
+    setObsolete(true);
 
   _sceneJson["nodes"] = nodesJsonArray;
   _sceneJson["connections"] = connJsonArray;
