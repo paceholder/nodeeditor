@@ -497,6 +497,13 @@ MoveNodeCommand(BasicGraphicsScene* scene,
   , _diff(diff)
 {
   _selectedNodes.clear();
+  for (QGraphicsItem * item : _scene->selectedItems())
+  {
+    if (auto n = qgraphicsitem_cast<NodeGraphicsObject*>(item))
+    {
+      _selectedNodes.insert(n->nodeId());
+    }
+  }
 }
 
 void
@@ -520,20 +527,15 @@ void
 MoveNodeCommand::
 redo()
 {
-  for (QGraphicsItem * item : _scene->selectedItems())
+  for (auto nodeId : _selectedNodes)
   {
-    if (auto n = qgraphicsitem_cast<NodeGraphicsObject*>(item))
-    {
-      _selectedNodes.insert(n->nodeId());
+    auto oldPos = 
+      _scene->graphModel().nodeData(nodeId,
+                                    NodeRole::Position).value<QPointF>();
 
-      auto oldPos = 
-        _scene->graphModel().nodeData(n->nodeId(),
-                                      NodeRole::Position).value<QPointF>();
+    oldPos += _diff;
 
-      oldPos += _diff;
-
-      _scene->graphModel().setNodeData(n->nodeId(), NodeRole::Position, oldPos);
-    }
+    _scene->graphModel().setNodeData(nodeId, NodeRole::Position, oldPos);
   }
 }
 
