@@ -175,7 +175,10 @@ void
 CreateCommand::
 undo()
 {
-  _sceneJson = _scene->graphModel().saveNode(_nodeId);
+  QJsonArray nodesJsonArray;
+  nodesJsonArray.append(_scene->graphModel().saveNode(_nodeId));
+  _sceneJson["nodes"] = nodesJsonArray;
+
   _scene->graphModel().deleteNode(_nodeId);
 }
 
@@ -184,9 +187,10 @@ void
 CreateCommand::
 redo()
 {
-  if(_sceneJson.isEmpty())
+  if(_sceneJson.empty() || _sceneJson["nodes"].toArray().empty())
     return;
-  _scene->graphModel().loadNode(_sceneJson);
+
+  insertSerializedItems(_sceneJson, _scene);  
 }
 
 
@@ -251,9 +255,7 @@ void
 DeleteCommand::
 redo()
 {
-  auto & graphModel = _scene->graphModel();
-
-  deleteSerializedItems(_sceneJson, graphModel);
+  deleteSerializedItems(_sceneJson, _scene->graphModel());
 }
 
 
@@ -295,6 +297,12 @@ CopyCommand(BasicGraphicsScene* scene)
 {
   QJsonObject sceneJson = serializeSelectedItems(scene);
 
+  if (sceneJson.empty() || sceneJson["nodes"].toArray().empty())
+  {
+    setObsolete(true);
+    return;
+  }
+
   QClipboard * clipboard = QApplication::clipboard();
 
   QByteArray const data = QJsonDocument(sceneJson).toJson();
@@ -322,6 +330,19 @@ PasteCommand(BasicGraphicsScene* scene,
   : _scene(scene)
   , _mouseScenePos(mouseScenePos)
 {
+  _newSceneJson = takeSceneJsonFromClipboard();
+
+  if (_newSceneJson.empty() || _newSceneJson["nodes"].toArray().empty())
+  {
+    setObsolete(true);
+    return;
+  }
+
+  _newSceneJson = makeNewNodeIdsInScene(_newSceneJson);
+
+  QPointF averagePos = computeAverageNodePosition(_newSceneJson);
+
+  offsetNodeGroup(_newSceneJson, _mouseScenePos - averagePos);
 }
 
 
@@ -339,18 +360,15 @@ redo()
 {
   _scene->clearSelection();
 
-  _newSceneJson = takeSceneJsonFromClipboard();
-
-  if (_newSceneJson.empty())
-    return;
-
-  _newSceneJson = makeNewNodeIdsInScene(_newSceneJson);
-
-  QPointF averagePos = computeAverageNodePosition(_newSceneJson);
-
-  offsetNodeGroup(_newSceneJson, _mouseScenePos - averagePos);
-
-  insertSerializedItems(_newSceneJson, _scene);
+  // Ignore if pasted in content that does not generate nodes.
+  try
+  {
+    insertSerializedItems(_newSceneJson, _scene);
+  }
+  catch(...)
+  {
+    setObsolete(true);
+  }
 }
 
 

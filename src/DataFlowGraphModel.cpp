@@ -3,6 +3,8 @@
 
 #include <QJsonArray>
 
+#include <stdexcept>
+
 namespace QtNodes
 {
 
@@ -563,6 +565,11 @@ loadNode(QJsonObject const & nodeJson)
                 pos);
 
     _models[restoredNodeId]->load(internalDataJson);
+  }
+  else
+  {
+    throw std::logic_error(std::string("No registered model with name ") +
+                           delegateModelName.toLocal8Bit().data());
   }
 }
 
