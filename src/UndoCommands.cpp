@@ -367,6 +367,26 @@ redo()
   }
   catch(...)
   {
+    auto & graphModel = _scene->graphModel();
+
+    QJsonArray connJsonArray;
+    for (QGraphicsItem * item : _scene->selectedItems())
+    {
+      if (auto c = qgraphicsitem_cast<ConnectionGraphicsObject*>(item))
+      {
+        graphModel.deleteConnection(c->connectionId());
+      }
+    }
+
+    QJsonArray nodesJsonArray;
+    for (QGraphicsItem * item : _scene->selectedItems())
+    {
+      if (auto n = qgraphicsitem_cast<NodeGraphicsObject*>(item))
+      {
+        graphModel.deleteNode(n->nodeId());
+      }
+    }
+
     setObsolete(true);
   }
 }
