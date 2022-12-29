@@ -95,6 +95,8 @@ insertSerializedItems(QJsonObject const & json,
 
     // Restore the connection
     graphModel.addConnection(connId);
+
+    scene->connectionGraphicsObject(connId)->setSelected(true);
   }
 }
 
@@ -360,23 +362,16 @@ redo()
 {
   _scene->clearSelection();
 
-  // Ignore if pasted in content that does not generate nodes.
+  // Ignore if pasted in content does not generate nodes.
   try
   {
     insertSerializedItems(_newSceneJson, _scene);
   }
   catch(...)
   {
+    // If the paste does not work, delete all selected nodes and connections
+    // `deleteNode(...)` implicitly removed connections
     auto & graphModel = _scene->graphModel();
-
-    QJsonArray connJsonArray;
-    for (QGraphicsItem * item : _scene->selectedItems())
-    {
-      if (auto c = qgraphicsitem_cast<ConnectionGraphicsObject*>(item))
-      {
-        graphModel.deleteConnection(c->connectionId());
-      }
-    }
 
     QJsonArray nodesJsonArray;
     for (QGraphicsItem * item : _scene->selectedItems())
