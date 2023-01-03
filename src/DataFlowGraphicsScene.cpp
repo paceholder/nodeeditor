@@ -4,6 +4,7 @@
 #include "GraphicsView.hpp"
 #include "NodeDelegateModelRegistry.hpp"
 #include "NodeGraphicsObject.hpp"
+#include "UndoCommands.hpp"
 
 #include <QtWidgets/QFileDialog>
 #include <QtWidgets/QGraphicsSceneMoveEvent>
@@ -130,14 +131,7 @@ createSceneMenu(QPointF const scenePos)
               return;
             }
 
-            NodeId nodeId = this->_graphModel.addNode(item->text(0));
-
-            if (nodeId != InvalidNodeId)
-            {
-              _graphModel.setNodeData(nodeId,
-                                      NodeRole::Position,
-                                      scenePos);
-            }
+            this->undoStack().push(new CreateCommand(this, item->text(0), scenePos));
 
             modelMenu->close();
           });

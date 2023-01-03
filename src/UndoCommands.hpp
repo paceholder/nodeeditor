@@ -14,6 +14,23 @@ namespace QtNodes
 class BasicGraphicsScene;
 
 
+class CreateCommand : public QUndoCommand
+{
+public:
+  CreateCommand(BasicGraphicsScene* scene,
+                QString const name,
+                QPointF const & mouseScenePos);
+
+  void undo() override;
+  void redo() override;
+
+private:
+  BasicGraphicsScene* _scene;
+  NodeId _nodeId;
+  QJsonObject _sceneJson;
+};
+
+
 /**
  * Selected scene objects are serialized and then removed from the scene.
  * The deleted elements could be restored in `undo`.
