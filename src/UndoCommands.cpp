@@ -234,6 +234,10 @@ DeleteCommand(BasicGraphicsScene* scene)
     }
   }
 
+  // If nothing is deleted, cancel this operation
+  if(connJsonArray.isEmpty() && nodesJsonArray.isEmpty())
+    setObsolete(true);
+
   _sceneJson["nodes"] = nodesJsonArray;
   _sceneJson["connections"] = connJsonArray;
 }
@@ -251,9 +255,7 @@ void
 DeleteCommand::
 redo()
 {
-  auto & graphModel = _scene->graphModel();
-
-  deleteSerializedItems(_sceneJson, graphModel);
+  deleteSerializedItems(_sceneJson, _scene->graphModel());
 }
 
 
