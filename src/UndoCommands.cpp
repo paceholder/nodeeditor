@@ -95,6 +95,8 @@ insertSerializedItems(QJsonObject const & json,
 
     // Restore the connection
     graphModel.addConnection(connId);
+
+    scene->connectionGraphicsObject(connId)->setSelected(true);
   }
 }
 
@@ -297,6 +299,12 @@ CopyCommand(BasicGraphicsScene* scene)
 {
   QJsonObject sceneJson = serializeSelectedItems(scene);
 
+  if (sceneJson.empty() || sceneJson["nodes"].toArray().empty())
+  {
+    setObsolete(true);
+    return;
+  }
+
   QClipboard * clipboard = QApplication::clipboard();
 
   QByteArray const data = QJsonDocument(sceneJson).toJson();
@@ -324,6 +332,19 @@ PasteCommand(BasicGraphicsScene* scene,
   : _scene(scene)
   , _mouseScenePos(mouseScenePos)
 {
+  _newSceneJson = takeSceneJsonFromClipboard();
+
+  if (_newSceneJson.empty() || _newSceneJson["nodes"].toArray().empty())
+  {
+    setObsolete(true);
+    return;
+  }
+
+  _newSceneJson = makeNewNodeIdsInScene(_newSceneJson);
+
+  QPointF averagePos = computeAverageNodePosition(_newSceneJson);
+
+  offsetNodeGroup(_newSceneJson, _mouseScenePos - averagePos);
 }
 
 
@@ -341,18 +362,28 @@ redo()
 {
   _scene->clearSelection();
 
-  _newSceneJson = takeSceneJsonFromClipboard();
+  // Ignore if pasted in content does not generate nodes.
+  try
+  {
+    insertSerializedItems(_newSceneJson, _scene);
+  }
+  catch(...)
+  {
+    // If the paste does not work, delete all selected nodes and connections
+    // `deleteNode(...)` implicitly removed connections
+    auto & graphModel = _scene->graphModel();
 
-  if (_newSceneJson.empty())
-    return;
+    QJsonArray nodesJsonArray;
+    for (QGraphicsItem * item : _scene->selectedItems())
+    {
+      if (auto n = qgraphicsitem_cast<NodeGraphicsObject*>(item))
+      {
+        graphModel.deleteNode(n->nodeId());
+      }
+    }
 
-  _newSceneJson = makeNewNodeIdsInScene(_newSceneJson);
-
-  QPointF averagePos = computeAverageNodePosition(_newSceneJson);
-
-  offsetNodeGroup(_newSceneJson, _mouseScenePos - averagePos);
-
-  insertSerializedItems(_newSceneJson, _scene);
+    setObsolete(true);
+  }
 }
 
 
