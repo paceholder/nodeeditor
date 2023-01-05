@@ -229,53 +229,53 @@ mousePressEvent(QGraphicsSceneMouseEvent* event)
     PortIndex const portIndex =
       geometry.checkPortHit(_nodeId, portToCheck, nodeCoord);
 
-    if (portIndex != InvalidPortIndex)
+    if (portIndex == InvalidPortIndex)
+      continue;
+
+    auto const& connected =
+      _graphModel.connections(_nodeId, portToCheck, portIndex);
+
+    // Start dragging existing connection.
+    if (!connected.empty() && portToCheck == PortType::In)
     {
-      auto const& connected =
-        _graphModel.connections(_nodeId, portToCheck, portIndex);
+      auto const& cnId = *connected.begin();
 
-      // Start dragging existing connection.
-      if (!connected.empty() && portToCheck == PortType::In)
+      // Need ConnectionGraphicsObject
+
+      NodeConnectionInteraction
+        interaction(*this,
+                    *nodeScene()->connectionGraphicsObject(cnId),
+                    *nodeScene());
+
+      if (_graphModel.detachPossible(cnId))
+        interaction.disconnect(portToCheck);
+    }
+    else // initialize new Connection
+    {
+      if (portToCheck == PortType::Out)
       {
-        auto const& cnId = *connected.begin();
+        auto const outPolicy =
+          _graphModel.portData(_nodeId,
+                               portToCheck,
+                               portIndex,
+                               PortRole::ConnectionPolicyRole).value<ConnectionPolicy>();
 
-        // Need ConnectionGraphicsObject
-
-        NodeConnectionInteraction
-          interaction(*this,
-                      *nodeScene()->connectionGraphicsObject(cnId),
-                      *nodeScene());
-
-        if (_graphModel.detachPossible(cnId))
-          interaction.disconnect(portToCheck);
-      }
-      else // initialize new Connection
-      {
-        if (portToCheck == PortType::Out)
+        if (!connected.empty() &&
+            outPolicy == ConnectionPolicy::One)
         {
-          auto const outPolicy =
-            _graphModel.portData(_nodeId,
-                                 portToCheck,
-                                 portIndex,
-                                 PortRole::ConnectionPolicyRole).value<ConnectionPolicy>();
-
-          if (!connected.empty() &&
-              outPolicy == ConnectionPolicy::One)
+          for (auto& cnId : connected)
           {
-            for (auto& cnId : connected)
-            {
-              _graphModel.deleteConnection(cnId);
-            }
+            _graphModel.deleteConnection(cnId);
           }
-        } // if port == out
+        }
+      } // if port == out
 
-        ConnectionId const incompleteConnectionId =
-          makeIncompleteConnectionId(_nodeId,
-                                     portToCheck,
-                                     portIndex);
+      ConnectionId const incompleteConnectionId =
+        makeIncompleteConnectionId(_nodeId,
+                                   portToCheck,
+                                   portIndex);
 
-        nodeScene()->makeDraftConnection(incompleteConnectionId);
-      }
+      nodeScene()->makeDraftConnection(incompleteConnectionId);
     }
   }
 
@@ -299,10 +299,14 @@ void
 NodeGraphicsObject::
 mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 {
-  // deselect all other items after this one is selected
+  // Deselect all other items after this one is selected.
+  // Unless we press a CTRL button to add the item to the selected group before
+  // starting moving.
   if (!isSelected())
   {
-    scene()->clearSelection();
+    if (!event->modifiers().testFlag(Qt::ControlModifier))
+      scene()->clearSelection();
+
     setSelected(true);
   }
 
