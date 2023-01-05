@@ -29,8 +29,20 @@ PRIVATE
   CALC_EXPORTS
 )
 
+set_target_properties(CalculatorShared
+  PROPERTIES
+    ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
+    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+)
+
 target_link_libraries(CalculatorShared
   QtNodes
+)
+
+target_include_directories(CalculatorShared
+  PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
 )
 
 
@@ -40,6 +52,13 @@ add_executable(calculator
 
 target_link_libraries(calculator
   CalculatorShared
+)
+
+set_target_properties(calculator
+  PROPERTIES
+    ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
+    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
 )
 
 
