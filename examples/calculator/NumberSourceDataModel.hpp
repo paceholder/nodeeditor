@@ -6,6 +6,8 @@
 
 #include <iostream>
 
+#include "CalcExport.hpp"
+
 class DecimalData;
 
 using QtNodes::PortType;
@@ -18,7 +20,7 @@ class QLineEdit;
 
 /// The model dictates the number of inputs and outputs for the Node.
 /// In this example it has no logic.
-class NumberSourceDataModel : public NodeDelegateModel
+class CALC_PUBLIC NumberSourceDataModel : public NodeDelegateModel
 {
   Q_OBJECT
 

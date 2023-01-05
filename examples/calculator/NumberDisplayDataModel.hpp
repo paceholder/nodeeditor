@@ -8,6 +8,7 @@
 
 #include "DecimalData.hpp"
 
+#include "CalcExport.hpp"
 
 using QtNodes::PortType;
 using QtNodes::PortIndex;
@@ -19,7 +20,7 @@ class QLabel;
 
 /// The model dictates the number of inputs and outputs for the Node.
 /// In this example it has no logic.
-class NumberDisplayDataModel : public NodeDelegateModel
+class CALC_PUBLIC NumberDisplayDataModel : public NodeDelegateModel
 {
   Q_OBJECT
 

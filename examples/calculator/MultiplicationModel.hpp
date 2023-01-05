@@ -9,9 +9,11 @@
 
 #include "DecimalData.hpp"
 
+#include "CalcExport.hpp"
+
 /// The model dictates the number of inputs and outputs for the Node.
 /// In this example it has no logic.
-class MultiplicationModel : public MathOperationDataModel
+class CALC_PUBLIC MultiplicationModel : public MathOperationDataModel
 {
 public:
 

@@ -2,12 +2,14 @@
 
 #include <QtNodes/NodeData>
 
+#include "CalcExport.hpp"
+
 using QtNodes::NodeDataType;
 using QtNodes::NodeData;
 
 /// The class can potentially incapsulate any user data which
 /// need to be transferred within the Node Editor graph
-class DecimalData : public NodeData
+class CALC_PUBLIC DecimalData : public NodeData
 {
 public:
 

@@ -8,9 +8,11 @@
 #include <QtCore/QObject>
 #include <QtWidgets/QLabel>
 
+#include "CalcExport.hpp"
+
 /// The model dictates the number of inputs and outputs for the Node.
 /// In this example it has no logic.
-class DivisionModel : public MathOperationDataModel
+class CALC_PUBLIC DivisionModel : public MathOperationDataModel
 {
 public:
 
