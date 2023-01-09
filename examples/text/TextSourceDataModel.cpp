@@ -2,77 +2,56 @@
 
 #include <QtWidgets/QLineEdit>
 
-TextSourceDataModel::
-TextSourceDataModel()
-  : _lineEdit{nullptr}
+TextSourceDataModel::TextSourceDataModel()
+    : _lineEdit{nullptr}
 {
-  //
+    //
 }
 
-
-unsigned int
-TextSourceDataModel::
-nPorts(PortType portType) const
+unsigned int TextSourceDataModel::nPorts(PortType portType) const
 {
-  unsigned int result = 1;
+    unsigned int result = 1;
 
-  switch (portType)
-  {
+    switch (portType) {
     case PortType::In:
-      result = 0;
-      break;
+        result = 0;
+        break;
 
     case PortType::Out:
-      result = 1;
+        result = 1;
 
     default:
-      break;
-  }
+        break;
+    }
 
-  return result;
+    return result;
 }
 
-
-void
-TextSourceDataModel::
-onTextEdited(QString const & string)
+void TextSourceDataModel::onTextEdited(QString const &string)
 {
-  Q_UNUSED(string);
+    Q_UNUSED(string);
 
-  Q_EMIT dataUpdated(0);
+    Q_EMIT dataUpdated(0);
 }
 
-
-NodeDataType
-TextSourceDataModel::
-dataType(PortType, PortIndex) const
+NodeDataType TextSourceDataModel::dataType(PortType, PortIndex) const
 {
-  return TextData().type();
+    return TextData().type();
 }
 
-
-std::shared_ptr<NodeData>
-TextSourceDataModel::
-outData(PortIndex const portIndex)
+std::shared_ptr<NodeData> TextSourceDataModel::outData(PortIndex const portIndex)
 {
-  Q_UNUSED(portIndex);
-  return std::make_shared<TextData>(_lineEdit->text());
+    Q_UNUSED(portIndex);
+    return std::make_shared<TextData>(_lineEdit->text());
 }
 
-
-QWidget *
-TextSourceDataModel::
-embeddedWidget()
+QWidget *TextSourceDataModel::embeddedWidget()
 {
-  if (!_lineEdit)
-  {
-    _lineEdit = new QLineEdit("Default Text"),
+    if (!_lineEdit) {
+        _lineEdit = new QLineEdit("Default Text"),
 
-    connect(_lineEdit, &QLineEdit::textEdited,
-            this, &TextSourceDataModel::onTextEdited);
+        connect(_lineEdit, &QLineEdit::textEdited, this, &TextSourceDataModel::onTextEdited);
+    }
 
-  }
-
-  return _lineEdit;
+    return _lineEdit;
 }
-

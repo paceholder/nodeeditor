@@ -8,11 +8,11 @@
 
 class DecimalData;
 
-using QtNodes::PortType;
-using QtNodes::PortIndex;
 using QtNodes::NodeData;
 using QtNodes::NodeDataType;
 using QtNodes::NodeDelegateModel;
+using QtNodes::PortIndex;
+using QtNodes::PortType;
 
 class QLineEdit;
 
@@ -20,65 +20,45 @@ class QLineEdit;
 /// In this example it has no logic.
 class NumberSourceDataModel : public NodeDelegateModel
 {
-  Q_OBJECT
+    Q_OBJECT
 
 public:
-  NumberSourceDataModel();
+    NumberSourceDataModel();
 
-  virtual
-  ~NumberSourceDataModel() {}
-
-public:
-
-  QString
-  caption() const override
-  { return QStringLiteral("Number Source"); }
-
-  bool
-  captionVisible() const override
-  { return false; }
-
-  QString
-  name() const override
-  { return QStringLiteral("NumberSource"); }
+    virtual ~NumberSourceDataModel() {}
 
 public:
+    QString caption() const override { return QStringLiteral("Number Source"); }
 
-  QJsonObject
-  save() const override;
+    bool captionVisible() const override { return false; }
 
-  void
-  load(QJsonObject const& p) override;
-
-public:
-
-  unsigned int
-  nPorts(PortType portType) const override;
-
-  NodeDataType
-  dataType(PortType portType, PortIndex portIndex) const override;
-
-  std::shared_ptr<NodeData>
-  outData(PortIndex port) override;
-
-  void
-  setInData(std::shared_ptr<NodeData>, PortIndex) override
-  {}
-
-  QWidget *
-  embeddedWidget() override;
+    QString name() const override { return QStringLiteral("NumberSource"); }
 
 public:
-  void setNumber(double number);
+    QJsonObject save() const override;
+
+    void load(QJsonObject const &p) override;
+
+public:
+    unsigned int nPorts(PortType portType) const override;
+
+    NodeDataType dataType(PortType portType, PortIndex portIndex) const override;
+
+    std::shared_ptr<NodeData> outData(PortIndex port) override;
+
+    void setInData(std::shared_ptr<NodeData>, PortIndex) override {}
+
+    QWidget *embeddedWidget() override;
+
+public:
+    void setNumber(double number);
 
 private Q_SLOTS:
 
-  void
-  onTextEdited(QString const& string);
+    void onTextEdited(QString const &string);
 
 private:
+    std::shared_ptr<DecimalData> _number;
 
-  std::shared_ptr<DecimalData> _number;
-
-  QLineEdit* _lineEdit;
+    QLineEdit *_lineEdit;
 };

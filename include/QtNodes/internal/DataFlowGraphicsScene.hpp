@@ -4,49 +4,37 @@
 #include "DataFlowGraphModel.hpp"
 #include "Export.hpp"
 
-
-namespace QtNodes
-{
-
+namespace QtNodes {
 
 /// @brief An advanced scene working with data-propagating graphs.
 /**
  * The class represents a scene that existed in v2.x but built wit the
  * new model-view approach in mind.
  */
-class NODE_EDITOR_PUBLIC DataFlowGraphicsScene
-  : public BasicGraphicsScene
+class NODE_EDITOR_PUBLIC DataFlowGraphicsScene : public BasicGraphicsScene
 {
-  Q_OBJECT
+    Q_OBJECT
 public:
+    DataFlowGraphicsScene(DataFlowGraphModel &graphModel, QObject *parent = nullptr);
 
-  DataFlowGraphicsScene(DataFlowGraphModel &graphModel,
-                        QObject * parent = nullptr);
-
-  ~DataFlowGraphicsScene() = default;
+    ~DataFlowGraphicsScene() = default;
 
 public:
-  std::vector<NodeId>
-  selectedNodes() const;
+    std::vector<NodeId> selectedNodes() const;
 
 public:
-  QMenu *
-  createSceneMenu(QPointF const scenePos) override;
-
+    QMenu *createSceneMenu(QPointF const scenePos) override;
 
 public Q_SLOTS:
-  void
-  save() const;
+    void save() const;
 
-  void
-  load();
+    void load();
 
 Q_SIGNALS:
-  void
-  sceneLoaded();
+    void sceneLoaded();
 
 private:
-  DataFlowGraphModel &_graphModel;
+    DataFlowGraphModel &_graphModel;
 };
 
-}
+} // namespace QtNodes

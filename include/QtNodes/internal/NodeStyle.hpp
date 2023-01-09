@@ -5,50 +5,49 @@
 #include "Export.hpp"
 #include "Style.hpp"
 
-namespace QtNodes
-{
+namespace QtNodes {
 
 class NODE_EDITOR_PUBLIC NodeStyle : public Style
 {
 public:
-  NodeStyle();
+    NodeStyle();
 
-  NodeStyle(QString jsonText);
+    NodeStyle(QString jsonText);
 
-  NodeStyle(QJsonObject const & json);
+    NodeStyle(QJsonObject const &json);
 
-  virtual ~NodeStyle() = default;
-
-public:
-  static void setNodeStyle(QString jsonText);
+    virtual ~NodeStyle() = default;
 
 public:
-  void loadJson(QJsonObject const & json) override;
-
-  QJsonObject toJson() const override;
+    static void setNodeStyle(QString jsonText);
 
 public:
-  QColor NormalBoundaryColor;
-  QColor SelectedBoundaryColor;
-  QColor GradientColor0;
-  QColor GradientColor1;
-  QColor GradientColor2;
-  QColor GradientColor3;
-  QColor ShadowColor;
-  QColor FontColor;
-  QColor FontColorFaded;
+    void loadJson(QJsonObject const &json) override;
 
-  QColor ConnectionPointColor;
-  QColor FilledConnectionPointColor;
+    QJsonObject toJson() const override;
 
-  QColor WarningColor;
-  QColor ErrorColor;
+public:
+    QColor NormalBoundaryColor;
+    QColor SelectedBoundaryColor;
+    QColor GradientColor0;
+    QColor GradientColor1;
+    QColor GradientColor2;
+    QColor GradientColor3;
+    QColor ShadowColor;
+    QColor FontColor;
+    QColor FontColorFaded;
 
-  float PenWidth;
-  float HoveredPenWidth;
+    QColor ConnectionPointColor;
+    QColor FilledConnectionPointColor;
 
-  float ConnectionPointDiameter;
+    QColor WarningColor;
+    QColor ErrorColor;
 
-  float Opacity;
+    float PenWidth;
+    float HoveredPenWidth;
+
+    float ConnectionPointDiameter;
+
+    float Opacity;
 };
-}
+} // namespace QtNodes

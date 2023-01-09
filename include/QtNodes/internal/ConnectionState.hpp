@@ -8,8 +8,7 @@
 
 class QPointF;
 
-namespace QtNodes
-{
+namespace QtNodes {
 
 class ConnectionGraphicsObject;
 
@@ -18,62 +17,44 @@ class ConnectionGraphicsObject;
 class NODE_EDITOR_PUBLIC ConnectionState
 {
 public:
-
-  /// Defines whether we construct a new connection
-  /// or it is already binding two nodes.
-  enum LooseEnd
-  {
-    Pending   = 0,
-    Connected = 1
-  };
+    /// Defines whether we construct a new connection
+    /// or it is already binding two nodes.
+    enum LooseEnd { Pending = 0, Connected = 1 };
 
 public:
+    ConnectionState(ConnectionGraphicsObject &cgo)
+        : _cgo(cgo)
+        , _hovered(false)
+    {}
 
-  ConnectionState(ConnectionGraphicsObject & cgo)
-    : _cgo(cgo)
-    , _hovered(false)
-  {}
+    ConnectionState(ConnectionState const &) = delete;
+    ConnectionState(ConnectionState &&) = delete;
 
-  ConnectionState(ConnectionState const&) = delete;
-  ConnectionState(ConnectionState &&) = delete;
+    ConnectionState &operator=(ConnectionState const &) = delete;
+    ConnectionState &operator=(ConnectionState &&) = delete;
 
-  ConnectionState&
-  operator=(ConnectionState const&) = delete;
-  ConnectionState&
-  operator=(ConnectionState &&) = delete;
-
-  ~ConnectionState();
+    ~ConnectionState();
 
 public:
+    PortType requiredPort() const;
+    bool requiresPort() const;
 
-  PortType
-  requiredPort() const;
-  bool
-  requiresPort() const;
-
-  bool
-  hovered() const;
-  void
-  setHovered(bool hovered);
+    bool hovered() const;
+    void setHovered(bool hovered);
 
 public:
+    /// Caches NodeId for further interaction.
+    void setLastHoveredNode(NodeId const nodeId);
 
-  /// Caches NodeId for further interaction.
-  void
-  setLastHoveredNode(NodeId const nodeId);
+    NodeId lastHoveredNode() const;
 
-  NodeId
-  lastHoveredNode() const;
-
-  void
-  resetLastHoveredNode();
+    void resetLastHoveredNode();
 
 private:
-  ConnectionGraphicsObject & _cgo;
+    ConnectionGraphicsObject &_cgo;
 
-  bool _hovered;
+    bool _hovered;
 
-  NodeId _lastHoveredNode{InvalidNodeId};
-
+    NodeId _lastHoveredNode{InvalidNodeId};
 };
-}
+} // namespace QtNodes

@@ -8,12 +8,11 @@
 
 #include "DecimalData.hpp"
 
-
-using QtNodes::PortType;
-using QtNodes::PortIndex;
 using QtNodes::NodeData;
 using QtNodes::NodeDataType;
 using QtNodes::NodeDelegateModel;
+using QtNodes::PortIndex;
+using QtNodes::PortType;
 
 class QLabel;
 
@@ -21,51 +20,35 @@ class QLabel;
 /// In this example it has no logic.
 class NumberDisplayDataModel : public NodeDelegateModel
 {
-  Q_OBJECT
+    Q_OBJECT
 
 public:
-  NumberDisplayDataModel();
+    NumberDisplayDataModel();
 
-  ~NumberDisplayDataModel() = default;
-
-public:
-
-  QString
-  caption() const override
-  { return QStringLiteral("Result"); }
-
-  bool
-  captionVisible() const override
-  { return false; }
-
-  QString
-  name() const override
-  { return QStringLiteral("Result"); }
+    ~NumberDisplayDataModel() = default;
 
 public:
+    QString caption() const override { return QStringLiteral("Result"); }
 
-  unsigned int
-  nPorts(PortType portType) const override;
+    bool captionVisible() const override { return false; }
 
-  NodeDataType
-  dataType(PortType  portType,
-           PortIndex portIndex) const override;
+    QString name() const override { return QStringLiteral("Result"); }
 
-  std::shared_ptr<NodeData>
-  outData(PortIndex port) override;
+public:
+    unsigned int nPorts(PortType portType) const override;
 
-  void
-  setInData(std::shared_ptr<NodeData> data,
-            PortIndex                 portIndex) override;
+    NodeDataType dataType(PortType portType, PortIndex portIndex) const override;
 
-  QWidget *
-  embeddedWidget() override;
+    std::shared_ptr<NodeData> outData(PortIndex port) override;
 
-  double number() const;
+    void setInData(std::shared_ptr<NodeData> data, PortIndex portIndex) override;
 
+    QWidget *embeddedWidget() override;
+
+    double number() const;
 
 private:
-  std::shared_ptr<DecimalData> _numberData;
+    std::shared_ptr<DecimalData> _numberData;
 
-  QLabel* _label;
+    QLabel *_label;
 };

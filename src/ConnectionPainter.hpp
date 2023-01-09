@@ -5,8 +5,7 @@
 
 #include "Definitions.hpp"
 
-namespace QtNodes
-{
+namespace QtNodes {
 
 class ConnectionGeometry;
 class ConnectionGraphicsObject;
@@ -14,13 +13,9 @@ class ConnectionGraphicsObject;
 class ConnectionPainter
 {
 public:
+    static void paint(QPainter *painter, ConnectionGraphicsObject const &cgo);
 
-  static
-  void paint(QPainter * painter,
-             ConnectionGraphicsObject const & cgo);
-
-  static
-  QPainterPath getPainterStroke(ConnectionGraphicsObject const & cgo);
+    static QPainterPath getPainterStroke(ConnectionGraphicsObject const &cgo);
 };
 
-}
+} // namespace QtNodes

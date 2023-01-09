@@ -8,10 +8,10 @@
 
 #include <iostream>
 
-using QtNodes::PortType;
-using QtNodes::PortIndex;
 using QtNodes::NodeData;
 using QtNodes::NodeDelegateModel;
+using QtNodes::PortIndex;
+using QtNodes::PortType;
 
 class QLineEdit;
 
@@ -19,48 +19,35 @@ class QLineEdit;
 /// In this example it has no logic.
 class TextSourceDataModel : public NodeDelegateModel
 {
-  Q_OBJECT
+    Q_OBJECT
 
 public:
-  TextSourceDataModel();
+    TextSourceDataModel();
 
 public:
-  QString
-  caption() const override
-  { return QString("Text Source"); }
+    QString caption() const override { return QString("Text Source"); }
 
-  bool
-  captionVisible() const override { return false; }
+    bool captionVisible() const override { return false; }
 
-  static QString
-  Name()
-  { return QString("TextSourceDataModel"); }
+    static QString Name() { return QString("TextSourceDataModel"); }
 
-  QString
-  name() const override
-  { return TextSourceDataModel::Name(); }
+    QString name() const override { return TextSourceDataModel::Name(); }
 
 public:
-  unsigned int
-  nPorts(PortType portType) const override;
+    unsigned int nPorts(PortType portType) const override;
 
-  NodeDataType
-  dataType(PortType portType, PortIndex portIndex) const override;
+    NodeDataType dataType(PortType portType, PortIndex portIndex) const override;
 
-  std::shared_ptr<NodeData>
-  outData(PortIndex const portIndex) override;
+    std::shared_ptr<NodeData> outData(PortIndex const portIndex) override;
 
-  void
-  setInData(std::shared_ptr<NodeData>, PortIndex const) override { }
+    void setInData(std::shared_ptr<NodeData>, PortIndex const) override {}
 
-  QWidget *
-  embeddedWidget() override;
+    QWidget *embeddedWidget() override;
 
 private Q_SLOTS:
 
-  void
-  onTextEdited(QString const & string);
+    void onTextEdited(QString const &string);
 
 private:
-  QLineEdit * _lineEdit;
+    QLineEdit *_lineEdit;
 };

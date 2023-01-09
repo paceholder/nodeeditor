@@ -3,39 +3,35 @@
 #include <QtNodes/ConnectionStyle>
 #include <QtNodes/DataFlowGraphModel>
 #include <QtNodes/DataFlowGraphicsScene>
-#include <QtNodes/NodeDelegateModelRegistry>
 #include <QtNodes/GraphicsView>
 #include <QtNodes/GraphicsViewStyle>
 #include <QtNodes/NodeData>
+#include <QtNodes/NodeDelegateModelRegistry>
 #include <QtNodes/NodeStyle>
 
 #include <QtWidgets/QApplication>
 
 using QtNodes::ConnectionStyle;
-using QtNodes::DataFlowGraphModel;
 using QtNodes::DataFlowGraphicsScene;
-using QtNodes::NodeDelegateModelRegistry;
+using QtNodes::DataFlowGraphModel;
 using QtNodes::GraphicsView;
 using QtNodes::GraphicsViewStyle;
+using QtNodes::NodeDelegateModelRegistry;
 using QtNodes::NodeStyle;
 
-static std::shared_ptr<NodeDelegateModelRegistry>
-registerDataModels()
+static std::shared_ptr<NodeDelegateModelRegistry> registerDataModels()
 {
-  auto ret = std::make_shared<NodeDelegateModelRegistry>();
+    auto ret = std::make_shared<NodeDelegateModelRegistry>();
 
-  ret->registerModel<MyDataModel>();
+    ret->registerModel<MyDataModel>();
 
-  return ret;
+    return ret;
 }
 
-
-static
-void
-setStyle()
+static void setStyle()
 {
-  GraphicsViewStyle::setStyle(
-    R"(
+    GraphicsViewStyle::setStyle(
+        R"(
   {
     "GraphicsViewStyle": {
       "BackgroundColor": [255, 255, 240],
@@ -45,8 +41,8 @@ setStyle()
   }
   )");
 
-  NodeStyle::setNodeStyle(
-    R"(
+    NodeStyle::setNodeStyle(
+        R"(
   {
     "NodeStyle": {
       "NormalBoundaryColor": "darkgray",
@@ -67,8 +63,8 @@ setStyle()
   }
   )");
 
-  ConnectionStyle::setConnectionStyle(
-    R"(
+    ConnectionStyle::setConnectionStyle(
+        R"(
   {
     "ConnectionStyle": {
       "ConstructionColor": "gray",
@@ -87,25 +83,22 @@ setStyle()
   )");
 }
 
-
-int
-main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
-  QApplication app(argc, argv);
+    QApplication app(argc, argv);
 
-  setStyle();
+    setStyle();
 
-  std::shared_ptr<NodeDelegateModelRegistry> registry = registerDataModels();
-  DataFlowGraphModel dataFlowGraphModel(registry);
+    std::shared_ptr<NodeDelegateModelRegistry> registry = registerDataModels();
+    DataFlowGraphModel dataFlowGraphModel(registry);
 
-  DataFlowGraphicsScene scene(dataFlowGraphModel);
+    DataFlowGraphicsScene scene(dataFlowGraphModel);
 
-  GraphicsView view(&scene);
+    GraphicsView view(&scene);
 
-  view.setWindowTitle("Style example");
-  view.resize(800, 600);
-  view.show();
+    view.setWindowTitle("Style example");
+    view.resize(800, 600);
+    view.show();
 
-  return app.exec();
+    return app.exec();
 }
-

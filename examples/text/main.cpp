@@ -1,47 +1,43 @@
 #include <QtNodes/DataFlowGraphModel>
 #include <QtNodes/DataFlowGraphicsScene>
-#include <QtNodes/NodeDelegateModelRegistry>
 #include <QtNodes/GraphicsView>
 #include <QtNodes/NodeData>
+#include <QtNodes/NodeDelegateModelRegistry>
 
 #include <QtWidgets/QApplication>
 
-#include "TextSourceDataModel.hpp"
 #include "TextDisplayDataModel.hpp"
+#include "TextSourceDataModel.hpp"
 
-using QtNodes::DataFlowGraphModel;
 using QtNodes::DataFlowGraphicsScene;
-using QtNodes::NodeDelegateModelRegistry;
+using QtNodes::DataFlowGraphModel;
 using QtNodes::GraphicsView;
+using QtNodes::NodeDelegateModelRegistry;
 
-static std::shared_ptr<NodeDelegateModelRegistry>
-registerDataModels()
+static std::shared_ptr<NodeDelegateModelRegistry> registerDataModels()
 {
-  auto ret = std::make_shared<NodeDelegateModelRegistry>();
+    auto ret = std::make_shared<NodeDelegateModelRegistry>();
 
-  ret->registerModel<TextSourceDataModel>();
-  ret->registerModel<TextDisplayDataModel>();
+    ret->registerModel<TextSourceDataModel>();
+    ret->registerModel<TextDisplayDataModel>();
 
-  return ret;
+    return ret;
 }
 
-
-int
-main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
-  QApplication app(argc, argv);
+    QApplication app(argc, argv);
 
-  std::shared_ptr<NodeDelegateModelRegistry> registry = registerDataModels();
-  DataFlowGraphModel dataFlowGraphModel(registry);
+    std::shared_ptr<NodeDelegateModelRegistry> registry = registerDataModels();
+    DataFlowGraphModel dataFlowGraphModel(registry);
 
-  DataFlowGraphicsScene scene(dataFlowGraphModel);
+    DataFlowGraphicsScene scene(dataFlowGraphModel);
 
-  GraphicsView view(&scene);
+    GraphicsView view(&scene);
 
-  view.setWindowTitle("Node-based flow editor");
-  view.resize(800, 600);
-  view.show();
+    view.setWindowTitle("Node-based flow editor");
+    view.resize(800, 600);
+    view.show();
 
-  return app.exec();
+    return app.exec();
 }
-
