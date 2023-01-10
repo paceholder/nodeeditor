@@ -32,9 +32,6 @@ public:
     /// Caption is used in GUI
     virtual QString caption() const { return ""; }
 
-    /// It is possible to hide port caption in GUI
-    virtual bool portCaptionVisible(PortType, PortIndex) const { return false; }
-
     /// Port caption is used in GUI to label individual ports
     virtual QString portCaption(PortType, PortIndex) const { return QString(); }
 

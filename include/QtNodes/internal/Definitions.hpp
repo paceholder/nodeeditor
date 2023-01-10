@@ -51,11 +51,10 @@ Q_DECLARE_OPERATORS_FOR_FLAGS(NodeFlags)
  * Constants for fetching port-related information from the GraphModel.
  */
 enum class PortRole {
-    Data = 0,                 ///< `std::shared_ptr<NodeData>`.
-    DataType = 1,             ///< `QString` describing the port data type.
-    ConnectionPolicyRole = 2, ///< `enum` ConnectionPolicyRole
-    CaptionVisible = 3,       ///< `bool` for caption visibility.
-    Caption = 4,              ///< `QString` for port caption.
+    Data = 0,             ///< `std::shared_ptr<NodeData>`.
+    DataType,             ///< `QString` describing the port data type.
+    ConnectionPolicyRole, ///< `enum` ConnectionPolicyRole
+    Caption,              ///< `QString` for port caption.
 };
 Q_ENUM_NS(PortRole)
 

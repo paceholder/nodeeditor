@@ -176,10 +176,9 @@ QRectF DefaultHorizontalNodeGeometry::portTextRect(NodeId const nodeId,
                                                    PortType const portType,
                                                    PortIndex const portIndex) const
 {
-    QString s;
-    if (_graphModel.portData<bool>(nodeId, portType, portIndex, PortRole::CaptionVisible)) {
-        s = _graphModel.portData<QString>(nodeId, portType, portIndex, PortRole::Caption);
-    } else {
+    QString s = _graphModel.portData<QString>(nodeId, portType, portIndex, PortRole::Caption);
+
+    if (s.isEmpty()) {
         auto portData = _graphModel.portData(nodeId, portType, portIndex, PortRole::DataType);
 
         s = portData.value<NodeDataType>().name;
@@ -212,11 +211,9 @@ unsigned int DefaultHorizontalNodeGeometry::maxPortsTextAdvance(NodeId const nod
                          .toUInt();
 
     for (PortIndex portIndex = 0ul; portIndex < n; ++portIndex) {
-        QString name;
+        QString name = _graphModel.portData<QString>(nodeId, portType, portIndex, PortRole::Caption);
 
-        if (_graphModel.portData<bool>(nodeId, portType, portIndex, PortRole::CaptionVisible)) {
-            name = _graphModel.portData<QString>(nodeId, portType, portIndex, PortRole::Caption);
-        } else {
+        if (name.isEmpty()) {
             NodeDataType portData = _graphModel.portData<NodeDataType>(nodeId,
                                                                        portType,
                                                                        portIndex,

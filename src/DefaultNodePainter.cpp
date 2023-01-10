@@ -241,11 +241,9 @@ void DefaultNodePainter::drawEntryLabels(QPainter *painter, NodeGraphicsObject &
             else
                 painter->setPen(nodeStyle.FontColor);
 
-            QString s;
+            QString s = model.portData<QString>(nodeId, portType, portIndex, PortRole::Caption);
 
-            if (model.portData<bool>(nodeId, portType, portIndex, PortRole::CaptionVisible)) {
-                s = model.portData<QString>(nodeId, portType, portIndex, PortRole::Caption);
-            } else {
+            if (s.isEmpty()) {
                 auto portData = model.portData(nodeId, portType, portIndex, PortRole::DataType);
 
                 s = portData.value<NodeDataType>().name;

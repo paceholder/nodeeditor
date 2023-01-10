@@ -19,13 +19,6 @@ public:
 public:
     QString caption() const override { return QStringLiteral("Subtraction"); }
 
-    virtual bool portCaptionVisible(PortType portType, PortIndex portIndex) const override
-    {
-        Q_UNUSED(portType);
-        Q_UNUSED(portIndex);
-        return true;
-    }
-
     virtual QString portCaption(PortType portType, PortIndex portIndex) const override
     {
         switch (portType) {

@@ -212,10 +212,6 @@ QVariant DynamicPortsModel::portData(NodeId nodeId,
         return QVariant::fromValue(ConnectionPolicy::One);
         break;
 
-    case PortRole::CaptionVisible:
-        return true;
-        break;
-
     case PortRole::Caption:
         if (portType == PortType::In)
             return QString::fromUtf8("Port In");

@@ -292,10 +292,6 @@ QVariant DataFlowGraphModel::portData(NodeId nodeId,
         result = QVariant::fromValue(model->portConnectionPolicy(portType, portIndex));
         break;
 
-    case PortRole::CaptionVisible:
-        result = model->portCaptionVisible(portType, portIndex);
-        break;
-
     case PortRole::Caption:
         result = model->portCaption(portType, portIndex);
 

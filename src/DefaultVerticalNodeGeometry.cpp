@@ -194,10 +194,9 @@ QRectF DefaultVerticalNodeGeometry::portTextRect(NodeId const nodeId,
                                                  PortType const portType,
                                                  PortIndex const portIndex) const
 {
-    QString s;
-    if (_graphModel.portData<bool>(nodeId, portType, portIndex, PortRole::CaptionVisible)) {
-        s = _graphModel.portData<QString>(nodeId, portType, portIndex, PortRole::Caption);
-    } else {
+    QString s = _graphModel.portData<QString>(nodeId, portType, portIndex, PortRole::Caption);
+
+    if (s.isEmpty()) {
         auto portData = _graphModel.portData(nodeId, portType, portIndex, PortRole::DataType);
 
         s = portData.value<NodeDataType>().name;
@@ -230,11 +229,9 @@ unsigned int DefaultVerticalNodeGeometry::maxPortsTextAdvance(NodeId const nodeI
                          .toUInt();
 
     for (PortIndex portIndex = 0ul; portIndex < n; ++portIndex) {
-        QString name;
+        QString name = _graphModel.portData<QString>(nodeId, portType, portIndex, PortRole::Caption);
 
-        if (_graphModel.portData<bool>(nodeId, portType, portIndex, PortRole::CaptionVisible)) {
-            name = _graphModel.portData<QString>(nodeId, portType, portIndex, PortRole::Caption);
-        } else {
+        if (name.isEmpty()) {
             NodeDataType portData = _graphModel.portData<NodeDataType>(nodeId,
                                                                        portType,
                                                                        portIndex,
@@ -262,7 +259,7 @@ unsigned int DefaultVerticalNodeGeometry::portCaptionsHeight(NodeId const nodeId
     case PortType::In: {
         PortCount nInPorts = _graphModel.nodeData<PortCount>(nodeId, NodeRole::InPortCount);
         for (PortIndex i = 0; i < nInPorts; ++i) {
-            if (_graphModel.portData<bool>(nodeId, PortType::In, i, PortRole::CaptionVisible)) {
+            if (_graphModel.portData<QString>(nodeId, PortType::In, i, PortRole::Caption).isEmpty()) {
                 h += _portSpasing;
                 break;
             }
@@ -273,7 +270,7 @@ unsigned int DefaultVerticalNodeGeometry::portCaptionsHeight(NodeId const nodeId
     case PortType::Out: {
         PortCount nOutPorts = _graphModel.nodeData<PortCount>(nodeId, NodeRole::OutPortCount);
         for (PortIndex i = 0; i < nOutPorts; ++i) {
-            if (_graphModel.portData<bool>(nodeId, PortType::Out, i, PortRole::CaptionVisible)) {
+            if (_graphModel.portData<QString>(nodeId, PortType::Out, i, PortRole::Caption).isEmpty()) {
                 h += _portSpasing;
                 break;
             }
