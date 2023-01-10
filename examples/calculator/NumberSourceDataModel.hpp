@@ -28,10 +28,6 @@ public:
     virtual ~NumberSourceDataModel() {}
 
 public:
-    QString caption() const override { return QStringLiteral("Number Source"); }
-
-    bool captionVisible() const override { return false; }
-
     QString name() const override { return QStringLiteral("NumberSource"); }
 
 public:

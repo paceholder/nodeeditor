@@ -29,11 +29,8 @@ public:
 
     virtual ~NodeDelegateModel() = default;
 
-    /// It is possible to hide caption in GUI
-    virtual bool captionVisible() const { return true; }
-
     /// Caption is used in GUI
-    virtual QString caption() const = 0;
+    virtual QString caption() const { return ""; }
 
     /// It is possible to hide port caption in GUI
     virtual bool portCaptionVisible(PortType, PortIndex) const { return false; }

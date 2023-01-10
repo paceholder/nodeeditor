@@ -196,10 +196,9 @@ void DefaultNodePainter::drawNodeCaption(QPainter *painter, NodeGraphicsObject &
     NodeId const nodeId = ngo.nodeId();
     AbstractNodeGeometry &geometry = ngo.nodeScene()->nodeGeometry();
 
-    if (!model.nodeData(nodeId, NodeRole::CaptionVisible).toBool())
-        return;
-
     QString const name = model.nodeData(nodeId, NodeRole::Caption).toString();
+    if (name.isEmpty())
+        return;
 
     QFont f = painter->font();
     f.setBold(true);

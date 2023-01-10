@@ -28,10 +28,6 @@ public:
     virtual ~TextDisplayDataModel() {}
 
 public:
-    QString caption() const override { return QString("Text Display"); }
-
-    bool captionVisible() const override { return false; }
-
     static QString Name() { return QString("TextDisplayDataModel"); }
 
     QString name() const override { return TextDisplayDataModel::Name(); }

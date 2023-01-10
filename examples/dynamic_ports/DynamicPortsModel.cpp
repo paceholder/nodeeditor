@@ -119,10 +119,6 @@ QVariant DynamicPortsModel::nodeData(NodeId nodeId, NodeRole role) const
         result = _nodeGeometryData[nodeId].size;
         break;
 
-    case NodeRole::CaptionVisible:
-        result = true;
-        break;
-
     case NodeRole::Caption:
         result = QString("Node");
         break;
@@ -171,9 +167,6 @@ bool DynamicPortsModel::setNodeData(NodeId nodeId, NodeRole role, QVariant value
         _nodeGeometryData[nodeId].size = value.value<QSize>();
         result = true;
     } break;
-
-    case NodeRole::CaptionVisible:
-        break;
 
     case NodeRole::Caption:
         break;

@@ -15,9 +15,7 @@ DataFlowGraphModel::DataFlowGraphModel(std::shared_ptr<NodeDelegateModelRegistry
 std::unordered_set<NodeId> DataFlowGraphModel::allNodeIds() const
 {
     std::unordered_set<NodeId> nodeIds;
-    for_each(_models.begin(), _models.end(), [&nodeIds](auto const &p) {
-        nodeIds.insert(p.first);
-    });
+    for_each(_models.begin(), _models.end(), [&nodeIds](auto const &p) { nodeIds.insert(p.first); });
 
     return nodeIds;
 }
@@ -176,10 +174,6 @@ QVariant DataFlowGraphModel::nodeData(NodeId nodeId, NodeRole role) const
         result = _nodeGeometryData[nodeId].size;
         break;
 
-    case NodeRole::CaptionVisible:
-        result = model->captionVisible();
-        break;
-
     case NodeRole::Caption:
         result = model->caption();
         break;
@@ -248,9 +242,6 @@ bool DataFlowGraphModel::setNodeData(NodeId nodeId, NodeRole role, QVariant valu
         _nodeGeometryData[nodeId].size = value.value<QSize>();
         result = true;
     } break;
-
-    case NodeRole::CaptionVisible:
-        break;
 
     case NodeRole::Caption:
         break;

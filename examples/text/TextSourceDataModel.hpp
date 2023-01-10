@@ -25,10 +25,6 @@ public:
     TextSourceDataModel();
 
 public:
-    QString caption() const override { return QString("Text Source"); }
-
-    bool captionVisible() const override { return false; }
-
     static QString Name() { return QString("TextSourceDataModel"); }
 
     QString name() const override { return TextSourceDataModel::Name(); }

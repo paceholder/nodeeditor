@@ -28,10 +28,6 @@ public:
     ~NumberDisplayDataModel() = default;
 
 public:
-    QString caption() const override { return QStringLiteral("Result"); }
-
-    bool captionVisible() const override { return false; }
-
     QString name() const override { return QStringLiteral("Result"); }
 
 public:
