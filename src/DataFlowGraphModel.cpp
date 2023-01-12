@@ -458,6 +458,10 @@ void DataFlowGraphModel::initModelFormId(std::unique_ptr<NodeDelegateModel> mode
             this,
             &DataFlowGraphModel::portsInserted);
 
+    connect(model.get(), &NodeDelegateModel::nodeUpdated, this, [nodeId, this]() {
+        Q_EMIT nodeUpdated(nodeId);
+    });
+
     model->init();
 
     _models[nodeId] = std::move(model);

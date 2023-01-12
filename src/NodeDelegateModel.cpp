@@ -45,6 +45,8 @@ unsigned int NodeDelegateModel::nPorts(PortType portType) const
         return (unsigned int) _inputPorts.size();
     case PortType::Out:
         return (unsigned int) _outputPorts.size();
+    default:
+        break;
     }
     return 0;
 }
@@ -68,21 +70,107 @@ void NodeDelegateModel::createPort(PortType portType,
         case PortType::Out:
             _outputPorts.push_back(port);
             break;
+
+        default:
+            return;
         }
+
+        Q_EMIT nodeUpdated();
     }
+}
+
+void NodeDelegateModel::insertPort(PortType portType,
+                                   PortIndex portIndex,
+                                   std::shared_ptr<NodeData> nodeData,
+                                   const PortCaption name,
+                                   ConnectionPolicy policy)
+{
+    if (nodeData) {
+        NodePort port = {nodeData, name, policy};
+
+        if (name.isEmpty())
+            port.name = (QString) nodeData->type();
+
+        switch (portType) {
+        case PortType::In:
+            if (portIndex > (unsigned int) _inputPorts.size())
+                return;
+            _inputPorts.insert(_inputPorts.begin() + portIndex, port);
+            break;
+
+        case PortType::Out:
+            if (portIndex > (unsigned int) _outputPorts.size())
+                return;
+            _outputPorts.insert(_outputPorts.begin() + portIndex, port);
+            break;
+
+        default:
+            return;
+        }
+
+        Q_EMIT portsAboutToBeInserted(portType, portIndex, portIndex);
+        Q_EMIT portsInserted();
+        Q_EMIT nodeUpdated();
+    }
+}
+
+void NodeDelegateModel::removePort(PortType portType, PortIndex portIndex)
+{
+    switch (portType) {
+    case PortType::In:
+        if (portIndex >= (unsigned int) _inputPorts.size())
+            return;
+        _inputPorts.erase(_inputPorts.begin() + portIndex);
+        break;
+
+    case PortType::Out:
+        if (portIndex >= (unsigned int) _inputPorts.size())
+            return;
+        _outputPorts.erase(_outputPorts.begin() + portIndex);
+        break;
+
+    default:
+        return;
+    }
+
+    Q_EMIT portsAboutToBeDeleted(portType, portIndex, portIndex);
+    Q_EMIT portsDeleted();
+    Q_EMIT nodeUpdated();
+}
+
+void NodeDelegateModel::clearPort(PortType portType)
+{
+    switch (portType) {
+    case PortType::In:
+        Q_EMIT portsAboutToBeDeleted(PortType::In, 0, (PortIndex) _inputPorts.size() - 1);
+        _inputPorts.clear();
+        break;
+
+    case PortType::Out:
+        Q_EMIT portsAboutToBeDeleted(PortType::Out, 0, (PortIndex) _outputPorts.size() - 1);
+        _outputPorts.clear();
+        break;
+
+    default:
+        return;
+    }
+
+    Q_EMIT portsDeleted();
+    Q_EMIT nodeUpdated();
 }
 
 NodePort const &NodeDelegateModel::port(PortType portType, PortIndex portIndex) const
 {
     try {
         switch (portType) {
-        case PortType::In: {
+        case PortType::In:
             return _inputPorts.at(portIndex);
-        }
 
-        case PortType::Out: {
+        case PortType::Out:
             return _outputPorts.at(portIndex);
-        }
+
+        default:
+            break;
         }
     } catch (...) {
     }

@@ -74,6 +74,17 @@ public:
                     const PortCaption name = "",
                     ConnectionPolicy policy = ConnectionPolicy::One);
 
+    /// @brief Insert new port at `portIndex`
+    void insertPort(PortType portType,
+                    PortIndex portIndex,
+                    std::shared_ptr<NodeData> nodeData,
+                    const PortCaption name = "",
+                    ConnectionPolicy policy = ConnectionPolicy::One);
+
+    void removePort(PortType portType, PortIndex portIndex);
+
+    void clearPort(PortType portType);
+
     NodePort const &port(PortType portType, PortIndex portIndex) const;
 
     template<class T>
@@ -142,6 +153,8 @@ Q_SIGNALS:
 
     /// Call this function when data and port moditications are finished.
     void portsInserted();
+
+    void nodeUpdated();
 
 private:
     NodeStyle _nodeStyle;
