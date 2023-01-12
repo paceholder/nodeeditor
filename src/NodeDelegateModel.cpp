@@ -12,20 +12,6 @@ NodeDelegateModel::NodeDelegateModel()
     // Derived classes can initialize specific style here
 }
 
-QJsonObject NodeDelegateModel::save() const
-{
-    QJsonObject modelJson;
-
-    modelJson["model-name"] = name();
-
-    return modelJson;
-}
-
-void NodeDelegateModel::load(QJsonObject const &)
-{
-    //
-}
-
 NodeStyle const &NodeDelegateModel::nodeStyle() const
 {
     return _nodeStyle;

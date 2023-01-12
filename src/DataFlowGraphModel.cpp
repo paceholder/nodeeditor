@@ -343,6 +343,8 @@ QJsonObject DataFlowGraphModel::saveNode(NodeId const nodeId) const
 
     nodeJson["id"] = static_cast<qint64>(nodeId);
 
+    nodeJson["model-name"] = _models.at(nodeId)->name();
+
     nodeJson["internal-data"] = _models.at(nodeId)->save();
 
     {
@@ -389,9 +391,9 @@ void DataFlowGraphModel::loadNode(QJsonObject const &nodeJson)
 
     _nextNodeId = std::max(_nextNodeId, restoredNodeId + 1);
 
-    QJsonObject const internalDataJson = nodeJson["internal-data"].toObject();
+    QString delegateModelName = nodeJson["model-name"].toString();
 
-    QString delegateModelName = internalDataJson["model-name"].toString();
+    QJsonObject const internalDataJson = nodeJson["internal-data"].toObject();
 
     std::unique_ptr<NodeDelegateModel> model = _registry->create(delegateModelName);
 

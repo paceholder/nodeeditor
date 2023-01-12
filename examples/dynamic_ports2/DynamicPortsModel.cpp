@@ -26,7 +26,7 @@ void DynamicPortsModel::init()
 
 QJsonObject DynamicPortsModel::save() const
 {
-    QJsonObject modelJson = NodeDelegateModel::save();
+    QJsonObject modelJson;
 
     QJsonArray inPortsArray;
     for (unsigned int i = 0; i < nPorts(PortType::In); i++) {

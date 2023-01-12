@@ -45,46 +45,7 @@ static std::shared_ptr<NodeDelegateModelRegistry> registerDataModels()
 static QString addingNumbersScene(
     R"(
     {
-        "nodes": [
-            {
-                "id": 0,
-                "internal-data": {
-                    "model-name": "NumberSource",
-                    "number": "3"
-                },
-                "position": {
-                    "x": -338,
-                    "y": -160
-                }
-            },
-            {
-                "id": 1,
-                "internal-data": {
-                    "model-name": "Addition"
-                },
-                "position": {
-                    "x": -31,
-                    "y": -264
-                }
-            },
-            {
-                "id": 2,
-                "internal-data": {
-                    "model-name": "Result"
-                },
-                "position": {
-                    "x": 201,
-                    "y": -129
-                }
-            }
-        ],
         "connections": [
-            {
-                "inPortIndex": 0,
-                "intNodeId": 2,
-                "outNodeId": 1,
-                "outPortIndex": 0
-            },
             {
                 "inPortIndex": 1,
                 "intNodeId": 1,
@@ -96,6 +57,45 @@ static QString addingNumbersScene(
                 "intNodeId": 1,
                 "outNodeId": 0,
                 "outPortIndex": 0
+            },
+            {
+                "inPortIndex": 0,
+                "intNodeId": 2,
+                "outNodeId": 1,
+                "outPortIndex": 0
+            }
+        ],
+        "nodes": [
+            {
+                "id": 2,
+                "internal-data": {
+                },
+                "model-name": "Result",
+                "position": {
+                    "x": 147,
+                    "y": -27
+                }
+            },
+            {
+                "id": 1,
+                "internal-data": {
+                },
+                "model-name": "Addition",
+                "position": {
+                    "x": -55,
+                    "y": -53
+                }
+            },
+            {
+                "id": 0,
+                "internal-data": {
+                    "number": "3"
+                },
+                "model-name": "NumberSource",
+                "position": {
+                    "x": -362,
+                    "y": -33
+                }
             }
         ]
     }

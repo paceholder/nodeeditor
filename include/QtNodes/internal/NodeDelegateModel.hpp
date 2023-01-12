@@ -38,11 +38,6 @@ public:
     virtual QString name() const = 0;
 
 public:
-    QJsonObject save() const override;
-
-    void load(QJsonObject const &) override;
-
-public:
     NodeStyle const &nodeStyle() const;
 
     void setNodeStyle(NodeStyle const &style);

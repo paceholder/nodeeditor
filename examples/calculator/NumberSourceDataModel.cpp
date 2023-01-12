@@ -18,7 +18,7 @@ void NumberSourceDataModel::init()
 
 QJsonObject NumberSourceDataModel::save() const
 {
-    QJsonObject modelJson = NodeDelegateModel::save();
+    QJsonObject modelJson;
 
     modelJson["number"] = QString::number(_number->number());
 
