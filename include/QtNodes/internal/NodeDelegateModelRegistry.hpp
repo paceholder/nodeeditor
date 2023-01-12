@@ -44,7 +44,7 @@ public:
     void registerModel(RegistryItemCreator creator, QString const &category = "Nodes")
     {
         QString const name = computeName<ModelType>(HasStaticMethodName<ModelType>{}, creator);
-        if (!_registeredItemCreators.count(name)) {
+        if (!name.isEmpty() && !_registeredItemCreators.count(name)) {
             _registeredItemCreators[name] = std::move(creator);
             _categories.insert(category);
             _registeredModelsCategory[name] = category;

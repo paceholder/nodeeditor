@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Export.hpp"
+#include "NodeData.hpp"
 
 #include <QtCore/QMetaObject>
 
@@ -63,8 +64,8 @@ Q_ENUM_NS(PortRole)
  * values are fetched using PortRole::ConnectionPolicy.
  */
 enum class ConnectionPolicy {
-    One,  ///< Just one connection for each port.
-    Many, ///< Any number of connections possible for the port.
+    One = 1, ///< Just one connection for each port.
+    Many,    ///< Any number of connections possible for the port.
 };
 Q_ENUM_NS(ConnectionPolicy)
 
@@ -83,12 +84,21 @@ using PortCount = unsigned int;
 /// ports are consecutively numbered starting from zero.
 using PortIndex = unsigned int;
 
+using PortCaption = QString;
+
 static constexpr PortIndex InvalidPortIndex = std::numeric_limits<PortIndex>::max();
 
 /// Unique Id associated with each node in the GraphModel.
 using NodeId = unsigned int;
 
 static constexpr NodeId InvalidNodeId = std::numeric_limits<NodeId>::max();
+
+struct NodePort
+{
+    std::shared_ptr<NodeData> data;
+    PortCaption name;
+    ConnectionPolicy connectionPolicy = ConnectionPolicy::One;
+};
 
 /**
  * A unique connection identificator that stores

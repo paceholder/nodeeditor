@@ -16,27 +16,16 @@ public:
     virtual ~DivisionModel() {}
 
 public:
-    QString caption() const override { return QStringLiteral("Division"); }
-
-    QString portCaption(PortType portType, PortIndex portIndex) const override
+    void init() override
     {
-        switch (portType) {
-        case PortType::In:
-            if (portIndex == 0)
-                return QStringLiteral("Dividend");
-            else if (portIndex == 1)
-                return QStringLiteral("Divisor");
+        MathOperationDataModel::init();
 
-            break;
-
-        case PortType::Out:
-            return QStringLiteral("Result");
-
-        default:
-            break;
-        }
-        return QString();
+        setPortCaption(PortType::In, 0, "Dividend");
+        setPortCaption(PortType::In, 1, "Divisor");
+        setPortCaption(PortType::Out, 0, "Result");
     }
+
+    QString caption() const override { return QStringLiteral("Division"); }
 
     QString name() const override { return QStringLiteral("Division"); }
 
@@ -55,7 +44,9 @@ private:
         } else if (n1 && n2) {
             //modelValidationState = NodeValidationState::Valid;
             //modelValidationError = QString();
-            _result = std::make_shared<DecimalData>(n1->number() / n2->number());
+            setPortData(PortType::Out,
+                        0,
+                        std::make_shared<DecimalData>(n1->number() / n2->number()));
         } else {
             //modelValidationState = NodeValidationState::Warning;
             //modelValidationError = QStringLiteral("Missing or incorrect inputs");

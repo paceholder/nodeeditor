@@ -29,11 +29,10 @@ public:
 
     virtual ~NodeDelegateModel() = default;
 
+    virtual void init() = 0;
+
     /// Caption is used in GUI
     virtual QString caption() const { return ""; }
-
-    /// Port caption is used in GUI to label individual ports
-    virtual QString portCaption(PortType, PortIndex) const { return QString(); }
 
     /// Name makes this model unique
     virtual QString name() const = 0;
@@ -44,21 +43,12 @@ public:
     void load(QJsonObject const &) override;
 
 public:
-    virtual unsigned int nPorts(PortType portType) const = 0;
-
-    virtual NodeDataType dataType(PortType portType, PortIndex portIndex) const = 0;
-
-public:
-    virtual ConnectionPolicy portConnectionPolicy(PortType, PortIndex) const;
-
     NodeStyle const &nodeStyle() const;
 
     void setNodeStyle(NodeStyle const &style);
 
 public:
     virtual void setInData(std::shared_ptr<NodeData> nodeData, PortIndex const portIndex) = 0;
-
-    virtual std::shared_ptr<NodeData> outData(PortIndex const port) = 0;
 
     /**
    * It is recommented to preform a lazy initialization for the
@@ -73,6 +63,39 @@ public:
     virtual QWidget *embeddedWidget() = 0;
 
     virtual bool resizable() const { return false; }
+
+#pragma region /* port */
+
+public:
+    unsigned int nPorts(PortType portType) const;
+
+    void createPort(PortType portType,
+                    std::shared_ptr<NodeData> nodeData,
+                    const PortCaption name = "",
+                    ConnectionPolicy policy = ConnectionPolicy::One);
+
+    NodePort const &port(PortType portType, PortIndex portIndex) const;
+
+    template<class T>
+    std::shared_ptr<T> portData(PortType portType, PortIndex portIndex) const
+    {
+        return std::dynamic_pointer_cast<T>(portData(portType, portIndex));
+    }
+
+    std::shared_ptr<NodeData> portData(PortType portType, PortIndex portIndex) const;
+
+    void setPortData(PortType portType, PortIndex portIndex, std::shared_ptr<NodeData> nodeData);
+
+    /// Port caption is used in GUI to label individual ports
+    PortCaption portCaption(PortType portType, PortIndex portIndex) const;
+
+    void setPortCaption(PortType portType, PortIndex portIndex, const PortCaption name);
+
+    ConnectionPolicy portConnectionPolicy(PortType portType, PortIndex portIndex) const;
+
+    void setPortConnectionPolicy(PortType portType, PortIndex portIndex, ConnectionPolicy policy);
+
+#pragma endregion /* port */
 
 public Q_SLOTS:
 
@@ -122,6 +145,9 @@ Q_SIGNALS:
 
 private:
     NodeStyle _nodeStyle;
+
+    std::vector<NodePort> _inputPorts;
+    std::vector<NodePort> _outputPorts;
 };
 
 } // namespace QtNodes

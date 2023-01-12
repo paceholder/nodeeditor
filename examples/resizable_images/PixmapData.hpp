@@ -15,17 +15,10 @@ public:
     PixmapData() {}
 
     PixmapData(QPixmap const &pixmap)
-        : _pixmap(pixmap)
+        : data(pixmap)
     {}
 
-    NodeDataType type() const override
-    {
-        //       id      name
-        return {"pixmap", "P"};
-    }
+    NodeDataType type() const override { return "pixmap"; }
 
-    QPixmap pixmap() const { return _pixmap; }
-
-private:
-    QPixmap _pixmap;
+    QPixmap data;
 };

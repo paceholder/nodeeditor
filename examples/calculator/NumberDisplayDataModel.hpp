@@ -28,15 +28,11 @@ public:
     ~NumberDisplayDataModel() = default;
 
 public:
+    void init() override;
+
     QString name() const override { return QStringLiteral("Result"); }
 
 public:
-    unsigned int nPorts(PortType portType) const override;
-
-    NodeDataType dataType(PortType portType, PortIndex portIndex) const override;
-
-    std::shared_ptr<NodeData> outData(PortIndex port) override;
-
     void setInData(std::shared_ptr<NodeData> data, PortIndex portIndex) override;
 
     QWidget *embeddedWidget() override;

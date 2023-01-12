@@ -18,7 +18,7 @@ using QtNodes::PortType;
 class MyNodeData : public NodeData
 {
 public:
-    NodeDataType type() const override { return NodeDataType{"MyNodeData", "My Node Data"}; }
+    NodeDataType type() const override { return "MyNodeData"; }
 };
 
 //------------------------------------------------------------------------------
@@ -32,6 +32,17 @@ public:
     ~MyDataModel() = default;
 
 public:
+    void init() override
+    {
+        for (int i = 0; i < 3; ++i) {
+            createPort(PortType::In, std::make_shared<MyNodeData>(), "My Node Data");
+            createPort(PortType::Out,
+                       std::make_shared<MyNodeData>(),
+                       "My Node Data",
+                       QtNodes::ConnectionPolicy::Many);
+        }
+    }
+
     QString caption() const override { return QString("My Data Model"); }
 
     QString name() const override { return QString("MyDataModel"); }
@@ -47,15 +58,6 @@ public:
     }
 
 public:
-    unsigned int nPorts(PortType const) const override { return 3; }
-
-    NodeDataType dataType(PortType const, PortIndex const) const override
-    {
-        return MyNodeData().type();
-    }
-
-    std::shared_ptr<NodeData> outData(PortIndex) override { return std::make_shared<MyNodeData>(); }
-
     void setInData(std::shared_ptr<NodeData>, PortIndex const) override {}
 
     QWidget *embeddedWidget() override { return nullptr; }

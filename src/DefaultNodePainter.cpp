@@ -132,7 +132,7 @@ void DefaultNodePainter::drawConnectionPoints(QPainter *painter, NodeGraphicsObj
             }
 
             if (connectionStyle.useDataDefinedColors()) {
-                painter->setBrush(connectionStyle.normalColor(dataType.id));
+                painter->setBrush(connectionStyle.normalColor(dataType));
             } else {
                 painter->setBrush(nodeStyle.ConnectionPointColor);
             }
@@ -176,7 +176,7 @@ void DefaultNodePainter::drawFilledConnectionPoints(QPainter *painter, NodeGraph
 
                 auto const &connectionStyle = StyleCollection::connectionStyle();
                 if (connectionStyle.useDataDefinedColors()) {
-                    QColor const c = connectionStyle.normalColor(dataType.id);
+                    QColor const c = connectionStyle.normalColor(dataType);
                     painter->setPen(c);
                     painter->setBrush(c);
                 } else {
@@ -246,7 +246,7 @@ void DefaultNodePainter::drawEntryLabels(QPainter *painter, NodeGraphicsObject &
             if (s.isEmpty()) {
                 auto portData = model.portData(nodeId, portType, portIndex, PortRole::DataType);
 
-                s = portData.value<NodeDataType>().name;
+                s = portData.value<NodeDataType>();
             }
 
             painter->drawText(p, s);

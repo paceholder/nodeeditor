@@ -18,7 +18,7 @@ public:
         : _number(number)
     {}
 
-    NodeDataType type() const override { return NodeDataType{"decimal", "Decimal"}; }
+    NodeDataType type() const override { return "decimal"; }
 
     double number() const { return _number; }
 

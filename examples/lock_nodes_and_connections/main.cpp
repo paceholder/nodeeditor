@@ -34,10 +34,10 @@ int main(int argc, char *argv[])
 
     // Initialize and connect two nodes.
     {
-        NodeId id1 = graphModel.addNode(SimpleNodeData().type().id);
+        NodeId id1 = graphModel.addNode(SimpleNodeData().type());
         graphModel.setNodeData(id1, NodeRole::Position, QPointF(0, 0));
 
-        NodeId id2 = graphModel.addNode(SimpleNodeData().type().id);
+        NodeId id2 = graphModel.addNode(SimpleNodeData().type());
         graphModel.setNodeData(id2, NodeRole::Position, QPointF(300, 300));
 
         graphModel.addConnection(ConnectionId{id1, 0, id2, 0});

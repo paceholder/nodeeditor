@@ -18,13 +18,13 @@ using QtNodes::PortType;
 class MyNodeData : public NodeData
 {
 public:
-    NodeDataType type() const override { return NodeDataType{"MyNodeData", "My Node Data"}; }
+    NodeDataType type() const override { return "MyNodeData"; }
 };
 
 class SimpleNodeData : public NodeData
 {
 public:
-    NodeDataType type() const override { return NodeDataType{"SimpleData", "Simple Data"}; }
+    NodeDataType type() const override { return "SimpleData"; }
 };
 
 //------------------------------------------------------------------------------
@@ -39,66 +39,26 @@ public:
     virtual ~NaiveDataModel() {}
 
 public:
+    void init() override
+    {
+        createPort(PortType::In, std::make_shared<MyNodeData>(), "My Node Data");
+        createPort(PortType::In, std::make_shared<SimpleNodeData>(), "Simple Data");
+
+        createPort(PortType::Out,
+                   std::make_shared<MyNodeData>(),
+                   "My Node Data",
+                   QtNodes::ConnectionPolicy::Many);
+        createPort(PortType::Out,
+                   std::make_shared<SimpleNodeData>(),
+                   "Simple Data",
+                   QtNodes::ConnectionPolicy::Many);
+    }
+
     QString caption() const override { return QString("Naive Data Model"); }
 
     QString name() const override { return QString("NaiveDataModel"); }
 
 public:
-    unsigned int nPorts(PortType const portType) const override
-    {
-        unsigned int result = 1;
-
-        switch (portType) {
-        case PortType::In:
-            result = 2;
-            break;
-
-        case PortType::Out:
-            result = 2;
-            break;
-        case PortType::None:
-            break;
-        }
-
-        return result;
-    }
-
-    NodeDataType dataType(PortType const portType, PortIndex const portIndex) const override
-    {
-        switch (portType) {
-        case PortType::In:
-            switch (portIndex) {
-            case 0:
-                return MyNodeData().type();
-            case 1:
-                return SimpleNodeData().type();
-            }
-            break;
-
-        case PortType::Out:
-            switch (portIndex) {
-            case 0:
-                return MyNodeData().type();
-            case 1:
-                return SimpleNodeData().type();
-            }
-            break;
-
-        case PortType::None:
-            break;
-        }
-        // FIXME: control may reach end of non-void function [-Wreturn-type]
-        return NodeDataType();
-    }
-
-    std::shared_ptr<NodeData> outData(PortIndex const port) override
-    {
-        if (port < 1)
-            return std::make_shared<MyNodeData>();
-
-        return std::make_shared<SimpleNodeData>();
-    }
-
     void setInData(std::shared_ptr<NodeData>, PortIndex const) override
     {
         //

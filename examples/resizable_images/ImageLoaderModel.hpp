@@ -23,11 +23,11 @@ class ImageLoaderModel : public NodeDelegateModel
     Q_OBJECT
 
 public:
-    ImageLoaderModel();
-
     ~ImageLoaderModel() = default;
 
 public:
+    void init() override;
+
     QString caption() const override { return QString("Image Source"); }
 
     QString name() const override { return QString("ImageLoaderModel"); }
@@ -35,13 +35,7 @@ public:
 public:
     virtual QString modelName() const { return QString("Source Image"); }
 
-    unsigned int nPorts(PortType const portType) const override;
-
-    NodeDataType dataType(PortType const portType, PortIndex const portIndex) const override;
-
-    std::shared_ptr<NodeData> outData(PortIndex const port) override;
-
-    void setInData(std::shared_ptr<NodeData>, PortIndex const portIndex) override {}
+    void setInData(std::shared_ptr<NodeData>, PortIndex) override {}
 
     QWidget *embeddedWidget() override { return _label; }
 
@@ -51,7 +45,7 @@ protected:
     bool eventFilter(QObject *object, QEvent *event) override;
 
 private:
-    QLabel *_label;
+    std::shared_ptr<PixmapData> _pixmap;
 
-    QPixmap _pixmap;
+    QLabel *_label = nullptr;
 };

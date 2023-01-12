@@ -199,7 +199,7 @@ QRectF DefaultVerticalNodeGeometry::portTextRect(NodeId const nodeId,
     if (s.isEmpty()) {
         auto portData = _graphModel.portData(nodeId, portType, portIndex, PortRole::DataType);
 
-        s = portData.value<NodeDataType>().name;
+        s = portData.value<NodeDataType>();
     }
 
     return _fontMetrics.boundingRect(s);
@@ -237,7 +237,7 @@ unsigned int DefaultVerticalNodeGeometry::maxPortsTextAdvance(NodeId const nodeI
                                                                        portIndex,
                                                                        PortRole::DataType);
 
-            name = portData.name;
+            name = portData;
         }
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)

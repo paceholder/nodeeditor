@@ -100,6 +100,8 @@ Q_SIGNALS:
 private:
     NodeId newNodeId() override { return _nextNodeId++; }
 
+    void initModelFormId(std::unique_ptr<NodeDelegateModel> model, NodeId const nodeId);
+
 private Q_SLOTS:
     /**
    * Fuction is called in three cases:

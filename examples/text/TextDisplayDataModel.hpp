@@ -23,27 +23,19 @@ class TextDisplayDataModel : public NodeDelegateModel
     Q_OBJECT
 
 public:
-    TextDisplayDataModel();
+    void init() override;
 
-    virtual ~TextDisplayDataModel() {}
-
-public:
     static QString Name() { return QString("TextDisplayDataModel"); }
 
     QString name() const override { return TextDisplayDataModel::Name(); }
 
 public:
-    unsigned int nPorts(PortType portType) const override;
+    void setInData(std::shared_ptr<NodeData> nodeData, PortIndex const portIndex) override;
 
-    NodeDataType dataType(PortType portType, PortIndex portIndex) const override;
-
-    std::shared_ptr<NodeData> outData(PortIndex const port) override;
-
-    void setInData(std::shared_ptr<NodeData> data, PortIndex const portIndex) override;
-
-    QWidget *embeddedWidget() override { return _label; }
+    QWidget *embeddedWidget() override;
 
 private:
-    QLabel *_label;
+    QLabel *_label = nullptr;
+
     QString _inputText;
 };

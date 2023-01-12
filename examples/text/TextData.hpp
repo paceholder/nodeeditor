@@ -13,13 +13,10 @@ public:
     TextData() {}
 
     TextData(QString const &text)
-        : _text(text)
+        : data(text)
     {}
 
-    NodeDataType type() const override { return NodeDataType{"text", "Text"}; }
+    NodeDataType type() const override { return "text"; }
 
-    QString text() const { return _text; }
-
-private:
-    QString _text;
+    QString data;
 };

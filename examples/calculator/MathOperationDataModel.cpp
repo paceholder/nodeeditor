@@ -2,26 +2,13 @@
 
 #include "DecimalData.hpp"
 
-unsigned int MathOperationDataModel::nPorts(PortType portType) const
+void MathOperationDataModel::init()
 {
-    unsigned int result;
+    createPort(PortType::In, std::make_shared<DecimalData>(), "Decimal");
+    createPort(PortType::In, std::make_shared<DecimalData>(), "Decimal");
 
-    if (portType == PortType::In)
-        result = 2;
-    else
-        result = 1;
-
-    return result;
-}
-
-NodeDataType MathOperationDataModel::dataType(PortType, PortIndex) const
-{
-    return DecimalData().type();
-}
-
-std::shared_ptr<NodeData> MathOperationDataModel::outData(PortIndex)
-{
-    return std::static_pointer_cast<NodeData>(_result);
+    _result = std::make_shared<DecimalData>();
+    createPort(PortType::Out, _result, "Decimal", QtNodes::ConnectionPolicy::Many);
 }
 
 void MathOperationDataModel::setInData(std::shared_ptr<NodeData> data, PortIndex portIndex)

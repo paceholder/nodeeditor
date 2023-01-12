@@ -17,27 +17,16 @@ public:
     virtual ~SubtractionModel() {}
 
 public:
-    QString caption() const override { return QStringLiteral("Subtraction"); }
-
-    virtual QString portCaption(PortType portType, PortIndex portIndex) const override
+    void init() override
     {
-        switch (portType) {
-        case PortType::In:
-            if (portIndex == 0)
-                return QStringLiteral("Minuend");
-            else if (portIndex == 1)
-                return QStringLiteral("Subtrahend");
+        MathOperationDataModel::init();
 
-            break;
-
-        case PortType::Out:
-            return QStringLiteral("Result");
-
-        default:
-            break;
-        }
-        return QString();
+        setPortCaption(PortType::In, 0, "Minuend");
+        setPortCaption(PortType::In, 1, "Subtracted");
+        setPortCaption(PortType::Out, 0, "Result");
     }
+
+    QString caption() const override { return QStringLiteral("Subtraction"); }
 
     QString name() const override { return QStringLiteral("Subtraction"); }
 
@@ -50,7 +39,9 @@ private:
         auto n2 = _number2.lock();
 
         if (n1 && n2) {
-            _result = std::make_shared<DecimalData>(n1->number() - n2->number());
+            setPortData(PortType::Out,
+                        0,
+                        std::make_shared<DecimalData>(n1->number() - n2->number()));
         } else {
             _result.reset();
         }

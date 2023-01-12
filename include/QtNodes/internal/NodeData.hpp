@@ -11,13 +11,8 @@ namespace QtNodes {
 
 /**
  * `id` represents an internal unique data type for the given port.
- * `name` is a normal text description.
  */
-struct NODE_EDITOR_PUBLIC NodeDataType
-{
-    QString id;
-    QString name;
-};
+using NodeDataType = QString;
 
 /**
  * Class represents data transferred between nodes.
@@ -31,7 +26,7 @@ public:
 
     virtual bool sameType(NodeData const &nodeData) const
     {
-        return (this->type().id == nodeData.type().id);
+        return (this->type() == nodeData.type());
     }
 
     /// Type for inner use
@@ -39,5 +34,4 @@ public:
 };
 
 } // namespace QtNodes
-Q_DECLARE_METATYPE(QtNodes::NodeDataType)
 Q_DECLARE_METATYPE(std::shared_ptr<QtNodes::NodeData>)
