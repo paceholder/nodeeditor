@@ -2,6 +2,7 @@
 
 #include "StyleCollection.hpp"
 
+#include <stdexcept>
 #include <utility>
 
 namespace QtNodes {
