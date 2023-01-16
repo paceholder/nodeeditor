@@ -54,11 +54,13 @@ void DefaultVerticalNodeGeometry::recomputeSize(NodeId const nodeId) const
     unsigned int inPortWidth = maxPortsTextAdvance(nodeId, PortType::In);
     unsigned int outPortWidth = maxPortsTextAdvance(nodeId, PortType::Out);
 
-    unsigned int totalInPortsWidth =
-      nInPorts > 0 ? inPortWidth * nInPorts + _portSpasing * (nInPorts - 1) : 0;
+    unsigned int totalInPortsWidth = nInPorts > 0
+                                         ? inPortWidth * nInPorts + _portSpasing * (nInPorts - 1)
+                                         : 0;
 
-    unsigned int totalOutPortsWidth =
-      nOutPorts > 0 ? outPortWidth * nOutPorts + _portSpasing * (nOutPorts - 1) : 0;
+    unsigned int totalOutPortsWidth = nOutPorts > 0 ? outPortWidth * nOutPorts
+                                                          + _portSpasing * (nOutPorts - 1)
+                                                    : 0;
 
     unsigned int width = std::max(totalInPortsWidth, totalOutPortsWidth);
 
