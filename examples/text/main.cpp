@@ -1,13 +1,14 @@
 #include <QtNodes/DataFlowGraphModel>
 #include <QtNodes/DataFlowGraphicsScene>
 #include <QtNodes/GraphicsView>
-#include <QtNodes/NodeData>
 #include <QtNodes/NodeDelegateModelRegistry>
 
 #include <QtWidgets/QApplication>
 
 #include "TextDisplayDataModel.hpp"
 #include "TextSourceDataModel.hpp"
+
+#include "TextData.hpp"
 
 using QtNodes::DataFlowGraphicsScene;
 using QtNodes::DataFlowGraphModel;
@@ -17,6 +18,8 @@ using QtNodes::NodeDelegateModelRegistry;
 static std::shared_ptr<NodeDelegateModelRegistry> registerDataModels()
 {
     auto ret = std::make_shared<NodeDelegateModelRegistry>();
+
+    ret->registerData<TextData>();
 
     ret->registerModel<TextSourceDataModel>();
     ret->registerModel<TextDisplayDataModel>();

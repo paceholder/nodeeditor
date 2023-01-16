@@ -6,7 +6,6 @@
 
 #include "Definitions.hpp"
 #include "Export.hpp"
-#include "NodeData.hpp"
 #include "NodeStyle.hpp"
 #include "Serializable.hpp"
 
@@ -38,12 +37,12 @@ public:
     virtual QString name() const = 0;
 
 public:
-    NodeStyle const &nodeStyle() const;
+    NodeStyle const &nodeStyle() const { return _nodeStyle; }
 
-    void setNodeStyle(NodeStyle const &style);
+    void setNodeStyle(NodeStyle const &style) { _nodeStyle = style; }
 
 public:
-    virtual void setInData(std::shared_ptr<NodeData> nodeData, PortIndex const portIndex) = 0;
+    virtual void setInData(QVariant const nodeData, PortIndex const portIndex) = 0;
 
     /**
    * It is recommented to preform a lazy initialization for the
@@ -59,49 +58,7 @@ public:
 
     virtual bool resizable() const { return false; }
 
-#pragma region /* port */
-
-public:
-    unsigned int nPorts(PortType portType) const;
-
-    void createPort(PortType portType,
-                    std::shared_ptr<NodeData> nodeData,
-                    const PortCaption name = "",
-                    ConnectionPolicy policy = ConnectionPolicy::One);
-
-    /// @brief Insert new port at `portIndex`
-    void insertPort(PortType portType,
-                    PortIndex portIndex,
-                    std::shared_ptr<NodeData> nodeData,
-                    const PortCaption name = "",
-                    ConnectionPolicy policy = ConnectionPolicy::One);
-
-    void removePort(PortType portType, PortIndex portIndex);
-
-    void clearPort(PortType portType);
-
-    NodePort const &port(PortType portType, PortIndex portIndex) const;
-
-    template<class T>
-    std::shared_ptr<T> portData(PortType portType, PortIndex portIndex) const
-    {
-        return std::dynamic_pointer_cast<T>(portData(portType, portIndex));
-    }
-
-    std::shared_ptr<NodeData> portData(PortType portType, PortIndex portIndex) const;
-
-    void setPortData(PortType portType, PortIndex portIndex, std::shared_ptr<NodeData> nodeData);
-
-    /// Port caption is used in GUI to label individual ports
-    PortCaption portCaption(PortType portType, PortIndex portIndex) const;
-
-    void setPortCaption(PortType portType, PortIndex portIndex, const PortCaption name);
-
-    ConnectionPolicy portConnectionPolicy(PortType portType, PortIndex portIndex) const;
-
-    void setPortConnectionPolicy(PortType portType, PortIndex portIndex, ConnectionPolicy policy);
-
-#pragma endregion /* port */
+    virtual bool isDynamicPorts() const { return false; }
 
 public Q_SLOTS:
 
@@ -127,35 +84,27 @@ Q_SIGNALS:
 
     void embeddedWidgetSizeUpdated();
 
-    /// Call this function before deleting the data associated with ports.
-    /**
-   * The function notifies the Graph Model and makes it remove and recompute the
-   * affected connection addresses.
-   */
-    void portsAboutToBeDeleted(PortType const portType, PortIndex const first, PortIndex const last);
+    void createPort(PortType portType,
+                    const NodeDataType dataType,
+                    const PortCaption name = "",
+                    ConnectionPolicy policy = ConnectionPolicy::One);
 
-    /// Call this function when data and port moditications are finished.
-    void portsDeleted();
+    void insertPort(PortType portType,
+                    PortIndex portIndex,
+                    const NodeDataType dataType,
+                    const PortCaption name = "",
+                    ConnectionPolicy policy = ConnectionPolicy::One);
 
-    /// Call this function before inserting the data associated with ports.
-    /**
-   * The function notifies the Graph Model and makes it recompute the affected
-   * connection addresses.
-   */
-    void portsAboutToBeInserted(PortType const portType,
-                                PortIndex const first,
-                                PortIndex const last);
+    void removePort(PortType portType, PortIndex portIndex);
 
-    /// Call this function when data and port moditications are finished.
-    void portsInserted();
+    void updatePortCaption(PortType portType, PortIndex portIndex, const PortCaption name);
 
-    void nodeUpdated();
+    void updatePortConnectionPolicy(PortType portType, PortIndex portIndex, ConnectionPolicy policy);
+
+    void updateOutPortData(PortIndex portIndex, QVariant nodeData);
 
 private:
     NodeStyle _nodeStyle;
-
-    std::vector<NodePort> _inputPorts;
-    std::vector<NodePort> _outputPorts;
 };
 
 } // namespace QtNodes

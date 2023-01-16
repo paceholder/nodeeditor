@@ -19,6 +19,8 @@
 #include "NumberSourceDataModel.hpp"
 #include "SubtractionModel.hpp"
 
+#include "DecimalData.hpp"
+
 using QtNodes::ConnectionStyle;
 using QtNodes::DataFlowGraphicsScene;
 using QtNodes::DataFlowGraphModel;
@@ -28,16 +30,16 @@ using QtNodes::NodeDelegateModelRegistry;
 static std::shared_ptr<NodeDelegateModelRegistry> registerDataModels()
 {
     auto ret = std::make_shared<NodeDelegateModelRegistry>();
+
+    ret->registerData<DecimalData>();
+
     ret->registerModel<NumberSourceDataModel>("Sources");
 
     ret->registerModel<NumberDisplayDataModel>("Displays");
 
     ret->registerModel<AdditionModel>("Operators");
-
     ret->registerModel<SubtractionModel>("Operators");
-
     ret->registerModel<MultiplicationModel>("Operators");
-
     ret->registerModel<DivisionModel>("Operators");
 
     return ret;

@@ -14,11 +14,28 @@ using QtNodes::ConnectionStyle;
 using QtNodes::DataFlowGraphicsScene;
 using QtNodes::DataFlowGraphModel;
 using QtNodes::GraphicsView;
+using QtNodes::NodeData;
+using QtNodes::NodeDataType;
 using QtNodes::NodeDelegateModelRegistry;
+
+class ANodeData : public NodeData
+{
+public:
+    NodeDataType type() const override { return "AData"; }
+};
+
+class BNodeData : public NodeData
+{
+public:
+    NodeDataType type() const override { return "BData"; }
+};
 
 static std::shared_ptr<NodeDelegateModelRegistry> registerDataModels()
 {
     auto ret = std::make_shared<NodeDelegateModelRegistry>();
+
+    ret->registerData<ANodeData>();
+    ret->registerData<BNodeData>();
 
     ret->registerModel<DynamicPortsModel>();
 

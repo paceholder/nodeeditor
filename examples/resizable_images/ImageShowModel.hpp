@@ -8,7 +8,6 @@
 #include <QtNodes/NodeDelegateModel>
 #include <QtNodes/NodeDelegateModelRegistry>
 
-using QtNodes::NodeData;
 using QtNodes::NodeDataType;
 using QtNodes::NodeDelegateModel;
 using QtNodes::PortIndex;
@@ -33,7 +32,7 @@ public:
 public:
     virtual QString modelName() const { return QString("Resulting Image"); }
 
-    void setInData(std::shared_ptr<NodeData> nodeData, PortIndex portIndex) override;
+    void setInData(QVariant const nodeData, PortIndex portIndex) override;
 
     QWidget *embeddedWidget() override;
 
@@ -44,4 +43,6 @@ protected:
 
 private:
     QLabel *_label = nullptr;
+
+    QPixmap _pixmap;
 };

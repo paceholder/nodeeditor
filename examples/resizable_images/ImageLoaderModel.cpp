@@ -7,8 +7,7 @@
 
 void ImageLoaderModel::init()
 {
-    _pixmap = std::make_shared<PixmapData>();
-    createPort(PortType::Out, _pixmap, "P", QtNodes::ConnectionPolicy::Many);
+    createPort(PortType::Out, "pixmap", "P", QtNodes::ConnectionPolicy::Many);
 
     _label = new QLabel("Double click to load image");
 
@@ -38,16 +37,18 @@ bool ImageLoaderModel::eventFilter(QObject *object, QEvent *event)
                                                             QDir::homePath(),
                                                             tr("Image Files (*.png *.jpg *.bmp)"));
 
-            _pixmap->data = QPixmap(fileName);
+            _pixmap = QPixmap(fileName);
 
-            _label->setPixmap(_pixmap->data.scaled(w, h, Qt::KeepAspectRatio));
+            updateOutPortData(0, QVariant::fromValue(_pixmap));
+
+            _label->setPixmap(_pixmap.scaled(w, h, Qt::KeepAspectRatio));
 
             Q_EMIT dataUpdated(0);
 
             return true;
         } else if (event->type() == QEvent::Resize) {
-            if (!_pixmap->data.isNull())
-                _label->setPixmap(_pixmap->data.scaled(w, h, Qt::KeepAspectRatio));
+            if (!_pixmap.isNull())
+                _label->setPixmap(_pixmap.scaled(w, h, Qt::KeepAspectRatio));
         }
     }
 

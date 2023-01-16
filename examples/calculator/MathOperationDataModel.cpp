@@ -1,28 +1,24 @@
 #include "MathOperationDataModel.hpp"
 
-#include "DecimalData.hpp"
-
 void MathOperationDataModel::init()
 {
-    createPort(PortType::In, std::make_shared<DecimalData>(), "Decimal");
-    createPort(PortType::In, std::make_shared<DecimalData>(), "Decimal");
+    createPort(PortType::In, "decimal", "Decimal");
+    createPort(PortType::In, "decimal", "Decimal");
 
-    _result = std::make_shared<DecimalData>();
-    createPort(PortType::Out, _result, "Decimal", QtNodes::ConnectionPolicy::Many);
+    createPort(PortType::Out, "decimal", "Decimal", QtNodes::ConnectionPolicy::Many);
 }
 
-void MathOperationDataModel::setInData(std::shared_ptr<NodeData> data, PortIndex portIndex)
+void MathOperationDataModel::setInData(QVariant const nodeData, PortIndex portIndex)
 {
-    auto numberData = std::dynamic_pointer_cast<DecimalData>(data);
-
-    if (!data) {
+    if (nodeData.isNull()) {
         Q_EMIT dataInvalidated(0);
+        return;
     }
 
     if (portIndex == 0) {
-        _number1 = numberData;
+        _number1 = nodeData.toDouble();
     } else {
-        _number2 = numberData;
+        _number2 = nodeData.toDouble();
     }
 
     compute();

@@ -6,10 +6,6 @@
 
 #include <iostream>
 
-#include "DecimalData.hpp"
-
-using QtNodes::NodeData;
-using QtNodes::NodeDataType;
 using QtNodes::NodeDelegateModel;
 using QtNodes::PortIndex;
 using QtNodes::PortType;
@@ -33,14 +29,14 @@ public:
     QString name() const override { return QStringLiteral("Result"); }
 
 public:
-    void setInData(std::shared_ptr<NodeData> data, PortIndex portIndex) override;
+    void setInData(QVariant const nodeData, PortIndex portIndex) override;
 
     QWidget *embeddedWidget() override;
 
     double number() const;
 
 private:
-    std::shared_ptr<DecimalData> _numberData;
-
     QLabel *_label;
+
+    double _number;
 };

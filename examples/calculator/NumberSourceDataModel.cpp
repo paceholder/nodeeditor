@@ -1,26 +1,24 @@
 #include "NumberSourceDataModel.hpp"
 
-#include "DecimalData.hpp"
-
 #include <QtCore/QJsonValue>
 #include <QtGui/QDoubleValidator>
 #include <QtWidgets/QLineEdit>
 
 NumberSourceDataModel::NumberSourceDataModel()
     : _lineEdit{nullptr}
-    , _number(std::make_shared<DecimalData>(0.0))
+    , _number(0.0)
 {}
 
 void NumberSourceDataModel::init()
 {
-    createPort(PortType::Out, _number, "Decimal", QtNodes::ConnectionPolicy::Many);
+    createPort(PortType::Out, "decimal", "Decimal", QtNodes::ConnectionPolicy::Many);
 }
 
 QJsonObject NumberSourceDataModel::save() const
 {
     QJsonObject modelJson;
 
-    modelJson["number"] = QString::number(_number->number());
+    modelJson["number"] = QString::number(_number);
 
     return modelJson;
 }
@@ -35,8 +33,8 @@ void NumberSourceDataModel::load(QJsonObject const &p)
         bool ok;
         double d = strNum.toDouble(&ok);
         if (ok) {
-            _number = std::make_shared<DecimalData>(d);
-            setPortData(PortType::Out, 0, _number);
+            _number = d;
+            updateOutPortData(0, _number);
 
             if (_lineEdit)
                 _lineEdit->setText(strNum);
@@ -51,8 +49,8 @@ void NumberSourceDataModel::onTextEdited(QString const &str)
     double number = str.toDouble(&ok);
 
     if (ok) {
-        _number = std::make_shared<DecimalData>(number);
-        setPortData(PortType::Out, 0, _number);
+        _number = number;
+        updateOutPortData(0, _number);
 
         Q_EMIT dataUpdated(0);
 
@@ -71,18 +69,18 @@ QWidget *NumberSourceDataModel::embeddedWidget()
 
         connect(_lineEdit, &QLineEdit::textChanged, this, &NumberSourceDataModel::onTextEdited);
 
-        _lineEdit->setText(QString::number(_number->number()));
+        _lineEdit->setText(QString::number(_number));
     }
     return _lineEdit;
 }
 
 void NumberSourceDataModel::setNumber(double n)
 {
-    _number = std::make_shared<DecimalData>(n);
-    setPortData(PortType::Out, 0, _number);
+    _number = n;
+    updateOutPortData(0, _number);
 
     Q_EMIT dataUpdated(0);
 
     if (_lineEdit)
-        _lineEdit->setText(QString::number(_number->number()));
+        _lineEdit->setText(QString::number(_number));
 }

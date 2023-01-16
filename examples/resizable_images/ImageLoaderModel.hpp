@@ -6,11 +6,7 @@
 #include <QtWidgets/QLabel>
 
 #include <QtNodes/NodeDelegateModel>
-#include <QtNodes/NodeDelegateModelRegistry>
 
-#include "PixmapData.hpp"
-
-using QtNodes::NodeData;
 using QtNodes::NodeDataType;
 using QtNodes::NodeDelegateModel;
 using QtNodes::PortIndex;
@@ -35,7 +31,7 @@ public:
 public:
     virtual QString modelName() const { return QString("Source Image"); }
 
-    void setInData(std::shared_ptr<NodeData>, PortIndex) override {}
+    void setInData(QVariant const, PortIndex) override {}
 
     QWidget *embeddedWidget() override { return _label; }
 
@@ -45,7 +41,7 @@ protected:
     bool eventFilter(QObject *object, QEvent *event) override;
 
 private:
-    std::shared_ptr<PixmapData> _pixmap;
-
     QLabel *_label = nullptr;
+
+    QPixmap _pixmap;
 };

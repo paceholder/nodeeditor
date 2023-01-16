@@ -14,12 +14,21 @@
 
 using QtNodes::DataFlowGraphicsScene;
 using QtNodes::GraphicsView;
+using QtNodes::NodeData;
 using QtNodes::NodeDelegateModelRegistry;
 using QtNodes::NodeRole;
+
+class SimpleNodeData : public NodeData
+{
+public:
+    NodeDataType type() const override { return "SimpleData"; }
+};
 
 static std::shared_ptr<NodeDelegateModelRegistry> registerDataModels()
 {
     auto ret = std::make_shared<NodeDelegateModelRegistry>();
+
+    ret->registerData<SimpleNodeData>();
 
     ret->registerModel<SimpleDataModel>();
 

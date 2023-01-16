@@ -13,22 +13,6 @@ using QtNodes::NodeDelegateModel;
 using QtNodes::PortIndex;
 using QtNodes::PortType;
 
-/// The class can potentially incapsulate any user data which
-/// need to be transferred within the Node Editor graph
-class MyNodeData : public NodeData
-{
-public:
-    NodeDataType type() const override { return "MyNodeData"; }
-};
-
-class SimpleNodeData : public NodeData
-{
-public:
-    NodeDataType type() const override { return "SimpleData"; }
-};
-
-//------------------------------------------------------------------------------
-
 /// The model dictates the number of inputs and outputs for the Node.
 /// In this example it has no logic.
 class NaiveDataModel : public NodeDelegateModel
@@ -41,17 +25,11 @@ public:
 public:
     void init() override
     {
-        createPort(PortType::In, std::make_shared<MyNodeData>(), "My Node Data");
-        createPort(PortType::In, std::make_shared<SimpleNodeData>(), "Simple Data");
+        createPort(PortType::Out, "MyNodeData", "My Node Data", QtNodes::ConnectionPolicy::Many);
+        createPort(PortType::Out, "SimpleData", "Simple Data", QtNodes::ConnectionPolicy::Many);
 
-        createPort(PortType::Out,
-                   std::make_shared<MyNodeData>(),
-                   "My Node Data",
-                   QtNodes::ConnectionPolicy::Many);
-        createPort(PortType::Out,
-                   std::make_shared<SimpleNodeData>(),
-                   "Simple Data",
-                   QtNodes::ConnectionPolicy::Many);
+        createPort(PortType::In, "MyNodeData", "My Node Data");
+        createPort(PortType::In, "SimpleData", "Simple Data");
     }
 
     QString caption() const override { return QString("Naive Data Model"); }
@@ -59,10 +37,7 @@ public:
     QString name() const override { return QString("NaiveDataModel"); }
 
 public:
-    void setInData(std::shared_ptr<NodeData>, PortIndex const) override
-    {
-        //
-    }
+    void setInData(QVariant const, PortIndex const) override {}
 
     QWidget *embeddedWidget() override { return nullptr; }
 };

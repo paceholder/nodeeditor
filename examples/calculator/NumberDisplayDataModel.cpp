@@ -8,21 +8,20 @@ NumberDisplayDataModel::NumberDisplayDataModel()
 
 void NumberDisplayDataModel::init()
 {
-    createPort(PortType::In, std::make_shared<DecimalData>(), "Decimal");
+    createPort(PortType::In, "decimal", "Decimal");
 }
 
-void NumberDisplayDataModel::setInData(std::shared_ptr<NodeData> data, PortIndex portIndex)
+void NumberDisplayDataModel::setInData(QVariant const nodeData, PortIndex portIndex)
 {
-    _numberData = std::dynamic_pointer_cast<DecimalData>(data);
+    if (!nodeData.isNull())
+        _number = nodeData.toDouble();
+    else
+        _number = 0.0;
 
     if (!_label)
         return;
 
-    if (_numberData) {
-        _label->setText(_numberData->numberAsText());
-    } else {
-        _label->clear();
-    }
+    _label->setText(QString::number(_number, 'f'));
 
     _label->adjustSize();
 }
@@ -38,8 +37,5 @@ QWidget *NumberDisplayDataModel::embeddedWidget()
 
 double NumberDisplayDataModel::number() const
 {
-    if (_numberData)
-        return _numberData->number();
-
-    return 0.0;
+    return _number;
 }

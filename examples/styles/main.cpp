@@ -16,12 +16,26 @@ using QtNodes::DataFlowGraphicsScene;
 using QtNodes::DataFlowGraphModel;
 using QtNodes::GraphicsView;
 using QtNodes::GraphicsViewStyle;
+using QtNodes::NodeData;
+using QtNodes::NodeDataType;
 using QtNodes::NodeDelegateModelRegistry;
 using QtNodes::NodeStyle;
+
+/// The class can potentially incapsulate any user data which need to
+/// be transferred within the Node Editor graph
+class MyNodeData : public NodeData
+{
+public:
+    NodeDataType type() const override { return "MyNodeData"; }
+};
+
+//------------------------------------------------------------------------------
 
 static std::shared_ptr<NodeDelegateModelRegistry> registerDataModels()
 {
     auto ret = std::make_shared<NodeDelegateModelRegistry>();
+
+    ret->registerData<MyNodeData>();
 
     ret->registerModel<MyDataModel>();
 

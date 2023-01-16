@@ -3,6 +3,7 @@
 #include <QtCore/QFile>
 #include <QtWidgets/QMessageBox>
 
+using QtNodes::NodeData;
 using QtNodes::NodeDataType;
 using QtNodes::NodeDelegateModel;
 using QtNodes::NodeDelegateModelRegistry;
@@ -12,6 +13,17 @@ std::unique_ptr<NodeDelegateModel> NodeDelegateModelRegistry::create(QString con
     auto it = _registeredItemCreators.find(modelName);
 
     if (it != _registeredItemCreators.end()) {
+        return it->second();
+    }
+
+    return nullptr;
+}
+
+std::shared_ptr<NodeData> NodeDelegateModelRegistry::createData(QString const &dataType)
+{
+    auto it = _registeredDataCreators.find(dataType);
+
+    if (it != _registeredDataCreators.end()) {
         return it->second();
     }
 

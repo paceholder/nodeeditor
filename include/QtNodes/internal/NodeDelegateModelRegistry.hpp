@@ -27,6 +27,10 @@ public:
     using RegisteredModelsCategoryMap = std::unordered_map<QString, QString>;
     using CategoriesSet = std::set<QString>;
 
+    using RegistryDataPtr = std::shared_ptr<NodeData>;
+    using RegistryDataCreator = std::function<RegistryDataPtr()>;
+    using RegisteredDataCreatorsMap = std::unordered_map<QString, RegistryDataCreator>;
+
     //using RegisteredTypeConvertersMap = std::map<TypeConverterId, TypeConverter>;
 
     NodeDelegateModelRegistry() = default;
@@ -56,6 +60,17 @@ public:
     {
         RegistryItemCreator creator = []() { return std::make_unique<ModelType>(); };
         registerModel<ModelType>(std::move(creator), category);
+    }
+
+    template<typename DataType>
+    void registerData()
+    {
+        RegistryDataCreator creator = []() { return std::make_shared<DataType>(); };
+        const QString name = std::make_shared<DataType>()->type();
+
+        if (!name.isEmpty() && !_registeredDataCreators.count(name)) {
+            _registeredDataCreators[name] = std::move(creator);
+        }
     }
 
 #if 0
@@ -96,6 +111,8 @@ public:
 
     std::unique_ptr<NodeDelegateModel> create(QString const &modelName);
 
+    std::shared_ptr<NodeData> createData(QString const &dataType);
+
     RegisteredModelCreatorsMap const &registeredModelCreators() const;
 
     RegisteredModelsCategoryMap const &registeredModelsCategoryAssociation() const;
@@ -114,6 +131,8 @@ private:
     CategoriesSet _categories;
 
     RegisteredModelCreatorsMap _registeredItemCreators;
+
+    RegisteredDataCreatorsMap _registeredDataCreators;
 
 #if 0
   RegisteredTypeConvertersMap _registeredTypeConverters;

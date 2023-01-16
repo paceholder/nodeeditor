@@ -15,11 +15,30 @@ using QtNodes::DataFlowGraphModel;
 using QtNodes::GraphicsView;
 using QtNodes::NodeDelegateModelRegistry;
 
+/// The class can potentially incapsulate any user data which
+/// need to be transferred within the Node Editor graph
+class MyNodeData : public NodeData
+{
+public:
+    NodeDataType type() const override { return "MyNodeData"; }
+};
+
+class SimpleNodeData : public NodeData
+{
+public:
+    NodeDataType type() const override { return "SimpleData"; }
+};
+
+//------------------------------------------------------------------------------
+
 static std::shared_ptr<NodeDelegateModelRegistry> registerDataModels()
 {
     auto ret = std::make_shared<NodeDelegateModelRegistry>();
 
     ret->registerModel<NaiveDataModel>();
+
+    ret->registerData<MyNodeData>();
+    ret->registerData<SimpleNodeData>();
 
     /*
      We could have more models registered.

@@ -12,23 +12,9 @@
 
 #include <iostream>
 
-using QtNodes::NodeData;
-using QtNodes::NodeDataType;
 using QtNodes::NodeDelegateModel;
 using QtNodes::PortIndex;
 using QtNodes::PortType;
-
-class ANodeData : public NodeData
-{
-public:
-    NodeDataType type() const override { return "AData"; }
-};
-
-class BNodeData : public NodeData
-{
-public:
-    NodeDataType type() const override { return "BData"; }
-};
 
 class DynamicPortsModel : public NodeDelegateModel
 {
@@ -46,16 +32,13 @@ public:
     QString name() const override { return DynamicPortsModel::Name(); }
 
 public:
-    QJsonObject save() const override;
-
-    void load(QJsonObject const &p) override;
-
-public:
-    void setInData(std::shared_ptr<NodeData>, PortIndex const) override;
+    void setInData(QVariant const, PortIndex const) override {}
 
     QWidget *embeddedWidget() override;
 
     virtual bool resizable() const override { return true; }
+
+    virtual bool isDynamicPorts() const { return true; }
 
 private:
     QWidget *_widget = nullptr;

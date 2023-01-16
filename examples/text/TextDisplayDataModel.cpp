@@ -1,15 +1,19 @@
 #include "TextDisplayDataModel.hpp"
 
+#include <QtWidgets/QLabel>
+
 void TextDisplayDataModel::init()
 {
-    createPort(PortType::In, std::make_shared<TextData>(), "Text");
+    createPort(PortType::In, "text", "Text");
 }
 
-void TextDisplayDataModel::setInData(std::shared_ptr<NodeData> nodeData, PortIndex const)
+void TextDisplayDataModel::setInData(QVariant const nodeData, PortIndex const)
 {
-    auto textData = std::dynamic_pointer_cast<TextData>(nodeData);
-
-    _label->setText(textData->data);
+    if (!nodeData.isNull()) {
+        _label->setText(nodeData.toString());
+    } else {
+        _label->clear();
+    }
 
     _label->adjustSize();
 }

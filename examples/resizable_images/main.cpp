@@ -10,6 +10,8 @@
 #include "ImageLoaderModel.hpp"
 #include "ImageShowModel.hpp"
 
+#include "PixmapData.hpp"
+
 using QtNodes::ConnectionStyle;
 using QtNodes::DataFlowGraphicsScene;
 using QtNodes::DataFlowGraphModel;
@@ -19,8 +21,10 @@ using QtNodes::NodeDelegateModelRegistry;
 static std::shared_ptr<NodeDelegateModelRegistry> registerDataModels()
 {
     auto ret = std::make_shared<NodeDelegateModelRegistry>();
-    ret->registerModel<ImageShowModel>();
 
+    ret->registerData<PixmapData>();
+
+    ret->registerModel<ImageShowModel>();
     ret->registerModel<ImageLoaderModel>();
 
     return ret;

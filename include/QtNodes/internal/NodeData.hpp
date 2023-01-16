@@ -4,6 +4,7 @@
 
 #include <QtCore/QObject>
 #include <QtCore/QString>
+#include <QtCore/QVariant>
 
 #include "Export.hpp"
 
@@ -31,6 +32,8 @@ public:
 
     /// Type for inner use
     virtual NodeDataType type() const = 0;
+
+    QVariant data;
 };
 
 } // namespace QtNodes

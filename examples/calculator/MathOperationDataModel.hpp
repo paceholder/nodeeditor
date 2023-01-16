@@ -8,10 +8,6 @@
 
 #include <iostream>
 
-class DecimalData;
-
-using QtNodes::NodeData;
-using QtNodes::NodeDataType;
 using QtNodes::NodeDelegateModel;
 using QtNodes::PortIndex;
 using QtNodes::PortType;
@@ -28,7 +24,7 @@ public:
 public:
     virtual void init() override;
 
-    void setInData(std::shared_ptr<NodeData> data, PortIndex portIndex) override;
+    void setInData(QVariant const nodeData, PortIndex portIndex) override;
 
     QWidget *embeddedWidget() override { return nullptr; }
 
@@ -36,8 +32,8 @@ protected:
     virtual void compute() = 0;
 
 protected:
-    std::weak_ptr<DecimalData> _number1;
-    std::weak_ptr<DecimalData> _number2;
+    double _number1;
+    double _number2;
 
-    std::shared_ptr<DecimalData> _result;
+    double _result;
 };

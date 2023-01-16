@@ -6,10 +6,6 @@
 
 #include <iostream>
 
-class DecimalData;
-
-using QtNodes::NodeData;
-using QtNodes::NodeDataType;
 using QtNodes::NodeDelegateModel;
 using QtNodes::PortIndex;
 using QtNodes::PortType;
@@ -38,7 +34,7 @@ public:
     void load(QJsonObject const &p) override;
 
 public:
-    void setInData(std::shared_ptr<NodeData>, PortIndex) override {}
+    void setInData(QVariant const, PortIndex) override {}
 
     QWidget *embeddedWidget() override;
 
@@ -50,7 +46,7 @@ private Q_SLOTS:
     void onTextEdited(QString const &string);
 
 private:
-    std::shared_ptr<DecimalData> _number;
-
     QLineEdit *_lineEdit;
+
+    double _number;
 };

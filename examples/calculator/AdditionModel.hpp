@@ -1,6 +1,5 @@
 #pragma once
 
-#include "DecimalData.hpp"
 #include "MathOperationDataModel.hpp"
 
 #include <QtNodes/NodeDelegateModel>
@@ -25,16 +24,7 @@ private:
     {
         PortIndex const outPortIndex = 0;
 
-        auto n1 = _number1.lock();
-        auto n2 = _number2.lock();
-
-        if (n1 && n2) {
-            setPortData(PortType::Out,
-                        0,
-                        std::make_shared<DecimalData>(n1->number() + n2->number()));
-        } else {
-            _result.reset();
-        }
+        updateOutPortData(outPortIndex, _number1 + _number2);
 
         Q_EMIT dataUpdated(outPortIndex);
     }

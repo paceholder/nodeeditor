@@ -3,6 +3,7 @@
 #include "AbstractGraphModel.hpp"
 #include "ConnectionIdUtils.hpp"
 #include "NodeDelegateModelRegistry.hpp"
+#include "NodePorts.hpp"
 #include "Serializable.hpp"
 #include "StyleCollection.hpp"
 
@@ -89,7 +90,7 @@ public:
         if (it == _models.end())
             return nullptr;
 
-        auto model = dynamic_cast<NodeDelegateModelType *>(it->second.get());
+        auto model = dynamic_cast<NodeDelegateModelType *>(it->second->node.get());
 
         return model;
     }
@@ -123,7 +124,13 @@ private:
 
     NodeId _nextNodeId;
 
-    std::unordered_map<NodeId, std::unique_ptr<NodeDelegateModel>> _models;
+    struct NodeModel
+    {
+        std::unique_ptr<NodeDelegateModel> node;
+        std::unique_ptr<NodePorts> ports;
+    };
+
+    std::unordered_map<NodeId, std::unique_ptr<NodeModel>> _models;
 
     std::unordered_set<ConnectionId> _connectivity;
 
