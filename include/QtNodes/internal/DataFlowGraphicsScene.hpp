@@ -25,6 +25,8 @@ public:
 public:
     QMenu *createSceneMenu(QPointF const scenePos) override;
 
+    void sortSceneMenu(bool sortMenu = true);
+
 public Q_SLOTS:
     void save() const;
 
@@ -35,6 +37,8 @@ Q_SIGNALS:
 
 private:
     DataFlowGraphModel &_graphModel;
+
+    bool _sortMenu;
 };
 
 } // namespace QtNodes
