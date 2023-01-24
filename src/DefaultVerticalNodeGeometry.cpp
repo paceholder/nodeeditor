@@ -54,8 +54,13 @@ void DefaultVerticalNodeGeometry::recomputeSize(NodeId const nodeId) const
     unsigned int inPortWidth = maxPortsTextAdvance(nodeId, PortType::In);
     unsigned int outPortWidth = maxPortsTextAdvance(nodeId, PortType::Out);
 
-    unsigned int width = std::max(inPortWidth * nInPorts + _portSpasing * (nInPorts - 1),
-                                  outPortWidth * nOutPorts + _portSpasing * (nOutPorts - 1));
+    unsigned int totalInPortsWidth =
+      nInPorts > 0 ? inPortWidth * nInPorts + _portSpasing * (nInPorts - 1) : 0;
+
+    unsigned int totalOutPortsWidth =
+      nOutPorts > 0 ? outPortWidth * nOutPorts + _portSpasing * (nOutPorts - 1) : 0;
+
+    unsigned int width = std::max(totalInPortsWidth, totalOutPortsWidth);
 
     if (auto w = _graphModel.nodeData<QWidget *>(nodeId, NodeRole::Widget)) {
         width = std::max(width, static_cast<unsigned int>(w->width()));
