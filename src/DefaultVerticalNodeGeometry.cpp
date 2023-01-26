@@ -162,6 +162,7 @@ QPointF DefaultVerticalNodeGeometry::captionPosition(NodeId const nodeId) const
     QSize size = _graphModel.nodeData<QSize>(nodeId, NodeRole::Size);
 
     unsigned int step = portCaptionsHeight(nodeId, PortType::In);
+    step += _portSpasing;
 
     auto rect = captionRect(nodeId);
 
