@@ -52,7 +52,8 @@ void DefaultHorizontalNodeGeometry::recomputeSize(NodeId const nodeId) const
         width += w->width();
     }
 
-    width = std::max(width, static_cast<unsigned int>(capRect.width()));
+    width = std::max(width,
+                     static_cast<unsigned int>(capRect.width()) + 2 * _portSpasing);
 
     QSize size(width, height);
 
