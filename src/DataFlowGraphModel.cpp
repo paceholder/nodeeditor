@@ -140,12 +140,13 @@ void DataFlowGraphModel::addConnection(ConnectionId const connectionId)
                                                   PortType::Out,
                                                   connectionId.outPortIndex,
                                                   PortRole::Data);
-
-    setPortData(connectionId.inNodeId,
-                PortType::In,
-                connectionId.inPortIndex,
-                portDataToPropagate,
-                PortRole::Data);
+    if (canPropagate(connectionId)) {
+        setPortData(connectionId.inNodeId,
+                    PortType::In,
+                    connectionId.inPortIndex,
+                    portDataToPropagate,
+                    PortRole::Data);
+    }
 }
 
 bool DataFlowGraphModel::nodeExists(NodeId const nodeId) const
@@ -492,7 +493,17 @@ void DataFlowGraphModel::onOutPortDataUpdated(NodeId const nodeId, PortIndex con
     QVariant const portDataToPropagate = portData(nodeId, PortType::Out, portIndex, PortRole::Data);
 
     for (auto const &cn : connected) {
-        setPortData(cn.inNodeId, PortType::In, cn.inPortIndex, portDataToPropagate, PortRole::Data);
+        if (canPropagate(cn)) {
+            setPortData(cn.inNodeId, PortType::In, cn.inPortIndex, portDataToPropagate, PortRole::Data);
+        }
+    }
+}
+
+void DataFlowGraphModel::propagate(NodeId const nodeId)
+{
+    unsigned int nPorts = nodeData(nodeId, NodeRole::OutPortCount).toUInt();
+    for (PortIndex idx = 0; idx < nPorts; ++idx) {
+        onOutPortDataUpdated(nodeId, idx);
     }
 }
 
