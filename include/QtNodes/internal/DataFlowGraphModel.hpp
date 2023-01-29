@@ -106,7 +106,7 @@ Q_SIGNALS:
 private:
     NodeId newNodeId() override { return _nextNodeId++; }
 
-private Q_SLOTS:
+protected Q_SLOTS:
     /**
    * Fuction is called in three cases:
    *
@@ -117,10 +117,10 @@ private Q_SLOTS:
    * - When a node restored from JSON an needs to send data downstream.
    *   @see DataFlowGraphModel::loadNode
    */
-    void onOutPortDataUpdated(NodeId const nodeId, PortIndex const portIndex);
+    virtual void onOutPortDataUpdated(NodeId const nodeId, PortIndex const portIndex);
 
     /// Function is called after detaching a connection.
-    void propagateEmptyDataTo(NodeId const nodeId, PortIndex const portIndex);
+    virtual void propagateEmptyDataTo(NodeId const nodeId, PortIndex const portIndex);
 
 private:
     std::shared_ptr<NodeDelegateModelRegistry> _registry;
