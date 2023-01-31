@@ -107,6 +107,10 @@ private:
     NodeId newNodeId() override { return _nextNodeId++; }
 
 protected Q_SLOTS:
+    void sendConnectionCreation(ConnectionId const connectionId);
+
+    void sendConnectionDeletion(ConnectionId const connectionId);
+
     /**
    * Fuction is called in three cases:
    *

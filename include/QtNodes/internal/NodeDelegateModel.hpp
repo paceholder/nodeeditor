@@ -17,7 +17,7 @@ class StyleCollection;
 /**
  * The class wraps Node-specific data operations and propagates it to
  * the nesting DataFlowGraphModel which is a subclass of
- * AbstractGrapModel.
+ * AbstractGraphModel.
  * This class is the same what has been called NodeDataModel before v3.
  */
 class NODE_EDITOR_PUBLIC NodeDelegateModel : public QObject, public Serializable
