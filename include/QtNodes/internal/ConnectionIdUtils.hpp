@@ -140,10 +140,11 @@ inline QJsonObject toJson(ConnectionId const &connId)
 
 inline ConnectionId fromJson(QJsonObject const &connJson)
 {
-    ConnectionId connId{static_cast<NodeId>(connJson[QLatin1String("outNodeId")].toInt(InvalidNodeId)),
-                        static_cast<PortIndex>(connJson[QLatin1String("outPortIndex")].toInt(InvalidPortIndex)),
-                        static_cast<NodeId>(connJson[QLatin1String("intNodeId")].toInt(InvalidNodeId)),
-                        static_cast<PortIndex>(connJson[QLatin1String("inPortIndex")].toInt(InvalidPortIndex))};
+    ConnectionId connId{
+        static_cast<NodeId>(connJson[QLatin1String("outNodeId")].toInt(InvalidNodeId)),
+        static_cast<PortIndex>(connJson[QLatin1String("outPortIndex")].toInt(InvalidPortIndex)),
+        static_cast<NodeId>(connJson[QLatin1String("intNodeId")].toInt(InvalidNodeId)),
+        static_cast<PortIndex>(connJson[QLatin1String("inPortIndex")].toInt(InvalidPortIndex))};
 
     return connId;
 }

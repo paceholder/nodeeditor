@@ -15,9 +15,7 @@ DataFlowGraphModel::DataFlowGraphModel(std::shared_ptr<NodeDelegateModelRegistry
 std::unordered_set<NodeId> DataFlowGraphModel::allNodeIds() const
 {
     std::unordered_set<NodeId> nodeIds;
-    for_each(_models.begin(), _models.end(), [&nodeIds](auto const &p) {
-        nodeIds.insert(p.first);
-    });
+    for_each(_models.begin(), _models.end(), [&nodeIds](auto const &p) { nodeIds.insert(p.first); });
 
     return nodeIds;
 }
@@ -494,7 +492,11 @@ void DataFlowGraphModel::onOutPortDataUpdated(NodeId const nodeId, PortIndex con
 
     for (auto const &cn : connected) {
         if (canPropagate(cn)) {
-            setPortData(cn.inNodeId, PortType::In, cn.inPortIndex, portDataToPropagate, PortRole::Data);
+            setPortData(cn.inNodeId,
+                        PortType::In,
+                        cn.inPortIndex,
+                        portDataToPropagate,
+                        PortRole::Data);
         }
     }
 }
