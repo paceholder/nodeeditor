@@ -1,4 +1,4 @@
-{
+﻿{
   "GraphicsViewStyle": {
     "BackgroundColor": [53, 53, 53],
     "FineGridColor": [60, 60, 60],
@@ -14,6 +14,7 @@
     "ShadowColor": [20, 20, 20],
     "FontColor" : "white",
     "FontColorFaded" : "gray",
+    "FontFamily": "Microsoft YaHei",
     "ConnectionPointColor": [169, 169, 169],
     "FilledConnectionPointColor": "cyan",
     "ErrorColor": "red",

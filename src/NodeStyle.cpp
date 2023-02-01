@@ -1,4 +1,4 @@
-#include "NodeStyle.hpp"
+﻿#include "NodeStyle.hpp"
 
 #include <iostream>
 
@@ -88,6 +88,19 @@ void NodeStyle::setNodeStyle(QString jsonText)
         values[#variable] = variable; \
     }
 
+#define NODE_STYLE_READ_STRING(values, variable)\
+{ \
+    auto valueRef = values[#variable]; \
+    NODE_STYLE_CHECK_UNDEFINED_VALUE(valueRef, variable) \
+    variable = valueRef.toString(); \
+}
+
+#define NODE_STYLE_WRITE_STRING(values, variable) \
+    { \
+        values[#variable] = variable; \
+    }
+
+
 void NodeStyle::loadJson(QJsonObject const &json)
 {
     QJsonValue nodeStyleValues = json["NodeStyle"];
@@ -113,6 +126,8 @@ void NodeStyle::loadJson(QJsonObject const &json)
     NODE_STYLE_READ_FLOAT(obj, ConnectionPointDiameter);
 
     NODE_STYLE_READ_FLOAT(obj, Opacity);
+
+    NODE_STYLE_READ_STRING(obj, FontFamily);
 }
 
 QJsonObject NodeStyle::toJson() const
@@ -138,6 +153,8 @@ QJsonObject NodeStyle::toJson() const
     NODE_STYLE_WRITE_FLOAT(obj, ConnectionPointDiameter);
 
     NODE_STYLE_WRITE_FLOAT(obj, Opacity);
+
+    NODE_STYLE_WRITE_STRING(obj, FontFamily);
 
     QJsonObject root;
     root["NodeStyle"] = obj;
