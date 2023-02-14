@@ -144,7 +144,7 @@ QMenu *DataFlowGraphicsScene::createSceneMenu(QPointF const scenePos)
     return modelMenu;
 }
 
-void DataFlowGraphicsScene::save() const
+bool DataFlowGraphicsScene::save() const
 {
     QString fileName = QFileDialog::getSaveFileName(nullptr,
                                                     tr("Open Flow Scene"),
@@ -158,11 +158,13 @@ void DataFlowGraphicsScene::save() const
         QFile file(fileName);
         if (file.open(QIODevice::WriteOnly)) {
             file.write(QJsonDocument(_graphModel.save()).toJson());
+            return true;
         }
     }
+    return false;
 }
 
-void DataFlowGraphicsScene::load()
+bool DataFlowGraphicsScene::load()
 {
     QString fileName = QFileDialog::getOpenFileName(nullptr,
                                                     tr("Open Flow Scene"),
@@ -170,12 +172,12 @@ void DataFlowGraphicsScene::load()
                                                     tr("Flow Scene Files (*.flow)"));
 
     if (!QFileInfo::exists(fileName))
-        return;
+        return false;
 
     QFile file(fileName);
 
     if (!file.open(QIODevice::ReadOnly))
-        return;
+        return false;
 
     clearScene();
 
@@ -184,6 +186,8 @@ void DataFlowGraphicsScene::load()
     _graphModel.load(QJsonDocument::fromJson(wholeFile).object());
 
     Q_EMIT sceneLoaded();
+
+    return true;
 }
 
 } // namespace QtNodes
