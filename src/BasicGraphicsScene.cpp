@@ -111,6 +111,16 @@ QUndoStack &BasicGraphicsScene::undoStack()
     return *_undoStack;
 }
 
+void BasicGraphicsScene::setDropShadowEffect(bool enable)
+{
+    _dropShadowEffect = enable;
+}
+
+bool BasicGraphicsScene::isDropShadowEffectEnabled() const
+{
+    return _dropShadowEffect;
+}
+
 std::unique_ptr<ConnectionGraphicsObject> const &BasicGraphicsScene::makeDraftConnection(
     ConnectionId const incompleteConnectionId)
 {
