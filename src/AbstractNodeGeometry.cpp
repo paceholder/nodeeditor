@@ -9,8 +9,9 @@
 
 namespace QtNodes {
 
-AbstractNodeGeometry::AbstractNodeGeometry(AbstractGraphModel &graphModel)
+AbstractNodeGeometry::AbstractNodeGeometry(AbstractGraphModel &graphModel, double marginsRatio)
     : _graphModel(graphModel)
+    , _marginsRatio(marginsRatio)
 {
     //
 }
@@ -19,16 +20,19 @@ QRectF AbstractNodeGeometry::boundingRect(NodeId const nodeId) const
 {
     QSize s = size(nodeId);
 
-    double ratio = 0.20;
-
-    int widthMargin = s.width() * ratio;
-    int heightMargin = s.height() * ratio;
+    int widthMargin = s.width() * _marginsRatio;
+    int heightMargin = s.height() * _marginsRatio;
 
     QMargins margins(widthMargin, heightMargin, widthMargin, heightMargin);
 
     QRectF r(QPointF(0, 0), s);
 
     return r.marginsAdded(margins);
+}
+
+void AbstractNodeGeometry::setMarginsRatio(double marginsRatio)
+{
+    _marginsRatio = marginsRatio;
 }
 
 QPointF AbstractNodeGeometry::portScenePosition(NodeId const nodeId,

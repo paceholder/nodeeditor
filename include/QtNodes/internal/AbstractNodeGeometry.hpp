@@ -14,7 +14,7 @@ class AbstractGraphModel;
 class NODE_EDITOR_PUBLIC AbstractNodeGeometry
 {
 public:
-    AbstractNodeGeometry(AbstractGraphModel &);
+    AbstractNodeGeometry(AbstractGraphModel &, double marginsRatio = 0.2);
     virtual ~AbstractNodeGeometry() {}
 
     /**
@@ -26,6 +26,8 @@ public:
    * at each side of the rectangle.
    */
     virtual QRectF boundingRect(NodeId const nodeId) const;
+
+    virtual void setMarginsRatio(double marginsRatio);
 
     /// A direct rectangle defining the borders of the node's rectangle.
     virtual QSize size(NodeId const nodeId) const = 0;
@@ -74,6 +76,7 @@ public:
 
 protected:
     AbstractGraphModel &_graphModel;
+    double _marginsRatio{0.0};
 };
 
 } // namespace QtNodes
