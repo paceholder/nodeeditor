@@ -23,7 +23,7 @@ class ImageShowModel : public NodeDelegateModel
 public:
     ImageShowModel();
 
-    ~ImageShowModel() = default;
+    virtual ~ImageShowModel();
 
 public:
     QString caption() const override { return QString("Image Display"); }
@@ -40,6 +40,8 @@ public:
     std::shared_ptr<NodeData> outData(PortIndex const port) override;
 
     void setInData(std::shared_ptr<NodeData> nodeData, PortIndex const port) override;
+
+    bool widgetEmbeddable() const override { return false; }
 
     QWidget *embeddedWidget() override { return _label; }
 
