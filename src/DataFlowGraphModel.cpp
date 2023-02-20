@@ -240,6 +240,9 @@ QVariant DataFlowGraphModel::nodeData(NodeId nodeId, NodeRole role) const
         auto w = model->embeddedWidget();
         result = QVariant::fromValue(w);
     } break;
+
+    default:
+        break;
     }
 
     return result;
@@ -302,6 +305,9 @@ bool DataFlowGraphModel::setNodeData(NodeId nodeId, NodeRole role, QVariant valu
 
     case NodeRole::Widget:
         break;
+
+    default:
+        break;
     }
 
     return result;
@@ -340,7 +346,9 @@ QVariant DataFlowGraphModel::portData(NodeId nodeId,
 
     case PortRole::Caption:
         result = model->portCaption(portType, portIndex);
+        break;
 
+    default:
         break;
     }
 
