@@ -507,6 +507,24 @@ zoomFitAll()
 
 void
 FlowView::
+zoomFitSelected()
+{
+  if(_scene->selectedItems().count() > 0){
+
+    QRectF unitedBoundingRect;
+
+    for(QGraphicsItem * item : _scene->selectedItems())
+    {
+      unitedBoundingRect = unitedBoundingRect.united(item->mapRectToScene(item->boundingRect()));
+    }
+
+    fitInView(unitedBoundingRect, Qt::KeepAspectRatio);
+    clipCurrentScale();
+  }
+}
+
+void
+FlowView::
 contextMenuEvent(QContextMenuEvent *event)
 {
   auto menuPos{mapToScene(event->pos())};

@@ -112,6 +112,11 @@ public Q_SLOTS:
    */
   void zoomFitAll();
 
+  /**
+   * @brief Sets the viewport to fit selected existing nodes.
+   */
+  void zoomFitSelected();
+
 protected:
   /**
    * @brief Creates a context menu when the user right-clicks a group area.
