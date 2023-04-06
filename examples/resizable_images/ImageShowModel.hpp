@@ -16,14 +16,14 @@ using QtNodes::PortType;
 
 /// The model dictates the number of inputs and outputs for the Node.
 /// In this example it has no logic.
-class ImageShowModel : public NodeDelegateModel
+class ImageShowModel final : public NodeDelegateModel
 {
     Q_OBJECT
 
 public:
     ImageShowModel();
 
-    virtual ~ImageShowModel();
+    ~ImageShowModel() override;
 
 public:
     QString caption() const override { return QString("Image Display"); }
