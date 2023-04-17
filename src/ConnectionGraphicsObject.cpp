@@ -1,10 +1,10 @@
 #include "ConnectionGraphicsObject.hpp"
 
+#include "AbstractConnectionPainter.hpp"
 #include "AbstractGraphModel.hpp"
 #include "AbstractNodeGeometry.hpp"
 #include "BasicGraphicsScene.hpp"
 #include "ConnectionIdUtils.hpp"
-#include "ConnectionPainter.hpp"
 #include "ConnectionState.hpp"
 #include "ConnectionStyle.hpp"
 #include "NodeConnectionInteraction.hpp"
@@ -128,7 +128,7 @@ QPainterPath ConnectionGraphicsObject::shape() const
     //return path;
 
 #else
-    return ConnectionPainter::getPainterStroke(*this);
+    return nodeScene()->connectionPainter().getPainterStroke(*this);
 #endif
 }
 
@@ -198,7 +198,7 @@ void ConnectionGraphicsObject::paint(QPainter *painter,
 
     painter->setClipRect(option->exposedRect);
 
-    ConnectionPainter::paint(painter, *this);
+    nodeScene()->connectionPainter().paint(painter, *this);
 }
 
 void ConnectionGraphicsObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
