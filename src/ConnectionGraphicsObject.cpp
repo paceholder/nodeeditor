@@ -128,7 +128,7 @@ QPainterPath ConnectionGraphicsObject::shape() const
     //return path;
 
 #else
-    return ConnectionPainter::getPainterStroke(*this);
+    return nodeScene()->connectionPainter().getPainterStroke(*this);
 #endif
 }
 
@@ -198,7 +198,7 @@ void ConnectionGraphicsObject::paint(QPainter *painter,
 
     painter->setClipRect(option->exposedRect);
 
-    ConnectionPainter::paint(painter, *this);
+    nodeScene()->connectionPainter().paint(painter, *this);
 }
 
 void ConnectionGraphicsObject::mousePressEvent(QGraphicsSceneMouseEvent *event)

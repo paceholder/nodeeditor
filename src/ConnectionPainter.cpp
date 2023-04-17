@@ -11,7 +11,7 @@
 
 namespace QtNodes {
 
-static QPainterPath cubicPath(ConnectionGraphicsObject const &connection)
+QPainterPath ConnectionPainter::cubicPath(ConnectionGraphicsObject const &connection)
 {
     QPointF const &in = connection.endPoint(PortType::In);
     QPointF const &out = connection.endPoint(PortType::Out);
@@ -26,7 +26,7 @@ static QPainterPath cubicPath(ConnectionGraphicsObject const &connection)
     return cubic;
 }
 
-QPainterPath ConnectionPainter::getPainterStroke(ConnectionGraphicsObject const &connection)
+QPainterPath ConnectionPainter::getPainterStroke(ConnectionGraphicsObject const &connection) const
 {
     auto cubic = cubicPath(connection);
 
@@ -78,7 +78,7 @@ static void debugDrawing(QPainter *painter, ConnectionGraphicsObject const &cgo)
 
 #endif
 
-static void drawSketchLine(QPainter *painter, ConnectionGraphicsObject const &cgo)
+void ConnectionPainter::drawSketchLine(QPainter *painter, ConnectionGraphicsObject const &cgo)
 {
     ConnectionState const &state = cgo.connectionState();
 
@@ -86,7 +86,7 @@ static void drawSketchLine(QPainter *painter, ConnectionGraphicsObject const &cg
         auto const &connectionStyle = QtNodes::StyleCollection::connectionStyle();
 
         QPen pen;
-        pen.setWidth(connectionStyle.constructionLineWidth());
+        pen.setWidth(static_cast<int>(connectionStyle.constructionLineWidth()));
         pen.setColor(connectionStyle.constructionColor());
         pen.setStyle(Qt::DashLine);
 
@@ -100,7 +100,7 @@ static void drawSketchLine(QPainter *painter, ConnectionGraphicsObject const &cg
     }
 }
 
-static void drawHoveredOrSelected(QPainter *painter, ConnectionGraphicsObject const &cgo)
+void ConnectionPainter::drawHoveredOrSelected(QPainter *painter, ConnectionGraphicsObject const &cgo)
 {
     bool const hovered = cgo.connectionState().hovered();
     bool const selected = cgo.isSelected();
@@ -112,7 +112,7 @@ static void drawHoveredOrSelected(QPainter *painter, ConnectionGraphicsObject co
         double const lineWidth = connectionStyle.lineWidth();
 
         QPen pen;
-        pen.setWidth(2 * lineWidth);
+        pen.setWidth(static_cast<int>(2 * lineWidth));
         pen.setColor(selected ? connectionStyle.selectedHaloColor()
                               : connectionStyle.hoveredColor());
 
@@ -125,7 +125,7 @@ static void drawHoveredOrSelected(QPainter *painter, ConnectionGraphicsObject co
     }
 }
 
-static void drawNormalLine(QPainter *painter, ConnectionGraphicsObject const &cgo)
+void ConnectionPainter::drawNormalLine(QPainter *painter, ConnectionGraphicsObject const &cgo)
 {
     ConnectionState const &state = cgo.connectionState();
 
@@ -227,7 +227,7 @@ static void drawNormalLine(QPainter *painter, ConnectionGraphicsObject const &cg
     }
 }
 
-void ConnectionPainter::paint(QPainter *painter, ConnectionGraphicsObject const &cgo)
+void ConnectionPainter::paint(QPainter *painter, ConnectionGraphicsObject const &cgo) const
 {
     drawHoveredOrSelected(painter, cgo);
 
