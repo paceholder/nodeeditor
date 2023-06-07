@@ -331,7 +331,6 @@ namespace QtNodes {
                     if (getDataType(id1, p1, PortType::Out).id == InvalidData().type().id) {
 
                         std::swap(id1, id2); // Swap back and try again;
-                        qDebug() << "No vacant ports";
                         p1 = 0;
                         break;
                     }

@@ -11,16 +11,12 @@
 #include "QtNodes/NodeData"
 #include "QtNodes/internal/NodeState.hpp"
 #include "AbstractGraphModel.hpp"
-#include "AbstractNodeGeometry.hpp"
 #include "BasicGraphicsScene.hpp"
 #include "ConnectionGraphicsObject.hpp"
 #include "ConnectionIdUtils.hpp"
 #include "NodeGraphicsObject.hpp"
-#include "NodeState.hpp"
-#include "StyleCollection.hpp"
 
 
-// TODO: move to QtNodes fork
 QtNodes::WidgetNodePainter::WidgetNodePainter() : AbstractNodePainter() {
 }
 
