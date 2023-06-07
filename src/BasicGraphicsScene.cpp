@@ -276,6 +276,24 @@ namespace QtNodes {
         traverseGraphAndPopulateGraphicsObjects();
     }
 
+    bool BasicGraphicsScene::portVacant(NodeId nodeId, PortIndex const portIndex,
+                          PortType const portType) {
+        auto const connected = _graphModel.connections(nodeId, portType, portIndex);
+
+        auto policy = _graphModel.portData(nodeId, portType, portIndex,
+                                           PortRole::ConnectionPolicyRole)
+                .value<ConnectionPolicy>();
+
+        return connected.empty() || (policy == ConnectionPolicy::Many);
+    };
+
+    NodeDataType BasicGraphicsScene::getDataType(NodeId nodeId, PortIndex const portIndex,
+                           PortType const portType) {
+        return _graphModel.portData(nodeId, portType,
+                                    portIndex,
+                                    PortRole::DataType).value<NodeDataType>();
+    };
+
     void BasicGraphicsScene::keyPressEvent(QKeyEvent *event) {
         QGraphicsScene::keyPressEvent(event);
         if (event->key() == Qt::Key_F) {
@@ -301,27 +319,24 @@ namespace QtNodes {
                 if(pos2 < pos1) {
                     std::swap(id1, id2);
                 }
+                if(_graphModel.nodeData<int>(id1, NodeRole::OutPortCount) == 0) {
+                    std::swap(id1, id2);
+                }
 
-                auto portVacant = [&](NodeId nodeId, PortIndex const portIndex,
-                                      PortType const portType) {
-                    auto const connected = _graphModel.connections(nodeId, portType, portIndex);
-
-                    auto policy = _graphModel.portData(nodeId, portType, portIndex,
-                                                       PortRole::ConnectionPolicyRole)
-                            .value<ConnectionPolicy>();
-
-                    return connected.empty() || (policy == ConnectionPolicy::Many);
-                };
-
-                auto getDataType = [&](NodeId nodeId, PortIndex const portIndex,
-                                       PortType const portType) {
-                    return _graphModel.portData(nodeId, portType,
-                                                portIndex,
-                                                PortRole::DataType).value<NodeDataType>();
-                };
 
                 // Find free port for node 1
                 PortIndex p1 = 0;
+                while (!portVacant(id1, p1, PortType::Out)) {
+                    p1++;
+                    if (getDataType(id1, p1, PortType::Out).id == InvalidData().type().id) {
+
+                        std::swap(id1, id2); // Swap back and try again;
+                        qDebug() << "No vacant ports";
+                        p1 = 0;
+                        break;
+                    }
+                }
+                // Find free port for node 1
                 while (!portVacant(id1, p1, PortType::Out)) {
                     p1++;
                     if (getDataType(id1, p1, PortType::Out).id == InvalidData().type().id) {
