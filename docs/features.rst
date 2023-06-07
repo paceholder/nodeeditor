@@ -242,7 +242,7 @@ Vertical Layout
 This feature might seem to be a bit "raw". I haven't had good use cases from real
 life projects to polish the code and the resulting node layout and rendering.
 
-The current node layout in a vertical mode looks as follows:
+The current node layout in a vertical mode_ looks as follows:
 
 ::
 
@@ -391,5 +391,5 @@ to a dedicated ``GraphicsView``.
 Code Example
   See ``examples/calculator/headless_main.cpp``. In this file we instantiate just
   a ``DataFlowGraphModel`` and load a pre-saved calculator graph structure into
-  it. The model is able to compute the results if the user modifies the inputs in
+  it. The model is able to execute the results if the user modifies the inputs in
   the code.

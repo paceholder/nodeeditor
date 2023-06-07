@@ -38,6 +38,8 @@ bool NodeConnectionInteraction::canConnect(PortIndex *portIndex) const
     if (_ngo.nodeId() == connectedNodeId)
         return false;
 
+    // TODO: forbid loop
+
     // 3. Connection loose end is above the node port.
 
     QPointF connectionPoint = _cgo.sceneTransform().map(_cgo.endPoint(requiredPort));
@@ -68,7 +70,18 @@ bool NodeConnectionInteraction::tryConnect() const
         return false;
     }
 
-    // 2. Create new connection.
+
+    // 2. Remove existing connections to the port
+
+    AbstractGraphModel &model = _ngo.nodeScene()->graphModel();
+    auto const connected = model.connections(_ngo.nodeId(), PortType::In, targetPortIndex);
+    if(!connected.empty()) {
+        for(auto conId : connected) {
+            _scene.undoStack().push(new DisconnectCommand(&_scene, conId));
+        }
+    }
+
+    // 3. Create new connection.
 
     ConnectionId incompleteConnectionId = _cgo.connectionId();
 

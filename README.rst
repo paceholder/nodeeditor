@@ -82,7 +82,7 @@ Current State (v3)
 ==================
 
 * Model-based graph
-* Headless mode
+* Headless mode_
   You can create, populate, modify the derivative of ``AbstractGraphModel``
   without adding it to the actual Flow Scene.  The library is now designed to be
   general-purpose graph visualization and modification tool, without

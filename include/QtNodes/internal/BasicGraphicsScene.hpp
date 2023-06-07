@@ -93,12 +93,17 @@ public:
 
     void setOrientation(Qt::Orientation const orientation);
 
+    void toggleWidgetMode();
+
 public:
     /// Can @return an instance of the scene context menu in subclass.
     /**
    * Default implementation returns `nullptr`.
    */
     virtual QMenu *createSceneMenu(QPointF const scenePos);
+
+
+    void keyPressEvent(QKeyEvent *event) override;
 
 Q_SIGNALS:
     void nodeMoved(NodeId const nodeId, QPointF const &newLocation);
@@ -173,6 +178,7 @@ private:
     QUndoStack *_undoStack;
 
     Qt::Orientation _orientation;
+
 };
 
 } // namespace QtNodes
