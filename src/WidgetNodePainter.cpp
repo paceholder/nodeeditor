@@ -30,8 +30,6 @@ void QtNodes::WidgetNodePainter::paint(QPainter *painter, NodeGraphicsObject &ng
 
     drawFilledConnectionPoints(painter, ngo);
 
-    drawEntryLabels(painter, ngo);
-
     drawResizeRect(painter, ngo);
 }
 

@@ -277,7 +277,7 @@ namespace QtNodes {
     }
 
     bool BasicGraphicsScene::portVacant(NodeId nodeId, PortIndex const portIndex,
-                          PortType const portType) {
+                                        PortType const portType) {
         auto const connected = _graphModel.connections(nodeId, portType, portIndex);
 
         auto policy = _graphModel.portData(nodeId, portType, portIndex,
@@ -288,7 +288,7 @@ namespace QtNodes {
     };
 
     NodeDataType BasicGraphicsScene::getDataType(NodeId nodeId, PortIndex const portIndex,
-                           PortType const portType) {
+                                                 PortType const portType) {
         return _graphModel.portData(nodeId, portType,
                                     portIndex,
                                     PortRole::DataType).value<NodeDataType>();
@@ -316,35 +316,25 @@ namespace QtNodes {
                     return;
                 }
                 // Sort them accordingly
-                if(pos2 < pos1) {
+                if (pos2 < pos1) {
                     std::swap(id1, id2);
                 }
-                if(_graphModel.nodeData<int>(id1, NodeRole::OutPortCount) == 0) {
+                if (_graphModel.nodeData<int>(id1, NodeRole::OutPortCount) == 0) {
                     std::swap(id1, id2);
                 }
-
 
                 // Find free port for node 1
                 PortIndex p1 = 0;
-                while (!portVacant(id1, p1, PortType::Out)) {
+                bool vacant = _graphModel.connections(id1, PortType::Out, p1).empty();
+                while (!vacant) {
                     p1++;
                     if (getDataType(id1, p1, PortType::Out).id == InvalidData().type().id) {
+                        return;
+                    }
+                    vacant = _graphModel.connections(id1, PortType::Out, p1).empty();
+                }
 
-                        std::swap(id1, id2); // Swap back and try again;
-                        p1 = 0;
-                        break;
-                    }
-                }
-                // Find free port for node 1
-                while (!portVacant(id1, p1, PortType::Out)) {
-                    p1++;
-                    if (getDataType(id1, p1, PortType::Out).id == InvalidData().type().id) {
-                        return; // No port available
-                    }
-                }
                 NodeDataType p1Type = getDataType(id1, p1, PortType::Out);
-
-
                 // Find free port for node 2
                 // Also ensure the data types match
                 PortIndex p2 = 0;
@@ -354,6 +344,10 @@ namespace QtNodes {
                     if (getDataType(id2, p2, PortType::In).id == InvalidData().type().id) {
                         return; // No port available
                     }
+                }
+                NodeDataType p2Type = getDataType(id2, p2, PortType::In);
+                if (p2Type.id == InvalidData().type().id) {
+                    return;
                 }
 
                 ConnectionId connectionId = {.outNodeId = id1, .outPortIndex = p1, .inNodeId = id2, .inPortIndex = p1};

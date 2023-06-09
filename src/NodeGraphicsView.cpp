@@ -24,7 +24,7 @@ void nitro::NodeGraphicsView::spawnNodeMenu() {
 
 QMenu *nitro::NodeGraphicsView::getNodeMenu() {
     if (!nodeMenu_) {
-        nodeMenu_ = initNodeMenu(); // TODO
+        nodeMenu_ = initNodeMenu();
     }
     return nodeMenu_;
 }

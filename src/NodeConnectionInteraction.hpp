@@ -5,6 +5,7 @@
 #include <QtCore/QPointF>
 
 #include "Definitions.hpp"
+#include "QtNodes/AbstractGraphModel"
 
 namespace QtNodes {
 
@@ -63,6 +64,8 @@ private:
     ConnectionGraphicsObject &_cgo;
 
     BasicGraphicsScene &_scene;
+
+    bool introducesCycle(QtNodes::AbstractGraphModel &model, NodeId sourceNode, NodeId targetNode) const;
 };
 
 } // namespace QtNodes
