@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QtNodes/NodeData>
+
 namespace QtNodes {
     class InvalidData : public NodeData {
     public:

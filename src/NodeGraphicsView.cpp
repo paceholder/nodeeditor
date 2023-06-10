@@ -1,4 +1,4 @@
-#include "include/QtNodes/NodeGraphicsView.hpp"
+#include "QtNodes/NodeGraphicsView.hpp"
 
 nitro::NodeGraphicsView::NodeGraphicsView(QtNodes::BasicGraphicsScene *scene,
                                           QtNodes::DataFlowGraphModel *model, QWidget *parent)

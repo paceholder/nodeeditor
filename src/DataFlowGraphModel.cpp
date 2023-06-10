@@ -115,12 +115,6 @@ bool DataFlowGraphModel::connectionPossible(ConnectionId const connectionId) con
 
     auto datOut = getDataType(PortType::Out);
     auto datIn = getDataType(PortType::In);
-    if(datOut.id == "greyImage" && datIn.id == "universalImage") { // TODO: this is hardcoded for now; change somewhere!!
-        return true;
-    }
-    if(datOut.id == "colImage" && datIn.id == "universalImage") { // TODO: this is hardcoded for now; change somewhere!!
-        return true;
-    }
     return datOut.id == datIn.id;
 }
 
