@@ -113,19 +113,9 @@ bool DataFlowGraphModel::connectionPossible(ConnectionId const connectionId) con
             .value<NodeDataType>();
     };
 
-    auto portVacant = [&](PortType const portType) {
-        NodeId const nodeId = getNodeId(portType, connectionId);
-        PortIndex const portIndex = getPortIndex(portType, connectionId);
-        auto const connected = connections(nodeId, portType, portIndex);
-
-        auto policy = portData(nodeId, portType, portIndex, PortRole::ConnectionPolicyRole)
-                          .value<ConnectionPolicy>();
-
-        return connected.empty() || (policy == ConnectionPolicy::Many);
-    };
-
-    return getDataType(PortType::Out).id == getDataType(PortType::In).id
-           && portVacant(PortType::Out) && portVacant(PortType::In);
+    auto datOut = getDataType(PortType::Out);
+    auto datIn = getDataType(PortType::In);
+    return datOut.id == datIn.id;
 }
 
 void DataFlowGraphModel::addConnection(ConnectionId const connectionId)

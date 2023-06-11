@@ -25,7 +25,7 @@ The library could be used for two purposes:
   1. General-purpose graph visulalization and editing.
   2. Computing data in the nodes and propagating it through connections.
 
-The "headless" mode is also supported. It is possible to create, delete, connect
+The "headless" mode_ is also supported. It is possible to create, delete, connect
 and disconnect nodes, as well as propagate data, without assigning your
 :cpp:type:`AbstractGraphModel` derivative to a :cpp:type:`BasicGraphicsScene`.
 

@@ -21,6 +21,45 @@ NodeConnectionInteraction::NodeConnectionInteraction(NodeGraphicsObject &ngo,
     , _scene(scene)
 {}
 
+
+bool dfs(AbstractGraphModel &model, NodeId currentNode, NodeId targetNode, std::map<NodeId, bool>& visited) {
+
+    if (currentNode == targetNode) {
+        // Target node reached, cycle found
+        return true;
+    }
+    if(visited[currentNode]) {
+        return false;
+    }
+    visited[currentNode] = true;
+
+    unsigned int nOutPorts = model.nodeData<PortCount>(currentNode, NodeRole::OutPortCount);
+    for (PortIndex index = 0; index < nOutPorts; ++index) {
+        auto const &outConnectionIds = model.connections(currentNode, PortType::Out, index);
+        for (auto& connection : outConnectionIds) {
+            NodeId neighbour  = connection.inNodeId;
+            if (!visited[neighbour]) {
+                if (dfs(model, neighbour, targetNode, visited)) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
+bool NodeConnectionInteraction::introducesCycle(AbstractGraphModel &model, NodeId sourceNode, NodeId targetNode) const {
+    // Mark all nodes as not visited
+    std::map<NodeId, bool> visited;
+    for (auto& id : model.allNodeIds()) {
+        visited[id] = false;
+    }
+
+    // Perform DFS from the target node
+    return dfs(model, sourceNode, targetNode, visited);
+}
+
+
 bool NodeConnectionInteraction::canConnect(PortIndex *portIndex) const
 {
     // 1. Connection requires a port.
@@ -38,7 +77,14 @@ bool NodeConnectionInteraction::canConnect(PortIndex *portIndex) const
     if (_ngo.nodeId() == connectedNodeId)
         return false;
 
-    // 3. Connection loose end is above the node port.
+    AbstractGraphModel &model = _ngo.nodeScene()->graphModel();
+
+    // 3. Forbid connections that introduce cycles
+    if(introducesCycle(model, _ngo.nodeId(), connectedNodeId)) {
+        return false;
+    }
+
+    // 4. Connection loose end is above the node port.
 
     QPointF connectionPoint = _cgo.sceneTransform().map(_cgo.endPoint(requiredPort));
 
@@ -48,9 +94,8 @@ bool NodeConnectionInteraction::canConnect(PortIndex *portIndex) const
         return false;
     }
 
-    // 4. Model allows connection.
+    // 5. Model allows connection.
 
-    AbstractGraphModel &model = _ngo.nodeScene()->graphModel();
 
     ConnectionId connectionId = makeCompleteConnectionId(_cgo.connectionId(), // incomplete
                                                          _ngo.nodeId(),       // missing node id
@@ -68,7 +113,18 @@ bool NodeConnectionInteraction::tryConnect() const
         return false;
     }
 
-    // 2. Create new connection.
+
+    // 2. Remove existing connections to the port
+
+    AbstractGraphModel &model = _ngo.nodeScene()->graphModel();
+    auto const connected = model.connections(_ngo.nodeId(), PortType::In, targetPortIndex);
+    if(!connected.empty()) {
+        for(auto conId : connected) {
+            _scene.undoStack().push(new DisconnectCommand(&_scene, conId));
+        }
+    }
+
+    // 3. Create new connection.
 
     ConnectionId incompleteConnectionId = _cgo.connectionId();
 

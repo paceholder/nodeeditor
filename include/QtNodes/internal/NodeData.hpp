@@ -34,6 +34,10 @@ public:
         return (this->type().id == nodeData.type().id);
     }
 
+    virtual bool canConvert(NodeData const &nodeData) {
+        return false;
+    }
+
     /// Type for inner use
     virtual NodeDataType type() const = 0;
 };
