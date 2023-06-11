@@ -248,7 +248,6 @@ void QtNodes::WidgetNodePainter::drawEntryLabels(QPainter *painter, NodeGraphics
 
             QString s;
 
-            // TODO: draw custom names here
             if (model.portData<bool>(nodeId, portType, portIndex, PortRole::CaptionVisible)) {
                 s = model.portData<QString>(nodeId, portType, portIndex, PortRole::Caption);
             } else {

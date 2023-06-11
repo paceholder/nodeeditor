@@ -80,8 +80,7 @@ bool NodeConnectionInteraction::canConnect(PortIndex *portIndex) const
     AbstractGraphModel &model = _ngo.nodeScene()->graphModel();
 
     // 3. Forbid connections that introduce cycles
-    if(introducesCycle(model, _ngo.nodeId(), connectedNodeId)
-        || introducesCycle(model, connectedNodeId, _ngo.nodeId())) {
+    if(introducesCycle(model, _ngo.nodeId(), connectedNodeId)) {
         return false;
     }
 
