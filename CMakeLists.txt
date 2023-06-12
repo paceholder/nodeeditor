@@ -132,12 +132,12 @@ set(HPP_HEADER_FILES
         include/QtNodes/InvalidData.hpp
         include/QtNodes/NodeInfo.hpp
         include/QtNodes/DataInfo.hpp
+        include/QtNodes/internal/UndoCommands.hpp
         src/ConnectionPainter.hpp
         src/DefaultHorizontalNodeGeometry.hpp
         src/DefaultVerticalNodeGeometry.hpp
         src/WidgetHorizontalNodeGeometry.hpp
         src/NodeConnectionInteraction.hpp
-        src/UndoCommands.hpp
         )
 
 # If we want to give the option to build a static library,

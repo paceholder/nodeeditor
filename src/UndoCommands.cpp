@@ -131,7 +131,9 @@ CreateCommand::CreateCommand(BasicGraphicsScene *scene,
 {
     _nodeId = _scene->graphModel().addNode(name);
     if (_nodeId != InvalidNodeId) {
-        _scene->graphModel().setNodeData(_nodeId, NodeRole::Position, mouseScenePos);
+        auto rect = scene->nodeGeometry().size(_nodeId);
+        QPointF posView = {mouseScenePos.x() - rect.width() / 2, mouseScenePos.y() - rect.height() / 2};
+        _scene->graphModel().setNodeData(_nodeId, NodeRole::Position, posView);
     } else {
         setObsolete(true);
     }
