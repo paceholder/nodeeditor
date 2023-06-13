@@ -115,7 +115,7 @@ bool NodeConnectionInteraction::tryConnect() const
 
 
     // 2. Remove existing connections to the port
-
+    // TODO: change to a different node id if the connection is created the other way around
     AbstractGraphModel &model = _ngo.nodeScene()->graphModel();
     auto const connected = model.connections(_ngo.nodeId(), PortType::In, targetPortIndex);
     if(!connected.empty()) {
