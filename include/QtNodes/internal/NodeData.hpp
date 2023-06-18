@@ -29,9 +29,8 @@ class NODE_EDITOR_PUBLIC NodeData
 public:
     virtual ~NodeData() = default;
 
-    virtual bool sameType(NodeData const &nodeData) const
-    {
-        return (this->type().id == nodeData.type().id);
+    virtual QString getDescription() const {
+        return type().name;
     }
 
     /// Type for inner use
