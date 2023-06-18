@@ -27,19 +27,10 @@ using QtNodes::BasicGraphicsScene;
 using QtNodes::GraphicsView;
 
 GraphicsView::GraphicsView(QWidget *parent)
-    : QGraphicsView(parent)
-    , _clearSelectionAction(Q_NULLPTR)
-    , _deleteSelectionAction(Q_NULLPTR)
-    , _duplicateSelectionAction(Q_NULLPTR)
-    , _copySelectionAction(Q_NULLPTR)
-    , _pasteAction(Q_NULLPTR)
-{
+        : QGraphicsView(parent), _clearSelectionAction(Q_NULLPTR), _deleteSelectionAction(Q_NULLPTR),
+          _duplicateSelectionAction(Q_NULLPTR), _copySelectionAction(Q_NULLPTR), _pasteAction(Q_NULLPTR) {
     setDragMode(QGraphicsView::ScrollHandDrag);
     setRenderHint(QPainter::Antialiasing);
-
-    auto const &flowViewStyle = StyleCollection::flowViewStyle();
-
-    setBackgroundBrush(flowViewStyle.BackgroundColor);
 
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -58,23 +49,19 @@ GraphicsView::GraphicsView(QWidget *parent)
 }
 
 GraphicsView::GraphicsView(BasicGraphicsScene *scene, QWidget *parent)
-    : GraphicsView(parent)
-{
+        : GraphicsView(parent) {
     setScene(scene);
 }
 
-QAction *GraphicsView::clearSelectionAction() const
-{
+QAction *GraphicsView::clearSelectionAction() const {
     return _clearSelectionAction;
 }
 
-QAction *GraphicsView::deleteSelectionAction() const
-{
+QAction *GraphicsView::deleteSelectionAction() const {
     return _deleteSelectionAction;
 }
 
-void GraphicsView::setScene(BasicGraphicsScene *scene)
-{
+void GraphicsView::setScene(BasicGraphicsScene *scene) {
     QGraphicsView::setScene(scene);
 
     {
@@ -146,8 +133,7 @@ void GraphicsView::setScene(BasicGraphicsScene *scene)
     addAction(redoAction);
 }
 
-void GraphicsView::centerScene()
-{
+void GraphicsView::centerScene() {
     if (scene()) {
         scene()->setSceneRect(QRectF());
 
@@ -161,8 +147,7 @@ void GraphicsView::centerScene()
     }
 }
 
-void GraphicsView::contextMenuEvent(QContextMenuEvent *event)
-{
+void GraphicsView::contextMenuEvent(QContextMenuEvent *event) {
     if (itemAt(event->pos())) {
         QGraphicsView::contextMenuEvent(event);
         return;
@@ -177,8 +162,7 @@ void GraphicsView::contextMenuEvent(QContextMenuEvent *event)
     }
 }
 
-void GraphicsView::wheelEvent(QWheelEvent *event)
-{
+void GraphicsView::wheelEvent(QWheelEvent *event) {
     QPoint delta = event->angleDelta();
 
     if (delta.y() == 0) {
@@ -194,13 +178,11 @@ void GraphicsView::wheelEvent(QWheelEvent *event)
         scaleDown();
 }
 
-double GraphicsView::getScale() const
-{
+double GraphicsView::getScale() const {
     return transform().m11();
 }
 
-void GraphicsView::setScaleRange(double minimum, double maximum)
-{
+void GraphicsView::setScaleRange(double minimum, double maximum) {
     if (maximum < minimum)
         std::swap(minimum, maximum);
     minimum = std::max(0.0, minimum);
@@ -211,13 +193,11 @@ void GraphicsView::setScaleRange(double minimum, double maximum)
     setupScale(transform().m11());
 }
 
-void GraphicsView::setScaleRange(ScaleRange range)
-{
+void GraphicsView::setScaleRange(ScaleRange range) {
     setScaleRange(range.minimum, range.maximum);
 }
 
-void GraphicsView::scaleUp()
-{
+void GraphicsView::scaleUp() {
     double const step = 1.2;
     double const factor = std::pow(step, 1.0);
 
@@ -234,8 +214,7 @@ void GraphicsView::scaleUp()
     Q_EMIT scaleChanged(transform().m11());
 }
 
-void GraphicsView::scaleDown()
-{
+void GraphicsView::scaleDown() {
     double const step = 1.2;
     double const factor = std::pow(step, -1.0);
 
@@ -252,8 +231,7 @@ void GraphicsView::scaleDown()
     Q_EMIT scaleChanged(transform().m11());
 }
 
-void GraphicsView::setupScale(double scale)
-{
+void GraphicsView::setupScale(double scale) {
     scale = std::max(_scaleRange.minimum, std::min(_scaleRange.maximum, scale));
 
     if (scale <= 0)
@@ -269,67 +247,59 @@ void GraphicsView::setupScale(double scale)
     Q_EMIT scaleChanged(scale);
 }
 
-void GraphicsView::onDeleteSelectedObjects()
-{
+void GraphicsView::onDeleteSelectedObjects() {
     nodeScene()->undoStack().push(new DeleteCommand(nodeScene()));
 }
 
-void GraphicsView::onDuplicateSelectedObjects()
-{
+void GraphicsView::onDuplicateSelectedObjects() {
     QPointF const pastePosition = scenePastePosition();
 
     nodeScene()->undoStack().push(new CopyCommand(nodeScene()));
     nodeScene()->undoStack().push(new PasteCommand(nodeScene(), pastePosition));
 }
 
-void GraphicsView::onCopySelectedObjects()
-{
+void GraphicsView::onCopySelectedObjects() {
     nodeScene()->undoStack().push(new CopyCommand(nodeScene()));
 }
 
-void GraphicsView::onPasteObjects()
-{
+void GraphicsView::onPasteObjects() {
     QPointF const pastePosition = scenePastePosition();
     nodeScene()->undoStack().push(new PasteCommand(nodeScene(), pastePosition));
 }
 
-void GraphicsView::keyPressEvent(QKeyEvent *event)
-{
+void GraphicsView::keyPressEvent(QKeyEvent *event) {
     switch (event->key()) {
-    case Qt::Key_Shift:
-        setDragMode(QGraphicsView::RubberBandDrag);
-        break;
+        case Qt::Key_Shift:
+            setDragMode(QGraphicsView::RubberBandDrag);
+            break;
 
-    default:
-        break;
+        default:
+            break;
     }
 
     QGraphicsView::keyPressEvent(event);
 }
 
-void GraphicsView::keyReleaseEvent(QKeyEvent *event)
-{
+void GraphicsView::keyReleaseEvent(QKeyEvent *event) {
     switch (event->key()) {
-    case Qt::Key_Shift:
-        setDragMode(QGraphicsView::ScrollHandDrag);
-        break;
+        case Qt::Key_Shift:
+            setDragMode(QGraphicsView::ScrollHandDrag);
+            break;
 
-    default:
-        break;
+        default:
+            break;
     }
     QGraphicsView::keyReleaseEvent(event);
 }
 
-void GraphicsView::mousePressEvent(QMouseEvent *event)
-{
+void GraphicsView::mousePressEvent(QMouseEvent *event) {
     QGraphicsView::mousePressEvent(event);
     if (event->button() == Qt::LeftButton) {
         _clickPos = mapToScene(event->pos());
     }
 }
 
-void GraphicsView::mouseMoveEvent(QMouseEvent *event)
-{
+void GraphicsView::mouseMoveEvent(QMouseEvent *event) {
     QGraphicsView::mouseMoveEvent(event);
     if (scene()->mouseGrabberItem() == nullptr && event->buttons() == Qt::LeftButton) {
         // Make sure shift is not being pressed
@@ -340,8 +310,8 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
     }
 }
 
-void GraphicsView::drawBackground(QPainter *painter, const QRectF &r)
-{
+void GraphicsView::drawBackground(QPainter *painter, const QRectF &r) {
+    setBackgroundBrush(palette().color(QPalette::Disabled, QPalette::Base));
     QGraphicsView::drawBackground(painter, r);
 
     auto drawGrid = [&](double gridStep) {
@@ -368,33 +338,29 @@ void GraphicsView::drawBackground(QPainter *painter, const QRectF &r)
         }
     };
 
-    auto const &flowViewStyle = StyleCollection::flowViewStyle();
 
-    QPen pfine(flowViewStyle.FineGridColor, 1.0);
+    QPen pfine(palette().color(QPalette::Disabled, QPalette::AlternateBase), 1.0);
 
     painter->setPen(pfine);
     drawGrid(15);
 
-    QPen p(flowViewStyle.CoarseGridColor, 1.0);
+    QPen p(palette().color(QPalette::Disabled, QPalette::Window), 1.0);
 
     painter->setPen(p);
     drawGrid(150);
 }
 
-void GraphicsView::showEvent(QShowEvent *event)
-{
+void GraphicsView::showEvent(QShowEvent *event) {
     QGraphicsView::showEvent(event);
 
     centerScene();
 }
 
-BasicGraphicsScene *GraphicsView::nodeScene()
-{
+BasicGraphicsScene *GraphicsView::nodeScene() {
     return dynamic_cast<BasicGraphicsScene *>(scene());
 }
 
-QPointF GraphicsView::scenePastePosition()
-{
+QPointF GraphicsView::scenePastePosition() {
     QPoint origin = mapFromGlobal(QCursor::pos());
 
     QRect const viewRect = rect();

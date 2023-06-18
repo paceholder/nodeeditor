@@ -22,8 +22,6 @@ namespace QtNodes {
 
         void drawNodeCaption(QPainter *painter, NodeGraphicsObject &ngo) const;
 
-        void drawEntryLabels(QPainter *painter, NodeGraphicsObject &ngo) const;
-
         void drawResizeRect(QPainter *painter, NodeGraphicsObject &ngo) const;
     };
 
