@@ -8,7 +8,6 @@
 #include "Definitions.hpp"
 #include "NodeData.hpp"
 #include "StyleCollection.hpp"
-#include "QtNodes/DataColors.hpp"
 
 namespace QtNodes {
 
@@ -136,7 +135,7 @@ namespace QtNodes {
         QColor normalColorIn = connectionStyle.normalColor();
         QColor selectedColor = connectionStyle.selectedColor();
 
-        bool useGradientColor = false;
+        bool useGradientColor = true;
 
         AbstractGraphModel const &graphModel = cgo.graphModel();
 
@@ -156,10 +155,11 @@ namespace QtNodes {
                     = graphModel.portData(cId.inNodeId, PortType::In, cId.inPortIndex, PortRole::DataType)
                             .value<NodeDataType>();
 
-            useGradientColor = (dataTypeOut.id != dataTypeIn.id);
 
-            normalColorOut = DataColors::getColor(dataTypeOut.id);
-            normalColorIn = DataColors::getColor(dataTypeIn.id);
+            normalColorOut = dataTypeOut.color;
+            normalColorIn = dataTypeIn.color;
+
+            useGradientColor = (normalColorOut != normalColorIn);
             selectedColor = normalColorOut.darker(200);
         }
 

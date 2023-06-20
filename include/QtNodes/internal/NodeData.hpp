@@ -39,7 +39,7 @@ class NODE_EDITOR_PUBLIC NodeData
 public:
     virtual ~NodeData() = default;
 
-    virtual QString getDescription() const {
+    [[nodiscard]] virtual QString getDescription() const {
         return type().name;
     }
 

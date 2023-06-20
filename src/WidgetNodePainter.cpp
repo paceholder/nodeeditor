@@ -4,7 +4,6 @@
 
 
 #include "QtNodes/NodeColors.hpp"
-#include "QtNodes/DataColors.hpp"
 #include "QtNodes/AbstractGraphModel"
 #include "QtNodes/internal/AbstractNodeGeometry.hpp"
 #include "QtNodes/internal/NodeStyle.hpp"
@@ -139,7 +138,7 @@ void QtNodes::WidgetNodePainter::drawConnectionPoints(QPainter *painter, NodeGra
                 }
             }
             painter->setPen({0, 0, 0});
-            painter->setBrush(DataColors::getColor(dataType.id));
+            painter->setBrush(dataType.color);
 
             painter->drawEllipse(p, reducedDiameter * r, reducedDiameter * r);
         }
@@ -178,8 +177,8 @@ void QtNodes::WidgetNodePainter::drawFilledConnectionPoints(QPainter *painter, N
                         .value<NodeDataType>();
 
 
-                painter->setPen(DataColors::getColor(dataType.id));
-                painter->setBrush(DataColors::getColor(dataType.id));
+                painter->setPen(dataType.color);
+                painter->setBrush(dataType.color);
                 painter->drawEllipse(p, diameter * 0.4, diameter * 0.4);
             }
         }
