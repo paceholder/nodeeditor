@@ -89,7 +89,6 @@ set(CPP_SOURCE_FILES
         src/NodeState.cpp
         src/NodeStyle.cpp
         src/NodeColors.cpp
-        src/DataColors.cpp
         src/StyleCollection.cpp
         src/UndoCommands.cpp
         src/locateNode.cpp
@@ -128,10 +127,8 @@ set(HPP_HEADER_FILES
         include/QtNodes/internal/Style.hpp
         include/QtNodes/internal/StyleCollection.hpp
         include/QtNodes/NodeColors.hpp
-        include/QtNodes/DataColors.hpp
         include/QtNodes/InvalidData.hpp
         include/QtNodes/NodeInfo.hpp
-        include/QtNodes/DataInfo.hpp
         include/QtNodes/internal/UndoCommands.hpp
         src/ConnectionPainter.hpp
         src/DefaultHorizontalNodeGeometry.hpp

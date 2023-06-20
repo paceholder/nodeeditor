@@ -115,7 +115,7 @@ bool DataFlowGraphModel::connectionPossible(ConnectionId const connectionId) con
 
     auto datOut = getDataType(PortType::Out);
     auto datIn = getDataType(PortType::In);
-    return datOut.id == datIn.id;
+    return datOut.id == datIn.id || datIn.allowConversionFrom(datOut.id);
 }
 
 void DataFlowGraphModel::addConnection(ConnectionId const connectionId)

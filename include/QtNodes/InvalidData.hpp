@@ -11,5 +11,7 @@ namespace QtNodes {
             return NodeDataType{"invalid", "Invalid"};
         }
 
+        [[nodiscard]] bool empty() const override { return true; }
+
     };
 } // QtNodes
