@@ -282,6 +282,7 @@ namespace QtNodes {
     void NodeGraphicsObject::hoverEnterEvent(QGraphicsSceneHoverEvent *event) {
 
         _nodeState.setHovered(true);
+        setCursor(Qt::ArrowCursor);
 
         update();
 
@@ -316,16 +317,6 @@ namespace QtNodes {
                 QToolTip::showText(pos, nodeData->getDescription());
                 return;
             }
-        }
-
-
-        auto pos = event->pos();
-
-        if ((_graphModel.nodeFlags(_nodeId) | NodeFlag::Resizable)
-            && geometry.resizeHandleRect(_nodeId).contains(QPoint(pos.x(), pos.y()))) {
-            setCursor(QCursor(Qt::SizeFDiagCursor));
-        } else {
-            setCursor(QCursor());
         }
 
         event->accept();
