@@ -9,6 +9,7 @@
 
 #include "Export.hpp"
 
+#include <QDebug>
 namespace QtNodes {
 
 /**
@@ -23,10 +24,10 @@ struct NODE_EDITOR_PUBLIC NodeDataType
 
     // TODO: this is pretty hacky, but seems to be the easiest to do without a major rewrite
     [[nodiscard]] bool allowConversionFrom(const QString& otherId) const {
-        return allowedConversion.count(otherId) > 0;
+        return allowedFromConversions.count(otherId) > 0;
     }
 
-    std::set<QString> allowedConversion;
+    std::set<QString> allowedFromConversions;
 };
 
 /**
@@ -48,7 +49,7 @@ public:
 
     virtual bool empty() const = 0;
 
-    virtual void allowConversions(bool checked) { Q_UNUSED(checked) }
+    virtual void allowConversionFrom(const QString& id) = 0;
 };
 
 } // namespace QtNodes
