@@ -9,6 +9,7 @@
 
 #include "Export.hpp"
 
+#include <QDebug>
 namespace QtNodes {
 
 /**
