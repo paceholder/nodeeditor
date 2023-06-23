@@ -132,7 +132,7 @@ CreateCommand::CreateCommand(BasicGraphicsScene *scene,
     _nodeId = _scene->graphModel().addNode(name);
     if (_nodeId != InvalidNodeId) {
         auto rect = scene->nodeGeometry().size(_nodeId);
-        QPointF posView = {mouseScenePos.x() - rect.width() / 2, mouseScenePos.y() - rect.height() / 2};
+        QPointF posView = {mouseScenePos.x() - rect.width() / 2, mouseScenePos.y() - 10};
         _scene->graphModel().setNodeData(_nodeId, NodeRole::Position, posView);
     } else {
         setObsolete(true);
@@ -154,6 +154,10 @@ void CreateCommand::redo()
         return;
 
     insertSerializedItems(_sceneJson, _scene);
+}
+
+NodeId CreateCommand::getNodeId() const {
+    return _nodeId;
 }
 
 //-------------------------------------

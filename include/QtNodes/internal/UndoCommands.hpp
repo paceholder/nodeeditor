@@ -20,6 +20,8 @@ public:
     void undo() override;
     void redo() override;
 
+    [[nodiscard]] NodeId getNodeId() const;
+
 private:
     BasicGraphicsScene *_scene;
     NodeId _nodeId;
