@@ -22,7 +22,7 @@ NodeConnectionInteraction::NodeConnectionInteraction(NodeGraphicsObject &ngo,
 {}
 
 
-bool dfs(AbstractGraphModel &model, NodeId currentNode, NodeId targetNode, std::map<NodeId, bool>& visited) {
+bool dfs(AbstractGraphModel &model, NodeId currentNode, NodeId targetNode, std::unordered_map<NodeId, bool>& visited) {
 
     if (currentNode == targetNode) {
         // Target node reached, cycle found
@@ -50,7 +50,7 @@ bool dfs(AbstractGraphModel &model, NodeId currentNode, NodeId targetNode, std::
 
 bool NodeConnectionInteraction::introducesCycle(AbstractGraphModel &model, NodeId sourceNode, NodeId targetNode) const {
     // Mark all nodes as not visited
-    std::map<NodeId, bool> visited;
+    std::unordered_map<NodeId, bool> visited;
     for (auto& id : model.allNodeIds()) {
         visited[id] = false;
     }
