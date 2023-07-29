@@ -98,7 +98,7 @@ public Q_SLOTS:
     virtual void propagate(NodeId const nodeId);
 
 protected:
-    virtual bool canPropagate(ConnectionId const) { return true; }
+    virtual bool canPropagate(ConnectionId const) const { return true; };
 
 Q_SIGNALS:
     void inPortDataWasSet(NodeId const, PortType const, PortIndex const);
