@@ -1,6 +1,8 @@
 QtNodes
 #######
 
+https://github.com/paceholder/nodeeditor/actions/workflows/cmake_build.yml/badge.svg
+
 Introduction
 ============
 
@@ -58,17 +60,14 @@ Supported Environments
 Platforms
 ---------
 
-* Linux (x64, gcc-7.0, clang-7) |ImageLink|_
-* OSX (Apple Clang - LLVM 3.6) |ImageLink|_
+* Linux (x64, gcc, Qt 5.15.2) |ImageLink|_
+* OSX (Apple Clang, Qt 5.15.2) |ImageLink|_
+* Windows (MSVC, Qt 5.15.2) |ImageLink|_
+* Windows (MSVC, Qt 6.3.0) |ImageLink|_
 
-.. |ImageLink| image:: https://travis-ci.org/paceholder/nodeeditor.svg?branch=master
-.. _ImageLink: https://travis-ci.org/paceholder/nodeeditor
+.. |ImageLink| image:: https://github.com/paceholder/nodeeditor/actions/workflows/cmake_build.yml/badge.svg
+.. _ImageLink: https://github.com/paceholder/nodeeditor/actions/workflows/cmake_build.yml
 
-
-* Windows (Win32, x64, msvc2017, MinGW 5.3) |AppveyorImage|_
-
-.. |AppveyorImage| image:: https://ci.appveyor.com/api/projects/status/wxp47wv3uyyiujjw/branch/master?svg=true
-.. _AppveyorImage: https://ci.appveyor.com/project/paceholder/nodeeditor/branch/master)
 
 Dependencies
 ------------
