@@ -8,12 +8,14 @@ environment:
       QTDIR: C:\Qt\5.15\msvc2019
       QT_MAJOR: 5
       PLATFORM: Win32
+      USE_QT6: "OFF"
     - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
       GENERATOR : "Visual Studio 16 2019"
       ARCHITECTURE : "-A x64"
       QTDIR: C:\Qt\6.3\msvc2019_64
       QT_MAJOR: 6
       PLATFORM: x64
+      USE_QT6: "ON"
 
 configuration:
   - Release
@@ -33,6 +35,7 @@ before_build:
     -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE="%OUTPUT_DIR%"
     -DCMAKE_CXX_FLAGS_INIT="%CMAKE_CXX_FLAGS_INIT%"
     -DBUILD_DOCS=OFF
+    -DUSE_QT6=%USE_QT6%
     ..
 
 
