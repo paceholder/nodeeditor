@@ -103,6 +103,16 @@ Current State (v3)
 Building
 ========
 
+Set this option to false if you want to build with Qt5 version instead of Qt6:
+
+::
+
+   USE_QT6
+
+   mkdir build && cd build && cmake .. -DUSE_QT6=on
+   or
+   mkdir build && cd build && cmake .. -DUSE_QT6=off
+
 Linux
 -----
 
