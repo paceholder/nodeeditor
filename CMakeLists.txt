@@ -13,6 +13,8 @@ set(CMAKE_DISABLE_SOURCE_CHANGES  ON)
 set(OpenGL_GL_PREFERENCE LEGACY)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+option(USE_QT6 "Build with Qt6 (default: Qt5)" ON)
+
 get_directory_property(_has_parent PARENT_DIRECTORY)
 if(_has_parent)
   set(is_root_project OFF)
@@ -46,7 +48,12 @@ endif()
 
 add_subdirectory(external)
 
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
+if(USE_QT6)
+  find_package(QT NAMES Qt6 REQUIRED COMPONENTS Widgets)
+else()
+  find_package(QT NAMES Qt5 REQUIRED COMPONENTS Widgets)
+endif()
+
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Widgets Gui OpenGL)
 message(STATUS "QT_VERSION: ${QT_VERSION}, QT_DIR: ${QT_DIR}")
 
