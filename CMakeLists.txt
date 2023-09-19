@@ -28,6 +28,7 @@ option(BUILD_DOCS "Build Documentation" "${QT_NODES_DEVELOPER_DEFAULTS}")
 option(BUILD_SHARED_LIBS "Build as shared library" ON)
 option(BUILD_DEBUG_POSTFIX_D "Append d suffix to debug libraries" OFF)
 option(QT_NODES_FORCE_TEST_COLOR "Force colorized unit test output" OFF)
+option(USE_QT6 "Build with Qt6 (Enabled by default)" ON)
 
 enable_testing()
 
@@ -46,7 +47,12 @@ endif()
 
 add_subdirectory(external)
 
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
+if(USE_QT6)
+  find_package(QT NAMES Qt6 REQUIRED COMPONENTS Widgets)
+else()
+  find_package(QT NAMES Qt5 REQUIRED COMPONENTS Widgets)
+endif()
+
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Widgets Gui OpenGL)
 message(STATUS "QT_VERSION: ${QT_VERSION}, QT_DIR: ${QT_DIR}")
 
