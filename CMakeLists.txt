@@ -13,7 +13,7 @@ set(CMAKE_DISABLE_SOURCE_CHANGES  ON)
 set(OpenGL_GL_PREFERENCE LEGACY)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-option(USE_QT6 "Build with Qt6 (default: Qt5)" ON)
+option(USE_QT6 "Build with Qt6 (Enabled by default)" ON)
 
 get_directory_property(_has_parent PARENT_DIRECTORY)
 if(_has_parent)

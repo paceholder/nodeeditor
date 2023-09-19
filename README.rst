@@ -104,7 +104,7 @@ Current State (v3)
 Building
 ========
 
-Set this option to true if you want to build with Qt6 version instead of Qt5:
+Set this option to false if you want to build with Qt5 version instead of Qt6:
 
 ::
 
