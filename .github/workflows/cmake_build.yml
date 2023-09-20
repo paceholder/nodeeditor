@@ -32,24 +32,28 @@ jobs:
             compiler: gcc
             qt_version: "5.15.2"
             modules: ""
+            use_qt6: "OFF"
 
           - toolchain: macos-clang
             os: macos-latest
             compiler: clang
             qt_version: "5.15.2"
             modules: ""
+            use_qt6: "OFF"
 
           - toolchain: windows-msvc
             os: windows-latest
             compiler: msvc
             qt_version: "5.15.2"
             modules: ""
+            use_qt6: "OFF"
 
           - toolchain: windows-msvc
             os: windows-latest
             compiler: msvc
             qt_version: "6.3.0"
             modules: "qt5compat"
+            use_qt6: "ON"
 
     steps:
     - name: Checkout Code
@@ -74,7 +78,7 @@ jobs:
         arch: x64
 
     - name: Configure (${{ matrix.configuration }})
-      run: cmake -S . -Bbuild -DCMAKE_BUILD_TYPE=${{ matrix.configuration }} -DBUILD_DOCS=OFF
+      run: cmake -S . -Bbuild -DCMAKE_BUILD_TYPE=${{ matrix.configuration }} -DBUILD_DOCS=OFF -DUSE_QT6=${{ matrix.use_qt6 }}
 
     - name: Build with ${{ matrix.compiler }}
       run: cmake --build build --config ${{ matrix.configuration }}

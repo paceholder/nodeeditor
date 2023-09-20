@@ -103,6 +103,12 @@ Current State (v3)
 Building
 ========
 
+Set this option to false if you want to build with Qt5 version instead of Qt6:
+
+::
+
+   USE_QT6
+
 Linux
 -----
 
