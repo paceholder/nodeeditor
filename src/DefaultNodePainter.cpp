@@ -1,4 +1,4 @@
-#include "DefaultNodePainter.hpp"
+﻿#include "DefaultNodePainter.hpp"
 
 #include <cmath>
 
@@ -209,6 +209,7 @@ void DefaultNodePainter::drawNodeCaption(QPainter *painter, NodeGraphicsObject &
     QJsonDocument json = QJsonDocument::fromVariant(model.nodeData(nodeId, NodeRole::Style));
     NodeStyle nodeStyle(json.object());
 
+    f.setFamily(nodeStyle.FontFamily);
     painter->setFont(f);
     painter->setPen(nodeStyle.FontColor);
     painter->drawText(position, name);
@@ -252,6 +253,9 @@ void DefaultNodePainter::drawEntryLabels(QPainter *painter, NodeGraphicsObject &
                 s = portData.value<NodeDataType>().name;
             }
 
+            auto f = painter->font();
+            f.setFamily(nodeStyle.FontFamily);
+            painter->setFont(f);
             painter->drawText(p, s);
         }
     }
