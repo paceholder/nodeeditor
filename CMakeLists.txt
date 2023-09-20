@@ -31,10 +31,11 @@ option(QT_NODES_FORCE_TEST_COLOR "Force colorized unit test output" OFF)
 
 enable_testing()
 
+include(GNUInstallDirs)
 if(QT_NODES_DEVELOPER_DEFAULTS)
-  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
-  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
-  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
+  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}")
+  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}")
+  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}")
 endif()
 
 if(BUILD_DEBUG_POSTFIX_D)
@@ -89,6 +90,7 @@ set(CPP_SOURCE_FILES
   src/StyleCollection.cpp
   src/UndoCommands.cpp
   src/locateNode.cpp
+  src/PluginsManager.cpp
 )
 
 set(HPP_HEADER_FILES
@@ -122,6 +124,8 @@ set(HPP_HEADER_FILES
   include/QtNodes/internal/Serializable.hpp
   include/QtNodes/internal/Style.hpp
   include/QtNodes/internal/StyleCollection.hpp
+  include/QtNodes/internal/PluginInterface.hpp
+  include/QtNodes/internal/PluginsManager.hpp
   src/ConnectionPainter.hpp
   src/DefaultHorizontalNodeGeometry.hpp
   src/DefaultVerticalNodeGeometry.hpp
@@ -240,8 +244,6 @@ endif()
 # Installation
 ##
 
-include(GNUInstallDirs)
-
 set(INSTALL_CONFIGDIR ${CMAKE_INSTALL_LIBDIR}/cmake/QtNodes)
 
 install(TARGETS QtNodes
@@ -249,7 +251,6 @@ install(TARGETS QtNodes
   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
 install(DIRECTORY include/
