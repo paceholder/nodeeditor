@@ -77,8 +77,12 @@ int main(int argc, char *argv[])
 
     auto menuBar = new QMenuBar();
     QMenu *menu = menuBar->addMenu("File");
+
     auto saveAction = menu->addAction("Save Scene");
+    saveAction->setShortcut(QKeySequence::Save);
+
     auto loadAction = menu->addAction("Load Scene");
+    loadAction->setShortcut(QKeySequence::Open);
 
     QVBoxLayout *l = new QVBoxLayout(&mainWidget);
 
@@ -92,13 +96,20 @@ int main(int argc, char *argv[])
     l->setContentsMargins(0, 0, 0, 0);
     l->setSpacing(0);
 
-    QObject::connect(saveAction, &QAction::triggered, scene, &DataFlowGraphicsScene::save);
+    QObject::connect(saveAction, &QAction::triggered, scene, [scene, &mainWidget]() {
+        if (scene->save())
+            mainWidget.setWindowModified(false);
+    });
 
     QObject::connect(loadAction, &QAction::triggered, scene, &DataFlowGraphicsScene::load);
 
     QObject::connect(scene, &DataFlowGraphicsScene::sceneLoaded, view, &GraphicsView::centerScene);
 
-    mainWidget.setWindowTitle("Data Flow: simplest calculator");
+    QObject::connect(scene, &DataFlowGraphicsScene::modified, &mainWidget, [&mainWidget]() {
+        mainWidget.setWindowModified(true);
+    });
+
+    mainWidget.setWindowTitle("[*]Data Flow: simplest calculator");
     mainWidget.resize(800, 600);
     // Center window.
     mainWidget.move(QApplication::primaryScreen()->availableGeometry().center()

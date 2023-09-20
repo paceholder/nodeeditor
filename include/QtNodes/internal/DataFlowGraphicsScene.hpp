@@ -26,9 +26,9 @@ public:
     QMenu *createSceneMenu(QPointF const scenePos) override;
 
 public Q_SLOTS:
-    void save() const;
+    bool save() const;
 
-    void load();
+    bool load();
 
 Q_SIGNALS:
     void sceneLoaded();
