@@ -53,6 +53,10 @@ public:
 
     QUndoStack &undoStack();
 
+    void setDropShadowEffect(bool enable);
+
+    bool isDropShadowEffectEnabled() const;
+
 public:
     /// Creates a "draft" instance of ConnectionGraphicsObject.
     /**
@@ -173,6 +177,8 @@ private:
     QUndoStack *_undoStack;
 
     Qt::Orientation _orientation;
+
+    bool _dropShadowEffect{false};
 };
 
 } // namespace QtNodes
