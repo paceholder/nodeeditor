@@ -203,6 +203,9 @@ void ConnectionGraphicsObject::paint(QPainter *painter,
 
 void ConnectionGraphicsObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
+    if (!isSelected()) {
+        Q_EMIT nodeScene()->connectionSelected(connectionId());
+    }
     QGraphicsItem::mousePressEvent(event);
 }
 
@@ -262,6 +265,13 @@ void ConnectionGraphicsObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event
         nodeScene()->resetDraftConnection();
     }
 }
+
+void ConnectionGraphicsObject::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+{
+    QGraphicsItem::mouseDoubleClickEvent(event);
+    Q_EMIT nodeScene()->connectionDoubleClicked(connectionId());
+}
+
 
 void ConnectionGraphicsObject::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {

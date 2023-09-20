@@ -113,6 +113,10 @@ Q_SIGNALS:
 
     void nodeHoverLeft(NodeId const nodeId);
 
+    void connectionSelected(ConnectionId const connectionId);
+
+    void connectionDoubleClicked(ConnectionId const connectionId);
+
     void connectionHovered(ConnectionId const connectionId, QPoint const screenPos);
 
     void connectionHoverLeft(ConnectionId const connectionId);
