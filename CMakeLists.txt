@@ -92,6 +92,7 @@ set(CPP_SOURCE_FILES
 )
 
 set(HPP_HEADER_FILES
+  include/QtNodes/internal/AbstractConnectionPainter.hpp
   include/QtNodes/internal/AbstractGraphModel.hpp
   include/QtNodes/internal/AbstractNodeGeometry.hpp
   include/QtNodes/internal/AbstractNodePainter.hpp
