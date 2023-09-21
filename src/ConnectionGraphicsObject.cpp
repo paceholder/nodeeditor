@@ -394,7 +394,7 @@ QPolygonF ConnectionGraphicsObject::arrow(QPainterPath target, qreal delta) cons
 
     QPointF first = in, second, third;
     int z = 16;
-    qreal angle = target.angleAtPercent((z/2)*cos(delta) / target.length()) * M_PI / 180.0;
+    qreal angle = target.angleAtPercent((z*2.0/3)*cos(delta) / target.length()) * M_PI / 180.0;
     if ((nodeScene()->orientation() == Qt::Horizontal && in.x() < out.x())
         || (nodeScene()->orientation() == Qt::Vertical && in.y() < out.y()) ) {
         z = -16;
