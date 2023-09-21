@@ -387,13 +387,14 @@ std::pair<QPointF, QPointF> ConnectionGraphicsObject::pointsC1C2Vertical() const
     return std::make_pair(c1, c2);
 }
 
-QPolygonF ConnectionGraphicsObject::arrow(qreal angle, qreal delta) const
+QPolygonF ConnectionGraphicsObject::arrow(QPainterPath target, qreal delta) const
 {
     QPointF const &in = endPoint(PortType::In);
     QPointF const &out = endPoint(PortType::In);
 
     QPointF first = in, second, third;
     int z = 16;
+    qreal angle = target.angleAtPercent((z/2)*cos(delta) / target.length()) * M_PI / 180.0;
     if ((nodeScene()->orientation() == Qt::Horizontal && in.x() < out.x())
         || (nodeScene()->orientation() == Qt::Vertical && in.y() < out.y()) ) {
         z = -16;

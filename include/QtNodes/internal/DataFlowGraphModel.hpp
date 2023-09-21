@@ -130,6 +130,8 @@ private:
     std::unordered_set<ConnectionId> _connectivity;
 
     mutable std::unordered_map<NodeId, NodeGeometryData> _nodeGeometryData;
+
+    mutable std::unordered_map<NodeId, std::shared_ptr<QJsonObject>> _styles;
 };
 
 } // namespace QtNodes

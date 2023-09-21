@@ -49,7 +49,7 @@ public:
     QPointF in() const { return _in; }
 
     std::pair<QPointF, QPointF> pointsC1C2() const;
-    QPolygonF arrow(qreal angle, qreal delta = M_PI / 8) const;
+    QPolygonF arrow(QPainterPath target, qreal delta = M_PI / 8) const;
 
     void setEndPoint(PortType portType, QPointF const &point);
 

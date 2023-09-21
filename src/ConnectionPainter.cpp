@@ -179,14 +179,6 @@ static void drawNormalLine(QPainter *painter, ConnectionGraphicsObject const &cg
     bool const selected = cgo.isSelected();
     auto cubic = cubicPath(cgo);
 
-    if (connectionStyle.withArrow()) {
-        painter->setBrush(selected ? connectionStyle.selectedHaloColor() : normalColorIn);
-        painter->setPen(Qt::NoPen);
-
-        QPolygonF poly = cgo.arrow(cubic.angleAtPercent(.95) * M_PI / 180.0);
-        painter->drawPolygon(poly);
-    }
-
     if (useGradientColor) {
         painter->setBrush(Qt::NoBrush);
 
@@ -232,6 +224,19 @@ static void drawNormalLine(QPainter *painter, ConnectionGraphicsObject const &cg
         painter->setBrush(Qt::NoBrush);
 
         painter->drawPath(cubic);
+    }
+
+    if (connectionStyle.withArrow()) {
+        bool hovered = cgo.connectionState().hovered();
+        painter->setBrush(selected
+            ? connectionStyle.selectedHaloColor()
+            : (hovered
+                ? connectionStyle.hoveredColor()
+                : normalColorIn));
+        painter->setPen(Qt::NoPen);
+
+        QPolygonF poly = cgo.arrow(cubic);
+        painter->drawPolygon(poly);
     }
 }
 
