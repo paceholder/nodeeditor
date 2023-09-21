@@ -387,4 +387,22 @@ std::pair<QPointF, QPointF> ConnectionGraphicsObject::pointsC1C2Vertical() const
     return std::make_pair(c1, c2);
 }
 
+QPolygonF ConnectionGraphicsObject::arrow(qreal angle, qreal delta) const
+{
+    QPointF const &in = endPoint(PortType::In);
+    QPointF const &out = endPoint(PortType::In);
+
+    QPointF first = in, second, third;
+    int z = 16;
+    if ((nodeScene()->orientation() == Qt::Horizontal && in.x() < out.x())
+        || (nodeScene()->orientation() == Qt::Vertical && in.y() < out.y()) ) {
+        z = -16;
+    }
+    second = QPointF(in.x() - z * cos(angle - delta), in.y() + z * sin(angle - delta));
+    third = QPointF(in.x() - z * cos(angle + delta), in.y() + z * sin(angle + delta));
+    QPolygonF poly;
+    poly << first << second << third << first;
+    return poly;
+}
+
 } // namespace QtNodes

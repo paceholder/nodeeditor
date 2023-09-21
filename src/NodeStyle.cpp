@@ -27,12 +27,12 @@ NodeStyle::NodeStyle()
     loadJsonFile(":DefaultStyle.json");
 }
 
-NodeStyle::NodeStyle(QString jsonText)
+NodeStyle::NodeStyle(QString jsonText): NodeStyle()
 {
     loadJsonText(jsonText);
 }
 
-NodeStyle::NodeStyle(QJsonObject const &json)
+NodeStyle::NodeStyle(QJsonObject const &json): NodeStyle()
 {
     loadJson(json);
 }
@@ -44,100 +44,60 @@ void NodeStyle::setNodeStyle(QString jsonText)
     StyleCollection::setNodeStyle(style);
 }
 
-#ifdef STYLE_DEBUG
-#define NODE_STYLE_CHECK_UNDEFINED_VALUE(v, variable) \
-    { \
-        if (v.type() == QJsonValue::Undefined || v.type() == QJsonValue::Null) \
-            qWarning() << "Undefined value for parameter:" << #variable; \
-    }
-#else
-#define NODE_STYLE_CHECK_UNDEFINED_VALUE(v, variable)
-#endif
-
-#define NODE_STYLE_READ_COLOR(values, variable) \
-    { \
-        auto valueRef = values[#variable]; \
-        NODE_STYLE_CHECK_UNDEFINED_VALUE(valueRef, variable) \
-        if (valueRef.isArray()) { \
-            auto colorArray = valueRef.toArray(); \
-            std::vector<int> rgb; \
-            rgb.reserve(3); \
-            for (auto it = colorArray.begin(); it != colorArray.end(); ++it) { \
-                rgb.push_back((*it).toInt()); \
-            } \
-            variable = QColor(rgb[0], rgb[1], rgb[2]); \
-        } else { \
-            variable = QColor(valueRef.toString()); \
-        } \
-    }
-
-#define NODE_STYLE_WRITE_COLOR(values, variable) \
-    { \
-        values[#variable] = variable.name(); \
-    }
-
-#define NODE_STYLE_READ_FLOAT(values, variable) \
-    { \
-        auto valueRef = values[#variable]; \
-        NODE_STYLE_CHECK_UNDEFINED_VALUE(valueRef, variable) \
-        variable = valueRef.toDouble(); \
-    }
-
-#define NODE_STYLE_WRITE_FLOAT(values, variable) \
-    { \
-        values[#variable] = variable; \
-    }
-
 void NodeStyle::loadJson(QJsonObject const &json)
 {
     QJsonValue nodeStyleValues = json["NodeStyle"];
 
     QJsonObject obj = nodeStyleValues.toObject();
 
-    NODE_STYLE_READ_COLOR(obj, NormalBoundaryColor);
-    NODE_STYLE_READ_COLOR(obj, SelectedBoundaryColor);
-    NODE_STYLE_READ_COLOR(obj, GradientColor0);
-    NODE_STYLE_READ_COLOR(obj, GradientColor1);
-    NODE_STYLE_READ_COLOR(obj, GradientColor2);
-    NODE_STYLE_READ_COLOR(obj, GradientColor3);
-    NODE_STYLE_READ_COLOR(obj, ShadowColor);
-    NODE_STYLE_READ_COLOR(obj, FontColor);
-    NODE_STYLE_READ_COLOR(obj, FontColorFaded);
-    NODE_STYLE_READ_COLOR(obj, ConnectionPointColor);
-    NODE_STYLE_READ_COLOR(obj, FilledConnectionPointColor);
-    NODE_STYLE_READ_COLOR(obj, WarningColor);
-    NODE_STYLE_READ_COLOR(obj, ErrorColor);
+    X_STYLE_READ_COLOR(obj, NormalBoundaryColor);
+    X_STYLE_READ_COLOR(obj, SelectedBoundaryColor);
+    X_STYLE_READ_COLOR(obj, GradientColor0);
+    X_STYLE_READ_COLOR(obj, GradientColor1);
+    X_STYLE_READ_COLOR(obj, GradientColor2);
+    X_STYLE_READ_COLOR(obj, GradientColor3);
+    X_STYLE_READ_COLOR(obj, ShadowColor);
+    X_STYLE_READ_COLOR(obj, FontColor);
+    X_STYLE_READ_COLOR(obj, FontColorFaded);
+    X_STYLE_READ_COLOR(obj, ConnectionPointColor);
+    X_STYLE_READ_COLOR(obj, FilledConnectionPointColor);
+    X_STYLE_READ_COLOR(obj, WarningColor);
+    X_STYLE_READ_COLOR(obj, ErrorColor);
+    X_STYLE_READ_COLOR(obj, FillColor);
 
-    NODE_STYLE_READ_FLOAT(obj, PenWidth);
-    NODE_STYLE_READ_FLOAT(obj, HoveredPenWidth);
-    NODE_STYLE_READ_FLOAT(obj, ConnectionPointDiameter);
+    X_STYLE_READ_FLOAT(obj, PenWidth);
+    X_STYLE_READ_FLOAT(obj, HoveredPenWidth);
+    X_STYLE_READ_FLOAT(obj, ConnectionPointDiameter);
 
-    NODE_STYLE_READ_FLOAT(obj, Opacity);
+    X_STYLE_READ_FLOAT(obj, Opacity);
+    X_STYLE_READ_FLOAT(obj, CornerRadius);
 }
 
 QJsonObject NodeStyle::toJson() const
 {
     QJsonObject obj;
 
-    NODE_STYLE_WRITE_COLOR(obj, NormalBoundaryColor);
-    NODE_STYLE_WRITE_COLOR(obj, SelectedBoundaryColor);
-    NODE_STYLE_WRITE_COLOR(obj, GradientColor0);
-    NODE_STYLE_WRITE_COLOR(obj, GradientColor1);
-    NODE_STYLE_WRITE_COLOR(obj, GradientColor2);
-    NODE_STYLE_WRITE_COLOR(obj, GradientColor3);
-    NODE_STYLE_WRITE_COLOR(obj, ShadowColor);
-    NODE_STYLE_WRITE_COLOR(obj, FontColor);
-    NODE_STYLE_WRITE_COLOR(obj, FontColorFaded);
-    NODE_STYLE_WRITE_COLOR(obj, ConnectionPointColor);
-    NODE_STYLE_WRITE_COLOR(obj, FilledConnectionPointColor);
-    NODE_STYLE_WRITE_COLOR(obj, WarningColor);
-    NODE_STYLE_WRITE_COLOR(obj, ErrorColor);
+    X_STYLE_WRITE_COLOR(obj, NormalBoundaryColor);
+    X_STYLE_WRITE_COLOR(obj, SelectedBoundaryColor);
+    X_STYLE_WRITE_COLOR(obj, GradientColor0);
+    X_STYLE_WRITE_COLOR(obj, GradientColor1);
+    X_STYLE_WRITE_COLOR(obj, GradientColor2);
+    X_STYLE_WRITE_COLOR(obj, GradientColor3);
+    X_STYLE_WRITE_COLOR(obj, ShadowColor);
+    X_STYLE_WRITE_COLOR(obj, FontColor);
+    X_STYLE_WRITE_COLOR(obj, FontColorFaded);
+    X_STYLE_WRITE_COLOR(obj, ConnectionPointColor);
+    X_STYLE_WRITE_COLOR(obj, FilledConnectionPointColor);
+    X_STYLE_WRITE_COLOR(obj, WarningColor);
+    X_STYLE_WRITE_COLOR(obj, ErrorColor);
+    X_STYLE_WRITE_COLOR(obj, FillColor);
 
-    NODE_STYLE_WRITE_FLOAT(obj, PenWidth);
-    NODE_STYLE_WRITE_FLOAT(obj, HoveredPenWidth);
-    NODE_STYLE_WRITE_FLOAT(obj, ConnectionPointDiameter);
+    X_STYLE_WRITE_FLOAT(obj, PenWidth);
+    X_STYLE_WRITE_FLOAT(obj, HoveredPenWidth);
+    X_STYLE_WRITE_FLOAT(obj, ConnectionPointDiameter);
 
-    NODE_STYLE_WRITE_FLOAT(obj, Opacity);
+    X_STYLE_WRITE_FLOAT(obj, Opacity);
+    X_STYLE_WRITE_FLOAT(obj, CornerRadius);
 
     QJsonObject root;
     root["NodeStyle"] = obj;

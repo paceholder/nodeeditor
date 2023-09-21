@@ -177,8 +177,16 @@ static void drawNormalLine(QPainter *painter, ConnectionGraphicsObject const &cg
     p.setWidth(lineWidth);
 
     bool const selected = cgo.isSelected();
-
     auto cubic = cubicPath(cgo);
+
+    if (connectionStyle.withArrow()) {
+        painter->setBrush(selected ? connectionStyle.selectedHaloColor() : normalColorIn);
+        painter->setPen(Qt::NoPen);
+
+        QPolygonF poly = cgo.arrow(cubic.angleAtPercent(.95) * M_PI / 180.0);
+        painter->drawPolygon(poly);
+    }
+
     if (useGradientColor) {
         painter->setBrush(Qt::NoBrush);
 

@@ -132,7 +132,7 @@ inline QJsonObject toJson(ConnectionId const &connId)
 
     connJson["outNodeId"] = static_cast<qint64>(connId.outNodeId);
     connJson["outPortIndex"] = static_cast<qint64>(connId.outPortIndex);
-    connJson["intNodeId"] = static_cast<qint64>(connId.inNodeId);
+    connJson["inNodeId"] = static_cast<qint64>(connId.inNodeId);
     connJson["inPortIndex"] = static_cast<qint64>(connId.inPortIndex);
 
     return connJson;
@@ -142,7 +142,7 @@ inline ConnectionId fromJson(QJsonObject const &connJson)
 {
     ConnectionId connId{static_cast<NodeId>(connJson["outNodeId"].toInt(InvalidNodeId)),
                         static_cast<PortIndex>(connJson["outPortIndex"].toInt(InvalidPortIndex)),
-                        static_cast<NodeId>(connJson["intNodeId"].toInt(InvalidNodeId)),
+                        static_cast<NodeId>((connJson.contains("inNodeId") ? connJson["inNodeId"] : connJson["intNodeId"]).toInt(InvalidNodeId)),
                         static_cast<PortIndex>(connJson["inPortIndex"].toInt(InvalidPortIndex))};
 
     return connId;
