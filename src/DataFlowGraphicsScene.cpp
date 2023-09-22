@@ -6,10 +6,14 @@
 #include "NodeGraphicsObject.hpp"
 #include "UndoCommands.hpp"
 
+#include <QGridLayout>
+#include <QPushButton>
+#include <QStandardItem>
 #include <QtWidgets/QFileDialog>
 #include <QtWidgets/QGraphicsSceneMoveEvent>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLineEdit>
+#include <QtWidgets/QTreeView>
 #include <QtWidgets/QTreeWidget>
 #include <QtWidgets/QWidgetAction>
 
@@ -31,6 +35,7 @@ namespace QtNodes {
 DataFlowGraphicsScene::DataFlowGraphicsScene(DataFlowGraphModel &graphModel, QObject *parent)
     : BasicGraphicsScene(graphModel, parent)
     , _graphModel(graphModel)
+    , _sortMenu(true)
 {
     connect(&_graphModel,
             &DataFlowGraphModel::inPortDataWasSet,
@@ -61,77 +66,104 @@ QMenu *DataFlowGraphicsScene::createSceneMenu(QPointF const scenePos)
 {
     QMenu *modelMenu = new QMenu();
 
+    QWidget *menuWidget = new QWidget();
+    QGridLayout *layout = new QGridLayout(menuWidget);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(3);
+
     // Add filterbox to the context menu
-    auto *txtBox = new QLineEdit(modelMenu);
+    QLineEdit *txtBox = new QLineEdit();
     txtBox->setPlaceholderText(QStringLiteral("Filter"));
     txtBox->setClearButtonEnabled(true);
+    txtBox->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    layout->addWidget(txtBox, 0, 0);
 
-    auto *txtBoxAction = new QWidgetAction(modelMenu);
-    txtBoxAction->setDefaultWidget(txtBox);
-
-    // 1.
-    modelMenu->addAction(txtBoxAction);
+    // Add sort button
+    QPushButton *sortButton = new QPushButton("Sort");
+    sortButton->setCheckable(true);
+    layout->addWidget(sortButton, 0, 1);
 
     // Add result treeview to the context menu
-    QTreeWidget *treeView = new QTreeWidget(modelMenu);
+    QTreeView *treeView = new QTreeView();
     treeView->header()->close();
+    layout->addWidget(treeView, 1, 0, 1, 2);
+    QStandardItemModel *treeModel = new QStandardItemModel(treeView);
 
-    auto *treeViewAction = new QWidgetAction(modelMenu);
-    treeViewAction->setDefaultWidget(treeView);
+    auto *menuWidgetAction = new QWidgetAction(menuWidget);
+    menuWidgetAction->setDefaultWidget(menuWidget);
 
-    // 2.
-    modelMenu->addAction(treeViewAction);
+    modelMenu->addAction(menuWidgetAction);
 
     auto registry = _graphModel.dataModelRegistry();
 
-    for (auto const &cat : registry->categories()) {
-        auto item = new QTreeWidgetItem(treeView);
-        item->setText(0, cat);
-        item->setFlags(item->flags() & ~Qt::ItemIsSelectable);
-    }
-
+    int sortCount = 0;
     for (auto const &assoc : registry->registeredModelsCategoryAssociation()) {
-        QList<QTreeWidgetItem *> parent = treeView->findItems(assoc.second, Qt::MatchExactly);
+        QList<QStandardItem *> parentList;
+        parentList.clear();
+        parentList = treeModel->findItems(assoc.second, Qt::MatchExactly);
 
-        if (parent.count() <= 0)
-            continue;
+        if (parentList.count() <= 0) {
+            // Create a parent if it does not exist
+            auto parentItem = new QStandardItem(assoc.second);
+            parentItem->setData(sortCount, Qt::UserRole);
+            parentItem->setFlags(parentItem->flags() & ~Qt::ItemIsSelectable);
+            parentList.push_back(parentItem);
+            treeModel->appendRow(parentItem);
+        }
 
-        auto item = new QTreeWidgetItem(parent.first());
-        item->setText(0, assoc.first);
+        auto childItem = new QStandardItem(assoc.first);
+        childItem->setData(sortCount, Qt::UserRole);
+        parentList.first()->appendRow(childItem);
+
+        sortCount++;
     }
 
+    treeView->setModel(treeModel);
     treeView->expandAll();
 
-    connect(treeView,
-            &QTreeWidget::itemClicked,
-            [this, modelMenu, scenePos](QTreeWidgetItem *item, int) {
-                if (!(item->flags() & (Qt::ItemIsSelectable))) {
-                    return;
-                }
+    if (_sortMenu) {
+        sortButton->setChecked(_sortMenu);
+        treeView->sortByColumn(0, Qt::AscendingOrder);
+    }
 
-                this->undoStack().push(new CreateCommand(this, item->text(0), scenePos));
+    connect(sortButton, &QPushButton::clicked, this, [this, treeModel, treeView](bool checked) {
+        if (checked)
+            treeModel->setSortRole(Qt::DisplayRole);
+        else
+            treeModel->setSortRole(Qt::UserRole);
+
+        _sortMenu = checked;
+        treeView->sortByColumn(0, Qt::AscendingOrder);
+    });
+
+    connect(treeView,
+            &QTreeView::clicked,
+            [this, modelMenu, treeModel, scenePos](const QModelIndex &index) {
+                auto item = treeModel->itemFromIndex(index);
+
+                if (item->hasChildren())
+                    return;
+
+                this->undoStack().push(new CreateCommand(this, item->text(), scenePos));
 
                 modelMenu->close();
             });
 
     //Setup filtering
-    connect(txtBox, &QLineEdit::textChanged, [treeView](const QString &text) {
-        QTreeWidgetItemIterator categoryIt(treeView, QTreeWidgetItemIterator::HasChildren);
-        while (*categoryIt)
-            (*categoryIt++)->setHidden(true);
-        QTreeWidgetItemIterator it(treeView, QTreeWidgetItemIterator::NoChildren);
-        while (*it) {
-            auto modelName = (*it)->text(0);
-            const bool match = (modelName.contains(text, Qt::CaseInsensitive));
-            (*it)->setHidden(!match);
-            if (match) {
-                QTreeWidgetItem *parent = (*it)->parent();
-                while (parent) {
-                    parent->setHidden(false);
-                    parent = parent->parent();
+    connect(txtBox, &QLineEdit::textChanged, [treeView, treeModel](const QString &text) {
+        QModelIndex treeViewIndex = treeView->rootIndex();
+
+        for (int i = 0; i < treeModel->rowCount(); ++i) {
+            QStandardItem *parent = treeModel->item(i);
+            treeView->setRowHidden(i, treeViewIndex, true);
+
+            for (int j = 0; j < parent->rowCount(); ++j) {
+                const bool match = parent->child(j)->text().contains(text, Qt::CaseInsensitive);
+                treeView->setRowHidden(j, parent->index(), !match);
+                if (match) {
+                    treeView->setRowHidden(i, treeViewIndex, false);
                 }
             }
-            ++it;
         }
     });
 
@@ -142,6 +174,11 @@ QMenu *DataFlowGraphicsScene::createSceneMenu(QPointF const scenePos)
     modelMenu->setAttribute(Qt::WA_DeleteOnClose);
 
     return modelMenu;
+}
+
+void DataFlowGraphicsScene::sortSceneMenu(bool sortMenu)
+{
+    _sortMenu = sortMenu;
 }
 
 void DataFlowGraphicsScene::save() const
