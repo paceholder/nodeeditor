@@ -105,5 +105,5 @@ private:
     mutable std::unordered_map<NodeId, NodeGeometryData> _nodeGeometryData;
 
     /// A convenience variable needed for generating unique node ids.
-    unsigned int _nextNodeId;
+    NodeId _nextNodeId;
 };
