@@ -193,7 +193,7 @@ void BasicGraphicsScene::traverseGraphAndPopulateGraphicsObjects()
 
     // Then for each node check output connections and insert them.
     for (NodeId const nodeId : allNodeIds) {
-        unsigned int nOutPorts = _graphModel.nodeData<PortCount>(nodeId, NodeRole::OutPortCount);
+        auto nOutPorts = _graphModel.nodeData<PortCount>(nodeId, NodeRole::OutPortCount);
 
         for (PortIndex index = 0; index < nOutPorts; ++index) {
             auto const &outConnectionIds = _graphModel.connections(nodeId, PortType::Out, index);

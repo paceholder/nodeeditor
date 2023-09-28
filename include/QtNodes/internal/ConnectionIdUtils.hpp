@@ -9,7 +9,7 @@
 
 namespace QtNodes {
 
-inline PortIndex getNodeId(PortType portType, ConnectionId connectionId)
+inline NodeId getNodeId(PortType portType, ConnectionId connectionId)
 {
     NodeId id = InvalidNodeId;
 
@@ -140,9 +140,9 @@ inline QJsonObject toJson(ConnectionId const &connId)
 
 inline ConnectionId fromJson(QJsonObject const &connJson)
 {
-    ConnectionId connId{static_cast<NodeId>(connJson["outNodeId"].toInt(InvalidNodeId)),
+    ConnectionId connId{static_cast<NodeId>(connJson["outNodeId"].toInteger(InvalidNodeId)),
                         static_cast<PortIndex>(connJson["outPortIndex"].toInt(InvalidPortIndex)),
-                        static_cast<NodeId>(connJson["intNodeId"].toInt(InvalidNodeId)),
+                        static_cast<NodeId>(connJson["intNodeId"].toInteger(InvalidNodeId)),
                         static_cast<PortIndex>(connJson["inPortIndex"].toInt(InvalidPortIndex))};
 
     return connId;

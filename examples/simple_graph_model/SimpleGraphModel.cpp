@@ -275,7 +275,7 @@ QJsonObject SimpleGraphModel::saveNode(NodeId const nodeId) const
 
 void SimpleGraphModel::loadNode(QJsonObject const &nodeJson)
 {
-    NodeId restoredNodeId = static_cast<NodeId>(nodeJson["id"].toInt());
+    NodeId restoredNodeId = static_cast<NodeId>(nodeJson["id"].toInteger());
 
     // Next NodeId must be larger that any id existing in the graph
     _nextNodeId = std::max(_nextNodeId, restoredNodeId + 1);
