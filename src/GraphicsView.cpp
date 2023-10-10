@@ -129,7 +129,7 @@ void GraphicsView::setScene(BasicGraphicsScene *scene)
 
     {
         delete _pasteAction;
-        _pasteAction = new QAction(QStringLiteral("Copy Selection"), this);
+        _pasteAction = new QAction(QStringLiteral("Paste Selection"), this);
         _pasteAction->setShortcutContext(Qt::ShortcutContext::WidgetShortcut);
         _pasteAction->setShortcut(QKeySequence(QKeySequence::Paste));
         connect(_pasteAction, &QAction::triggered, this, &GraphicsView::onPasteObjects);
