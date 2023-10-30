@@ -222,7 +222,8 @@ void NodeGraphicsObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
             ConnectionId const incompleteConnectionId = makeIncompleteConnectionId(_nodeId,
                                                                                    portToCheck,
                                                                                    portIndex);
-
+            if (!_graphModel.detachPossible(incompleteConnectionId))
+                continue;
             nodeScene()->makeDraftConnection(incompleteConnectionId);
         }
     }
