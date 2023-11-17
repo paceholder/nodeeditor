@@ -28,7 +28,7 @@ public:
     enum CtlOption {
         None,
         NoSceneMenu,
-    }
+    };
 
 public:
     DataFlowGraphModel(std::shared_ptr<NodeDelegateModelRegistry> registry);
