@@ -20,6 +20,11 @@ std::unordered_set<NodeId> DataFlowGraphModel::allNodeIds() const
     return nodeIds;
 }
 
+bool DataFlowGraphModel::is(CtlOption ctl) {
+    Q_UNUSED(ctl);
+    return false;
+}
+
 std::unordered_set<ConnectionId> DataFlowGraphModel::allConnectionIds(NodeId const nodeId) const
 {
     std::unordered_set<ConnectionId> result;

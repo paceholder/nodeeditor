@@ -25,10 +25,17 @@ public:
         QPointF pos;
     };
 
+    enum CtlOption {
+        None,
+        NoSceneMenu,
+    }
+
 public:
     DataFlowGraphModel(std::shared_ptr<NodeDelegateModelRegistry> registry);
 
     std::shared_ptr<NodeDelegateModelRegistry> dataModelRegistry() { return _registry; }
+
+    virtual bool is(CtlOption ctl);
 
 public:
     std::unordered_set<NodeId> allNodeIds() const override;
