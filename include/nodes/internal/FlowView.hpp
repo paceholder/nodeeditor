@@ -8,6 +8,7 @@ namespace QtNodes
 {
 
 class FlowScene;
+class NodeGraphicsObject;
 
 class NODE_EDITOR_PUBLIC FlowView
   : public QGraphicsView
@@ -31,6 +32,10 @@ public:
   void jsonToScene(QJsonObject object);
   void jsonToSceneMousePos(QJsonObject object);
   void deleteJsonElements(const QJsonObject &object);
+
+  void goToNode(NodeGraphicsObject *node);
+
+
 public slots:
 
   void scaleUp();
@@ -65,6 +70,7 @@ protected:
 
   void addAnchor(int index);
   void goToAnchor(int index);
+
 
 protected:
 

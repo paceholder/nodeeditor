@@ -927,7 +927,6 @@ loadFromMemory(const QByteArray& data)
       NodeDataModel *dm = nodeIn->nodeDataModel(); 
       nameA = dm->name();
     }
-    if(QString::compare(nameA, QString("InputVariable")) == 0) return true;
 
     {
       QJsonObject objB = rhs.toObject();
@@ -940,10 +939,17 @@ loadFromMemory(const QByteArray& data)
       NodeDataModel *dm = nodeIn->nodeDataModel(); 
       nameB = dm->name();
     }
-    if(QString::compare(nameB, QString("InputVariable")) == 0) return false;
-    //if(nameB == "InputVariable") return false;
 
-    return posA.x() < posB.x();
+	if (QString::compare(nameA, QString("InputVariable")) == 0 && QString::compare(nameB, QString("InputVariable")) != 0) {
+		return false; // "InputVariable" goes at the end
+	}
+	else if (QString::compare(nameB, QString("InputVariable")) == 0 && QString::compare(nameA, QString("InputVariable")) != 0) {
+		return true; // "InputVariable" goes at the end
+	}
+	else {
+		return posA.x() < posB.x();
+	}
+
   });
 
 

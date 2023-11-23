@@ -31,6 +31,7 @@ using QtNodes::FlowView;
 using QtNodes::FlowScene;
 using QtNodes::Connection;
 using QtNodes::NodeConnectionInteraction;
+using QtNodes::NodeGraphicsObject;
 
 FlowView::
 FlowView(QWidget *parent)
@@ -109,6 +110,22 @@ FlowView::goToAnchor(int index)
   QPointF difference = _scene->anchors[index].position - currentPosition;
   
   setSceneRect(sceneRect().translated(difference.x(), difference.y()));    
+}
+
+void FlowView::goToNode(NodeGraphicsObject *node)
+{
+  qreal x1, y1, x2, y2;
+  sceneRect().getCoords(&x1, &y1, &x2, &y2);
+  QPointF currentPosition = QPointF((x2 + x1) * 0.5, (y1 + y2) * 0.5);
+
+  QPointF difference = node->pos() - currentPosition;
+  
+  setSceneRect(sceneRect().translated(difference.x(), difference.y()));  
+     
+    
+  float scaleX = 1.2f / transform().m11();
+  float scaleY = 1.2f / transform().m22();
+  scale(scaleX, scaleY);
 }
 
 void
@@ -394,6 +411,7 @@ wheelEvent(QWheelEvent *event)
     scaleUp();
   else
     scaleDown();
+
 }
 
 
@@ -410,6 +428,7 @@ scaleUp()
     return;
 
   scale(factor, factor);
+  
 }
 
 

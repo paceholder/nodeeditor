@@ -122,7 +122,7 @@ embedQWidget()
     _proxyWidget->setPos(geom.widgetPosition());
 
     update();
-
+    _proxyWidget->setContentsMargins(0, 0, 0, 0);
     _proxyWidget->setOpacity(1.0);
     _proxyWidget->setFlag(QGraphicsItem::ItemIgnoresParentOpacity);
   }
