@@ -291,7 +291,7 @@ bool DataFlowGraphModel::setNodeData(NodeId nodeId, NodeRole role, QVariant valu
         break;
 
     case NodeRole::Style:
-        _styles.insert({nodeId, std::make_shared<QJsonObject>(value.value<QJsonObject>())});
+        _styles[nodeId] = std::make_shared<QJsonObject>(value.value<QJsonObject>());
         break;
 
     case NodeRole::InternalData:
