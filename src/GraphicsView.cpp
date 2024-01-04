@@ -151,7 +151,8 @@ void GraphicsView::centerScene()
     if (scene()) {
         scene()->setSceneRect(QRectF());
 
-        QRectF sceneRect = scene()->sceneRect();
+        QRectF rect = scene()->itemsBoundingRect();
+        QRectF sceneRect = QRectF(0, 0, rect.left() * 2 + rect.width(), rect.top() * 2 + rect.height());
 
         if (sceneRect.width() > this->rect().width() || sceneRect.height() > this->rect().height()) {
             fitInView(sceneRect, Qt::KeepAspectRatio);
