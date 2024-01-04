@@ -20,6 +20,11 @@ std::unordered_set<NodeId> DataFlowGraphModel::allNodeIds() const
     return nodeIds;
 }
 
+bool DataFlowGraphModel::is(CtlOption ctl) {
+    Q_UNUSED(ctl);
+    return false;
+}
+
 std::unordered_set<ConnectionId> DataFlowGraphModel::allConnectionIds(NodeId const nodeId) const
 {
     std::unordered_set<ConnectionId> result;
@@ -212,7 +217,11 @@ QVariant DataFlowGraphModel::nodeData(NodeId nodeId, NodeRole role) const
 
     case NodeRole::Style: {
         auto style = StyleCollection::nodeStyle();
-        result = style.toJson().toVariantMap();
+        QVariantMap m = style.toJson().toVariantMap();
+        if (!_styles.empty() && _styles.find(nodeId) != _styles.end()) {
+            m.insert(QVariantMap{{"NodeStyle",_styles.at(nodeId).get()->toVariantMap()}});
+        }
+        result = m;
     } break;
 
     case NodeRole::InternalData: {
@@ -282,6 +291,7 @@ bool DataFlowGraphModel::setNodeData(NodeId nodeId, NodeRole role, QVariant valu
         break;
 
     case NodeRole::Style:
+        _styles[nodeId] = std::make_shared<QJsonObject>(value.value<QJsonObject>());
         break;
 
     case NodeRole::InternalData:
@@ -402,6 +412,8 @@ bool DataFlowGraphModel::deleteNode(NodeId const nodeId)
 
     _nodeGeometryData.erase(nodeId);
     _models.erase(nodeId);
+    if (!_styles.empty() && _styles.find(nodeId) != _styles.end())
+        _styles.erase(nodeId);
 
     Q_EMIT nodeDeleted(nodeId);
 
@@ -481,6 +493,11 @@ void DataFlowGraphModel::loadNode(QJsonObject const &nodeJson)
         QPointF const pos(posJson["x"].toDouble(), posJson["y"].toDouble());
 
         setNodeData(restoredNodeId, NodeRole::Position, pos);
+
+        if (nodeJson.contains("style")) {
+            QJsonObject styleJson = nodeJson["style"].toObject();
+            setNodeData(restoredNodeId, NodeRole::Style, styleJson);
+        }
 
         _models[restoredNodeId]->load(internalDataJson);
     } else {

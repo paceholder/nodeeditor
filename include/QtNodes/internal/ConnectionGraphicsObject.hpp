@@ -1,7 +1,12 @@
 #pragma once
 
-#include <utility>
+#ifndef M_PI
+    #define M_PI 3.14159265358979323846
+#endif
 
+#include <utility>
+#include <QPainterPath>
+#include <QPolygonF>
 #include <QtCore/QUuid>
 #include <QtWidgets/QGraphicsObject>
 
@@ -48,6 +53,7 @@ public:
     QPointF in() const { return _in; }
 
     std::pair<QPointF, QPointF> pointsC1C2() const;
+    QPolygonF arrow(QPainterPath target, qreal delta = M_PI / 8) const;
 
     void setEndPoint(PortType portType, QPointF const &point);
 
@@ -68,6 +74,8 @@ protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
 
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
+
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
 
     void hoverEnterEvent(QGraphicsSceneHoverEvent *event) override;
 
