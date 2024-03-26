@@ -154,7 +154,7 @@ target_link_libraries(nodes
 
 target_compile_definitions(nodes
   PUBLIC
-    NODE_EDITOR_SHARED
+    $<IF:$<BOOL:BUILD_SHARED_LIBS>, NODE_EDITOR_SHARED, NODE_EDITOR_STATIC>
   PRIVATE
     NODE_EDITOR_EXPORTS
     #NODE_DEBUG_DRAWING
