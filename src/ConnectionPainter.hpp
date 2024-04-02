@@ -3,6 +3,7 @@
 #include <QtGui/QPainter>
 #include <QtGui/QPainterPath>
 
+#include "AbstractConnectionPainter.hpp"
 #include "Definitions.hpp"
 
 namespace QtNodes {
@@ -10,12 +11,17 @@ namespace QtNodes {
 class ConnectionGeometry;
 class ConnectionGraphicsObject;
 
-class ConnectionPainter
+class ConnectionPainter : public AbstractConnectionPainter
 {
 public:
-    static void paint(QPainter *painter, ConnectionGraphicsObject const &cgo);
+    void paint(QPainter *painter, ConnectionGraphicsObject const &cgo) const override;
+    QPainterPath getPainterStroke(ConnectionGraphicsObject const &cgo) const override;
 
-    static QPainterPath getPainterStroke(ConnectionGraphicsObject const &cgo);
+private:
+    static QPainterPath cubicPath(ConnectionGraphicsObject const &connection);
+    static void drawSketchLine(QPainter *painter, ConnectionGraphicsObject const &cgo);
+    static void drawHoveredOrSelected(QPainter *painter, ConnectionGraphicsObject const &cgo);
+    static void drawNormalLine(QPainter *painter, ConnectionGraphicsObject const &cgo);
 };
 
 } // namespace QtNodes
