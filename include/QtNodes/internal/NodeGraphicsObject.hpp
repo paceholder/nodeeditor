@@ -50,6 +50,8 @@ public:
     /// Repaints the node once with reacting ports.
     void reactToConnection(ConnectionGraphicsObject const *cgo);
 
+    void nodeFlagsUpdated(NodeId const nodeId);
+
 protected:
     void paint(QPainter *painter,
                QStyleOptionGraphicsItem const *option,
@@ -73,10 +75,11 @@ protected:
 
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event) override;
 
+
 private:
     void embedQWidget();
 
-    void setLockedState();
+    void setLockedState(NodeFlags flags);
 
 private:
     NodeId _nodeId;

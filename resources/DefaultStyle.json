@@ -18,13 +18,15 @@
     "FilledConnectionPointColor": "cyan",
     "ErrorColor": "red",
     "WarningColor": [128, 128, 0],
+    "FillColor": "none",
 
     "PenWidth": 1.0,
     "HoveredPenWidth": 1.5,
 
     "ConnectionPointDiameter": 8.0,
 
-    "Opacity": 0.8
+    "Opacity": 0.8,
+    "CornerRadius": 3.0
   },
   "ConnectionStyle": {
     "ConstructionColor": "gray",
@@ -37,6 +39,7 @@
     "ConstructionLineWidth": 2.0,
     "PointDiameter": 10.0,
 
-    "UseDataDefinedColors": false
+    "UseDataDefinedColors": false,
+    "WithArrow": false
   }
 }

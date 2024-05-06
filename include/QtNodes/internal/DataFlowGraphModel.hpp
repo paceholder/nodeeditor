@@ -25,10 +25,17 @@ public:
         QPointF pos;
     };
 
+    enum CtlOption {
+        None,
+        NoSceneMenu,
+    };
+
 public:
     DataFlowGraphModel(std::shared_ptr<NodeDelegateModelRegistry> registry);
 
     std::shared_ptr<NodeDelegateModelRegistry> dataModelRegistry() { return _registry; }
+
+    virtual bool is(CtlOption ctl);
 
 public:
     std::unordered_set<NodeId> allNodeIds() const override;
@@ -130,6 +137,8 @@ private:
     std::unordered_set<ConnectionId> _connectivity;
 
     mutable std::unordered_map<NodeId, NodeGeometryData> _nodeGeometryData;
+
+    mutable std::unordered_map<NodeId, std::shared_ptr<QJsonObject>> _styles;
 };
 
 } // namespace QtNodes

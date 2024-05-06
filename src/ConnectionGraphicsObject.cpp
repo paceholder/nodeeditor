@@ -203,6 +203,9 @@ void ConnectionGraphicsObject::paint(QPainter *painter,
 
 void ConnectionGraphicsObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
+    if (!isSelected()) {
+        Q_EMIT nodeScene()->connectionSelected(connectionId());
+    }
     QGraphicsItem::mousePressEvent(event);
 }
 
@@ -262,6 +265,13 @@ void ConnectionGraphicsObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event
         nodeScene()->resetDraftConnection();
     }
 }
+
+void ConnectionGraphicsObject::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+{
+    QGraphicsItem::mouseDoubleClickEvent(event);
+    Q_EMIT nodeScene()->connectionDoubleClicked(connectionId());
+}
+
 
 void ConnectionGraphicsObject::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
@@ -375,6 +385,25 @@ std::pair<QPointF, QPointF> ConnectionGraphicsObject::pointsC1C2Vertical() const
     QPointF c2(_in.x() - horizontalOffset, _in.y() - verticalOffset);
 
     return std::make_pair(c1, c2);
+}
+
+QPolygonF ConnectionGraphicsObject::arrow(QPainterPath target, qreal delta) const
+{
+    QPointF const &in = endPoint(PortType::In);
+    QPointF const &out = endPoint(PortType::In);
+
+    QPointF first = in, second, third;
+    int z = 16;
+    qreal angle = target.angleAtPercent((z*2.0/3)*cos(delta) / target.length()) * M_PI / 180.0;
+    if ((nodeScene()->orientation() == Qt::Horizontal && in.x() < out.x())
+        || (nodeScene()->orientation() == Qt::Vertical && in.y() < out.y()) ) {
+        z = -16;
+    }
+    second = QPointF(in.x() - z * cos(angle - delta), in.y() + z * sin(angle - delta));
+    third = QPointF(in.x() - z * cos(angle + delta), in.y() + z * sin(angle + delta));
+    QPolygonF poly;
+    poly << first << second << third << first;
+    return poly;
 }
 
 } // namespace QtNodes

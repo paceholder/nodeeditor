@@ -59,6 +59,9 @@ std::vector<NodeId> DataFlowGraphicsScene::selectedNodes() const
 
 QMenu *DataFlowGraphicsScene::createSceneMenu(QPointF const scenePos)
 {
+    if (_graphModel.is(DataFlowGraphModel::CtlOption::NoSceneMenu)) {
+        return nullptr;
+    }
     QMenu *modelMenu = new QMenu();
 
     // Add filterbox to the context menu

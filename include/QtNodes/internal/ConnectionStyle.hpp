@@ -37,6 +37,7 @@ public:
     float pointDiameter() const;
 
     bool useDataDefinedColors() const;
+    bool withArrow() const;
 
 private:
     QColor ConstructionColor;
@@ -50,5 +51,6 @@ private:
     float PointDiameter;
 
     bool UseDataDefinedColors;
+    bool WithArrow;
 };
 } // namespace QtNodes

@@ -45,7 +45,6 @@ void DefaultNodePainter::drawNodeRect(QPainter *painter, NodeGraphicsObject &ngo
     QSize size = geometry.size(nodeId);
 
     QJsonDocument json = QJsonDocument::fromVariant(model.nodeData(nodeId, NodeRole::Style));
-
     NodeStyle nodeStyle(json.object());
 
     auto color = ngo.isSelected() ? nodeStyle.SelectedBoundaryColor : nodeStyle.NormalBoundaryColor;
@@ -58,19 +57,22 @@ void DefaultNodePainter::drawNodeRect(QPainter *painter, NodeGraphicsObject &ngo
         painter->setPen(p);
     }
 
-    QLinearGradient gradient(QPointF(0.0, 0.0), QPointF(2.0, size.height()));
+    if (nodeStyle.FillColor.value()) {
+        painter->setBrush(nodeStyle.FillColor);
+    } else {
+        QLinearGradient gradient(QPointF(0.0, 0.0), QPointF(2.0, size.height()));
 
-    gradient.setColorAt(0.0, nodeStyle.GradientColor0);
-    gradient.setColorAt(0.10, nodeStyle.GradientColor1);
-    gradient.setColorAt(0.90, nodeStyle.GradientColor2);
-    gradient.setColorAt(1.0, nodeStyle.GradientColor3);
+        gradient.setColorAt(0.0, nodeStyle.GradientColor0);
+        gradient.setColorAt(0.10, nodeStyle.GradientColor1);
+        gradient.setColorAt(0.90, nodeStyle.GradientColor2);
+        gradient.setColorAt(1.0, nodeStyle.GradientColor3);
 
-    painter->setBrush(gradient);
+        painter->setBrush(gradient);
+    }
 
     QRectF boundary(0, 0, size.width(), size.height());
 
-    double const radius = 3.0;
-
+    double const radius = nodeStyle.CornerRadius >= 0 ? nodeStyle.CornerRadius : 3.0;
     painter->drawRoundedRect(boundary, radius, radius);
 }
 
