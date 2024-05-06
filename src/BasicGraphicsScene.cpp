@@ -193,7 +193,7 @@ void BasicGraphicsScene::traverseGraphAndPopulateGraphicsObjects()
 
     // Then for each node check output connections and insert them.
     for (NodeId const nodeId : allNodeIds) {
-        unsigned int nOutPorts = _graphModel.nodeData<PortCount>(nodeId, NodeRole::OutPortCount);
+        auto nOutPorts = _graphModel.nodeData<PortCount>(nodeId, NodeRole::OutPortCount);
 
         for (PortIndex index = 0; index < nOutPorts; ++index) {
             auto const &outConnectionIds = _graphModel.connections(nodeId, PortType::Out, index);
@@ -230,6 +230,8 @@ void BasicGraphicsScene::onConnectionDeleted(ConnectionId const connectionId)
 
     updateAttachedNodes(connectionId, PortType::Out);
     updateAttachedNodes(connectionId, PortType::In);
+
+    Q_EMIT modified(this);
 }
 
 void BasicGraphicsScene::onConnectionCreated(ConnectionId const connectionId)
@@ -239,6 +241,8 @@ void BasicGraphicsScene::onConnectionCreated(ConnectionId const connectionId)
 
     updateAttachedNodes(connectionId, PortType::Out);
     updateAttachedNodes(connectionId, PortType::In);
+
+    Q_EMIT modified(this);
 }
 
 void BasicGraphicsScene::onNodeDeleted(NodeId const nodeId)
@@ -246,12 +250,16 @@ void BasicGraphicsScene::onNodeDeleted(NodeId const nodeId)
     auto it = _nodeGraphicsObjects.find(nodeId);
     if (it != _nodeGraphicsObjects.end()) {
         _nodeGraphicsObjects.erase(it);
+
+        Q_EMIT modified(this);
     }
 }
 
 void BasicGraphicsScene::onNodeCreated(NodeId const nodeId)
 {
     _nodeGraphicsObjects[nodeId] = std::make_unique<NodeGraphicsObject>(*this, nodeId);
+
+    Q_EMIT modified(this);
 }
 
 void BasicGraphicsScene::onNodePositionUpdated(NodeId const nodeId)
@@ -280,8 +288,10 @@ void BasicGraphicsScene::onNodeUpdated(NodeId const nodeId)
 
 void BasicGraphicsScene::onNodeClicked(NodeId const nodeId)
 {
-    if (_nodeDrag)
+    if (_nodeDrag) {
         Q_EMIT nodeMoved(nodeId, _graphModel.nodeData(nodeId, NodeRole::Position).value<QPointF>());
+        Q_EMIT modified(this);
+    }
     _nodeDrag = false;
 }
 

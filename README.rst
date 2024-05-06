@@ -60,13 +60,13 @@ Supported Environments
 Platforms
 ---------
 
-* Linux (x64, gcc, Qt 5.15.2) |ImageLink|_
-* OSX (Apple Clang, Qt 5.15.2) |ImageLink|_
-* Windows (MSVC, Qt 5.15.2) |ImageLink|_
-* Windows (MSVC, Qt 6.3.0) |ImageLink|_
+* Linux (x64, gcc, Qt 5.15.2) |ImageLink|
+* OSX (Apple Clang, Qt 5.15.2) |ImageLink|
+* Windows (MSVC, Qt 5.15.2) |ImageLink|
+* Windows (MSVC, Qt 6.3.0) |ImageLink|
 
 .. |ImageLink| image:: https://github.com/paceholder/nodeeditor/actions/workflows/cmake_build.yml/badge.svg
-.. _ImageLink: https://github.com/paceholder/nodeeditor/actions/workflows/cmake_build.yml
+   :target: https://github.com/paceholder/nodeeditor/actions/workflows/cmake_build.yml
 
 
 Dependencies
@@ -102,6 +102,16 @@ Current State (v3)
 
 Building
 ========
+
+Set this option to false if you want to build with Qt5 version instead of Qt6:
+
+::
+
+   USE_QT6
+
+   mkdir build && cd build && cmake .. -DUSE_QT6=on
+   or
+   mkdir build && cd build && cmake .. -DUSE_QT6=off
 
 Linux
 -----

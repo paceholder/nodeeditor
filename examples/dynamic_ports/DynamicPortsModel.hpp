@@ -122,5 +122,5 @@ private:
     mutable std::unordered_map<NodeId, PortAddRemoveWidget *> _nodeWidgets;
 
     /// A convenience variable needed for generating unique node ids.
-    unsigned int _nextNodeId;
+    NodeId _nextNodeId;
 };
