@@ -41,7 +41,7 @@ public:
 
 public:
     template<typename ModelType>
-    void registerModel(RegistryItemCreator creator, QString const &category = "Nodes")
+    void registerModel(RegistryItemCreator creator, QString const &category = QLatin1String("Nodes"))
     {
         QString const name = computeName<ModelType>(HasStaticMethodName<ModelType>{}, creator);
         if (!_registeredItemCreators.count(name)) {
@@ -52,7 +52,7 @@ public:
     }
 
     template<typename ModelType>
-    void registerModel(QString const &category = "Nodes")
+    void registerModel(QString const &category = QLatin1String("Nodes"))
     {
         RegistryItemCreator creator = []() { return std::make_unique<ModelType>(); };
         registerModel<ModelType>(std::move(creator), category);
@@ -62,7 +62,7 @@ public:
   template<typename ModelType>
   void
   registerModel(RegistryItemCreator creator,
-                QString const&      category = "Nodes")
+                QString const&      category = QLatin1String("Nodes"))
   {
     registerModel<ModelType>(std::move(creator), category);
   }
@@ -70,7 +70,7 @@ public:
 
   template <typename ModelCreator>
   void
-  registerModel(ModelCreator&& creator, QString const& category = "Nodes")
+  registerModel(ModelCreator&& creator, QString const& category = QLatin1String("Nodes"))
   {
     using ModelType = compute_model_type_t<decltype(creator())>;
     registerModel<ModelType>(std::forward<ModelCreator>(creator), category);
