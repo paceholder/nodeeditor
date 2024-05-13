@@ -281,6 +281,7 @@ void BasicGraphicsScene::onNodeUpdated(NodeId const nodeId)
 
         _nodeGeometry->recomputeSize(nodeId);
 
+        node->updateQWidgetEmbedPos();
         node->update();
         node->moveConnections();
     }

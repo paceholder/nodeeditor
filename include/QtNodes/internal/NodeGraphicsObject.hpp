@@ -50,6 +50,8 @@ public:
     /// Repaints the node once with reacting ports.
     void reactToConnection(ConnectionGraphicsObject const *cgo);
 
+    void updateQWidgetEmbedPos();
+
 protected:
     void paint(QPainter *painter,
                QStyleOptionGraphicsItem const *option,

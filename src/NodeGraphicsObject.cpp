@@ -76,6 +76,11 @@ BasicGraphicsScene *NodeGraphicsObject::nodeScene() const
     return dynamic_cast<BasicGraphicsScene *>(scene());
 }
 
+void NodeGraphicsObject::updateQWidgetEmbedPos()
+{
+    _proxyWidget->setPos(nodeScene()->nodeGeometry().widgetPosition(_nodeId));
+}
+
 void NodeGraphicsObject::embedQWidget()
 {
     AbstractNodeGeometry &geometry = nodeScene()->nodeGeometry();
@@ -99,7 +104,7 @@ void NodeGraphicsObject::embedQWidget()
             _proxyWidget->setMinimumHeight(widgetHeight);
         }
 
-        _proxyWidget->setPos(geometry.widgetPosition(_nodeId));
+        updateQWidgetEmbedPos();
 
         //update();
 
