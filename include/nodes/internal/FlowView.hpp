@@ -34,6 +34,7 @@ public:
   void deleteJsonElements(const QJsonObject &object);
 
   void goToNode(NodeGraphicsObject *node);
+  void goToNodeID(QUuid ID);
 
 
 public slots:

@@ -940,11 +940,12 @@ loadFromMemory(const QByteArray& data)
       nameB = dm->name();
     }
 
+  //We put input variables at the end, so we only compute them when all the data is loaded.
 	if (QString::compare(nameA, QString("InputVariable")) == 0 && QString::compare(nameB, QString("InputVariable")) != 0) {
-		return false; // "InputVariable" goes at the end
+		return false; 
 	}
 	else if (QString::compare(nameB, QString("InputVariable")) == 0 && QString::compare(nameA, QString("InputVariable")) != 0) {
-		return true; // "InputVariable" goes at the end
+		return true;
 	}
 	else {
 		return posA.x() < posB.x();

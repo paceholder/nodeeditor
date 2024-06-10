@@ -128,6 +128,12 @@ void FlowView::goToNode(NodeGraphicsObject *node)
   scale(scaleX, scaleY);
 }
 
+void 
+FlowView::goToNodeID(QUuid ID)
+{
+  goToNode(&(_scene->nodes()[ID]->nodeGraphicsObject()));
+}
+
 void
 FlowView::setScene(FlowScene *scene)
 {
