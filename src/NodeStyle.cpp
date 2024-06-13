@@ -88,6 +88,18 @@ void NodeStyle::setNodeStyle(QString jsonText)
         values[#variable] = variable; \
     }
 
+#define NODE_STYLE_READ_BOOL(values, variable) \
+    { \
+            auto valueRef = values[#variable]; \
+            NODE_STYLE_CHECK_UNDEFINED_VALUE(valueRef, variable) \
+            variable = valueRef.toBool(); \
+    }
+
+#define NODE_STYLE_WRITE_BOOL(values, variable) \
+    { \
+            values[#variable] = variable; \
+    }
+
 void NodeStyle::loadJson(QJsonObject const &json)
 {
     QJsonValue nodeStyleValues = json["NodeStyle"];
@@ -101,6 +113,7 @@ void NodeStyle::loadJson(QJsonObject const &json)
     NODE_STYLE_READ_COLOR(obj, GradientColor2);
     NODE_STYLE_READ_COLOR(obj, GradientColor3);
     NODE_STYLE_READ_COLOR(obj, ShadowColor);
+    NODE_STYLE_READ_BOOL(obj, ShadowEnabled);
     NODE_STYLE_READ_COLOR(obj, FontColor);
     NODE_STYLE_READ_COLOR(obj, FontColorFaded);
     NODE_STYLE_READ_COLOR(obj, ConnectionPointColor);
@@ -126,6 +139,7 @@ QJsonObject NodeStyle::toJson() const
     NODE_STYLE_WRITE_COLOR(obj, GradientColor2);
     NODE_STYLE_WRITE_COLOR(obj, GradientColor3);
     NODE_STYLE_WRITE_COLOR(obj, ShadowColor);
+    NODE_STYLE_WRITE_BOOL(obj, ShadowEnabled);
     NODE_STYLE_WRITE_COLOR(obj, FontColor);
     NODE_STYLE_WRITE_COLOR(obj, FontColorFaded);
     NODE_STYLE_WRITE_COLOR(obj, ConnectionPointColor);

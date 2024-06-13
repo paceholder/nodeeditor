@@ -196,6 +196,7 @@ the moment of writing this documentation.
       "GradientColor2": [64, 64, 64],
       "GradientColor3": [58, 58, 58],
       "ShadowColor": [20, 20, 20],
+      "ShadowEnabled": false,
       "FontColor" : "white",
       "FontColorFaded" : "gray",
       "ConnectionPointColor": [169, 169, 169],
