@@ -17,9 +17,8 @@ public:
     virtual ~AbstractConnectionPainter() = default;
 
     /**
-   * Reimplement this function in order to have a custom connection painting.
-   *
-   */
+     * Reimplement this function in order to have a custom connection painting.
+     */
     virtual void paint(QPainter *painter, ConnectionGraphicsObject const &cgo) const = 0;
 
     virtual QPainterPath getPainterStroke(ConnectionGraphicsObject const &cgo) const = 0;
