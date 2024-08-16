@@ -26,40 +26,6 @@ QPainterPath DefaultConnectionPainter::cubicPath(ConnectionGraphicsObject const 
     return cubic;
 }
 
-
-
-#ifdef NODE_DEBUG_DRAWING
-void DefaultConnectionPainter::debugDrawing(QPainter *painter, ConnectionGraphicsObject const &cgo)
-{
-    Q_UNUSED(painter);
-
-    {
-        QPointF const &in = cgo.endPoint(PortType::In);
-        QPointF const &out = cgo.endPoint(PortType::Out);
-
-        auto const points = cgo.pointsC1C2();
-
-        painter->setPen(Qt::red);
-        painter->setBrush(Qt::red);
-
-        painter->drawLine(QLineF(out, points.first));
-        painter->drawLine(QLineF(points.first, points.second));
-        painter->drawLine(QLineF(points.second, in));
-        painter->drawEllipse(points.first, 3, 3);
-        painter->drawEllipse(points.second, 3, 3);
-
-        painter->setBrush(Qt::NoBrush);
-        painter->drawPath(cubicPath(cgo));
-    }
-
-    {
-        painter->setPen(Qt::yellow);
-        painter->drawRect(cgo.boundingRect());
-    }
-}
-
-#endif
-
 void DefaultConnectionPainter::drawSketchLine(QPainter *painter, ConnectionGraphicsObject const &cgo)
 {
     ConnectionState const &state = cgo.connectionState();
@@ -252,5 +218,36 @@ QPainterPath DefaultConnectionPainter::getPainterStroke(ConnectionGraphicsObject
 
     return stroker.createStroke(result);
 }
+
+#ifdef NODE_DEBUG_DRAWING
+void DefaultConnectionPainter::debugDrawing(QPainter *painter, ConnectionGraphicsObject const &cgo)
+{
+    Q_UNUSED(painter);
+
+    {
+        QPointF const &in = cgo.endPoint(PortType::In);
+        QPointF const &out = cgo.endPoint(PortType::Out);
+
+        auto const points = cgo.pointsC1C2();
+
+        painter->setPen(Qt::red);
+        painter->setBrush(Qt::red);
+
+        painter->drawLine(QLineF(out, points.first));
+        painter->drawLine(QLineF(points.first, points.second));
+        painter->drawLine(QLineF(points.second, in));
+        painter->drawEllipse(points.first, 3, 3);
+        painter->drawEllipse(points.second, 3, 3);
+
+        painter->setBrush(Qt::NoBrush);
+        painter->drawPath(cubicPath(cgo));
+    }
+
+    {
+        painter->setPen(Qt::yellow);
+        painter->drawRect(cgo.boundingRect());
+    }
+}
+#endif
 
 } // namespace QtNodes
