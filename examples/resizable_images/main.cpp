@@ -46,13 +46,13 @@ int main(int argc, char *argv[])
                                             .nodeData(nodeId, QtNodes::NodeRole::Caption)
                                             .value<QString>();
 
-                         bool isEmbeded = dataFlowGraphModel
-                                              .nodeData(nodeId, QtNodes::NodeRole::WidgetEmbeddable)
-                                              .value<bool>();
+                         bool isEmbedded = dataFlowGraphModel
+                                               .nodeData(nodeId, QtNodes::NodeRole::WidgetEmbeddable)
+                                               .value<bool>();
                          auto w = dataFlowGraphModel.nodeData(nodeId, QtNodes::NodeRole::Widget)
                                       .value<QWidget *>();
 
-                         if (!isEmbeded && w) {
+                         if (!isEmbedded && w) {
                              w->setWindowTitle(name + "_" + QString::number(nodeId));
                              w->show();
                          }

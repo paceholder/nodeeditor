@@ -32,10 +32,10 @@ void DefaultVerticalNodeGeometry::recomputeSize(NodeId const nodeId) const
 {
     unsigned int height = _portSpasing; // maxHorizontalPortsExtent(nodeId);
 
-    bool isEmbeded = _graphModel.nodeData(nodeId, NodeRole::WidgetEmbeddable).value<bool>();
+    bool isEmbedded = _graphModel.nodeData(nodeId, NodeRole::WidgetEmbeddable).value<bool>();
     auto w = _graphModel.nodeData<QWidget *>(nodeId, NodeRole::Widget);
 
-    if (isEmbeded && w) {
+    if (isEmbedded && w) {
         height = std::max(height, static_cast<unsigned int>(w->height()));
     }
 
@@ -67,7 +67,7 @@ void DefaultVerticalNodeGeometry::recomputeSize(NodeId const nodeId) const
 
     unsigned int width = std::max(totalInPortsWidth, totalOutPortsWidth);
 
-    if (isEmbeded && w) {
+    if (isEmbedded && w) {
         width = std::max(width, static_cast<unsigned int>(w->width()));
     }
 
@@ -180,10 +180,10 @@ QPointF DefaultVerticalNodeGeometry::widgetPosition(NodeId const nodeId) const
 
     unsigned int captionHeight = captionRect(nodeId).height();
 
-    bool isEmbeded = _graphModel.nodeData(nodeId, NodeRole::WidgetEmbeddable).value<bool>();
+    bool isEmbedded = _graphModel.nodeData(nodeId, NodeRole::WidgetEmbeddable).value<bool>();
     auto w = _graphModel.nodeData<QWidget *>(nodeId, NodeRole::Widget);
 
-    if (isEmbeded && w) {
+    if (isEmbedded && w) {
         // If the widget wants to use as much vertical space as possible,
         // place it immediately after the caption.
         if (w->sizePolicy().verticalPolicy() & QSizePolicy::ExpandFlag) {
