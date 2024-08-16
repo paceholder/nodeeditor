@@ -38,6 +38,26 @@ int main(int argc, char *argv[])
 
     GraphicsView view(&scene);
 
+    QObject::connect(&scene,
+                     &DataFlowGraphicsScene::nodeDoubleClicked,
+                     &dataFlowGraphModel,
+                     [&dataFlowGraphModel](QtNodes::NodeId nodeId) {
+                         QString name = dataFlowGraphModel
+                                            .nodeData(nodeId, QtNodes::NodeRole::Caption)
+                                            .value<QString>();
+
+                         bool isEmbedded = dataFlowGraphModel
+                                               .nodeData(nodeId, QtNodes::NodeRole::WidgetEmbeddable)
+                                               .value<bool>();
+                         auto w = dataFlowGraphModel.nodeData(nodeId, QtNodes::NodeRole::Widget)
+                                      .value<QWidget *>();
+
+                         if (!isEmbedded && w) {
+                             w->setWindowTitle(name + "_" + QString::number(nodeId));
+                             w->show();
+                         }
+                     });
+
     view.setWindowTitle("Data Flow: Resizable Images");
     view.resize(800, 600);
     // Center window.
