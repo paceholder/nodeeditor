@@ -37,6 +37,7 @@ NodeGraphicsObject::NodeGraphicsObject(BasicGraphicsScene &scene, NodeId nodeId)
 
     NodeStyle nodeStyle(nodeStyleJson);
 
+    if(nodeStyle.ShadowEnabled)
     {
         auto effect = new QGraphicsDropShadowEffect;
         effect->setOffset(4, 4);

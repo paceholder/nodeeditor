@@ -34,6 +34,7 @@ public:
     QColor GradientColor2;
     QColor GradientColor3;
     QColor ShadowColor;
+    bool ShadowEnabled;
     QColor FontColor;
     QColor FontColorFaded;
 
