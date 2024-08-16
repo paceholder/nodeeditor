@@ -37,7 +37,7 @@ BasicGraphicsScene::BasicGraphicsScene(AbstractGraphModel &graphModel, QObject *
     , _graphModel(graphModel)
     , _nodeGeometry(std::make_unique<DefaultHorizontalNodeGeometry>(_graphModel))
     , _nodePainter(std::make_unique<DefaultNodePainter>())
-    , _connectionPainter(std::make_unique<ConnectionPainter>())
+    , _connectionPainter(std::make_unique<DefaultConnectionPainter>())
     , _nodeDrag(false)
     , _undoStack(new QUndoStack(this))
     , _orientation(Qt::Horizontal)
