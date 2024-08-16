@@ -1,4 +1,4 @@
-#include "ConnectionPainter.hpp"
+#include "DefaultConnectionPainter.hpp"
 
 #include <QtGui/QIcon>
 
@@ -11,7 +11,7 @@
 
 namespace QtNodes {
 
-QPainterPath ConnectionPainter::cubicPath(ConnectionGraphicsObject const &connection)
+QPainterPath DefaultConnectionPainter::cubicPath(ConnectionGraphicsObject const &connection)
 {
     QPointF const &in = connection.endPoint(PortType::In);
     QPointF const &out = connection.endPoint(PortType::Out);
@@ -26,28 +26,10 @@ QPainterPath ConnectionPainter::cubicPath(ConnectionGraphicsObject const &connec
     return cubic;
 }
 
-QPainterPath ConnectionPainter::getPainterStroke(ConnectionGraphicsObject const &connection) const
-{
-    auto cubic = cubicPath(connection);
 
-    QPointF const &out = connection.endPoint(PortType::Out);
-    QPainterPath result(out);
-
-    unsigned segments = 20;
-
-    for (auto i = 0ul; i < segments; ++i) {
-        double ratio = double(i + 1) / segments;
-        result.lineTo(cubic.pointAtPercent(ratio));
-    }
-
-    QPainterPathStroker stroker;
-    stroker.setWidth(10.0);
-
-    return stroker.createStroke(result);
-}
 
 #ifdef NODE_DEBUG_DRAWING
-static void debugDrawing(QPainter *painter, ConnectionGraphicsObject const &cgo)
+void DefaultConnectionPainter::debugDrawing(QPainter *painter, ConnectionGraphicsObject const &cgo)
 {
     Q_UNUSED(painter);
 
@@ -78,7 +60,7 @@ static void debugDrawing(QPainter *painter, ConnectionGraphicsObject const &cgo)
 
 #endif
 
-void ConnectionPainter::drawSketchLine(QPainter *painter, ConnectionGraphicsObject const &cgo)
+void DefaultConnectionPainter::drawSketchLine(QPainter *painter, ConnectionGraphicsObject const &cgo)
 {
     ConnectionState const &state = cgo.connectionState();
 
@@ -100,7 +82,7 @@ void ConnectionPainter::drawSketchLine(QPainter *painter, ConnectionGraphicsObje
     }
 }
 
-void ConnectionPainter::drawHoveredOrSelected(QPainter *painter, ConnectionGraphicsObject const &cgo)
+void DefaultConnectionPainter::drawHoveredOrSelected(QPainter *painter, ConnectionGraphicsObject const &cgo)
 {
     bool const hovered = cgo.connectionState().hovered();
     bool const selected = cgo.isSelected();
@@ -125,7 +107,7 @@ void ConnectionPainter::drawHoveredOrSelected(QPainter *painter, ConnectionGraph
     }
 }
 
-void ConnectionPainter::drawNormalLine(QPainter *painter, ConnectionGraphicsObject const &cgo)
+void DefaultConnectionPainter::drawNormalLine(QPainter *painter, ConnectionGraphicsObject const &cgo)
 {
     ConnectionState const &state = cgo.connectionState();
 
@@ -227,7 +209,7 @@ void ConnectionPainter::drawNormalLine(QPainter *painter, ConnectionGraphicsObje
     }
 }
 
-void ConnectionPainter::paint(QPainter *painter, ConnectionGraphicsObject const &cgo) const
+void DefaultConnectionPainter::paint(QPainter *painter, ConnectionGraphicsObject const &cgo) const
 {
     drawHoveredOrSelected(painter, cgo);
 
@@ -249,6 +231,26 @@ void ConnectionPainter::paint(QPainter *painter, ConnectionGraphicsObject const 
     double const pointRadius = pointDiameter / 2.0;
     painter->drawEllipse(cgo.out(), pointRadius, pointRadius);
     painter->drawEllipse(cgo.in(), pointRadius, pointRadius);
+}
+
+QPainterPath DefaultConnectionPainter::getPainterStroke(ConnectionGraphicsObject const &connection) const
+{
+    auto cubic = cubicPath(connection);
+
+    QPointF const &out = connection.endPoint(PortType::Out);
+    QPainterPath result(out);
+
+    unsigned segments = 20;
+
+    for (auto i = 0ul; i < segments; ++i) {
+        double ratio = double(i + 1) / segments;
+        result.lineTo(cubic.pointAtPercent(ratio));
+    }
+
+    QPainterPathStroker stroker;
+    stroker.setWidth(10.0);
+
+    return stroker.createStroke(result);
 }
 
 } // namespace QtNodes
