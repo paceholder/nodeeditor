@@ -37,9 +37,9 @@ jobs:
           - toolchain: macos-clang
             os: macos-latest
             compiler: clang
-            qt_version: "5.15.2"
+            qt_version: "6.7.1"
             modules: ""
-            use_qt6: "OFF"
+            use_qt6: "ON"
 
           - toolchain: windows-msvc
             os: windows-latest
