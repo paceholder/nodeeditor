@@ -95,6 +95,7 @@ set(CPP_SOURCE_FILES
   src/StyleCollection.cpp
   src/UndoCommands.cpp
   src/locateNode.cpp
+  src/PluginsManager.cpp
 )
 
 set(HPP_HEADER_FILES
@@ -128,6 +129,8 @@ set(HPP_HEADER_FILES
   include/QtNodes/internal/Serializable.hpp
   include/QtNodes/internal/Style.hpp
   include/QtNodes/internal/StyleCollection.hpp
+  include/QtNodes/internal/PluginInterface.hpp
+  include/QtNodes/internal/PluginsManager.hpp
   src/DefaultConnectionPainter.hpp
   src/DefaultHorizontalNodeGeometry.hpp
   src/DefaultNodePainter.hpp
