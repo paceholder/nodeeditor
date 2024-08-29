@@ -120,6 +120,8 @@ void ConnectionStyle::loadJson(QJsonObject const &json)
     CONNECTION_STYLE_READ_FLOAT(obj, PointDiameter);
 
     CONNECTION_STYLE_READ_BOOL(obj, UseDataDefinedColors);
+    CONNECTION_STYLE_READ_BOOL(obj, InArrow);
+    CONNECTION_STYLE_READ_BOOL(obj, OutArrow);
 }
 
 QJsonObject ConnectionStyle::toJson() const
@@ -137,6 +139,8 @@ QJsonObject ConnectionStyle::toJson() const
     CONNECTION_STYLE_WRITE_FLOAT(obj, PointDiameter);
 
     CONNECTION_STYLE_WRITE_BOOL(obj, UseDataDefinedColors);
+    CONNECTION_STYLE_WRITE_BOOL(obj, InArrow);
+    CONNECTION_STYLE_WRITE_BOOL(obj, OutArrow);
 
     QJsonObject root;
     root["ConnectionStyle"] = obj;
@@ -202,4 +206,14 @@ float ConnectionStyle::pointDiameter() const
 bool ConnectionStyle::useDataDefinedColors() const
 {
     return UseDataDefinedColors;
+}
+
+
+bool ConnectionStyle::inArrow() const
+{
+    return InArrow;
+}
+bool ConnectionStyle::outArrow() const
+{
+    return OutArrow;
 }
