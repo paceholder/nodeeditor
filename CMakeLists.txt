@@ -128,12 +128,12 @@ set(HPP_HEADER_FILES
   include/QtNodes/internal/Serializable.hpp
   include/QtNodes/internal/Style.hpp
   include/QtNodes/internal/StyleCollection.hpp
-  src/DefaultConnectionPainter.hpp
-  src/DefaultHorizontalNodeGeometry.hpp
-  src/DefaultNodePainter.hpp
-  src/DefaultVerticalNodeGeometry.hpp
-  src/NodeConnectionInteraction.hpp
-  src/UndoCommands.hpp
+  include/QtNodes/internal/DefaultConnectionPainter.hpp
+  include/QtNodes/internal/DefaultHorizontalNodeGeometry.hpp
+  include/QtNodes/internal/DefaultNodePainter.hpp
+  include/QtNodes/internal/DefaultVerticalNodeGeometry.hpp
+  include/QtNodes/internal/NodeConnectionInteraction.hpp
+  include/QtNodes/internal/UndoCommands.hpp
 )
 
 # If we want to give the option to build a static library,
