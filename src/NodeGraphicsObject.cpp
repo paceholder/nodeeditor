@@ -85,9 +85,9 @@ void NodeGraphicsObject::embedQWidget()
 {
     AbstractNodeGeometry &geometry = nodeScene()->nodeGeometry();
     geometry.recomputeSize(_nodeId);
-
+    _proxyWidget = new QGraphicsProxyWidget(this);
     if (auto w = _graphModel.nodeData(_nodeId, NodeRole::Widget).value<QWidget *>()) {
-        _proxyWidget = new QGraphicsProxyWidget(this);
+
 
         _proxyWidget->setWidget(w);
 
