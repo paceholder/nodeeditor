@@ -46,7 +46,7 @@ paint(QPainter* painter,
 
   drawModelName(painter, geom, state, model);
 
-  drawEntryLabels(painter, geom, state, model);
+  drawEntryLabels(painter, geom, state, model, node.inputSelected);
 
   drawResizeRect(painter, geom, model);
 
@@ -281,13 +281,14 @@ NodePainter::
 drawEntryLabels(QPainter * painter,
                 NodeGeometry const & geom,
                 NodeState const & state,
-                NodeDataModel const * model)
+                NodeDataModel const * model, 
+                std::vector<bool> &inputSelected)
 {
   QFontMetrics const & metrics =
     painter->fontMetrics();
 
   auto drawPoints =
-    [&](PortType portType)
+    [&](PortType portType, std::vector<bool> *inputSelected=nullptr)
     {
       auto const &nodeStyle = model->nodeStyle();
 
@@ -303,6 +304,9 @@ drawEntryLabels(QPainter * painter,
           painter->setPen(nodeStyle.FontColorFaded);
         else
           painter->setPen(nodeStyle.FontColor);
+
+        if(inputSelected != nullptr && inputSelected->at(i)) 
+          painter->setPen(nodeStyle.FontColorSelected);
 
         QString s;
 
@@ -339,7 +343,7 @@ drawEntryLabels(QPainter * painter,
 
   drawPoints(PortType::Out);
 
-  drawPoints(PortType::In);
+  drawPoints(PortType::In, &inputSelected);
 }
 
 

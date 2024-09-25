@@ -48,7 +48,8 @@ public:
   drawEntryLabels(QPainter* painter,
                   NodeGeometry const& geom,
                   NodeState const& state,
-                  NodeDataModel const * model);
+                  NodeDataModel const * model,
+                  std::vector<bool> &inputColors);
 
   static
   void

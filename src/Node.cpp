@@ -39,9 +39,17 @@ Node(std::unique_ptr<NodeDataModel> && dataModel)
   // propagate data: model => node
   connect(_nodeDataModel.get(), &NodeDataModel::dataUpdated,
           this, &Node::onDataUpdated);
+
+  this->inputSelected.resize(_nodeDataModel->nPorts(PortType::In));
 		
 }
 
+void 
+Node::
+setInputSelected(int inx, bool selected)
+{
+  this->inputSelected[inx] = selected;
+}
 
 Node::
 ~Node() {}

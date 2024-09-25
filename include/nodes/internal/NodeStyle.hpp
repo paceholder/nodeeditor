@@ -39,6 +39,7 @@ public:
   QColor ShadowColor;
   QColor FontColor;
   QColor FontColorFaded;
+  QColor FontColorSelected;
 
   QColor ConnectionPointColor;
   QColor FilledConnectionPointColor;

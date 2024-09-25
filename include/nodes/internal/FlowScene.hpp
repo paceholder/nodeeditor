@@ -174,6 +174,8 @@ signals:
   
   void groupMoveFinished(Group& g, const QPointF& newLocation, const QPointF& oldLocation);
 
+  void nodeClicked(Node& n);
+
   void nodeDoubleClicked(Node& n);
   
   void groupDoubleClicked(Group& g);
@@ -187,6 +189,7 @@ signals:
   void nodeHoverLeft(Node& n);
 
   void nodeContextMenu(Node& n, const QPointF& pos);
+  
 
 public:
 

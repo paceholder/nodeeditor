@@ -244,6 +244,8 @@ mousePressEvent(QGraphicsSceneMouseEvent * event)
     _scene.clearSelection();
   }
 
+  _scene.nodeClicked(node());
+
   auto clickPort =
     [&](PortType portToCheck)
     {

@@ -102,9 +102,12 @@ public:
   NodeDataModel*
   nodeDataModel() const;
 
+  void setInputSelected(int inx, bool selected);
+
   int targetInputConnections=0;
   int currentInputConnections=0;
 
+  std::vector<bool> inputSelected;
 
 public slots: // data propagation
 
@@ -136,6 +139,7 @@ private:
   NodeState _nodeState;
 
   // painting
+
 
   NodeGeometry _nodeGeometry;
 
