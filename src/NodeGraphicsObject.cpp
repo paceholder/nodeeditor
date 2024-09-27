@@ -185,6 +185,10 @@ paint(QPainter * painter,
       QStyleOptionGraphicsItem const* option,
       QWidget* )
 {
+  if(_node.inputSelected.size() != _node.nodeDataModel()->nPorts(PortType::In))
+  {
+    _node.inputSelected.resize(_node.nodeDataModel()->nPorts(PortType::In));
+  }
   painter->setClipRect(option->exposedRect);
 
   NodePainter::paint(painter, _node, _scene);
