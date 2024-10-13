@@ -113,6 +113,12 @@ Set this option to false if you want to build with Qt5 version instead of Qt6:
    or
    mkdir build && cd build && cmake .. -DUSE_QT6=off
 
+For building a static lib use:
+
+::
+
+    cmake .. -BUILD_SHARED_LIBS=off
+
 Linux
 -----
 
