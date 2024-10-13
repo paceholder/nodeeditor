@@ -78,7 +78,10 @@ BasicGraphicsScene *NodeGraphicsObject::nodeScene() const
 
 void NodeGraphicsObject::updateQWidgetEmbedPos()
 {
-    _proxyWidget->setPos(nodeScene()->nodeGeometry().widgetPosition(_nodeId));
+  if (_proxyWidget) {
+    AbstractNodeGeometry &geometry = nodeScene()->nodeGeometry();
+    _proxyWidget->setPos(geometry.widgetPosition(_nodeId));
+  }
 }
 
 void NodeGraphicsObject::embedQWidget()
