@@ -18,7 +18,7 @@ using QtNodes::PortType;
 
 /// The model dictates the number of inputs and outputs for the Node.
 /// In this example it has no logic.
-class ImageLoaderModel : public NodeDelegateModel
+class ImageLoaderModel final : public NodeDelegateModel
 {
     Q_OBJECT
 

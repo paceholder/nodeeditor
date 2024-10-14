@@ -121,6 +121,10 @@ QVariant SimpleGraphModel::nodeData(NodeId nodeId, NodeRole role) const
         result = 3u;
         break;
 
+    case NodeRole::WidgetEmbeddable:
+        result = true;
+        break;
+
     case NodeRole::Widget:
         result = QVariant();
         break;
@@ -165,6 +169,9 @@ bool SimpleGraphModel::setNodeData(NodeId nodeId, NodeRole role, QVariant value)
         break;
 
     case NodeRole::OutPortCount:
+        break;
+
+    case NodeRole::WidgetEmbeddable:
         break;
 
     case NodeRole::Widget:
