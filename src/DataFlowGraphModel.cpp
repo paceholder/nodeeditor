@@ -93,7 +93,7 @@ NodeId DataFlowGraphModel::addNode(QString const nodeType)
                 this,
                 &DataFlowGraphModel::portsInserted);
 
-        _models[newId] = std::move(model);
+        _models[newId].nodeModel = std::move(model);
 
         Q_EMIT nodeCreated(newId);
 
@@ -130,6 +130,42 @@ bool DataFlowGraphModel::connectionPossible(ConnectionId const connectionId) con
 
 void DataFlowGraphModel::addConnection(ConnectionId const connectionId)
 {
+    NodeDataType inType, outType;
+    ConnectionPolicy inPolicy = ConnectionPolicy::Many, outPolicy = ConnectionPolicy::Many;
+
+    // Gets the type and policy of the input node
+    if (auto inNode = delegateModel<NodeDelegateModel>(connectionId.inNodeId); inNode) {
+        inType = inNode->dataType(PortType::In, connectionId.inPortIndex);
+        inPolicy = inNode->portConnectionPolicy(PortType::In, connectionId.inPortIndex);
+    }
+
+    // Gets the type and policy of the output node
+    if (auto outNode = delegateModel<NodeDelegateModel>(connectionId.outNodeId); outNode) {
+        outType = outNode->dataType(PortType::Out, connectionId.outPortIndex);
+        outPolicy = outNode->portConnectionPolicy(PortType::Out, connectionId.outPortIndex);
+    }
+    // If the data type is inconsistent, return it directly
+    if (inType != outType) return;
+
+    auto connectionExist = [this](NodeId nodeId, PortType portType, int portIndex, ConnectionPolicy policy) {
+        return policy == ConnectionPolicy::One && connections(nodeId, portType, portIndex).size() > 0;
+    };
+
+    // Check the input and output connection policies
+    if (connectionExist(connectionId.inNodeId, PortType::In, connectionId.inPortIndex, inPolicy)) return;
+    if (connectionExist(connectionId.outNodeId, PortType::Out, connectionId.outPortIndex, outPolicy)) return;
+
+    // Check if loop connections are made
+    if(!dfs(connectionId)) return;
+
+    // There is no assignment of 1, there is ++
+    if(_models.at(connectionId.outNodeId).successorNodes.contains(connectionId.inNodeId)) {
+        _models.at(connectionId.outNodeId).successorNodes[connectionId.inNodeId]++;
+    } else {
+        _models.at(connectionId.outNodeId).successorNodes[connectionId.inNodeId] = 1;
+    }
+
+    // return;
     _connectivity.insert(connectionId);
 
     sendConnectionCreation(connectionId);
@@ -146,6 +182,53 @@ void DataFlowGraphModel::addConnection(ConnectionId const connectionId)
                 PortRole::Data);
 }
 
+
+// Traversing forest using stack structure loop (non-recursive)
+/*          000...0
+ *              /   \
+ *        000..0  00..0
+ *           /   \  /   \
+ *     000..0     00 0..0
+ *
+ */
+bool DataFlowGraphModel::dfs(ConnectionId const connectionId)
+{
+    auto& successorNodes = _models.at(connectionId.inNodeId).successorNodes;
+
+    std::stack<NodeId> nodeStack;
+     // Prevent duplicate access
+    std::unordered_set<NodeId> visitedNodes;
+
+    // Put the initial node on the stack
+    for (const auto& node : successorNodes) {
+        nodeStack.push(node.first);
+    }
+
+    while (!nodeStack.empty()) {
+        NodeId nodeId = nodeStack.top();
+        nodeStack.pop();
+
+        // If the target node is found, it is a directed ring graph
+        if (nodeId == connectionId.outNodeId) {
+            return false;
+        }
+
+        // If the node has been accessed, skip it
+        if (visitedNodes.find(nodeId) != visitedNodes.end()) {
+            continue;
+        }
+
+        visitedNodes.insert(nodeId);
+
+        // Gets the successor to this node and pushes it onto the stack
+        auto& nodes = _models.at(nodeId).successorNodes;
+        for (const auto& nextNode : nodes) {
+            nodeStack.push(nextNode.first);
+        }
+    }
+    return true;;
+}
+
 void DataFlowGraphModel::sendConnectionCreation(ConnectionId const connectionId)
 {
     Q_EMIT connectionCreated(connectionId);
@@ -153,8 +236,8 @@ void DataFlowGraphModel::sendConnectionCreation(ConnectionId const connectionId)
     auto iti = _models.find(connectionId.inNodeId);
     auto ito = _models.find(connectionId.outNodeId);
     if (iti != _models.end() && ito != _models.end()) {
-        auto &modeli = iti->second;
-        auto &modelo = ito->second;
+        auto &modeli = iti->second.nodeModel;
+        auto &modelo = ito->second.nodeModel;
         modeli->inputConnectionCreated(connectionId);
         modelo->outputConnectionCreated(connectionId);
     }
@@ -167,8 +250,8 @@ void DataFlowGraphModel::sendConnectionDeletion(ConnectionId const connectionId)
     auto iti = _models.find(connectionId.inNodeId);
     auto ito = _models.find(connectionId.outNodeId);
     if (iti != _models.end() && ito != _models.end()) {
-        auto &modeli = iti->second;
-        auto &modelo = ito->second;
+        auto &modeli = iti->second.nodeModel;
+        auto &modelo = ito->second.nodeModel;
         modeli->inputConnectionDeleted(connectionId);
         modelo->outputConnectionDeleted(connectionId);
     }
@@ -187,7 +270,7 @@ QVariant DataFlowGraphModel::nodeData(NodeId nodeId, NodeRole role) const
     if (it == _models.end())
         return result;
 
-    auto &model = it->second;
+    auto &model = it->second.nodeModel;
 
     switch (role) {
     case NodeRole::Type:
@@ -218,7 +301,7 @@ QVariant DataFlowGraphModel::nodeData(NodeId nodeId, NodeRole role) const
     case NodeRole::InternalData: {
         QJsonObject nodeJson;
 
-        nodeJson["internal-data"] = _models.at(nodeId)->save();
+        nodeJson["internal-data"] = _models.at(nodeId).nodeModel->save();
 
         result = nodeJson.toVariantMap();
         break;
@@ -245,7 +328,7 @@ NodeFlags DataFlowGraphModel::nodeFlags(NodeId nodeId) const
 {
     auto it = _models.find(nodeId);
 
-    if (it != _models.end() && it->second->resizable())
+    if (it != _models.end() && it->second.nodeModel->resizable())
         return NodeFlag::Resizable;
 
     return NodeFlag::NoFlags;
@@ -311,7 +394,7 @@ QVariant DataFlowGraphModel::portData(NodeId nodeId,
     if (it == _models.end())
         return result;
 
-    auto &model = it->second;
+    auto &model = it->second.nodeModel;
 
     switch (role) {
     case PortRole::Data:
@@ -351,7 +434,7 @@ bool DataFlowGraphModel::setPortData(
     if (it == _models.end())
         return false;
 
-    auto &model = it->second;
+    auto &model = it->second.nodeModel;
 
     switch (role) {
     case PortRole::Data:
@@ -379,8 +462,16 @@ bool DataFlowGraphModel::deleteConnection(ConnectionId const connectionId)
     if (it != _connectivity.end()) {
         disconnected = true;
 
+        //count == 0 Example Remove a successor node from the topology
+        int count = --_models.at(connectionId.outNodeId).successorNodes[connectionId.inNodeId];
+        if(count == 0)
+        {
+            _models.at(connectionId.outNodeId).successorNodes.erase(connectionId.inNodeId);
+        }
+
         _connectivity.erase(it);
     }
+
 
     if (disconnected) {
         sendConnectionDeletion(connectionId);
@@ -414,7 +505,7 @@ QJsonObject DataFlowGraphModel::saveNode(NodeId const nodeId) const
 
     nodeJson["id"] = static_cast<qint64>(nodeId);
 
-    nodeJson["internal-data"] = _models.at(nodeId)->save();
+    nodeJson["internal-data"] = _models.at(nodeId).nodeModel->save();
 
     {
         QPointF const pos = nodeData(nodeId, NodeRole::Position).value<QPointF>();
@@ -473,7 +564,7 @@ void DataFlowGraphModel::loadNode(QJsonObject const &nodeJson)
                     onOutPortDataUpdated(restoredNodeId, portIndex);
                 });
 
-        _models[restoredNodeId] = std::move(model);
+        _models[restoredNodeId].nodeModel = std::move(model);
 
         Q_EMIT nodeCreated(restoredNodeId);
 
@@ -482,7 +573,7 @@ void DataFlowGraphModel::loadNode(QJsonObject const &nodeJson)
 
         setNodeData(restoredNodeId, NodeRole::Position, pos);
 
-        _models[restoredNodeId]->load(internalDataJson);
+        _models[restoredNodeId].nodeModel->load(internalDataJson);
     } else {
         throw std::logic_error(std::string("No registered model with name ")
                                + delegateModelName.toLocal8Bit().data());
