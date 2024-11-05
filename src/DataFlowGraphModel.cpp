@@ -61,6 +61,8 @@ NodeId DataFlowGraphModel::addNode(QString const nodeType)
     std::unique_ptr<NodeDelegateModel> model = _registry->create(nodeType);
 
     if (model) {
+        model->initialize();
+
         NodeId newId = newNodeId();
 
         connect(model.get(),
@@ -558,6 +560,8 @@ void DataFlowGraphModel::loadNode(QJsonObject const &nodeJson)
     std::unique_ptr<NodeDelegateModel> model = _registry->create(delegateModelName);
 
     if (model) {
+        model->initialize();
+
         connect(model.get(),
                 &NodeDelegateModel::dataUpdated,
                 [restoredNodeId, this](PortIndex const portIndex) {
