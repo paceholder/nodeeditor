@@ -1,34 +1,18 @@
 #include "BasicGraphicsScene.hpp"
-
 #include "AbstractNodeGeometry.hpp"
+#include "AbstractNodePainter.hpp"
 #include "ConnectionGraphicsObject.hpp"
+#include "ConnectionIdHash.hpp"
 #include "ConnectionIdUtils.hpp"
 #include "DefaultConnectionPainter.hpp"
 #include "DefaultHorizontalNodeGeometry.hpp"
 #include "DefaultNodePainter.hpp"
 #include "DefaultVerticalNodeGeometry.hpp"
-#include "GraphicsView.hpp"
 #include "NodeGraphicsObject.hpp"
-
-#include <QUndoStack>
-
-#include <QtWidgets/QFileDialog>
-#include <QtWidgets/QGraphicsSceneMoveEvent>
-
-#include <QtCore/QBuffer>
-#include <QtCore/QByteArray>
-#include <QtCore/QDataStream>
-#include <QtCore/QFile>
-#include <QtCore/QJsonArray>
-#include <QtCore/QJsonDocument>
-#include <QtCore/QJsonObject>
-#include <QtCore/QtGlobal>
-
-#include <iostream>
-#include <stdexcept>
 #include <unordered_set>
 #include <utility>
-#include <queue>
+#include <QDir>
+#include <QVariant>
 
 namespace QtNodes {
 

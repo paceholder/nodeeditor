@@ -1,13 +1,22 @@
+#include "SimpleGraphModel.hpp"
 #include <QAction>
+#include <QApplication>
+#include <QCursor>
+#include <QGroupBox>
+#include <QHBoxLayout>
+#include <QList>
+#include <QObject>
+#include <QPoint>
+#include <QPointF>
+#include <QRadioButton>
+#include <QRect>
 #include <QScreen>
+#include <QStringLiteral>
+#include <QVBoxLayout>
+#include <QWidget>
+#include <Qt>
 #include <QtNodes/BasicGraphicsScene>
 #include <QtNodes/GraphicsView>
-#include <QtWidgets/QApplication>
-#include <QtWidgets/QGroupBox>
-#include <QtWidgets/QHBoxLayout>
-#include <QtWidgets/QRadioButton>
-
-#include "SimpleGraphModel.hpp"
 
 using QtNodes::BasicGraphicsScene;
 using QtNodes::GraphicsView;

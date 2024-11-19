@@ -1,23 +1,23 @@
-#include <QtNodes/ConnectionStyle>
-#include <QtNodes/DataFlowGraphModel>
-#include <QtNodes/DataFlowGraphicsScene>
-#include <QtNodes/GraphicsView>
-#include <QtNodes/NodeData>
-#include <QtNodes/NodeDelegateModelRegistry>
-
-#include <QtGui/QScreen>
-#include <QtWidgets/QApplication>
-#include <QtWidgets/QMenuBar>
-#include <QtWidgets/QVBoxLayout>
-
-#include <QtGui/QScreen>
-
 #include "AdditionModel.hpp"
 #include "DivisionModel.hpp"
 #include "MultiplicationModel.hpp"
 #include "NumberDisplayDataModel.hpp"
 #include "NumberSourceDataModel.hpp"
 #include "SubtractionModel.hpp"
+#include <memory>
+#include <QAction>
+#include <QApplication>
+#include <QMenu>
+#include <QMenuBar>
+#include <QObject>
+#include <QPoint>
+#include <QRect>
+#include <QScreen>
+#include <QVBoxLayout>
+#include <QWidget>
+#include <QtNodes/ConnectionStyle>
+#include <QtNodes/DataFlowGraphicsScene>
+#include <QtNodes/GraphicsView>
 
 using QtNodes::ConnectionStyle;
 using QtNodes::DataFlowGraphicsScene;

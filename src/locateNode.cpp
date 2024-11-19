@@ -1,11 +1,12 @@
 #include "locateNode.hpp"
-
-#include <vector>
-
-#include <QtCore/QList>
-#include <QtWidgets/QGraphicsScene>
-
 #include "NodeGraphicsObject.hpp"
+#include <algorithm>
+#include <iterator>
+#include <vector>
+#include <QGraphicsItem>
+#include <QGraphicsScene>
+#include <QList>
+#include <Qt>
 
 namespace QtNodes {
 

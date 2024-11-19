@@ -1,13 +1,18 @@
+#include "SimpleGraphModel.hpp"
+#include <QAction>
+#include <QApplication>
+#include <QCursor>
+#include <QList>
+#include <QObject>
+#include <QPoint>
+#include <QPointF>
+#include <QRect>
+#include <QScreen>
+#include <QStringLiteral>
+#include <Qt>
 #include <QtNodes/BasicGraphicsScene>
-#include <QtNodes/ConnectionStyle>
 #include <QtNodes/GraphicsView>
 #include <QtNodes/StyleCollection>
-
-#include <QAction>
-#include <QScreen>
-#include <QtWidgets/QApplication>
-
-#include "SimpleGraphModel.hpp"
 
 using QtNodes::BasicGraphicsScene;
 using QtNodes::ConnectionStyle;

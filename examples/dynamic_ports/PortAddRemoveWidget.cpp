@@ -1,6 +1,14 @@
 #include "PortAddRemoveWidget.hpp"
-
 #include "DynamicPortsModel.hpp"
+#include <tuple>
+#include <QFont>
+#include <QFontMetrics>
+#include <QLayout>
+#include <QLayoutItem>
+#include <QPushButton>
+#include <QSizePolicy>
+#include <QWidgetItem>
+#include <QtNodes/Definitions>
 
 PortAddRemoveWidget::PortAddRemoveWidget(unsigned int nInPorts,
                                          unsigned int nOutPorts,
@@ -37,7 +45,7 @@ PortAddRemoveWidget::~PortAddRemoveWidget()
     //
 }
 
-void PortAddRemoveWidget::populateButtons(PortType portType, unsigned int nPorts)
+void PortAddRemoveWidget::populateButtons(PortType portType, int nPorts)
 {
     QVBoxLayout *vl = (portType == PortType::In) ? _left : _right;
 
@@ -62,12 +70,16 @@ QHBoxLayout *PortAddRemoveWidget::addButtonGroupToLayout(QVBoxLayout *vbl, unsig
     l->setContentsMargins(0, 0, 0, 0);
 
     auto button = new QPushButton("+");
-    button->setFixedHeight(25);
+
+    // See DefaultHorizontalNodeGeometry.
+    unsigned int const step = QFontMetrics(QFont()).height() + 10;
+
+    button->setFixedHeight(step);
     l->addWidget(button);
     connect(button, &QPushButton::clicked, this, &PortAddRemoveWidget::onPlusClicked);
 
     button = new QPushButton("-");
-    button->setFixedHeight(25);
+    button->setFixedHeight(step);
     l->addWidget(button);
     connect(button, &QPushButton::clicked, this, &PortAddRemoveWidget::onMinusClicked);
 

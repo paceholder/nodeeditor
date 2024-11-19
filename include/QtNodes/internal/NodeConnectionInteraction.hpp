@@ -1,10 +1,7 @@
 #pragma once
 
-#include <memory>
-
-#include <QtCore/QPointF>
-
 #include "Definitions.hpp"
+#include <QPointF>
 
 namespace QtNodes {
 

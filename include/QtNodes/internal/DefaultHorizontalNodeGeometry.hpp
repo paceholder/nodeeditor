@@ -1,15 +1,17 @@
 #pragma once
 
 #include "AbstractNodeGeometry.hpp"
-
-#include <QtGui/QFontMetrics>
+#include "Definitions.hpp"
+#include <QFont>
+#include <QFontMetrics>
+#include <QPointF>
+#include <QRect>
+#include <QRectF>
+#include <QSize>
 
 namespace QtNodes {
 
-class AbstractGraphModel;
-class BasicGraphicsScene;
-
-class NODE_EDITOR_PUBLIC DefaultHorizontalNodeGeometry : public AbstractNodeGeometry
+class DefaultHorizontalNodeGeometry : public AbstractNodeGeometry
 {
 public:
     DefaultHorizontalNodeGeometry(AbstractGraphModel &graphModel);
@@ -45,14 +47,11 @@ private:
     unsigned int maxPortsTextAdvance(NodeId const nodeId, PortType const portType) const;
 
 private:
-    // Some variables are mutable because we need to change drawing
-    // metrics corresponding to fontMetrics but this doesn't change
-    // constness of the Node.
+    static constexpr unsigned int _portSpasing = 10;
 
-    mutable unsigned int _portSize;
-    unsigned int _portSpasing;
-    mutable QFontMetrics _fontMetrics;
-    mutable QFontMetrics _boldFontMetrics;
+    QFontMetrics _fontMetrics{QFont()};
+    unsigned int _portSize;
+    QFontMetrics _boldFontMetrics{QFont()};
 };
 
 } // namespace QtNodes

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <QtCore/QPointF>
-#include <QtGui/QTransform>
+#include <QPointF>
+#include <QTransform>
 
 class QGraphicsScene;
 

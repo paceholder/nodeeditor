@@ -1,32 +1,27 @@
 #pragma once
 
-#include <QtCore/QUuid>
-#include <QtWidgets/QGraphicsScene>
-#include <QtWidgets/QMenu>
-
-#include <functional>
-#include <memory>
-#include <tuple>
-#include <unordered_map>
-
 #include "AbstractGraphModel.hpp"
 #include "AbstractNodeGeometry.hpp"
-#include "ConnectionIdHash.hpp"
+#include "ConnectionGraphicsObject.hpp"
+#include "ConnectionIdHash.hpp" // IWYU pragma: keep
 #include "Definitions.hpp"
 #include "Export.hpp"
-
-#include "QUuidStdHash.hpp"
-
-class QUndoStack;
+#include "NodeGraphicsObject.hpp"
+#include <memory>
+#include <unordered_map>
+#include <QGraphicsScene>
+#include <QMenu>
+#include <QObject>
+#include <QPoint>
+#include <QPointF>
+#include <QUndoStack>
+#include <Qt>
 
 namespace QtNodes {
 
 class AbstractConnectionPainter;
 class AbstractGraphModel;
 class AbstractNodePainter;
-class ConnectionGraphicsObject;
-class NodeGraphicsObject;
-class NodeStyle;
 
 /// An instance of QGraphicsScene, holds connections and nodes.
 class NODE_EDITOR_PUBLIC BasicGraphicsScene : public QGraphicsScene

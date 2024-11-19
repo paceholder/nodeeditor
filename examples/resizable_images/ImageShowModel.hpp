@@ -1,12 +1,12 @@
 #pragma once
 
-#include <iostream>
-
-#include <QtCore/QObject>
-#include <QtWidgets/QLabel>
-
+#include <memory>
+#include <QEvent>
+#include <QLabel>
+#include <QObject>
+#include <QString>
+#include <QWidget>
 #include <QtNodes/NodeDelegateModel>
-#include <QtNodes/NodeDelegateModelRegistry>
 
 using QtNodes::NodeData;
 using QtNodes::NodeDataType;

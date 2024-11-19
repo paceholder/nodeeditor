@@ -1,14 +1,10 @@
 #include "NodeStyle.hpp"
-
-#include <iostream>
-
-#include <QtCore/QJsonArray>
-#include <QtCore/QJsonObject>
-#include <QtCore/QJsonValueRef>
-
-#include <QtCore/QDebug>
-
 #include "StyleCollection.hpp"
+#include <vector>
+#include <QJsonArray>
+#include <QJsonValue>
+#include <QJsonValueRef>
+#include <QtGlobal>
 
 using QtNodes::NodeStyle;
 

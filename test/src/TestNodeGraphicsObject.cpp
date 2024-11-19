@@ -1,13 +1,10 @@
 #include "ApplicationSetup.hpp"
 #include "StubNodeDataModel.hpp"
-
+#include <catch2/catch.hpp>
 #include <QtNodes/FlowScene>
 #include <QtNodes/FlowView>
 #include <QtNodes/Node>
 #include <QtNodes/NodeDataModel>
-
-#include <catch2/catch.hpp>
-
 #include <QtTest>
 
 using QtNodes::FlowScene;

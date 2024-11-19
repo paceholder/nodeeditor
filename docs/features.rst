@@ -26,7 +26,7 @@ The ``ConnectionId`` is nothing else but a combination of input and output
 
 ::
 
-  // Definitinos.hpp
+  // Definitions.hpp
   struct ConnectionId
   {
     NodeId    outNodeId;
@@ -369,7 +369,7 @@ redraw the receiver node and could be hooked up for other user's purposes.
   // Source Delegate Model -> source NodeId
   DataFlowGraphModel::onOutPortDataUpdated(NodeId, PortIndex)
 
-  // soure NodeId -> target NodeId
+  // source NodeId -> target NodeId
   DataFlowGraphModel::setPortData()
 
   // target NodeId -> target Delegate Model

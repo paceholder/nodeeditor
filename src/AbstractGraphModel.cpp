@@ -1,6 +1,7 @@
 #include "AbstractGraphModel.hpp"
-
-#include <QtNodes/ConnectionIdUtils>
+#include "ConnectionIdUtils.hpp"
+#include <algorithm>
+#include <unordered_set>
 
 namespace QtNodes {
 
@@ -31,7 +32,7 @@ void AbstractGraphModel::portsAboutToBeDeleted(NodeId const nodeId,
         }
     }
 
-    std::size_t const nRemovedPorts = clampedLast - first + 1;
+    PortIndex const nRemovedPorts = clampedLast - first + 1;
 
     for (PortIndex portIndex = clampedLast + 1; portIndex < portCount; ++portIndex) {
         std::unordered_set<ConnectionId> conns = connections(nodeId, portType, portIndex);
@@ -75,7 +76,7 @@ void AbstractGraphModel::portsAboutToBeInserted(NodeId const nodeId,
     if (last < first)
         return;
 
-    std::size_t const nNewPorts = last - first + 1;
+    PortIndex const nNewPorts = last - first + 1;
 
     for (PortIndex portIndex = first; portIndex < portCount; ++portIndex) {
         std::unordered_set<ConnectionId> conns = connections(nodeId, portType, portIndex);

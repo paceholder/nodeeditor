@@ -1,11 +1,9 @@
 #pragma once
 
 #include "Definitions.hpp"
-
-#include <QJsonObject>
-
 #include <iostream>
 #include <string>
+#include <QJsonObject>
 
 namespace QtNodes {
 

@@ -1,11 +1,18 @@
 #pragma once
 
-#include <QtCore/QUuid>
-#include <QtWidgets/QGraphicsObject>
-
+#include "Definitions.hpp"
 #include "NodeState.hpp"
-
-class QGraphicsProxyWidget;
+#include <QGraphicsItem>
+#include <QGraphicsProxyWidget>
+#include <QGraphicsSceneContextMenuEvent>
+#include <QGraphicsSceneHoverEvent>
+#include <QGraphicsSceneMouseEvent>
+#include <QObject>
+#include <QPainter>
+#include <QRectF>
+#include <QStyleOptionGraphicsItem>
+#include <QVariant>
+#include <QWidget>
 
 namespace QtNodes {
 

@@ -1,11 +1,4 @@
 #include "NodeGraphicsObject.hpp"
-
-#include <cstdlib>
-#include <iostream>
-
-#include <QtWidgets/QGraphicsEffect>
-#include <QtWidgets/QtWidgets>
-
 #include "AbstractGraphModel.hpp"
 #include "AbstractNodeGeometry.hpp"
 #include "AbstractNodePainter.hpp"
@@ -13,8 +6,26 @@
 #include "ConnectionGraphicsObject.hpp"
 #include "ConnectionIdUtils.hpp"
 #include "NodeConnectionInteraction.hpp"
-#include "StyleCollection.hpp"
+#include "NodeStyle.hpp"
 #include "UndoCommands.hpp"
+#include <initializer_list>
+#include <unordered_set>
+#include <QCursor>
+#include <QFlags>
+#include <QGraphicsDropShadowEffect>
+#include <QGraphicsItem>
+#include <QGraphicsScene>
+#include <QJsonObject>
+#include <QList>
+#include <QPoint>
+#include <QPointF>
+#include <QPolygonF>
+#include <QRect>
+#include <QSize>
+#include <QSizePolicy>
+#include <QTransform>
+#include <QUndoStack>
+#include <Qt>
 
 namespace QtNodes {
 

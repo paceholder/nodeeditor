@@ -1,14 +1,17 @@
 #pragma once
 
-#include <utility>
-
-#include <QtCore/QUuid>
-#include <QtWidgets/QGraphicsObject>
-
 #include "ConnectionState.hpp"
 #include "Definitions.hpp"
-
-class QGraphicsSceneMouseEvent;
+#include <utility>
+#include <QGraphicsItem>
+#include <QGraphicsSceneHoverEvent>
+#include <QGraphicsSceneMouseEvent>
+#include <QObject>
+#include <QPainter>
+#include <QPointF>
+#include <QRectF>
+#include <QStyleOptionGraphicsItem>
+#include <QWidget>
 
 namespace QtNodes {
 

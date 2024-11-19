@@ -1,10 +1,12 @@
 #pragma once
 
+#include <memory>
+#include <QJsonObject>
+#include <QObject>
+#include <QString>
+#include <QStringLiteral>
+#include <QWidget>
 #include <QtNodes/NodeDelegateModel>
-
-#include <QtCore/QObject>
-
-#include <iostream>
 
 class DecimalData;
 

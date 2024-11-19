@@ -1,16 +1,15 @@
 #pragma once
 
-#include "Export.hpp"
-
-#include <unordered_map>
-#include <unordered_set>
-
-#include <QtCore/QJsonObject>
-#include <QtCore/QObject>
-#include <QtCore/QVariant>
-
-#include "ConnectionIdHash.hpp"
+#include "ConnectionIdHash.hpp" // IWYU pragma: keep
 #include "Definitions.hpp"
+#include "Export.hpp"
+#include <unordered_set>
+#include <vector>
+#include <QDir>
+#include <QJsonObject>
+#include <QObject>
+#include <QString>
+#include <QVariant>
 
 namespace QtNodes {
 

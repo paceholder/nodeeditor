@@ -2,7 +2,8 @@
 
 #include "Definitions.hpp"
 #include "Export.hpp"
-
+#include <QPointF>
+#include <QRect>
 #include <QRectF>
 #include <QSize>
 #include <QTransform>

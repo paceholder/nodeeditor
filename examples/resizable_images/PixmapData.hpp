@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QtGui/QPixmap>
-
 #include <QtNodes/NodeData>
 
 using QtNodes::NodeData;

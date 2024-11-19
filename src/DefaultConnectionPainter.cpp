@@ -5,9 +5,22 @@
 #include "AbstractGraphModel.hpp"
 #include "ConnectionGraphicsObject.hpp"
 #include "ConnectionState.hpp"
+#include "ConnectionStyle.hpp"
 #include "Definitions.hpp"
 #include "NodeData.hpp"
 #include "StyleCollection.hpp"
+#include <utility>
+#include <QColor>
+#include <QIcon>
+#include <QPainterPathStroker>
+#include <QPen>
+#include <QPixmap>
+#include <QPoint>
+#include <QPointF>
+#include <QSize>
+#include <QString>
+#include <QVariant>
+#include <Qt>
 
 namespace QtNodes {
 
@@ -26,7 +39,8 @@ QPainterPath DefaultConnectionPainter::cubicPath(ConnectionGraphicsObject const 
     return cubic;
 }
 
-void DefaultConnectionPainter::drawSketchLine(QPainter *painter, ConnectionGraphicsObject const &cgo) const
+void DefaultConnectionPainter::drawSketchLine(QPainter *painter,
+                                              ConnectionGraphicsObject const &cgo) const
 {
     ConnectionState const &state = cgo.connectionState();
 
@@ -48,7 +62,8 @@ void DefaultConnectionPainter::drawSketchLine(QPainter *painter, ConnectionGraph
     }
 }
 
-void DefaultConnectionPainter::drawHoveredOrSelected(QPainter *painter, ConnectionGraphicsObject const &cgo) const
+void DefaultConnectionPainter::drawHoveredOrSelected(QPainter *painter,
+                                                     ConnectionGraphicsObject const &cgo) const
 {
     bool const hovered = cgo.connectionState().hovered();
     bool const selected = cgo.isSelected();
@@ -73,7 +88,8 @@ void DefaultConnectionPainter::drawHoveredOrSelected(QPainter *painter, Connecti
     }
 }
 
-void DefaultConnectionPainter::drawNormalLine(QPainter *painter, ConnectionGraphicsObject const &cgo) const
+void DefaultConnectionPainter::drawNormalLine(QPainter *painter,
+                                              ConnectionGraphicsObject const &cgo) const
 {
     ConnectionState const &state = cgo.connectionState();
 
@@ -199,7 +215,8 @@ void DefaultConnectionPainter::paint(QPainter *painter, ConnectionGraphicsObject
     painter->drawEllipse(cgo.in(), pointRadius, pointRadius);
 }
 
-QPainterPath DefaultConnectionPainter::getPainterStroke(ConnectionGraphicsObject const &connection) const
+QPainterPath DefaultConnectionPainter::getPainterStroke(
+    ConnectionGraphicsObject const &connection) const
 {
     auto cubic = cubicPath(connection);
 

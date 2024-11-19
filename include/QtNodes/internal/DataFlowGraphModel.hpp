@@ -1,20 +1,28 @@
 #pragma once
 
 #include "AbstractGraphModel.hpp"
-#include "ConnectionIdUtils.hpp"
+#include "ConnectionIdHash.hpp" // IWYU pragma: keep
+#include "Definitions.hpp"
+#include "Export.hpp"
+#include "NodeDelegateModel.hpp"
 #include "NodeDelegateModelRegistry.hpp"
 #include "Serializable.hpp"
-#include "StyleCollection.hpp"
-
-#include "Export.hpp"
-
-#include <QJsonObject>
-
 #include <memory>
+#include <unordered_map>
+#include <unordered_set>
+#include <utility>
+#include <QJsonObject>
+#include <QObject>
+#include <QPointF>
+#include <QSize>
+#include <QString>
+#include <QVariant>
 
 namespace QtNodes {
 
-class NODE_EDITOR_PUBLIC DataFlowGraphModel : public AbstractGraphModel, public Serializable
+class NODE_EDITOR_PUBLIC DataFlowGraphModel
+    : public AbstractGraphModel
+    , public Serializable
 {
     Q_OBJECT
 

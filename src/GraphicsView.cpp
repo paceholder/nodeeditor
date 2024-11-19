@@ -1,27 +1,26 @@
 #include "GraphicsView.hpp"
-
 #include "BasicGraphicsScene.hpp"
-#include "ConnectionGraphicsObject.hpp"
-#include "NodeGraphicsObject.hpp"
+#include "GraphicsViewStyle.hpp"
 #include "StyleCollection.hpp"
 #include "UndoCommands.hpp"
-
-#include <QtWidgets/QGraphicsScene>
-
-#include <QtGui/QBrush>
-#include <QtGui/QPen>
-
-#include <QtWidgets/QMenu>
-
-#include <QtCore/QDebug>
-#include <QtCore/QPointF>
-#include <QtCore/QRectF>
-
-#include <QtOpenGL>
-#include <QtWidgets>
-
+#include <algorithm>
 #include <cmath>
-#include <iostream>
+#include <utility>
+#include <QApplication>
+#include <QBrush>
+#include <QCursor>
+#include <QFlags>
+#include <QGraphicsScene>
+#include <QKeySequence>
+#include <QLineF>
+#include <QMenu>
+#include <QPen>
+#include <QPoint>
+#include <QRect>
+#include <QStringLiteral>
+#include <QTransform>
+#include <QUndoStack>
+#include <Qt>
 
 using QtNodes::BasicGraphicsScene;
 using QtNodes::GraphicsView;
@@ -165,6 +164,49 @@ void GraphicsView::centerScene()
     }
 }
 
+bool GraphicsView::handleMouseEvent(QMouseEvent *event)
+{
+    if (event->type() == QEvent::MouseButtonPress) {
+        mousePressEvent(event);
+    } else if (event->type() == QEvent::MouseMove) {
+        mouseMoveEvent(event);
+    }
+
+    QPoint pos = event->pos();
+
+    QWidget *child = childAt(pos);
+
+    if (event->type() == QEvent::MouseButtonPress) {
+        m_mouseDownWidget = child;
+    } else if (event->type() == QEvent::MouseButtonRelease) {
+        m_mouseDownWidget = nullptr;
+    }
+
+    QWidget *receiver = m_mouseDownWidget ? m_mouseDownWidget : child;
+
+    if (receiver != nullptr) {
+        QPoint newPt = receiver->mapFrom(this, pos);
+
+        if (event->button() == Qt::MouseButton::RightButton) {
+            contextMenuEvent(new QContextMenuEvent(QContextMenuEvent::Mouse,
+                                                   newPt,
+                                                   event->globalPosition().toPoint()));
+        }
+        QMouseEvent *eventlocal = new QMouseEvent(event->type(),
+                                                  newPt,
+                                                  event->scenePosition(),
+                                                  newPt,
+                                                  event->button(),
+                                                  event->buttons(),
+                                                  event->modifiers(),
+                                                  event->source(),
+                                                  event->pointingDevice());
+        return qApp->notify(receiver, eventlocal);
+    }
+
+    return false;
+}
+
 void GraphicsView::contextMenuEvent(QContextMenuEvent *event)
 {
     if (itemAt(event->pos())) {
@@ -218,6 +260,19 @@ void GraphicsView::setScaleRange(double minimum, double maximum)
 void GraphicsView::setScaleRange(ScaleRange range)
 {
     setScaleRange(range.minimum, range.maximum);
+}
+
+bool GraphicsView::handleEvent(QEvent *e)
+{
+    if (QMouseEvent *me = dynamic_cast<QMouseEvent *>(e)) {
+        return handleMouseEvent(me);
+    }
+    if (QWheelEvent *we = dynamic_cast<QWheelEvent *>(e)) {
+        wheelEvent(we);
+        return true;
+    }
+
+    return QWidget::event(e);
 }
 
 void GraphicsView::scaleUp()

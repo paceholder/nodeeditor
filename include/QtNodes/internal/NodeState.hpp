@@ -1,16 +1,7 @@
 #pragma once
 
-#include <unordered_map>
-#include <vector>
-
-#include <QtCore/QPointF>
-#include <QtCore/QPointer>
-#include <QtCore/QUuid>
-
 #include "Export.hpp"
-
-#include "Definitions.hpp"
-#include "NodeData.hpp"
+#include <QPointer>
 
 namespace QtNodes {
 

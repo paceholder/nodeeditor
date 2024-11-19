@@ -2,7 +2,12 @@
 
 #include "BasicGraphicsScene.hpp"
 #include "DataFlowGraphModel.hpp"
+#include "Definitions.hpp"
 #include "Export.hpp"
+#include <vector>
+#include <QMenu>
+#include <QObject>
+#include <QPointF>
 
 namespace QtNodes {
 

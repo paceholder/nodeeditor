@@ -1,7 +1,6 @@
 #pragma once
 
 #include <utility>
-
 #include <QtNodes/NodeDataModel>
 
 class StubNodeDataModel : public QtNodes::NodeDataModel

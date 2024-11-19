@@ -11,16 +11,16 @@
 #include "NodeGraphicsObject.hpp"
 #include "StyleCollection.hpp"
 #include "locateNode.hpp"
-
-#include <QtWidgets/QGraphicsBlurEffect>
-#include <QtWidgets/QGraphicsDropShadowEffect>
-#include <QtWidgets/QGraphicsSceneMouseEvent>
-#include <QtWidgets/QGraphicsView>
-#include <QtWidgets/QStyleOptionGraphicsItem>
-
-#include <QtCore/QDebug>
-
+#include <cmath>
 #include <stdexcept>
+#include <QGraphicsBlurEffect>
+#include <QGraphicsItem>
+#include <QGraphicsScene>
+#include <QGraphicsView>
+#include <QPoint>
+#include <QTransform>
+#include <Qt>
+#include <QtGlobal>
 
 namespace QtNodes {
 
@@ -120,16 +120,7 @@ QRectF ConnectionGraphicsObject::boundingRect() const
 
 QPainterPath ConnectionGraphicsObject::shape() const
 {
-#ifdef DEBUG_DRAWING
-
-    //QPainterPath path;
-
-    //path.addRect(boundingRect());
-    //return path;
-
-#else
     return nodeScene()->connectionPainter().getPainterStroke(*this);
-#endif
 }
 
 QPointF const &ConnectionGraphicsObject::endPoint(PortType portType) const
@@ -317,64 +308,86 @@ void ConnectionGraphicsObject::addGraphicsEffect()
 
 std::pair<QPointF, QPointF> ConnectionGraphicsObject::pointsC1C2Horizontal() const
 {
-    double const defaultOffset = 200;
+    double const overlapNodeY = 50;
+
+    double const maxOffset = 200;
 
     double xDistance = _in.x() - _out.x();
 
-    double horizontalOffset = qMin(defaultOffset, std::abs(xDistance));
+    double horizontalOffset = qMin(maxOffset, std::abs(xDistance));
 
     double verticalOffset = 0;
+    double vector = 0;
 
     double ratioX = 0.5;
 
+    double yDistance = _in.y() - _out.y();
+
     if (xDistance <= 0) {
-        double yDistance = _in.y() - _out.y() + 20;
+        vector = yDistance < 0 ? -1.0 : 1.0;
 
-        double vector = yDistance < 0 ? -1.0 : 1.0;
-
-        verticalOffset = qMin(defaultOffset, std::abs(yDistance)) * vector;
+        verticalOffset = qMin(maxOffset, std::abs(yDistance)) * vector;
 
         ratioX = 1.0;
     }
 
     horizontalOffset *= ratioX;
 
-    QPointF c1(_out.x() + horizontalOffset, _out.y() + verticalOffset);
+    if (std::abs(yDistance) > overlapNodeY || _out.x() < _in.x()) {
+        QPointF c1(_out.x() + horizontalOffset, _out.y() + verticalOffset);
 
-    QPointF c2(_in.x() - horizontalOffset, _in.y() - verticalOffset);
+        QPointF c2(_in.x() - horizontalOffset, _in.y() - verticalOffset);
+        return std::make_pair(c1, c2);
+    } else {
+        QPointF c1(_out.x() + horizontalOffset,
+                   _out.y() - qMax(100., std::abs(verticalOffset)) * vector);
 
-    return std::make_pair(c1, c2);
+        QPointF c2(_in.x() - horizontalOffset,
+                   _in.y() - qMax(100., std::abs(verticalOffset)) * vector);
+        return std::make_pair(c1, c2);
+    }
 }
 
 std::pair<QPointF, QPointF> ConnectionGraphicsObject::pointsC1C2Vertical() const
 {
-    double const defaultOffset = 200;
+    double const overlapNodeX = 50;
+
+    double const maxOffset = 200;
 
     double yDistance = _in.y() - _out.y();
 
-    double verticalOffset = qMin(defaultOffset, std::abs(yDistance));
+    double verticalOffset = qMin(maxOffset, std::abs(yDistance));
 
     double horizontalOffset = 0;
+    double vector = 0;
 
     double ratioY = 0.5;
 
+    double xDistance = _in.x() - _out.x();
+
     if (yDistance <= 0) {
-        double xDistance = _in.x() - _out.x() + 20;
+        vector = xDistance < 0 ? -1.0 : 1.0;
 
-        double vector = xDistance < 0 ? -1.0 : 1.0;
-
-        horizontalOffset = qMin(defaultOffset, std::abs(xDistance)) * vector;
+        horizontalOffset = qMin(maxOffset, std::abs(xDistance)) * vector;
 
         ratioY = 1.0;
     }
 
     verticalOffset *= ratioY;
 
-    QPointF c1(_out.x() + horizontalOffset, _out.y() + verticalOffset);
+    if (std::abs(xDistance) > overlapNodeX || _out.y() < _in.y()) {
+        QPointF c1(_out.x() + horizontalOffset, _out.y() + verticalOffset);
 
-    QPointF c2(_in.x() - horizontalOffset, _in.y() - verticalOffset);
+        QPointF c2(_in.x() - horizontalOffset, _in.y() - verticalOffset);
+        return std::make_pair(c1, c2);
+    } else {
+        QPointF c1(_out.x() + qMax(100., std::abs(horizontalOffset)) * vector,
+                   _out.y() + verticalOffset);
 
-    return std::make_pair(c1, c2);
+        QPointF c2(_in.x() + qMax(100., std::abs(horizontalOffset)) * vector,
+                   _in.y() - verticalOffset);
+        return std::make_pair(c1, c2);
+    }
 }
 
 } // namespace QtNodes

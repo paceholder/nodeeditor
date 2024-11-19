@@ -1,9 +1,10 @@
 #pragma once
 
-#include <QtGui/QColor>
-
 #include "Export.hpp"
 #include "Style.hpp"
+#include <QColor>
+#include <QJsonObject>
+#include <QString>
 
 namespace QtNodes {
 

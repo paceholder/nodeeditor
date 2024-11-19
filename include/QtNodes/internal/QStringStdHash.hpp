@@ -7,7 +7,6 @@
 // As of 5.14 there is a specialization std::hash<QString>
 
 #include <functional>
-
 #include <QtCore/QString>
 #include <QtCore/QVariant>
 

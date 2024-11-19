@@ -1,0 +1,197 @@
+{
+    "connections": [
+        {
+            "inPortIndex": 0,
+            "intNodeId": 9,
+            "outNodeId": 7,
+            "outPortIndex": 0
+        },
+        {
+            "inPortIndex": 0,
+            "intNodeId": 2,
+            "outNodeId": 1,
+            "outPortIndex": 0
+        },
+        {
+            "inPortIndex": 0,
+            "intNodeId": 1,
+            "outNodeId": 0,
+            "outPortIndex": 0
+        },
+        {
+            "inPortIndex": 0,
+            "intNodeId": 7,
+            "outNodeId": 5,
+            "outPortIndex": 0
+        },
+        {
+            "inPortIndex": 0,
+            "intNodeId": 3,
+            "outNodeId": 2,
+            "outPortIndex": 0
+        },
+        {
+            "inPortIndex": 0,
+            "intNodeId": 4,
+            "outNodeId": 3,
+            "outPortIndex": 0
+        },
+        {
+            "inPortIndex": 0,
+            "intNodeId": 5,
+            "outNodeId": 3,
+            "outPortIndex": 0
+        },
+        {
+            "inPortIndex": 0,
+            "intNodeId": 6,
+            "outNodeId": 3,
+            "outPortIndex": 0
+        },
+        {
+            "inPortIndex": 0,
+            "intNodeId": 8,
+            "outNodeId": 6,
+            "outPortIndex": 0
+        },
+        {
+            "inPortIndex": 1,
+            "intNodeId": 9,
+            "outNodeId": 8,
+            "outPortIndex": 0
+        },
+        {
+            "inPortIndex": 0,
+            "intNodeId": 10,
+            "outNodeId": 9,
+            "outPortIndex": 0
+        }
+    ],
+    "nodes": [
+        {
+            "id": 0,
+            "internal-data": {
+                "model-name": "Input"
+            },
+            "position": {
+                "x": -78,
+                "y": -89.04032850545761
+            }
+        },
+        {
+            "id": 1,
+            "internal-data": {
+                "M": 4,
+                "model-name": "Decimation"
+            },
+            "position": {
+                "x": 62,
+                "y": -90
+            }
+        },
+        {
+            "id": 2,
+            "internal-data": {
+                "F": 1.5,
+                "c0": 1540,
+                "model-name": "DasPw"
+            },
+            "position": {
+                "x": 478,
+                "y": -42
+            }
+        },
+        {
+            "id": 3,
+            "internal-data": {
+                "model-name": "ClutterFilter",
+                "value": 0.4099999964237213
+            },
+            "position": {
+                "x": 897.3249370277077,
+                "y": -13.465994962216623
+            }
+        },
+        {
+            "id": 4,
+            "internal-data": {
+                "model-name": "DopplerViewer"
+            },
+            "position": {
+                "x": 1367.9999999999998,
+                "y": -14.399999999999997
+            }
+        },
+        {
+            "id": 5,
+            "internal-data": {
+                "model-name": "RoiRect",
+                "x1": 1,
+                "x2": 2,
+                "y1": 3,
+                "y2": 4,
+                "z1": 5,
+                "z2": 6
+            },
+            "position": {
+                "x": 143.98964455639518,
+                "y": 199.3702770780856
+            }
+        },
+        {
+            "id": 6,
+            "internal-data": {
+                "model-name": "RoiSphere",
+                "r": 1,
+                "x": 4,
+                "y": 3,
+                "z": 2
+            },
+            "position": {
+                "x": 164.7573817520291,
+                "y": 452.7366708648194
+            }
+        },
+        {
+            "id": 7,
+            "internal-data": {
+                "model-name": "Average"
+            },
+            "position": {
+                "x": 654.760603251236,
+                "y": 249.02055248468446
+            }
+        },
+        {
+            "id": 8,
+            "internal-data": {
+                "model-name": "Average"
+            },
+            "position": {
+                "x": 642.2615021612712,
+                "y": 457.6593937556364
+            }
+        },
+        {
+            "id": 9,
+            "internal-data": {
+                "expression": "x1+x2",
+                "model-name": "Calculator"
+            },
+            "position": {
+                "x": 841.2856502860965,
+                "y": 328.5020158259996
+            }
+        },
+        {
+            "id": 10,
+            "internal-data": {
+                "model-name": "Output"
+            },
+            "position": {
+                "x": 1240,
+                "y": 327
+            }
+        }
+    ]
+}

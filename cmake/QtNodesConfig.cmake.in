@@ -1,4 +1,4 @@
-get_filename_component(QtNodes_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+@PACKAGE_INIT@
 
 include(CMakeFindDependencyMacro)
 
@@ -8,11 +8,6 @@ find_dependency(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_dependency(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS
                 Core
                 Widgets
-                Gui
-                OpenGL)
+                Gui)
 
-if(NOT TARGET QtNodes::QtNodes)
-    include("${QtNodes_CMAKE_DIR}/QtNodesTargets.cmake")
-endif()
-
-set(QtNodes_LIBRARIES QtNodes::QtNodes)
+include("${CMAKE_CURRENT_LIST_DIR}/QtNodesTargets.cmake")

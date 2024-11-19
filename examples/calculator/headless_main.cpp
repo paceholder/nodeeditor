@@ -4,9 +4,12 @@
 #include "NumberDisplayDataModel.hpp"
 #include "NumberSourceDataModel.hpp"
 #include "SubtractionModel.hpp"
-
+#include <memory>
+#include <QJsonDocument>
+#include <QString>
+#include <QtDebug>
 #include <QtNodes/DataFlowGraphModel>
-#include <QtNodes/NodeDelegateModelRegistry>
+#include <qlogging.h>
 
 using QtNodes::DataFlowGraphModel;
 using QtNodes::NodeDelegateModelRegistry;

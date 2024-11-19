@@ -1,26 +1,25 @@
 #include "DefaultHorizontalNodeGeometry.hpp"
-
 #include "AbstractGraphModel.hpp"
 #include "NodeData.hpp"
-
-#include <QPoint>
+#include <algorithm>
+#include <stddef.h>
+#include <QFont>
 #include <QRect>
+#include <QSizePolicy>
+#include <QString>
+#include <QVariant>
 #include <QWidget>
+#include <QtGlobal>
 
 namespace QtNodes {
 
 DefaultHorizontalNodeGeometry::DefaultHorizontalNodeGeometry(AbstractGraphModel &graphModel)
     : AbstractNodeGeometry(graphModel)
-    , _portSize(20)
-    , _portSpasing(10)
-    , _fontMetrics(QFont())
-    , _boldFontMetrics(QFont())
+    , _portSize(_fontMetrics.height())
 {
     QFont f;
     f.setBold(true);
     _boldFontMetrics = QFontMetrics(f);
-
-    _portSize = _fontMetrics.height();
 }
 
 QSize DefaultHorizontalNodeGeometry::size(NodeId const nodeId) const

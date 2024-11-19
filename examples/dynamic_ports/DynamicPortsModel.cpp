@@ -1,12 +1,16 @@
 #include "DynamicPortsModel.hpp"
-
 #include "PortAddRemoveWidget.hpp"
-
-#include <QtNodes/ConnectionIdUtils>
-
-#include <QJsonArray>
-
+#include <algorithm>
 #include <iterator>
+#include <unordered_set>
+#include <QDir>
+#include <QJsonArray>
+#include <QJsonValue>
+#include <QJsonValueRef>
+#include <QtGlobal>
+#include <QtNodes/AbstractGraphModel>
+#include <QtNodes/ConnectionIdUtils>
+#include <QtNodes/StyleCollection>
 
 DynamicPortsModel::DynamicPortsModel()
     : _nextNodeId{0}
@@ -186,12 +190,12 @@ bool DynamicPortsModel::setNodeData(NodeId nodeId, NodeRole role, QVariant value
 
     case NodeRole::InPortCount:
         _nodePortCounts[nodeId].in = value.toUInt();
-        widget(nodeId)->populateButtons(PortType::In, value.toUInt());
+        widget(nodeId)->populateButtons(PortType::In, value.toInt());
         break;
 
     case NodeRole::OutPortCount:
         _nodePortCounts[nodeId].out = value.toUInt();
-        widget(nodeId)->populateButtons(PortType::Out, value.toUInt());
+        widget(nodeId)->populateButtons(PortType::Out, value.toInt());
         break;
 
     case NodeRole::Widget:

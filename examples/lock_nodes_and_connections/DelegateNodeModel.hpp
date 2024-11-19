@@ -1,11 +1,10 @@
 #pragma once
 
-#include <QtCore/QObject>
-
-#include <QtNodes/NodeData>
-#include <QtNodes/NodeDelegateModel>
-
 #include <memory>
+#include <QObject>
+#include <QString>
+#include <QWidget>
+#include <QtNodes/NodeDelegateModel>
 
 using QtNodes::NodeData;
 using QtNodes::NodeDataType;

@@ -1,7 +1,7 @@
 #include "NodeState.hpp"
-
 #include "ConnectionGraphicsObject.hpp"
 #include "NodeGraphicsObject.hpp"
+#include <QDir>
 
 namespace QtNodes {
 

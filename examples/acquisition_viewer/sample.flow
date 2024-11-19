@@ -1,0 +1,171 @@
+{
+    "connections": [
+        {
+            "inPortIndex": 0,
+            "intNodeId": 4,
+            "outNodeId": 3,
+            "outPortIndex": 0
+        },
+        {
+            "inPortIndex": 0,
+            "intNodeId": 2,
+            "outNodeId": 3,
+            "outPortIndex": 0
+        },
+        {
+            "inPortIndex": 0,
+            "intNodeId": 6,
+            "outNodeId": 5,
+            "outPortIndex": 0
+        },
+        {
+            "inPortIndex": 0,
+            "intNodeId": 3,
+            "outNodeId": 2,
+            "outPortIndex": 0
+        },
+        {
+            "inPortIndex": 0,
+            "intNodeId": 1,
+            "outNodeId": 3,
+            "outPortIndex": 0
+        },
+        {
+            "inPortIndex": 0,
+            "intNodeId": 7,
+            "outNodeId": 6,
+            "outPortIndex": 0
+        },
+        {
+            "inPortIndex": 0,
+            "intNodeId": 3,
+            "outNodeId": 1,
+            "outPortIndex": 0
+        },
+        {
+            "inPortIndex": 0,
+            "intNodeId": 5,
+            "outNodeId": 4,
+            "outPortIndex": 0
+        },
+        {
+            "inPortIndex": 0,
+            "intNodeId": 8,
+            "outNodeId": 7,
+            "outPortIndex": 0
+        },
+        {
+            "inPortIndex": 0,
+            "intNodeId": 9,
+            "outNodeId": 8,
+            "outPortIndex": 0
+        },
+        {
+            "inPortIndex": 0,
+            "intNodeId": 3,
+            "outNodeId": 9,
+            "outPortIndex": 0
+        }
+    ],
+    "nodes": [
+        {
+            "id": 1,
+            "internal-data": {
+                "Title": "HD2",
+                "model-name": "Acquisition"
+            },
+            "position": {
+                "x": 160,
+                "y": -34
+            }
+        },
+        {
+            "id": 2,
+            "internal-data": {
+                "Title": "Ultrafast",
+                "model-name": "Acquisition"
+            },
+            "position": {
+                "x": 118,
+                "y": 206
+            }
+        },
+        {
+            "id": 3,
+            "internal-data": {
+                "Title": "BMode-25Hz",
+                "model-name": "Acquisition"
+            },
+            "position": {
+                "x": -33,
+                "y": 159
+            }
+        },
+        {
+            "id": 4,
+            "internal-data": {
+                "Title": "Push #1",
+                "model-name": "Acquisition"
+            },
+            "position": {
+                "x": 257,
+                "y": 160
+            }
+        },
+        {
+            "id": 5,
+            "internal-data": {
+                "Title": "Imaging #1",
+                "model-name": "Acquisition"
+            },
+            "position": {
+                "x": 380,
+                "y": 159
+            }
+        },
+        {
+            "id": 6,
+            "internal-data": {
+                "Title": "Push #2",
+                "model-name": "Acquisition"
+            },
+            "position": {
+                "x": 516,
+                "y": 159
+            }
+        },
+        {
+            "id": 7,
+            "internal-data": {
+                "Title": "Imaging #2",
+                "model-name": "Acquisition"
+            },
+            "position": {
+                "x": 634,
+                "y": 160
+            }
+        },
+        {
+            "id": 8,
+            "internal-data": {
+                "Title": "Push #3",
+                "model-name": "Acquisition"
+            },
+            "position": {
+                "x": 769,
+                "y": 160
+            }
+        },
+        {
+            "id": 9,
+            "internal-data": {
+                "Title": "Imaging #3",
+                "model-name": "Acquisition"
+            },
+            "position": {
+                "x": 892,
+                "y": 159
+            }
+        }
+    ]
+}

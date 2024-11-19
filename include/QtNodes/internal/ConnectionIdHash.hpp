@@ -1,8 +1,9 @@
 #pragma once
 
-#include <functional>
-
 #include "Definitions.hpp"
+#include <functional>
+#include <utility>
+#include <QtGlobal>
 
 inline void hash_combine(std::size_t &seed)
 {

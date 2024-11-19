@@ -1,11 +1,15 @@
 #include "DefaultVerticalNodeGeometry.hpp"
-
 #include "AbstractGraphModel.hpp"
 #include "NodeData.hpp"
-
-#include <QPoint>
+#include <algorithm>
+#include <stddef.h>
+#include <QFont>
 #include <QRect>
+#include <QSizePolicy>
+#include <QString>
+#include <QVariant>
 #include <QWidget>
+#include <QtGlobal>
 
 namespace QtNodes {
 

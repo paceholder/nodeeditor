@@ -1,17 +1,10 @@
 #pragma once
 
-#include <QtGui/QPainter>
-
 #include "AbstractNodePainter.hpp"
-#include "Definitions.hpp"
+#include "Export.hpp"
+#include <QPainter>
 
 namespace QtNodes {
-
-class BasicGraphicsScene;
-class GraphModel;
-class NodeGeometry;
-class NodeGraphicsObject;
-class NodeState;
 
 /// @ Lightweight class incapsulating paint code.
 class NODE_EDITOR_PUBLIC DefaultNodePainter : public AbstractNodePainter

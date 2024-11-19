@@ -1,7 +1,5 @@
 #include "NodeDelegateModelRegistry.hpp"
-
-#include <QtCore/QFile>
-#include <QtWidgets/QMessageBox>
+#include "NodeData.hpp"
 
 using QtNodes::NodeDataType;
 using QtNodes::NodeDelegateModel;

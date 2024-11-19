@@ -1,11 +1,12 @@
 #include "AbstractNodeGeometry.hpp"
-
 #include "AbstractGraphModel.hpp"
+#include "NodeStyle.hpp"
 #include "StyleCollection.hpp"
-
-#include <QMargins>
-
 #include <cmath>
+#include <stddef.h>
+#include <QMargins>
+#include <QPoint>
+#include <QSizeF>
 
 namespace QtNodes {
 

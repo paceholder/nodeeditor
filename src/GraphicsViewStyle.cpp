@@ -1,11 +1,10 @@
 #include "GraphicsViewStyle.hpp"
-
-#include <QtCore/QFile>
-#include <QtCore/QJsonArray>
-#include <QtCore/QJsonObject>
-#include <QtCore/QJsonValueRef>
-
 #include "StyleCollection.hpp"
+#include <vector>
+#include <QJsonArray>
+#include <QJsonValue>
+#include <QJsonValueRef>
+#include <QtGlobal>
 
 using QtNodes::GraphicsViewStyle;
 

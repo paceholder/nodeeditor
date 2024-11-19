@@ -1,10 +1,13 @@
 ﻿#pragma once
 
 #include "Export.hpp"
-
-#include <QtCore/QMetaObject>
-
 #include <limits>
+#include <utility>
+#include <QFlags>
+#include <QObject>
+#include <QtGlobal>
+
+#undef max
 
 /**
  * @file

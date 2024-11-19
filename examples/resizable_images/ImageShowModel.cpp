@@ -1,12 +1,9 @@
 #include "ImageShowModel.hpp"
-
 #include "PixmapData.hpp"
-
+#include <QFont>
+#include <QPixmap>
+#include <Qt>
 #include <QtNodes/NodeDelegateModelRegistry>
-
-#include <QtCore/QDir>
-#include <QtCore/QEvent>
-#include <QtWidgets/QFileDialog>
 
 ImageShowModel::ImageShowModel()
     : _label(new QLabel("Image will appear here"))

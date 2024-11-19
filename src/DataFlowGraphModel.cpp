@@ -1,9 +1,21 @@
 #include "DataFlowGraphModel.hpp"
 #include "ConnectionIdHash.hpp"
-
-#include <QJsonArray>
-
+#include "ConnectionIdUtils.hpp"
+#include "NodeData.hpp"
+#include "NodeStyle.hpp"
+#include <algorithm>
+#include <iterator>
 #include <stdexcept>
+#include <string>
+#include <unordered_set>
+#include <QByteArray>
+#include <QDir>
+#include <QJsonArray>
+#include <QJsonValue>
+#include <QJsonValueRef>
+#include <QWidget>
+#include <QtDebug>
+#include <QtGlobal>
 
 namespace QtNodes {
 
@@ -211,7 +223,7 @@ QVariant DataFlowGraphModel::nodeData(NodeId nodeId, NodeRole role) const
         break;
 
     case NodeRole::Style: {
-        auto style = StyleCollection::nodeStyle();
+        auto style = model->nodeStyle();
         result = style.toJson().toVariantMap();
     } break;
 
@@ -360,6 +372,7 @@ bool DataFlowGraphModel::setPortData(
 
             // Triggers repainting on the scene.
             Q_EMIT inPortDataWasSet(nodeId, portType, portIndex);
+            return true;
         }
         break;
 
@@ -473,6 +486,7 @@ void DataFlowGraphModel::loadNode(QJsonObject const &nodeJson)
                     onOutPortDataUpdated(restoredNodeId, portIndex);
                 });
 
+        model->load(internalDataJson);
         _models[restoredNodeId] = std::move(model);
 
         Q_EMIT nodeCreated(restoredNodeId);
@@ -481,8 +495,6 @@ void DataFlowGraphModel::loadNode(QJsonObject const &nodeJson)
         QPointF const pos(posJson["x"].toDouble(), posJson["y"].toDouble());
 
         setNodeData(restoredNodeId, NodeRole::Position, pos);
-
-        _models[restoredNodeId]->load(internalDataJson);
     } else {
         throw std::logic_error(std::string("No registered model with name ")
                                + delegateModelName.toLocal8Bit().data());

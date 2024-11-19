@@ -1,6 +1,6 @@
 #include "NodeDelegateModel.hpp"
-
 #include "StyleCollection.hpp"
+#include <QJsonValueRef>
 
 namespace QtNodes {
 

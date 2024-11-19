@@ -1,7 +1,6 @@
 #pragma once
 
 #include <functional>
-
 #include <QtCore/QUuid>
 #include <QtCore/QVariant>
 

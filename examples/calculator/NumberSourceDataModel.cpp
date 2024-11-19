@@ -1,10 +1,10 @@
 #include "NumberSourceDataModel.hpp"
-
 #include "DecimalData.hpp"
-
-#include <QtCore/QJsonValue>
-#include <QtGui/QDoubleValidator>
-#include <QtWidgets/QLineEdit>
+#include <QDoubleValidator>
+#include <QJsonValue>
+#include <QJsonValueRef>
+#include <QLineEdit>
+#include <QtNodes/NodeDelegateModel>
 
 NumberSourceDataModel::NumberSourceDataModel()
     : _lineEdit{nullptr}

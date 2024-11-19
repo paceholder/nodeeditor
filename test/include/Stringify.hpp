@@ -1,10 +1,8 @@
 #pragma once
 
+#include <catch2/catch.hpp>
 #include <QtCore/QPoint>
 #include <QtCore/QPointF>
-
-#include <catch2/catch.hpp>
-
 #include <QtTest>
 
 namespace Catch {

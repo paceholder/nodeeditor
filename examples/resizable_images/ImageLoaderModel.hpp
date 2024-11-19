@@ -1,14 +1,14 @@
 #pragma once
 
-#include <iostream>
-
-#include <QtCore/QObject>
-#include <QtWidgets/QLabel>
-
-#include <QtNodes/NodeDelegateModel>
-#include <QtNodes/NodeDelegateModelRegistry>
-
 #include "PixmapData.hpp"
+#include <memory>
+#include <QEvent>
+#include <QLabel>
+#include <QObject>
+#include <QPixmap>
+#include <QString>
+#include <QWidget>
+#include <QtNodes/NodeDelegateModel>
 
 using QtNodes::NodeData;
 using QtNodes::NodeDataType;

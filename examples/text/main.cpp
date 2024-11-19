@@ -1,13 +1,9 @@
-#include <QtNodes/DataFlowGraphModel>
-#include <QtNodes/DataFlowGraphicsScene>
-#include <QtNodes/GraphicsView>
-#include <QtNodes/NodeData>
-#include <QtNodes/NodeDelegateModelRegistry>
-
-#include <QtWidgets/QApplication>
-
 #include "TextDisplayDataModel.hpp"
 #include "TextSourceDataModel.hpp"
+#include <memory>
+#include <QApplication>
+#include <QtNodes/DataFlowGraphicsScene>
+#include <QtNodes/GraphicsView>
 
 using QtNodes::DataFlowGraphicsScene;
 using QtNodes::DataFlowGraphModel;

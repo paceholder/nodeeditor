@@ -1,4 +1,5 @@
 #include "TextDisplayDataModel.hpp"
+#include <QtNodes/NodeDelegateModel>
 
 TextDisplayDataModel::TextDisplayDataModel()
     : _label(new QLabel("Resulting Text"))

@@ -1,6 +1,7 @@
 #include "TextSourceDataModel.hpp"
-
-#include <QtWidgets/QLineEdit>
+#include <QDir>
+#include <QLineEdit>
+#include <QtNodes/NodeDelegateModel>
 
 TextSourceDataModel::TextSourceDataModel()
     : _lineEdit{nullptr}

@@ -1,8 +1,20 @@
 #pragma once
 
-#include <QtWidgets/QGraphicsView>
-
 #include "Export.hpp"
+#include <QAction>
+#include <QContextMenuEvent>
+#include <QEvent>
+#include <QGraphicsView>
+#include <QKeyEvent>
+#include <QMouseEvent>
+#include <QObject>
+#include <QPainter>
+#include <QPointF>
+#include <QRectF>
+#include <QShowEvent>
+#include <QWheelEvent>
+#include <QWidget>
+#include <QtGlobal>
 
 namespace QtNodes {
 
@@ -43,6 +55,8 @@ public:
 
     double getScale() const;
 
+    bool handleEvent(QEvent *e);
+
 public Q_SLOTS:
     void scaleUp();
 
@@ -62,6 +76,8 @@ Q_SIGNALS:
     void scaleChanged(double scale);
 
 protected:
+    bool handleMouseEvent(QMouseEvent *event);
+
     void contextMenuEvent(QContextMenuEvent *event) override;
 
     void wheelEvent(QWheelEvent *event) override;
@@ -93,5 +109,7 @@ private:
 
     QPointF _clickPos;
     ScaleRange _scaleRange;
+
+    QWidget *m_mouseDownWidget = nullptr;
 };
 } // namespace QtNodes

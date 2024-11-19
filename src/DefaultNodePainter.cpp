@@ -1,17 +1,36 @@
 #include "DefaultNodePainter.hpp"
-
-#include <cmath>
-
-#include <QtCore/QMargins>
-
 #include "AbstractGraphModel.hpp"
 #include "AbstractNodeGeometry.hpp"
 #include "BasicGraphicsScene.hpp"
 #include "ConnectionGraphicsObject.hpp"
 #include "ConnectionIdUtils.hpp"
+#include "ConnectionState.hpp"
+#include "ConnectionStyle.hpp"
+#include "Definitions.hpp"
+#include "NodeData.hpp"
 #include "NodeGraphicsObject.hpp"
 #include "NodeState.hpp"
+#include "NodeStyle.hpp"
 #include "StyleCollection.hpp"
+#include <cmath>
+#include <initializer_list>
+#include <stddef.h>
+#include <unordered_set>
+#include <QBrush>
+#include <QColor>
+#include <QFlags>
+#include <QFont>
+#include <QJsonDocument>
+#include <QLinearGradient>
+#include <QPen>
+#include <QPoint>
+#include <QPointF>
+#include <QRectF>
+#include <QSize>
+#include <QString>
+#include <QTransform>
+#include <QVariant>
+#include <Qt>
 
 namespace QtNodes {
 

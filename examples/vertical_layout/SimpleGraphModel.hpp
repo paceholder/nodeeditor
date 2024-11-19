@@ -1,11 +1,14 @@
 #pragma once
 
-#include <QtCore/QJsonObject>
-#include <QtCore/QPointF>
-#include <QtCore/QSize>
-
+#include <unordered_map>
+#include <unordered_set>
+#include <QJsonObject>
+#include <QObject>
+#include <QPointF>
+#include <QSize>
+#include <QString>
+#include <QVariant>
 #include <QtNodes/AbstractGraphModel>
-#include <QtNodes/ConnectionIdUtils>
 #include <QtNodes/StyleCollection>
 
 using ConnectionId = QtNodes::ConnectionId;

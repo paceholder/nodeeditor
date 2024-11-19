@@ -1,8 +1,7 @@
 #pragma once
 
-#include <QPainter>
-
 #include "Export.hpp"
+#include <QPainter>
 
 class QPainter;
 

@@ -1,13 +1,15 @@
 #pragma once
 
 #include "AbstractNodeGeometry.hpp"
-
-#include <QtGui/QFontMetrics>
+#include "Definitions.hpp"
+#include "Export.hpp"
+#include <QFontMetrics>
+#include <QPointF>
+#include <QRect>
+#include <QRectF>
+#include <QSize>
 
 namespace QtNodes {
-
-class AbstractGraphModel;
-class BasicGraphicsScene;
 
 class NODE_EDITOR_PUBLIC DefaultVerticalNodeGeometry : public AbstractNodeGeometry
 {

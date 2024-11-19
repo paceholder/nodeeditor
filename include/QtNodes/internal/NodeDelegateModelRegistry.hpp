@@ -1,19 +1,15 @@
 #pragma once
 
 #include "Export.hpp"
-#include "NodeData.hpp"
 #include "NodeDelegateModel.hpp"
-#include "QStringStdHash.hpp"
-
-#include <QtCore/QString>
-
 #include <functional>
 #include <memory>
 #include <set>
 #include <type_traits>
 #include <unordered_map>
 #include <utility>
-#include <vector>
+#include <QHash>
+#include <QString>
 
 namespace QtNodes {
 

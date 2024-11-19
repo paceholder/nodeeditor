@@ -1,18 +1,17 @@
 #pragma once
 
-#include <memory>
-
-#include <QtWidgets/QWidget>
-
 #include "Definitions.hpp"
 #include "Export.hpp"
 #include "NodeData.hpp"
 #include "NodeStyle.hpp"
 #include "Serializable.hpp"
+#include <memory>
+#include <QJsonObject>
+#include <QObject>
+#include <QString>
+#include <QWidget>
 
 namespace QtNodes {
-
-class StyleCollection;
 
 /**
  * The class wraps Node-specific data operations and propagates it to
@@ -20,7 +19,9 @@ class StyleCollection;
  * AbstractGraphModel.
  * This class is the same what has been called NodeDataModel before v3.
  */
-class NODE_EDITOR_PUBLIC NodeDelegateModel : public QObject, public Serializable
+class NODE_EDITOR_PUBLIC NodeDelegateModel
+    : public QObject
+    , public Serializable
 {
     Q_OBJECT
 
@@ -67,7 +68,7 @@ public:
     virtual std::shared_ptr<NodeData> outData(PortIndex const port) = 0;
 
     /**
-   * It is recommented to preform a lazy initialization for the
+   * It is recommended to perform a lazy initialization for the
    * embedded widget and create it inside this function, not in the
    * constructor of the current model.
    *
@@ -111,7 +112,7 @@ Q_SIGNALS:
    */
     void portsAboutToBeDeleted(PortType const portType, PortIndex const first, PortIndex const last);
 
-    /// Call this function when data and port moditications are finished.
+    /// Call this function when data and port modifications are finished.
     void portsDeleted();
 
     /// Call this function before inserting the data associated with ports.
@@ -123,7 +124,7 @@ Q_SIGNALS:
                                 PortIndex const first,
                                 PortIndex const last);
 
-    /// Call this function when data and port moditications are finished.
+    /// Call this function when data and port modifications are finished.
     void portsInserted();
 
 private:

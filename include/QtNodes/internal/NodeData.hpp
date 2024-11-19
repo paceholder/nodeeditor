@@ -1,11 +1,9 @@
 #pragma once
 
+#include "Export.hpp"
 #include <memory>
-
 #include <QtCore/QObject>
 #include <QtCore/QString>
-
-#include "Export.hpp"
 
 namespace QtNodes {
 

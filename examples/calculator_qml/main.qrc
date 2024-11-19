@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/hello">
+        <file>main.qml</file>
+        <file>Display.qml</file>
+        <file>Source.qml</file>
+    </qresource>
+</RCC>

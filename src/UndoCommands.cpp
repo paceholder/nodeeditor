@@ -1,19 +1,27 @@
 #include "UndoCommands.hpp"
-
+#include "AbstractGraphModel.hpp"
 #include "BasicGraphicsScene.hpp"
 #include "ConnectionGraphicsObject.hpp"
 #include "ConnectionIdUtils.hpp"
 #include "Definitions.hpp"
 #include "NodeGraphicsObject.hpp"
-
-#include <QtCore/QJsonArray>
-#include <QtCore/QJsonDocument>
-#include <QtCore/QMimeData>
-#include <QtGui/QClipboard>
-#include <QtWidgets/QApplication>
-#include <QtWidgets/QGraphicsObject>
-
 #include <typeinfo>
+#include <unordered_map>
+#include <unordered_set>
+#include <QApplication>
+#include <QByteArray>
+#include <QClipboard>
+#include <QGraphicsItem>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonValue>
+#include <QJsonValueConstRef>
+#include <QJsonValueRef>
+#include <QList>
+#include <QMimeData>
+#include <QPoint>
+#include <QVariant>
+#include <QtGlobal>
 
 namespace QtNodes {
 

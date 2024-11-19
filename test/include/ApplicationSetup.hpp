@@ -1,7 +1,6 @@
 #pragma once
 
 #include <memory>
-
 #include <QApplication>
 
 inline std::unique_ptr<QApplication> applicationSetup()

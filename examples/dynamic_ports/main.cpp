@@ -1,16 +1,33 @@
+#include "DynamicPortsModel.hpp"
+#include <QAction>
+#include <QApplication>
+#include <QByteArray>
+#include <QCursor>
+#include <QDir>
+#include <QFile>
+#include <QFileDialog>
+#include <QFileInfo>
+#include <QIODevice>
+#include <QIODeviceBase>
+#include <QJsonDocument>
+#include <QList>
+#include <QMenu>
+#include <QMenuBar>
+#include <QObject>
+#include <QPoint>
+#include <QPointF>
+#include <QRect>
+#include <QScreen>
+#include <QString>
+#include <QStringLiteral>
+#include <QVBoxLayout>
+#include <QWidget>
+#include <Qt>
+#include <QtDebug>
+#include <QtGlobal>
 #include <QtNodes/BasicGraphicsScene>
-#include <QtNodes/ConnectionStyle>
 #include <QtNodes/GraphicsView>
 #include <QtNodes/StyleCollection>
-
-#include <QAction>
-#include <QFileDialog>
-#include <QScreen>
-#include <QtWidgets/QApplication>
-#include <QtWidgets/QMenuBar>
-#include <QtWidgets/QVBoxLayout>
-
-#include "DynamicPortsModel.hpp"
 
 using QtNodes::BasicGraphicsScene;
 using QtNodes::ConnectionStyle;

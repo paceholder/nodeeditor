@@ -1,12 +1,11 @@
 #pragma once
 
 #include "Definitions.hpp"
-
-#include <QUndoCommand>
-#include <QtCore/QJsonObject>
-#include <QtCore/QPointF>
-
 #include <unordered_set>
+#include <QJsonObject>
+#include <QPointF>
+#include <QString>
+#include <qundostack.h>
 
 namespace QtNodes {
 
