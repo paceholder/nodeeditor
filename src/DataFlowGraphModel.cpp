@@ -473,6 +473,30 @@ void DataFlowGraphModel::loadNode(QJsonObject const &nodeJson)
                     onOutPortDataUpdated(restoredNodeId, portIndex);
                 });
 
+        connect(model.get(),
+                &NodeDelegateModel::portsAboutToBeDeleted,
+                this,
+                [restoredNodeId, this](PortType const portType, PortIndex const first, PortIndex const last) {
+                    portsAboutToBeDeleted(restoredNodeId, portType, first, last);
+                });
+
+        connect(model.get(),
+                &NodeDelegateModel::portsDeleted,
+                this,
+                &DataFlowGraphModel::portsDeleted);
+
+        connect(model.get(),
+                &NodeDelegateModel::portsAboutToBeInserted,
+                this,
+                [restoredNodeId, this](PortType const portType, PortIndex const first, PortIndex const last) {
+                    portsAboutToBeInserted(restoredNodeId, portType, first, last);
+                });
+
+        connect(model.get(),
+                &NodeDelegateModel::portsInserted,
+                this,
+                &DataFlowGraphModel::portsInserted);
+
         _models[restoredNodeId] = std::move(model);
 
         Q_EMIT nodeCreated(restoredNodeId);
