@@ -196,6 +196,9 @@ bool DynamicPortsModel::setNodeData(NodeId nodeId, NodeRole role, QVariant value
 
     case NodeRole::Widget:
         break;
+
+    case NodeRole::Shape:
+        break;
     }
 
     return result;

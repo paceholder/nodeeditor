@@ -15,6 +15,7 @@ QJsonObject NodeDelegateModel::save() const
     QJsonObject modelJson;
 
     modelJson["model-name"] = name();
+    modelJson["shape"] = static_cast<int>(shape());
 
     return modelJson;
 }

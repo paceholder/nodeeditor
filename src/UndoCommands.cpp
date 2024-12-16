@@ -55,6 +55,7 @@ static QJsonObject serializeSelectedItems(BasicGraphicsScene *scene)
 
 static void insertSerializedItems(QJsonObject const &json, BasicGraphicsScene *scene)
 {
+    return; // XXX disable copy-paste temporarily 
     AbstractGraphModel &graphModel = scene->graphModel();
 
     QJsonArray const &nodesJsonArray = json["nodes"].toArray();

@@ -18,6 +18,7 @@ public:
 
 public:
     static void setConnectionStyle(QString jsonText);
+    static void registerColor(const QString &typeId, const QColor &color);
 
 public:
     void loadJson(QJsonObject const &json) override;
@@ -50,5 +51,7 @@ private:
     float PointDiameter;
 
     bool UseDataDefinedColors;
+
+    static std::unordered_map<std::size_t, QColor> RegisteredColors;
 };
 } // namespace QtNodes

@@ -44,7 +44,8 @@ public:
     /// Name makes this model unique
     virtual QString name() const = 0;
 
-public:
+    virtual NodeShape shape() const { return NodeShape::RoundedRectangle; };
+
     QJsonObject save() const override;
 
     void load(QJsonObject const &) override;
@@ -61,6 +62,8 @@ public:
 
     void setNodeStyle(NodeStyle const &style);
 
+public:
+    // Callback for when a port is connected to a block as input data. 
 public:
     virtual void setInData(std::shared_ptr<NodeData> nodeData, PortIndex const portIndex) = 0;
 
@@ -125,6 +128,8 @@ Q_SIGNALS:
 
     /// Call this function when data and port moditications are finished.
     void portsInserted();
+
+    void contentUpdated();
 
 private:
     NodeStyle _nodeStyle;

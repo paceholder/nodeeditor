@@ -54,6 +54,20 @@ void DefaultHorizontalNodeGeometry::recomputeSize(NodeId const nodeId) const
 
     width = std::max(width, static_cast<unsigned int>(capRect.width()) + 2 * _portSpasing);
 
+    auto shape = _graphModel.nodeData<NodeShape>(nodeId, NodeRole::Shape);
+    switch (shape) {
+    case NodeShape::Trapezoid:
+        height += height / 5;
+        break;
+    case NodeShape::Pentagon:
+        width += height / 2;
+        break;
+    case NodeShape::RoundedRectangle:
+    case NodeShape::Rectangle:
+    default:
+        break;
+    }
+
     QSize size(width, height);
 
     _graphModel.setNodeData(nodeId, NodeRole::Size, size);
@@ -89,6 +103,21 @@ QPointF DefaultHorizontalNodeGeometry::portPosition(NodeId const nodeId,
         double x = size.width();
 
         result = QPointF(x, totalHeight);
+
+        auto shape = _graphModel.nodeData<NodeShape>(nodeId, NodeRole::Shape);
+        if (shape == NodeShape::Pentagon) { // pentagon has unique shape at the output side
+            double midPoint = size.height() / 2;
+
+            PortCount nOutPorts = _graphModel.nodeData<PortCount>(nodeId, NodeRole::OutPortCount);
+            PortIndex midIndex = nOutPorts / 2;
+            if (nOutPorts > 1) {
+                double offset = (static_cast<int>(portIndex) - static_cast<int>(midIndex))
+                                * static_cast<int>(step);
+                midPoint += offset;
+                x -= std::abs(offset);
+            }
+            result = QPointF(x, midPoint);
+        }
         break;
     }
 

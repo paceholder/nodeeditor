@@ -1,4 +1,4 @@
-#include "DataFlowGraphicsScene.hpp"
+#include "DagGraphicsScene.hpp"
 
 #include "ConnectionGraphicsObject.hpp"
 #include "GraphicsView.hpp"
@@ -21,25 +21,30 @@
 #include <QtCore/QJsonArray>
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
+#include <QtCore/QStandardPaths>
 #include <QtCore/QtGlobal>
 
 #include <stdexcept>
 #include <utility>
 
+namespace {
+const QString FILE_EXTENSION = "dag";
+}
+
 namespace QtNodes {
 
-DataFlowGraphicsScene::DataFlowGraphicsScene(DataFlowGraphModel &graphModel, QObject *parent)
+DagGraphicsScene::DagGraphicsScene(DirectedAcyclicGraphModel &graphModel, QObject *parent)
     : BasicGraphicsScene(graphModel, parent)
     , _graphModel(graphModel)
 {
     connect(&_graphModel,
-            &DataFlowGraphModel::inPortDataWasSet,
+            &DirectedAcyclicGraphModel::inPortDataWasSet,
             [this](NodeId const nodeId, PortType const, PortIndex const) { onNodeUpdated(nodeId); });
 }
 
 // TODO constructor for an empty scene?
 
-std::vector<NodeId> DataFlowGraphicsScene::selectedNodes() const
+std::vector<NodeId> DagGraphicsScene::selectedNodes() const
 {
     QList<QGraphicsItem *> graphicsItems = selectedItems();
 
@@ -57,7 +62,7 @@ std::vector<NodeId> DataFlowGraphicsScene::selectedNodes() const
     return result;
 }
 
-QMenu *DataFlowGraphicsScene::createSceneMenu(QPointF const scenePos)
+QMenu *DagGraphicsScene::createSceneMenu(QPointF const scenePos)
 {
     QMenu *modelMenu = new QMenu();
 
@@ -108,8 +113,7 @@ QMenu *DataFlowGraphicsScene::createSceneMenu(QPointF const scenePos)
                 if (!(item->flags() & (Qt::ItemIsSelectable))) {
                     return;
                 }
-
-                this->undoStack().push(new CreateCommand(this, item->text(0), scenePos));
+                this->createNodeAt(item->text(0), scenePos);
 
                 modelMenu->close();
             });
@@ -144,37 +148,26 @@ QMenu *DataFlowGraphicsScene::createSceneMenu(QPointF const scenePos)
     return modelMenu;
 }
 
-bool DataFlowGraphicsScene::save() const
+bool DagGraphicsScene::save(const QString &filePath) const
 {
-    QString fileName = QFileDialog::getSaveFileName(nullptr,
-                                                    tr("Open Flow Scene"),
-                                                    QDir::homePath(),
-                                                    tr("Flow Scene Files (*.flow)"));
-
-    if (!fileName.isEmpty()) {
-        if (!fileName.endsWith("flow", Qt::CaseInsensitive))
-            fileName += ".flow";
-
-        QFile file(fileName);
-        if (file.open(QIODevice::WriteOnly)) {
-            file.write(QJsonDocument(_graphModel.save()).toJson());
-            return true;
-        }
-    }
-    return false;
+    QFileInfo fileInfo(filePath);
+    if (fileInfo.suffix().compare("dag", Qt::CaseInsensitive) != 0)
+        fileInfo.setFile(fileInfo.dir(), fileInfo.baseName() + '.' + FILE_EXTENSION);
+    QFile file(fileInfo.absoluteFilePath());
+    if (!file.open(QIODevice::WriteOnly))
+        return false;
+    file.write(QJsonDocument(_graphModel.save()).toJson());
+    file.close();
+    return true;
 }
 
-bool DataFlowGraphicsScene::load()
+bool DagGraphicsScene::load(const QString &filePath)
 {
-    QString fileName = QFileDialog::getOpenFileName(nullptr,
-                                                    tr("Open Flow Scene"),
-                                                    QDir::homePath(),
-                                                    tr("Flow Scene Files (*.flow)"));
-
-    if (!QFileInfo::exists(fileName))
+    QFileInfo fileInfo(filePath);
+    if (!fileInfo.exists() || fileInfo.suffix() != FILE_EXTENSION)
         return false;
 
-    QFile file(fileName);
+    QFile file(fileInfo.absoluteFilePath());
 
     if (!file.open(QIODevice::ReadOnly))
         return false;
@@ -188,6 +181,11 @@ bool DataFlowGraphicsScene::load()
     Q_EMIT sceneLoaded();
 
     return true;
+}
+
+void DagGraphicsScene::createNodeAt(const QString &name, const QPointF &pos)
+{
+    this->undoStack().push(new CreateCommand(this, name, pos));
 }
 
 } // namespace QtNodes

@@ -59,19 +59,48 @@ void DefaultNodePainter::drawNodeRect(QPainter *painter, NodeGraphicsObject &ngo
     }
 
     QLinearGradient gradient(QPointF(0.0, 0.0), QPointF(2.0, size.height()));
+    QRectF boundary(0, 0, size.width(), size.height());
 
     gradient.setColorAt(0.0, nodeStyle.GradientColor0);
     gradient.setColorAt(0.10, nodeStyle.GradientColor1);
     gradient.setColorAt(0.90, nodeStyle.GradientColor2);
     gradient.setColorAt(1.0, nodeStyle.GradientColor3);
-
     painter->setBrush(gradient);
 
-    QRectF boundary(0, 0, size.width(), size.height());
-
-    double const radius = 3.0;
-
-    painter->drawRoundedRect(boundary, radius, radius);
+    auto shape = model.nodeData<NodeShape>(nodeId, NodeRole::Shape);
+    switch (shape) {
+    case NodeShape::Rectangle:
+        painter->drawRect(boundary);
+        break;
+    case NodeShape::Trapezoid: {
+        constexpr uint POINTS = 4;
+        QPointF const trapezoidFactor(0, size.height() / 10);
+        QPointF trapezoidPoints[POINTS] = {boundary.topLeft() - trapezoidFactor,
+                                           boundary.topRight(),
+                                           boundary.bottomRight(),
+                                           boundary.bottomLeft() + trapezoidFactor};
+        painter->drawPolygon(trapezoidPoints, POINTS);
+        break;
+    }
+    case NodeShape::Pentagon: {
+        constexpr uint POINTS = 5;
+        double halfHeight = size.height() / 2;
+        QPointF const xShift(halfHeight, 0);
+        QPointF const factor(halfHeight, halfHeight);
+        QPointF pentagonPoints[POINTS] = {boundary.topLeft(),
+                                          boundary.topRight() - xShift,
+                                          boundary.topRight() - xShift + factor,
+                                          boundary.bottomRight() - xShift,
+                                          boundary.bottomLeft()};
+        painter->drawPolygon(pentagonPoints, POINTS);
+        break;
+    }
+    case NodeShape::RoundedRectangle: // default is rounded rectangle
+    default:
+        double const radius = 3.0;
+        painter->drawRoundedRect(boundary, radius, radius);
+        break;
+    }
 }
 
 void DefaultNodePainter::drawConnectionPoints(QPainter *painter, NodeGraphicsObject &ngo) const

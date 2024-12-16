@@ -17,6 +17,8 @@ inline void initResources()
     Q_INIT_RESOURCE(resources);
 }
 
+std::unordered_map<std::size_t, QColor> ConnectionStyle::RegisteredColors;
+
 ConnectionStyle::ConnectionStyle()
 {
     // Explicit resources inialization for preventing the static initialization
@@ -38,6 +40,12 @@ void ConnectionStyle::setConnectionStyle(QString jsonText)
     ConnectionStyle style(jsonText);
 
     StyleCollection::setConnectionStyle(style);
+}
+
+void ConnectionStyle::registerColor(const QString &typeId, const QColor &color)
+{
+    std::size_t hash = qHash(typeId);
+    ConnectionStyle::RegisteredColors[hash] = color;
 }
 
 #ifdef STYLE_DEBUG
@@ -157,6 +165,9 @@ QColor ConnectionStyle::normalColor() const
 QColor ConnectionStyle::normalColor(QString typeId) const
 {
     std::size_t hash = qHash(typeId);
+
+    if (RegisteredColors.count(hash) > 0)
+        return RegisteredColors.at(hash);
 
     std::size_t const hue_range = 0xFF;
 

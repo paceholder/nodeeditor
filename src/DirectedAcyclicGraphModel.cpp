@@ -1,18 +1,89 @@
-#include "DataFlowGraphModel.hpp"
+#include "DirectedAcyclicGraphModel.hpp"
 #include "ConnectionIdHash.hpp"
 
 #include <QJsonArray>
 
+#include <stack>
 #include <stdexcept>
+
+namespace {
+bool isCyclicUtil(QtNodes::NodeId nodeId,
+                  std::unordered_map<QtNodes::NodeId, bool> &visited,
+                  std::unordered_map<QtNodes::NodeId, bool> &recStack,
+                  std::unordered_set<QtNodes::ConnectionId> const &connections)
+{
+    if (!visited[nodeId]) {
+        visited[nodeId] = true;
+        recStack[nodeId] = true;
+
+        for (const auto &conn : connections) {
+            if (conn.outNodeId == nodeId) {
+                QtNodes::NodeId adjacent = conn.inNodeId;
+                if (!visited[adjacent] && isCyclicUtil(adjacent, visited, recStack, connections)) {
+                    return true;
+                }
+                if (recStack[adjacent]) {
+                    return true;
+                }
+            }
+        }
+    }
+    recStack[nodeId] = false;
+    return false;
+}
+
+void topologicalSortUtil(QtNodes::NodeId nodeId,
+                         std::unordered_map<QtNodes::NodeId, bool> &visited,
+                         std::stack<QtNodes::NodeId> &stack,
+                         std::unordered_set<QtNodes::ConnectionId> const &connections)
+{
+    visited[nodeId] = true;
+
+    for (const auto &conn : connections) {
+        if (conn.outNodeId == nodeId) {
+            QtNodes::NodeId adjacent = conn.inNodeId;
+            if (!visited[adjacent]) {
+                topologicalSortUtil(adjacent, visited, stack, connections);
+            }
+        }
+    }
+    stack.push(nodeId);
+}
+
+void isConnectedUtil(QtNodes::NodeId nodeId,
+                     std::unordered_map<QtNodes::NodeId, bool> &visited,
+                     std::stack<QtNodes::NodeId> &stack,
+                     std::unordered_set<QtNodes::ConnectionId> const &connections)
+{
+    visited[nodeId] = true;
+
+    for (const auto &conn : connections) {
+        // we don't care about direction, just connectivity
+        if (conn.inNodeId == nodeId || conn.outNodeId == nodeId) {
+            QtNodes::NodeId adjacent = conn.inNodeId == nodeId ? conn.outNodeId : conn.inNodeId;
+            if (!visited[adjacent]) {
+                isConnectedUtil(adjacent, visited, stack, connections);
+            }
+        }
+    }
+    stack.push(nodeId);
+}
+} // namespace
 
 namespace QtNodes {
 
-DataFlowGraphModel::DataFlowGraphModel(std::shared_ptr<NodeDelegateModelRegistry> registry)
+DirectedAcyclicGraphModel::DirectedAcyclicGraphModel(
+    std::shared_ptr<NodeDelegateModelRegistry> registry)
     : _registry(std::move(registry))
     , _nextNodeId{0}
-{}
+{
+    connect(this,
+            &DirectedAcyclicGraphModel::nodeCreated,
+            this,
+            &DirectedAcyclicGraphModel::onNodeCreated);
+}
 
-std::unordered_set<NodeId> DataFlowGraphModel::allNodeIds() const
+std::unordered_set<NodeId> DirectedAcyclicGraphModel::allNodeIds() const
 {
     std::unordered_set<NodeId> nodeIds;
     for_each(_models.begin(), _models.end(), [&nodeIds](auto const &p) { nodeIds.insert(p.first); });
@@ -20,7 +91,7 @@ std::unordered_set<NodeId> DataFlowGraphModel::allNodeIds() const
     return nodeIds;
 }
 
-std::unordered_set<ConnectionId> DataFlowGraphModel::allConnectionIds(NodeId const nodeId) const
+std::unordered_set<ConnectionId> DirectedAcyclicGraphModel::allConnectionIds(NodeId const nodeId) const
 {
     std::unordered_set<ConnectionId> result;
 
@@ -34,9 +105,9 @@ std::unordered_set<ConnectionId> DataFlowGraphModel::allConnectionIds(NodeId con
     return result;
 }
 
-std::unordered_set<ConnectionId> DataFlowGraphModel::connections(NodeId nodeId,
-                                                                 PortType portType,
-                                                                 PortIndex portIndex) const
+std::unordered_set<ConnectionId> DirectedAcyclicGraphModel::connections(NodeId nodeId,
+                                                                        PortType portType,
+                                                                        PortIndex portIndex) const
 {
     std::unordered_set<ConnectionId> result;
 
@@ -51,51 +122,23 @@ std::unordered_set<ConnectionId> DataFlowGraphModel::connections(NodeId nodeId,
     return result;
 }
 
-bool DataFlowGraphModel::connectionExists(ConnectionId const connectionId) const
+bool DirectedAcyclicGraphModel::connectionExists(ConnectionId const connectionId) const
 {
     return (_connectivity.find(connectionId) != _connectivity.end());
 }
 
-NodeId DataFlowGraphModel::addNode(QString const nodeType)
+NodeId DirectedAcyclicGraphModel::addNode(QString const nodeType)
 {
     std::unique_ptr<NodeDelegateModel> model = _registry->create(nodeType);
 
     if (model) {
         NodeId newId = newNodeId();
 
-        connect(model.get(),
-                &NodeDelegateModel::dataUpdated,
-                [newId, this](PortIndex const portIndex) {
-                    onOutPortDataUpdated(newId, portIndex);
-                });
-
-        connect(model.get(),
-                &NodeDelegateModel::portsAboutToBeDeleted,
-                this,
-                [newId, this](PortType const portType, PortIndex const first, PortIndex const last) {
-                    portsAboutToBeDeleted(newId, portType, first, last);
-                });
-
-        connect(model.get(),
-                &NodeDelegateModel::portsDeleted,
-                this,
-                &DataFlowGraphModel::portsDeleted);
-
-        connect(model.get(),
-                &NodeDelegateModel::portsAboutToBeInserted,
-                this,
-                [newId, this](PortType const portType, PortIndex const first, PortIndex const last) {
-                    portsAboutToBeInserted(newId, portType, first, last);
-                });
-
-        connect(model.get(),
-                &NodeDelegateModel::portsInserted,
-                this,
-                &DataFlowGraphModel::portsInserted);
-
         _models[newId] = std::move(model);
 
         Q_EMIT nodeCreated(newId);
+
+        _isCyclicCache.clear();
 
         return newId;
     }
@@ -103,7 +146,7 @@ NodeId DataFlowGraphModel::addNode(QString const nodeType)
     return InvalidNodeId;
 }
 
-bool DataFlowGraphModel::connectionPossible(ConnectionId const connectionId) const
+bool DirectedAcyclicGraphModel::connectionPossible(ConnectionId const connectionId) const
 {
     auto getDataType = [&](PortType const portType) {
         return portData(getNodeId(portType, connectionId),
@@ -125,10 +168,10 @@ bool DataFlowGraphModel::connectionPossible(ConnectionId const connectionId) con
     };
 
     return getDataType(PortType::Out).id == getDataType(PortType::In).id
-           && portVacant(PortType::Out) && portVacant(PortType::In);
+           && portVacant(PortType::Out) && portVacant(PortType::In) && !willBeCyclic(connectionId);
 }
 
-void DataFlowGraphModel::addConnection(ConnectionId const connectionId)
+void DirectedAcyclicGraphModel::addConnection(ConnectionId const connectionId)
 {
     _connectivity.insert(connectionId);
 
@@ -144,9 +187,12 @@ void DataFlowGraphModel::addConnection(ConnectionId const connectionId)
                 connectionId.inPortIndex,
                 portDataToPropagate,
                 PortRole::Data);
+
+    // sanity check
+    isCyclic();
 }
 
-void DataFlowGraphModel::sendConnectionCreation(ConnectionId const connectionId)
+void DirectedAcyclicGraphModel::sendConnectionCreation(ConnectionId const connectionId)
 {
     Q_EMIT connectionCreated(connectionId);
 
@@ -160,7 +206,7 @@ void DataFlowGraphModel::sendConnectionCreation(ConnectionId const connectionId)
     }
 }
 
-void DataFlowGraphModel::sendConnectionDeletion(ConnectionId const connectionId)
+void DirectedAcyclicGraphModel::sendConnectionDeletion(ConnectionId const connectionId)
 {
     Q_EMIT connectionDeleted(connectionId);
 
@@ -174,12 +220,95 @@ void DataFlowGraphModel::sendConnectionDeletion(ConnectionId const connectionId)
     }
 }
 
-bool DataFlowGraphModel::nodeExists(NodeId const nodeId) const
+bool DirectedAcyclicGraphModel::isCyclic(
+    std::optional<std::reference_wrapper<const std::unordered_set<ConnectionId>>> connections) const
+{
+    const std::unordered_set<ConnectionId> &conns = connections ? connections->get()
+                                                                : _connectivity;
+
+    // check against cache whether the nodes + connections are already computed
+    const auto hash = hashNodesAndConnections(allNodeIds(), conns);
+    if (_isCyclicCache.count(hash) > 0)
+        return _isCyclicCache.at(hash);
+
+    std::unordered_map<NodeId, bool> visited;
+    std::unordered_map<NodeId, bool> recStack;
+
+    for (const auto &node : _models) {
+        if (isCyclicUtil(node.first, visited, recStack, conns)) {
+            if (!connections) // don't print if we are using custom connections
+                // this should never be true, if it is, there is a bug
+                qCritical() << "Directed Acyclic Graph model is cyclic";
+            _isCyclicCache[hash] = true;
+            return true;
+        }
+    }
+    _isCyclicCache[hash] = false;
+    return false;
+}
+
+bool DirectedAcyclicGraphModel::willBeCyclic(ConnectionId const connectionId) const
+{
+    std::unordered_set<ConnectionId> copy(_connectivity);
+    copy.insert(connectionId);
+    return isCyclic(copy);
+}
+
+size_t DirectedAcyclicGraphModel::hashNodesAndConnections(
+    std::unordered_set<NodeId> const &nodes,
+    std::unordered_set<ConnectionId> const &connections) const
+{
+    size_t hash = 0;
+    for (const auto &node : nodes)
+        hash ^= std::hash<uint>{}(node) + 0x9e3779b9 + (hash << 6) + (hash >> 2);
+    for (const auto &connection : connections) {
+        hash ^= std::hash<ConnectionId>{}(connection) + 0x9e3779b9 + (hash << 6) + (hash >> 2);
+    }
+    return hash;
+}
+
+void DirectedAcyclicGraphModel::initNodeConnections(const std::unique_ptr<NodeDelegateModel> &node,
+                                                    const NodeId &id)
+{
+    connect(node.get(), &NodeDelegateModel::dataUpdated, [id, this](PortIndex const portIndex) {
+        onOutPortDataUpdated(id, portIndex);
+    });
+
+    connect(node.get(),
+            &NodeDelegateModel::portsAboutToBeDeleted,
+            this,
+            [id, this](PortType const portType, PortIndex const first, PortIndex const last) {
+                portsAboutToBeDeleted(id, portType, first, last);
+            });
+
+    connect(node.get(),
+            &NodeDelegateModel::portsDeleted,
+            this,
+            &DirectedAcyclicGraphModel::portsDeleted);
+
+    connect(node.get(),
+            &NodeDelegateModel::portsAboutToBeInserted,
+            this,
+            [id, this](PortType const portType, PortIndex const first, PortIndex const last) {
+                portsAboutToBeInserted(id, portType, first, last);
+            });
+
+    connect(node.get(),
+            &NodeDelegateModel::portsInserted,
+            this,
+            &DirectedAcyclicGraphModel::portsInserted);
+
+    connect(node.get(), &NodeDelegateModel::contentUpdated, [id, this]() {
+        Q_EMIT nodeUpdated(id);
+    });
+}
+
+bool DirectedAcyclicGraphModel::nodeExists(NodeId const nodeId) const
 {
     return (_models.find(nodeId) != _models.end());
 }
 
-QVariant DataFlowGraphModel::nodeData(NodeId nodeId, NodeRole role) const
+QVariant DirectedAcyclicGraphModel::nodeData(NodeId nodeId, NodeRole role) const
 {
     QVariant result;
 
@@ -211,7 +340,7 @@ QVariant DataFlowGraphModel::nodeData(NodeId nodeId, NodeRole role) const
         break;
 
     case NodeRole::Style: {
-        auto style = StyleCollection::nodeStyle();
+        auto style = _models.at(nodeId)->nodeStyle();
         result = style.toJson().toVariantMap();
     } break;
 
@@ -237,15 +366,15 @@ QVariant DataFlowGraphModel::nodeData(NodeId nodeId, NodeRole role) const
         result = QVariant::fromValue(w);
         break;
     }
-
     case NodeRole::Shape:
+        result = static_cast<int>(_models.at(nodeId)->shape());
         break;
     }
 
     return result;
 }
 
-NodeFlags DataFlowGraphModel::nodeFlags(NodeId nodeId) const
+NodeFlags DirectedAcyclicGraphModel::nodeFlags(NodeId nodeId) const
 {
     auto it = _models.find(nodeId);
 
@@ -255,7 +384,7 @@ NodeFlags DataFlowGraphModel::nodeFlags(NodeId nodeId) const
     return NodeFlag::NoFlags;
 }
 
-bool DataFlowGraphModel::setNodeData(NodeId nodeId, NodeRole role, QVariant value)
+bool DirectedAcyclicGraphModel::setNodeData(NodeId nodeId, NodeRole role, QVariant value)
 {
     Q_UNUSED(nodeId);
     Q_UNUSED(role);
@@ -307,10 +436,10 @@ bool DataFlowGraphModel::setNodeData(NodeId nodeId, NodeRole role, QVariant valu
     return result;
 }
 
-QVariant DataFlowGraphModel::portData(NodeId nodeId,
-                                      PortType portType,
-                                      PortIndex portIndex,
-                                      PortRole role) const
+QVariant DirectedAcyclicGraphModel::portData(NodeId nodeId,
+                                             PortType portType,
+                                             PortIndex portIndex,
+                                             PortRole role) const
 {
     QVariant result;
 
@@ -347,7 +476,7 @@ QVariant DataFlowGraphModel::portData(NodeId nodeId,
     return result;
 }
 
-bool DataFlowGraphModel::setPortData(
+bool DirectedAcyclicGraphModel::setPortData(
     NodeId nodeId, PortType portType, PortIndex portIndex, QVariant const &value, PortRole role)
 {
     Q_UNUSED(nodeId);
@@ -377,7 +506,7 @@ bool DataFlowGraphModel::setPortData(
     return false;
 }
 
-bool DataFlowGraphModel::deleteConnection(ConnectionId const connectionId)
+bool DirectedAcyclicGraphModel::deleteConnection(ConnectionId const connectionId)
 {
     bool disconnected = false;
 
@@ -399,7 +528,7 @@ bool DataFlowGraphModel::deleteConnection(ConnectionId const connectionId)
     return disconnected;
 }
 
-bool DataFlowGraphModel::deleteNode(NodeId const nodeId)
+bool DirectedAcyclicGraphModel::deleteNode(NodeId const nodeId)
 {
     // Delete connections to this node first.
     auto connectionIds = allConnectionIds(nodeId);
@@ -412,10 +541,12 @@ bool DataFlowGraphModel::deleteNode(NodeId const nodeId)
 
     Q_EMIT nodeDeleted(nodeId);
 
+    _isCyclicCache.clear();
+
     return true;
 }
 
-QJsonObject DataFlowGraphModel::saveNode(NodeId const nodeId) const
+QJsonObject DirectedAcyclicGraphModel::saveNode(NodeId const nodeId) const
 {
     QJsonObject nodeJson;
 
@@ -435,7 +566,7 @@ QJsonObject DataFlowGraphModel::saveNode(NodeId const nodeId) const
     return nodeJson;
 }
 
-QJsonObject DataFlowGraphModel::save() const
+QJsonObject DirectedAcyclicGraphModel::save() const
 {
     QJsonObject sceneJson;
 
@@ -454,7 +585,7 @@ QJsonObject DataFlowGraphModel::save() const
     return sceneJson;
 }
 
-void DataFlowGraphModel::loadNode(QJsonObject const &nodeJson)
+void DirectedAcyclicGraphModel::loadNode(QJsonObject const &nodeJson)
 {
     // Possibility of the id clash when reading it from json and not generating a
     // new value.
@@ -474,12 +605,6 @@ void DataFlowGraphModel::loadNode(QJsonObject const &nodeJson)
     std::unique_ptr<NodeDelegateModel> model = _registry->create(delegateModelName);
 
     if (model) {
-        connect(model.get(),
-                &NodeDelegateModel::dataUpdated,
-                [restoredNodeId, this](PortIndex const portIndex) {
-                    onOutPortDataUpdated(restoredNodeId, portIndex);
-                });
-
         _models[restoredNodeId] = std::move(model);
 
         Q_EMIT nodeCreated(restoredNodeId);
@@ -496,7 +621,7 @@ void DataFlowGraphModel::loadNode(QJsonObject const &nodeJson)
     }
 }
 
-void DataFlowGraphModel::load(QJsonObject const &jsonDocument)
+void DirectedAcyclicGraphModel::load(QJsonObject const &jsonDocument)
 {
     QJsonArray nodesJsonArray = jsonDocument["nodes"].toArray();
 
@@ -506,17 +631,54 @@ void DataFlowGraphModel::load(QJsonObject const &jsonDocument)
 
     QJsonArray connectionJsonArray = jsonDocument["connections"].toArray();
 
+    std::deque<ConnectionId> orderedConnections;
     for (QJsonValueRef connection : connectionJsonArray) {
         QJsonObject connJson = connection.toObject();
 
         ConnectionId connId = fromJson(connJson);
 
-        // Restore the connection
-        addConnection(connId);
+        // TODO: better implementation to add connections in a sequential order
+        // current implementation prioritizes input index 0 first since it is
+        // the function input for reduce blocks, which will create i/o ports for the block
+        if (connId.inPortIndex == 0)
+            orderedConnections.push_front(connId);
+        else
+            orderedConnections.push_back(connId);
     }
+    for (auto &conn : orderedConnections)
+        addConnection(conn);
 }
 
-void DataFlowGraphModel::onOutPortDataUpdated(NodeId const nodeId, PortIndex const portIndex)
+std::vector<NodeId> DirectedAcyclicGraphModel::topologicalOrder() const
+{
+    std::stack<NodeId> stack;
+    std::unordered_map<NodeId, bool> visited;
+
+    for (const auto &node : _models) {
+        if (!visited[node.first]) {
+            topologicalSortUtil(node.first, visited, stack, _connectivity);
+        }
+    }
+
+    std::vector<NodeId> sortedNodes;
+    while (!stack.empty()) {
+        sortedNodes.push_back(stack.top());
+        stack.pop();
+    }
+    return sortedNodes;
+}
+
+bool DirectedAcyclicGraphModel::isConnected() const
+{
+    std::stack<NodeId> stack;
+    std::unordered_map<NodeId, bool> visited;
+    if (_models.size() < 1)
+        return false;
+    isConnectedUtil(_models.begin()->first, visited, stack, _connectivity);
+    return stack.size() == _models.size();
+}
+
+void DirectedAcyclicGraphModel::onOutPortDataUpdated(NodeId const nodeId, PortIndex const portIndex)
 {
     std::unordered_set<ConnectionId> const &connected = connections(nodeId,
                                                                     PortType::Out,
@@ -529,11 +691,20 @@ void DataFlowGraphModel::onOutPortDataUpdated(NodeId const nodeId, PortIndex con
     }
 }
 
-void DataFlowGraphModel::propagateEmptyDataTo(NodeId const nodeId, PortIndex const portIndex)
+void DirectedAcyclicGraphModel::propagateEmptyDataTo(NodeId const nodeId, PortIndex const portIndex)
 {
     QVariant emptyData{};
 
     setPortData(nodeId, PortType::In, portIndex, emptyData, PortRole::Data);
+}
+
+void DirectedAcyclicGraphModel::onNodeCreated(NodeId const nodeId)
+{
+    auto it = _models.find(nodeId);
+    if (it == _models.end())
+        return;
+    auto &model = it->second;
+    initNodeConnections(model, nodeId);
 }
 
 } // namespace QtNodes
