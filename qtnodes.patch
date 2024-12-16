@@ -1,0 +1,928 @@
+Only in qtnodes: .git
+Only in qtnodes: .github
+diff -ru qtnodes/.gitignore qtnodes.bk/.gitignore
+--- qtnodes/.gitignore	2024-12-16 16:03:48.346120409 +0800
++++ qtnodes.bk/.gitignore	2024-12-16 15:56:58.014004329 +0800
+@@ -5,3 +5,5 @@
+ .vscode/
+ 
+ tags
++
++.DS_Store
+\ No newline at end of file
+diff -ru qtnodes/CMakeLists.txt qtnodes.bk/CMakeLists.txt
+--- qtnodes/CMakeLists.txt	2024-12-16 16:23:22.480718148 +0800
++++ qtnodes.bk/CMakeLists.txt	2024-12-16 15:56:58.014004329 +0800
+@@ -1,15 +1,17 @@
+ cmake_minimum_required(VERSION 3.8)
+ 
+-cmake_policy(SET CMP0072 NEW) # new in 3.11. The NEW behavior for this policy is to set OpenGL_GL_PREFERENCE to GLVND.
+-cmake_policy(SET CMP0068 NEW) # new in 3.9. The NEW behavior of this policy is to ignore the RPATH settings for install_name on macOS.
+-
++cmake_policy(SET CMP0072 NEW) # new in 3.11. The NEW behavior for this policy is
++                              # to set OpenGL_GL_PREFERENCE to GLVND.
++cmake_policy(
++  SET CMP0068 NEW) # new in 3.9. The NEW behavior of this policy is to ignore
++                   # the RPATH settings for install_name on macOS.
+ 
+ project(QtNodesLibrary CXX)
+ 
+ set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+ 
+ set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
+-set(CMAKE_DISABLE_SOURCE_CHANGES  ON)
++set(CMAKE_DISABLE_SOURCE_CHANGES ON)
+ set(OpenGL_GL_PREFERENCE LEGACY)
+ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+ 
+@@ -20,7 +22,9 @@
+   set(is_root_project ON)
+ endif()
+ 
+-set(QT_NODES_DEVELOPER_DEFAULTS "${is_root_project}" CACHE BOOL "Turns on default settings for development of QtNodes")
++set(QT_NODES_DEVELOPER_DEFAULTS
++    "${is_root_project}"
++    CACHE BOOL "Turns on default settings for development of QtNodes")
+ 
+ option(BUILD_TESTING "Build tests" "${QT_NODES_DEVELOPER_DEFAULTS}")
+ option(BUILD_EXAMPLES "Build Examples" "${QT_NODES_DEVELOPER_DEFAULTS}")
+@@ -56,136 +60,129 @@
+ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Widgets Gui OpenGL)
+ message(STATUS "QT_VERSION: ${QT_VERSION}, QT_DIR: ${QT_DIR}")
+ 
+-if (${QT_VERSION} VERSION_LESS 5.11.0)
+-  message(FATAL_ERROR "Requires qt version >= 5.11.0, Your current version is ${QT_VERSION}")
++if(${QT_VERSION} VERSION_LESS 5.11.0)
++  message(
++    FATAL_ERROR
++      "Requires qt version >= 5.11.0, Your current version is ${QT_VERSION}")
+ endif()
+ 
+-if (${QT_VERSION_MAJOR} EQUAL 6)
++if(${QT_VERSION_MAJOR} EQUAL 6)
+   qt_add_resources(RESOURCES ./resources/resources.qrc)
+ else()
+   qt5_add_resources(RESOURCES ./resources/resources.qrc)
+ endif()
+ 
+-# Unfortunately, as we have a split include/src, AUTOMOC doesn't work.
+-# We'll have to manually specify some files
++# Unfortunately, as we have a split include/src, AUTOMOC doesn't work. We'll
++# have to manually specify some files
+ set(CMAKE_AUTOMOC ON)
+ 
+ set(CPP_SOURCE_FILES
+-  src/AbstractGraphModel.cpp
+-  src/AbstractNodeGeometry.cpp
+-  src/BasicGraphicsScene.cpp
+-  src/ConnectionGraphicsObject.cpp
+-  src/ConnectionState.cpp
+-  src/ConnectionStyle.cpp
+-  src/DataFlowGraphModel.cpp
+-  src/DataFlowGraphicsScene.cpp
+-  src/DefaultConnectionPainter.cpp
+-  src/DefaultHorizontalNodeGeometry.cpp
+-  src/DefaultNodePainter.cpp
+-  src/DefaultVerticalNodeGeometry.cpp
+-  src/Definitions.cpp
+-  src/GraphicsView.cpp
+-  src/GraphicsViewStyle.cpp
+-  src/NodeConnectionInteraction.cpp
+-  src/NodeDelegateModel.cpp
+-  src/NodeDelegateModelRegistry.cpp
+-  src/NodeGraphicsObject.cpp
+-  src/NodeState.cpp
+-  src/NodeStyle.cpp
+-  src/StyleCollection.cpp
+-  src/UndoCommands.cpp
+-  src/locateNode.cpp
+-)
++    src/AbstractGraphModel.cpp
++    src/AbstractNodeGeometry.cpp
++    src/BasicGraphicsScene.cpp
++    src/ConnectionGraphicsObject.cpp
++    src/ConnectionPainter.cpp
++    src/ConnectionState.cpp
++    src/ConnectionStyle.cpp
++    src/DataFlowGraphModel.cpp
++    src/DataFlowGraphicsScene.cpp
++    src/DirectedAcyclicGraphModel.cpp
++    src/DagGraphicsScene.cpp
++    src/DefaultHorizontalNodeGeometry.cpp
++    src/DefaultVerticalNodeGeometry.cpp
++    src/Definitions.cpp
++    src/GraphicsView.cpp
++    src/GraphicsViewStyle.cpp
++    src/NodeDelegateModelRegistry.cpp
++    src/NodeConnectionInteraction.cpp
++    src/NodeDelegateModel.cpp
++    src/NodeGraphicsObject.cpp
++    src/DefaultNodePainter.cpp
++    src/NodeState.cpp
++    src/NodeStyle.cpp
++    src/StyleCollection.cpp
++    src/UndoCommands.cpp
++    src/locateNode.cpp)
+ 
+ set(HPP_HEADER_FILES
+-  include/QtNodes/internal/AbstractConnectionPainter.hpp
+-  include/QtNodes/internal/AbstractGraphModel.hpp
+-  include/QtNodes/internal/AbstractNodeGeometry.hpp
+-  include/QtNodes/internal/AbstractNodePainter.hpp
+-  include/QtNodes/internal/BasicGraphicsScene.hpp
+-  include/QtNodes/internal/Compiler.hpp
+-  include/QtNodes/internal/ConnectionGraphicsObject.hpp
+-  include/QtNodes/internal/ConnectionIdHash.hpp
+-  include/QtNodes/internal/ConnectionIdUtils.hpp
+-  include/QtNodes/internal/ConnectionState.hpp
+-  include/QtNodes/internal/ConnectionStyle.hpp
+-  include/QtNodes/internal/DataFlowGraphicsScene.hpp
+-  include/QtNodes/internal/DataFlowGraphModel.hpp
+-  include/QtNodes/internal/Definitions.hpp
+-  include/QtNodes/internal/Export.hpp
+-  include/QtNodes/internal/GraphicsView.hpp
+-  include/QtNodes/internal/GraphicsViewStyle.hpp
+-  include/QtNodes/internal/locateNode.hpp
+-  include/QtNodes/internal/NodeData.hpp
+-  include/QtNodes/internal/NodeDelegateModel.hpp
+-  include/QtNodes/internal/NodeDelegateModelRegistry.hpp
+-  include/QtNodes/internal/NodeGraphicsObject.hpp
+-  include/QtNodes/internal/NodeState.hpp
+-  include/QtNodes/internal/NodeStyle.hpp
+-  include/QtNodes/internal/OperatingSystem.hpp
+-  include/QtNodes/internal/QStringStdHash.hpp
+-  include/QtNodes/internal/QUuidStdHash.hpp
+-  include/QtNodes/internal/Serializable.hpp
+-  include/QtNodes/internal/Style.hpp
+-  include/QtNodes/internal/StyleCollection.hpp
+-  include/QtNodes/internal/DefaultConnectionPainter.hpp
+-  include/QtNodes/internal/DefaultHorizontalNodeGeometry.hpp
+-  include/QtNodes/internal/DefaultNodePainter.hpp
+-  include/QtNodes/internal/DefaultVerticalNodeGeometry.hpp
+-  include/QtNodes/internal/NodeConnectionInteraction.hpp
+-  include/QtNodes/internal/UndoCommands.hpp
+-)
+-
+-# If we want to give the option to build a static library,
+-# set BUILD_SHARED_LIBS option to OFF
+-add_library(QtNodes
+-  ${CPP_SOURCE_FILES}
+-  ${HPP_HEADER_FILES}
+-  ${RESOURCES}
+-)
++    include/QtNodes/internal/AbstractGraphModel.hpp
++    include/QtNodes/internal/AbstractNodeGeometry.hpp
++    include/QtNodes/internal/AbstractNodePainter.hpp
++    include/QtNodes/internal/BasicGraphicsScene.hpp
++    include/QtNodes/internal/Compiler.hpp
++    include/QtNodes/internal/ConnectionGraphicsObject.hpp
++    include/QtNodes/internal/ConnectionIdHash.hpp
++    include/QtNodes/internal/ConnectionIdUtils.hpp
++    include/QtNodes/internal/ConnectionState.hpp
++    include/QtNodes/internal/ConnectionStyle.hpp
++    include/QtNodes/internal/DataFlowGraphicsScene.hpp
++    include/QtNodes/internal/DataFlowGraphModel.hpp
++    include/QtNodes/internal/DagGraphicsScene.hpp
++    include/QtNodes/internal/DirectedAcyclicGraphModel.hpp
++    include/QtNodes/internal/DefaultNodePainter.hpp
++    include/QtNodes/internal/Definitions.hpp
++    include/QtNodes/internal/Export.hpp
++    include/QtNodes/internal/GraphicsView.hpp
++    include/QtNodes/internal/GraphicsViewStyle.hpp
++    include/QtNodes/internal/locateNode.hpp
++    include/QtNodes/internal/NodeData.hpp
++    include/QtNodes/internal/NodeDelegateModel.hpp
++    include/QtNodes/internal/NodeDelegateModelRegistry.hpp
++    include/QtNodes/internal/NodeGraphicsObject.hpp
++    include/QtNodes/internal/NodeState.hpp
++    include/QtNodes/internal/NodeStyle.hpp
++    include/QtNodes/internal/OperatingSystem.hpp
++    include/QtNodes/internal/QStringStdHash.hpp
++    include/QtNodes/internal/QUuidStdHash.hpp
++    include/QtNodes/internal/Serializable.hpp
++    include/QtNodes/internal/Style.hpp
++    include/QtNodes/internal/StyleCollection.hpp
++    src/ConnectionPainter.hpp
++    src/DefaultHorizontalNodeGeometry.hpp
++    src/DefaultVerticalNodeGeometry.hpp
++    src/NodeConnectionInteraction.hpp
++    src/UndoCommands.hpp)
++
++# If we want to give the option to build a static library, set BUILD_SHARED_LIBS
++# option to OFF
++add_library(QtNodes ${CPP_SOURCE_FILES} ${HPP_HEADER_FILES} ${RESOURCES})
+ 
+ add_library(QtNodes::QtNodes ALIAS QtNodes)
+ 
+-
+-target_include_directories(QtNodes
+-  PUBLIC
+-    $<INSTALL_INTERFACE:include>
+-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
++target_include_directories(
++  QtNodes
++  PUBLIC $<INSTALL_INTERFACE:include>
++         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+   PRIVATE
+     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/QtNodes/internal>
+-)
+-
+-target_link_libraries(QtNodes
+-  PUBLIC
+-    Qt${QT_VERSION_MAJOR}::Core
+-    Qt${QT_VERSION_MAJOR}::Widgets
+-    Qt${QT_VERSION_MAJOR}::Gui
+-    Qt${QT_VERSION_MAJOR}::OpenGL
+-)
+-
+-target_compile_definitions(QtNodes
+-  PUBLIC
+-    $<IF:$<BOOL:${BUILD_SHARED_LIBS}>, NODE_EDITOR_SHARED, NODE_EDITOR_STATIC>
+-  PRIVATE
+-    NODE_EDITOR_EXPORTS
+-    #NODE_DEBUG_DRAWING
+-    QT_NO_KEYWORDS
+-)
+-
++    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/QtNodes/internal>)
+ 
+-target_compile_options(QtNodes
+-  PRIVATE
+-    $<$<CXX_COMPILER_ID:MSVC>:/W4 /wd4127 /EHsc /utf-8>
+-    $<$<CXX_COMPILER_ID:GNU>:-Wall -Wextra>
+-    $<$<CXX_COMPILER_ID:AppleClang>:-Wall -Wextra -Werror>
+-)
++target_link_libraries(
++  QtNodes PUBLIC Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Widgets
++                 Qt${QT_VERSION_MAJOR}::Gui Qt${QT_VERSION_MAJOR}::OpenGL)
++
++target_compile_definitions(
++  QtNodes
++  PUBLIC NODE_EDITOR_SHARED
++  PRIVATE NODE_EDITOR_EXPORTS
++          # NODE_DEBUG_DRAWING
++          QT_NO_KEYWORDS)
++
++target_compile_options(
++  QtNodes
++  PRIVATE $<$<CXX_COMPILER_ID:MSVC>:/W4
++          /wd4127
++          /EHsc
++          /utf-8>
++          $<$<CXX_COMPILER_ID:GNU>:-Wall
++          -Wextra>
++          $<$<CXX_COMPILER_ID:AppleClang>:-Wall
++          -Wextra
++          -Werror>)
+ if(NOT "${CMAKE_CXX_SIMULATE_ID}" STREQUAL "MSVC")
+   # Clang-Cl on MSVC identifies as "Clang" but behaves more like MSVC:
+-  target_compile_options(QtNodes
+-    PRIVATE
+-      $<$<CXX_COMPILER_ID:Clang>:-Wall -Wextra>
+-  )
++  target_compile_options(QtNodes PRIVATE $<$<CXX_COMPILER_ID:Clang>:-Wall
++                                         -Wextra>)
+ endif()
+ 
+ if(QT_NODES_DEVELOPER_DEFAULTS)
+@@ -193,39 +190,45 @@
+   set_target_properties(QtNodes PROPERTIES CXX_EXTENSIONS OFF)
+ endif()
+ 
++set_target_properties(
++  QtNodes
++  PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
++             LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
++             RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+ 
+-set_target_properties(QtNodes
+-  PROPERTIES
+-    ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
+-    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
+-    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+-)
+-
+-######
++#
+ # Moc
+-##
++#
+ 
+ file(GLOB_RECURSE HEADERS_TO_MOC include/QtNodes/internal/*.hpp)
+ 
+-if (${QT_VERSION_MAJOR} EQUAL 6)
+-  qt_wrap_cpp(nodes_moc
+-      ${HEADERS_TO_MOC}
+-      TARGET QtNodes
+-    OPTIONS --no-notes # Don't display a note for the headers which don't produce a moc_*.cpp
++if(${QT_VERSION_MAJOR} EQUAL 6)
++  qt_wrap_cpp(
++    nodes_moc
++    ${HEADERS_TO_MOC}
++    TARGET
++    QtNodes
++    OPTIONS
++    --no-notes # Don't display a note for the headers which don't produce a
++               # moc_*.cpp
+   )
+ else()
+-  qt5_wrap_cpp(nodes_moc
+-  ${HEADERS_TO_MOC}
+-  TARGET QtNodes
+-  OPTIONS --no-notes # Don't display a note for the headers which don't produce a moc_*.cpp
++  qt5_wrap_cpp(
++    nodes_moc
++    ${HEADERS_TO_MOC}
++    TARGET
++    QtNodes
++    OPTIONS
++    --no-notes # Don't display a note for the headers which don't produce a
++               # moc_*.cpp
+   )
+ endif()
+ 
+ target_sources(QtNodes PRIVATE ${nodes_moc})
+ 
+-###########
++# ##############################################################################
+ # Examples
+-##
++#
+ 
+ if(BUILD_EXAMPLES)
+   add_subdirectory(examples)
+@@ -235,47 +238,44 @@
+   add_subdirectory(docs)
+ endif()
+ 
+-##################
++# ##############################################################################
+ # Automated Tests
+-##
++#
+ 
+ if(BUILD_TESTING)
+-  #add_subdirectory(test)
++  # add_subdirectory(test)
+ endif()
+ 
+-###############
++# ##############################################################################
+ # Installation
+-##
++#
+ 
+ include(GNUInstallDirs)
+ 
+ set(INSTALL_CONFIGDIR ${CMAKE_INSTALL_LIBDIR}/cmake/QtNodes)
+ 
+-install(TARGETS QtNodes
++install(
++  TARGETS QtNodes
+   EXPORT QtNodesTargets
+   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+-  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+-)
++  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+ 
+-install(DIRECTORY include/
+-        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
++install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+ 
+-install(EXPORT QtNodesTargets
++install(
++  EXPORT QtNodesTargets
+   FILE QtNodesTargets.cmake
+   NAMESPACE QtNodes::
+-  DESTINATION ${INSTALL_CONFIGDIR}
+-)
++  DESTINATION ${INSTALL_CONFIGDIR})
+ 
+ include(CMakePackageConfigHelpers)
+ 
+-configure_package_config_file(${CMAKE_CURRENT_LIST_DIR}/cmake/QtNodesConfig.cmake.in
++configure_package_config_file(
++  ${CMAKE_CURRENT_LIST_DIR}/cmake/QtNodesConfig.cmake.in
+   ${CMAKE_CURRENT_BINARY_DIR}/QtNodesConfig.cmake
+-  INSTALL_DESTINATION ${INSTALL_CONFIGDIR}
+-)
++  INSTALL_DESTINATION ${INSTALL_CONFIGDIR})
+ 
+-install(FILES
+-  ${CMAKE_CURRENT_BINARY_DIR}/QtNodesConfig.cmake
+-  DESTINATION ${INSTALL_CONFIGDIR}
+-)
++install(FILES ${CMAKE_CURRENT_BINARY_DIR}/QtNodesConfig.cmake
++        DESTINATION ${INSTALL_CONFIGDIR})
+diff -ru qtnodes/README.rst qtnodes.bk/README.rst
+--- qtnodes/README.rst	2024-12-16 16:23:22.480718148 +0800
++++ qtnodes.bk/README.rst	2024-12-16 15:56:58.014004329 +0800
+@@ -113,12 +113,6 @@
+    or
+    mkdir build && cd build && cmake .. -DUSE_QT6=off
+ 
+-For building a static lib use:
+-
+-::
+-
+-    cmake .. -BUILD_SHARED_LIBS=off
+-
+ Linux
+ -----
+ 
+Only in qtnodes/docs: Makefile
+diff -ru qtnodes/docs/development.rst qtnodes.bk/docs/development.rst
+--- qtnodes/docs/development.rst	2024-12-16 16:03:48.356121911 +0800
++++ qtnodes.bk/docs/development.rst	2024-12-16 15:56:58.024004329 +0800
+@@ -7,10 +7,10 @@
+ - [✅ done] Dynamic ports
+ - [✅ done] ``AbstractNodeGeometry``, ``AbstractNodePainter``
+ - [✅ done] Website with documentation
+-- [✅] ``ConnectionPaintDelegate``
+ - [➡️  work in progress] Unit-Tests
+ - [➡️  work in progress] Ctrl+D for copying and inserting a selection duplicate
+ - [⏸ not started] Node groups
++- [⏸ not started] ``ConnectionPaintDelegate``
+ - [⏸ not started] Check how styles work and what needs to be done. See old pull-requests
+ - [☝ help needed] Python bindings. Maybe a wrapper using Shiboken
+   - Python examples
+diff -ru qtnodes/examples/dynamic_ports/DynamicPortsModel.cpp qtnodes.bk/examples/dynamic_ports/DynamicPortsModel.cpp
+--- qtnodes/examples/dynamic_ports/DynamicPortsModel.cpp	2024-12-16 16:03:48.356121911 +0800
++++ qtnodes.bk/examples/dynamic_ports/DynamicPortsModel.cpp	2024-12-16 15:56:58.034004330 +0800
+@@ -196,6 +196,9 @@
+ 
+     case NodeRole::Widget:
+         break;
++
++    case NodeRole::Shape:
++        break;
+     }
+ 
+     return result;
+Only in qtnodes/include/QtNodes: AbstractConnectionPainter
+Only in qtnodes.bk/include/QtNodes: DirectedAcyclicGraphModel
+Only in qtnodes/include/QtNodes/internal: AbstractConnectionPainter.hpp
+diff -ru qtnodes/include/QtNodes/internal/BasicGraphicsScene.hpp qtnodes.bk/include/QtNodes/internal/BasicGraphicsScene.hpp
+--- qtnodes/include/QtNodes/internal/BasicGraphicsScene.hpp	2024-12-16 16:03:48.356121911 +0800
++++ qtnodes.bk/include/QtNodes/internal/BasicGraphicsScene.hpp	2024-12-16 15:56:58.044004328 +0800
+@@ -21,7 +21,6 @@
+ 
+ namespace QtNodes {
+ 
+-class AbstractConnectionPainter;
+ class AbstractGraphModel;
+ class AbstractNodePainter;
+ class ConnectionGraphicsObject;
+@@ -50,12 +49,8 @@
+ 
+     AbstractNodePainter &nodePainter();
+ 
+-    AbstractConnectionPainter &connectionPainter();
+-
+     void setNodePainter(std::unique_ptr<AbstractNodePainter> newPainter);
+ 
+-    void setConnectionPainter(std::unique_ptr<AbstractConnectionPainter> newPainter);
+-
+     QUndoStack &undoStack();
+ 
+ public:
+@@ -175,8 +170,6 @@
+ 
+     std::unique_ptr<AbstractNodePainter> _nodePainter;
+ 
+-    std::unique_ptr<AbstractConnectionPainter> _connectionPainter;
+-
+     bool _nodeDrag;
+ 
+     QUndoStack *_undoStack;
+diff -ru qtnodes/include/QtNodes/internal/ConnectionStyle.hpp qtnodes.bk/include/QtNodes/internal/ConnectionStyle.hpp
+--- qtnodes/include/QtNodes/internal/ConnectionStyle.hpp	2024-12-16 16:03:48.356121911 +0800
++++ qtnodes.bk/include/QtNodes/internal/ConnectionStyle.hpp	2024-12-16 15:56:58.044004328 +0800
+@@ -18,6 +18,7 @@
+ 
+ public:
+     static void setConnectionStyle(QString jsonText);
++    static void registerColor(const QString &typeId, const QColor &color);
+ 
+ public:
+     void loadJson(QJsonObject const &json) override;
+@@ -50,5 +51,7 @@
+     float PointDiameter;
+ 
+     bool UseDataDefinedColors;
++
++    static std::unordered_map<std::size_t, QColor> RegisteredColors;
+ };
+ } // namespace QtNodes
+Only in qtnodes/include/QtNodes/internal: DefaultConnectionPainter.hpp
+Only in qtnodes/include/QtNodes/internal: DefaultHorizontalNodeGeometry.hpp
+Only in qtnodes/include/QtNodes/internal: DefaultVerticalNodeGeometry.hpp
+diff -ru qtnodes/include/QtNodes/internal/Definitions.hpp qtnodes.bk/include/QtNodes/internal/Definitions.hpp
+--- qtnodes/include/QtNodes/internal/Definitions.hpp	2024-12-16 16:22:32.510681621 +0800
++++ qtnodes.bk/include/QtNodes/internal/Definitions.hpp	2024-12-16 15:56:58.044004328 +0800
+@@ -32,9 +32,18 @@
+         InPortCount = 7,    ///< `unsigned int`
+         OutPortCount = 9,   ///< `unsigned int`
+         Widget = 10,        ///< Optional `QWidget*` or `nullptr`
++        Shape = 11,         ///< Custom shape of the node, rounded rect by default
+     };
+ Q_ENUM_NS(NodeRole)
+ 
++enum class NodeShape {
++    RoundedRectangle = 0,
++    Rectangle = 1,
++    Trapezoid = 2,
++    Pentagon = 3,
++};
++Q_ENUM_NS(NodeShape)
++
+ /**
+  * Specific flags regulating node features and appeaarence.
+  */
+Only in qtnodes.bk/include/QtNodes/internal: DirectedAcyclicGraphModel.hpp
+Only in qtnodes/include/QtNodes/internal: NodeConnectionInteraction.hpp
+diff -ru qtnodes/include/QtNodes/internal/NodeGraphicsObject.hpp qtnodes.bk/include/QtNodes/internal/NodeGraphicsObject.hpp
+--- qtnodes/include/QtNodes/internal/NodeGraphicsObject.hpp	2024-12-16 16:03:48.356121911 +0800
++++ qtnodes.bk/include/QtNodes/internal/NodeGraphicsObject.hpp	2024-12-16 15:56:58.044004328 +0800
+@@ -50,8 +50,6 @@
+     /// Repaints the node once with reacting ports.
+     void reactToConnection(ConnectionGraphicsObject const *cgo);
+ 
+-    void updateQWidgetEmbedPos();
+-
+ protected:
+     void paint(QPainter *painter,
+                QStyleOptionGraphicsItem const *option,
+Only in qtnodes/include/QtNodes/internal: UndoCommands.hpp
+Only in qtnodes: qtnodes.patch
+diff -ru qtnodes/src/BasicGraphicsScene.cpp qtnodes.bk/src/BasicGraphicsScene.cpp
+--- qtnodes/src/BasicGraphicsScene.cpp	2024-12-16 16:03:48.366123411 +0800
++++ qtnodes.bk/src/BasicGraphicsScene.cpp	2024-12-16 15:56:58.044004328 +0800
+@@ -3,7 +3,6 @@
+ #include "AbstractNodeGeometry.hpp"
+ #include "ConnectionGraphicsObject.hpp"
+ #include "ConnectionIdUtils.hpp"
+-#include "DefaultConnectionPainter.hpp"
+ #include "DefaultHorizontalNodeGeometry.hpp"
+ #include "DefaultNodePainter.hpp"
+ #include "DefaultVerticalNodeGeometry.hpp"
+@@ -37,7 +36,6 @@
+     , _graphModel(graphModel)
+     , _nodeGeometry(std::make_unique<DefaultHorizontalNodeGeometry>(_graphModel))
+     , _nodePainter(std::make_unique<DefaultNodePainter>())
+-    , _connectionPainter(std::make_unique<DefaultConnectionPainter>())
+     , _nodeDrag(false)
+     , _undoStack(new QUndoStack(this))
+     , _orientation(Qt::Horizontal)
+@@ -103,21 +101,11 @@
+     return *_nodePainter;
+ }
+ 
+-AbstractConnectionPainter &BasicGraphicsScene::connectionPainter()
+-{
+-    return *_connectionPainter;
+-}
+-
+ void BasicGraphicsScene::setNodePainter(std::unique_ptr<AbstractNodePainter> newPainter)
+ {
+     _nodePainter = std::move(newPainter);
+ }
+ 
+-void BasicGraphicsScene::setConnectionPainter(std::unique_ptr<AbstractConnectionPainter> newPainter)
+-{
+-    _connectionPainter = std::move(newPainter);
+-}
+-
+ QUndoStack &BasicGraphicsScene::undoStack()
+ {
+     return *_undoStack;
+@@ -293,7 +281,6 @@
+ 
+         _nodeGeometry->recomputeSize(nodeId);
+ 
+-        node->updateQWidgetEmbedPos();
+         node->update();
+         node->moveConnections();
+     }
+diff -ru qtnodes/src/ConnectionGraphicsObject.cpp qtnodes.bk/src/ConnectionGraphicsObject.cpp
+--- qtnodes/src/ConnectionGraphicsObject.cpp	2024-12-16 16:03:48.366123411 +0800
++++ qtnodes.bk/src/ConnectionGraphicsObject.cpp	2024-12-16 15:56:58.044004328 +0800
+@@ -1,10 +1,10 @@
+ #include "ConnectionGraphicsObject.hpp"
+ 
+-#include "AbstractConnectionPainter.hpp"
+ #include "AbstractGraphModel.hpp"
+ #include "AbstractNodeGeometry.hpp"
+ #include "BasicGraphicsScene.hpp"
+ #include "ConnectionIdUtils.hpp"
++#include "ConnectionPainter.hpp"
+ #include "ConnectionState.hpp"
+ #include "ConnectionStyle.hpp"
+ #include "NodeConnectionInteraction.hpp"
+@@ -128,7 +128,7 @@
+     //return path;
+ 
+ #else
+-    return nodeScene()->connectionPainter().getPainterStroke(*this);
++    return ConnectionPainter::getPainterStroke(*this);
+ #endif
+ }
+ 
+@@ -198,7 +198,7 @@
+ 
+     painter->setClipRect(option->exposedRect);
+ 
+-    nodeScene()->connectionPainter().paint(painter, *this);
++    ConnectionPainter::paint(painter, *this);
+ }
+ 
+ void ConnectionGraphicsObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
+Only in qtnodes.bk/src: ConnectionPainter.cpp
+Only in qtnodes.bk/src: ConnectionPainter.hpp
+diff -ru qtnodes/src/ConnectionStyle.cpp qtnodes.bk/src/ConnectionStyle.cpp
+--- qtnodes/src/ConnectionStyle.cpp	2024-12-16 16:03:48.366123411 +0800
++++ qtnodes.bk/src/ConnectionStyle.cpp	2024-12-16 15:56:58.044004328 +0800
+@@ -17,6 +17,8 @@
+     Q_INIT_RESOURCE(resources);
+ }
+ 
++std::unordered_map<std::size_t, QColor> ConnectionStyle::RegisteredColors;
++
+ ConnectionStyle::ConnectionStyle()
+ {
+     // Explicit resources inialization for preventing the static initialization
+@@ -40,6 +42,12 @@
+     StyleCollection::setConnectionStyle(style);
+ }
+ 
++void ConnectionStyle::registerColor(const QString &typeId, const QColor &color)
++{
++    std::size_t hash = qHash(typeId);
++    ConnectionStyle::RegisteredColors[hash] = color;
++}
++
+ #ifdef STYLE_DEBUG
+ #define CONNECTION_STYLE_CHECK_UNDEFINED_VALUE(v, variable) \
+     { \
+@@ -158,6 +166,9 @@
+ {
+     std::size_t hash = qHash(typeId);
+ 
++    if (RegisteredColors.count(hash) > 0)
++        return RegisteredColors.at(hash);
++
+     std::size_t const hue_range = 0xFF;
+ 
+     std::mt19937 gen(static_cast<unsigned int>(hash));
+diff -ru qtnodes/src/DataFlowGraphModel.cpp qtnodes.bk/src/DataFlowGraphModel.cpp
+--- qtnodes/src/DataFlowGraphModel.cpp	2024-12-16 16:03:48.366123411 +0800
++++ qtnodes.bk/src/DataFlowGraphModel.cpp	2024-12-16 15:56:58.044004328 +0800
+@@ -235,7 +235,11 @@
+     case NodeRole::Widget: {
+         auto w = model->embeddedWidget();
+         result = QVariant::fromValue(w);
+-    } break;
++        break;
++    }
++
++    case NodeRole::Shape:
++        break;
+     }
+ 
+     return result;
+@@ -295,6 +299,9 @@
+ 
+     case NodeRole::Widget:
+         break;
++
++    case NodeRole::Shape:
++        break;
+     }
+ 
+     return result;
+diff -ru qtnodes/src/DataFlowGraphicsScene.cpp qtnodes.bk/src/DataFlowGraphicsScene.cpp
+--- qtnodes/src/DataFlowGraphicsScene.cpp	2024-12-16 16:03:48.366123411 +0800
++++ qtnodes.bk/src/DataFlowGraphicsScene.cpp	2024-12-16 15:56:58.044004328 +0800
+@@ -37,7 +37,7 @@
+             [this](NodeId const nodeId, PortType const, PortIndex const) { onNodeUpdated(nodeId); });
+ }
+ 
+-// TODO constructor for an empyt scene?
++// TODO constructor for an empty scene?
+ 
+ std::vector<NodeId> DataFlowGraphicsScene::selectedNodes() const
+ {
+Only in qtnodes/src: DefaultConnectionPainter.cpp
+diff -ru qtnodes/src/DefaultHorizontalNodeGeometry.cpp qtnodes.bk/src/DefaultHorizontalNodeGeometry.cpp
+--- qtnodes/src/DefaultHorizontalNodeGeometry.cpp	2024-12-16 16:03:48.366123411 +0800
++++ qtnodes.bk/src/DefaultHorizontalNodeGeometry.cpp	2024-12-16 15:56:58.044004328 +0800
+@@ -54,6 +54,20 @@
+ 
+     width = std::max(width, static_cast<unsigned int>(capRect.width()) + 2 * _portSpasing);
+ 
++    auto shape = _graphModel.nodeData<NodeShape>(nodeId, NodeRole::Shape);
++    switch (shape) {
++    case NodeShape::Trapezoid:
++        height += height / 5;
++        break;
++    case NodeShape::Pentagon:
++        width += height / 2;
++        break;
++    case NodeShape::RoundedRectangle:
++    case NodeShape::Rectangle:
++    default:
++        break;
++    }
++
+     QSize size(width, height);
+ 
+     _graphModel.setNodeData(nodeId, NodeRole::Size, size);
+@@ -89,6 +103,21 @@
+         double x = size.width();
+ 
+         result = QPointF(x, totalHeight);
++
++        auto shape = _graphModel.nodeData<NodeShape>(nodeId, NodeRole::Shape);
++        if (shape == NodeShape::Pentagon) { // pentagon has unique shape at the output side
++            double midPoint = size.height() / 2;
++
++            PortCount nOutPorts = _graphModel.nodeData<PortCount>(nodeId, NodeRole::OutPortCount);
++            PortIndex midIndex = nOutPorts / 2;
++            if (nOutPorts > 1) {
++                double offset = (static_cast<int>(portIndex) - static_cast<int>(midIndex))
++                                * static_cast<int>(step);
++                midPoint += offset;
++                x -= std::abs(offset);
++            }
++            result = QPointF(x, midPoint);
++        }
+         break;
+     }
+ 
+@@ -109,15 +138,13 @@
+ 
+     p.setY(p.y() + rect.height() / 4.0);
+ 
+-    QSize size = _graphModel.nodeData<QSize>(nodeId, NodeRole::Size);
+-
+     switch (portType) {
+     case PortType::In:
+         p.setX(_portSpasing);
+         break;
+ 
+     case PortType::Out:
+-        p.setX(size.width() - _portSpasing - rect.width());
++        p.setX(p.x() - _portSpasing - rect.width());
+         break;
+ 
+     default:
+Only in qtnodes.bk/src: DefaultHorizontalNodeGeometry.hpp
+diff -ru qtnodes/src/DefaultNodePainter.cpp qtnodes.bk/src/DefaultNodePainter.cpp
+--- qtnodes/src/DefaultNodePainter.cpp	2024-12-16 16:03:48.366123411 +0800
++++ qtnodes.bk/src/DefaultNodePainter.cpp	2024-12-16 15:56:58.044004328 +0800
+@@ -59,19 +59,48 @@
+     }
+ 
+     QLinearGradient gradient(QPointF(0.0, 0.0), QPointF(2.0, size.height()));
++    QRectF boundary(0, 0, size.width(), size.height());
+ 
+     gradient.setColorAt(0.0, nodeStyle.GradientColor0);
+     gradient.setColorAt(0.10, nodeStyle.GradientColor1);
+     gradient.setColorAt(0.90, nodeStyle.GradientColor2);
+     gradient.setColorAt(1.0, nodeStyle.GradientColor3);
+-
+     painter->setBrush(gradient);
+ 
+-    QRectF boundary(0, 0, size.width(), size.height());
+-
+-    double const radius = 3.0;
+-
+-    painter->drawRoundedRect(boundary, radius, radius);
++    auto shape = model.nodeData<NodeShape>(nodeId, NodeRole::Shape);
++    switch (shape) {
++    case NodeShape::Rectangle:
++        painter->drawRect(boundary);
++        break;
++    case NodeShape::Trapezoid: {
++        constexpr uint POINTS = 4;
++        QPointF const trapezoidFactor(0, size.height() / 10);
++        QPointF trapezoidPoints[POINTS] = {boundary.topLeft() - trapezoidFactor,
++                                           boundary.topRight(),
++                                           boundary.bottomRight(),
++                                           boundary.bottomLeft() + trapezoidFactor};
++        painter->drawPolygon(trapezoidPoints, POINTS);
++        break;
++    }
++    case NodeShape::Pentagon: {
++        constexpr uint POINTS = 5;
++        double halfHeight = size.height() / 2;
++        QPointF const xShift(halfHeight, 0);
++        QPointF const factor(halfHeight, halfHeight);
++        QPointF pentagonPoints[POINTS] = {boundary.topLeft(),
++                                          boundary.topRight() - xShift,
++                                          boundary.topRight() - xShift + factor,
++                                          boundary.bottomRight() - xShift,
++                                          boundary.bottomLeft()};
++        painter->drawPolygon(pentagonPoints, POINTS);
++        break;
++    }
++    case NodeShape::RoundedRectangle: // default is rounded rectangle
++    default:
++        double const radius = 3.0;
++        painter->drawRoundedRect(boundary, radius, radius);
++        break;
++    }
+ }
+ 
+ void DefaultNodePainter::drawConnectionPoints(QPainter *painter, NodeGraphicsObject &ngo) const
+Only in qtnodes.bk/src: DefaultVerticalNodeGeometry.hpp
+Only in qtnodes.bk/src: DirectedAcyclicGraphModel.cpp
+diff -ru qtnodes/src/GraphicsView.cpp qtnodes.bk/src/GraphicsView.cpp
+--- qtnodes/src/GraphicsView.cpp	2024-12-16 16:03:48.366123411 +0800
++++ qtnodes.bk/src/GraphicsView.cpp	2024-12-16 15:56:58.044004328 +0800
+@@ -93,7 +93,6 @@
+         _deleteSelectionAction = new QAction(QStringLiteral("Delete Selection"), this);
+         _deleteSelectionAction->setShortcutContext(Qt::ShortcutContext::WidgetShortcut);
+         _deleteSelectionAction->setShortcut(QKeySequence(QKeySequence::Delete));
+-        _deleteSelectionAction->setAutoRepeat(false);
+         connect(_deleteSelectionAction,
+                 &QAction::triggered,
+                 this,
+@@ -107,7 +106,6 @@
+         _duplicateSelectionAction = new QAction(QStringLiteral("Duplicate Selection"), this);
+         _duplicateSelectionAction->setShortcutContext(Qt::ShortcutContext::WidgetShortcut);
+         _duplicateSelectionAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_D));
+-        _duplicateSelectionAction->setAutoRepeat(false);
+         connect(_duplicateSelectionAction,
+                 &QAction::triggered,
+                 this,
+@@ -121,7 +119,6 @@
+         _copySelectionAction = new QAction(QStringLiteral("Copy Selection"), this);
+         _copySelectionAction->setShortcutContext(Qt::ShortcutContext::WidgetShortcut);
+         _copySelectionAction->setShortcut(QKeySequence(QKeySequence::Copy));
+-        _copySelectionAction->setAutoRepeat(false);
+         connect(_copySelectionAction,
+                 &QAction::triggered,
+                 this,
+@@ -135,7 +132,6 @@
+         _pasteAction = new QAction(QStringLiteral("Copy Selection"), this);
+         _pasteAction->setShortcutContext(Qt::ShortcutContext::WidgetShortcut);
+         _pasteAction->setShortcut(QKeySequence(QKeySequence::Paste));
+-        _pasteAction->setAutoRepeat(false);
+         connect(_pasteAction, &QAction::triggered, this, &GraphicsView::onPasteObjects);
+ 
+         addAction(_pasteAction);
+Only in qtnodes.bk/src: NodeConnectionInteraction.hpp
+diff -ru qtnodes/src/NodeDelegateModel.cpp qtnodes.bk/src/NodeDelegateModel.cpp
+--- qtnodes/src/NodeDelegateModel.cpp	2024-12-16 16:03:48.366123411 +0800
++++ qtnodes.bk/src/NodeDelegateModel.cpp	2024-12-16 15:56:58.044004328 +0800
+@@ -15,6 +15,7 @@
+     QJsonObject modelJson;
+ 
+     modelJson["model-name"] = name();
++    modelJson["shape"] = static_cast<int>(shape());
+ 
+     return modelJson;
+ }
+diff -ru qtnodes/src/NodeGraphicsObject.cpp qtnodes.bk/src/NodeGraphicsObject.cpp
+--- qtnodes/src/NodeGraphicsObject.cpp	2024-12-16 16:03:48.366123411 +0800
++++ qtnodes.bk/src/NodeGraphicsObject.cpp	2024-12-16 15:56:58.044004328 +0800
+@@ -76,14 +76,6 @@
+     return dynamic_cast<BasicGraphicsScene *>(scene());
+ }
+ 
+-void NodeGraphicsObject::updateQWidgetEmbedPos()
+-{
+-  if (_proxyWidget) {
+-    AbstractNodeGeometry &geometry = nodeScene()->nodeGeometry();
+-    _proxyWidget->setPos(geometry.widgetPosition(_nodeId));
+-  }
+-}
+-
+ void NodeGraphicsObject::embedQWidget()
+ {
+     AbstractNodeGeometry &geometry = nodeScene()->nodeGeometry();
+@@ -107,7 +99,7 @@
+             _proxyWidget->setMinimumHeight(widgetHeight);
+         }
+ 
+-        updateQWidgetEmbedPos();
++        _proxyWidget->setPos(geometry.widgetPosition(_nodeId));
+ 
+         //update();
+ 
+diff -ru qtnodes/src/UndoCommands.cpp qtnodes.bk/src/UndoCommands.cpp
+--- qtnodes/src/UndoCommands.cpp	2024-12-16 16:03:48.366123411 +0800
++++ qtnodes.bk/src/UndoCommands.cpp	2024-12-16 15:56:58.044004328 +0800
+@@ -55,6 +55,7 @@
+ 
+ static void insertSerializedItems(QJsonObject const &json, BasicGraphicsScene *scene)
+ {
++    return; // XXX disable copy-paste temporarily 
+     AbstractGraphModel &graphModel = scene->graphModel();
+ 
+     QJsonArray const &nodesJsonArray = json["nodes"].toArray();
+Only in qtnodes.bk/src: UndoCommands.hpp
