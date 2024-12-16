@@ -77,6 +77,7 @@ set(CPP_SOURCE_FILES
   src/ConnectionGraphicsObject.cpp
   src/ConnectionState.cpp
   src/ConnectionStyle.cpp
+  src/DagGraphicsScene.cpp
   src/DataFlowGraphModel.cpp
   src/DataFlowGraphicsScene.cpp
   src/DefaultConnectionPainter.cpp
@@ -84,6 +85,7 @@ set(CPP_SOURCE_FILES
   src/DefaultNodePainter.cpp
   src/DefaultVerticalNodeGeometry.cpp
   src/Definitions.cpp
+  src/DirectedAcyclicGraphModel.cpp
   src/GraphicsView.cpp
   src/GraphicsViewStyle.cpp
   src/NodeConnectionInteraction.cpp
@@ -109,9 +111,11 @@ set(HPP_HEADER_FILES
   include/QtNodes/internal/ConnectionIdUtils.hpp
   include/QtNodes/internal/ConnectionState.hpp
   include/QtNodes/internal/ConnectionStyle.hpp
+  include/QtNodes/internal/DagGraphicsScene.hpp
   include/QtNodes/internal/DataFlowGraphicsScene.hpp
   include/QtNodes/internal/DataFlowGraphModel.hpp
   include/QtNodes/internal/Definitions.hpp
+  include/QtNodes/internal/DirectedAcyclicGraphModel.hpp
   include/QtNodes/internal/Export.hpp
   include/QtNodes/internal/GraphicsView.hpp
   include/QtNodes/internal/GraphicsViewStyle.hpp

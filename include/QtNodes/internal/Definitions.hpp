@@ -32,8 +32,17 @@ Q_NAMESPACE_EXPORT(NODE_EDITOR_PUBLIC)
         InPortCount = 7,    ///< `unsigned int`
         OutPortCount = 9,   ///< `unsigned int`
         Widget = 10,        ///< Optional `QWidget*` or `nullptr`
+        Shape = 11,         ///< Custom shape of the node, rounded rect by default
     };
 Q_ENUM_NS(NodeRole)
+
+enum class NodeShape {
+    RoundedRectangle = 0,
+    Rectangle = 1,
+    Trapezoid = 2,
+    Pentagon = 3,
+};
+Q_ENUM_NS(NodeShape)
 
 /**
  * Specific flags regulating node features and appeaarence.
