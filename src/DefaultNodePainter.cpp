@@ -266,18 +266,10 @@ void DefaultNodePainter::drawEntryLabels(QPainter *painter, NodeGraphicsObject &
 
             QPointF p = geometry.portTextPosition(nodeId, portType, portIndex);
 
-            // fetch the port-specific colour if it exists, else default black
-            QVariant fontColorVariant = model.portData(nodeId,
-                                                       portType,
-                                                       portIndex,
-                                                       QtNodes::PortRole::FontColor);
-            if (fontColorVariant.isValid() && fontColorVariant.canConvert<QColor>()) {
-                painter->setPen(fontColorVariant.value<QColor>());
-            } else if (connected.empty()) {
+            if (connected.empty())
                 painter->setPen(nodeStyle.FontColorFaded);
-            } else {
+            else
                 painter->setPen(nodeStyle.FontColor);
-            }
 
             QString s;
 
