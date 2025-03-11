@@ -469,6 +469,12 @@ QVariant DirectedAcyclicGraphModel::portData(NodeId nodeId,
 
     case PortRole::Caption:
         result = model->portCaption(portType, portIndex);
+        break;
+
+    case PortRole::FontColor:
+        // Get the color from the map or use black as default
+        QColor color = m_portFontColors.value({nodeId, portType, portIndex}, QColor(Qt::black));
+        return color;
 
         break;
     }
@@ -498,6 +504,10 @@ bool DirectedAcyclicGraphModel::setPortData(
             Q_EMIT inPortDataWasSet(nodeId, portType, portIndex);
         }
         break;
+
+    case PortRole::FontColor:
+        m_portFontColors[{nodeId, portType, portIndex}] = value.value<QColor>();
+        return true;
 
     default:
         break;
