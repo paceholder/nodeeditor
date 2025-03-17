@@ -14,7 +14,9 @@
 
 namespace QtNodes {
 
-class NODE_EDITOR_PUBLIC DataFlowGraphModel : public AbstractGraphModel, public Serializable
+class NODE_EDITOR_PUBLIC DataFlowGraphModel
+    : public AbstractGraphModel
+    , public Serializable
 {
     Q_OBJECT
 
@@ -130,6 +132,8 @@ private:
     std::unordered_set<ConnectionId> _connectivity;
 
     mutable std::unordered_map<NodeId, NodeGeometryData> _nodeGeometryData;
+
+    QMap<std::tuple<NodeId, PortType, PortIndex>, QColor> _portFontColors;
 };
 
 } // namespace QtNodes

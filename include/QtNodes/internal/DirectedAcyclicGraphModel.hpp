@@ -156,7 +156,7 @@ private:
     // cache is cleared when a node is added/deleted
     mutable std::unordered_map<size_t, bool> _isCyclicCache;
 
-    QMap<std::tuple<NodeId, PortType, PortIndex>, QColor> m_portFontColors;
+    QMap<std::tuple<NodeId, PortType, PortIndex>, QColor> _portFontColors;
 };
 
 } // namespace QtNodes
