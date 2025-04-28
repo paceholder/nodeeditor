@@ -5,6 +5,7 @@
 #include <QUndoCommand>
 #include <QtCore/QJsonObject>
 #include <QtCore/QPointF>
+#include "Export.hpp"
 
 #include <unordered_set>
 
@@ -12,7 +13,7 @@ namespace QtNodes {
 
 class BasicGraphicsScene;
 
-class CreateCommand : public QUndoCommand
+class NODE_EDITOR_PUBLIC CreateCommand : public QUndoCommand
 {
 public:
     CreateCommand(BasicGraphicsScene *scene, QString const name, QPointF const &mouseScenePos);
@@ -30,7 +31,7 @@ private:
  * Selected scene objects are serialized and then removed from the scene.
  * The deleted elements could be restored in `undo`.
  */
-class DeleteCommand : public QUndoCommand
+class NODE_EDITOR_PUBLIC DeleteCommand : public QUndoCommand
 {
 public:
     DeleteCommand(BasicGraphicsScene *scene);
@@ -43,13 +44,13 @@ private:
     QJsonObject _sceneJson;
 };
 
-class CopyCommand : public QUndoCommand
+class NODE_EDITOR_PUBLIC CopyCommand : public QUndoCommand
 {
 public:
     CopyCommand(BasicGraphicsScene *scene);
 };
 
-class PasteCommand : public QUndoCommand
+class NODE_EDITOR_PUBLIC PasteCommand : public QUndoCommand
 {
 public:
     PasteCommand(BasicGraphicsScene *scene, QPointF const &mouseScenePos);
@@ -67,7 +68,7 @@ private:
     QJsonObject _newSceneJson;
 };
 
-class DisconnectCommand : public QUndoCommand
+class NODE_EDITOR_PUBLIC DisconnectCommand : public QUndoCommand
 {
 public:
     DisconnectCommand(BasicGraphicsScene *scene, ConnectionId const);
@@ -81,7 +82,7 @@ private:
     ConnectionId _connId;
 };
 
-class ConnectCommand : public QUndoCommand
+class NODE_EDITOR_PUBLIC ConnectCommand : public QUndoCommand
 {
 public:
     ConnectCommand(BasicGraphicsScene *scene, ConnectionId const);
@@ -95,7 +96,7 @@ private:
     ConnectionId _connId;
 };
 
-class MoveNodeCommand : public QUndoCommand
+class NODE_EDITOR_PUBLIC MoveNodeCommand : public QUndoCommand
 {
 public:
     MoveNodeCommand(BasicGraphicsScene *scene, QPointF const &diff);
