@@ -46,6 +46,8 @@ public:
 
     AbstractGraphModel &graphModel();
 
+    AbstractNodeGeometry const &nodeGeometry() const;
+
     AbstractNodeGeometry &nodeGeometry();
 
     AbstractNodePainter &nodePainter();
