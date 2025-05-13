@@ -3,6 +3,11 @@
 cmake_policy(SET CMP0072 NEW) # new in 3.11. The NEW behavior for this policy is to set OpenGL_GL_PREFERENCE to GLVND.
 cmake_policy(SET CMP0068 NEW) # new in 3.9. The NEW behavior of this policy is to ignore the RPATH settings for install_name on macOS.
 
+# 手动指定构建工具ninja
+if(APPLE)
+    set(CMAKE_MAKE_PROGRAM "/opt/homebrew/bin/ninja" CACHE INTERNAL "")
+endif()
+
 project(QtNodesLibrary CXX)
 
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
