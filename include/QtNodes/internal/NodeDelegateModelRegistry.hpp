@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Export.hpp"
 #include "NodeData.hpp"
@@ -43,6 +43,7 @@ public:
     template<typename ModelType>
     void registerModel(RegistryItemCreator creator, QString const &category = "Nodes")
     {
+        // TODO: 使用用户传递的名称
         QString const name = computeName<ModelType>(HasStaticMethodName<ModelType>{}, creator);
         if (!_registeredItemCreators.count(name)) {
             _registeredItemCreators[name] = std::move(creator);

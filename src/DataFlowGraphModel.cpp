@@ -1,4 +1,4 @@
-#include "DataFlowGraphModel.hpp"
+﻿#include "DataFlowGraphModel.hpp"
 #include "ConnectionIdHash.hpp"
 
 #include <QJsonArray>
@@ -165,6 +165,7 @@ QVariant DataFlowGraphModel::nodeData(NodeId nodeId, NodeRole role) const
 
     switch (role) {
     case NodeRole::Type:
+        // TODO: 缓存名称，模型名称，需唯一
         result = model->name();
         break;
 
@@ -181,6 +182,7 @@ QVariant DataFlowGraphModel::nodeData(NodeId nodeId, NodeRole role) const
         break;
 
     case NodeRole::Caption:
+        // TODO: 缓存节点标题，节点显示的标题
         result = model->caption();
         break;
 

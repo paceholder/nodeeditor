@@ -1,8 +1,7 @@
-cmake_minimum_required(VERSION 3.8)
+﻿cmake_minimum_required(VERSION 3.8)
 
 cmake_policy(SET CMP0072 NEW) # new in 3.11. The NEW behavior for this policy is to set OpenGL_GL_PREFERENCE to GLVND.
 cmake_policy(SET CMP0068 NEW) # new in 3.9. The NEW behavior of this policy is to ignore the RPATH settings for install_name on macOS.
-
 
 project(QtNodesLibrary CXX)
 
@@ -122,6 +121,7 @@ set(HPP_HEADER_FILES
   include/QtNodes/internal/Serializable.hpp
   include/QtNodes/internal/Style.hpp
   include/QtNodes/internal/StyleCollection.hpp
+
   src/ConnectionPainter.hpp
   src/DefaultHorizontalNodeGeometry.hpp
   src/DefaultVerticalNodeGeometry.hpp
@@ -254,6 +254,9 @@ install(TARGETS QtNodes
 
 install(DIRECTORY include/
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+#file(GLOB_RECURSE SOURCE_HEADERS "src/*.hpp")
+#install(FILES ${SOURCE_HEADERS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 install(EXPORT QtNodesTargets
   FILE QtNodesTargets.cmake

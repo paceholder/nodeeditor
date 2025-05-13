@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "BasicGraphicsScene.hpp"
 #include "DataFlowGraphModel.hpp"
@@ -21,6 +21,14 @@ public:
 
 public:
     std::vector<NodeId> selectedNodes() const;
+
+    /**
+     * @brief  add node to this scene,and support undo
+     * 
+     * @param name node name
+     * @param mouseScenePos node position
+     */
+    void addUndoNode(QString const name,QPointF const &mouseScenePos);
 
 public:
     QMenu *createSceneMenu(QPointF const scenePos) override;

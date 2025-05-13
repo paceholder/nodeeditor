@@ -1,4 +1,4 @@
-#include "DataFlowGraphicsScene.hpp"
+﻿#include "DataFlowGraphicsScene.hpp"
 
 #include "ConnectionGraphicsObject.hpp"
 #include "GraphicsView.hpp"
@@ -57,6 +57,10 @@ std::vector<NodeId> DataFlowGraphicsScene::selectedNodes() const
     return result;
 }
 
+void DataFlowGraphicsScene::addUndoNode(QString const name, QPointF const &mouseScenePos) {
+    this->undoStack().push(new CreateCommand(this, name, mouseScenePos));
+}
+
 QMenu *DataFlowGraphicsScene::createSceneMenu(QPointF const scenePos)
 {
     QMenu *modelMenu = new QMenu();
@@ -109,7 +113,7 @@ QMenu *DataFlowGraphicsScene::createSceneMenu(QPointF const scenePos)
                     return;
                 }
 
-                this->undoStack().push(new CreateCommand(this, item->text(0), scenePos));
+                addUndoNode(item->text(0), scenePos);
 
                 modelMenu->close();
             });

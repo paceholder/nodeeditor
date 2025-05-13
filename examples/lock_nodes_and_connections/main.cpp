@@ -1,4 +1,4 @@
-#include <QtNodes/DataFlowGraphicsScene>
+﻿#include <QtNodes/DataFlowGraphicsScene>
 #include <QtNodes/GraphicsView>
 #include <QtNodes/NodeDelegateModelRegistry>
 
@@ -21,7 +21,7 @@ static std::shared_ptr<NodeDelegateModelRegistry> registerDataModels()
 {
     auto ret = std::make_shared<NodeDelegateModelRegistry>();
 
-    ret->registerModel<SimpleDataModel>();
+    ret->registerModel<SimpleDataModel>("Tests");
 
     return ret;
 }
@@ -31,17 +31,6 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
 
     DataFlowModel graphModel(registerDataModels());
-
-    // Initialize and connect two nodes.
-    {
-        NodeId id1 = graphModel.addNode(SimpleNodeData().type().id);
-        graphModel.setNodeData(id1, NodeRole::Position, QPointF(0, 0));
-
-        NodeId id2 = graphModel.addNode(SimpleNodeData().type().id);
-        graphModel.setNodeData(id2, NodeRole::Position, QPointF(300, 300));
-
-        graphModel.addConnection(ConnectionId{id1, 0, id2, 0});
-    }
 
     auto scene = new DataFlowGraphicsScene(graphModel);
 
