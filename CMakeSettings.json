@@ -1,0 +1,23 @@
+﻿{
+  "configurations": [
+    {
+      "name": "x64-Debug",
+      "generator": "Ninja",
+      "configurationType": "Debug",
+      "inheritEnvironments": [ "msvc_x64_x64" ],
+      "buildRoot": "${projectDir}\\out\\build\\${name}",
+      "installRoot": "${projectDir}\\out\\install\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "variables": [
+        {
+          "name": "CMAKE_PREFIX_PATH",
+          "value": "E:\\SDK\\Qt\\6.8.3\\msvc2022_64",
+          "type": "STRING"
+        }
+      ]
+    }
+  ]
+  
+}
