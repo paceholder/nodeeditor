@@ -5,7 +5,7 @@
       "hidden": true,
       "name": "Qt",
       "cacheVariables": {
-        "CMAKE_PREFIX_PATH": "$env{QTDIR}"
+        "CMAKE_PREFIX_PATH": "E:\\SDK\\Qt\\6.8.3\\msvc2022_64"
       },
       "vendor": {
         "qt-project.org/Qt": {
