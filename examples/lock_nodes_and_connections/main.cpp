@@ -21,7 +21,7 @@ static std::shared_ptr<NodeDelegateModelRegistry> registerDataModels()
 {
     auto ret = std::make_shared<NodeDelegateModelRegistry>();
 
-    ret->registerModel<SimpleDataModel>("Tests");
+    ret->registerModel<CameraModel>("Camera", "相机", "图像采集");
 
     return ret;
 }
@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
 
     DataFlowModel graphModel(registerDataModels());
-
+    
     auto scene = new DataFlowGraphicsScene(graphModel);
 
     QWidget window;

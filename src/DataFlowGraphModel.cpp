@@ -107,6 +107,7 @@ NodeId DataFlowGraphModel::addNode(QString const nodeType)
 
 bool DataFlowGraphModel::connectionPossible(ConnectionId const connectionId) const
 {
+    // 获取端口数据类型
     auto getDataType = [&](PortType const portType) {
         return portData(getNodeId(portType, connectionId),
                         portType,
@@ -115,6 +116,7 @@ bool DataFlowGraphModel::connectionPossible(ConnectionId const connectionId) con
             .value<NodeDataType>();
     };
 
+    // 获取连接策略
     auto portVacant = [&](PortType const portType) {
         NodeId const nodeId = getNodeId(portType, connectionId);
         PortIndex const portIndex = getPortIndex(portType, connectionId);
@@ -126,8 +128,12 @@ bool DataFlowGraphModel::connectionPossible(ConnectionId const connectionId) con
         return connected.empty() || (policy == ConnectionPolicy::Many);
     };
 
-    return getDataType(PortType::Out).id == getDataType(PortType::In).id
-           && portVacant(PortType::Out) && portVacant(PortType::In);
+    //std::unique_ptr<NodeDelegateModel> model = _models[]
+    QString outId = getDataType(PortType::Out).id;
+    QString inId = getDataType(PortType::In).id;
+    auto outPort = portVacant(PortType::Out);
+    auto inPort = portVacant(PortType::In);
+    return outId == inId && outPort && inPort;
 }
 
 void DataFlowGraphModel::addConnection(ConnectionId const connectionId)
@@ -165,7 +171,7 @@ QVariant DataFlowGraphModel::nodeData(NodeId nodeId, NodeRole role) const
 
     switch (role) {
     case NodeRole::Type:
-        // TODO: 缓存名称，模型名称，需唯一
+        // 模型名称，需唯一
         result = model->name();
         break;
 
@@ -182,7 +188,7 @@ QVariant DataFlowGraphModel::nodeData(NodeId nodeId, NodeRole role) const
         break;
 
     case NodeRole::Caption:
-        // TODO: 缓存节点标题，节点显示的标题
+        // 节点显示的标题
         result = model->caption();
         break;
 
@@ -299,7 +305,7 @@ QVariant DataFlowGraphModel::portData(NodeId nodeId,
         result = QVariant::fromValue(model->dataType(portType, portIndex));
         break;
 
-    case PortRole::ConnectionPolicyRole:
+    case PortRole::ConnectionPolicyRole: // 连接策略
         result = QVariant::fromValue(model->portConnectionPolicy(portType, portIndex));
         break;
 

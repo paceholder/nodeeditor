@@ -80,6 +80,16 @@ enum class PortType {
 };
 Q_ENUM_NS(PortType)
 
+/// @brief 节点间传输的数据类型
+enum class PortTransDataType {
+    Int = 0,
+    Bool = 1,
+    Float = 2,
+    String = 3,
+    Mat = 4,
+    File = 5
+};
+
 using PortCount = unsigned int;
 
 /// ports are consecutively numbered starting from zero.
@@ -102,6 +112,13 @@ struct ConnectionId
     PortIndex outPortIndex;
     NodeId inNodeId;
     PortIndex inPortIndex;
+};
+
+/// @brief 节点中唯一的端口
+struct PortId
+{
+    PortType portType;
+    PortIndex portIndex;
 };
 
 inline bool operator==(ConnectionId const &a, ConnectionId const &b)

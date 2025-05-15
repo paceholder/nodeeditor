@@ -43,6 +43,9 @@ public:
 
     NodeId addNode(QString const nodeType) override;
 
+    /// @brief 是否可连接
+    /// @param connectionId  连接id
+    /// @return 
     bool connectionPossible(ConnectionId const connectionId) const override;
 
     void addConnection(ConnectionId const connectionId) override;
