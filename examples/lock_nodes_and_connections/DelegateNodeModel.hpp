@@ -13,7 +13,7 @@ using QtNodes::NodeDelegateModel;
 using QtNodes::PortIndex;
 using QtNodes::PortType;
 
-class SimpleNodeData : public NodeData
+class CameraModelData : public NodeData
 {
 public:
     NodeDataType type() const override { return NodeDataType{"SimpleData", "Simple Data"}; }
@@ -21,26 +21,38 @@ public:
 
 /// The model dictates the number of inputs and outputs for the Node.
 /// In this example it has no logic.
-class SimpleDataModel : public NodeDelegateModel
+class CameraModel : public NodeDelegateModel
 {
     Q_OBJECT
 
 public:
-    QString caption() const override { return QString("Simple Data Model"); }
 
-    QString name() const override { return QString("SimpleDataModel"); }
+    CameraModel() {}
+
+    CameraModel(const QString &name,
+                    const QString &caption = "default caption",
+                    const QString &category = "default category",
+                    int inCount = 1,
+                    int outCount = 1)
+        : NodeDelegateModel(name, caption, category,inCount,outCount)
+    {}
 
 public:
-    unsigned int nPorts(PortType const portType) const override { return 2; }
 
     NodeDataType dataType(PortType const portType, PortIndex const portIndex) const override
     {
-        return SimpleNodeData().type();
+        if (portType == PortType::In) {
+            return NodeDataType{"Input", "Input"};
+        } else if (portType == PortType::Out) {
+            return NodeDataType{"Input", "Output"};
+        } else {
+            return NodeDataType{"Default", "Default"};
+        }
     }
 
     std::shared_ptr<NodeData> outData(PortIndex const port) override
     {
-        return std::make_shared<SimpleNodeData>();
+        return std::make_shared<CameraModelData>();
     }
 
     void setInData(std::shared_ptr<NodeData>, PortIndex const) override {}

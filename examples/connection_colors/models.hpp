@@ -21,7 +21,7 @@ public:
     NodeDataType type() const override { return NodeDataType{"MyNodeData", "My Node Data"}; }
 };
 
-class SimpleNodeData : public NodeData
+class CameraModelData : public NodeData
 {
 public:
     NodeDataType type() const override { return NodeDataType{"SimpleData", "Simple Data"}; }
@@ -36,15 +36,20 @@ class NaiveDataModel : public NodeDelegateModel
     Q_OBJECT
 
 public:
+    NaiveDataModel() {}
+    NaiveDataModel(const QString &name,
+                   const QString &caption = "default caption",
+                   const QString &category = "default category",
+                   unsigned int inCount = 1,
+                   unsigned int outCount = 1)
+        : NodeDelegateModel(name, caption, category, inCount, outCount)
+    {}
     virtual ~NaiveDataModel() {}
 
 public:
-    QString caption() const override { return QString("Naive Data Model"); }
-
-    QString name() const override { return QString("NaiveDataModel"); }
 
 public:
-    unsigned int nPorts(PortType const portType) const override
+    unsigned int nPorts(PortType const portType) const
     {
         unsigned int result = 1;
 
@@ -71,7 +76,7 @@ public:
             case 0:
                 return MyNodeData().type();
             case 1:
-                return SimpleNodeData().type();
+                return CameraModelData().type();
             }
             break;
 
@@ -80,7 +85,7 @@ public:
             case 0:
                 return MyNodeData().type();
             case 1:
-                return SimpleNodeData().type();
+                return CameraModelData().type();
             }
             break;
 
@@ -96,7 +101,7 @@ public:
         if (port < 1)
             return std::make_shared<MyNodeData>();
 
-        return std::make_shared<SimpleNodeData>();
+        return std::make_shared<CameraModelData>();
     }
 
     void setInData(std::shared_ptr<NodeData>, PortIndex const) override

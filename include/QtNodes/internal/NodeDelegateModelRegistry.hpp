@@ -39,11 +39,14 @@ public:
 
     NodeDelegateModelRegistry &operator=(NodeDelegateModelRegistry &&) = default;
 
+    /// @brief 获取已经注册的模型 
+    /// @return 
+    RegisteredModelCreatorsMap getRegisteredItemCreators() const;
+
 public:
     template<typename ModelType>
     void registerModel(RegistryItemCreator creator, QString const &category = "Nodes")
     {
-        // TODO: 使用用户传递的名称
         QString const name = computeName<ModelType>(HasStaticMethodName<ModelType>{}, creator);
         if (!_registeredItemCreators.count(name)) {
             _registeredItemCreators[name] = std::move(creator);
@@ -52,10 +55,16 @@ public:
         }
     }
 
+    /// @brief 注册模型
+    /// @tparam ModelType 模型类型
+    /// @param name 唯一名称，必填
+    /// @param caption 标题，选填
+    /// @param category 目录，选填
     template<typename ModelType>
-    void registerModel(QString const &category = "Nodes")
+    void registerModel(QString const name,
+                       QString const caption = "caption", QString const category = "Nodes")
     {
-        RegistryItemCreator creator = []() { return std::make_unique<ModelType>(); };
+        RegistryItemCreator creator = [=]() { return std::make_unique<ModelType>(name,caption,category); };
         registerModel<ModelType>(std::move(creator), category);
     }
 

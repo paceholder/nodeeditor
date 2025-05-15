@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <memory>
 
@@ -27,13 +27,19 @@ class NODE_EDITOR_PUBLIC NodeDelegateModel : public QObject, public Serializable
 public:
     NodeDelegateModel();
 
+    NodeDelegateModel(const QString &name,
+                      const QString &caption = "default caption",
+                      const QString &category = "default category",
+                      unsigned int inCount = 1,
+                      unsigned int outCount = 1);
+
     virtual ~NodeDelegateModel() = default;
 
     /// It is possible to hide caption in GUI
     virtual bool captionVisible() const { return true; }
 
-    /// Caption is used in GUI
-    virtual QString caption() const = 0;
+    /// 获取标题，Caption is used in GUI
+    QString caption() const;
 
     /// It is possible to hide port caption in GUI
     virtual bool portCaptionVisible(PortType, PortIndex) const { return false; }
@@ -41,8 +47,12 @@ public:
     /// Port caption is used in GUI to label individual ports
     virtual QString portCaption(PortType, PortIndex) const { return QString(); }
 
-    /// Name makes this model unique
-    virtual QString name() const = 0;
+    /// 获取模型唯一名称，Name makes this model unique
+    QString name() const;
+
+    /// @brief 获取目录名称
+    /// @return 
+    QString category() const;
 
 public:
     QJsonObject save() const override;
@@ -50,11 +60,15 @@ public:
     void load(QJsonObject const &) override;
 
 public:
-    virtual unsigned int nPorts(PortType portType) const = 0;
+    unsigned int nPorts(PortType portType) const;
 
     virtual NodeDataType dataType(PortType portType, PortIndex portIndex) const = 0;
 
 public:
+    /// @brief 设置端口的单连、多连策略
+    /// @param  端口类型
+    /// @param  端口索引
+    /// @return 连接策略
     virtual ConnectionPolicy portConnectionPolicy(PortType, PortIndex) const;
 
     NodeStyle const &nodeStyle() const;
@@ -128,6 +142,21 @@ Q_SIGNALS:
 
 private:
     NodeStyle _nodeStyle;
+    
+    /// @brief 标题
+    QString _caption;
+
+    /// @brief 唯一名称
+    QString _name;
+
+    /// @brief 目录
+    QString _category;
+
+    /// @brief 输入端口数量
+    unsigned int _inCount;
+
+    /// @brief 输出端口数量
+    unsigned int _outCount;
 };
 
 } // namespace QtNodes

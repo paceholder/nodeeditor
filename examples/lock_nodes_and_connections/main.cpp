@@ -21,7 +21,7 @@ static std::shared_ptr<NodeDelegateModelRegistry> registerDataModels()
 {
     auto ret = std::make_shared<NodeDelegateModelRegistry>();
 
-    ret->registerModel<SimpleDataModel>("Tests");
+    ret->registerModel<CameraModel>("Camera", "相机", "图像采集");
 
     return ret;
 }

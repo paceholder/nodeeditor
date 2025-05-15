@@ -165,7 +165,7 @@ QVariant DataFlowGraphModel::nodeData(NodeId nodeId, NodeRole role) const
 
     switch (role) {
     case NodeRole::Type:
-        // TODO: 缓存名称，模型名称，需唯一
+        // 模型名称，需唯一
         result = model->name();
         break;
 
@@ -182,7 +182,7 @@ QVariant DataFlowGraphModel::nodeData(NodeId nodeId, NodeRole role) const
         break;
 
     case NodeRole::Caption:
-        // TODO: 缓存节点标题，节点显示的标题
+        // 节点显示的标题
         result = model->caption();
         break;
 
@@ -299,7 +299,7 @@ QVariant DataFlowGraphModel::portData(NodeId nodeId,
         result = QVariant::fromValue(model->dataType(portType, portIndex));
         break;
 
-    case PortRole::ConnectionPolicyRole:
+    case PortRole::ConnectionPolicyRole: // 连接策略
         result = QVariant::fromValue(model->portConnectionPolicy(portType, portIndex));
         break;
 

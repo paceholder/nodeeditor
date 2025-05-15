@@ -19,7 +19,7 @@ static std::shared_ptr<NodeDelegateModelRegistry> registerDataModels()
 {
     auto ret = std::make_shared<NodeDelegateModelRegistry>();
 
-    ret->registerModel<NaiveDataModel>();
+    ret->registerModel<NaiveDataModel>("1", "2", "3");
 
     /*
      We could have more models registered.
