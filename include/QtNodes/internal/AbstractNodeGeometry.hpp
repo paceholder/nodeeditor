@@ -21,11 +21,8 @@ public:
    * The node's size plus some additional margin around it to account for drawing
    * effects (for example shadows) or node's parts outside the size rectangle
    * (for example port points).
-   *
-   * The default implementation returns QSize + 20 percent of width and heights
-   * at each side of the rectangle.
    */
-    virtual QRectF boundingRect(NodeId const nodeId) const;
+    virtual QRectF boundingRect(NodeId const nodeId) const = 0;
 
     /// A direct rectangle defining the borders of the node's rectangle.
     virtual QSize size(NodeId const nodeId) const = 0;

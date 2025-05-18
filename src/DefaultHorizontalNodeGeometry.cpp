@@ -23,6 +23,18 @@ DefaultHorizontalNodeGeometry::DefaultHorizontalNodeGeometry(AbstractGraphModel 
     _portSize = _fontMetrics.height();
 }
 
+QRectF DefaultHorizontalNodeGeometry::boundingRect(NodeId const nodeId) const
+{
+    QSize s = size(nodeId);
+
+    qreal marginSize = 2.0 * _portSpasing;
+    QMargins margins(marginSize, marginSize, marginSize, marginSize);
+
+    QRectF r(QPointF(0, 0), s);
+
+    return r.marginsAdded(margins);
+}
+
 QSize DefaultHorizontalNodeGeometry::size(NodeId const nodeId) const
 {
     return _graphModel.nodeData<QSize>(nodeId, NodeRole::Size);
