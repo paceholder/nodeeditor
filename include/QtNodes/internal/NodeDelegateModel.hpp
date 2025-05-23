@@ -158,8 +158,8 @@ private:
     /// @brief 输出端口数量
     unsigned int _outCount;
 
-    /// @brief 
-    mutable std::unordered_map<PortId, QList<PortTransDataType>> _nodePortTransTypes;
+    /// @brief 输入输出端口传输数据类型
+    //std::unordered_map<PortId, QList<PortTransDataType>> _nodePortTransTypes;
 };
 
 } // namespace QtNodes

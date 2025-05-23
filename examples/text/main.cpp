@@ -1,4 +1,4 @@
-#include <QtNodes/DataFlowGraphModel>
+﻿#include <QtNodes/DataFlowGraphModel>
 #include <QtNodes/DataFlowGraphicsScene>
 #include <QtNodes/GraphicsView>
 #include <QtNodes/NodeData>
@@ -18,8 +18,8 @@ static std::shared_ptr<NodeDelegateModelRegistry> registerDataModels()
 {
     auto ret = std::make_shared<NodeDelegateModelRegistry>();
 
-    ret->registerModel<TextSourceDataModel>();
-    ret->registerModel<TextDisplayDataModel>();
+    ret->registerModel<TextSourceDataModel>("TextSource", "相机", "图像采集");
+    ret->registerModel<TextDisplayDataModel>("TextDisplay", "相机", "图像采集");
 
     return ret;
 }

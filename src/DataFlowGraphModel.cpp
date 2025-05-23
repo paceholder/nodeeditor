@@ -128,6 +128,9 @@ bool DataFlowGraphModel::connectionPossible(ConnectionId const connectionId) con
         return connected.empty() || (policy == ConnectionPolicy::Many);
     };
 
+    // TODO: 1. 环路不可链接
+    // TODO: 2. 输入输出类型不可链接
+    // TODO: 3. 链接策略判定
     //std::unique_ptr<NodeDelegateModel> model = _models[]
     QString outId = getDataType(PortType::Out).id;
     QString inId = getDataType(PortType::In).id;

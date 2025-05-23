@@ -1,4 +1,4 @@
-#include "ImageShowModel.hpp"
+﻿#include "ImageShowModel.hpp"
 
 #include "PixmapData.hpp"
 
@@ -23,6 +23,12 @@ ImageShowModel::ImageShowModel()
 
     _label->installEventFilter(this);
 }
+
+ImageShowModel::ImageShowModel(const QString &name,
+                               const QString &caption,
+                               const QString &category,
+                               unsigned int inCount,
+                               unsigned int outCount): NodeDelegateModel(name, caption, category,inCount,outCount){}
 
 unsigned int ImageShowModel::nPorts(PortType portType) const
 {

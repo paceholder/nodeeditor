@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "DecimalData.hpp"
 #include "MathOperationDataModel.hpp"
@@ -13,10 +13,18 @@
 class DivisionModel : public MathOperationDataModel
 {
 public:
+    DivisionModel(){}
+    DivisionModel(const QString &name,
+                const QString &caption = "default caption",
+                const QString &category = "default category",
+                int inCount = 1,
+                int outCount = 1)
+        : MathOperationDataModel(name, caption, category,inCount,outCount)
+    {
+    }
     virtual ~DivisionModel() {}
 
 public:
-    QString caption() const override { return QStringLiteral("Division"); }
 
     bool portCaptionVisible(PortType portType, PortIndex portIndex) const override
     {
@@ -44,8 +52,6 @@ public:
         }
         return QString();
     }
-
-    QString name() const override { return QStringLiteral("Division"); }
 
 private:
     void compute() override

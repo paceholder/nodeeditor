@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <QtCore/QObject>
 
@@ -23,18 +23,20 @@ class TextSourceDataModel : public NodeDelegateModel
 
 public:
     TextSourceDataModel();
+    TextSourceDataModel(const QString &name,
+                      const QString &caption = "default caption",
+                      const QString &category = "default category",
+                      unsigned int inCount = 1,
+                        unsigned int outCount = 1);
 
 public:
-    QString caption() const override { return QString("Text Source"); }
 
     bool captionVisible() const override { return false; }
 
     static QString Name() { return QString("TextSourceDataModel"); }
 
-    QString name() const override { return TextSourceDataModel::Name(); }
-
 public:
-    unsigned int nPorts(PortType portType) const override;
+    unsigned int nPorts(PortType portType) const;
 
     NodeDataType dataType(PortType portType, PortIndex portIndex) const override;
 

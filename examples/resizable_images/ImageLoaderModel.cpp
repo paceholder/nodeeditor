@@ -1,4 +1,4 @@
-#include "ImageLoaderModel.hpp"
+﻿#include "ImageLoaderModel.hpp"
 
 #include <QtCore/QDir>
 #include <QtCore/QEvent>
@@ -21,6 +21,12 @@ ImageLoaderModel::ImageLoaderModel()
 
     _label->installEventFilter(this);
 }
+
+ImageLoaderModel::ImageLoaderModel(const QString &name,
+                               const QString &caption,
+                               const QString &category,
+                               unsigned int inCount,
+                               unsigned int outCount): NodeDelegateModel(name, caption, category,inCount,outCount){}
 
 unsigned int ImageLoaderModel::nPorts(PortType portType) const
 {

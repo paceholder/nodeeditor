@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <QtNodes/NodeDelegateModel>
 
@@ -23,10 +23,18 @@ class MathOperationDataModel : public NodeDelegateModel
     Q_OBJECT
 
 public:
+    MathOperationDataModel(){}
+    MathOperationDataModel(const QString &name,
+                  const QString &caption = "default caption",
+                  const QString &category = "default category",
+                  int inCount = 1,
+                  int outCount = 1)
+        : NodeDelegateModel(name, caption, category,inCount,outCount){}
+
     ~MathOperationDataModel() = default;
 
 public:
-    unsigned int nPorts(PortType portType) const override;
+    unsigned int nPorts(PortType portType) const;
 
     NodeDataType dataType(PortType portType, PortIndex portIndex) const override;
 

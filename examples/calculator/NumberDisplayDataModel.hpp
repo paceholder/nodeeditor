@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <QtNodes/NodeDelegateModel>
 
@@ -24,18 +24,20 @@ class NumberDisplayDataModel : public NodeDelegateModel
 
 public:
     NumberDisplayDataModel();
-
+    NumberDisplayDataModel(const QString &name,
+                        const QString &caption = "default caption",
+                        const QString &category = "default category",
+                        unsigned int inCount = 1,
+                           unsigned int outCount = 1);
     ~NumberDisplayDataModel() = default;
 
 public:
-    QString caption() const override { return QStringLiteral("Result"); }
 
     bool captionVisible() const override { return false; }
 
-    QString name() const override { return QStringLiteral("Result"); }
 
 public:
-    unsigned int nPorts(PortType portType) const override;
+    unsigned int nPorts(PortType portType) const;
 
     NodeDataType dataType(PortType portType, PortIndex portIndex) const override;
 

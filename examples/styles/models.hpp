@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <QtCore/QObject>
 
@@ -29,12 +29,16 @@ class MyDataModel : public NodeDelegateModel
 {
     Q_OBJECT
 public:
+    MyDataModel(){}
+    MyDataModel(const QString &name,
+                          const QString &caption = "default caption",
+                          const QString &category = "default category",
+                          unsigned int inCount = 1,
+                          unsigned int outCount = 1): NodeDelegateModel(name, caption, category,inCount,outCount){}
+
     ~MyDataModel() = default;
 
 public:
-    QString caption() const override { return QString("My Data Model"); }
-
-    QString name() const override { return QString("MyDataModel"); }
 
 public:
     QJsonObject save() const override
@@ -47,7 +51,7 @@ public:
     }
 
 public:
-    unsigned int nPorts(PortType const) const override { return 3; }
+    unsigned int nPorts(PortType const) const { return 3; }
 
     NodeDataType dataType(PortType const, PortIndex const) const override
     {

@@ -1,4 +1,4 @@
-#include "models.hpp"
+﻿#include "models.hpp"
 
 #include <QtNodes/ConnectionStyle>
 #include <QtNodes/DataFlowGraphModel>
@@ -23,7 +23,7 @@ static std::shared_ptr<NodeDelegateModelRegistry> registerDataModels()
 {
     auto ret = std::make_shared<NodeDelegateModelRegistry>();
 
-    ret->registerModel<MyDataModel>();
+    ret->registerModel<MyDataModel>("MyData");
 
     return ret;
 }
@@ -72,12 +72,12 @@ static void setStyle()
       "SelectedColor": "gray",
       "SelectedHaloColor": "deepskyblue",
       "HoveredColor": "deepskyblue",
-
       "LineWidth": 3.0,
       "ConstructionLineWidth": 2.0,
       "PointDiameter": 10.0,
-
-      "UseDataDefinedColors": false
+      "UseDataDefinedColors": false,
+      "InArrow" : true,
+      "OutArrow" : false
     }
   }
   )");

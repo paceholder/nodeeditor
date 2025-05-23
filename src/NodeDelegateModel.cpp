@@ -1,4 +1,4 @@
-#include "NodeDelegateModel.hpp"
+﻿#include "NodeDelegateModel.hpp"
 
 #include "StyleCollection.hpp"
 
@@ -15,8 +15,8 @@ NodeDelegateModel::NodeDelegateModel(const QString &name,
                                      const QString &category,
                                      unsigned int inCount,
                                      unsigned int outCount)
-    : _name(name)
-    , _caption(caption)
+    : _caption(caption)
+    , _name(name)
     , _category(category)
     , _inCount(inCount)
     , _outCount(outCount)

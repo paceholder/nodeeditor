@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "DecimalData.hpp"
 #include "MathOperationDataModel.hpp"
@@ -13,12 +13,16 @@
 class AdditionModel : public MathOperationDataModel
 {
 public:
+    AdditionModel(){}
+    AdditionModel(const QString &name,
+                                const QString &caption = "default caption",
+                                const QString &category = "default category",
+                                int inCount = 1,
+                                int outCount = 1)
+        : MathOperationDataModel(name, caption, category,inCount,outCount){}
     ~AdditionModel() = default;
 
 public:
-    QString caption() const override { return QStringLiteral("Addition"); }
-
-    QString name() const override { return QStringLiteral("Addition"); }
 
 private:
     void compute() override

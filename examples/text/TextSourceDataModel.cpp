@@ -1,4 +1,4 @@
-#include "TextSourceDataModel.hpp"
+﻿#include "TextSourceDataModel.hpp"
 
 #include <QtWidgets/QLineEdit>
 
@@ -7,6 +7,13 @@ TextSourceDataModel::TextSourceDataModel()
 {
     //
 }
+
+TextSourceDataModel::TextSourceDataModel(const QString &name,
+                                         const QString &caption,
+                                         const QString &category,
+                                         unsigned int inCount,
+                                         unsigned int outCount):
+    NodeDelegateModel(name, caption, category,inCount,outCount){}
 
 unsigned int TextSourceDataModel::nPorts(PortType portType) const
 {

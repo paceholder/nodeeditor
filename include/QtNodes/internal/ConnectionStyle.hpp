@@ -38,6 +38,14 @@ public:
 
     bool useDataDefinedColors() const;
 
+    /// @brief 输入箭头样式是否开启
+    /// @return true:开启，false:关闭
+    bool inArrow() const;
+
+    /// @brief 输出箭头样式是否开启
+    /// @return true:开启，false:关闭
+    bool outArrow() const;
+
 private:
     QColor ConstructionColor;
     QColor NormalColor;
@@ -50,5 +58,11 @@ private:
     float PointDiameter;
 
     bool UseDataDefinedColors;
+
+    /// @brief 输入箭头样式是否开启
+    bool InArrow;
+
+    /// @brief 输出箭头样式是否开启
+    bool OutArrow;
 };
 } // namespace QtNodes

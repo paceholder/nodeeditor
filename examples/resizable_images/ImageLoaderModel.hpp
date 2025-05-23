@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <iostream>
 
@@ -25,17 +25,20 @@ class ImageLoaderModel : public NodeDelegateModel
 public:
     ImageLoaderModel();
 
+    ImageLoaderModel(const QString &name,
+                   const QString &caption = "default caption",
+                   const QString &category = "default category",
+                   unsigned int inCount = 1,
+                   unsigned int outCount = 1);
+
     ~ImageLoaderModel() = default;
 
 public:
-    QString caption() const override { return QString("Image Source"); }
-
-    QString name() const override { return QString("ImageLoaderModel"); }
 
 public:
     virtual QString modelName() const { return QString("Source Image"); }
 
-    unsigned int nPorts(PortType const portType) const override;
+    unsigned int nPorts(PortType const portType) const;
 
     NodeDataType dataType(PortType const portType, PortIndex const portIndex) const override;
 

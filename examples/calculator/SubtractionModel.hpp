@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <QtCore/QObject>
 #include <QtWidgets/QLabel>
@@ -14,10 +14,15 @@
 class SubtractionModel : public MathOperationDataModel
 {
 public:
+    SubtractionModel(){}
+    SubtractionModel(const QString &name,
+                   const QString &caption = "default caption",
+                   const QString &category = "default category",
+                   unsigned int inCount = 1,
+                   unsigned int outCount = 1): MathOperationDataModel(name, caption, category,inCount,outCount){}
     virtual ~SubtractionModel() {}
 
 public:
-    QString caption() const override { return QStringLiteral("Subtraction"); }
 
     virtual bool portCaptionVisible(PortType portType, PortIndex portIndex) const override
     {
@@ -45,8 +50,6 @@ public:
         }
         return QString();
     }
-
-    QString name() const override { return QStringLiteral("Subtraction"); }
 
 private:
     void compute() override

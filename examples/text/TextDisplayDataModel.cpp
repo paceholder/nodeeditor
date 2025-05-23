@@ -1,10 +1,17 @@
-#include "TextDisplayDataModel.hpp"
+﻿#include "TextDisplayDataModel.hpp"
 
 TextDisplayDataModel::TextDisplayDataModel()
     : _label(new QLabel("Resulting Text"))
 {
     _label->setMargin(3);
 }
+
+TextDisplayDataModel::TextDisplayDataModel(const QString &name,
+                                             const QString &caption,
+                                             const QString &category,
+                                             unsigned int inCount,
+                                             unsigned int outCount):
+    NodeDelegateModel(name, caption, category,inCount,outCount){}
 
 unsigned int TextDisplayDataModel::nPorts(PortType portType) const
 {

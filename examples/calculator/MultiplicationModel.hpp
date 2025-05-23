@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <QtNodes/NodeDelegateModel>
 
@@ -14,12 +14,17 @@
 class MultiplicationModel : public MathOperationDataModel
 {
 public:
+    MultiplicationModel(){}
+    MultiplicationModel(const QString &name,
+                           const QString &caption = "default caption",
+                           const QString &category = "default category",
+                           unsigned int inCount = 1,
+                        unsigned int outCount = 1): MathOperationDataModel(name, caption, category,inCount,outCount){
+
+    }
     virtual ~MultiplicationModel() {}
 
 public:
-    QString caption() const override { return QStringLiteral("Multiplication"); }
-
-    QString name() const override { return QStringLiteral("Multiplication"); }
 
 private:
     void compute() override

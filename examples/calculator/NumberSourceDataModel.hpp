@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <QtNodes/NodeDelegateModel>
 
@@ -24,15 +24,16 @@ class NumberSourceDataModel : public NodeDelegateModel
 
 public:
     NumberSourceDataModel();
-
+    NumberSourceDataModel(const QString &name,
+                   const QString &caption = "default caption",
+                   const QString &category = "default category",
+                   unsigned int inCount = 1,
+                   unsigned int outCount = 1): NodeDelegateModel(name, caption, category,inCount,outCount){}
     virtual ~NumberSourceDataModel() {}
 
 public:
-    QString caption() const override { return QStringLiteral("Number Source"); }
 
     bool captionVisible() const override { return false; }
-
-    QString name() const override { return QStringLiteral("NumberSource"); }
 
 public:
     QJsonObject save() const override;
@@ -40,7 +41,7 @@ public:
     void load(QJsonObject const &p) override;
 
 public:
-    unsigned int nPorts(PortType portType) const override;
+    unsigned int nPorts(PortType portType) const;
 
     NodeDataType dataType(PortType portType, PortIndex portIndex) const override;
 

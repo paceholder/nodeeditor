@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "TextData.hpp"
 
@@ -25,19 +25,23 @@ class TextDisplayDataModel : public NodeDelegateModel
 public:
     TextDisplayDataModel();
 
+    TextDisplayDataModel(const QString &name,
+                        const QString &caption = "default caption",
+                        const QString &category = "default category",
+                        unsigned int inCount = 1,
+                         unsigned int outCount = 1);
+
     virtual ~TextDisplayDataModel() {}
 
 public:
-    QString caption() const override { return QString("Text Display"); }
 
     bool captionVisible() const override { return false; }
 
     static QString Name() { return QString("TextDisplayDataModel"); }
 
-    QString name() const override { return TextDisplayDataModel::Name(); }
 
 public:
-    unsigned int nPorts(PortType portType) const override;
+    unsigned int nPorts(PortType portType) const;
 
     NodeDataType dataType(PortType portType, PortIndex portIndex) const override;
 

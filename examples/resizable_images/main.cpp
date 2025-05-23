@@ -1,4 +1,4 @@
-#include <QtNodes/DataFlowGraphModel>
+﻿#include <QtNodes/DataFlowGraphModel>
 #include <QtNodes/DataFlowGraphicsScene>
 #include <QtNodes/GraphicsView>
 #include <QtNodes/NodeData>
@@ -19,9 +19,9 @@ using QtNodes::NodeDelegateModelRegistry;
 static std::shared_ptr<NodeDelegateModelRegistry> registerDataModels()
 {
     auto ret = std::make_shared<NodeDelegateModelRegistry>();
-    ret->registerModel<ImageShowModel>();
+    ret->registerModel<ImageShowModel>("ImageShow");
 
-    ret->registerModel<ImageLoaderModel>();
+    ret->registerModel<ImageLoaderModel>("ImageLoader");
 
     return ret;
 }

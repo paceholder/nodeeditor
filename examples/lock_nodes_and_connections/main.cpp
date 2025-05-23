@@ -34,6 +34,8 @@ int main(int argc, char *argv[])
     
     auto scene = new DataFlowGraphicsScene(graphModel);
 
+    scene->setOrientation(Qt::Vertical);
+
     QWidget window;
 
     QHBoxLayout *l = new QHBoxLayout(&window);
