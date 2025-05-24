@@ -15,7 +15,7 @@ public:
     DefaultHorizontalNodeGeometry(AbstractGraphModel &graphModel);
 
 public:
-    QRectF boundingRect(NodeId const nodeId) const;
+    QRectF boundingRect(NodeId const nodeId) const override;
 
     QSize size(NodeId const nodeId) const override;
 
