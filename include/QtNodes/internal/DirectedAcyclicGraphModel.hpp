@@ -105,6 +105,7 @@ public:
 
 Q_SIGNALS:
     void inPortDataWasSet(NodeId const, PortType const, PortIndex const);
+    void graphLoadedFromFile(QJsonArray const &nodesJsonArray);
 
 private:
     NodeId newNodeId() override { return _nextNodeId++; }

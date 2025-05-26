@@ -657,6 +657,8 @@ void DirectedAcyclicGraphModel::load(QJsonObject const &jsonDocument)
     }
     for (auto &conn : orderedConnections)
         addConnection(conn);
+
+    Q_EMIT graphLoadedFromFile(nodesJsonArray);
 }
 
 std::vector<NodeId> DirectedAcyclicGraphModel::topologicalOrder() const
