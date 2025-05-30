@@ -138,6 +138,7 @@ paste(QJsonObject const& json, QUuid ID)
   _nodeGraphicsObject->setPos(point);
 
   _nodeDataModel->restore(json["model"].toObject());
+  // this->updateView();
 }
 
 

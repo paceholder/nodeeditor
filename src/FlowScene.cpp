@@ -391,6 +391,7 @@ QUuid FlowScene::pasteNode(QJsonObject &nodeJson, QPointF nodeGroupCentroid, QPo
   auto nodePtr = node.get();
   _nodes[node->id()] = std::move(node);
   nodeCreated(*nodePtr);
+  nodePtr->updateView();
   return newId;
 }
 
