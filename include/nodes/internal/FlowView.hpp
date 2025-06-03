@@ -72,6 +72,8 @@ protected:
   void addAnchor(int index);
   void goToAnchor(int index);
 
+signals: 
+  void nodeNotFound(const QString &str);
 
 protected:
 

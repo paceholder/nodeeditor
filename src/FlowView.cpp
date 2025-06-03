@@ -306,27 +306,27 @@ contextMenuEvent(QContextMenuEvent *event)
       return;
     }
 
-	if (item->parent() != nullptr)
-	{
-		QString parent = item->parent()->data(0, Qt::UserRole).toString();
-		if(parent == "Templates")
-		{
-		  DataModelRegistry::RegisteredTemplatesMap map = _scene->registry().RegisteredTemplates();
-		  QString fileName = map[modelName];
+    if (item->parent() != nullptr)
+    {
+      QString parent = item->parent()->data(0, Qt::UserRole).toString();
+      if(parent == "Templates")
+      {
+        DataModelRegistry::RegisteredTemplatesMap map = _scene->registry().RegisteredTemplates();
+        QString fileName = map[modelName];
 
-		  QFile file;
-		  file.setFileName(fileName);
-		  file.open(QIODevice::ReadOnly | QIODevice::Text);
-		  QString val = file.readAll();
-		  file.close();
-		  qWarning() << val;
-		  QJsonDocument d = QJsonDocument::fromJson(val.toUtf8());
-		  QJsonObject sett2 = d.object();
-		  jsonToSceneMousePos(sett2);
+        QFile file;
+        file.setFileName(fileName);
+        file.open(QIODevice::ReadOnly | QIODevice::Text);
+        QString val = file.readAll();
+        file.close();
+        qWarning() << val;
+        QJsonDocument d = QJsonDocument::fromJson(val.toUtf8());
+        QJsonObject sett2 = d.object();
+        jsonToSceneMousePos(sett2);
 
-			modelMenu.close();
-		}
-	}
+        modelMenu.close();
+      }
+    }
 
     auto type = _scene->registry().create(modelName);
 
@@ -391,6 +391,12 @@ contextMenuEvent(QContextMenuEvent *event)
 
       topLvlItem->setHidden(shouldHideCategory);
     }
+  });
+
+  connect(txtBox, &QLineEdit::returnPressed, [&]() {
+    QString text = txtBox->text();
+    emit nodeNotFound(text);
+    modelMenu.close();
   });
 
   // make sure the text box gets focus so the user doesn't have to click on it
