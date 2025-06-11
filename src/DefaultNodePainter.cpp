@@ -296,15 +296,19 @@ void DefaultNodePainter::drawEntryLabels(QPainter *painter, NodeGraphicsObject &
 
 void DefaultNodePainter::drawResizeRect(QPainter *painter, NodeGraphicsObject &ngo) const
 {
-    AbstractGraphModel &model = ngo.graphModel();
-    NodeId const nodeId = ngo.nodeId();
-    AbstractNodeGeometry &geometry = ngo.nodeScene()->nodeGeometry();
+    Q_UNUSED(painter);
+    Q_UNUSED(ngo);
 
-    if (model.nodeFlags(nodeId) & NodeFlag::Resizable) {
-        painter->setBrush(Qt::gray);
+    // Commented to remove the gray round at the corner of the node.
+    // AbstractGraphModel &model = ngo.graphModel();
+    // NodeId const nodeId = ngo.nodeId();
+    // AbstractNodeGeometry &geometry = ngo.nodeScene()->nodeGeometry();
 
-        painter->drawEllipse(geometry.resizeHandleRect(nodeId));
-    }
+    // if (model.nodeFlags(nodeId) & NodeFlag::Resizable) {
+    //     painter->setBrush(Qt::gray);
+
+    //     painter->drawEllipse(geometry.resizeHandleRect(nodeId));
+    // }
 }
 
 } // namespace QtNodes

@@ -83,7 +83,7 @@ public:
    */
     virtual QWidget *embeddedWidget() = 0;
 
-    virtual bool resizable() const { return false; } // XXX disable resize for now
+    virtual bool resizable() const { return true; }
 
 public Q_SLOTS:
 
