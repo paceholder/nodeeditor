@@ -79,7 +79,9 @@ static void insertSerializedItems(QJsonObject const &json, BasicGraphicsScene *s
         // Restore the connection
         graphModel.addConnection(connId);
 
-        scene->connectionGraphicsObject(connId)->setSelected(true);
+        if(auto obj = scene->connectionGraphicsObject(connId);obj) {
+            obj->setSelected(true);
+        }
     }
 }
 

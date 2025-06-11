@@ -29,6 +29,10 @@ public:
 
     virtual ~NodeDelegateModel() = default;
 
+    /// The creation completes the call initializationIt
+    /// Inherited classes are not recommended to be initialized in the constructor
+    virtual void initialize() {}
+
     /// It is possible to hide caption in GUI
     virtual bool captionVisible() const { return true; }
 

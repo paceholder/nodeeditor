@@ -85,15 +85,20 @@ public:
     template<typename NodeDelegateModelType>
     NodeDelegateModelType *delegateModel(NodeId const nodeId)
     {
-        auto it = _models.find(nodeId);
-        if (it == _models.end())
+        auto it = models_.find(nodeId);
+        if (it == models_.end())
             return nullptr;
 
-        auto model = dynamic_cast<NodeDelegateModelType *>(it->second.get());
+        auto model = dynamic_cast<NodeDelegateModelType *>(it->second.nodeModel.get());
 
         return model;
     }
-
+    //DFS
+    /* Depth-first search (depth-first search)
+     * starts at the starting node and recursively visits neighbor nodes along a certain path
+     * until the target node is found or there are no more neighbors to visit.
+     */
+    bool dfs(ConnectionId const connectionId);
 Q_SIGNALS:
     void inPortDataWasSet(NodeId const, PortType const, PortIndex const);
 
@@ -121,15 +126,22 @@ private Q_SLOTS:
     void propagateEmptyDataTo(NodeId const nodeId, PortIndex const portIndex);
 
 private:
+    //Topology of nodes -- directed acyclic graph
+    struct NodeTopological
+    {
+        std::unique_ptr<NodeDelegateModel> nodeModel;
+        NodeGeometryData    nodeGeometryData;
+        std::unordered_map<NodeId,int> successorNodes;
+    };
+
     std::shared_ptr<NodeDelegateModelRegistry> _registry;
 
     NodeId _nextNodeId;
 
-    std::unordered_map<NodeId, std::unique_ptr<NodeDelegateModel>> _models;
+    mutable std::unordered_map<NodeId, NodeTopological> _models;
 
     std::unordered_set<ConnectionId> _connectivity;
 
-    mutable std::unordered_map<NodeId, NodeGeometryData> _nodeGeometryData;
 };
 
 } // namespace QtNodes
