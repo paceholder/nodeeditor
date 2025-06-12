@@ -2,8 +2,8 @@
 #include <QtNodes/GraphicsView>
 #include <QtNodes/NodeDelegateModelRegistry>
 
-#include <QAction>
-#include <QScreen>
+#include <QtGui/QAction>
+#include <QtGui/QScreen>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QCheckBox>
 #include <QtWidgets/QGroupBox>
@@ -65,13 +65,25 @@ int main(int argc, char *argv[])
     vbl->addStretch();
     groupBox->setLayout(vbl);
 
-    QObject::connect(cb1, &QCheckBox::stateChanged, [&graphModel](int state) {
-        graphModel.setNodesLocked(state == Qt::Checked);
-    });
+    QObject::connect(cb1,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
+                     &QCheckBox::checkStateChanged,
+#else
+                     &QCheckBox::stateChanged, 
+#endif
+                     [&graphModel](int state) {
+                       graphModel.setNodesLocked(state == Qt::Checked);
+                     });
 
-    QObject::connect(cb2, &QCheckBox::stateChanged, [&graphModel](int state) {
-        graphModel.setDetachPossible(state == Qt::Checked);
-    });
+    QObject::connect(cb2, 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
+                     &QCheckBox::checkStateChanged,
+#else
+                     &QCheckBox::stateChanged, 
+#endif
+                     [&graphModel](int state) {
+                       graphModel.setDetachPossible(state == Qt::Checked);
+                    });
 
     l->addWidget(groupBox);
 
