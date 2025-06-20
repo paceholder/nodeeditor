@@ -28,7 +28,7 @@ jobs:
 
         include:
           - toolchain: linux-gcc
-            os: ubuntu-20.04
+            os: ubuntu-22.04
             compiler: gcc
             qt_version: "5.15.2"
             modules: ""
