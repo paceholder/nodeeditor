@@ -33,8 +33,6 @@ void DefaultNodePainter::paint(QPainter *painter, NodeGraphicsObject &ngo) const
     drawEntryLabels(painter, ngo);
 
     drawResizeRect(painter, ngo);
-
-    drawValidationRect(painter, ngo);
 }
 
 void DefaultNodePainter::drawNodeRect(QPainter *painter, NodeGraphicsObject &ngo) const
@@ -51,7 +49,18 @@ void DefaultNodePainter::drawNodeRect(QPainter *painter, NodeGraphicsObject &ngo
 
     NodeStyle nodeStyle(json.object());
 
-    auto color = ngo.isSelected() ? nodeStyle.SelectedBoundaryColor : nodeStyle.NormalBoundaryColor;
+    QVariant var = model.nodeData(nodeId, NodeRole::ValidationState);
+    bool invalid = false;
+    if (var.canConvert<NodeValidationState>()) {
+        auto state = var.value<NodeValidationState>();
+        invalid = !state._isValid;
+    }
+
+    QColor color = ngo.isSelected() ? nodeStyle.SelectedBoundaryColor
+                                    : nodeStyle.NormalBoundaryColor;
+    if (invalid) {
+        color = nodeStyle.ErrorColor;
+    }
 
     if (ngo.nodeState().hovered()) {
         QPen p(color, nodeStyle.HoveredPenWidth);
@@ -61,15 +70,17 @@ void DefaultNodePainter::drawNodeRect(QPainter *painter, NodeGraphicsObject &ngo
         painter->setPen(p);
     }
 
-    QLinearGradient gradient(QPointF(0.0, 0.0), QPointF(2.0, size.height()));
+    if (invalid) {
+        painter->setBrush(nodeStyle.ErrorColor);
+    } else {
+        QLinearGradient gradient(QPointF(0.0, 0.0), QPointF(2.0, size.height()));
+        gradient.setColorAt(0.0, nodeStyle.GradientColor0);
+        gradient.setColorAt(0.10, nodeStyle.GradientColor1);
+        gradient.setColorAt(0.90, nodeStyle.GradientColor2);
+        gradient.setColorAt(1.0, nodeStyle.GradientColor3);
 
-    gradient.setColorAt(0.0, nodeStyle.GradientColor0);
-    gradient.setColorAt(0.10, nodeStyle.GradientColor1);
-    gradient.setColorAt(0.90, nodeStyle.GradientColor2);
-    gradient.setColorAt(1.0, nodeStyle.GradientColor3);
-
-    painter->setBrush(gradient);
-
+        painter->setBrush(gradient);
+    }
     QRectF boundary(0, 0, size.width(), size.height());
 
     double const radius = 3.0;
@@ -270,57 +281,6 @@ void DefaultNodePainter::drawResizeRect(QPainter *painter, NodeGraphicsObject &n
         painter->setBrush(Qt::gray);
 
         painter->drawEllipse(geometry.resizeHandleRect(nodeId));
-    }
-}
-
-void DefaultNodePainter::drawValidationRect(QPainter *painter, NodeGraphicsObject &ngo) const
-{
-    AbstractGraphModel const &model = ngo.graphModel();
-
-    NodeId const nodeId = ngo.nodeId();
-
-    QVariant var = model.nodeData(nodeId, NodeRole::ValidationState);
-    if (var.canConvert<NodeValidationState>()) {
-        auto state = var.value<NodeValidationState>();
-        if (state._isValid) {
-            return;
-        }
-        QString const errorMsg = state._errorMessage;
-
-        QtNodes::AbstractNodeGeometry const &geometry = ngo.nodeScene()->nodeGeometry();
-        QSize const size = geometry.size(nodeId);
-
-        QJsonDocument json = QJsonDocument::fromVariant(model.nodeData(nodeId, NodeRole::Style));
-        NodeStyle nodeStyle(json.object());
-
-        QtNodes::NodeStyle style(json.object());
-
-        auto color = ngo.isSelected() ? nodeStyle.SelectedBoundaryColor
-                                      : nodeStyle.NormalBoundaryColor;
-        QPen pen(color, ngo.nodeState().hovered() ? nodeStyle.HoveredPenWidth : nodeStyle.PenWidth);
-        painter->setPen(pen);
-
-        painter->setBrush(nodeStyle.ErrorColor);
-
-        float diam = style.ConnectionPointDiameter;
-
-        QFontMetrics metrics(painter->font());
-        QRect textRect = metrics.boundingRect(errorMsg);
-        unsigned int validationHeight = textRect.height() + diam;
-
-        QRectF boundary(-diam,
-                        -diam + size.height() - validationHeight,
-                        size.width() + 2.0 * diam,
-                        validationHeight + 2.0 * diam);
-
-        double const radius = 3.0;
-        painter->drawRoundedRect(boundary, radius, radius);
-
-        QPointF position((size.width() - textRect.width()) / 2.0,
-                         size.height() - (validationHeight - textRect.height()));
-
-        painter->setPen(style.FontColor);
-        painter->drawText(position, errorMsg);
     }
 }
 

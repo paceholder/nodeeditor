@@ -308,6 +308,7 @@ bool DataFlowGraphModel::setNodeData(NodeId nodeId, NodeRole role, QVariant valu
                 node->setValidatonState(state);
             }
         }
+        Q_EMIT nodeUpdated(nodeId);
     } break;
     }
 

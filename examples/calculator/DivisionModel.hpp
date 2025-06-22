@@ -66,8 +66,8 @@ private:
             setValidatonState(state);
             _result = std::make_shared<DecimalData>(n1->number() / n2->number());
         } else {
-            //modelValidationState = NodeValidationState::Warning;
-            //modelValidationError = QStringLiteral("Missing or incorrect inputs");
+            QtNodes::NodeValidationState state;
+            setValidatonState(state);
             _result.reset();
         }
 

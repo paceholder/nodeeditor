@@ -17,7 +17,7 @@
     "FontColorFaded" : "gray",
     "ConnectionPointColor": [169, 169, 169],
     "FilledConnectionPointColor": "cyan",
-    "ErrorColor": "red",
+    "ErrorColor": [255, 105, 97],
     "WarningColor": [128, 128, 0],
 
     "PenWidth": 1.0,
