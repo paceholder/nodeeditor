@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include <QMetaType>
 #include <QtWidgets/QWidget>
 
 #include "Definitions.hpp"
@@ -11,6 +12,15 @@
 #include "Serializable.hpp"
 
 namespace QtNodes {
+
+/**
+ * Describes whether a node configuration is usable.
+ */
+struct NodeValidationState
+{
+    bool _isValid{true};
+    QString _errorMessage{""};
+};
 
 class StyleCollection;
 
@@ -44,10 +54,15 @@ public:
     /// Name makes this model unique
     virtual QString name() const = 0;
 
+    /// Validation State will default to Valid, but you can manipulate it by overriding in an inherited class
+    virtual NodeValidationState validationState() const { return _nodeValidationState; }
+
 public:
     QJsonObject save() const override;
 
     void load(QJsonObject const &) override;
+
+    void setValidatonState(const NodeValidationState &validationState);
 
 public:
     virtual unsigned int nPorts(PortType portType) const = 0;
@@ -128,6 +143,10 @@ Q_SIGNALS:
 
 private:
     NodeStyle _nodeStyle;
+
+    NodeValidationState _nodeValidationState;
 };
 
 } // namespace QtNodes
+
+Q_DECLARE_METATYPE(QtNodes::NodeValidationState)

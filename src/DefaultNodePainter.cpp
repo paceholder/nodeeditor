@@ -9,6 +9,7 @@
 #include "BasicGraphicsScene.hpp"
 #include "ConnectionGraphicsObject.hpp"
 #include "ConnectionIdUtils.hpp"
+#include "NodeDelegateModel.hpp"
 #include "NodeGraphicsObject.hpp"
 #include "NodeState.hpp"
 #include "StyleCollection.hpp"
@@ -32,6 +33,8 @@ void DefaultNodePainter::paint(QPainter *painter, NodeGraphicsObject &ngo) const
     drawEntryLabels(painter, ngo);
 
     drawResizeRect(painter, ngo);
+
+    drawValidationRect(painter, ngo);
 }
 
 void DefaultNodePainter::drawNodeRect(QPainter *painter, NodeGraphicsObject &ngo) const
@@ -267,6 +270,57 @@ void DefaultNodePainter::drawResizeRect(QPainter *painter, NodeGraphicsObject &n
         painter->setBrush(Qt::gray);
 
         painter->drawEllipse(geometry.resizeHandleRect(nodeId));
+    }
+}
+
+void DefaultNodePainter::drawValidationRect(QPainter *painter, NodeGraphicsObject &ngo) const
+{
+    AbstractGraphModel const &model = ngo.graphModel();
+
+    NodeId const nodeId = ngo.nodeId();
+
+    QVariant var = model.nodeData(nodeId, NodeRole::ValidationState);
+    if (var.canConvert<NodeValidationState>()) {
+        auto state = var.value<NodeValidationState>();
+        if (state._isValid) {
+            return;
+        }
+        QString const errorMsg = state._errorMessage;
+
+        QtNodes::AbstractNodeGeometry const &geometry = ngo.nodeScene()->nodeGeometry();
+        QSize const size = geometry.size(nodeId);
+
+        QJsonDocument json = QJsonDocument::fromVariant(model.nodeData(nodeId, NodeRole::Style));
+        NodeStyle nodeStyle(json.object());
+
+        QtNodes::NodeStyle style(json.object());
+
+        auto color = ngo.isSelected() ? nodeStyle.SelectedBoundaryColor
+                                      : nodeStyle.NormalBoundaryColor;
+        QPen pen(color, ngo.nodeState().hovered() ? nodeStyle.HoveredPenWidth : nodeStyle.PenWidth);
+        painter->setPen(pen);
+
+        painter->setBrush(nodeStyle.ErrorColor);
+
+        float diam = style.ConnectionPointDiameter;
+
+        QFontMetrics metrics(painter->font());
+        QRect textRect = metrics.boundingRect(errorMsg);
+        unsigned int validationHeight = textRect.height() + diam;
+
+        QRectF boundary(-diam,
+                        -diam + size.height() - validationHeight,
+                        size.width() + 2.0 * diam,
+                        validationHeight + 2.0 * diam);
+
+        double const radius = 3.0;
+        painter->drawRoundedRect(boundary, radius, radius);
+
+        QPointF position((size.width() - textRect.width()) / 2.0,
+                         size.height() - (validationHeight - textRect.height()));
+
+        painter->setPen(style.FontColor);
+        painter->drawText(position, errorMsg);
     }
 }
 

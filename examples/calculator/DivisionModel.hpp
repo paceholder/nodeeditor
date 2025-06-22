@@ -56,12 +56,14 @@ private:
         auto n2 = _number2.lock();
 
         if (n2 && (n2->number() == 0.0)) {
-            //modelValidationState = NodeValidationState::Error;
-            //modelValidationError = QStringLiteral("Division by zero error");
+            QtNodes::NodeValidationState state;
+            state._isValid = false;
+            state._errorMessage = QStringLiteral("Division by zero error");
+            setValidatonState(state);
             _result.reset();
         } else if (n1 && n2) {
-            //modelValidationState = NodeValidationState::Valid;
-            //modelValidationError = QString();
+            QtNodes::NodeValidationState state;
+            setValidatonState(state);
             _result = std::make_shared<DecimalData>(n1->number() / n2->number());
         } else {
             //modelValidationState = NodeValidationState::Warning;
