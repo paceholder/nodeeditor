@@ -14,12 +14,17 @@
 namespace QtNodes {
 
 /**
- * Describes whether a node configuration is usable.
+ * Describes whether a node configuration is usable and defines a description message
  */
 struct NodeValidationState
 {
-    bool _isValid{true};
-    QString _errorMessage{""};
+    enum class State : int {
+        Valid,   /// All required inputs are present and correct.
+        Warning, /// Some inputs are missing or questionable, processing may be unreliable.
+        Error    /// Inputs or settings are invalid, preventing successful computation.
+    };
+    State _state{State::Valid};
+    QString _stateMessage{""};
 };
 
 class StyleCollection;

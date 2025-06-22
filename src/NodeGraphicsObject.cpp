@@ -165,8 +165,8 @@ void NodeGraphicsObject::paint(QPainter *painter, QStyleOptionGraphicsItem const
     QVariant var = _graphModel.nodeData(_nodeId, NodeRole::ValidationState);
     if (var.canConvert<NodeValidationState>()) {
         auto state = var.value<NodeValidationState>();
-        if (!state._isValid) {
-            tooltip = state._errorMessage;
+        if (state._state != NodeValidationState::State::Valid) {
+            tooltip = state._stateMessage;
         }
     }
     setToolTip(tooltip);

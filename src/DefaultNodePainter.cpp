@@ -51,15 +51,25 @@ void DefaultNodePainter::drawNodeRect(QPainter *painter, NodeGraphicsObject &ngo
 
     QVariant var = model.nodeData(nodeId, NodeRole::ValidationState);
     bool invalid = false;
-    if (var.canConvert<NodeValidationState>()) {
-        auto state = var.value<NodeValidationState>();
-        invalid = !state._isValid;
-    }
 
     QColor color = ngo.isSelected() ? nodeStyle.SelectedBoundaryColor
                                     : nodeStyle.NormalBoundaryColor;
-    if (invalid) {
-        color = nodeStyle.ErrorColor;
+
+    if (var.canConvert<NodeValidationState>()) {
+        auto state = var.value<NodeValidationState>();
+        switch (state._state) {
+        case NodeValidationState::State::Error: {
+            invalid = true;
+            color = nodeStyle.ErrorColor;
+        } break;
+        case NodeValidationState::State::Warning: {
+            invalid = true;
+            color = nodeStyle.WarningColor;
+            break;
+        default:
+            break;
+        }
+        }
     }
 
     if (ngo.nodeState().hovered()) {
@@ -71,7 +81,7 @@ void DefaultNodePainter::drawNodeRect(QPainter *painter, NodeGraphicsObject &ngo
     }
 
     if (invalid) {
-        painter->setBrush(nodeStyle.ErrorColor);
+        painter->setBrush(color);
     } else {
         QLinearGradient gradient(QPointF(0.0, 0.0), QPointF(2.0, size.height()));
         gradient.setColorAt(0.0, nodeStyle.GradientColor0);
