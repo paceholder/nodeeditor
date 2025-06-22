@@ -55,19 +55,22 @@ private:
         auto n1 = _number1.lock();
         auto n2 = _number2.lock();
 
+        QtNodes::NodeValidationState state;
         if (n2 && (n2->number() == 0.0)) {
-            QtNodes::NodeValidationState state;
             state._state = QtNodes::NodeValidationState::State::Error;
             state._stateMessage = QStringLiteral("Division by zero error");
             setValidatonState(state);
             _result.reset();
-        } else if (n1 && n2) {
-            QtNodes::NodeValidationState state;
-
-            if (n2->number() < 1e-5) {
-                state._state = QtNodes::NodeValidationState::State::Warning;
-                state._stateMessage = QStringLiteral("Dividend very small. Calculation might overflow");
+        } else if ( n2 && (n2->number() < 1e-5)) {
+            state._state = QtNodes::NodeValidationState::State::Warning;
+            state._stateMessage = QStringLiteral("Very small divident. Result might overflow");
+            setValidatonState(state);
+            if (n1) {
+                _result = std::make_shared<DecimalData>(n1->number() / n2->number());
+            } else {
+                _result.reset();
             }
+        } else if (n1 && n2) {
             setValidatonState(state);
             _result = std::make_shared<DecimalData>(n1->number() / n2->number());
         } else {
