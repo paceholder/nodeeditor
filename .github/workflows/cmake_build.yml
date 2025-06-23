@@ -30,9 +30,9 @@ jobs:
           - toolchain: linux-gcc
             os: ubuntu-22.04
             compiler: gcc
-            qt_version: "5.15.2"
+            qt_version: "6.3.0"
             modules: ""
-            use_qt6: "OFF"
+            use_qt6: "ON"
 
           - toolchain: macos-clang
             os: macos-latest
