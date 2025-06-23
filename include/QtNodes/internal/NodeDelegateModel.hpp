@@ -6,12 +6,27 @@
 #include "NodeStyle.hpp"
 #include "Serializable.hpp"
 
+#include <memory>
 #include <QtWidgets/QWidget>
 
-#include <memory>
-
-
 namespace QtNodes {
+/**
+ * Describes whether a node configuration is usable and defines a description message
+ */
+struct NodeValidationState
+{
+    enum class State : int {
+        Valid = 0,   ///< All required inputs are present and correct.
+        Warning = 1, ///< Some inputs are missing or questionable, processing may be unreliable.
+        Error = 2,   ///< Inputs or settings are invalid, preventing successful computation.
+    };
+    bool isValid() { return _state == State::Valid; };
+    QString const message() { return _stateMessage; }
+    State state() { return _state; }
+
+    State _state{State::Valid};
+    QString _stateMessage{""};
+};
 
 class StyleCollection;
 
@@ -21,7 +36,9 @@ class StyleCollection;
  * AbstractGraphModel.
  * This class is the same what has been called NodeDataModel before v3.
  */
-class NODE_EDITOR_PUBLIC NodeDelegateModel : public QObject, public Serializable
+class NODE_EDITOR_PUBLIC NodeDelegateModel
+    : public QObject
+    , public Serializable
 {
     Q_OBJECT
 
