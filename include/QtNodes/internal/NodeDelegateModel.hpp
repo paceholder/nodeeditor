@@ -19,10 +19,14 @@ namespace QtNodes {
 struct NodeValidationState
 {
     enum class State : int {
-        Valid,   /// All required inputs are present and correct.
-        Warning, /// Some inputs are missing or questionable, processing may be unreliable.
-        Error    /// Inputs or settings are invalid, preventing successful computation.
+        Valid = 0,    ///< All required inputs are present and correct.
+        Warning = 1,  ///< Some inputs are missing or questionable, processing may be unreliable.
+        Error = 2,    ///< Inputs or settings are invalid, preventing successful computation.
     };
+    bool isValid() { return _state == State::Valid; };
+    QString const message() { return _stateMessage; }
+    State state() { return _state; }
+
     State _state{State::Valid};
     QString _stateMessage{""};
 };
