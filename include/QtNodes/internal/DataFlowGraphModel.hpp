@@ -94,17 +94,23 @@ public:
         return model;
     }
 
+public Q_SLOTS:
+    virtual void propagate(NodeId const nodeId);
+
+protected:
+    virtual bool canPropagate(ConnectionId const) const { return true; };
+
 Q_SIGNALS:
     void inPortDataWasSet(NodeId const, PortType const, PortIndex const);
 
 private:
     NodeId newNodeId() override { return _nextNodeId++; }
 
+protected Q_SLOTS:
     void sendConnectionCreation(ConnectionId const connectionId);
 
     void sendConnectionDeletion(ConnectionId const connectionId);
 
-private Q_SLOTS:
     /**
    * Fuction is called in three cases:
    *
@@ -115,10 +121,10 @@ private Q_SLOTS:
    * - When a node restored from JSON an needs to send data downstream.
    *   @see DataFlowGraphModel::loadNode
    */
-    void onOutPortDataUpdated(NodeId const nodeId, PortIndex const portIndex);
+    virtual void onOutPortDataUpdated(NodeId const nodeId, PortIndex const portIndex);
 
     /// Function is called after detaching a connection.
-    void propagateEmptyDataTo(NodeId const nodeId, PortIndex const portIndex);
+    virtual void propagateEmptyDataTo(NodeId const nodeId, PortIndex const portIndex);
 
 private:
     std::shared_ptr<NodeDelegateModelRegistry> _registry;
