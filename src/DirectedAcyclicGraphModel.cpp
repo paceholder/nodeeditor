@@ -617,14 +617,13 @@ void DirectedAcyclicGraphModel::loadNode(QJsonObject const &nodeJson)
     if (model) {
         _models[restoredNodeId] = std::move(model);
 
-        Q_EMIT nodeCreated(restoredNodeId);
-
         QJsonObject posJson = nodeJson["position"].toObject();
         QPointF const pos(posJson["x"].toDouble(), posJson["y"].toDouble());
 
         setNodeData(restoredNodeId, NodeRole::Position, pos);
 
         _models[restoredNodeId]->load(internalDataJson);
+        Q_EMIT nodeCreated(restoredNodeId);
     } else {
         throw std::logic_error(std::string("No registered model with name ")
                                + delegateModelName.toLocal8Bit().data());
