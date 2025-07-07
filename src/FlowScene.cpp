@@ -68,7 +68,7 @@ FlowScene(std::shared_ptr<DataModelRegistry> registry)
           n->nodeGraphicsObject().setPos(newPosition);
           return 0;
         },
-        "Moved Node " + n.nodeDataModel()->name().toStdString()
+        "Moved Node " + n.nodeDataModel()->name()
       )
     );
   };
@@ -90,7 +90,7 @@ FlowScene(std::shared_ptr<DataModelRegistry> registry)
         g.groupGraphicsObject().setPos(newPosition);
         return 0;
       },
-      "Moved Group " + g.GetName().toStdString()
+      "Moved Group " + g.GetName()
     ));
   };
   connect(this, &FlowScene::groupMoveFinished, this, GroupUpdateLamda);
@@ -985,14 +985,14 @@ loadFromMemory(const QByteArray& data)
 
 void FlowScene::PrintActions()
 {
-  std::cout << "ACTIONS " << std::endl;
+  qDebug() << "ACTIONS ";
   for(int i=0; i<undoActions.size(); i++)
   {
-    std::cout << undoActions[i].name << std::endl;
+    qDebug() << undoActions[i].name;
   }
   for(int i=0; i<redoActions.size(); i++)
   {
-    std::cout << " -  " << redoActions[i].name << std::endl;
+    qDebug() << " -  " << redoActions[i].name;
   }
 }
 
@@ -1002,8 +1002,8 @@ void FlowScene::AddAction(QtNodes::UndoRedoAction action)
   {
     undoActions.push_back(action);
     redoActions.clear();
-    PrintActions();
     historyInx++;
+    emit ActionAdded(action.name);
   }
 }
 

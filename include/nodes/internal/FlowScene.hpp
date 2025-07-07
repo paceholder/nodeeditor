@@ -31,8 +31,8 @@ struct UndoRedoAction {
 
   std::function<int(void*)> undoAction;
   std::function<int(void*)> redoAction;
-  std::string name;
-  UndoRedoAction(std::function<int(void*)> undoAction, std::function<int(void*)> redoAction, std::string name) {
+  QString name;
+  UndoRedoAction(std::function<int(void*)> undoAction, std::function<int(void*)> redoAction, const QString &name) {
     this->undoAction = undoAction;
     this->redoAction = redoAction;
     this->name = name;
@@ -189,6 +189,8 @@ signals:
   void nodeHoverLeft(Node& n);
 
   void nodeContextMenu(Node& n, const QPointF& pos);
+
+  void ActionAdded(const QString  actionName);
   
 
 public:

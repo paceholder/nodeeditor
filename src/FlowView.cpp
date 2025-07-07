@@ -352,7 +352,7 @@ contextMenuEvent(QContextMenuEvent *event)
           node.nodeGraphicsObject().setPos(posView);    
           return 0;
         },
-        "Created Node " + node.nodeDataModel()->name().toStdString()
+        "Created Node " + node.nodeDataModel()->name()
       ));
     }
     else
