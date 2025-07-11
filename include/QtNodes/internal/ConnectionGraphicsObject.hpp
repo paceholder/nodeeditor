@@ -16,7 +16,7 @@ class AbstractGraphModel;
 class BasicGraphicsScene;
 
 /// Graphic Object for connection. Adds itself to scene
-class ConnectionGraphicsObject : public QGraphicsObject
+class NODE_EDITOR_PUBLIC ConnectionGraphicsObject : public QGraphicsObject
 {
     Q_OBJECT
 public:
