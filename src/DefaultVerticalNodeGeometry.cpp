@@ -183,6 +183,16 @@ QPointF DefaultVerticalNodeGeometry::captionPosition(NodeId const nodeId) const
     return QPointF(0.5 * (size.width() - rect.width()), step + rect.height());
 }
 
+QPointF DefaultVerticalNodeGeometry::labelPosition(const NodeId nodeId) const
+{
+    return QPointF();
+}
+
+QRectF DefaultVerticalNodeGeometry::labelRect(NodeId const nodeId) const
+{
+    return QRectF();
+}
+
 QPointF DefaultVerticalNodeGeometry::widgetPosition(NodeId const nodeId) const
 {
     QSize size = _graphModel.nodeData<QSize>(nodeId, NodeRole::Size);

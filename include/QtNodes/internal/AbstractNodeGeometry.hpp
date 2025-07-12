@@ -60,6 +60,15 @@ public:
     /// Caption rect is needed for estimating the total node size.
     virtual QRectF captionRect(NodeId const nodeId) const = 0;
 
+    /**
+   * Defines where to start drawing the label. The point corresponds to a font
+   * baseline.
+   */
+    virtual QPointF labelPosition(NodeId const nodeId) const = 0;
+
+    /// Caption rect is needed for estimating the total node size.
+    virtual QRectF labelRect(NodeId const nodeId) const = 0;
+
     /// Position for an embedded widget. Return any value if you don't embed.
     virtual QPointF widgetPosition(NodeId const nodeId) const = 0;
 

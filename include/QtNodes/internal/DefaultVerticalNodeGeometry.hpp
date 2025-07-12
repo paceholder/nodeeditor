@@ -33,6 +33,10 @@ public:
 
     QRectF captionRect(NodeId const nodeId) const override;
 
+    QPointF labelPosition(const NodeId nodeId) const override;
+
+    QRectF labelRect(NodeId const nodeId) const override;
+
     QPointF widgetPosition(NodeId const nodeId) const override;
 
     QRect resizeHandleRect(NodeId const nodeId) const override;

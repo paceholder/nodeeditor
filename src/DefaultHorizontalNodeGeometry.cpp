@@ -156,6 +156,28 @@ QPointF DefaultHorizontalNodeGeometry::captionPosition(NodeId const nodeId) cons
                    0.5 * _portSpasing + captionRect(nodeId).height());
 }
 
+QRectF DefaultHorizontalNodeGeometry::labelRect(NodeId const nodeId) const
+{
+    if (!_graphModel.nodeData<bool>(nodeId, NodeRole::LabelVisible))
+        return QRect();
+
+    QString nickname = _graphModel.nodeData<QString>(nodeId, NodeRole::Label);
+
+    QRectF nickRect = _boldFontMetrics.boundingRect(nickname);
+
+    nickRect.setWidth(nickRect.width() * 0.5);
+    nickRect.setHeight(nickRect.height() * 0.5);
+
+    return nickRect;
+}
+
+QPointF DefaultHorizontalNodeGeometry::labelPosition(NodeId const nodeId) const
+{
+    QSize size = _graphModel.nodeData<QSize>(nodeId, NodeRole::Size);
+    return QPointF(0.4 * (size.width() - labelRect(nodeId).width()),
+                   0.5 * _portSpasing + labelRect(nodeId).height());
+}
+
 QPointF DefaultHorizontalNodeGeometry::widgetPosition(NodeId const nodeId) const
 {
     QSize size = _graphModel.nodeData<QSize>(nodeId, NodeRole::Size);

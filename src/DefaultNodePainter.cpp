@@ -13,7 +13,6 @@
 
 #include <cmath>
 
-
 namespace QtNodes {
 
 void DefaultNodePainter::paint(QPainter *painter, NodeGraphicsObject &ngo) const
@@ -33,6 +32,10 @@ void DefaultNodePainter::paint(QPainter *painter, NodeGraphicsObject &ngo) const
     drawEntryLabels(painter, ngo);
 
     drawResizeRect(painter, ngo);
+
+    drawValidationIcon(painter, ngo);
+
+    drawNodeLabel(painter, ngo);
 }
 
 void DefaultNodePainter::drawNodeRect(QPainter *painter, NodeGraphicsObject &ngo) const
@@ -90,7 +93,6 @@ void DefaultNodePainter::drawConnectionPoints(QPainter *painter, NodeGraphicsObj
     auto reducedDiameter = diameter * 0.6;
 
     for (PortType portType : {PortType::Out, PortType::In}) {
-
         auto portCountRole = (portType == PortType::Out) ? NodeRole::OutPortCount
                                                          : NodeRole::InPortCount;
         size_t const n = model.nodeData(nodeId, portCountRole).toUInt();
@@ -212,6 +214,33 @@ void DefaultNodePainter::drawNodeCaption(QPainter *painter, NodeGraphicsObject &
     painter->setFont(f);
     painter->setPen(nodeStyle.FontColor);
     painter->drawText(position, name);
+
+    f.setBold(false);
+    painter->setFont(f);
+}
+
+void DefaultNodePainter::drawNodeLabel(QPainter *painter, NodeGraphicsObject &ngo) const
+{
+    AbstractGraphModel &model = ngo.graphModel();
+    NodeId const nodeId = ngo.nodeId();
+    AbstractNodeGeometry &geometry = ngo.nodeScene()->nodeGeometry();
+
+    if (!model.nodeData(nodeId, NodeRole::LabelVisible).toBool())
+        return;
+
+    QString const nickname = model.nodeData(nodeId, NodeRole::Label).toString();
+
+    QFont f = painter->font();
+    f.setBold(true);
+
+    QPointF position = geometry.labelPosition(nodeId);
+
+    QJsonDocument json = QJsonDocument::fromVariant(model.nodeData(nodeId, NodeRole::Style));
+    NodeStyle nodeStyle(json.object());
+
+    painter->setFont(f);
+    painter->setPen(nodeStyle.FontColor);
+    painter->drawText(position, nickname);
 
     f.setBold(false);
     painter->setFont(f);
