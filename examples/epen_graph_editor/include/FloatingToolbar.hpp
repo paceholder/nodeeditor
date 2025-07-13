@@ -14,8 +14,12 @@ public:
     explicit FloatingToolbar(GraphEditorWindow *parent = nullptr);
     ~FloatingToolbar() = default;
 
-    // Position the toolbar relative to the main window
-    void positionRelativeToParent();
+    // Position the toolbar within the parent window
+    void updatePosition();
+    
+    // Set whether the toolbar is docked to right or left
+    void setDockedRight(bool right);
+    bool isDockedRight() const { return m_dockedRight; }
 
 signals:
     void rectangleRequested();
@@ -27,8 +31,13 @@ signals:
     void resetViewRequested();
 
 protected:
-    // Override to maintain position relative to parent
-    void showEvent(QShowEvent *event) override;
+    // Override for custom painting
+    void paintEvent(QPaintEvent *event) override;
+    
+    // Mouse events for dragging
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
 
 private:
     void setupUI();
@@ -36,6 +45,14 @@ private:
 
     GraphEditorWindow *m_graphEditor;
     QVBoxLayout *m_layout;
+    
+    // Dragging support
+    bool m_dragging;
+    QPoint m_dragStartPosition;
+    
+    // Docking position
+    bool m_dockedRight;
+    int m_margin;
 };
 
 #endif // FLOATING_TOOLBAR_HPP

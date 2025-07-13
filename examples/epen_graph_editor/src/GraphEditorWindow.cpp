@@ -80,7 +80,7 @@ void GraphEditorWindow::createFloatingToolbar()
     qDebug() << "Main window geometry:" << geometry();
     qDebug() << "Main window visible:" << isVisible();
     
-    // Create the floating toolbar
+    // Create the floating toolbar as a child widget
     m_toolbar = new FloatingToolbar(this);
     
     if (!m_toolbar) {
@@ -97,14 +97,12 @@ void GraphEditorWindow::createFloatingToolbar()
         qDebug() << "Color changed to:" << color.name();
     });
     
-    // Set initial position before showing
-    QPoint mainPos = mapToGlobal(QPoint(0, 0));
-    m_toolbar->move(mainPos.x() + width() + 10, mainPos.y());
-    
     // Show the toolbar
     m_toolbar->show();
     m_toolbar->raise();
-    m_toolbar->activateWindow();
+    
+    // Update position
+    m_toolbar->updatePosition();
     
     qDebug() << "Toolbar created. Visible:" << m_toolbar->isVisible() 
              << "Geometry:" << m_toolbar->geometry();
@@ -129,10 +127,7 @@ void GraphEditorWindow::moveEvent(QMoveEvent *event)
 {
     GraphicsView::moveEvent(event);
     
-    // Update toolbar position when main window moves
-    if (m_toolbar && m_toolbar->isVisible()) {
-        m_toolbar->positionRelativeToParent();
-    }
+    // No need to update toolbar position as it's now a child widget
 }
 
 void GraphEditorWindow::resizeEvent(QResizeEvent *event)
@@ -141,6 +136,6 @@ void GraphEditorWindow::resizeEvent(QResizeEvent *event)
     
     // Update toolbar position when main window resizes
     if (m_toolbar && m_toolbar->isVisible()) {
-        m_toolbar->positionRelativeToParent();
+        m_toolbar->updatePosition();
     }
 }
