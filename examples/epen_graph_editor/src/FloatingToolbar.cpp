@@ -1,5 +1,6 @@
 #include "FloatingToolbar.hpp"
 #include "GraphEditorWindow.hpp"
+#include "QPushButton"
 #include <QApplication>
 #include <QDebug>
 #include <QFontDatabase>
@@ -8,7 +9,6 @@
 #include <QMouseEvent>
 #include <QPaintEvent>
 #include <QPainter>
-#include <QPushButton>
 #include <QVBoxLayout>
 
 FloatingToolbar::FloatingToolbar(GraphEditorWindow *parent)
@@ -66,16 +66,6 @@ QString FloatingToolbar::createSafeButtonText(const QString &icon, const QString
     return icon + " " + text;
 }
 
-QPushButton *FloatingToolbar::createRichTextButton(const QString &icon, const QString &text)
-{
-    QPushButton *button = new QPushButton();
-
-    // For now, just use the safe text method
-    button->setText(createSafeButtonText(icon, text));
-
-    return button;
-}
-
 void FloatingToolbar::setupUI()
 {
     // Create main widget with background
@@ -96,7 +86,7 @@ void FloatingToolbar::setupUI()
                                  "   border: 1px solid #ccc;"
                                  "   border-radius: 6px;"
                                  "}"
-                                 "QPushButton {"
+                                 "DraggableButton {"
                                  "   padding: 6px 8px;"
                                  "   margin: 2px;"
                                  "   border: 1px solid #bbb;"
@@ -105,14 +95,14 @@ void FloatingToolbar::setupUI()
                                  "   text-align: left;"
                                  "   font-size: 11px;"
                                  "}"
-                                 "QPushButton:hover {"
+                                 "DraggableButton:hover {"
                                  "   background-color: #e0e0e0;"
                                  "   border-color: #999;"
                                  "}"
-                                 "QPushButton:pressed {"
+                                 "DraggableButton:pressed {"
                                  "   background-color: #d0d0d0;"
                                  "}"
-                                 "QPushButton:disabled {"
+                                 "DraggableButton:disabled {"
                                  "   background-color: #f0f0f0;"
                                  "   color: #999;"
                                  "}");
@@ -152,38 +142,44 @@ void FloatingToolbar::setupUI()
         QString fallback;
         QString tooltip;
         bool enabled;
+        QString actionName;
     };
 
     QVector<NodeType> nodeTypes = {
-        {"Video Input", QString::fromUtf8("\u25C0"), "<", "Create a video input node", true}, // ◀
-        {"Video Output", QString::fromUtf8("\u25B6"), ">", "Create a video output node", false}, // ▶
-        {"Process", QString::fromUtf8("\u2666"), "*", "Create a processing node", true}, // ♦
-        {"Image", QString::fromUtf8("\u25A1"), "#", "Create an image node", true},       // □
-        {"Buffer", QString::fromUtf8("\u25AC"), "=", "Create a buffer node", true}       // ▬
+        {"Video Input",
+         QString::fromUtf8("\u25C0"),
+         "<",
+         "Create a video input node",
+         true,
+         "input"}, // ◀
+        {"Video Output",
+         QString::fromUtf8("\u25B6"),
+         ">",
+         "Create a video output node",
+         false,
+         "output"}, // ▶
+        {"Process", QString::fromUtf8("\u2666"), "*", "Create a processing node", true, "process"}, // ♦
+        {"Image", QString::fromUtf8("\u25A1"), "#", "Create an image node", true, "image"},  // □
+        {"Buffer", QString::fromUtf8("\u25AC"), "=", "Create a buffer node", true, "buffer"} // ▬
     };
 
     // Create buttons with proper icon handling
     for (const auto &nodeType : nodeTypes) {
-        QPushButton *btn = new QPushButton();
+        DraggableButton *btn = new DraggableButton(nodeType.actionName, this);
 
         // Try to use the Unicode icon, fall back to ASCII if needed
         QString buttonText = createSafeButtonText(nodeType.icon, nodeType.name);
         btn->setText(buttonText);
         btn->setToolTip(nodeType.tooltip);
         btn->setEnabled(nodeType.enabled);
+        btn->setCheckable(true);
+        btn->setChecked(true);
         btn->setFont(buttonFont);
 
         // Store the node type in a property for later use
         btn->setProperty("nodeType", nodeType.name);
 
         m_layout->addWidget(btn);
-
-        // Connect signal
-        connect(btn, &QPushButton::clicked, [this, nodeType]() {
-            emit nodeRequested();
-            // You can emit a specific signal with node type info if needed
-            // emit specificNodeRequested(nodeType.name);
-        });
     }
 
     // Separator
