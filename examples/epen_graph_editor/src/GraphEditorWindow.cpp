@@ -38,6 +38,8 @@ GraphEditorWindow::GraphEditorWindow()
     resize(800, 600);
 
     setAcceptDrops(true);
+    viewport()->setAcceptDrops(true); // Important for drag and drop
+    
     // Don't create toolbar here - wait for showEvent
 }
 
@@ -80,7 +82,7 @@ void GraphEditorWindow::createFloatingToolbar()
     qDebug() << "Main window geometry:" << geometry();
     qDebug() << "Main window visible:" << isVisible();
 
-    // Create the floating toolbar as a child widget
+    // Create the floating toolbar
     m_toolbar = new FloatingToolbar(this);
 
     if (!m_toolbar) {
@@ -100,8 +102,8 @@ void GraphEditorWindow::createFloatingToolbar()
     m_toolbar->show();
     m_toolbar->raise();
 
-    // Update position
-    m_toolbar->updatePosition();
+    // Set initial dock position (optional - start docked to right)
+    // m_toolbar->setDockPosition(FloatingToolbar::DockedRight);
 
     qDebug() << "Toolbar created. Visible:" << m_toolbar->isVisible()
              << "Geometry:" << m_toolbar->geometry();
@@ -125,16 +127,16 @@ void GraphEditorWindow::createNodeAtCursor()
 void GraphEditorWindow::moveEvent(QMoveEvent *event)
 {
     GraphicsView::moveEvent(event);
-
-    // No need to update toolbar position as it's now a child widget
+    
+    // The toolbar will handle its own position updates through event filter
 }
 
 void GraphEditorWindow::resizeEvent(QResizeEvent *event)
 {
     GraphicsView::resizeEvent(event);
-
-    // Update toolbar position when main window resizes
-    if (m_toolbar && m_toolbar->isVisible()) {
+    
+    // Update toolbar position if it's docked
+    if (m_toolbar && m_toolbar->isVisible() && m_toolbar->isDocked()) {
         m_toolbar->updatePosition();
     }
 }
@@ -142,6 +144,7 @@ void GraphEditorWindow::resizeEvent(QResizeEvent *event)
 void GraphEditorWindow::goToMode(QString mode)
 {
     _currentMode = mode;
+    qDebug() << "Mode changed to:" << mode;
 }
 
 void GraphEditorWindow::mousePressEvent(QMouseEvent *event)
@@ -151,12 +154,13 @@ void GraphEditorWindow::mousePressEvent(QMouseEvent *event)
 
 void GraphEditorWindow::dragEnterEvent(QDragEnterEvent *event)
 {
+    qDebug() << "DragEnter - MIME formats:" << event->mimeData()->formats();
     event->acceptProposedAction();
 }
 
 void GraphEditorWindow::dropEvent(QDropEvent *event)
 {
-    qDebug() << event->mimeData()->text();
+    qDebug() << "Drop event - Text:" << event->mimeData()->text();
     event->acceptProposedAction();
     QPointF scenePos = mapToScene(event->position().toPoint());
     createNodeAtPosition(scenePos);

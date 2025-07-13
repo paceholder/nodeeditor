@@ -7,25 +7,32 @@
 class QVBoxLayout;
 class QPushButton;
 class GraphEditorWindow;
+class QPropertyAnimation;
+class QScrollArea;
 
 class FloatingToolbar : public QWidget
 {
     Q_OBJECT
 
 public:
+    enum DockPosition {
+        Floating,
+        DockedLeft,
+        DockedRight
+    };
+
     explicit FloatingToolbar(GraphEditorWindow *parent = nullptr);
     ~FloatingToolbar() = default;
 
     // Position the toolbar within the parent window
     void updatePosition();
 
-    // Set whether the toolbar is docked to right or left
-    void setDockedRight(bool right);
-    bool isDockedRight() const { return m_dockedRight; }
+    // Docking functions
+    void setDockPosition(DockPosition position);
+    DockPosition getDockPosition() const { return m_dockPosition; }
+    bool isDocked() const { return m_dockPosition != Floating; }
 
 signals:
-    void rectangleRequested();
-    void circleRequested();
     void specificNodeRequested(QString actionName);
     void fillColorChanged(const QColor &color);
     void zoomInRequested();
@@ -43,22 +50,38 @@ protected:
 
     // Override to update position when shown
     void showEvent(QShowEvent *event) override;
+    void resizeEvent(QResizeEvent *event) override;
 
 private:
     void setupUI();
     void connectSignals();
     QString createSafeButtonText(const QString &icon, const QString &text);
-
+    
+    // Docking helpers
+    DockPosition checkDockingZone(const QPoint &pos);
+    void applyDocking(DockPosition position);
+    void updateDockedGeometry();
+    
     GraphEditorWindow *m_graphEditor;
     QVBoxLayout *m_layout;
+    QWidget *m_contentWidget;
+    QScrollArea *m_scrollArea;
 
     // Dragging support
     bool m_dragging;
     QPoint m_dragStartPosition;
+    QRect m_floatingGeometry;  // Remember size and position when floating
 
-    // Docking position
-    bool m_dockedRight;
-    int m_margin;
+    // Docking state
+    DockPosition m_dockPosition;
+    DockPosition m_previewDockPosition;
+    int m_dockMargin;
+    int m_dockingDistance; // Distance from edge to trigger docking
+    int m_dockedWidth;     // Width when docked
+    int _floatHeight;
+    
+    // Animation
+    QPropertyAnimation *m_geometryAnimation;
 };
 
 #endif // FLOATING_TOOLBAR_HPP

@@ -9,41 +9,54 @@
 #include <QMouseEvent>
 #include <QPaintEvent>
 #include <QPainter>
+#include <QPropertyAnimation>
+#include <QScrollArea>
 #include <QVBoxLayout>
 
 FloatingToolbar::FloatingToolbar(GraphEditorWindow *parent)
-    : QWidget(parent)
+    : QWidget(parent) // Always a child widget
     , m_graphEditor(parent)
     , m_dragging(false)
-    , m_dockedRight(true)
-    , m_margin(10)
+    , m_dockPosition(Floating)
+    , m_previewDockPosition(Floating)
+    , m_dockMargin(0) // No margin when docked
+    , m_dockingDistance(40)
+    , m_dockedWidth(200) // Wider when docked
 {
-    setWindowTitle("Tools");
-    setFixedWidth(150);
-
-    // Make it stay on top within the parent widget
+    // Keep it as a child widget with these flags
     setWindowFlags(Qt::SubWindow | Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
+
+    // Create animation for smooth transitions
+    m_geometryAnimation = new QPropertyAnimation(this, "geometry");
+    m_geometryAnimation->setDuration(200);
+    m_geometryAnimation->setEasingCurve(QEasingCurve::OutCubic);
 
     setupUI();
     connectSignals();
 
-    // Initial position
-    updatePosition();
+    // Initial floating size and position
+    setFixedWidth(150);
+    if (parent) {
+        m_floatingGeometry = QRect((parent->width() - 150) / 2,
+                                   (parent->height() - height()) / 2,
+                                   150,
+                                   height());
+        setGeometry(m_floatingGeometry);
+    }
+
+    // Ensure toolbar is on top
+    raise();
+    _floatHeight = height();
 }
 
 QString FloatingToolbar::createSafeButtonText(const QString &icon, const QString &text)
 {
-    // Check if system supports the icon by testing font metrics
     QFont testFont = QApplication::font();
     QFontMetrics fm(testFont);
-
-    // Test if the icon character renders properly
     QRect boundingRect = fm.boundingRect(icon);
 
-    // If the icon doesn't render properly (too small or empty), use fallback
     if (boundingRect.width() < 5 || boundingRect.height() < 5) {
-        // Use fallback ASCII characters
         if (text.contains("Video Input"))
             return "< " + text;
         if (text.contains("Video Output"))
@@ -68,11 +81,16 @@ QString FloatingToolbar::createSafeButtonText(const QString &icon, const QString
 
 void FloatingToolbar::setupUI()
 {
-    // Create main widget with background
-    QWidget *contentWidget = new QWidget(this);
-    contentWidget->setObjectName("ToolbarContent");
+    // Create scroll area for when docked
+    m_scrollArea = new QScrollArea(this);
+    m_scrollArea->setWidgetResizable(true);
+    m_scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    m_scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    m_scrollArea->setFrameShape(QFrame::NoFrame);
 
-    // Platform-specific font settings for better icon support
+    m_contentWidget = new QWidget();
+    m_contentWidget->setObjectName("ToolbarContent");
+
     QFont buttonFont = QApplication::font();
 #ifdef Q_OS_MAC
     buttonFont.setFamily("Helvetica Neue");
@@ -81,43 +99,64 @@ void FloatingToolbar::setupUI()
 #endif
     buttonFont.setPointSize(11);
 
-    contentWidget->setStyleSheet("#ToolbarContent {"
-                                 "   background-color: #f5f5f5;"
-                                 "   border: 1px solid #ccc;"
-                                 "   border-radius: 6px;"
-                                 "}"
-                                 "DraggableButton {"
-                                 "   padding: 6px 8px;"
-                                 "   margin: 2px;"
-                                 "   border: 1px solid #bbb;"
-                                 "   border-radius: 4px;"
-                                 "   background-color: white;"
-                                 "   text-align: left;"
-                                 "   font-size: 11px;"
-                                 "}"
-                                 "DraggableButton:hover {"
-                                 "   background-color: #e0e0e0;"
-                                 "   border-color: #999;"
-                                 "}"
-                                 "DraggableButton:pressed {"
-                                 "   background-color: #d0d0d0;"
-                                 "}"
-                                 "DraggableButton:disabled {"
-                                 "   background-color: #f0f0f0;"
-                                 "   color: #999;"
-                                 "}");
+    m_scrollArea->setStyleSheet("QScrollArea {"
+                                "   background: transparent;"
+                                "   border: none;"
+                                "}"
+                                "QScrollBar:vertical {"
+                                "   background: #f0f0f0;"
+                                "   width: 10px;"
+                                "   border-radius: 5px;"
+                                "}"
+                                "QScrollBar::handle:vertical {"
+                                "   background: #c0c0c0;"
+                                "   border-radius: 5px;"
+                                "   min-height: 20px;"
+                                "}"
+                                "QScrollBar::handle:vertical:hover {"
+                                "   background: #a0a0a0;"
+                                "}");
 
-    // Main layout for the widget
+    m_contentWidget->setStyleSheet("#ToolbarContent {"
+                                   "   background-color: #f5f5f5;"
+                                   "   border: 1px solid #ccc;"
+                                   "   border-radius: 6px;"
+                                   "}"
+                                   "DraggableButton {"
+                                   "   padding: 6px 8px;"
+                                   "   margin: 2px;"
+                                   "   border: 1px solid #bbb;"
+                                   "   border-radius: 4px;"
+                                   "   background-color: white;"
+                                   "   text-align: left;"
+                                   "   font-size: 11px;"
+                                   "}"
+                                   "DraggableButton:hover {"
+                                   "   background-color: #e0e0e0;"
+                                   "   border-color: #999;"
+                                   "}"
+                                   "DraggableButton:pressed {"
+                                   "   background-color: #d0d0d0;"
+                                   "}"
+                                   "DraggableButton:disabled {"
+                                   "   background-color: #f0f0f0;"
+                                   "   color: #999;"
+                                   "}");
+
+    // Set scroll area content
+    m_scrollArea->setWidget(m_contentWidget);
+
+    // Main layout for this widget
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     mainLayout->setContentsMargins(0, 0, 0, 0);
-    mainLayout->addWidget(contentWidget);
+    mainLayout->addWidget(m_scrollArea);
 
     // Content layout
-    m_layout = new QVBoxLayout(contentWidget);
+    m_layout = new QVBoxLayout(m_contentWidget);
     m_layout->setContentsMargins(8, 8, 8, 8);
     m_layout->setSpacing(4);
 
-    // Add title (acts as drag handle)
+    // Title bar for dragging
     QLabel *title = new QLabel("Tools");
     title->setAlignment(Qt::AlignCenter);
     title->setStyleSheet("font-weight: bold;"
@@ -134,7 +173,6 @@ void FloatingToolbar::setupUI()
     nodeLabel->setStyleSheet("font-weight: bold; color: #333;");
     m_layout->addWidget(nodeLabel);
 
-    // Define icons - using Unicode code points for safety
     struct NodeType
     {
         QString name;
@@ -146,28 +184,19 @@ void FloatingToolbar::setupUI()
     };
 
     QVector<NodeType> nodeTypes = {
-        {"Video Input",
-         QString::fromUtf8("\u25C0"),
-         "<",
-         "Create a video input node",
-         true,
-         "input"}, // ◀
+        {"Video Input", QString::fromUtf8("\u25C0"), "<", "Create a video input node", true, "input"},
         {"Video Output",
          QString::fromUtf8("\u25B6"),
          ">",
          "Create a video output node",
          false,
-         "output"}, // ▶
-        {"Process", QString::fromUtf8("\u2666"), "*", "Create a processing node", true, "process"}, // ♦
-        {"Image", QString::fromUtf8("\u25A1"), "#", "Create an image node", true, "image"},  // □
-        {"Buffer", QString::fromUtf8("\u25AC"), "=", "Create a buffer node", true, "buffer"} // ▬
-    };
+         "output"},
+        {"Process", QString::fromUtf8("\u2666"), "*", "Create a processing node", true, "process"},
+        {"Image", QString::fromUtf8("\u25A1"), "#", "Create an image node", true, "image"},
+        {"Buffer", QString::fromUtf8("\u25AC"), "=", "Create a buffer node", true, "buffer"}};
 
-    // Create buttons with proper icon handling
     for (const auto &nodeType : nodeTypes) {
         DraggableButton *btn = new DraggableButton(nodeType.actionName, this);
-
-        // Try to use the Unicode icon, fall back to ASCII if needed
         QString buttonText = createSafeButtonText(nodeType.icon, nodeType.name);
         btn->setText(buttonText);
         btn->setToolTip(nodeType.tooltip);
@@ -175,10 +204,7 @@ void FloatingToolbar::setupUI()
         btn->setCheckable(true);
         btn->setChecked(true);
         btn->setFont(buttonFont);
-
-        // Store the node type in a property for later use
         btn->setProperty("nodeType", nodeType.name);
-
         m_layout->addWidget(btn);
     }
 
@@ -190,12 +216,11 @@ void FloatingToolbar::setupUI()
     m_layout->addWidget(separator);
     m_layout->addSpacing(5);
 
-    // View controls section
+    // View controls
     QLabel *viewLabel = new QLabel("View:");
     viewLabel->setStyleSheet("font-weight: bold; color: #333;");
     m_layout->addWidget(viewLabel);
 
-    // View control buttons with safe icons
     struct ViewControl
     {
         QString name;
@@ -203,11 +228,9 @@ void FloatingToolbar::setupUI()
         QString fallback;
     };
 
-    QVector<ViewControl> viewControls = {
-        {"Zoom In", QString::fromUtf8("\u2295"), "+"},   // ⊕
-        {"Zoom Out", QString::fromUtf8("\u2296"), "-"},  // ⊖
-        {"Reset View", QString::fromUtf8("\u21BA"), "R"} // ↺
-    };
+    QVector<ViewControl> viewControls = {{"Zoom In", QString::fromUtf8("\u2295"), "+"},
+                                         {"Zoom Out", QString::fromUtf8("\u2296"), "-"},
+                                         {"Reset View", QString::fromUtf8("\u21BA"), "R"}};
 
     QPushButton *btnZoomIn = new QPushButton(
         createSafeButtonText(viewControls[0].icon, viewControls[0].name));
@@ -224,17 +247,15 @@ void FloatingToolbar::setupUI()
     m_layout->addWidget(btnZoomOut);
     m_layout->addWidget(btnResetView);
 
-    // Connect view control signals
     connect(btnZoomIn, &QPushButton::clicked, this, &FloatingToolbar::zoomInRequested);
     connect(btnZoomOut, &QPushButton::clicked, this, &FloatingToolbar::zoomOutRequested);
     connect(btnResetView, &QPushButton::clicked, this, &FloatingToolbar::resetViewRequested);
 
-    // Add stretch to push everything to the top
     m_layout->addStretch();
 
-    // Calculate height based on content
+    // Initial size
+    m_contentWidget->adjustSize();
     adjustSize();
-    setFixedHeight(sizeHint().height());
 }
 
 void FloatingToolbar::connectSignals()
@@ -256,41 +277,120 @@ void FloatingToolbar::connectSignals()
 
 void FloatingToolbar::updatePosition()
 {
-    if (!m_graphEditor)
-        return;
-
-    int x, y;
-
-    if (m_dockedRight) {
-        x = m_graphEditor->width() - width() - m_margin;
-    } else {
-        x = m_margin;
+    if (m_dockPosition != Floating) {
+        updateDockedGeometry();
     }
-
-    y = m_margin;
-
-    // Ensure toolbar stays within bounds
-    x = qMax(m_margin, qMin(x, m_graphEditor->width() - width() - m_margin));
-    y = qMax(m_margin, qMin(y, m_graphEditor->height() - height() - m_margin));
-
-    move(x, y);
 }
 
-void FloatingToolbar::setDockedRight(bool right)
+void FloatingToolbar::setDockPosition(DockPosition position)
 {
-    m_dockedRight = right;
-    updatePosition();
+    if (m_dockPosition == position)
+        return;
+
+    m_dockPosition = position;
+
+    if (position == Floating) {
+        // Restore floating geometry
+        setMinimumSize(0, 0);
+        setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
+        setFixedWidth(150);
+
+        if (m_geometryAnimation->state() == QAbstractAnimation::Running) {
+            m_geometryAnimation->stop();
+        }
+        m_geometryAnimation->setStartValue(geometry());
+        m_geometryAnimation->setEndValue(m_floatingGeometry);
+        m_geometryAnimation->start();
+    } else {
+        // Apply docked geometry
+        updateDockedGeometry();
+    }
+}
+
+FloatingToolbar::DockPosition FloatingToolbar::checkDockingZone(const QPoint &pos)
+{
+    if (!parentWidget())
+        return Floating;
+
+    int parentWidth = parentWidget()->width();
+
+    // Check left edge
+    if (pos.x() <= m_dockingDistance) {
+        return DockedLeft;
+    }
+
+    // Check right edge
+    if (pos.x() + width() >= parentWidth - m_dockingDistance) {
+        return DockedRight;
+    }
+
+    return Floating;
+}
+
+void FloatingToolbar::applyDocking(DockPosition position)
+{
+    setDockPosition(position);
+}
+
+void FloatingToolbar::updateDockedGeometry()
+{
+    if (!parentWidget() || m_dockPosition == Floating) {
+        return;
+    }
+
+    QRect targetGeometry;
+    int parentHeight = parentWidget()->height();
+
+    // Remove size constraints for docking
+    setMinimumSize(0, 0);
+    setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
+
+    switch (m_dockPosition) {
+    case DockedLeft:
+        targetGeometry = QRect(m_dockMargin,
+                               m_dockMargin,
+                               m_dockedWidth,
+                               parentHeight - 2 * m_dockMargin);
+        break;
+    case DockedRight:
+        targetGeometry = QRect(parentWidget()->width() - m_dockedWidth - m_dockMargin,
+                               m_dockMargin,
+                               m_dockedWidth,
+                               parentHeight - 2 * m_dockMargin);
+        break;
+    default:
+        return;
+    }
+
+    if (m_geometryAnimation->state() == QAbstractAnimation::Running) {
+        m_geometryAnimation->stop();
+    }
+    m_geometryAnimation->setStartValue(geometry());
+    m_geometryAnimation->setEndValue(targetGeometry);
+    m_geometryAnimation->start();
+
+    m_contentWidget->setStyleSheet("#ToolbarContent {"
+                                   "   background-color: #f5f5f5;"
+                                   "   border: 1px solid #ccc;"
+                                   "   border-radius: 0px;"
+                                   "}");
 }
 
 void FloatingToolbar::paintEvent(QPaintEvent *event)
 {
-    // Draw shadow
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
 
-    // Shadow
+    // Draw shadow
     QRect shadowRect = rect().adjusted(4, 4, -4, -4);
     painter.fillRect(shadowRect, QColor(0, 0, 0, 30));
+
+    // Draw docking preview
+    if (m_dragging && m_previewDockPosition != Floating && m_previewDockPosition != m_dockPosition) {
+        painter.setPen(QPen(QColor(0, 120, 215), 2));
+        painter.setBrush(QColor(0, 120, 215, 20));
+        painter.drawRoundedRect(rect().adjusted(1, 1, -1, -1), 6, 6);
+    }
 
     QWidget::paintEvent(event);
 }
@@ -302,6 +402,13 @@ void FloatingToolbar::mousePressEvent(QMouseEvent *event)
         if (title && title->geometry().contains(event->pos())) {
             m_dragging = true;
             m_dragStartPosition = event->pos();
+
+            // Store current geometry if floating
+            if (m_dockPosition == Floating) {
+                m_floatingGeometry = geometry();
+            }
+
+            raise(); // Bring to front when dragging
         }
     }
     QWidget::mousePressEvent(event);
@@ -312,29 +419,59 @@ void FloatingToolbar::mouseMoveEvent(QMouseEvent *event)
     if (m_dragging && (event->buttons() & Qt::LeftButton)) {
         QPoint newPos = pos() + event->pos() - m_dragStartPosition;
 
-        // Keep toolbar within parent bounds
-        int maxX = parentWidget()->width() - width() - m_margin;
-        int maxY = parentWidget()->height() - height() - m_margin;
+        // If currently docked, undock first
+        if (m_dockPosition != Floating) {
+            m_dockPosition = Floating;
+            setFixedWidth(150);
+            // Adjust position to keep mouse on title bar
+            newPos = QPoint(event->globalPos().x() - m_dragStartPosition.x(),
+                            event->globalPos().y() - m_dragStartPosition.y());
+            if (parentWidget()) {
+                newPos = parentWidget()->mapFromGlobal(newPos);
+            }
+            setFixedHeight(_floatHeight);
+            m_contentWidget->setStyleSheet("#ToolbarContent {"
+                                           "   background-color: #f5f5f5;"
+                                           "   border: 1px solid #ccc;"
+                                           "   border-radius: 6px;"
+                                           "}");
+        }
 
-        newPos.setX(qMax(m_margin, qMin(newPos.x(), maxX)));
-        newPos.setY(qMax(m_margin, qMin(newPos.y(), maxY)));
+        // Keep within parent bounds
+        if (parentWidget()) {
+            int maxX = parentWidget()->width() - width();
+            int maxY = parentWidget()->height() - height();
+            newPos.setX(qMax(0, qMin(newPos.x(), maxX)));
+            newPos.setY(qMax(0, qMin(newPos.y(), maxY)));
+        }
 
         move(newPos);
 
-        // Update docked state based on position
-        if (newPos.x() < parentWidget()->width() / 2) {
-            m_dockedRight = false;
-        } else {
-            m_dockedRight = true;
+        // Check for docking zones
+        m_previewDockPosition = checkDockingZone(newPos);
+
+        // Remember floating position
+        if (m_previewDockPosition == Floating) {
+            m_floatingGeometry = QRect(newPos, size());
         }
+
+        update(); // Repaint for preview
     }
     QWidget::mouseMoveEvent(event);
 }
 
 void FloatingToolbar::mouseReleaseEvent(QMouseEvent *event)
 {
-    if (event->button() == Qt::LeftButton) {
+    if (event->button() == Qt::LeftButton && m_dragging) {
         m_dragging = false;
+
+        // Apply docking if in zone
+        if (m_previewDockPosition != Floating) {
+            applyDocking(m_previewDockPosition);
+        }
+
+        m_previewDockPosition = Floating;
+        update();
     }
     QWidget::mouseReleaseEvent(event);
 }
@@ -343,4 +480,15 @@ void FloatingToolbar::showEvent(QShowEvent *event)
 {
     QWidget::showEvent(event);
     updatePosition();
+    raise(); // Ensure toolbar is on top
+}
+
+void FloatingToolbar::resizeEvent(QResizeEvent *event)
+{
+    QWidget::resizeEvent(event);
+
+    // If docked, maintain the docked state
+    if (m_dockPosition != Floating) {
+        updateDockedGeometry();
+    }
 }
