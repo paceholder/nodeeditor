@@ -5,8 +5,10 @@
 #include <QPointer>
 #include <QMimeData>
 #include <QDrag>
+#include <QtNodes/BasicGraphicsScene>
 
 using QtNodes::GraphicsView;
+using QtNodes::BasicGraphicsScene;
 
 class FloatingToolbar;
 class SimpleGraphModel;
@@ -15,7 +17,7 @@ class GraphEditorWindow : public GraphicsView
 {
     Q_OBJECT
 public:
-    GraphEditorWindow();
+    GraphEditorWindow(BasicGraphicsScene* scene);
     ~GraphEditorWindow();
 
 public slots:
@@ -41,7 +43,7 @@ private:
     void setupNodeCreation();
 
     QPointer<FloatingToolbar> m_toolbar;
-    SimpleGraphModel *m_graphModel;
+    //SimpleGraphModel *m_graphModel;
     bool m_toolbarCreated; // This was missing!
     QString _currentMode;
 };

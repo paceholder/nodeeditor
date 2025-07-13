@@ -1,6 +1,5 @@
 #include "GraphEditorWindow.hpp"
 #include "FloatingToolbar.hpp"
-#include "SimpleGraphModel.hpp"
 #include <QAction>
 #include <QApplication>
 #include <QCursor>
@@ -9,28 +8,19 @@
 #include <QResizeEvent>
 #include <QShowEvent>
 #include <QTimer>
-#include <QtNodes/BasicGraphicsScene>
 #include <QtNodes/ConnectionStyle>
 #include <QtNodes/StyleCollection>
 
-using QtNodes::BasicGraphicsScene;
 using QtNodes::ConnectionStyle;
 using QtNodes::NodeRole;
 using QtNodes::StyleCollection;
 
-GraphEditorWindow::GraphEditorWindow()
-    : GraphicsView()
+GraphEditorWindow::GraphEditorWindow(BasicGraphicsScene *scene)
+    : GraphicsView(scene)
     , m_toolbar(nullptr)
     , m_toolbarCreated(false)
     , _currentMode("pan")
 {
-    // Create the graph model
-    m_graphModel = new SimpleGraphModel();
-
-    // Create and set the scene
-    auto scene = new BasicGraphicsScene(*m_graphModel);
-    setScene(scene);
-
     // Setup context menu
     setupNodeCreation();
 
@@ -39,15 +29,11 @@ GraphEditorWindow::GraphEditorWindow()
 
     setAcceptDrops(true);
     viewport()->setAcceptDrops(true); // Important for drag and drop
-    
+
     // Don't create toolbar here - wait for showEvent
 }
 
-GraphEditorWindow::~GraphEditorWindow()
-{
-    // The toolbar will be automatically deleted as it's a child of this window
-    delete m_graphModel;
-}
+GraphEditorWindow::~GraphEditorWindow() {}
 
 void GraphEditorWindow::showEvent(QShowEvent *event)
 {
@@ -111,10 +97,8 @@ void GraphEditorWindow::createFloatingToolbar()
 
 void GraphEditorWindow::createNodeAtPosition(const QPointF &scenePos)
 {
-    if (m_graphModel) {
-        NodeId const newId = m_graphModel->addNode();
-        m_graphModel->setNodeData(newId, NodeRole::Position, scenePos);
-    }
+    QtNodes::NodeId newId = nodeScene()->graphModel().addNode();
+    nodeScene()->graphModel().setNodeData(newId, NodeRole::Position, scenePos);
 }
 
 void GraphEditorWindow::createNodeAtCursor()
@@ -127,14 +111,14 @@ void GraphEditorWindow::createNodeAtCursor()
 void GraphEditorWindow::moveEvent(QMoveEvent *event)
 {
     GraphicsView::moveEvent(event);
-    
+
     // The toolbar will handle its own position updates through event filter
 }
 
 void GraphEditorWindow::resizeEvent(QResizeEvent *event)
 {
     GraphicsView::resizeEvent(event);
-    
+
     // Update toolbar position if it's docked
     if (m_toolbar && m_toolbar->isVisible() && m_toolbar->isDocked()) {
         m_toolbar->updatePosition();
