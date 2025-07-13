@@ -4,6 +4,7 @@
 #include <QWidget>
 
 class QVBoxLayout;
+class QPushButton;
 class GraphEditorWindow;
 
 class FloatingToolbar : public QWidget
@@ -38,10 +39,15 @@ protected:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
+    
+    // Override to update position when shown
+    void showEvent(QShowEvent *event) override;
 
 private:
     void setupUI();
     void connectSignals();
+    QString createSafeButtonText(const QString &icon, const QString &text);
+    QPushButton* createRichTextButton(const QString &icon, const QString &text);
 
     GraphEditorWindow *m_graphEditor;
     QVBoxLayout *m_layout;
