@@ -15,7 +15,7 @@ using QtNodes::ConnectionStyle;
 using QtNodes::NodeRole;
 using QtNodes::StyleCollection;
 
-GraphEditorWindow::GraphEditorWindow(BasicGraphicsScene *scene)
+GraphEditorWindow::GraphEditorWindow(DataFlowGraphicsScene *scene)
     : GraphicsView(scene)
     , m_toolbar(nullptr)
     , m_toolbarCreated(false)

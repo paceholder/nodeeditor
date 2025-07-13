@@ -6,9 +6,11 @@
 #include <QMimeData>
 #include <QDrag>
 #include <QtNodes/BasicGraphicsScene>
+#include <QtNodes/DataFlowGraphicsScene>
 
 using QtNodes::GraphicsView;
 using QtNodes::BasicGraphicsScene;
+using QtNodes::DataFlowGraphicsScene;
 
 class FloatingToolbar;
 class SimpleGraphModel;
@@ -17,7 +19,7 @@ class GraphEditorWindow : public GraphicsView
 {
     Q_OBJECT
 public:
-    GraphEditorWindow(BasicGraphicsScene* scene);
+    GraphEditorWindow(DataFlowGraphicsScene* scene);
     ~GraphEditorWindow();
 
 public slots:
