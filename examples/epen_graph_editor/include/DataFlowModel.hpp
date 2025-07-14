@@ -196,9 +196,7 @@ private:
     {
         auto it = _nodeWidgets.find(nodeId);
         if (it == _nodeWidgets.end()) {
-            _nodeWidgets[nodeId] = new PortAddRemoveWidget(0,
-                                                           0,
-                                                           nodeId,
+            _nodeWidgets[nodeId] = new PortAddRemoveWidget(nodeId,
                                                            *const_cast<DataFlowModel *>(this));
         }
 

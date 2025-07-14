@@ -2,9 +2,7 @@
 
 #include "DataFlowModel.hpp"
 
-PortAddRemoveWidget::PortAddRemoveWidget(unsigned int nInPorts,
-                                         unsigned int nOutPorts,
-                                         NodeId nodeId,
+PortAddRemoveWidget::PortAddRemoveWidget(NodeId nodeId,
                                          DataFlowModel &model,
                                          QWidget *parent)
     : QWidget(parent)

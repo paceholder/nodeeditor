@@ -42,11 +42,7 @@ class PortAddRemoveWidget : public QWidget
 {
     Q_OBJECT
 public:
-    PortAddRemoveWidget(unsigned int nInPorts,
-                        unsigned int nOutPorts,
-                        NodeId nodeId,
-                        DataFlowModel &model,
-                        QWidget *parent = nullptr);
+    PortAddRemoveWidget(NodeId nodeId, DataFlowModel &model, QWidget *parent = nullptr);
 
     ~PortAddRemoveWidget();
 

@@ -1,5 +1,4 @@
 #include "GraphEditorMainWindow.hpp"
-#include "SimpleGraphModel.hpp"
 #include <QtNodes/DataFlowGraphModel>
 #include <QtNodes/DataFlowGraphicsScene>
 #include <QtNodes/GraphicsView>
