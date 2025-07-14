@@ -1,5 +1,6 @@
 #pragma once
 
+#include "PortAddRemoveWidget.hpp"
 #include <QtNodes/DataFlowGraphModel>
 
 using QtNodes::ConnectionId;
@@ -9,6 +10,9 @@ using QtNodes::NodeDelegateModelRegistry;
 using QtNodes::NodeFlag;
 using QtNodes::NodeFlags;
 using QtNodes::NodeId;
+using QtNodes::NodeRole;
+using QtNodes::PortIndex;
+using QtNodes::PortType;
 
 enum class NodeTypes { Video_Input, Video_Output, Image, Buffer, Process };
 
@@ -34,14 +38,6 @@ public:
     {}
 
     bool detachPossible(ConnectionId const) const override { return true; }
-
-    /*NodeFlags nodeFlags(NodeId nodeId) const override
-    {
-        auto basicFlags = DataFlowGraphModel::nodeFlags(nodeId);
-        QVariant nodeTypeName = nodeData(nodeId, QtNodes::NodeRole::Type);
-
-        return basicFlags;
-    }*/
 
     NodeId addNodeType(NodeTypes type)
     {
@@ -79,10 +75,96 @@ public:
                 }
             }
         }
+        _nodeWidgets.erase(nodeId);
+        _nodePortCounts.erase(nodeId);
         return DataFlowGraphModel::deleteNode(nodeId);
     }
 
-    bool deleteConnection(ConnectionId const connectionId) override { return false; }
+    bool deleteConnection(ConnectionId const connectionId) override { return true; }
+
+    QVariant nodeData(NodeId nodeId, NodeRole role) const override
+    {
+        QVariant nodeTypeName = DataFlowGraphModel::nodeData(nodeId, QtNodes::NodeRole::Type);
+        if (nodeTypeName == "Process") {
+            switch (role) {
+            case NodeRole::InPortCount:
+                return _nodePortCounts[nodeId].in;
+
+            case NodeRole::OutPortCount:
+                return _nodePortCounts[nodeId].out;
+
+            case NodeRole::Widget: {
+                return QVariant::fromValue(widget(nodeId));
+            }
+            }
+        }
+
+        return DataFlowGraphModel::nodeData(nodeId, role);
+    }
+
+    bool setNodeData(NodeId nodeId, NodeRole role, QVariant value) override
+    {
+        QVariant nodeTypeName = DataFlowGraphModel::nodeData(nodeId, QtNodes::NodeRole::Type);
+        if (nodeTypeName == "Process") {
+            switch (role) {
+            case NodeRole::InPortCount:
+                _nodePortCounts[nodeId].in = value.toUInt();
+                widget(nodeId)->populateButtons(PortType::In, value.toUInt());
+                return false;
+
+            case NodeRole::OutPortCount:
+                _nodePortCounts[nodeId].out = value.toUInt();
+                widget(nodeId)->populateButtons(PortType::Out, value.toUInt());
+                return false;
+
+            case NodeRole::Widget:
+                return false;
+            }
+        }
+
+        return DataFlowGraphModel::setNodeData(nodeId, role, value);
+    }
+
+    void addPort(NodeId nodeId, PortType portType, PortIndex portIndex)
+    {
+        // STAGE 1.
+        // Compute new addresses for the existing connections that are shifted and
+        // placed after the new ones
+        PortIndex first = portIndex;
+        PortIndex last = first;
+        portsAboutToBeInserted(nodeId, portType, first, last);
+
+        // STAGE 2. Change the number of connections in your model
+        if (portType == PortType::In)
+            _nodePortCounts[nodeId].in++;
+        else
+            _nodePortCounts[nodeId].out++;
+
+        // STAGE 3. Re-create previouly existed and now shifted connections
+        portsInserted();
+
+        Q_EMIT nodeUpdated(nodeId);
+    }
+
+    void removePort(NodeId nodeId, PortType portType, PortIndex portIndex)
+    {
+        // STAGE 1.
+        // Compute new addresses for the existing connections that are shifted upwards
+        // instead of the deleted ports.
+        PortIndex first = portIndex;
+        PortIndex last = first;
+        portsAboutToBeDeleted(nodeId, portType, first, last);
+
+        // STAGE 2. Change the number of connections in your model
+        if (portType == PortType::In)
+            _nodePortCounts[nodeId].in--;
+        else
+            _nodePortCounts[nodeId].out--;
+
+        portsDeleted();
+
+        Q_EMIT nodeUpdated(nodeId);
+    }
 
 private:
     std::unordered_map<NodeTypes, std::unordered_set<NodeId>> nodesMap;
@@ -102,5 +184,24 @@ private:
         } else {
             return std::nullopt;
         }
+    }
+    struct NodePortCount
+    {
+        unsigned int in = 0;
+        unsigned int out = 0;
+    };
+    mutable std::unordered_map<NodeId, NodePortCount> _nodePortCounts;
+    mutable std::unordered_map<NodeId, PortAddRemoveWidget *> _nodeWidgets;
+    PortAddRemoveWidget *widget(NodeId nodeId) const
+    {
+        auto it = _nodeWidgets.find(nodeId);
+        if (it == _nodeWidgets.end()) {
+            _nodeWidgets[nodeId] = new PortAddRemoveWidget(0,
+                                                           0,
+                                                           nodeId,
+                                                           *const_cast<DataFlowModel *>(this));
+        }
+
+        return _nodeWidgets[nodeId];
     }
 };
