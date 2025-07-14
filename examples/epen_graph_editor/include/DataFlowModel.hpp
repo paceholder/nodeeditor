@@ -37,6 +37,28 @@ public:
         : DataFlowGraphModel(std::move(registry))
     {}
 
+    NodeId addNode(QString const nodeType) override
+    {
+        if (nodeType == "VideoOutput") {
+            auto it = nodesMap.find(NodeTypes::Video_Output);
+            if (it != nodesMap.end()) {
+                const std::unordered_set<NodeId> &nodeSet = it->second;
+                if (nodeSet.size() > 0) {
+                    return InvalidNodeId;
+                }
+            }
+        }
+        NodeId newNodeId = DataFlowGraphModel::addNode(nodeType);
+        if (nodeType == "Process") {
+            _nodePortCounts[newNodeId].in = 1;
+            widget(newNodeId)->populateButtons(PortType::In, 1);
+            _nodePortCounts[newNodeId].out = 1;
+            widget(newNodeId)->populateButtons(PortType::Out, 1);
+            _nodeSize[newNodeId] = QSize(250, 130);
+        }
+        return newNodeId;
+    }
+
     bool detachPossible(ConnectionId const) const override { return true; }
 
     NodeId addNodeType(NodeTypes type)
@@ -44,13 +66,6 @@ public:
         QString nodeTypeName = nodeTypeToName[type];
         NodeId newNodeId = addNode(nodeTypeName);
         nodesMap[type].insert(newNodeId);
-        if (type == NodeTypes::Process) {
-            _nodePortCounts[newNodeId].in = 1;
-            widget(newNodeId)->populateButtons(PortType::In, 1);
-            _nodePortCounts[newNodeId].out = 1;
-            widget(newNodeId)->populateButtons(PortType::Out, 1);
-            _nodeSize[newNodeId] = QSize(250, 130);
-        }
         return newNodeId;
     }
 
@@ -67,10 +82,10 @@ public:
     bool deleteNode(NodeId const nodeId) override
     {
         QVariant nodeTypeName = nodeData(nodeId, QtNodes::NodeRole::Type);
+        auto nodeType = stringToNodeType(nodeTypeName.toString());
         if (nodeTypeName == "VideoOutput") {
             return false;
         } else if (nodeTypeName == "VideoInput") {
-            auto nodeType = stringToNodeType(nodeTypeName.toString());
             if (nodeType) {
                 NodeTypes type = *nodeType;
                 auto it = nodesMap.find(type);
@@ -84,6 +99,14 @@ public:
         }
         _nodeWidgets.erase(nodeId);
         _nodePortCounts.erase(nodeId);
+        if (nodeType) {
+            NodeTypes type = *nodeType;
+            auto it = nodesMap.find(type);
+            if (it != nodesMap.end()) {
+                it->second.erase(nodeId);
+            }
+        }
+
         return DataFlowGraphModel::deleteNode(nodeId);
     }
 
