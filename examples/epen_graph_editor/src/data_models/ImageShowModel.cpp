@@ -1,4 +1,4 @@
-#include "ImageShowModel.hpp"
+#include "data_models/ImageShowModel.hpp"
 
 #include "PixmapData.hpp"
 

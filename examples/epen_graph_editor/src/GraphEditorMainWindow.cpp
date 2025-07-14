@@ -1,4 +1,4 @@
-#include "GraphEditorWindow.hpp"
+#include "GraphEditorMainWindow.hpp"
 #include "FloatingToolbar.hpp"
 #include <QAction>
 #include <QApplication>
@@ -15,14 +15,15 @@ using QtNodes::ConnectionStyle;
 using QtNodes::NodeRole;
 using QtNodes::StyleCollection;
 
-GraphEditorWindow::GraphEditorWindow(DataFlowGraphicsScene *scene)
+GraphEditorWindow::GraphEditorWindow(DataFlowGraphicsScene *scene, DataFlowGraphModel *model)
     : GraphicsView(scene)
     , m_toolbar(nullptr)
     , m_toolbarCreated(false)
     , _currentMode("pan")
+    , _model(model)
 {
     // Setup context menu
-    setupNodeCreation();
+    //setupNodeCreation();
 
     setWindowTitle("Simple Node Graph");
     resize(800, 600);
@@ -45,6 +46,45 @@ void GraphEditorWindow::showEvent(QShowEvent *event)
         // Use a timer to ensure the window is fully rendered
         QTimer::singleShot(100, this, [this]() { createFloatingToolbar(); });
     }
+}
+void GraphEditorWindow::moveEvent(QMoveEvent *event)
+{
+    GraphicsView::moveEvent(event);
+
+    // The toolbar will handle its own position updates through event filter
+}
+
+void GraphEditorWindow::resizeEvent(QResizeEvent *event)
+{
+    GraphicsView::resizeEvent(event);
+
+    // Update toolbar position if it's docked
+    if (m_toolbar && m_toolbar->isVisible() && m_toolbar->isDocked()) {
+        m_toolbar->updatePosition();
+    }
+}
+
+void GraphEditorWindow::mousePressEvent(QMouseEvent *event)
+{
+    GraphicsView::mousePressEvent(event);
+}
+
+void GraphEditorWindow::dragEnterEvent(QDragEnterEvent *event)
+{
+    qDebug() << "DragEnter - MIME formats:" << event->mimeData()->formats();
+    event->acceptProposedAction();
+}
+
+void GraphEditorWindow::dropEvent(QDropEvent *event)
+{
+    event->acceptProposedAction();
+    QPointF scenePos = mapToScene(event->position().toPoint());
+    createNodeAtPosition(scenePos, event->mimeData()->text());
+}
+
+void GraphEditorWindow::dragMoveEvent(QDragMoveEvent *event)
+{
+    event->acceptProposedAction();
 }
 
 void GraphEditorWindow::setupNodeCreation()
@@ -95,62 +135,21 @@ void GraphEditorWindow::createFloatingToolbar()
              << "Geometry:" << m_toolbar->geometry();
 }
 
-void GraphEditorWindow::createNodeAtPosition(const QPointF &scenePos)
+void GraphEditorWindow::createNodeAtPosition(const QPointF &scenePos, const QString nodeType)
 {
-    QtNodes::NodeId newId = nodeScene()->graphModel().addNode();
-    nodeScene()->graphModel().setNodeData(newId, NodeRole::Position, scenePos);
+    QtNodes::NodeId newId = _model->addNode(nodeType);
+    _model->setNodeData(newId, NodeRole::Position, scenePos);
 }
 
 void GraphEditorWindow::createNodeAtCursor()
 {
     // Get mouse position in scene coordinates
     QPointF posView = mapToScene(mapFromGlobal(QCursor::pos()));
-    createNodeAtPosition(posView);
-}
-
-void GraphEditorWindow::moveEvent(QMoveEvent *event)
-{
-    GraphicsView::moveEvent(event);
-
-    // The toolbar will handle its own position updates through event filter
-}
-
-void GraphEditorWindow::resizeEvent(QResizeEvent *event)
-{
-    GraphicsView::resizeEvent(event);
-
-    // Update toolbar position if it's docked
-    if (m_toolbar && m_toolbar->isVisible() && m_toolbar->isDocked()) {
-        m_toolbar->updatePosition();
-    }
+    createNodeAtPosition(posView, "ImageShowModel");
 }
 
 void GraphEditorWindow::goToMode(QString mode)
 {
     _currentMode = mode;
     qDebug() << "Mode changed to:" << mode;
-}
-
-void GraphEditorWindow::mousePressEvent(QMouseEvent *event)
-{
-    GraphicsView::mousePressEvent(event);
-}
-
-void GraphEditorWindow::dragEnterEvent(QDragEnterEvent *event)
-{
-    qDebug() << "DragEnter - MIME formats:" << event->mimeData()->formats();
-    event->acceptProposedAction();
-}
-
-void GraphEditorWindow::dropEvent(QDropEvent *event)
-{
-    qDebug() << "Drop event - Text:" << event->mimeData()->text();
-    event->acceptProposedAction();
-    QPointF scenePos = mapToScene(event->position().toPoint());
-    createNodeAtPosition(scenePos);
-}
-
-void GraphEditorWindow::dragMoveEvent(QDragMoveEvent *event)
-{
-    event->acceptProposedAction();
 }

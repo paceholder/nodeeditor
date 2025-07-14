@@ -1,5 +1,5 @@
 #include "FloatingToolbar.hpp"
-#include "GraphEditorWindow.hpp"
+#include "GraphEditorMainWindow.hpp"
 #include "QPushButton"
 #include <QApplication>
 #include <QDebug>
@@ -184,15 +184,15 @@ void FloatingToolbar::setupUI()
     };
 
     QVector<NodeType> nodeTypes = {
-        {"Video Input", QString::fromUtf8("\u25C0"), "<", "Create a video input node", true, "input"},
+        {"Video Input", QString::fromUtf8("\u25C0"), "<", "Create a video input node", true, "VideoInput"},
         {"Video Output",
          QString::fromUtf8("\u25B6"),
          ">",
          "Create a video output node",
          false,
-         "output"},
+         "VideoOutput"},
         {"Process", QString::fromUtf8("\u2666"), "*", "Create a processing node", true, "process"},
-        {"Image", QString::fromUtf8("\u25A1"), "#", "Create an image node", true, "image"},
+        {"Image", QString::fromUtf8("\u25A1"), "#", "Create an image node", true, "Image"},
         {"Buffer", QString::fromUtf8("\u25AC"), "=", "Create a buffer node", true, "buffer"}};
 
     for (const auto &nodeType : nodeTypes) {

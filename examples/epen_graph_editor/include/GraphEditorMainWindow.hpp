@@ -2,15 +2,17 @@
 #define GRAPH_EDITOR_WINDOW
 
 #include "QtNodes/GraphicsView"
-#include <QPointer>
-#include <QMimeData>
 #include <QDrag>
+#include <QMimeData>
+#include <QPointer>
 #include <QtNodes/BasicGraphicsScene>
+#include <QtNodes/DataFlowGraphModel>
 #include <QtNodes/DataFlowGraphicsScene>
 
-using QtNodes::GraphicsView;
 using QtNodes::BasicGraphicsScene;
 using QtNodes::DataFlowGraphicsScene;
+using QtNodes::DataFlowGraphModel;
+using QtNodes::GraphicsView;
 
 class FloatingToolbar;
 class SimpleGraphModel;
@@ -19,12 +21,12 @@ class GraphEditorWindow : public GraphicsView
 {
     Q_OBJECT
 public:
-    GraphEditorWindow(DataFlowGraphicsScene* scene);
+    GraphEditorWindow(DataFlowGraphicsScene *scene, DataFlowGraphModel *model);
     ~GraphEditorWindow();
 
 public slots:
     // Slot for creating a node at a specific position
-    void createNodeAtPosition(const QPointF &scenePos);
+    void createNodeAtPosition(const QPointF &scenePos,const QString nodeType);
 
     // Slot for creating a node at cursor position
     void createNodeAtCursor();
@@ -48,6 +50,7 @@ private:
     //SimpleGraphModel *m_graphModel;
     bool m_toolbarCreated; // This was missing!
     QString _currentMode;
+    DataFlowGraphModel *_model;
 };
 
 #endif // GRAPH_EDITOR_WINDOW
