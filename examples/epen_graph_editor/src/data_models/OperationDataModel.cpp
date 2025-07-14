@@ -1,6 +1,6 @@
 #include "data_models/OperationDataModel.hpp"
 
-#include "data_models/VideoData.hpp"
+#include "VideoData.hpp"
 
 unsigned int OperationDataModel::nPorts(PortType portType) const
 {

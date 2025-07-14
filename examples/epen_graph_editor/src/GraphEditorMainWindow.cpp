@@ -11,12 +11,12 @@
 #include <QtNodes/ConnectionStyle>
 #include <QtNodes/StyleCollection>
 
+using QtNodes::ConnectionId;
 using QtNodes::ConnectionStyle;
 using QtNodes::NodeRole;
 using QtNodes::StyleCollection;
-using QtNodes::ConnectionId;
 
-GraphEditorWindow::GraphEditorWindow(DataFlowGraphicsScene *scene, DataFlowGraphModel *model)
+GraphEditorWindow::GraphEditorWindow(DataFlowGraphicsScene *scene, DataFlowModel *model)
     : GraphicsView(scene)
     , m_toolbar(nullptr)
     , m_toolbarCreated(false)
@@ -32,11 +32,11 @@ GraphEditorWindow::GraphEditorWindow(DataFlowGraphicsScene *scene, DataFlowGraph
     setAcceptDrops(true);
     viewport()->setAcceptDrops(true); // Important for drag and drop
 
-    QtNodes::NodeId newIdInput = _model->addNode("VideoInput");
+    QtNodes::NodeId newIdInput = _model->addNodeType(NodeTypes::Video_Input);
     QPointF inputScenePos = mapToScene(0, 0);
     _model->setNodeData(newIdInput, NodeRole::Position, inputScenePos);
 
-    QtNodes::NodeId newIdOutput = _model->addNode("VideoOutput");
+    QtNodes::NodeId newIdOutput = _model->addNodeType(NodeTypes::Video_Output);
     QPointF outputScenePos = mapToScene(400, 0);
     _model->setNodeData(newIdOutput, NodeRole::Position, outputScenePos);
 
@@ -146,7 +146,7 @@ void GraphEditorWindow::createFloatingToolbar()
 
 void GraphEditorWindow::createNodeAtPosition(const QPointF &scenePos, const QString nodeType)
 {
-    QtNodes::NodeId newId = _model->addNode(nodeType);
+    QtNodes::NodeId newId = _model->addNodeName(nodeType);
     _model->setNodeData(newId, NodeRole::Position, scenePos);
 }
 

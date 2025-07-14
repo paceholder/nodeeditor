@@ -8,6 +8,7 @@
 #include <QtNodes/BasicGraphicsScene>
 #include <QtNodes/DataFlowGraphModel>
 #include <QtNodes/DataFlowGraphicsScene>
+#include "DataFlowModel.hpp"
 
 using QtNodes::BasicGraphicsScene;
 using QtNodes::DataFlowGraphicsScene;
@@ -21,7 +22,7 @@ class GraphEditorWindow : public GraphicsView
 {
     Q_OBJECT
 public:
-    GraphEditorWindow(DataFlowGraphicsScene *scene, DataFlowGraphModel *model);
+    GraphEditorWindow(DataFlowGraphicsScene *scene, DataFlowModel *model);
     ~GraphEditorWindow();
 
 public slots:
@@ -50,7 +51,7 @@ private:
     //SimpleGraphModel *m_graphModel;
     bool m_toolbarCreated; // This was missing!
     QString _currentMode;
-    DataFlowGraphModel *_model;
+    DataFlowModel *_model;
 };
 
 #endif // GRAPH_EDITOR_WINDOW

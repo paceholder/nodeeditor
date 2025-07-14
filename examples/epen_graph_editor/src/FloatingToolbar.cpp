@@ -193,9 +193,9 @@ void FloatingToolbar::setupUI()
          "Create a video output node",
          false,
          "VideoOutput"},
-        {"Process", QString::fromUtf8("\u2666"), "*", "Create a processing node", true, "process"},
+        {"Process", QString::fromUtf8("\u2666"), "*", "Create a processing node", true, "Process"},
         {"Image", QString::fromUtf8("\u25A1"), "#", "Create an image node", true, "Image"},
-        {"Buffer", QString::fromUtf8("\u25AC"), "=", "Create a buffer node", true, "buffer"}};
+        {"Buffer", QString::fromUtf8("\u25AC"), "=", "Create a buffer node", true, "Buffer"}};
 
     for (const auto &nodeType : nodeTypes) {
         DraggableButton *btn = new DraggableButton(nodeType.actionName, this);
@@ -426,8 +426,8 @@ void FloatingToolbar::mouseMoveEvent(QMouseEvent *event)
             m_dockPosition = Floating;
             setFixedWidth(150);
             // Adjust position to keep mouse on title bar
-            newPos = QPoint(event->globalPos().x() - m_dragStartPosition.x(),
-                            event->globalPos().y() - m_dragStartPosition.y());
+            newPos = QPoint(event->globalPosition().x() - m_dragStartPosition.x(),
+                            event->globalPosition().y() - m_dragStartPosition.y());
             if (parentWidget()) {
                 newPos = parentWidget()->mapFromGlobal(newPos);
             }

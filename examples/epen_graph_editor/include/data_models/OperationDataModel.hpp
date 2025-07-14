@@ -2,11 +2,11 @@
 
 #include <QtNodes/NodeDelegateModel>
 
+#include "VideoData.hpp"
+#include <iostream>
 #include <QtCore/QJsonObject>
 #include <QtCore/QObject>
 #include <QtWidgets/QLabel>
-#include "VideoData.hpp"
-#include <iostream>
 
 class VideoData;
 
@@ -16,8 +16,6 @@ using QtNodes::NodeDelegateModel;
 using QtNodes::PortIndex;
 using QtNodes::PortType;
 
-/// The model dictates the number of inputs and outputs for the Node.
-/// In this example it has no logic.
 class OperationDataModel : public NodeDelegateModel
 {
     Q_OBJECT
@@ -35,7 +33,6 @@ public:
     void setInData(std::shared_ptr<NodeData> data, PortIndex portIndex) override;
 
     QWidget *embeddedWidget() override { return nullptr; }
-
 
 protected:
     std::weak_ptr<VideoData> _number1;
