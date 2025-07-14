@@ -26,7 +26,7 @@ public:
     ~ImageShowModel() = default;
 
 public:
-    QString caption() const override { return QString("Image Display"); }
+    QString caption() const override { return QString("Image"); }
 
     QString name() const override { return QString("Image"); }
 

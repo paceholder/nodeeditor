@@ -14,6 +14,7 @@
 using QtNodes::ConnectionStyle;
 using QtNodes::NodeRole;
 using QtNodes::StyleCollection;
+using QtNodes::ConnectionId;
 
 GraphEditorWindow::GraphEditorWindow(DataFlowGraphicsScene *scene, DataFlowGraphModel *model)
     : GraphicsView(scene)
@@ -31,7 +32,16 @@ GraphEditorWindow::GraphEditorWindow(DataFlowGraphicsScene *scene, DataFlowGraph
     setAcceptDrops(true);
     viewport()->setAcceptDrops(true); // Important for drag and drop
 
-    // Don't create toolbar here - wait for showEvent
+    QtNodes::NodeId newIdInput = _model->addNode("VideoInput");
+    QPointF inputScenePos = mapToScene(0, 0);
+    _model->setNodeData(newIdInput, NodeRole::Position, inputScenePos);
+
+    QtNodes::NodeId newIdOutput = _model->addNode("VideoOutput");
+    QPointF outputScenePos = mapToScene(400, 0);
+    _model->setNodeData(newIdOutput, NodeRole::Position, outputScenePos);
+
+    _model->addConnection(ConnectionId{newIdInput, 0, newIdOutput, 0});
+    setupScale(0.8);
 }
 
 GraphEditorWindow::~GraphEditorWindow() {}
@@ -71,7 +81,6 @@ void GraphEditorWindow::mousePressEvent(QMouseEvent *event)
 
 void GraphEditorWindow::dragEnterEvent(QDragEnterEvent *event)
 {
-    qDebug() << "DragEnter - MIME formats:" << event->mimeData()->formats();
     event->acceptProposedAction();
 }
 

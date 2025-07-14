@@ -19,16 +19,8 @@ public:
     QString portCaption(PortType portType, PortIndex portIndex) const override
     {
         switch (portType) {
-        case PortType::In:
-            if (portIndex == 0)
-                return QStringLiteral("Dividend");
-            else if (portIndex == 1)
-                return QStringLiteral("Divisor");
-
-            break;
-
         case PortType::Out:
-            return QStringLiteral("Result");
+            return QStringLiteral("Video");
 
         default:
             break;
@@ -37,4 +29,16 @@ public:
     }
 
     QString name() const override { return QStringLiteral("VideoInput"); }
+
+    unsigned int nPorts(PortType portType) const override
+    {
+        unsigned int result;
+
+        if (portType == PortType::In)
+            result = 0;
+        else
+            result = 1;
+
+        return result;
+    }
 };

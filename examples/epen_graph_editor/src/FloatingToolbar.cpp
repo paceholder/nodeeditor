@@ -48,6 +48,8 @@ FloatingToolbar::FloatingToolbar(GraphEditorWindow *parent)
     // Ensure toolbar is on top
     raise();
     _floatHeight = height();
+
+    setDockPosition(DockPosition::DockedLeft);
 }
 
 QString FloatingToolbar::createSafeButtonText(const QString &icon, const QString &text)

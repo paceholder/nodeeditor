@@ -7,7 +7,7 @@ unsigned int OperationDataModel::nPorts(PortType portType) const
     unsigned int result;
 
     if (portType == PortType::In)
-        result = 2;
+        result = 1;
     else
         result = 1;
 

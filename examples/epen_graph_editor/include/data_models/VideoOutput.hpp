@@ -21,14 +21,9 @@ public:
         switch (portType) {
         case PortType::In:
             if (portIndex == 0)
-                return QStringLiteral("Dividend");
-            else if (portIndex == 1)
-                return QStringLiteral("Divisor");
+                return QStringLiteral("Video");
 
             break;
-
-        case PortType::Out:
-            return QStringLiteral("Result");
 
         default:
             break;
@@ -37,4 +32,16 @@ public:
     }
 
     QString name() const override { return QStringLiteral("VideoOutput"); }
+
+    unsigned int nPorts(PortType portType) const override
+    {
+        unsigned int result;
+
+        if (portType == PortType::In)
+            result = 1;
+        else
+            result = 0;
+
+        return result;
+    }
 };

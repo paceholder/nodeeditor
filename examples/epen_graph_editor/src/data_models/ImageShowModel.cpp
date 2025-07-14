@@ -30,7 +30,7 @@ unsigned int ImageShowModel::nPorts(PortType portType) const
 
     switch (portType) {
     case PortType::In:
-        result = 1;
+        result = 0;
         break;
 
     case PortType::Out:
