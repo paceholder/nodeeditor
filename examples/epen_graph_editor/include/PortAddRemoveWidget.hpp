@@ -55,7 +55,7 @@ public:
     /**
    * Adds a single `[+][-]` button group to a given layout.
    */
-    QHBoxLayout *addButtonGroupToLayout(QVBoxLayout *vbl, unsigned int portIndex);
+    QHBoxLayout *addButtonGroupToLayout(QVBoxLayout *vbl, unsigned int portIndex, bool deletable);
 
     /**
    * Removes a single `[+][-]` button group from a given layout.

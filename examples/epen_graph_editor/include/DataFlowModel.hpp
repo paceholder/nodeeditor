@@ -44,6 +44,13 @@ public:
         QString nodeTypeName = nodeTypeToName[type];
         NodeId newNodeId = addNode(nodeTypeName);
         nodesMap[type].insert(newNodeId);
+        if (type == NodeTypes::Process) {
+            _nodePortCounts[newNodeId].in = 1;
+            widget(newNodeId)->populateButtons(PortType::In, 1);
+            _nodePortCounts[newNodeId].out = 1;
+            widget(newNodeId)->populateButtons(PortType::Out, 1);
+            _nodeSize[newNodeId] = QSize(250, 130);
+        }
         return newNodeId;
     }
 
@@ -80,13 +87,13 @@ public:
         return DataFlowGraphModel::deleteNode(nodeId);
     }
 
-    bool deleteConnection(ConnectionId const connectionId) override { return true; }
-
     QVariant nodeData(NodeId nodeId, NodeRole role) const override
     {
         QVariant nodeTypeName = DataFlowGraphModel::nodeData(nodeId, QtNodes::NodeRole::Type);
         if (nodeTypeName == "Process") {
             switch (role) {
+            case NodeRole::Size:
+                return _nodeSize[nodeId];
             case NodeRole::InPortCount:
                 return _nodePortCounts[nodeId].in;
 
@@ -107,6 +114,9 @@ public:
         QVariant nodeTypeName = DataFlowGraphModel::nodeData(nodeId, QtNodes::NodeRole::Type);
         if (nodeTypeName == "Process") {
             switch (role) {
+            case NodeRole::Size:
+                _nodeSize[nodeId] = value.value<QSize>();
+                return true;
             case NodeRole::InPortCount:
                 _nodePortCounts[nodeId].in = value.toUInt();
                 widget(nodeId)->populateButtons(PortType::In, value.toUInt());
@@ -192,6 +202,7 @@ private:
     };
     mutable std::unordered_map<NodeId, NodePortCount> _nodePortCounts;
     mutable std::unordered_map<NodeId, PortAddRemoveWidget *> _nodeWidgets;
+    mutable std::unordered_map<NodeId, QSize> _nodeSize;
     PortAddRemoveWidget *widget(NodeId nodeId) const
     {
         auto it = _nodeWidgets.find(nodeId);

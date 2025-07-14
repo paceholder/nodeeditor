@@ -2,9 +2,7 @@
 
 #include "DataFlowModel.hpp"
 
-PortAddRemoveWidget::PortAddRemoveWidget(NodeId nodeId,
-                                         DataFlowModel &model,
-                                         QWidget *parent)
+PortAddRemoveWidget::PortAddRemoveWidget(NodeId nodeId, DataFlowModel &model, QWidget *parent)
     : QWidget(parent)
     , _nodeId(nodeId)
     , _model(model)
@@ -39,12 +37,9 @@ void PortAddRemoveWidget::populateButtons(PortType portType, unsigned int nPorts
 {
     QVBoxLayout *vl = (portType == PortType::In) ? _left : _right;
 
-    // we use [-1} in the expression `vl->count() - 1` because
-    // one element - a spacer - is alvays present in this layout.
-
     if (vl->count() - 1 < nPorts)
         while (vl->count() - 1 < nPorts) {
-            addButtonGroupToLayout(vl, 0);
+            addButtonGroupToLayout(vl, 0, false);
         }
 
     if (vl->count() - 1 > nPorts) {
@@ -54,7 +49,9 @@ void PortAddRemoveWidget::populateButtons(PortType portType, unsigned int nPorts
     }
 }
 
-QHBoxLayout *PortAddRemoveWidget::addButtonGroupToLayout(QVBoxLayout *vbl, unsigned int portIndex)
+QHBoxLayout *PortAddRemoveWidget::addButtonGroupToLayout(QVBoxLayout *vbl,
+                                                         unsigned int portIndex,
+                                                         bool deletable)
 {
     auto l = new QHBoxLayout();
     l->setContentsMargins(0, 0, 0, 0);
@@ -67,6 +64,7 @@ QHBoxLayout *PortAddRemoveWidget::addButtonGroupToLayout(QVBoxLayout *vbl, unsig
     button = new QPushButton("-");
     button->setFixedHeight(25);
     l->addWidget(button);
+    button->setEnabled(deletable);
     connect(button, &QPushButton::clicked, this, &PortAddRemoveWidget::onMinusClicked);
 
     vbl->insertLayout(portIndex, l);
@@ -103,7 +101,7 @@ void PortAddRemoveWidget::onPlusClicked()
     std::tie(portType, portIndex) = findWhichPortWasClicked(QObject::sender(), plusButtonIndex);
 
     // We add new "plus-minus" button group to the chosen layout.
-    addButtonGroupToLayout((portType == PortType::In) ? _left : _right, portIndex + 1);
+    addButtonGroupToLayout((portType == PortType::In) ? _left : _right, portIndex + 1, true);
 
     // Trigger changes in the model
     _model.addPort(_nodeId, portType, portIndex + 1);
