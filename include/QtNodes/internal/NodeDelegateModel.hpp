@@ -35,7 +35,9 @@ class StyleCollection;
  * AbstractGraphModel.
  * This class is the same what has been called NodeDataModel before v3.
  */
-class NODE_EDITOR_PUBLIC NodeDelegateModel : public QObject, public Serializable
+class NODE_EDITOR_PUBLIC NodeDelegateModel
+    : public QObject
+    , public Serializable
 {
     Q_OBJECT
 
@@ -43,6 +45,24 @@ public:
     NodeDelegateModel();
 
     virtual ~NodeDelegateModel() = default;
+
+    /**
+     * Describes the node status, depending on its current situation
+     */
+    struct NodeProcessingStatus
+    {
+        enum class Status : int {
+            NoStatus = 0,   ///
+            Updated = 1,    ///
+            Processing = 2, ///
+            Pending = 3,    ///
+            Empty = 4,      ///
+            Failed = 5,     ///
+            Partial = 6,    ///
+        };
+
+        Status _status{Status::NoStatus};
+    };
 
     /// It is possible to hide caption in GUI
     virtual bool captionVisible() const { return true; }
@@ -62,6 +82,12 @@ public:
     /// Validation State will default to Valid, but you can manipulate it by overriding in an inherited class
     virtual NodeValidationState validationState() const { return _nodeValidationState; }
 
+    /// Returns the curent processing status
+    virtual NodeProcessingStatus::Status processingStatus() const
+    {
+        return _processingStatus._status;
+    }
+
 public:
     QJsonObject save() const override;
 
@@ -80,6 +106,8 @@ public:
     NodeStyle const &nodeStyle() const;
 
     void setNodeStyle(NodeStyle const &style);
+
+    void setNodeProcessingStatus(NodeProcessingStatus status);
 
 public:
     virtual void setInData(std::shared_ptr<NodeData> nodeData, PortIndex const portIndex) = 0;
@@ -150,6 +178,8 @@ private:
     NodeStyle _nodeStyle;
 
     NodeValidationState _nodeValidationState;
+
+    NodeProcessingStatus _processingStatus;
 };
 
 } // namespace QtNodes

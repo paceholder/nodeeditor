@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QColor>
+#include <QIcon>
 #include <QtCore/QUuid>
 #include <QtWidgets/QGraphicsObject>
 
@@ -52,6 +54,16 @@ public:
 
     void updateQWidgetEmbedPos();
 
+    void updateStatusIconSize() const;
+
+    const QIcon processingStatusIcon() const;
+
+    QRect statusIconRect() const;
+
+    QSize statusIconSize() const;
+
+    QColor getStatusColor() { return _status_color; }
+
 protected:
     void paint(QPainter *painter,
                QStyleOptionGraphicsItem const *option,
@@ -89,5 +101,18 @@ private:
 
     // either nullptr or owned by parent QGraphicsItem
     QGraphicsProxyWidget *_proxyWidget;
+
+    mutable bool _statusIconActive;
+
+    mutable QSize _statusIconSize;
+
+    mutable QColor _status_color;
+
+    const QIcon _statusUpdated{"://status_icons/updated.svg"};
+    const QIcon _statusProcessing{"://status_icons/processing.svg"};
+    const QIcon _statusPending{"://status_icons/pending.svg"};
+    const QIcon _statusInvalid{"://status_icons/failed.svg"};
+    const QIcon _statusEmpty{"://status_icons/empty.svg"};
+    const QIcon _statusPartial{"://status_icons/partial.svg"};
 };
 } // namespace QtNodes

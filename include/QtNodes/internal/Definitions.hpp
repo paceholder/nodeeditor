@@ -18,22 +18,23 @@ NODE_EDITOR_PUBLIC Q_NAMESPACE
 Q_NAMESPACE_EXPORT(NODE_EDITOR_PUBLIC)
 #endif
 
-/**
+    /**
  * Constants used for fetching QVariant data from GraphModel.
  */
-enum class NodeRole {
-    Type = 0,             ///< Type of the current node, usually a string.
-    Position = 1,         ///< `QPointF` positon of the node on the scene.
-    Size = 2,             ///< `QSize` for resizable nodes.
-    CaptionVisible = 3,   ///< `bool` for caption visibility.
-    Caption = 4,          ///< `QString` for node caption.
-    Style = 5,            ///< Custom NodeStyle as QJsonDocument
-    InternalData = 6,     ///< Node-stecific user data as QJsonObject
-    InPortCount = 7,      ///< `unsigned int`
-    OutPortCount = 9,     ///< `unsigned int`
-    Widget = 10,          ///< Optional `QWidget*` or `nullptr`
-    ValidationState = 11, ///< Enum NodeValidationState of the node
-};
+    enum class NodeRole {
+        Type = 0,             ///< Type of the current node, usually a string.
+        Position = 1,         ///< `QPointF` positon of the node on the scene.
+        Size = 2,             ///< `QSize` for resizable nodes.
+        CaptionVisible = 3,   ///< `bool` for caption visibility.
+        Caption = 4,          ///< `QString` for node caption.
+        Style = 5,            ///< Custom NodeStyle as QJsonDocument
+        InternalData = 6,     ///< Node-stecific user data as QJsonObject
+        InPortCount = 7,      ///< `unsigned int`
+        OutPortCount = 9,     ///< `unsigned int`
+        Widget = 10,          ///< Optional `QWidget*` or `nullptr`
+        ValidationState = 11, ///< Enum NodeValidationState of the node
+        ProcessingStatus = 12 ///< Enum NodeProcessingStatus of the node
+    };
 Q_ENUM_NS(NodeRole)
 
 /**

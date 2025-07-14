@@ -3,11 +3,13 @@
 #include "AbstractNodeGeometry.hpp"
 #include "ConnectionGraphicsObject.hpp"
 #include "ConnectionIdUtils.hpp"
+#include "DataFlowGraphModel.hpp"
 #include "DefaultConnectionPainter.hpp"
 #include "DefaultHorizontalNodeGeometry.hpp"
 #include "DefaultNodePainter.hpp"
 #include "DefaultVerticalNodeGeometry.hpp"
 #include "GraphicsView.hpp"
+#include "NodeDelegateModel.hpp"
 #include "NodeGraphicsObject.hpp"
 
 #include <QUndoStack>

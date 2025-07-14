@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <iostream>
 
+#include <QJsonDocument>
 #include <QtWidgets/QGraphicsEffect>
 #include <QtWidgets/QtWidgets>
 
@@ -65,6 +66,15 @@ NodeGraphicsObject::NodeGraphicsObject(BasicGraphicsScene &scene, NodeId nodeId)
         if (_nodeId == nodeId)
             setLockedState();
     });
+
+    QVariant var = _graphModel.nodeData(_nodeId, NodeRole::ProcessingStatus);
+    auto processingStatusValue = var.value<QtNodes::NodeDelegateModel::NodeProcessingStatus>()
+                                     ._status;
+
+    _statusIconActive = processingStatusValue
+                        != QtNodes::NodeDelegateModel::NodeProcessingStatus::Status::NoStatus;
+    _statusIconSize.setWidth(_statusIconActive ? 32 : 0);
+    _statusIconSize.setHeight(_statusIconActive ? 32 : 0);
 }
 
 AbstractGraphModel &NodeGraphicsObject::graphModel() const
@@ -377,6 +387,71 @@ void NodeGraphicsObject::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 void NodeGraphicsObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
     Q_EMIT nodeScene()->nodeContextMenu(_nodeId, mapToScene(event->pos()));
+}
+
+void NodeGraphicsObject::updateStatusIconSize() const
+{
+    QVariant var = _graphModel.nodeData(_nodeId, NodeRole::ProcessingStatus);
+    auto processingStatusValue = var.value<QtNodes::NodeDelegateModel::NodeProcessingStatus>()
+                                     ._status;
+
+    bool oldStatus = _statusIconActive;
+    _statusIconActive = processingStatusValue
+                        != QtNodes::NodeDelegateModel::NodeProcessingStatus::Status::NoStatus;
+
+    if (oldStatus != _statusIconActive) {
+        _statusIconSize.setWidth(_statusIconActive ? 32 : 0);
+        _statusIconSize.setHeight(_statusIconActive ? 32 : 0);
+    }
+}
+
+QRect NodeGraphicsObject::statusIconRect() const
+{
+    QVariant var = _graphModel.nodeData(_nodeId, NodeRole::ProcessingStatus);
+
+    // auto spacing = static_cast<int>(_spacing);
+    auto iconPos =
+        //     = portScenePosition(std::max(var.value<QtNodes::NodeDelegateModel>().nPorts(PortType::Out),
+        //                                  var.value<QtNodes::NodeDelegateModel>().nPorts(PortType::In)),
+        //                         PortType::Out)
+        //           .toPoint()
+        // +
+        QPoint{-statusIconSize().width() / 2, 0};
+
+    return QRect{iconPos, statusIconSize()};
+}
+
+const QIcon NodeGraphicsObject::processingStatusIcon() const
+{
+    QVariant var = _graphModel.nodeData(_nodeId, NodeRole::ProcessingStatus);
+
+    switch (var.value<QtNodes::NodeDelegateModel::NodeProcessingStatus>()._status) {
+    case QtNodes::NodeDelegateModel::NodeProcessingStatus::Status::NoStatus:
+    case QtNodes::NodeDelegateModel::NodeProcessingStatus::Status::Updated:
+        _status_color = QColor("green");
+        return _statusUpdated;
+    case QtNodes::NodeDelegateModel::NodeProcessingStatus::Status::Processing:
+        _status_color = QColor("blue");
+        return _statusProcessing;
+    case QtNodes::NodeDelegateModel::NodeProcessingStatus::Status::Pending:
+        _status_color = QColor("yellow");
+        return _statusPending;
+    case QtNodes::NodeDelegateModel::NodeProcessingStatus::Status::Empty:
+        _status_color = QColor("gray");
+        return _statusEmpty;
+    case QtNodes::NodeDelegateModel::NodeProcessingStatus::Status::Failed:
+        _status_color = QColor("red");
+        return _statusInvalid;
+    case QtNodes::NodeDelegateModel::NodeProcessingStatus::Status::Partial:
+        _status_color = QColor("white");
+        return _statusPartial;
+    }
+    return _statusInvalid;
+}
+
+QSize NodeGraphicsObject::statusIconSize() const
+{
+    return _statusIconSize;
 }
 
 } // namespace QtNodes
