@@ -295,7 +295,7 @@ void BasicGraphicsScene::onNodeCreated(NodeId const nodeId)
                 if (auto *df = dynamic_cast<DataFlowGraphModel *>(&_graphModel))
                     if (auto *d = df->delegateModel<NodeDelegateModel>(nodeId))
                         d->setNodeProcessingStatus(
-                            NodeDelegateModel::NodeProcessingStatus::Status::NoStatus);
+                            NodeDelegateModel::NodeProcessingStatus::Status::Updated);
                 if (auto ngo = nodeGraphicsObject(nodeId))
                     ngo->update();
             });

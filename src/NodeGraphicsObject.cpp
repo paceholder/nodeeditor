@@ -392,8 +392,8 @@ void NodeGraphicsObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 void NodeGraphicsObject::updateStatusIconSize() const
 {
     QVariant var = _graphModel.nodeData(_nodeId, NodeRole::ProcessingStatus);
-    auto processingStatusValue = var.value<QtNodes::NodeDelegateModel::NodeProcessingStatus>()
-                                     ._status;
+    auto processingStatusValue
+        = var.value<QtNodes::NodeDelegateModel::NodeProcessingStatus::Status>();
 
     bool oldStatus = _statusIconActive;
     _statusIconActive = processingStatusValue
@@ -425,8 +425,9 @@ const QIcon NodeGraphicsObject::processingStatusIcon() const
 {
     QVariant var = _graphModel.nodeData(_nodeId, NodeRole::ProcessingStatus);
 
-    switch (var.value<QtNodes::NodeDelegateModel::NodeProcessingStatus>()._status) {
+    switch (var.value<QtNodes::NodeDelegateModel::NodeProcessingStatus::Status>()) {
     case QtNodes::NodeDelegateModel::NodeProcessingStatus::Status::NoStatus:
+        return QIcon();
     case QtNodes::NodeDelegateModel::NodeProcessingStatus::Status::Updated:
         _status_color = QColor("green");
         return _statusUpdated;

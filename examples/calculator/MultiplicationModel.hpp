@@ -32,25 +32,24 @@ private:
         // Dentro da sua classe:
         QTimer *timer = new QTimer(this);
         timer->start(1000); // 1000ms = 1 segundo
-        int secondsRemaining = 10;
+        int secondsRemaining = 3;
         connect(timer, &QTimer::timeout, this, [=]() mutable {
             if (--secondsRemaining <= 0) {
                 timer->stop();
+                if (n1 && n2) {
+                    //modelValidationState = NodeValidationState::Valid;
+                    //modelValidationError = QString();
+                    _result = std::make_shared<DecimalData>(n1->number() * n2->number());
+                } else {
+                    //modelValidationState = NodeValidationState::Warning;
+                    //modelValidationError = QStringLiteral("Missing or incorrect inputs");
+                    _result.reset();
+                }
+
+                Q_EMIT dataUpdated(outPortIndex);
                 // Faça algo quando o timer acabar
             }
             // Atualize sua UI aqui, ex: label->setText(QString::number(secondsRemaining));
         });
-
-        if (n1 && n2) {
-            //modelValidationState = NodeValidationState::Valid;
-            //modelValidationError = QString();
-            _result = std::make_shared<DecimalData>(n1->number() * n2->number());
-        } else {
-            //modelValidationState = NodeValidationState::Warning;
-            //modelValidationError = QStringLiteral("Missing or incorrect inputs");
-            _result.reset();
-        }
-
-        Q_EMIT dataUpdated(outPortIndex);
     }
 };
