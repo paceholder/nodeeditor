@@ -278,6 +278,40 @@ void BasicGraphicsScene::onNodeCreated(NodeId const nodeId)
 {
     _nodeGraphicsObjects[nodeId] = std::make_unique<NodeGraphicsObject>(*this, nodeId);
 
+    //auto processing_status = NodeDelegateModel::NodeProcessingStatus()
+
+    auto *dfModel = dynamic_cast<DataFlowGraphModel *>(&_graphModel);
+    if (dfModel) {
+        if (auto *delegate = dfModel->delegateModel<NodeDelegateModel>(nodeId)) {
+            connect(delegate, &NodeDelegateModel::computingStarted, this, [this, nodeId]() {
+                if (auto *df = dynamic_cast<DataFlowGraphModel *>(&_graphModel))
+                    if (auto *d = df->delegateModel<NodeDelegateModel>(nodeId))
+                        d->setNodeProcessingStatus(
+                            NodeDelegateModel::NodeProcessingStatus::Status::Processing);
+                if (auto ngo = nodeGraphicsObject(nodeId))
+                    ngo->update();
+            });
+            connect(delegate, &NodeDelegateModel::computingFinished, this, [this, nodeId]() {
+                if (auto *df = dynamic_cast<DataFlowGraphModel *>(&_graphModel))
+                    if (auto *d = df->delegateModel<NodeDelegateModel>(nodeId))
+                        d->setNodeProcessingStatus(
+                            NodeDelegateModel::NodeProcessingStatus::Status::NoStatus);
+                if (auto ngo = nodeGraphicsObject(nodeId))
+                    ngo->update();
+            });
+            /*
+            connect(delegate, &NodeDelegateModel::computingFinished, this, [this, nodeId]() {
+                if (auto *df = dynamic_cast<DataFlowGraphModel *>(&_graphModel))
+                    if (auto *d = df->delegateModel<NodeDelegateModel>(nodeId))
+                        d->setNodeProcessingStatus(
+                            NodeDelegateModel::NodeProcessingStatus::Status::NoStatus);
+                if (auto ngo = nodeGraphicsObject(nodeId))
+                    ngo->update();
+            });
+*/
+        }
+    }
+
     Q_EMIT modified(this);
 }
 

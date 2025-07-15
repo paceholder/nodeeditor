@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QtNodes/NodeDelegateModel>
-
+#include <QTimer>
 #include <QtCore/QObject>
 #include <QtWidgets/QLabel>
 
@@ -28,6 +28,18 @@ private:
 
         auto n1 = _number1.lock();
         auto n2 = _number2.lock();
+
+        // Dentro da sua classe:
+        QTimer *timer = new QTimer(this);
+        timer->start(1000); // 1000ms = 1 segundo
+        int secondsRemaining = 10;
+        connect(timer, &QTimer::timeout, this, [=]() mutable {
+            if (--secondsRemaining <= 0) {
+                timer->stop();
+                // Faça algo quando o timer acabar
+            }
+            // Atualize sua UI aqui, ex: label->setText(QString::number(secondsRemaining));
+        });
 
         if (n1 && n2) {
             //modelValidationState = NodeValidationState::Valid;

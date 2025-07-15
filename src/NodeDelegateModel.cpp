@@ -56,9 +56,9 @@ void NodeDelegateModel::setNodeStyle(NodeStyle const &style)
     _nodeStyle = style;
 }
 
-void NodeDelegateModel::setNodeProcessingStatus(NodeProcessingStatus status)
+void NodeDelegateModel::setNodeProcessingStatus(NodeProcessingStatus::Status status)
 {
-    _processingStatus = status;
+    _processingStatus._status = status;
 }
 
 } // namespace QtNodes

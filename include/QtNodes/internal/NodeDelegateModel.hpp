@@ -107,7 +107,7 @@ public:
 
     void setNodeStyle(NodeStyle const &style);
 
-    void setNodeProcessingStatus(NodeProcessingStatus status);
+    void setNodeProcessingStatus(NodeProcessingStatus::Status status);
 
 public:
     virtual void setInData(std::shared_ptr<NodeData> nodeData, PortIndex const portIndex) = 0;

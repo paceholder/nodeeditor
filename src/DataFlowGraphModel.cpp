@@ -320,7 +320,7 @@ bool DataFlowGraphModel::setNodeData(NodeId nodeId, NodeRole role, QVariant valu
         if (value.canConvert<QtNodes::NodeDelegateModel::NodeProcessingStatus>()) {
             auto status = value.value<QtNodes::NodeDelegateModel::NodeProcessingStatus>();
             if (auto node = delegateModel<NodeDelegateModel>(nodeId); node != nullptr) {
-                node->setNodeProcessingStatus(status);
+                node->setNodeProcessingStatus(status._status);
             }
         }
         Q_EMIT nodeUpdated(nodeId);
