@@ -8,10 +8,14 @@
 #include "qtpropertymanager.h"
 #include "qtvariantproperty.h"
 #include "qttreepropertybrowser.h"
+#include <QtNodes/DataFlowGraphModel>
 
 QT_BEGIN_NAMESPACE
 class QVBoxLayout;
 QT_END_NAMESPACE
+
+using QtNodes::NodeId;
+using QtNodes::InvalidNodeId;
 
 class FloatingProperties : public FloatingPanelBase
 {
@@ -27,7 +31,7 @@ signals:
     void nodeDeselected();
 
 public slots:
-    void updatePropertiesForNode(int nodeId);
+    void updatePropertiesForNode(NodeId nodeId);
     void clearProperties();
 
 protected:
@@ -45,7 +49,7 @@ private:
     QVBoxLayout *m_propertiesLayout;
     
     // Current node
-    int m_currentNodeId;
+    NodeId m_currentNodeId;
     
     // Property widgets
     QList<QWidget*> m_propertyWidgets;

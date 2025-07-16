@@ -11,14 +11,48 @@
 #include <QSpinBox>
 #include <QVBoxLayout>
 
+// Custom editor factory to create larger input fields
+class CustomVariantEditorFactory : public QtVariantEditorFactory
+{
+public:
+    QWidget *createEditor(QtVariantPropertyManager *manager,
+                          QtProperty *property,
+                          QWidget *parent) override
+    {
+        QWidget *editor = QtVariantEditorFactory::createEditor(manager, property, parent);
+
+        if (editor) {
+            // Set minimum height for all editors
+            editor->setMinimumHeight(20);
+            editor->setMaximumHeight(20);
+
+            // Apply consistent styling to all editor types
+            QString editorStyle
+                = "padding: 2px 4px; margin: 0px; min-height: 20px; max-height: 20px;";
+
+            if (QLineEdit *lineEdit = qobject_cast<QLineEdit *>(editor)) {
+                lineEdit->setStyleSheet("QLineEdit { " + editorStyle + " }");
+            } else if (QSpinBox *spinBox = qobject_cast<QSpinBox *>(editor)) {
+                spinBox->setStyleSheet("QSpinBox { " + editorStyle + " }");
+            } else if (QDoubleSpinBox *doubleSpinBox = qobject_cast<QDoubleSpinBox *>(editor)) {
+                doubleSpinBox->setStyleSheet("QDoubleSpinBox { " + editorStyle + " }");
+            } else if (QComboBox *comboBox = qobject_cast<QComboBox *>(editor)) {
+                comboBox->setStyleSheet("QComboBox { " + editorStyle + " }");
+            }
+        }
+
+        return editor;
+    }
+};
+
 FloatingProperties::FloatingProperties(GraphEditorWindow *parent)
     : FloatingPanelBase(parent, "Properties")
-    , m_currentNodeId(-1)
+    , m_currentNodeId(InvalidNodeId)
     , _properties(nullptr)
 {
     // Set panel-specific dimensions
     setFloatingWidth(200);
-    setDockedWidth(250);  // Wider for properties
+    setDockedWidth(250); // Wider for properties
 
     // Initialize UI
     setupUI();
@@ -53,36 +87,6 @@ void FloatingProperties::setupUI()
     QFont labelFont = QApplication::font();
     labelFont.setPointSize(10);
 
-    // Additional style for property widgets
-    QString additionalStyle = 
-        "QLabel {"
-        "   color: #555;"
-        "   font-size: 10px;"
-        "   font-weight: bold;"
-        "   margin-top: 5px;"
-        "}"
-        "QLineEdit, QSpinBox, QDoubleSpinBox, QComboBox {"
-        "   padding: 4px 6px;"
-        "   border: 1px solid #bbb;"
-        "   border-radius: 3px;"
-        "   background-color: white;"
-        "   font-size: 11px;"
-        "}"
-        "QLineEdit:focus, QSpinBox:focus, QDoubleSpinBox:focus, QComboBox:focus {"
-        "   border-color: #0078d4;"
-        "   outline: none;"
-        "}"
-        "QCheckBox {"
-        "   font-size: 11px;"
-        "   spacing: 5px;"
-        "}"
-        "QCheckBox::indicator {"
-        "   width: 16px;"
-        "   height: 16px;"
-        "}";
-    
-    getContentWidget()->setStyleSheet(getContentWidget()->styleSheet() + additionalStyle);
-
     QVBoxLayout *layout = getContentLayout();
 
     // Properties section
@@ -105,93 +109,100 @@ QtTreePropertyBrowser *FloatingProperties::getPropertyWidget()
 {
     QtVariantPropertyManager *variantManager = new QtVariantPropertyManager();
 
-    int i = 0;
-    QtProperty *topItem = variantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
-                                                      QString::number(i++)
-                                                          + QLatin1String(" Group Property"));
-
-    QtVariantProperty *item = variantManager->addProperty(QVariant::Bool,
-                                                          QString::number(i++)
-                                                              + QLatin1String(" Bool Property"));
-    item->setValue(true);
-    topItem->addSubProperty(item);
-
-    item = variantManager->addProperty(QVariant::Int,
-                                       QString::number(i++) + QLatin1String(" Int Property"));
-    item->setValue(20);
-    item->setAttribute(QLatin1String("minimum"), 0);
-    item->setAttribute(QLatin1String("maximum"), 100);
-    item->setAttribute(QLatin1String("singleStep"), 10);
-    topItem->addSubProperty(item);
-
-    item = variantManager->addProperty(QVariant::Int,
-                                       QString::number(i++)
-                                           + QLatin1String(" Int Property (ReadOnly)"));
-    item->setValue(20);
-    item->setAttribute(QLatin1String("minimum"), 0);
-    item->setAttribute(QLatin1String("maximum"), 100);
-    item->setAttribute(QLatin1String("singleStep"), 10);
-    item->setAttribute(QLatin1String("readOnly"), true);
-    topItem->addSubProperty(item);
-
-    item = variantManager->addProperty(QVariant::Double,
-                                       QString::number(i++) + QLatin1String(" Double Property"));
-    item->setValue(1.2345);
-    item->setAttribute(QLatin1String("singleStep"), 0.1);
-    item->setAttribute(QLatin1String("decimals"), 3);
-    topItem->addSubProperty(item);
-
-    item = variantManager->addProperty(QVariant::String,
-                                       QString::number(i++) + QLatin1String(" String Property"));
-    item->setValue("Value");
-    topItem->addSubProperty(item);
-
-    item = variantManager->addProperty(QVariant::Date,
-                                       QString::number(i++) + QLatin1String(" Date Property"));
-    item->setValue(QDate::currentDate().addDays(2));
-    topItem->addSubProperty(item);
-
-    item = variantManager->addProperty(QVariant::Time,
-                                       QString::number(i++) + QLatin1String(" Time Property"));
-    item->setValue(QTime::currentTime());
-    topItem->addSubProperty(item);
-
-    item = variantManager->addProperty(QVariant::DateTime,
-                                       QString::number(i++) + QLatin1String(" DateTime Property"));
-    item->setValue(QDateTime::currentDateTime());
-    topItem->addSubProperty(item);
-
-    item = variantManager->addProperty(QVariant::Point,
-                                       QString::number(i++) + QLatin1String(" Point Property"));
-    item->setValue(QPoint(10, 10));
-    topItem->addSubProperty(item);
-
-    item = variantManager->addProperty(QVariant::Size,
-                                       QString::number(i++) + QLatin1String(" Size Property"));
-    item->setValue(QSize(20, 20));
-    item->setAttribute(QLatin1String("minimum"), QSize(10, 10));
-    item->setAttribute(QLatin1String("maximum"), QSize(30, 30));
-    topItem->addSubProperty(item);
-
-    item = variantManager->addProperty(QtVariantPropertyManager::enumTypeId(),
-                                       QString::number(i++) + QLatin1String(" Enum Property"));
-    QStringList enumNames;
-    enumNames << "Enum0" << "Enum1" << "Enum2";
-    item->setAttribute(QLatin1String("enumNames"), enumNames);
-    item->setValue(1);
-    topItem->addSubProperty(item);
-
-    item = variantManager->addProperty(QVariant::Color,
-                                       QString::number(i++) + QLatin1String(" Color Property"));
-    topItem->addSubProperty(item);
-
-    QtVariantEditorFactory *variantFactory = new QtVariantEditorFactory();
+    // Use custom factory with larger inputs
+    CustomVariantEditorFactory *variantFactory = new CustomVariantEditorFactory();
 
     QtTreePropertyBrowser *variantEditor = new QtTreePropertyBrowser();
     variantEditor->setFactoryForManager(variantManager, variantFactory);
-    variantEditor->addProperty(topItem);
-    variantEditor->setPropertiesWithoutValueMarked(true);
+
+    // Create a sample property
+    QtVariantProperty *item = variantManager->addProperty(QVariant::String, QLatin1String("Name"));
+    item->setValue("Node001");
+
+    variantEditor->addProperty(item);
+    variantEditor->setPropertiesWithoutValueMarked(false);
     variantEditor->setRootIsDecorated(false);
+
+    // Apply comprehensive styling for larger input fields
+    variantEditor->setStyleSheet("QtTreePropertyBrowser {"
+                                 "   background-color: #ffffff;"
+                                 "   alternate-background-color: #f9f9f9;"
+                                 "   font-size: 11px;"
+                                 "}"
+                                 "QtTreePropertyBrowser::item {"
+                                 "   height: 20px;" // Increased row height
+                                 "   padding-top: 0px;"
+                                 "   padding-bottom: 0px;"
+                                 "}"
+                                 // Style for property names column
+                                 "QtTreePropertyBrowser::item:!has-children {"
+                                 "   padding-left: 4px;"
+                                 "}"
+                                 // Global style for all input widgets
+                                 "QtTreePropertyBrowser QLineEdit,"
+                                 "QtTreePropertyBrowser QSpinBox,"
+                                 "QtTreePropertyBrowser QDoubleSpinBox,"
+                                 "QtTreePropertyBrowser QComboBox,"
+                                 "QtTreePropertyBrowser QDateEdit,"
+                                 "QtTreePropertyBrowser QTimeEdit,"
+                                 "QtTreePropertyBrowser QDateTimeEdit {"
+                                 "   min-height: 14px;"
+                                 "   max-height: 14px;"
+                                 "   padding: 0px;"
+                                 "   margin: 0px;"
+                                 "   border: 1px solid #bbb;"
+                                 "   border-radius: 2px;"
+                                 "   background-color: white;"
+                                 "   font-size: 13px;"
+                                 "}"
+                                 // Focus style
+                                 "QtTreePropertyBrowser QLineEdit:focus,"
+                                 "QtTreePropertyBrowser QSpinBox:focus,"
+                                 "QtTreePropertyBrowser QDoubleSpinBox:focus,"
+                                 "QtTreePropertyBrowser QComboBox:focus {"
+                                 "   border-color: #0078d4;"
+                                 "   padding: 0px;"
+                                 "   margin: 0px;"
+                                 "   background-color: #f0f8ff;"
+                                 "}"
+                                 // Style for spin box buttons
+                                 "QtTreePropertyBrowser QSpinBox::up-button,"
+                                 "QtTreePropertyBrowser QDoubleSpinBox::up-button {"
+                                 "   width: 16px;"
+                                 "   height: 13px;"
+                                 "   border-left: 1px solid #bbb;"
+                                 "}"
+                                 "QtTreePropertyBrowser QSpinBox::down-button,"
+                                 "QtTreePropertyBrowser QDoubleSpinBox::down-button {"
+                                 "   width: 16px;"
+                                 "   height: 13px;"
+                                 "   border-left: 1px solid #bbb;"
+                                 "}"
+                                 // Color button specific style
+                                 "QtTreePropertyBrowser QtColorEditWidget {"
+                                 "   min-height: 13px;"
+                                 "   max-height: 13px;"
+                                 "}"
+                                 // Checkbox style
+                                 "QtTreePropertyBrowser QCheckBox {"
+                                 "   padding: 4px;"
+                                 "}"
+                                 "QtTreePropertyBrowser QCheckBox::indicator {"
+                                 "   width: 16px;"
+                                 "   height: 16px;"
+                                 "}");
+
+    // Set alternating row colors
+    variantEditor->setAlternatingRowColors(true);
+
+    // Adjust splitter position for better property name visibility
+    variantEditor->setSplitterPosition(100);
+
+    // Set indentation
+    variantEditor->setIndentation(15);
+
+    // Make sure headers are visible if needed
+    variantEditor->setHeaderVisible(false);
 
     return variantEditor;
 }
@@ -201,7 +212,7 @@ void FloatingProperties::connectSignals()
     // Connect to property change signals when values are modified
 }
 
-void FloatingProperties::updatePropertiesForNode(int nodeId)
+void FloatingProperties::updatePropertiesForNode(NodeId nodeId)
 {
     if (m_currentNodeId == nodeId) {
         return; // Already showing this node's properties
@@ -209,74 +220,16 @@ void FloatingProperties::updatePropertiesForNode(int nodeId)
 
     m_currentNodeId = nodeId;
     clearPropertyWidgets();
-
-    // Example properties - you would get these from your node model
-    QLabel *nodeHeader = new QLabel(QString("Node #%1").arg(nodeId));
-    nodeHeader->setStyleSheet("font-size: 12px; font-weight: bold; color: #333; padding: 5px 0;");
-    m_propertiesLayout->addWidget(nodeHeader);
-    m_propertyWidgets.append(nodeHeader);
-
-    // Add separator
-    QFrame *separator = new QFrame();
-    separator->setFrameShape(QFrame::HLine);
-    separator->setFrameShadow(QFrame::Sunken);
-    m_propertiesLayout->addWidget(separator);
-    m_propertyWidgets.append(separator);
-
-    // Example properties based on node type
-    // You would customize this based on your actual node properties
-
-    // Name property
-    QLineEdit *nameEdit = new QLineEdit();
-    nameEdit->setText(QString("Node_%1").arg(nodeId));
-    connect(nameEdit, &QLineEdit::textChanged, [this](const QString &text) {
-        emit propertyChanged("name", text);
-    });
-    addPropertyWidget("Name:", nameEdit);
-
-    // Type property (read-only)
-    QComboBox *typeCombo = new QComboBox();
-    typeCombo->addItems({"Video Input", "Video Output", "Process", "Image", "Buffer"});
-    typeCombo->setCurrentIndex(nodeId % 5); // Example selection
-    connect(typeCombo, QOverload<int>::of(&QComboBox::currentIndexChanged), [this](int index) {
-        emit propertyChanged("type", index);
-    });
-    addPropertyWidget("Type:", typeCombo);
-
-    // Position properties
-    QDoubleSpinBox *xSpin = new QDoubleSpinBox();
-    xSpin->setRange(-9999, 9999);
-    xSpin->setValue(100.0 * nodeId); // Example value
-    xSpin->setSuffix(" px");
-    connect(xSpin, QOverload<double>::of(&QDoubleSpinBox::valueChanged), [this](double value) {
-        emit propertyChanged("x", value);
-    });
-    addPropertyWidget("X Position:", xSpin);
-
-    QDoubleSpinBox *ySpin = new QDoubleSpinBox();
-    ySpin->setRange(-9999, 9999);
-    ySpin->setValue(50.0 * nodeId); // Example value
-    ySpin->setSuffix(" px");
-    connect(ySpin, QOverload<double>::of(&QDoubleSpinBox::valueChanged), [this](double value) {
-        emit propertyChanged("y", value);
-    });
-    addPropertyWidget("Y Position:", ySpin);
-
-    // Add some spacing at the end
-    m_propertiesLayout->addSpacing(10);
-
-    // Update the content size
-    getContentWidget()->adjustSize();
 }
 
 void FloatingProperties::clearProperties()
 {
-    m_currentNodeId = -1;
+    m_currentNodeId = InvalidNodeId;
     clearPropertyWidgets();
 
     QLabel *noSelectionLabel = new QLabel("No node selected");
     noSelectionLabel->setAlignment(Qt::AlignCenter);
-    noSelectionLabel->setStyleSheet("color: #999; font-style: italic; padding: 20px;");
+    noSelectionLabel->setStyleSheet("color: #999; font-style: italic; padding: 0px;");
     m_propertiesLayout->addWidget(noSelectionLabel);
     m_propertyWidgets.append(noSelectionLabel);
 }
@@ -302,7 +255,7 @@ void FloatingProperties::addPropertyWidget(const QString &label, QWidget *widget
 void FloatingProperties::resizeEvent(QResizeEvent *event)
 {
     FloatingPanelBase::resizeEvent(event);
-    
+
     if (_properties) {
         _properties->setFixedHeight(height());
     }

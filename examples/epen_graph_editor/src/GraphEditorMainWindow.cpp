@@ -103,9 +103,11 @@ void GraphEditorWindow::mousePressEvent(QMouseEvent *event)
     // You'll need to implement this based on your scene's node handling
     QGraphicsItem *item = scene()->itemAt(mapToScene(event->pos()), QTransform());
     if (item) {
+        qDebug()<<"selected";
         // Check if this is a node item and get its ID
         // This is a simplified example - adjust based on your actual node implementation
-        // auto nodeItem = dynamic_cast<NodeGraphicsObject*>(item);
+         //auto nodeItem = dynamic_cast<NodeGraphicsObject*>(item);
+         
         // if (nodeItem) {
         //     onNodeSelected(nodeItem->nodeId());
         // }
@@ -260,6 +262,7 @@ void GraphEditorWindow::goToMode(QString mode)
 
 void GraphEditorWindow::onNodeSelected(int nodeId)
 {
+    qDebug()<<nodeId;
     m_currentSelectedNodeId = nodeId;
     
     if (m_properties) {
