@@ -16,6 +16,7 @@ using QtNodes::DataFlowGraphModel;
 using QtNodes::GraphicsView;
 
 class FloatingToolbar;
+class FloatingProperties;
 class SimpleGraphModel;
 
 class GraphEditorWindow : public GraphicsView
@@ -27,11 +28,16 @@ public:
 
 public slots:
     // Slot for creating a node at a specific position
-    void createNodeAtPosition(const QPointF &scenePos,const QString nodeType);
+    void createNodeAtPosition(const QPointF &scenePos, const QString nodeType);
 
     // Slot for creating a node at cursor position
     void createNodeAtCursor();
     void goToMode(QString mode);
+    
+    // Slots for node selection and property changes
+    void onNodeSelected(int nodeId);
+    void onNodeDeselected();
+    void onPropertyChanged(const QString &name, const QVariant &value);
 
 protected:
     // Override to maintain toolbar position
@@ -45,13 +51,17 @@ protected:
 
 private:
     void createFloatingToolbar();
+    void createFloatingProperties();
     void setupNodeCreation();
 
     QPointer<FloatingToolbar> m_toolbar;
-    //SimpleGraphModel *m_graphModel;
-    bool m_toolbarCreated; // This was missing!
+    QPointer<FloatingProperties> m_properties;
+
+    bool m_toolbarCreated;
+    bool m_propertiesCreated;
     QString _currentMode;
     DataFlowModel *_model;
+    int m_currentSelectedNodeId;
 };
 
 #endif // GRAPH_EDITOR_WINDOW

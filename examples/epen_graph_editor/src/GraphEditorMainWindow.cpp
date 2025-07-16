@@ -1,5 +1,6 @@
 #include "GraphEditorMainWindow.hpp"
 #include "FloatingToolbar.hpp"
+#include "FloatingProperties.hpp"
 #include <QAction>
 #include <QApplication>
 #include <QCursor>
@@ -19,9 +20,12 @@ using QtNodes::StyleCollection;
 GraphEditorWindow::GraphEditorWindow(DataFlowGraphicsScene *scene, DataFlowModel *model)
     : GraphicsView(scene)
     , m_toolbar(nullptr)
+    , m_properties(nullptr)
     , m_toolbarCreated(false)
+    , m_propertiesCreated(false)
     , _currentMode("pan")
     , _model(model)
+    , m_currentSelectedNodeId(-1)
 {
     // Setup context menu
     //setupNodeCreation();
@@ -32,6 +36,7 @@ GraphEditorWindow::GraphEditorWindow(DataFlowGraphicsScene *scene, DataFlowModel
     setAcceptDrops(true);
     viewport()->setAcceptDrops(true); // Important for drag and drop
 
+    // Create initial nodes
     QtNodes::NodeId newIdInput = _model->addNodeType(NodeTypes::Video_Input);
     QPointF inputScenePos = mapToScene(0, 0);
     _model->setNodeData(newIdInput, NodeRole::Position, inputScenePos);
@@ -41,10 +46,14 @@ GraphEditorWindow::GraphEditorWindow(DataFlowGraphicsScene *scene, DataFlowModel
     _model->setNodeData(newIdOutput, NodeRole::Position, outputScenePos);
 
     _model->addConnection(ConnectionId{newIdInput, 0, newIdOutput, 0});
+    
     setupScale(0.8);
 }
 
-GraphEditorWindow::~GraphEditorWindow() {}
+GraphEditorWindow::~GraphEditorWindow() 
+{
+    // Cleanup is handled by QPointer
+}
 
 void GraphEditorWindow::showEvent(QShowEvent *event)
 {
@@ -56,12 +65,19 @@ void GraphEditorWindow::showEvent(QShowEvent *event)
         // Use a timer to ensure the window is fully rendered
         QTimer::singleShot(100, this, [this]() { createFloatingToolbar(); });
     }
+
+    // Create properties panel
+    if (!m_propertiesCreated && isVisible()) {
+        m_propertiesCreated = true;
+        // Create properties panel slightly after toolbar
+        QTimer::singleShot(150, this, [this]() { createFloatingProperties(); });
+    }
 }
+
 void GraphEditorWindow::moveEvent(QMoveEvent *event)
 {
     GraphicsView::moveEvent(event);
-
-    // The toolbar will handle its own position updates through event filter
+    // The toolbars will handle their own position updates through event filter
 }
 
 void GraphEditorWindow::resizeEvent(QResizeEvent *event)
@@ -72,11 +88,30 @@ void GraphEditorWindow::resizeEvent(QResizeEvent *event)
     if (m_toolbar && m_toolbar->isVisible() && m_toolbar->isDocked()) {
         m_toolbar->updatePosition();
     }
+
+    // Update properties position if it's docked
+    if (m_properties && m_properties->isVisible() && m_properties->isDocked()) {
+        m_properties->updatePosition();
+    }
 }
 
 void GraphEditorWindow::mousePressEvent(QMouseEvent *event)
 {
     GraphicsView::mousePressEvent(event);
+    
+    // Example: Check if a node was clicked and select it
+    // You'll need to implement this based on your scene's node handling
+    QGraphicsItem *item = scene()->itemAt(mapToScene(event->pos()), QTransform());
+    if (item) {
+        // Check if this is a node item and get its ID
+        // This is a simplified example - adjust based on your actual node implementation
+        // auto nodeItem = dynamic_cast<NodeGraphicsObject*>(item);
+        // if (nodeItem) {
+        //     onNodeSelected(nodeItem->nodeId());
+        // }
+    } else {
+        onNodeDeselected();
+    }
 }
 
 void GraphEditorWindow::dragEnterEvent(QDragEnterEvent *event)
@@ -137,17 +172,63 @@ void GraphEditorWindow::createFloatingToolbar()
     m_toolbar->show();
     m_toolbar->raise();
 
-    // Set initial dock position (optional - start docked to right)
-    // m_toolbar->setDockPosition(FloatingToolbar::DockedRight);
+    // Set initial dock position (optional - start docked to left)
+    // m_toolbar->setDockPosition(FloatingToolbar::DockedLeft);
 
     qDebug() << "Toolbar created. Visible:" << m_toolbar->isVisible()
              << "Geometry:" << m_toolbar->geometry();
+}
+
+void GraphEditorWindow::createFloatingProperties()
+{
+    qDebug() << "Creating floating properties panel...";
+
+    // Create the floating properties panel
+    m_properties = new FloatingProperties(this);
+
+    if (!m_properties) {
+        qDebug() << "Failed to create properties panel!";
+        return;
+    }
+
+    // Connect properties panel signals
+    connect(m_properties, &FloatingProperties::propertyChanged, 
+            this, &GraphEditorWindow::onPropertyChanged);
+
+    // Connect to the properties panel's node selection signals if needed
+    connect(m_properties, &FloatingProperties::nodeSelected,
+            this, &GraphEditorWindow::onNodeSelected);
+    connect(m_properties, &FloatingProperties::nodeDeselected,
+            this, &GraphEditorWindow::onNodeDeselected);
+
+    // If you have node selection in your scene, connect it
+    // Example (adjust based on your actual implementation):
+    // auto dataFlowScene = dynamic_cast<DataFlowGraphicsScene*>(scene());
+    // if (dataFlowScene) {
+    //     connect(dataFlowScene, &DataFlowGraphicsScene::nodeSelected,
+    //             this, &GraphEditorWindow::onNodeSelected);
+    //     connect(dataFlowScene, &DataFlowGraphicsScene::nodeDeselected,
+    //             this, &GraphEditorWindow::onNodeDeselected);
+    // }
+
+    // Show the properties panel
+    m_properties->show();
+    m_properties->raise();
+
+    // Start docked to the right by default
+    // m_properties->setDockPosition(FloatingProperties::DockedRight);
+
+    qDebug() << "Properties panel created. Visible:" << m_properties->isVisible()
+             << "Geometry:" << m_properties->geometry();
 }
 
 void GraphEditorWindow::createNodeAtPosition(const QPointF &scenePos, const QString nodeType)
 {
     QtNodes::NodeId newId = _model->addNodeName(nodeType);
     _model->setNodeData(newId, NodeRole::Position, scenePos);
+    
+    // Select the newly created node
+    onNodeSelected(static_cast<int>(newId));
 }
 
 void GraphEditorWindow::createNodeAtCursor()
@@ -161,4 +242,72 @@ void GraphEditorWindow::goToMode(QString mode)
 {
     _currentMode = mode;
     qDebug() << "Mode changed to:" << mode;
+    
+    // Handle different modes
+    if (mode == "VideoInput") {
+        createNodeAtCursor();
+    } else if (mode == "VideoOutput") {
+        // Create video output node
+        QPointF posView = mapToScene(mapFromGlobal(QCursor::pos()));
+        createNodeAtPosition(posView, "VideoOutput");
+    } else if (mode == "Process") {
+        // Create process node
+        QPointF posView = mapToScene(mapFromGlobal(QCursor::pos()));
+        createNodeAtPosition(posView, "Process");
+    }
+    // Add more mode handlers as needed
+}
+
+void GraphEditorWindow::onNodeSelected(int nodeId)
+{
+    m_currentSelectedNodeId = nodeId;
+    
+    if (m_properties) {
+        m_properties->updatePropertiesForNode(nodeId);
+    }
+    
+    qDebug() << "Node selected:" << nodeId;
+}
+
+void GraphEditorWindow::onNodeDeselected()
+{
+    m_currentSelectedNodeId = -1;
+    
+    if (m_properties) {
+        m_properties->clearProperties();
+    }
+    
+    qDebug() << "Node deselected";
+}
+
+void GraphEditorWindow::onPropertyChanged(const QString &name, const QVariant &value)
+{
+    qDebug() << "Property changed:" << name << "=" << value;
+    
+    // Handle property changes here
+    // Update your node model with the new property value
+    if (_model && m_currentSelectedNodeId >= 0) {
+        QtNodes::NodeId nodeId = static_cast<QtNodes::NodeId>(m_currentSelectedNodeId);
+        
+        if (name == "name") {
+            // Update node name
+            // _model->setNodeData(nodeId, NodeRole::Name, value);
+        } else if (name == "x" || name == "y") {
+            // Update node position
+            QPointF currentPos = _model->nodeData(nodeId, NodeRole::Position).toPointF();
+            if (name == "x") {
+                currentPos.setX(value.toDouble());
+            } else {
+                currentPos.setY(value.toDouble());
+            }
+            _model->setNodeData(nodeId, NodeRole::Position, currentPos);
+        } else if (name == "width" || name == "height") {
+            // Update node size if supported
+            // _model->setNodeData(nodeId, NodeRole::Size, value);
+        } else if (name == "enabled") {
+            // Update node enabled state
+            // _model->setNodeData(nodeId, NodeRole::Enabled, value);
+        }
+        // Add more property handlers as needed
+    }
 }
