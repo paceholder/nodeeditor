@@ -8,41 +8,27 @@
 #include <QFrame>
 #include <QLabel>
 #include <QLineEdit>
-#include <QMouseEvent>
-#include <QPainter>
-#include <QPropertyAnimation>
-#include <QScrollArea>
 #include <QSpinBox>
 #include <QVBoxLayout>
 
 FloatingProperties::FloatingProperties(GraphEditorWindow *parent)
-    : QWidget(parent)
-    , m_graphEditor(parent)
-    , m_dragging(false)
-    , m_dockPosition(Floating)
-    , m_previewDockPosition(Floating)
-    , m_dockMargin(0)
-    , m_dockingDistance(40)
-    , m_dockedWidth(250) // Wider for properties
+    : FloatingPanelBase(parent, "Properties")
     , m_currentNodeId(-1)
+    , _properties(nullptr)
 {
-    // Keep it as a child widget with these flags
-    setWindowFlags(Qt::SubWindow | Qt::FramelessWindowHint);
-    setAttribute(Qt::WA_TranslucentBackground);
+    // Set panel-specific dimensions
+    setFloatingWidth(200);
+    setDockedWidth(250);  // Wider for properties
 
-    // Create animation for smooth transitions
-    m_geometryAnimation = new QPropertyAnimation(this, "geometry");
-    m_geometryAnimation->setDuration(200);
-    m_geometryAnimation->setEasingCurve(QEasingCurve::OutCubic);
-
+    // Initialize UI
     setupUI();
     connectSignals();
 
     // Initial floating size and position
-    setFixedWidth(200);
+    setFixedWidth(floatingWidth());
     if (parent) {
         // Position on the right side by default
-        m_floatingGeometry = QRect(parent->width() - 220, 20, 200, height());
+        m_floatingGeometry = QRect(parent->width() - 220, 20, floatingWidth(), height());
         setGeometry(m_floatingGeometry);
     }
 
@@ -54,45 +40,21 @@ FloatingProperties::FloatingProperties(GraphEditorWindow *parent)
     setDockPosition(DockPosition::DockedRight);
 }
 
+FloatingProperties::~FloatingProperties()
+{
+    delete _properties;
+}
+
 void FloatingProperties::setupUI()
 {
-    // Create scroll area for when docked
-    m_scrollArea = new QScrollArea(this);
-    m_scrollArea->setWidgetResizable(true);
-    m_scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    m_scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-    m_scrollArea->setFrameShape(QFrame::NoFrame);
-
-    m_contentWidget = new QWidget();
-    m_contentWidget->setObjectName("PropertiesContent");
+    // Call base class setup
+    setupBaseUI("Properties");
 
     QFont labelFont = QApplication::font();
     labelFont.setPointSize(10);
 
-    m_scrollArea->setStyleSheet("QScrollArea {"
-                                "   background: transparent;"
-                                "   border: none;"
-                                "}"
-                                "QScrollBar:vertical {"
-                                "   background: #f0f0f0;"
-                                "   width: 10px;"
-                                "   border-radius: 5px;"
-                                "}"
-                                "QScrollBar::handle:vertical {"
-                                "   background: #c0c0c0;"
-                                "   border-radius: 5px;"
-                                "   min-height: 20px;"
-                                "}"
-                                "QScrollBar::handle:vertical:hover {"
-                                "   background: #a0a0a0;"
-                                "}");
-
-    m_contentWidget->setStyleSheet(
-        "#PropertiesContent {"
-        "   background-color: #f5f5f5;"
-        "   border: 1px solid #ccc;"
-        "   border-radius: 6px;"
-        "}"
+    // Additional style for property widgets
+    QString additionalStyle = 
         "QLabel {"
         "   color: #555;"
         "   font-size: 10px;"
@@ -117,50 +79,25 @@ void FloatingProperties::setupUI()
         "QCheckBox::indicator {"
         "   width: 16px;"
         "   height: 16px;"
-        "}");
+        "}";
+    
+    getContentWidget()->setStyleSheet(getContentWidget()->styleSheet() + additionalStyle);
 
-    // Set scroll area content
-    m_scrollArea->setWidget(m_contentWidget);
-
-    // Main layout for this widget
-    QVBoxLayout *mainLayout = new QVBoxLayout(this);
-    mainLayout->setContentsMargins(0, 0, 0, 0);
-    mainLayout->addWidget(m_scrollArea);
-
-    // Content layout
-    m_layout = new QVBoxLayout(m_contentWidget);
-    m_layout->setContentsMargins(8, 8, 8, 8);
-    m_layout->setSpacing(4);
-
-    // Title bar for dragging
-    QLabel *title = new QLabel("Properties");
-    title->setAlignment(Qt::AlignCenter);
-    title->setStyleSheet("font-weight: bold;"
-                         "padding: 8px;"
-                         "background-color: #e0e0e0;"
-                         "border-radius: 4px;"
-                         "margin-bottom: 5px;");
-    title->setCursor(Qt::SizeAllCursor);
-    m_layout->addWidget(title);
+    QVBoxLayout *layout = getContentLayout();
 
     // Properties section
     m_propertiesLayout = new QVBoxLayout();
     m_propertiesLayout->setSpacing(6);
-    m_layout->addLayout(m_propertiesLayout);
+    layout->addLayout(m_propertiesLayout);
 
-    // Initial "no selection" message
-    /*QLabel *noSelectionLabel = new QLabel("No node selected");
-    noSelectionLabel->setAlignment(Qt::AlignCenter);
-    noSelectionLabel->setStyleSheet("color: #999; font-style: italic; padding: 20px;");
-    m_propertiesLayout->addWidget(noSelectionLabel);*/
-
+    // Initialize property browser
     _properties = getPropertyWidget();
     m_propertiesLayout->addWidget(_properties);
 
-    m_layout->addStretch();
+    layout->addStretch();
 
     // Initial size
-    m_contentWidget->adjustSize();
+    getContentWidget()->adjustSize();
     adjustSize();
 }
 
@@ -204,33 +141,9 @@ QtTreePropertyBrowser *FloatingProperties::getPropertyWidget()
     item->setAttribute(QLatin1String("decimals"), 3);
     topItem->addSubProperty(item);
 
-    item = variantManager->addProperty(QVariant::Double,
-                                       QString::number(i++)
-                                           + QLatin1String(" Double Property (ReadOnly)"));
-    item->setValue(1.23456);
-    item->setAttribute(QLatin1String("singleStep"), 0.1);
-    item->setAttribute(QLatin1String("decimals"), 5);
-    item->setAttribute(QLatin1String("readOnly"), true);
-    topItem->addSubProperty(item);
-
     item = variantManager->addProperty(QVariant::String,
                                        QString::number(i++) + QLatin1String(" String Property"));
     item->setValue("Value");
-    topItem->addSubProperty(item);
-
-    item = variantManager->addProperty(QVariant::String,
-                                       QString::number(i++)
-                                           + QLatin1String(" String Property (Password)"));
-    item->setAttribute(QLatin1String("echoMode"), QLineEdit::Password);
-    item->setValue("Password");
-    topItem->addSubProperty(item);
-
-    // Readonly String Property
-    item = variantManager->addProperty(QVariant::String,
-                                       QString::number(i++)
-                                           + QLatin1String(" String Property (ReadOnly)"));
-    item->setAttribute(QLatin1String("readOnly"), true);
-    item->setValue("readonly text");
     topItem->addSubProperty(item);
 
     item = variantManager->addProperty(QVariant::Date,
@@ -248,31 +161,9 @@ QtTreePropertyBrowser *FloatingProperties::getPropertyWidget()
     item->setValue(QDateTime::currentDateTime());
     topItem->addSubProperty(item);
 
-    item = variantManager->addProperty(QVariant::KeySequence,
-                                       QString::number(i++)
-                                           + QLatin1String(" KeySequence Property"));
-    item->setValue(QKeySequence(Qt::ControlModifier | Qt::Key_Q));
-    topItem->addSubProperty(item);
-
-    item = variantManager->addProperty(QVariant::Char,
-                                       QString::number(i++) + QLatin1String(" Char Property"));
-    item->setValue(QChar(386));
-    topItem->addSubProperty(item);
-
-    item = variantManager->addProperty(QVariant::Locale,
-                                       QString::number(i++) + QLatin1String(" Locale Property"));
-    item->setValue(QLocale(QLocale::Polish, QLocale::Poland));
-    topItem->addSubProperty(item);
-
     item = variantManager->addProperty(QVariant::Point,
                                        QString::number(i++) + QLatin1String(" Point Property"));
     item->setValue(QPoint(10, 10));
-    topItem->addSubProperty(item);
-
-    item = variantManager->addProperty(QVariant::PointF,
-                                       QString::number(i++) + QLatin1String(" PointF Property"));
-    item->setValue(QPointF(1.2345, -1.23451));
-    item->setAttribute(QLatin1String("decimals"), 3);
     topItem->addSubProperty(item);
 
     item = variantManager->addProperty(QVariant::Size,
@@ -282,53 +173,12 @@ QtTreePropertyBrowser *FloatingProperties::getPropertyWidget()
     item->setAttribute(QLatin1String("maximum"), QSize(30, 30));
     topItem->addSubProperty(item);
 
-    item = variantManager->addProperty(QVariant::SizeF,
-                                       QString::number(i++) + QLatin1String(" SizeF Property"));
-    item->setValue(QSizeF(1.2345, 1.2345));
-    item->setAttribute(QLatin1String("decimals"), 3);
-    item->setAttribute(QLatin1String("minimum"), QSizeF(0.12, 0.34));
-    item->setAttribute(QLatin1String("maximum"), QSizeF(20.56, 20.78));
-    topItem->addSubProperty(item);
-
-    item = variantManager->addProperty(QVariant::Rect,
-                                       QString::number(i++) + QLatin1String(" Rect Property"));
-    item->setValue(QRect(10, 10, 20, 20));
-    topItem->addSubProperty(item);
-    item->setAttribute(QLatin1String("constraint"), QRect(0, 0, 50, 50));
-
-    item = variantManager->addProperty(QVariant::RectF,
-                                       QString::number(i++) + QLatin1String(" RectF Property"));
-    item->setValue(QRectF(1.2345, 1.2345, 1.2345, 1.2345));
-    topItem->addSubProperty(item);
-    item->setAttribute(QLatin1String("constraint"), QRectF(0, 0, 50, 50));
-    item->setAttribute(QLatin1String("decimals"), 3);
-
     item = variantManager->addProperty(QtVariantPropertyManager::enumTypeId(),
                                        QString::number(i++) + QLatin1String(" Enum Property"));
     QStringList enumNames;
     enumNames << "Enum0" << "Enum1" << "Enum2";
     item->setAttribute(QLatin1String("enumNames"), enumNames);
     item->setValue(1);
-    topItem->addSubProperty(item);
-
-    item = variantManager->addProperty(QtVariantPropertyManager::flagTypeId(),
-                                       QString::number(i++) + QLatin1String(" Flag Property"));
-    QStringList flagNames;
-    flagNames << "Flag0" << "Flag1" << "Flag2";
-    item->setAttribute(QLatin1String("flagNames"), flagNames);
-    item->setValue(5);
-    topItem->addSubProperty(item);
-
-    item = variantManager->addProperty(QVariant::SizePolicy,
-                                       QString::number(i++) + QLatin1String(" SizePolicy Property"));
-    topItem->addSubProperty(item);
-
-    item = variantManager->addProperty(QVariant::Font,
-                                       QString::number(i++) + QLatin1String(" Font Property"));
-    topItem->addSubProperty(item);
-
-    item = variantManager->addProperty(QVariant::Cursor,
-                                       QString::number(i++) + QLatin1String(" Cursor Property"));
     topItem->addSubProperty(item);
 
     item = variantManager->addProperty(QVariant::Color,
@@ -412,39 +262,11 @@ void FloatingProperties::updatePropertiesForNode(int nodeId)
     });
     addPropertyWidget("Y Position:", ySpin);
 
-    // Size properties
-    QSpinBox *widthSpin = new QSpinBox();
-    widthSpin->setRange(50, 500);
-    widthSpin->setValue(150);
-    widthSpin->setSuffix(" px");
-    connect(widthSpin, QOverload<int>::of(&QSpinBox::valueChanged), [this](int value) {
-        emit propertyChanged("width", value);
-    });
-    addPropertyWidget("Width:", widthSpin);
-
-    QSpinBox *heightSpin = new QSpinBox();
-    heightSpin->setRange(50, 500);
-    heightSpin->setValue(100);
-    heightSpin->setSuffix(" px");
-    connect(heightSpin, QOverload<int>::of(&QSpinBox::valueChanged), [this](int value) {
-        emit propertyChanged("height", value);
-    });
-    addPropertyWidget("Height:", heightSpin);
-
-    // Enabled property
-    QCheckBox *enabledCheck = new QCheckBox("Enabled");
-    enabledCheck->setChecked(true);
-    connect(enabledCheck, &QCheckBox::toggled, [this](bool checked) {
-        emit propertyChanged("enabled", checked);
-    });
-    m_propertiesLayout->addWidget(enabledCheck);
-    m_propertyWidgets.append(enabledCheck);
-
     // Add some spacing at the end
     m_propertiesLayout->addSpacing(10);
 
     // Update the content size
-    m_contentWidget->adjustSize();
+    getContentWidget()->adjustSize();
 }
 
 void FloatingProperties::clearProperties()
@@ -477,226 +299,11 @@ void FloatingProperties::addPropertyWidget(const QString &label, QWidget *widget
     m_propertyWidgets.append(widget);
 }
 
-void FloatingProperties::updatePosition()
-{
-    if (m_dockPosition != Floating) {
-        updateDockedGeometry();
-    }
-}
-
-void FloatingProperties::setDockPosition(DockPosition position)
-{
-    if (m_dockPosition == position)
-        return;
-
-    m_dockPosition = position;
-
-    if (position == Floating) {
-        // Restore floating geometry
-        setMinimumSize(0, 0);
-        setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
-        setFixedWidth(200);
-
-        if (m_geometryAnimation->state() == QAbstractAnimation::Running) {
-            m_geometryAnimation->stop();
-        }
-        m_geometryAnimation->setStartValue(geometry());
-        m_geometryAnimation->setEndValue(m_floatingGeometry);
-        m_geometryAnimation->start();
-    } else {
-        // Apply docked geometry
-        updateDockedGeometry();
-    }
-}
-
-FloatingProperties::DockPosition FloatingProperties::checkDockingZone(const QPoint &pos)
-{
-    if (!parentWidget())
-        return Floating;
-
-    int parentWidth = parentWidget()->width();
-
-    // Check left edge
-    if (pos.x() <= m_dockingDistance) {
-        return DockedLeft;
-    }
-
-    // Check right edge
-    if (pos.x() + width() >= parentWidth - m_dockingDistance) {
-        return DockedRight;
-    }
-
-    return Floating;
-}
-
-void FloatingProperties::applyDocking(DockPosition position)
-{
-    setDockPosition(position);
-}
-
-void FloatingProperties::updateDockedGeometry()
-{
-    if (!parentWidget() || m_dockPosition == Floating) {
-        return;
-    }
-
-    QRect targetGeometry;
-    int parentHeight = parentWidget()->height();
-
-    // Remove size constraints for docking
-    setMinimumSize(0, 0);
-    setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
-
-    switch (m_dockPosition) {
-    case DockedLeft:
-        targetGeometry = QRect(m_dockMargin,
-                               m_dockMargin,
-                               m_dockedWidth,
-                               parentHeight - 2 * m_dockMargin);
-        break;
-    case DockedRight:
-        targetGeometry = QRect(parentWidget()->width() - m_dockedWidth - m_dockMargin,
-                               m_dockMargin,
-                               m_dockedWidth,
-                               parentHeight - 2 * m_dockMargin);
-        break;
-    default:
-        return;
-    }
-
-    if (m_geometryAnimation->state() == QAbstractAnimation::Running) {
-        m_geometryAnimation->stop();
-    }
-    m_geometryAnimation->setStartValue(geometry());
-    m_geometryAnimation->setEndValue(targetGeometry);
-    m_geometryAnimation->start();
-
-    m_contentWidget->setStyleSheet("#PropertiesContent {"
-                                   "   background-color: #f5f5f5;"
-                                   "   border: 1px solid #ccc;"
-                                   "   border-radius: 0px;"
-                                   "}");
-}
-
-FloatingProperties::~FloatingProperties()
-{
-    delete _properties;
-}
-
-void FloatingProperties::paintEvent(QPaintEvent *event)
-{
-    QPainter painter(this);
-    painter.setRenderHint(QPainter::Antialiasing);
-
-    // Draw shadow
-    QRect shadowRect = rect().adjusted(4, 4, -4, -4);
-    painter.fillRect(shadowRect, QColor(0, 0, 0, 30));
-
-    // Draw docking preview
-    if (m_dragging && m_previewDockPosition != Floating && m_previewDockPosition != m_dockPosition) {
-        painter.setPen(QPen(QColor(0, 120, 215), 2));
-        painter.setBrush(QColor(0, 120, 215, 20));
-        painter.drawRoundedRect(rect().adjusted(1, 1, -1, -1), 6, 6);
-    }
-
-    QWidget::paintEvent(event);
-}
-
-void FloatingProperties::mousePressEvent(QMouseEvent *event)
-{
-    if (event->button() == Qt::LeftButton) {
-        QLabel *title = findChild<QLabel *>();
-        if (title && title->geometry().contains(event->pos())) {
-            m_dragging = true;
-            m_dragStartPosition = event->pos();
-
-            // Store current geometry if floating
-            if (m_dockPosition == Floating) {
-                m_floatingGeometry = geometry();
-            }
-
-            raise(); // Bring to front when dragging
-        }
-    }
-    QWidget::mousePressEvent(event);
-}
-
-void FloatingProperties::mouseMoveEvent(QMouseEvent *event)
-{
-    if (m_dragging && (event->buttons() & Qt::LeftButton)) {
-        QPoint newPos = pos() + event->pos() - m_dragStartPosition;
-
-        // If currently docked, undock first
-        if (m_dockPosition != Floating) {
-            m_dockPosition = Floating;
-            setFixedWidth(200);
-            // Adjust position to keep mouse on title bar
-            newPos = QPoint(event->globalPosition().x() - m_dragStartPosition.x(),
-                            event->globalPosition().y() - m_dragStartPosition.y());
-            if (parentWidget()) {
-                newPos = parentWidget()->mapFromGlobal(newPos);
-            }
-            setFixedHeight(m_floatHeight);
-            m_contentWidget->setStyleSheet("#PropertiesContent {"
-                                           "   background-color: #f5f5f5;"
-                                           "   border: 1px solid #ccc;"
-                                           "   border-radius: 6px;"
-                                           "}");
-        }
-
-        // Keep within parent bounds
-        if (parentWidget()) {
-            int maxX = parentWidget()->width() - width();
-            int maxY = parentWidget()->height() - height();
-            newPos.setX(qMax(0, qMin(newPos.x(), maxX)));
-            newPos.setY(qMax(0, qMin(newPos.y(), maxY)));
-        }
-
-        move(newPos);
-
-        // Check for docking zones
-        m_previewDockPosition = checkDockingZone(newPos);
-
-        // Remember floating position
-        if (m_previewDockPosition == Floating) {
-            m_floatingGeometry = QRect(newPos, size());
-        }
-
-        update(); // Repaint for preview
-    }
-    QWidget::mouseMoveEvent(event);
-}
-
-void FloatingProperties::mouseReleaseEvent(QMouseEvent *event)
-{
-    if (event->button() == Qt::LeftButton && m_dragging) {
-        m_dragging = false;
-
-        // Apply docking if in zone
-        if (m_previewDockPosition != Floating) {
-            applyDocking(m_previewDockPosition);
-        }
-
-        m_previewDockPosition = Floating;
-        update();
-    }
-    QWidget::mouseReleaseEvent(event);
-}
-
-void FloatingProperties::showEvent(QShowEvent *event)
-{
-    QWidget::showEvent(event);
-    updatePosition();
-    raise(); // Ensure properties panel is on top
-}
-
 void FloatingProperties::resizeEvent(QResizeEvent *event)
 {
-    QWidget::resizeEvent(event);
-
-    // If docked, maintain the docked state
-    if (m_dockPosition != Floating) {
-        updateDockedGeometry();
+    FloatingPanelBase::resizeEvent(event);
+    
+    if (_properties) {
+        _properties->setFixedHeight(height());
     }
-    _properties->setFixedHeight(height());
 }

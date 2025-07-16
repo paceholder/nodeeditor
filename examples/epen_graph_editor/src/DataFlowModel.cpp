@@ -121,11 +121,6 @@ QVariant DataFlowModel::nodeData(NodeId nodeId, NodeRole role) const
         }
         }
     }
-    if (role == NodeRole::Caption && nodeTypeName != "VideoOutput") {
-        QString fullCaption = DataFlowGraphModel::nodeData(nodeId, role).toString() + "</br>["
-                              + _nodeNames[nodeId] + "]";
-        return fullCaption;
-    }
     return DataFlowGraphModel::nodeData(nodeId, role);
 }
 
