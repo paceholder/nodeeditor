@@ -54,6 +54,8 @@ private:
     // Property widgets
     QList<QWidget*> m_propertyWidgets;
     QtTreePropertyBrowser *_properties;
+    QtVariantPropertyManager *_variantManager;
+    QtVariantEditorFactory *_variantFactory;
 };
 
 #endif // FLOATINGPROPERTIES_HPP
