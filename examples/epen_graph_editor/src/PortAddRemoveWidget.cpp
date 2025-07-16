@@ -104,7 +104,7 @@ void PortAddRemoveWidget::onPlusClicked()
     addButtonGroupToLayout((portType == PortType::In) ? _left : _right, portIndex + 1, true);
 
     // Trigger changes in the model
-    _model.addPort(_nodeId, portType, portIndex + 1);
+    _model.addProcessNodePort(_nodeId, portType, portIndex + 1);
 
     adjustSize();
 }
@@ -122,7 +122,7 @@ void PortAddRemoveWidget::onMinusClicked()
     removeButtonGroupFromLayout((portType == PortType::In) ? _left : _right, portIndex);
 
     // Trigger changes in the model
-    _model.removePort(_nodeId, portType, portIndex);
+    _model.removeProcessNodePort(_nodeId, portType, portIndex);
 
     adjustSize();
 }

@@ -36,7 +36,6 @@ public:
     DataFlowModel(std::shared_ptr<NodeDelegateModelRegistry> registry);
 
     NodeId addNode(QString const nodeType) override;
-   
 
     bool detachPossible(ConnectionId const) const override { return true; }
 
@@ -45,17 +44,14 @@ public:
     NodeId addNodeName(QString const nodeTypeName);
 
     bool deleteNode(NodeId const nodeId) override;
-    
 
     QVariant nodeData(NodeId nodeId, NodeRole role) const override;
-    
 
     bool setNodeData(NodeId nodeId, NodeRole role, QVariant value) override;
-    
 
-    void addPort(NodeId nodeId, PortType portType, PortIndex portIndex);
+    void addProcessNodePort(NodeId nodeId, PortType portType, PortIndex portIndex);
 
-    void removePort(NodeId nodeId, PortType portType, PortIndex portIndex);
+    void removeProcessNodePort(NodeId nodeId, PortType portType, PortIndex portIndex);
 
 private:
     std::unordered_map<NodeTypes, std::unordered_set<NodeId>> nodesMap;
@@ -69,5 +65,6 @@ private:
     mutable std::unordered_map<NodeId, NodePortCount> _nodePortCounts;
     mutable std::unordered_map<NodeId, PortAddRemoveWidget *> _nodeWidgets;
     mutable std::unordered_map<NodeId, QSize> _nodeSize;
+    mutable std::unordered_map<NodeId, QString> _nodeNames;
     PortAddRemoveWidget *widget(NodeId nodeId) const;
 };

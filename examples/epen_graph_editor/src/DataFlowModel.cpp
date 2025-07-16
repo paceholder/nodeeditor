@@ -23,6 +23,7 @@ NodeId DataFlowModel::addNode(QString const nodeType)
         widget(newNodeId)->populateButtons(PortType::Out, 1);
         _nodeSize[newNodeId] = QSize(250, 130);
     }
+    _nodeNames[newNodeId]=QString(nodeType) ;// + newNodeId;
     return newNodeId;
 }
 
@@ -120,7 +121,11 @@ QVariant DataFlowModel::nodeData(NodeId nodeId, NodeRole role) const
         }
         }
     }
-
+    if (role == NodeRole::Caption && nodeTypeName != "VideoOutput") {
+        QString fullCaption = DataFlowGraphModel::nodeData(nodeId, role).toString() + "</br>["
+                              + _nodeNames[nodeId] + "]";
+        return fullCaption;
+    }
     return DataFlowGraphModel::nodeData(nodeId, role);
 }
 
@@ -150,7 +155,7 @@ bool DataFlowModel::setNodeData(NodeId nodeId, NodeRole role, QVariant value)
     return DataFlowGraphModel::setNodeData(nodeId, role, value);
 }
 
-void DataFlowModel::addPort(NodeId nodeId, PortType portType, PortIndex portIndex)
+void DataFlowModel::addProcessNodePort(NodeId nodeId, PortType portType, PortIndex portIndex)
 {
     PortIndex first = portIndex;
     PortIndex last = first;
@@ -165,7 +170,7 @@ void DataFlowModel::addPort(NodeId nodeId, PortType portType, PortIndex portInde
     Q_EMIT nodeUpdated(nodeId);
 }
 
-void DataFlowModel::removePort(NodeId nodeId, PortType portType, PortIndex portIndex)
+void DataFlowModel::removeProcessNodePort(NodeId nodeId, PortType portType, PortIndex portIndex)
 {
     PortIndex first = portIndex;
     PortIndex last = first;
