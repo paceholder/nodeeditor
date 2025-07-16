@@ -429,22 +429,16 @@ const QIcon NodeGraphicsObject::processingStatusIcon() const
     case QtNodes::NodeDelegateModel::NodeProcessingStatus::Status::NoStatus:
         return QIcon();
     case QtNodes::NodeDelegateModel::NodeProcessingStatus::Status::Updated:
-        _status_color = QColor("green");
         return _statusUpdated;
     case QtNodes::NodeDelegateModel::NodeProcessingStatus::Status::Processing:
-        _status_color = QColor("blue");
         return _statusProcessing;
     case QtNodes::NodeDelegateModel::NodeProcessingStatus::Status::Pending:
-        _status_color = QColor("yellow");
         return _statusPending;
     case QtNodes::NodeDelegateModel::NodeProcessingStatus::Status::Empty:
-        _status_color = QColor("gray");
         return _statusEmpty;
     case QtNodes::NodeDelegateModel::NodeProcessingStatus::Status::Failed:
-        _status_color = QColor("red");
         return _statusInvalid;
     case QtNodes::NodeDelegateModel::NodeProcessingStatus::Status::Partial:
-        _status_color = QColor("white");
         return _statusPartial;
     }
     return _statusInvalid;

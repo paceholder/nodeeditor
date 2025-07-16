@@ -321,13 +321,6 @@ void DefaultNodePainter::drawProcessingIndicator(QPainter *painter, NodeGraphics
     QSize iconSize(16, 16);
     QPixmap pixmap = icon.pixmap(iconSize);
 
-    QColor color = ngo.getStatusColor();
-
-    QPainter imgPainter(&pixmap);
-    imgPainter.setCompositionMode(QPainter::CompositionMode_SourceIn);
-    imgPainter.fillRect(pixmap.rect(), color);
-    imgPainter.end();
-
     QRect r(size.width() - 12.0, size.height() - 12.0, 8.0, 8.0);
     painter->drawPixmap(r, pixmap);
 }

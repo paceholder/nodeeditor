@@ -62,8 +62,6 @@ public:
 
     QSize statusIconSize() const;
 
-    QColor getStatusColor() { return _status_color; }
-
 protected:
     void paint(QPainter *painter,
                QStyleOptionGraphicsItem const *option,
@@ -105,8 +103,6 @@ private:
     mutable bool _statusIconActive;
 
     mutable QSize _statusIconSize;
-
-    mutable QColor _status_color;
 
     const QIcon _statusUpdated{"://status_icons/updated.svg"};
     const QIcon _statusProcessing{"://status_icons/processing.svg"};
