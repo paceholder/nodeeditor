@@ -1,0 +1,146 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Generated Files">
+      <UniqueIdentifier>{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;moc;h;def;odl;idl;res;</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{D9D6E242-F8AF-46E4-B9FD-80ECBC20BA3E}</UniqueIdentifier>
+      <Extensions>qrc;*</Extensions>
+      <ParseFiles>false</ParseFiles>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{D9D6E242-F8AF-46E4-B9FD-80ECBC20BA3E}</UniqueIdentifier>
+      <Extensions>qrc;*</Extensions>
+      <ParseFiles>false</ParseFiles>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\qtbuttonpropertybrowser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <QtMoc Include="..\src\qteditorfactory.cpp">
+      <Filter>Source Files</Filter>
+    </QtMoc>
+    <ClCompile Include="..\src\qtgroupboxpropertybrowser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\qtpropertybrowser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\qtpropertybrowserutils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <QtMoc Include="..\src\qtpropertymanager.cpp">
+      <Filter>Source Files</Filter>
+    </QtMoc>
+    <QtMoc Include="..\src\qttreepropertybrowser.cpp">
+      <Filter>Source Files</Filter>
+    </QtMoc>
+    <ClCompile Include="..\src\qtvariantproperty.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="..\src\qtbuttonpropertybrowser.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="..\src\qteditorfactory.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="..\src\qtgroupboxpropertybrowser.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="..\src\qtpropertybrowser.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="..\src\qtpropertybrowserutils_p.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="..\src\qtpropertymanager.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="..\src\qttreepropertybrowser.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="..\src\qtvariantproperty.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\src\images\cursor-arrow.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\src\images\cursor-busy.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\src\images\cursor-closedhand.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\src\images\cursor-cross.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\src\images\cursor-forbidden.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\src\images\cursor-hand.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\src\images\cursor-hsplit.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\src\images\cursor-ibeam.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\src\images\cursor-openhand.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\src\images\cursor-sizeall.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\src\images\cursor-sizeb.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\src\images\cursor-sizef.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\src\images\cursor-sizeh.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\src\images\cursor-sizev.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\src\images\cursor-uparrow.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\src\images\cursor-vsplit.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\src\images\cursor-wait.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\src\images\cursor-whatsthis.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <QtRcc Include="..\src\qtpropertybrowser.qrc">
+      <Filter>Resource Files</Filter>
+    </QtRcc>
+  </ItemGroup>
+</Project>
