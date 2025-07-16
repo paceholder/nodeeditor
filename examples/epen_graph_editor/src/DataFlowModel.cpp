@@ -23,7 +23,7 @@ NodeId DataFlowModel::addNode(QString const nodeType)
         widget(newNodeId)->populateButtons(PortType::Out, 1);
         _nodeSize[newNodeId] = QSize(250, 130);
     }
-    _nodeNames[newNodeId]=QString(nodeType) ;// + newNodeId;
+    _nodeNames[newNodeId]=QString(nodeType) ;
     return newNodeId;
 }
 

@@ -14,6 +14,8 @@ using QtNodes::BasicGraphicsScene;
 using QtNodes::DataFlowGraphicsScene;
 using QtNodes::DataFlowGraphModel;
 using QtNodes::GraphicsView;
+using QtNodes::NodeId;
+using QtNodes::InvalidNodeId;
 
 class FloatingToolbar;
 class FloatingProperties;
@@ -35,7 +37,7 @@ public slots:
     void goToMode(QString mode);
     
     // Slots for node selection and property changes
-    void onNodeSelected(int nodeId);
+    void onNodeSelected(NodeId nodeId);
     void onNodeDeselected();
     void onPropertyChanged(const QString &name, const QVariant &value);
 
@@ -56,12 +58,12 @@ private:
 
     QPointer<FloatingToolbar> m_toolbar;
     QPointer<FloatingProperties> m_properties;
-
+    //SimpleGraphModel *m_graphModel;
     bool m_toolbarCreated;
     bool m_propertiesCreated;
     QString _currentMode;
     DataFlowModel *_model;
-    int m_currentSelectedNodeId;
+    NodeId m_currentSelectedNodeId;
 };
 
 #endif // GRAPH_EDITOR_WINDOW

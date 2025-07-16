@@ -1,6 +1,6 @@
 #include "GraphEditorMainWindow.hpp"
-#include "FloatingToolbar.hpp"
 #include "FloatingProperties.hpp"
+#include "FloatingToolbar.hpp"
 #include <QAction>
 #include <QApplication>
 #include <QCursor>
@@ -25,7 +25,7 @@ GraphEditorWindow::GraphEditorWindow(DataFlowGraphicsScene *scene, DataFlowModel
     , m_propertiesCreated(false)
     , _currentMode("pan")
     , _model(model)
-    , m_currentSelectedNodeId(-1)
+    , m_currentSelectedNodeId(InvalidNodeId)
 {
     // Setup context menu
     //setupNodeCreation();
@@ -35,6 +35,11 @@ GraphEditorWindow::GraphEditorWindow(DataFlowGraphicsScene *scene, DataFlowModel
 
     setAcceptDrops(true);
     viewport()->setAcceptDrops(true); // Important for drag and drop
+
+    // Connect to scene signals for node selection
+    connect(scene, &BasicGraphicsScene::nodeSelected, this, [this](QtNodes::NodeId nodeId) {
+        onNodeSelected(nodeId);
+    });
 
     // Create initial nodes
     QtNodes::NodeId newIdInput = _model->addNodeType(NodeTypes::Video_Input);
@@ -46,11 +51,11 @@ GraphEditorWindow::GraphEditorWindow(DataFlowGraphicsScene *scene, DataFlowModel
     _model->setNodeData(newIdOutput, NodeRole::Position, outputScenePos);
 
     _model->addConnection(ConnectionId{newIdInput, 0, newIdOutput, 0});
-    
+
     setupScale(0.8);
 }
 
-GraphEditorWindow::~GraphEditorWindow() 
+GraphEditorWindow::~GraphEditorWindow()
 {
     // Cleanup is handled by QPointer
 }
@@ -98,16 +103,14 @@ void GraphEditorWindow::resizeEvent(QResizeEvent *event)
 void GraphEditorWindow::mousePressEvent(QMouseEvent *event)
 {
     GraphicsView::mousePressEvent(event);
-    
+
     // Example: Check if a node was clicked and select it
     // You'll need to implement this based on your scene's node handling
     QGraphicsItem *item = scene()->itemAt(mapToScene(event->pos()), QTransform());
     if (item) {
-        qDebug()<<"selected";
         // Check if this is a node item and get its ID
         // This is a simplified example - adjust based on your actual node implementation
-         //auto nodeItem = dynamic_cast<NodeGraphicsObject*>(item);
-         
+        // auto nodeItem = dynamic_cast<NodeGraphicsObject*>(item);
         // if (nodeItem) {
         //     onNodeSelected(nodeItem->nodeId());
         // }
@@ -194,14 +197,20 @@ void GraphEditorWindow::createFloatingProperties()
     }
 
     // Connect properties panel signals
-    connect(m_properties, &FloatingProperties::propertyChanged, 
-            this, &GraphEditorWindow::onPropertyChanged);
+    connect(m_properties,
+            &FloatingProperties::propertyChanged,
+            this,
+            &GraphEditorWindow::onPropertyChanged);
 
     // Connect to the properties panel's node selection signals if needed
-    connect(m_properties, &FloatingProperties::nodeSelected,
-            this, &GraphEditorWindow::onNodeSelected);
-    connect(m_properties, &FloatingProperties::nodeDeselected,
-            this, &GraphEditorWindow::onNodeDeselected);
+    connect(m_properties,
+            &FloatingProperties::nodeSelected,
+            this,
+            &GraphEditorWindow::onNodeSelected);
+    connect(m_properties,
+            &FloatingProperties::nodeDeselected,
+            this,
+            &GraphEditorWindow::onNodeDeselected);
 
     // If you have node selection in your scene, connect it
     // Example (adjust based on your actual implementation):
@@ -228,9 +237,8 @@ void GraphEditorWindow::createNodeAtPosition(const QPointF &scenePos, const QStr
 {
     QtNodes::NodeId newId = _model->addNodeName(nodeType);
     _model->setNodeData(newId, NodeRole::Position, scenePos);
-    
-    // Select the newly created node
-    onNodeSelected(static_cast<int>(newId));
+
+    // The node selection will be handled by the scene's nodeSelected signal
 }
 
 void GraphEditorWindow::createNodeAtCursor()
@@ -244,7 +252,7 @@ void GraphEditorWindow::goToMode(QString mode)
 {
     _currentMode = mode;
     qDebug() << "Mode changed to:" << mode;
-    
+
     // Handle different modes
     if (mode == "VideoInput") {
         createNodeAtCursor();
@@ -260,38 +268,37 @@ void GraphEditorWindow::goToMode(QString mode)
     // Add more mode handlers as needed
 }
 
-void GraphEditorWindow::onNodeSelected(int nodeId)
+void GraphEditorWindow::onNodeSelected(NodeId nodeId)
 {
-    qDebug()<<nodeId;
     m_currentSelectedNodeId = nodeId;
-    
+
     if (m_properties) {
         m_properties->updatePropertiesForNode(nodeId);
     }
-    
+
     qDebug() << "Node selected:" << nodeId;
 }
 
 void GraphEditorWindow::onNodeDeselected()
 {
     m_currentSelectedNodeId = -1;
-    
+
     if (m_properties) {
         m_properties->clearProperties();
     }
-    
+
     qDebug() << "Node deselected";
 }
 
 void GraphEditorWindow::onPropertyChanged(const QString &name, const QVariant &value)
 {
     qDebug() << "Property changed:" << name << "=" << value;
-    
+
     // Handle property changes here
     // Update your node model with the new property value
     if (_model && m_currentSelectedNodeId >= 0) {
         QtNodes::NodeId nodeId = static_cast<QtNodes::NodeId>(m_currentSelectedNodeId);
-        
+
         if (name == "name") {
             // Update node name
             // _model->setNodeData(nodeId, NodeRole::Name, value);
