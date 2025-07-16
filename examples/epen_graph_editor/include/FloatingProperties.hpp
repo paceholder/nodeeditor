@@ -3,6 +3,12 @@
 
 #include <QWidget>
 #include <QPropertyAnimation>
+#include <QDate>
+#include <QLocale>
+#include <QLineEdit>
+#include "qtpropertymanager.h"
+#include "qtvariantproperty.h"
+#include "qttreepropertybrowser.h"
 
 QT_BEGIN_NAMESPACE
 class QVBoxLayout;
@@ -29,6 +35,7 @@ public:
     };
 
     explicit FloatingProperties(GraphEditorWindow *parent = nullptr);
+    ~FloatingProperties();
 
     void setDockPosition(DockPosition position);
     DockPosition dockPosition() const { return m_dockPosition; }
@@ -60,7 +67,7 @@ private:
     void updateDockedGeometry();
     void clearPropertyWidgets();
     void addPropertyWidget(const QString &label, QWidget *widget);
-
+    QtTreePropertyBrowser*  getPropertyWidget();
     GraphEditorWindow *m_graphEditor;
     QVBoxLayout *m_layout;
     QVBoxLayout *m_propertiesLayout;
@@ -86,6 +93,7 @@ private:
     
     // Property widgets
     QList<QWidget*> m_propertyWidgets;
+    QtTreePropertyBrowser *_properties;
 };
 
 #endif // FLOATINGPROPERTIES_HPP
