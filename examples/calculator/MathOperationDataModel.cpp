@@ -38,20 +38,5 @@ void MathOperationDataModel::setInData(std::shared_ptr<NodeData> data, PortIndex
         _number2 = numberData;
     }
 
-    /*
-    Q_EMIT computingStarted();
-
-    QTimer *timer = new QTimer(this);
-    timer->start(1000);
-    int secondsRemaining = 10;
-    connect(timer, &QTimer::timeout, this, [=]() mutable {
-        if (--secondsRemaining <= 0) {
-            timer->stop();
-            compute();
-            Q_EMIT computingFinished();
-        }
-    });
-    */
-
     compute();
 }
