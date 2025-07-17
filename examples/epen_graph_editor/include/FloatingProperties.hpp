@@ -34,7 +34,6 @@ signals:
     
 
 public slots:
-    void updatePropertiesForNode(NodeId nodeId);
     void clearProperties();
 
 protected:
@@ -59,6 +58,8 @@ private:
     QtTreePropertyBrowser *_properties;
     QtVariantPropertyManager *_variantManager;
     QtVariantEditorFactory *_variantFactory;
+    OperationDataModel* _currentNode;
+    QtTreePropertyBrowser *_variantEditor;
 };
 
 #endif // FLOATINGPROPERTIES_HPP

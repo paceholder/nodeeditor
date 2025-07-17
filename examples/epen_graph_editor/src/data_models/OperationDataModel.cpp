@@ -2,6 +2,11 @@
 
 #include "VideoData.hpp"
 
+OperationDataModel::OperationDataModel()
+{
+    _name = "NewNode001";
+}
+
 unsigned int OperationDataModel::nPorts(PortType portType) const
 {
     unsigned int result;
@@ -37,4 +42,12 @@ void OperationDataModel::setInData(std::shared_ptr<NodeData> data, PortIndex por
     } else {
         _number2 = numberData;
     }
+}
+
+void OperationDataModel::setupProperties(QtTreePropertyBrowser *variantEditor,
+                                         QtVariantPropertyManager *variantManager)
+{
+    QtVariantProperty *item = variantManager->addProperty(QMetaType::QString, QLatin1String("Name"));
+    item->setValue(_name);
+    variantEditor->addProperty(item);
 }

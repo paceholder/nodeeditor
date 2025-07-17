@@ -3,6 +3,8 @@
 #include <QtNodes/NodeDelegateModel>
 
 #include "VideoData.hpp"
+#include "qttreepropertybrowser.h"
+#include "qtvariantproperty.h"
 #include <iostream>
 #include <QtCore/QJsonObject>
 #include <QtCore/QObject>
@@ -21,6 +23,7 @@ class OperationDataModel : public NodeDelegateModel
     Q_OBJECT
 
 public:
+    OperationDataModel();
     ~OperationDataModel() = default;
 
 public:
@@ -33,10 +36,13 @@ public:
     void setInData(std::shared_ptr<NodeData> data, PortIndex portIndex) override;
 
     QWidget *embeddedWidget() override { return nullptr; }
+    virtual void setupProperties(QtTreePropertyBrowser *variantEditor,
+                                 QtVariantPropertyManager *variantManager);
 
 protected:
     std::weak_ptr<VideoData> _number1;
     std::weak_ptr<VideoData> _number2;
 
     std::shared_ptr<VideoData> _result;
+    QString _name;
 };

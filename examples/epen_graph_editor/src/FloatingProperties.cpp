@@ -117,6 +117,8 @@ FloatingProperties::~FloatingProperties()
 {
     // The property browser will delete the manager and factory
     delete _properties;
+    delete _variantManager;
+    delete _variantFactory;
 }
 
 void FloatingProperties::setupUI()
@@ -157,17 +159,11 @@ QtTreePropertyBrowser *FloatingProperties::getPropertyWidget()
     // Use custom factory with configurable editor height
     _variantFactory = new CustomVariantEditorFactory(EDITOR_HEIGHT);
 
-    QtTreePropertyBrowser *variantEditor = new QtTreePropertyBrowser();
-    variantEditor->setFactoryForManager(_variantManager, _variantFactory);
+    _variantEditor = new QtTreePropertyBrowser();
+    _variantEditor->setFactoryForManager(_variantManager, _variantFactory);
 
-    // Create a sample property
-    QtVariantProperty *item = _variantManager->addProperty(QMetaType::QString,
-                                                           QLatin1String("Name"));
-    item->setValue("Node001");
-
-    variantEditor->addProperty(item);
-    variantEditor->setPropertiesWithoutValueMarked(false);
-    variantEditor->setRootIsDecorated(false);
+    _variantEditor->setPropertiesWithoutValueMarked(false);
+    _variantEditor->setRootIsDecorated(false);
 
     // Apply comprehensive styling with configurable heights
     QString styleSheet = QString("QtTreePropertyBrowser {"
@@ -241,10 +237,10 @@ QtTreePropertyBrowser *FloatingProperties::getPropertyWidget()
                              .arg(EDITOR_PADDING)
                              .arg(EDITOR_HEIGHT / 2); // Spin button height
 
-    variantEditor->setStyleSheet(styleSheet);
+    _variantEditor->setStyleSheet(styleSheet);
 
     // IMPORTANT: Access the internal QTreeWidget to set row heights
-    QTreeWidget *treeWidget = variantEditor->findChild<QTreeWidget *>();
+    QTreeWidget *treeWidget = _variantEditor->findChild<QTreeWidget *>();
     if (treeWidget) {
         // Set uniform row heights
         treeWidget->setUniformRowHeights(true);
@@ -271,18 +267,18 @@ QtTreePropertyBrowser *FloatingProperties::getPropertyWidget()
     }
 
     // Set alternating row colors
-    variantEditor->setAlternatingRowColors(true);
+    _variantEditor->setAlternatingRowColors(true);
 
     // Adjust splitter position for better property name visibility
-    variantEditor->setSplitterPosition(100);
+    _variantEditor->setSplitterPosition(100);
 
     // Set indentation
-    variantEditor->setIndentation(15);
+    _variantEditor->setIndentation(15);
 
     // Make sure headers are visible if needed
-    variantEditor->setHeaderVisible(false);
+    _variantEditor->setHeaderVisible(false);
 
-    return variantEditor;
+    return _variantEditor;
 }
 
 void FloatingProperties::connectSignals()
@@ -293,108 +289,9 @@ void FloatingProperties::connectSignals()
         connect(_variantManager,
                 &QtVariantPropertyManager::valueChanged,
                 [this](QtProperty *property, const QVariant &value) {
-                    emit propertyChanged(property->propertyName(), value);
+                    qDebug() << "val chnaged" << value;
+                    //emit propertyChanged(property->propertyName(), value);
                 });
-    }
-}
-
-void FloatingProperties::updatePropertiesForNode(NodeId nodeId)
-{
-    if (m_currentNodeId == nodeId) {
-        return; // Already showing this node's properties
-    }
-
-    m_currentNodeId = nodeId;
-
-    // Clear existing properties
-    if (_properties) {
-        _properties->clear();
-    }
-
-    // Make sure we have a manager
-    if (!_variantManager)
-        return;
-
-    // Add properties based on node type
-    // This is just an example - you would get actual properties from your node model
-
-    // Group for basic properties
-    QtProperty *basicGroup = _variantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
-                                                          QString("Node %1").arg(nodeId));
-
-    // Name property
-    QtVariantProperty *nameProp = _variantManager->addProperty(QMetaType::QString, "Name");
-    nameProp->setValue(QString("Node_%1").arg(nodeId));
-    basicGroup->addSubProperty(nameProp);
-
-    // Type property
-    QtVariantProperty *typeProp = _variantManager
-                                      ->addProperty(QtVariantPropertyManager::enumTypeId(), "Type");
-    QStringList nodeTypes;
-    nodeTypes << "Video Input" << "Video Output" << "Process" << "Image" << "Buffer";
-    typeProp->setAttribute("enumNames", nodeTypes);
-    typeProp->setValue(nodeId % 5);
-    basicGroup->addSubProperty(typeProp);
-
-    // Position group
-    QtProperty *posGroup = _variantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
-                                                        "Position");
-
-    QtVariantProperty *xProp = _variantManager->addProperty(QMetaType::Double, "X");
-    xProp->setValue(100.0 * nodeId);
-    xProp->setAttribute("suffix", " px");
-    xProp->setAttribute("decimals", 1);
-    posGroup->addSubProperty(xProp);
-
-    QtVariantProperty *yProp = _variantManager->addProperty(QMetaType::Double, "Y");
-    yProp->setValue(50.0 * nodeId);
-    yProp->setAttribute("suffix", " px");
-    yProp->setAttribute("decimals", 1);
-    posGroup->addSubProperty(yProp);
-
-    basicGroup->addSubProperty(posGroup);
-
-    // Size group
-    QtProperty *sizeGroup = _variantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
-                                                         "Size");
-
-    QtVariantProperty *widthProp = _variantManager->addProperty(QMetaType::Int, "Width");
-    widthProp->setValue(150);
-    widthProp->setAttribute("minimum", 50);
-    widthProp->setAttribute("maximum", 500);
-    widthProp->setAttribute("suffix", " px");
-    sizeGroup->addSubProperty(widthProp);
-
-    QtVariantProperty *heightProp = _variantManager->addProperty(QMetaType::Int, "Height");
-    heightProp->setValue(100);
-    heightProp->setAttribute("minimum", 50);
-    heightProp->setAttribute("maximum", 300);
-    heightProp->setAttribute("suffix", " px");
-    sizeGroup->addSubProperty(heightProp);
-
-    basicGroup->addSubProperty(sizeGroup);
-
-    // Enabled property
-    QtVariantProperty *enabledProp = _variantManager->addProperty(QMetaType::Bool, "Enabled");
-    enabledProp->setValue(true);
-    basicGroup->addSubProperty(enabledProp);
-
-    // Add to browser
-    _properties->addProperty(basicGroup);
-
-    // IMPORTANT: Update row heights after adding properties
-    const int ROW_HEIGHT = 32; // Should match the value in getPropertyWidget()
-    QTreeWidget *treeWidget = _properties->findChild<QTreeWidget *>();
-    if (treeWidget) {
-        // Update all items with the correct height
-        QTimer::singleShot(10, [treeWidget, ROW_HEIGHT]() {
-            QTreeWidgetItemIterator it(treeWidget);
-            while (*it) {
-                (*it)->setSizeHint(0, QSize(0, ROW_HEIGHT));
-                ++it;
-            }
-            treeWidget->update();
-        });
     }
 }
 
@@ -436,5 +333,8 @@ void FloatingProperties::resizeEvent(QResizeEvent *event)
 
 void FloatingProperties::setNode(OperationDataModel *node)
 {
-    qDebug() << "node selecxted";
+    _currentNode = node;
+    _properties->clear();
+
+    node->setupProperties(_variantEditor, _variantManager);
 }
