@@ -14,13 +14,35 @@ using QtNodes::NodeRole;
 using QtNodes::PortIndex;
 using QtNodes::PortType;
 
-enum class NodeTypes { Video_Input, Video_Output, Image, Buffer, Process };
+enum class NodeTypes {
+    Video_Input,
+    Video_Output,
+    FixBuffer,
+    Process,
+    InBuffer,
+    OutBuffer,
+    InImage,
+    OutImage,
+    SliderBuffer,
+    CheckboxBuffer,
+    Color4Buffer,
+    PlainNumberBuffer
+};
 
-const QMap<NodeTypes, QString> nodeTypeToName = {{NodeTypes::Video_Input, "VideoInput"},
-                                                 {NodeTypes::Video_Output, "VideoOutput"},
-                                                 {NodeTypes::Image, "Image"},
-                                                 {NodeTypes::Buffer, "Buffer"},
-                                                 {NodeTypes::Process, "Process"}};
+const QMap<NodeTypes, QString> nodeTypeToName = {
+    {NodeTypes::Video_Input, "VideoInput"},
+    {NodeTypes::Video_Output, "VideoOutput"},
+    {NodeTypes::FixBuffer, "FixBuffer"},
+    {NodeTypes::Process, "Process"},
+    {NodeTypes::InBuffer, "InBuffer"},
+    {NodeTypes::OutBuffer, "OutBuffer"},
+    {NodeTypes::SliderBuffer, "SliderBuffer"},
+    {NodeTypes::InImage, "InImage"},
+    {NodeTypes::OutImage, "OutImage"},
+    {NodeTypes::CheckboxBuffer, "CheckboxBuffer"},
+    {NodeTypes::Color4Buffer, "Color4Buffer"},
+    {NodeTypes::PlainNumberBuffer, "PlainNumberBuffer"},
+};
 
 namespace std {
 template<>

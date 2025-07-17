@@ -1,13 +1,13 @@
 #pragma once
 #include "OperationDataModel.hpp"
 
-class Buffer : public OperationDataModel
+class GpuInputBuffer : public OperationDataModel
 {
 public:
-    virtual ~Buffer() {}
+    virtual ~GpuInputBuffer() {}
 
 public:
-    QString caption() const override { return QStringLiteral("Fixed Buffer"); }
+    QString caption() const override { return QStringLiteral("Gpu Input Buffer"); }
 
     bool portCaptionVisible(PortType portType, PortIndex portIndex) const override
     {
@@ -28,7 +28,7 @@ public:
         return QString();
     }
 
-    QString name() const override { return QStringLiteral("FixBuffer"); }
+    QString name() const override { return QStringLiteral("InBuffer"); }
 
     unsigned int nPorts(PortType portType) const override
     {

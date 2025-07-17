@@ -53,7 +53,7 @@ QString FloatingToolbar::createSafeButtonText(const QString &icon, const QString
             return "* " + text;
         if (text.contains("Image"))
             return "# " + text;
-        if (text.contains("Buffer"))
+        if (text.contains("FixBuffer"))
             return "= " + text;
         if (text.contains("Zoom In"))
             return "+ " + text;
@@ -128,7 +128,7 @@ void FloatingToolbar::setupUI()
         {"Video Output", QString::fromUtf8("\u25B6"), ">", "Create a video output node", false, "VideoOutput"},
         {"Process", QString::fromUtf8("\u2666"), "*", "Create a processing node", true, "Process"},
         {"Image", QString::fromUtf8("\u25A1"), "#", "Create an image node", true, "Image"},
-        {"Buffer", QString::fromUtf8("\u25AC"), "=", "Create a buffer node", true, "Buffer"}
+        {"Buffer", QString::fromUtf8("\u25AC"), "=", "Create a buffer node", true, "FixBuffer"}
     };
 
     for (const auto &nodeType : nodeTypes) {

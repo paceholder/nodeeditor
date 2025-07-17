@@ -1,13 +1,13 @@
 #pragma once
 #include "OperationDataModel.hpp"
 
-class Image : public OperationDataModel
+class InputImage : public OperationDataModel
 {
 public:
-    virtual ~Image() {}
+    virtual ~InputImage() {}
 
 public:
-    QString caption() const override { return QStringLiteral("Image"); }
+    QString caption() const override { return QStringLiteral("Input Image"); }
 
     bool portCaptionVisible(PortType portType, PortIndex portIndex) const override
     {
@@ -28,7 +28,7 @@ public:
         return QString();
     }
 
-    QString name() const override { return QStringLiteral("Image"); }
+    QString name() const override { return QStringLiteral("InputImage"); }
 
     unsigned int nPorts(PortType portType) const override
     {

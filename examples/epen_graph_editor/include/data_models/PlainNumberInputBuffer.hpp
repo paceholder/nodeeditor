@@ -1,13 +1,13 @@
 #pragma once
 #include "OperationDataModel.hpp"
 
-class Buffer : public OperationDataModel
+class PlainNumberInputBuffer : public OperationDataModel
 {
 public:
-    virtual ~Buffer() {}
+    virtual ~PlainNumberInputBuffer() {}
 
 public:
-    QString caption() const override { return QStringLiteral("Fixed Buffer"); }
+    QString caption() const override { return QStringLiteral("Plain Number Input Buffer"); }
 
     bool portCaptionVisible(PortType portType, PortIndex portIndex) const override
     {
@@ -28,7 +28,7 @@ public:
         return QString();
     }
 
-    QString name() const override { return QStringLiteral("FixBuffer"); }
+    QString name() const override { return QStringLiteral("PlainNumberBuffer"); }
 
     unsigned int nPorts(PortType portType) const override
     {

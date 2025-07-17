@@ -1,10 +1,10 @@
 #pragma once
 #include "OperationDataModel.hpp"
 
-class Buffer : public OperationDataModel
+class FixedBuffer : public OperationDataModel
 {
 public:
-    virtual ~Buffer() {}
+    virtual ~FixedBuffer() {}
 
 public:
     QString caption() const override { return QStringLiteral("Fixed Buffer"); }
