@@ -3,10 +3,6 @@
 
 #include "FloatingPanelBase.hpp"
 #include "data_models/OperationDataModel.hpp"
-#include "qtbuttonpropertybrowser.h"
-#include "qteditorfactory.h"
-#include "qtgroupboxpropertybrowser.h"
-#include "qtpropertymanager.h"
 #include "qttreepropertybrowser.h"
 #include <QDate>
 #include <QLineEdit>
@@ -44,13 +40,10 @@ protected:
     void resizeEvent(QResizeEvent *event) override;
 
 private:
-    // Properties layout
-
-    // Current node
     NodeId m_currentNodeId;
 
     OperationDataModel *_currentNode;
-    QtAbstractPropertyBrowser *_properties;
+    QtTreePropertyBrowser *_properties;
 };
 
 #endif // FLOATINGPROPERTIES_HPP
