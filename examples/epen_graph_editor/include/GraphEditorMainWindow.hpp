@@ -9,6 +9,7 @@
 #include <QtNodes/DataFlowGraphModel>
 #include <QtNodes/DataFlowGraphicsScene>
 #include "DataFlowModel.hpp"
+#include "data_models/OperationDataModel.hpp"
 
 using QtNodes::BasicGraphicsScene;
 using QtNodes::DataFlowGraphicsScene;
@@ -16,6 +17,7 @@ using QtNodes::DataFlowGraphModel;
 using QtNodes::GraphicsView;
 using QtNodes::NodeId;
 using QtNodes::InvalidNodeId;
+using QtNodes::NodeDelegateModel;
 
 class FloatingToolbar;
 class FloatingProperties;

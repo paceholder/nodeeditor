@@ -2,20 +2,21 @@
 #define FLOATINGPROPERTIES_HPP
 
 #include "FloatingPanelBase.hpp"
-#include <QDate>
-#include <QLocale>
-#include <QLineEdit>
+#include "data_models/OperationDataModel.hpp"
 #include "qtpropertymanager.h"
-#include "qtvariantproperty.h"
 #include "qttreepropertybrowser.h"
+#include "qtvariantproperty.h"
+#include <QDate>
+#include <QLineEdit>
+#include <QLocale>
 #include <QtNodes/DataFlowGraphModel>
 
 QT_BEGIN_NAMESPACE
 class QVBoxLayout;
 QT_END_NAMESPACE
 
-using QtNodes::NodeId;
 using QtNodes::InvalidNodeId;
+using QtNodes::NodeId;
 
 class FloatingProperties : public FloatingPanelBase
 {
@@ -25,10 +26,12 @@ public:
     explicit FloatingProperties(GraphEditorWindow *parent = nullptr);
     ~FloatingProperties();
 
+    void setNode(OperationDataModel *node);
 signals:
     void propertyChanged(const QString &name, const QVariant &value);
     void nodeSelected(int nodeId);
     void nodeDeselected();
+    
 
 public slots:
     void updatePropertiesForNode(NodeId nodeId);
@@ -43,16 +46,16 @@ protected:
 private:
     void clearPropertyWidgets();
     void addPropertyWidget(const QString &label, QWidget *widget);
-    QtTreePropertyBrowser* getPropertyWidget();
-    
+    QtTreePropertyBrowser *getPropertyWidget();
+
     // Properties layout
     QVBoxLayout *m_propertiesLayout;
-    
+
     // Current node
     NodeId m_currentNodeId;
-    
+
     // Property widgets
-    QList<QWidget*> m_propertyWidgets;
+    QList<QWidget *> m_propertyWidgets;
     QtTreePropertyBrowser *_properties;
     QtVariantPropertyManager *_variantManager;
     QtVariantEditorFactory *_variantFactory;

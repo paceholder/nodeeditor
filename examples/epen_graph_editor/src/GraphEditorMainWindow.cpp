@@ -272,11 +272,10 @@ void GraphEditorWindow::onNodeSelected(NodeId nodeId)
 {
     m_currentSelectedNodeId = nodeId;
 
+    OperationDataModel *nodeModel = _model->delegateModel<OperationDataModel>(nodeId);
     if (m_properties) {
-        m_properties->updatePropertiesForNode(nodeId);
+        m_properties->setNode(nodeModel);
     }
-
-    qDebug() << "Node selected:" << nodeId;
 }
 
 void GraphEditorWindow::onNodeDeselected()
