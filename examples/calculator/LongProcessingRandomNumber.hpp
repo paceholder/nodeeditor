@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QtNodes/NodeDelegateModel>
-#include <QtNodes/BasicGraphicsScene>
 #include <QTimer>
 #include <QtCore/QObject>
 #include <QtWidgets/QLabel>
@@ -18,20 +17,17 @@ class RandomNumberModel : public MathOperationDataModel
 public:
     RandomNumberModel() {
         QObject::connect(this, &NodeDelegateModel::computingStarted, this, [this]() {
-            //auto n1 = _number1.lock()->number();
-            //auto n2 = _number2.lock()->number();
-
-            //if (n1 > n2) {
-            //    this->setNodeProcessingStatus(
-            //        NodeDelegateModel::NodeProcessingStatus::Status::Failed);
-            //} else {
-                this->setNodeProcessingStatus(
+            this->setNodeProcessingStatus(
                     NodeDelegateModel::NodeProcessingStatus::Status::Processing);
-            //}
+
+            emit requestNodeUpdate();
+
         });
         QObject::connect(this, &NodeDelegateModel::computingFinished, this, [this]() {
             this->setNodeProcessingStatus(
                 NodeDelegateModel::NodeProcessingStatus::Status::Updated);
+
+            emit requestNodeUpdate();
         });
     }
     virtual ~RandomNumberModel() {}
@@ -60,8 +56,11 @@ private:
                     double a = n1->number();
                     double b = n2->number();
 
-                    if (a > b)
-                        std::swap(a, b);
+                    if (a > b) {
+                        this->setNodeProcessingStatus(NodeDelegateModel::NodeProcessingStatus::Status::Failed);
+                        emit requestNodeUpdate();
+                        return;
+                    }
 
                     double upper = std::nextafter(b, std::numeric_limits<double>::max());
                     double randomValue = QRandomGenerator::global()->generateDouble() * (upper - a) + a;
