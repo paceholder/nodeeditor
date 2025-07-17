@@ -152,6 +152,14 @@ Q_SIGNALS:
 
     void embeddedWidgetSizeUpdated();
 
+    /// Request an update of the node's UI.
+    /**
+     * Emit this signal whenever some internal state change requires
+     * the node to be repainted. The containing graph model will
+     * propagate the update to the scene.
+     */
+    void requestNodeUpdate();
+
     /// Call this function before deleting the data associated with ports.
     /**
    * The function notifies the Graph Model and makes it remove and recompute the
