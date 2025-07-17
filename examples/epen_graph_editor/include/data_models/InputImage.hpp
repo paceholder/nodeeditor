@@ -28,7 +28,7 @@ public:
         return QString();
     }
 
-    QString name() const override { return QStringLiteral("InputImage"); }
+    QString name() const override { return QStringLiteral("InImage"); }
 
     unsigned int nPorts(PortType portType) const override
     {
