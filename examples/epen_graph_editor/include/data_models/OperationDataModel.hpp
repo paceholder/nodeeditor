@@ -39,6 +39,8 @@ public:
     virtual void setupProperties(QtTreePropertyBrowser *variantEditor,
                                  QtVariantPropertyManager *variantManager);
 
+    virtual void deselected();
+
 protected:
     std::weak_ptr<VideoData> _number1;
     std::weak_ptr<VideoData> _number2;

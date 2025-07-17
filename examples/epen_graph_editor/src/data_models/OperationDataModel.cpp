@@ -1,6 +1,6 @@
 #include "data_models/OperationDataModel.hpp"
-
 #include "VideoData.hpp"
+#include "qtpropertymanager.h"
 
 OperationDataModel::OperationDataModel()
 {
@@ -47,7 +47,14 @@ void OperationDataModel::setInData(std::shared_ptr<NodeData> data, PortIndex por
 void OperationDataModel::setupProperties(QtTreePropertyBrowser *variantEditor,
                                          QtVariantPropertyManager *variantManager)
 {
-    QtVariantProperty *item = variantManager->addProperty(QMetaType::QString, QLatin1String("Name"));
-    item->setValue(_name);
+    QtIntPropertyManager *intManager = new QtIntPropertyManager(this);
+    QObject::connect(intManager,
+                     &QtIntPropertyManager::valueChanged,
+                     [=](QtProperty *property, int val) { qDebug() << "VVV" << val; });
+    QtProperty *item = intManager->addProperty(QLatin1String("Name"));
+    intManager->setRange(item, -100, 100);
+    //item->setValue(0);
     variantEditor->addProperty(item);
 }
+
+void OperationDataModel::deselected() {}
