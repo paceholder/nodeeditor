@@ -44,17 +44,17 @@ void OperationDataModel::setInData(std::shared_ptr<NodeData> data, PortIndex por
     }
 }
 
-void OperationDataModel::setupProperties(QtTreePropertyBrowser *variantEditor,
-                                         QtVariantPropertyManager *variantManager)
+void OperationDataModel::setupProperties(QtAbstractPropertyBrowser *propertyBrowser)
 {
     QtIntPropertyManager *intManager = new QtIntPropertyManager(this);
     QObject::connect(intManager,
                      &QtIntPropertyManager::valueChanged,
                      [=](QtProperty *property, int val) { qDebug() << "VVV" << val; });
-    QtProperty *item = intManager->addProperty(QLatin1String("Name"));
-    intManager->setRange(item, -100, 100);
-    //item->setValue(0);
-    variantEditor->addProperty(item);
+    QtProperty *item9 = intManager->addProperty("value");
+    intManager->setRange(item9, -100, 100);
+    QtSpinBoxFactory *spinBoxFactory = new QtSpinBoxFactory(this);
+    propertyBrowser->setFactoryForManager(intManager, spinBoxFactory);
+    propertyBrowser->addProperty(item9);
 }
 
 void OperationDataModel::deselected() {}

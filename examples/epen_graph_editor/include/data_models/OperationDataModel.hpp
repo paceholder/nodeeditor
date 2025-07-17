@@ -4,7 +4,7 @@
 
 #include "VideoData.hpp"
 #include "qttreepropertybrowser.h"
-#include "qtvariantproperty.h"
+#include "qteditorfactory.h"
 #include <iostream>
 #include <QtCore/QJsonObject>
 #include <QtCore/QObject>
@@ -36,8 +36,7 @@ public:
     void setInData(std::shared_ptr<NodeData> data, PortIndex portIndex) override;
 
     QWidget *embeddedWidget() override { return nullptr; }
-    virtual void setupProperties(QtTreePropertyBrowser *variantEditor,
-                                 QtVariantPropertyManager *variantManager);
+    virtual void setupProperties(QtAbstractPropertyBrowser*);
 
     virtual void deselected();
 
