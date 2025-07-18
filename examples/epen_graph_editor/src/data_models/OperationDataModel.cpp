@@ -44,17 +44,35 @@ void OperationDataModel::setInData(std::shared_ptr<NodeData> data, PortIndex por
     }
 }
 
-void OperationDataModel::setupProperties(QtAbstractPropertyBrowser *propertyBrowser)
+void OperationDataModel::setupProperties(QtVariantPropertyManager *variantManager,
+                                         QtTreePropertyBrowser *browser)
 {
-    QtIntPropertyManager *intManager = new QtIntPropertyManager(this);
-    QObject::connect(intManager,
-                     &QtIntPropertyManager::valueChanged,
-                     [=](QtProperty *property, int val) { qDebug() << "VVV" << val; });
-    QtProperty *item9 = intManager->addProperty("value");
-    intManager->setRange(item9, -100, 100);
-    QtSpinBoxFactory *spinBoxFactory = new QtSpinBoxFactory(this);
-    propertyBrowser->setFactoryForManager(intManager, spinBoxFactory);
-    propertyBrowser->addProperty(item9);
+    _nameItem = variantManager->addProperty(QVariant::String, QLatin1String("Name"));
+
+    _nameItem->setValue(_name);
+    /*conn = QObject::connect(variantManager,
+                            &QtVariantPropertyManager::valueChanged,
+                            [=](QtProperty *property, const QVariant &val) {
+                                _name = val.toString();
+                            });*/
+    connect(variantManager,
+            &QtVariantPropertyManager::valueChanged,
+            this,
+            &OperationDataModel::nameChanged);
+    browser->addProperty(_nameItem);
 }
 
-void OperationDataModel::deselected() {}
+void OperationDataModel::nameChanged(QtProperty *property, const QVariant &val)
+{
+    _name = val.toString();
+}
+
+void OperationDataModel::deselected(QtVariantPropertyManager *variantManager,
+                                    QtTreePropertyBrowser *browser)
+{
+    disconnect(variantManager,
+               &QtVariantPropertyManager::valueChanged,
+               this,
+               &OperationDataModel::nameChanged);
+    delete _nameItem;
+}

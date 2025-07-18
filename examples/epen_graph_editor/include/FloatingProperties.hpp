@@ -4,6 +4,7 @@
 #include "FloatingPanelBase.hpp"
 #include "data_models/OperationDataModel.hpp"
 #include "qttreepropertybrowser.h"
+#include "qtvariantproperty.h"
 #include <QDate>
 #include <QLineEdit>
 #include <QLocale>
@@ -44,6 +45,8 @@ private:
 
     OperationDataModel *_currentNode;
     QtTreePropertyBrowser *_properties;
+    QtVariantPropertyManager *_variantManager;
+    QtVariantEditorFactory *_variantFactory;
 };
 
 #endif // FLOATINGPROPERTIES_HPP

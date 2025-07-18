@@ -21,6 +21,8 @@ FloatingProperties::FloatingProperties(GraphEditorWindow *parent)
     , m_currentNodeId(InvalidNodeId)
     , _currentNode(nullptr)
     , _properties(nullptr)
+    , _variantManager(new QtVariantPropertyManager())
+    , _variantFactory(new QtVariantEditorFactory())
 {
     setFloatingWidth(200);
     setDockedWidth(250);
@@ -56,6 +58,10 @@ void FloatingProperties::setupUI()
 
     _properties = new QtTreePropertyBrowser();
     _properties->setRowHeight(40);
+
+    _properties->setFactoryForManager(_variantManager, _variantFactory);
+    _properties->setPropertiesWithoutValueMarked(true);
+    _properties->setRootIsDecorated(false);
 
     const int ROW_HEIGHT = 50;    // Total row height - CHANGE THIS VALUE
     const int EDITOR_HEIGHT = 25; // Input field height (should be less than row height)
@@ -150,7 +156,7 @@ void FloatingProperties::clearProperties()
 {
     m_currentNodeId = InvalidNodeId;
     if (_currentNode != nullptr) {
-        _currentNode->deselected();
+        _currentNode->deselected(_variantManager, _properties);
         _currentNode = nullptr;
     }
     if (_properties) {
@@ -169,8 +175,12 @@ void FloatingProperties::resizeEvent(QResizeEvent *event)
 
 void FloatingProperties::setNode(OperationDataModel *node)
 {
+    if (_currentNode != nullptr) {
+        _currentNode->deselected(_variantManager, _properties);
+        _currentNode = nullptr;
+    }
     _currentNode = node;
     _properties->clear();
 
-    node->setupProperties(_properties);
+    node->setupProperties(_variantManager, _properties);
 }
