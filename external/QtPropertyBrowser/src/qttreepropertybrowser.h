@@ -57,6 +57,7 @@ class QT_QTPROPERTYBROWSER_EXPORT QtTreePropertyBrowser : public QtAbstractPrope
     Q_PROPERTY(ResizeMode resizeMode READ resizeMode WRITE setResizeMode)
     Q_PROPERTY(int splitterPosition READ splitterPosition WRITE setSplitterPosition)
     Q_PROPERTY(bool propertiesWithoutValueMarked READ propertiesWithoutValueMarked WRITE setPropertiesWithoutValueMarked)
+    Q_PROPERTY(int rowHeight READ rowHeight WRITE setRowHeight)
 public:
 
     enum ResizeMode
@@ -101,6 +102,9 @@ public:
 
     void setPropertiesWithoutValueMarked(bool mark);
     bool propertiesWithoutValueMarked() const;
+
+    void setRowHeight(int height);
+    int rowHeight() const;
 
     void editItem(QtBrowserItem *item);
 

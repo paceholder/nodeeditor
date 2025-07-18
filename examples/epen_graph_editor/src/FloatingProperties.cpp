@@ -55,9 +55,10 @@ void FloatingProperties::setupUI()
     QVBoxLayout *layout = getContentLayout();
 
     _properties = new QtTreePropertyBrowser();
+    _properties->setRowHeight(40);
 
     const int ROW_HEIGHT = 50;    // Total row height - CHANGE THIS VALUE
-    const int EDITOR_HEIGHT = 10; // Input field height (should be less than row height)
+    const int EDITOR_HEIGHT = 25; // Input field height (should be less than row height)
     const int EDITOR_PADDING = 2; // Padding inside editors
 
     QString styleSheet = QString("QtTreePropertyBrowser {"

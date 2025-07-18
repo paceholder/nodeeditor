@@ -83,6 +83,7 @@ public:
 
     QtPropertyEditorView *treeWidget() const { return m_treeWidget; }
     bool markPropertiesWithoutValue() const { return m_markPropertiesWithoutValue; }
+    int rowHeight() const { return m_rowHeight; }
 
     QtBrowserItem *currentItem() const;
     void setCurrentItem(QtBrowserItem *browserItem, bool block);
@@ -92,6 +93,8 @@ public:
     void slotCurrentTreeItemChanged(QTreeWidgetItem *newItem, QTreeWidgetItem *);
 
     QTreeWidgetItem *editedItem() const;
+
+    void updateTreeWidgetRowHeight();
 
 private:
     void updateItem(QTreeWidgetItem *item);
@@ -109,6 +112,7 @@ private:
     bool m_markPropertiesWithoutValue;
     bool m_browserChangedBlocked;
     QIcon m_expandIcon;
+    int m_rowHeight;
 };
 
 // ------------ QtPropertyEditorView
@@ -372,6 +376,11 @@ void QtPropertyEditorDelegate::paint(QPainter *painter, const QStyleOptionViewIt
 QSize QtPropertyEditorDelegate::sizeHint(const QStyleOptionViewItem &option,
             const QModelIndex &index) const
 {
+    Q_UNUSED(option);
+    Q_UNUSED(index);
+    if (m_editorPrivate && m_editorPrivate->rowHeight() > 0) {
+        return QSize(option.rect.width(), m_editorPrivate->rowHeight());
+    }
     return QItemDelegate::sizeHint(option, index) + QSize(3, 4);
 }
 
@@ -392,7 +401,8 @@ QtTreePropertyBrowserPrivate::QtTreePropertyBrowserPrivate() :
     m_resizeMode(QtTreePropertyBrowser::Stretch),
     m_delegate(0),
     m_markPropertiesWithoutValue(false),
-    m_browserChangedBlocked(false)
+    m_browserChangedBlocked(false),
+    m_rowHeight(0)
 {
 }
 
@@ -672,6 +682,28 @@ void QtTreePropertyBrowserPrivate::editItem(QtBrowserItem *browserItem)
         m_treeWidget->setCurrentItem (treeItem, 1);
         m_treeWidget->editItem(treeItem, 1);
     }
+}
+
+void QtTreePropertyBrowserPrivate::updateTreeWidgetRowHeight()
+{
+    if (!m_treeWidget)
+        return;
+
+    // Trigger a resize of all items by hiding and showing the tree widget
+    // This forces Qt to recalculate all row heights using the delegate's sizeHint
+    bool wasVisible = m_treeWidget->isVisible();
+    if (wasVisible) {
+        m_treeWidget->setVisible(false);
+        m_treeWidget->setVisible(true);
+    }
+    
+    // Alternative: Force update by resetting the item delegate
+    // This will cause all items to be re-measured
+    m_treeWidget->setItemDelegate(nullptr);
+    m_treeWidget->setItemDelegate(m_delegate);
+    
+    // Update the viewport
+    m_treeWidget->viewport()->update();
 }
 
 /*!
@@ -997,6 +1029,30 @@ void QtTreePropertyBrowser::setPropertiesWithoutValueMarked(bool mark)
 bool QtTreePropertyBrowser::propertiesWithoutValueMarked() const
 {
     return d_ptr->m_markPropertiesWithoutValue;
+}
+
+/*!
+    \property QtTreePropertyBrowser::rowHeight
+    \brief the height of each row in the property browser.
+
+    The default row height is 0, which means the row height is 
+    calculated automatically. Set to a positive value to have a 
+    fixed row height for all rows.
+
+    \sa rowHeight()
+*/
+void QtTreePropertyBrowser::setRowHeight(int height)
+{
+    if (d_ptr->m_rowHeight == height)
+        return;
+
+    d_ptr->m_rowHeight = height;
+    d_ptr->updateTreeWidgetRowHeight();
+}
+
+int QtTreePropertyBrowser::rowHeight() const
+{
+    return d_ptr->m_rowHeight;
 }
 
 /*!
