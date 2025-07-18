@@ -23,7 +23,15 @@ NodeId DataFlowModel::addNode(QString const nodeType)
         widget(newNodeId)->populateButtons(PortType::Out, 1);
         _nodeSize[newNodeId] = QSize(250, 130);
     }
-    _nodeNames[newNodeId]=QString(nodeType) ;
+    _nodeNames[newNodeId] = QString(nodeType);
+    OperationDataModel *nodeModel = delegateModel<OperationDataModel>(newNodeId);
+
+    auto nodeTypeEnum = stringToNodeType(nodeType);
+    if (nodeTypeEnum) {
+        NodeTypes type = *nodeTypeEnum;
+        nodeModel->setNodeName(generateNewNodeName(type, nodeType));
+        nodesMap[type].insert(newNodeId);
+    }
     return newNodeId;
 }
 
@@ -31,7 +39,6 @@ NodeId DataFlowModel::addNodeType(NodeTypes type)
 {
     QString nodeTypeName = nodeTypeToName[type];
     NodeId newNodeId = addNode(nodeTypeName);
-    nodesMap[type].insert(newNodeId);
     return newNodeId;
 }
 
@@ -179,4 +186,15 @@ void DataFlowModel::removeProcessNodePort(NodeId nodeId, PortType portType, Port
     portsDeleted();
 
     Q_EMIT nodeUpdated(nodeId);
+}
+
+QString DataFlowModel::generateNewNodeName(NodeTypes type, QString typeNamePrefix)
+{
+    auto it = nodesMap.find(type);
+    int nodeCount = 0;
+    if (it != nodesMap.end()) {
+        const std::unordered_set<NodeId> &nodeSet = it->second;
+        nodeCount = nodeSet.size();
+    }
+    return typeNamePrefix + QString("%1").arg(nodeCount + 1, 3, 10, QChar('0'));
 }

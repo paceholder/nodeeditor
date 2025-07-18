@@ -45,6 +45,7 @@ public:
 
     virtual bool valueChanged(QString propertyName, const QVariant &val);
 
+    void setNodeName(QString);
 protected:
     std::weak_ptr<VideoData> _number1;
     std::weak_ptr<VideoData> _number2;

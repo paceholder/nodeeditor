@@ -66,3 +66,8 @@ bool OperationDataModel::valueChanged(QString propertyName, const QVariant &val)
     }
     return false;
 }
+
+void OperationDataModel::setNodeName(QString name)
+{
+    _name = name;
+}

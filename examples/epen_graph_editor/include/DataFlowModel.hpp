@@ -1,6 +1,7 @@
 #pragma once
 
 #include "PortAddRemoveWidget.hpp"
+#include "data_models/OperationDataModel.hpp"
 #include <QtNodes/DataFlowGraphModel>
 
 using QtNodes::ConnectionId;
@@ -76,9 +77,10 @@ public:
     void removeProcessNodePort(NodeId nodeId, PortType portType, PortIndex portIndex);
 
 private:
-    std::unordered_map<NodeTypes, std::unordered_set<NodeId>> nodesMap;
-
+    QString generateNewNodeName(NodeTypes nodeType, QString typeNamePrefix);
     std::optional<NodeTypes> stringToNodeType(const QString &str) const;
+
+    std::unordered_map<NodeTypes, std::unordered_set<NodeId>> nodesMap;
     struct NodePortCount
     {
         unsigned int in = 0;
