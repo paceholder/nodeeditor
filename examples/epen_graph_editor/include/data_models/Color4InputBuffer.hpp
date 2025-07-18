@@ -1,7 +1,7 @@
 #pragma once
-#include "OperationDataModel.hpp"
+#include "UIDataModelBase.hpp"
 
-class Color4InputBuffer : public OperationDataModel
+class Color4InputBuffer : public UIDataModelBase
 {
 public:
     virtual ~Color4InputBuffer() {}
@@ -41,4 +41,38 @@ public:
 
         return result;
     }
+
+    void setupProperties(QtVariantPropertyManager *manager, QtTreePropertyBrowser *browser) override
+    {
+        UIDataModelBase::setupProperties(manager, browser);
+
+        _defaultValueItem = manager->addProperty(QVariant::Color, "Default Value");
+        browser->addProperty(_defaultValueItem);
+
+        _defaultValueItem->setValue(_defaultValue);
+    }
+
+    void deselected(QtVariantPropertyManager *manager, QtTreePropertyBrowser *browser) override
+    {
+        UIDataModelBase::deselected(manager, browser);
+        delete _defaultValueItem;
+    }
+
+    bool valueChanged(QString propertyName, const QVariant &val) override
+    {
+        if (UIDataModelBase::valueChanged(propertyName, val))
+            return true;
+        if (propertyName == "Default Value") {
+            if (val.canConvert<QColor>()) {
+                _defaultValue = val.value<QColor>();
+            }
+            return true;
+        }
+        return false;
+    }
+
+private:
+    QtVariantProperty *_defaultValueItem;
+
+    QColor _defaultValue{255, 255, 255, 255};
 };

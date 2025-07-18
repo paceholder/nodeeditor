@@ -1,8 +1,9 @@
 #pragma once
-#include "OperationDataModel.hpp"
+#include "NumberInputBufferBase.hpp"
 
-class PlainNumberInputBuffer : public OperationDataModel
+class PlainNumberInputBuffer : public NumberInputBufferBase
 {
+    Q_OBJECT
 public:
     virtual ~PlainNumberInputBuffer() {}
 
@@ -41,4 +42,5 @@ public:
 
         return result;
     }
+
 };

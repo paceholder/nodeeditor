@@ -1,7 +1,7 @@
 #pragma once
-#include "OperationDataModel.hpp"
+#include "UIDataModelBase.hpp"
 
-class CheckboxInputBuffer : public OperationDataModel
+class CheckboxInputBuffer : public UIDataModelBase
 {
 public:
     virtual ~CheckboxInputBuffer() {}
@@ -41,4 +41,35 @@ public:
 
         return result;
     }
+    void setupProperties(QtVariantPropertyManager *manager, QtTreePropertyBrowser *browser) override
+    {
+        UIDataModelBase::setupProperties(manager, browser);
+
+        _defaultValueItem = manager->addProperty(QVariant::Bool, "Default Value");
+        browser->addProperty(_defaultValueItem);
+
+        _defaultValueItem->setValue(_defaultValue);
+    }
+
+    void deselected(QtVariantPropertyManager *manager, QtTreePropertyBrowser *browser) override
+    {
+        UIDataModelBase::deselected(manager, browser);
+        delete _defaultValueItem;
+    }
+
+    bool valueChanged(QString propertyName, const QVariant &val) override
+    {
+        if (UIDataModelBase::valueChanged(propertyName, val))
+            return true;
+        if (propertyName == "Default Value") {
+            _defaultValue = val.toBool();
+            return true;
+        }
+        return false;
+    }
+
+private:
+    QtVariantProperty *_defaultValueItem;
+
+    bool _defaultValue = false;
 };
