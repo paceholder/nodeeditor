@@ -47,6 +47,10 @@ private:
     QtTreePropertyBrowser *_properties;
     QtVariantPropertyManager *_variantManager;
     QtVariantEditorFactory *_variantFactory;
+
+    bool _lockPropertyUpdate = false;
+private slots:
+    void propertyValueChanged(QtProperty *property, const QVariant &val);
 };
 
 #endif // FLOATINGPROPERTIES_HPP

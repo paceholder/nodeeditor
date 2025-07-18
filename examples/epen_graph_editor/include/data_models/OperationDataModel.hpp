@@ -8,6 +8,7 @@
 #include "qttreepropertybrowser.h"
 #include "qtvariantproperty.h"
 #include <iostream>
+#include <QMetaEnum>
 #include <QtCore/QJsonObject>
 #include <QtCore/QObject>
 #include <QtWidgets/QLabel>
@@ -42,6 +43,8 @@ public:
     virtual void deselected(QtVariantPropertyManager *variantManager,
                             QtTreePropertyBrowser *browser);
 
+    virtual bool valueChanged(QString propertyName, const QVariant &val);
+
 protected:
     std::weak_ptr<VideoData> _number1;
     std::weak_ptr<VideoData> _number2;
@@ -50,6 +53,4 @@ protected:
     QString _name;
 
     QtVariantProperty *_nameItem;
-private slots:
-    void nameChanged(QtProperty *property, const QVariant &val);
 };

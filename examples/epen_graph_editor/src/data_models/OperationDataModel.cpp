@@ -47,32 +47,22 @@ void OperationDataModel::setInData(std::shared_ptr<NodeData> data, PortIndex por
 void OperationDataModel::setupProperties(QtVariantPropertyManager *variantManager,
                                          QtTreePropertyBrowser *browser)
 {
-    _nameItem = variantManager->addProperty(QVariant::String, QLatin1String("Name"));
-
+    _nameItem = variantManager->addProperty(QVariant::String, "Name");
     _nameItem->setValue(_name);
-    /*conn = QObject::connect(variantManager,
-                            &QtVariantPropertyManager::valueChanged,
-                            [=](QtProperty *property, const QVariant &val) {
-                                _name = val.toString();
-                            });*/
-    connect(variantManager,
-            &QtVariantPropertyManager::valueChanged,
-            this,
-            &OperationDataModel::nameChanged);
     browser->addProperty(_nameItem);
-}
-
-void OperationDataModel::nameChanged(QtProperty *property, const QVariant &val)
-{
-    _name = val.toString();
 }
 
 void OperationDataModel::deselected(QtVariantPropertyManager *variantManager,
                                     QtTreePropertyBrowser *browser)
 {
-    disconnect(variantManager,
-               &QtVariantPropertyManager::valueChanged,
-               this,
-               &OperationDataModel::nameChanged);
     delete _nameItem;
+}
+
+bool OperationDataModel::valueChanged(QString propertyName, const QVariant &val)
+{
+    if (propertyName == "Name") {
+        _name = val.toString();
+        return true;
+    }
+    return false;
 }
