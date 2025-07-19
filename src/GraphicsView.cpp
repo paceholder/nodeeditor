@@ -3,6 +3,7 @@
 #include "BasicGraphicsScene.hpp"
 #include "ConnectionGraphicsObject.hpp"
 #include "NodeGraphicsObject.hpp"
+#include "MinimapGraphicsObject.hpp"
 #include "StyleCollection.hpp"
 #include "UndoCommands.hpp"
 
@@ -35,6 +36,7 @@ GraphicsView::GraphicsView(QWidget *parent)
     , _duplicateSelectionAction(Q_NULLPTR)
     , _copySelectionAction(Q_NULLPTR)
     , _pasteAction(Q_NULLPTR)
+    , _minimap(std::make_unique<MinimapGraphicsObject>(this))
 {
     setDragMode(QGraphicsView::ScrollHandDrag);
     setRenderHint(QPainter::Antialiasing);
@@ -78,6 +80,22 @@ QAction *GraphicsView::deleteSelectionAction() const
 void GraphicsView::setScene(BasicGraphicsScene *scene)
 {
     QGraphicsView::setScene(scene);
+    
+    // Connect to scene modifications to update minimap
+    if (scene) {
+        connect(scene, &BasicGraphicsScene::modified, [this]() {
+            if (_minimap) {
+                viewport()->update();
+            }
+        });
+        
+        // Also update on scene changes (items added/removed)
+        connect(scene, &QGraphicsScene::changed, [this]() {
+            if (_minimap) {
+                viewport()->update();
+            }
+        });
+    }
 
     {
         // setup actions
@@ -198,6 +216,11 @@ void GraphicsView::wheelEvent(QWheelEvent *event)
         scaleUp();
     else
         scaleDown();
+    
+    // Update minimap after zoom
+    if (_minimap) {
+        viewport()->update();
+    }
 }
 
 double GraphicsView::getScale() const
@@ -327,6 +350,26 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
             }
         }
         break;
+        
+    case Qt::Key_M:
+        // Toggle minimap visibility with 'M' key
+        if (!(event->modifiers() & Qt::ControlModifier)) {
+            // Check if any widget has focus (text editing)
+            if (!QApplication::focusWidget() || 
+                (!QApplication::focusWidget()->inherits("QLineEdit") && 
+                 !QApplication::focusWidget()->inherits("QTextEdit") &&
+                 !QApplication::focusWidget()->inherits("QPlainTextEdit"))) {
+                
+                // Also check if any QGraphicsTextItem has focus
+                auto focusItem = scene() ? scene()->focusItem() : nullptr;
+                if (!focusItem || !dynamic_cast<QGraphicsTextItem*>(focusItem)) {
+                    setMinimapVisible(!isMinimapVisible());
+                    event->accept();
+                    return;
+                }
+            }
+        }
+        break;
 
     default:
         break;
@@ -350,6 +393,12 @@ void GraphicsView::keyReleaseEvent(QKeyEvent *event)
 
 void GraphicsView::mousePressEvent(QMouseEvent *event)
 {
+    // Check if minimap handles the event first (use viewport coordinates)
+    if (_minimap && _minimap->handleMousePress(event->pos())) {
+        event->accept();
+        return;
+    }
+    
     QGraphicsView::mousePressEvent(event);
     if (event->button() == Qt::LeftButton) {
         _clickPos = mapToScene(event->pos());
@@ -358,12 +407,23 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
 
 void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 {
+    // Check if minimap handles the event first (use viewport coordinates)
+    if (_minimap && _minimap->handleMouseMove(event->pos())) {
+        event->accept();
+        viewport()->update();
+        return;
+    }
+    
     QGraphicsView::mouseMoveEvent(event);
     if (scene()->mouseGrabberItem() == nullptr && event->buttons() == Qt::LeftButton) {
         // Make sure shift is not being pressed
         if ((event->modifiers() & Qt::ShiftModifier) == 0) {
             QPointF difference = _clickPos - mapToScene(event->pos());
             setSceneRect(sceneRect().translated(difference.x(), difference.y()));
+            // Update minimap after panning
+            if (_minimap) {
+                viewport()->update();
+            }
         }
     }
 }
@@ -414,6 +474,55 @@ void GraphicsView::showEvent(QShowEvent *event)
     QGraphicsView::showEvent(event);
 
     centerScene();
+}
+
+void GraphicsView::paintEvent(QPaintEvent *event)
+{
+    QGraphicsView::paintEvent(event);
+    
+    // Draw minimap on top of everything
+    if (_minimap && _minimap->isVisible()) {
+        QPainter painter(viewport());
+        painter.save();
+        painter.resetTransform(); // Ensure minimap is not affected by view transform
+        _minimap->paint(&painter);
+        painter.restore();
+    }
+}
+
+void GraphicsView::resizeEvent(QResizeEvent *event)
+{
+    QGraphicsView::resizeEvent(event);
+    
+    // Update minimap when view is resized
+    if (_minimap) {
+        viewport()->update();
+    }
+}
+
+void GraphicsView::mouseReleaseEvent(QMouseEvent *event)
+{
+    // Check if minimap handles the event first (use viewport coordinates)
+    if (_minimap && _minimap->handleMouseRelease(event->pos())) {
+        event->accept();
+        viewport()->update();
+        return;
+    }
+    
+    QGraphicsView::mouseReleaseEvent(event);
+}
+
+void GraphicsView::setMinimapVisible(bool visible)
+{
+    if (_minimap) {
+        _minimap->setVisible(visible);
+        viewport()->update();
+    }
+}
+
+bool GraphicsView::isMinimapVisible() const
+{
+    return _minimap ? _minimap->isVisible() : false;
 }
 
 BasicGraphicsScene *GraphicsView::nodeScene()
