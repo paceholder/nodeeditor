@@ -3,6 +3,9 @@
 #include <QtWidgets/QGraphicsView>
 
 #include "Export.hpp"
+#include "MinimapGraphicsObject.hpp"
+
+#include <memory>
 
 namespace QtNodes {
 
@@ -78,11 +81,21 @@ protected:
 
     void showEvent(QShowEvent *event) override;
 
+    void paintEvent(QPaintEvent *event) override;
+
+    void resizeEvent(QResizeEvent *event) override;
+
+    void mouseReleaseEvent(QMouseEvent *event) override;
+
 protected:
     BasicGraphicsScene *nodeScene();
 
     /// Computes scene position for pasting the copied/duplicated node groups.
     QPointF scenePastePosition();
+
+public:
+    void setMinimapVisible(bool visible);
+    bool isMinimapVisible() const;
 
 private:
     QAction *_clearSelectionAction = nullptr;
@@ -93,5 +106,7 @@ private:
 
     QPointF _clickPos;
     ScaleRange _scaleRange;
+    
+    std::unique_ptr<MinimapGraphicsObject> _minimap;
 };
 } // namespace QtNodes
