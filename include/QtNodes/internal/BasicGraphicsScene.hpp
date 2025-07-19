@@ -119,6 +119,15 @@ public:
    * Default implementation returns `nullptr`.
    */
     virtual QMenu *createSceneMenu(QPointF const scenePos);
+    
+    /// Set pending connection for auto-connect after node creation
+    void setPendingConnection(ConnectionId const &connectionId) { _pendingConnectionId = connectionId; }
+    
+    /// Clear pending connection
+    void clearPendingConnection() { _pendingConnectionId = ConnectionId{}; }
+    
+    /// Get pending connection
+    ConnectionId const& pendingConnection() const { return _pendingConnectionId; }
 
 Q_SIGNALS:
     void modified(BasicGraphicsScene *);
@@ -199,6 +208,8 @@ private:
     Qt::Orientation _orientation;
 
     std::unordered_map<QUuid, std::unique_ptr<CommentGraphicsObject>> _commentGraphicsObjects;
+    
+    ConnectionId _pendingConnectionId;
 };
 
 } // namespace QtNodes

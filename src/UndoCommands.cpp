@@ -191,6 +191,57 @@ CreateCommand::CreateCommand(BasicGraphicsScene *scene,
     _nodeId = _scene->graphModel().addNode(name);
     if (_nodeId != InvalidNodeId) {
         _scene->graphModel().setNodeData(_nodeId, NodeRole::Position, mouseScenePos);
+        
+        // Check if there's a pending connection to auto-connect
+        ConnectionId pendingConn = _scene->pendingConnection();
+        if (pendingConn.inNodeId != InvalidNodeId || pendingConn.outNodeId != InvalidNodeId) {
+            // Determine which side of the connection we're completing
+            if (pendingConn.outNodeId != InvalidNodeId && pendingConn.inNodeId == InvalidNodeId) {
+                // We have an output connection waiting for an input
+                // Try to connect to the first compatible input port of the new node
+                auto &graphModel = _scene->graphModel();
+                
+                // Check each input port of the new node for compatibility
+                auto inPortCount = graphModel.nodeData<PortCount>(_nodeId, NodeRole::InPortCount);
+                for (PortIndex inPort = 0; inPort < inPortCount; ++inPort) {
+                    // Check type compatibility
+                    ConnectionId testConnection{pendingConn.outNodeId,
+                                              pendingConn.outPortIndex,
+                                              _nodeId,
+                                              inPort};
+                    if (graphModel.connectionPossible(testConnection)) {
+                        // Create the connection
+                        graphModel.addConnection(ConnectionId{pendingConn.outNodeId,
+                                                            pendingConn.outPortIndex,
+                                                            _nodeId,
+                                                            inPort});
+                        break; // Connect to first compatible port
+                    }
+                }
+            } else if (pendingConn.inNodeId != InvalidNodeId && pendingConn.outNodeId == InvalidNodeId) {
+                // We have an input connection waiting for an output
+                // Try to connect to the first compatible output port of the new node
+                auto &graphModel = _scene->graphModel();
+                
+                // Check each output port of the new node for compatibility
+                auto outPortCount = graphModel.nodeData<PortCount>(_nodeId, NodeRole::OutPortCount);
+                for (PortIndex outPort = 0; outPort < outPortCount; ++outPort) {
+                    // Check type compatibility
+                    ConnectionId testConnection{_nodeId,
+                                              outPort,
+                                              pendingConn.inNodeId,
+                                              pendingConn.inPortIndex};
+                    if (graphModel.connectionPossible(testConnection)) {
+                        // Create the connection
+                        graphModel.addConnection(ConnectionId{_nodeId,
+                                                            outPort,
+                                                            pendingConn.inNodeId,
+                                                            pendingConn.inPortIndex});
+                        break; // Connect to first compatible port
+                    }
+                }
+            }
+        }
     } else {
         setObsolete(true);
     }

@@ -16,6 +16,7 @@
 #include <QtWidgets/QGraphicsDropShadowEffect>
 #include <QtWidgets/QGraphicsSceneMouseEvent>
 #include <QtWidgets/QGraphicsView>
+#include <QtWidgets/QMenu>
 #include <QtWidgets/QStyleOptionGraphicsItem>
 
 #include <QtCore/QDebug>
@@ -258,7 +259,26 @@ void ConnectionGraphicsObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event
 
     // If connection attempt was unsuccessful
     if (!wasConnected) {
-        // Resulting unique_ptr is not used and automatically deleted.
+        // Store the connection info before resetting
+        ConnectionId connId = connectionId();
+        QPointF dropPos = event->scenePos();
+        
+        // Show context menu at drop position
+        if (auto basicScene = qobject_cast<BasicGraphicsScene*>(nodeScene())) {
+            // Store the pending connection info in the scene BEFORE creating menu
+            basicScene->setPendingConnection(connId);
+            
+            // Get the scene menu (which contains node creation options)
+            if (auto menu = basicScene->createSceneMenu(dropPos)) {
+                // Show the menu at the cursor position
+                menu->exec(event->screenPos());
+            }
+            
+            // Clear pending connection after menu closes
+            basicScene->clearPendingConnection();
+        }
+        
+        // Reset the draft connection
         nodeScene()->resetDraftConnection();
     }
 }

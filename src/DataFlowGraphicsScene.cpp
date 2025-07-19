@@ -7,6 +7,7 @@
 #include "NodeGraphicsObject.hpp"
 #include "UndoCommands.hpp"
 
+#include <QtWidgets/QCheckBox>
 #include <QtWidgets/QFileDialog>
 #include <QtWidgets/QGraphicsSceneMoveEvent>
 #include <QtWidgets/QHeaderView>
@@ -25,6 +26,7 @@
 #include <QtCore/QtGlobal>
 
 #include <stdexcept>
+#include <unordered_set>
 #include <utility>
 
 namespace QtNodes {
@@ -73,6 +75,17 @@ QMenu *DataFlowGraphicsScene::createSceneMenu(QPointF const scenePos)
     // 1.
     modelMenu->addAction(txtBoxAction);
 
+    // Add context sensitive checkbox
+    auto *contextCheckBox = new QCheckBox(QStringLiteral("Context Sensitive"), modelMenu);
+    contextCheckBox->setChecked(true); // Default to context sensitive
+    
+    auto *checkBoxAction = new QWidgetAction(modelMenu);
+    checkBoxAction->setDefaultWidget(contextCheckBox);
+    
+    // 2.
+    modelMenu->addAction(checkBoxAction);
+    modelMenu->addSeparator();
+
     // Add result treeview to the context menu
     QTreeWidget *treeView = new QTreeWidget(modelMenu);
     treeView->header()->close();
@@ -85,23 +98,157 @@ QMenu *DataFlowGraphicsScene::createSceneMenu(QPointF const scenePos)
 
     auto registry = _graphModel.dataModelRegistry();
 
+    // Build initial tree with all nodes
+    std::unordered_map<QString, QTreeWidgetItem*> categoryItems;
     for (auto const &cat : registry->categories()) {
         auto item = new QTreeWidgetItem(treeView);
         item->setText(0, cat);
         item->setFlags(item->flags() & ~Qt::ItemIsSelectable);
+        categoryItems[cat] = item;
     }
 
+    // Store node items for filtering
+    QList<QTreeWidgetItem*> allNodeItems;
+    
     for (auto const &assoc : registry->registeredModelsCategoryAssociation()) {
-        QList<QTreeWidgetItem *> parent = treeView->findItems(assoc.second, Qt::MatchExactly);
-
-        if (parent.count() <= 0)
+        auto categoryIt = categoryItems.find(assoc.second);
+        if (categoryIt == categoryItems.end())
             continue;
 
-        auto item = new QTreeWidgetItem(parent.first());
+        auto item = new QTreeWidgetItem(categoryIt->second);
         item->setText(0, assoc.first);
+        allNodeItems.append(item);
     }
 
     treeView->expandAll();
+    
+    // Function to apply context filtering
+    auto applyContextFilter = [this, registry, allNodeItems, categoryItems, treeView, contextCheckBox]() {
+        // Always show all nodes if context sensitivity is disabled
+        if (!contextCheckBox->isChecked()) {
+            for (auto item : allNodeItems) {
+                item->setHidden(false);
+            }
+            for (auto const& [cat, item] : categoryItems) {
+                item->setHidden(false);
+            }
+            return;
+        }
+        
+        // Check if we have a pending connection
+        ConnectionId pendingConn = pendingConnection();
+        
+        // If no pending connection (right-click on empty area), show all nodes
+        if (pendingConn.inNodeId == InvalidNodeId && pendingConn.outNodeId == InvalidNodeId) {
+            for (auto item : allNodeItems) {
+                item->setHidden(false);
+            }
+            for (auto const& [cat, item] : categoryItems) {
+                item->setHidden(false);
+            }
+            return;
+        }
+        
+        // We have a pending connection, apply filtering
+        bool needInputPort = (pendingConn.outNodeId != InvalidNodeId);
+        bool needOutputPort = (pendingConn.inNodeId != InvalidNodeId);
+        
+        // Try to get the data type from the pending connection
+        QVariant dataTypeVariant;
+        if (needInputPort) {
+            // We have an output connection, need compatible input
+            dataTypeVariant = _graphModel.portData(pendingConn.outNodeId, 
+                                                   PortType::Out, 
+                                                   pendingConn.outPortIndex, 
+                                                   PortRole::DataType);
+        } else if (needOutputPort) {
+            // We have an input connection, need compatible output
+            dataTypeVariant = _graphModel.portData(pendingConn.inNodeId, 
+                                                   PortType::In, 
+                                                   pendingConn.inPortIndex, 
+                                                   PortRole::DataType);
+        }
+        
+        // Check if we successfully got a data type
+        if (!dataTypeVariant.isValid() || !dataTypeVariant.canConvert<NodeDataType>()) {
+            // Couldn't get data type, show all nodes as fallback
+            for (auto item : allNodeItems) {
+                item->setHidden(false);
+            }
+            for (auto const& [cat, item] : categoryItems) {
+                item->setHidden(false);
+            }
+            return;
+        }
+        
+        NodeDataType pendingDataType = dataTypeVariant.value<NodeDataType>();
+        
+        // Filter nodes based on compatibility
+        std::unordered_set<QString> visibleCategories;
+        for (auto item : allNodeItems) {
+            QString modelName = item->text(0);
+            auto model = registry->create(modelName);
+            if (!model) {
+                item->setHidden(true);
+                continue;
+            }
+            
+            bool compatible = false;
+            
+            try {
+                if (needInputPort) {
+                    // Check if this node has compatible input ports
+                    unsigned int numInputs = model->nPorts(PortType::In);
+                    if (numInputs == 0) {
+                        // Node has no input ports, can't connect
+                        compatible = false;
+                    } else {
+                        for (unsigned int i = 0; i < numInputs; ++i) {
+                            auto nodeDataType = model->dataType(PortType::In, i);
+                            if (nodeDataType.id == pendingDataType.id) {
+                                compatible = true;
+                                break;
+                            }
+                        }
+                    }
+                } else if (needOutputPort) {
+                    // Check if this node has compatible output ports
+                    unsigned int numOutputs = model->nPorts(PortType::Out);
+                    if (numOutputs == 0) {
+                        // Node has no output ports, can't connect
+                        compatible = false;
+                    } else {
+                        for (unsigned int i = 0; i < numOutputs; ++i) {
+                            auto nodeDataType = model->dataType(PortType::Out, i);
+                            if (nodeDataType.id == pendingDataType.id) {
+                                compatible = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            } catch (...) {
+                // If there's any error checking compatibility, treat as incompatible
+                compatible = false;
+            }
+            
+            item->setHidden(!compatible);
+            if (compatible && item->parent()) {
+                visibleCategories.insert(item->parent()->text(0));
+            }
+        }
+        
+        // Hide empty categories
+        for (auto const& [cat, item] : categoryItems) {
+            item->setHidden(visibleCategories.find(cat) == visibleCategories.end());
+        }
+    };
+    
+    // Apply initial context filter
+    applyContextFilter();
+    
+    // Connect checkbox to reapply filter
+    connect(contextCheckBox, &QCheckBox::toggled, applyContextFilter);
 
     connect(treeView,
             &QTreeWidget::itemClicked,
@@ -116,23 +263,30 @@ QMenu *DataFlowGraphicsScene::createSceneMenu(QPointF const scenePos)
             });
 
     //Setup filtering
-    connect(txtBox, &QLineEdit::textChanged, [treeView](const QString &text) {
-        QTreeWidgetItemIterator categoryIt(treeView, QTreeWidgetItemIterator::HasChildren);
-        while (*categoryIt)
-            (*categoryIt++)->setHidden(true);
-        QTreeWidgetItemIterator it(treeView, QTreeWidgetItemIterator::NoChildren);
-        while (*it) {
-            auto modelName = (*it)->text(0);
-            const bool match = (modelName.contains(text, Qt::CaseInsensitive));
-            (*it)->setHidden(!match);
-            if (match) {
-                QTreeWidgetItem *parent = (*it)->parent();
-                while (parent) {
-                    parent->setHidden(false);
-                    parent = parent->parent();
+    connect(txtBox, &QLineEdit::textChanged, [treeView, applyContextFilter, allNodeItems, categoryItems, contextCheckBox](const QString &text) {
+        // First apply context filter
+        applyContextFilter();
+        
+        // Then apply text filter on top
+        if (text.isEmpty()) {
+            return; // Context filter already applied
+        }
+        
+        // Hide all categories first
+        for (auto const& [cat, item] : categoryItems) {
+            item->setHidden(true);
+        }
+        
+        // Apply text filter to visible items only
+        for (auto item : allNodeItems) {
+            if (!item->isHidden()) { // Only filter items that passed context filter
+                auto modelName = item->text(0);
+                const bool match = modelName.contains(text, Qt::CaseInsensitive);
+                item->setHidden(!match);
+                if (match && item->parent()) {
+                    item->parent()->setHidden(false);
                 }
             }
-            ++it;
         }
     });
 
