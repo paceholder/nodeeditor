@@ -3,6 +3,7 @@
 #include "AbstractNodeGeometry.hpp"
 #include "ConnectionGraphicsObject.hpp"
 #include "ConnectionIdUtils.hpp"
+#include "CommentGraphicsObject.hpp"
 #include "DefaultConnectionPainter.hpp"
 #include "DefaultHorizontalNodeGeometry.hpp"
 #include "DefaultNodePainter.hpp"
@@ -196,6 +197,141 @@ void BasicGraphicsScene::setOrientation(Qt::Orientation const orientation)
 QMenu *BasicGraphicsScene::createSceneMenu(QPointF const scenePos)
 {
     Q_UNUSED(scenePos);
+    return nullptr;
+}
+
+QUuid BasicGraphicsScene::createCommentFromSelection()
+{
+    auto selectedItems = this->selectedItems();
+    std::unordered_set<NodeId> selectedNodeIds;
+    std::unordered_set<QUuid> selectedCommentIds;
+    
+    // First, collect all selected comments
+    std::unordered_set<CommentGraphicsObject*> selectedComments;
+    for (auto item : selectedItems) {
+        if (auto commentGO = dynamic_cast<CommentGraphicsObject*>(item)) {
+            selectedComments.insert(commentGO);
+            selectedCommentIds.insert(commentGO->id());
+        }
+    }
+    
+    // Then collect nodes that should be directly added to the new parent comment
+    // These are nodes that are selected but NOT in any non-selected comment
+    for (auto item : selectedItems) {
+        if (auto nodeGO = qgraphicsitem_cast<NodeGraphicsObject*>(item)) {
+            NodeId nodeId = nodeGO->nodeId();
+            bool nodeInNonSelectedComment = false;
+            
+            // Check if this node is in any comment that is NOT selected
+            // (i.e., comments that won't become children of the new parent)
+            for (auto const& [commentId, commentGO] : _commentGraphicsObjects) {
+                if (commentGO && commentGO->containsNode(nodeId) && 
+                    selectedCommentIds.find(commentId) == selectedCommentIds.end()) {
+                    nodeInNonSelectedComment = true;
+                    break;
+                }
+            }
+            
+            // Only add nodes that are not in non-selected comments
+            // This means loose nodes OR nodes in comments that will become children
+            if (!nodeInNonSelectedComment) {
+                // But we still need to check if it's in a selected comment
+                bool inSelectedComment = false;
+                for (auto const& childId : selectedCommentIds) {
+                    if (auto childComment = commentGraphicsObject(childId)) {
+                        if (childComment->containsNode(nodeId)) {
+                            inSelectedComment = true;
+                            break;
+                        }
+                    }
+                }
+                
+                // Only add if it's truly loose (not in any selected comment)
+                if (!inSelectedComment) {
+                    selectedNodeIds.insert(nodeId);
+                }
+            }
+        }
+    }
+    
+    // We need either comments or loose nodes to create a parent comment
+    // If we only have nodes that are all inside selected comments, 
+    // we still create a parent (the selected comments become children)
+    if (selectedCommentIds.empty() && selectedNodeIds.empty()) {
+        // Check if we at least have some selected items
+        if (selectedItems.isEmpty()) {
+            return QUuid();
+        }
+    }
+    
+    // Create new comment
+    QUuid commentId = QUuid::createUuid();
+    auto comment = std::make_unique<CommentGraphicsObject>(*this, commentId);
+    comment->setCommentText("New Comment");
+    
+    // Set child comments first
+    for (QUuid const &childId : selectedCommentIds) {
+        comment->addChildComment(childId);
+        if (auto childComment = commentGraphicsObject(childId)) {
+            childComment->setParentComment(commentId);
+        }
+    }
+    
+    // Set grouped nodes (only loose nodes, not those in child comments)
+    comment->setGroupedNodes(selectedNodeIds);
+    
+    // Find the lowest z-value among selected comments (children should be on top)
+    qreal minZ = -1.0;
+    for (QUuid const &childId : selectedCommentIds) {
+        if (auto childComment = commentGraphicsObject(childId)) {
+            minZ = qMin(minZ, childComment->zValue());
+        }
+    }
+    
+    // Set new parent comment below its children
+    comment->setZValue(minZ - 0.1);
+    
+    // Calculate bounds before adding to scene
+    comment->adjustBounds();
+    
+    // Add to scene
+    addItem(comment.get());
+    
+    // Store in map
+    _commentGraphicsObjects[commentId] = std::move(comment);
+    
+    // Clear selection and select the new comment
+    clearSelection();
+    _commentGraphicsObjects[commentId]->setSelected(true);
+    
+    Q_EMIT modified(this);
+    
+    return commentId;
+}
+
+void BasicGraphicsScene::deleteComment(QUuid const &commentId)
+{
+    auto it = _commentGraphicsObjects.find(commentId);
+    if (it != _commentGraphicsObjects.end()) {
+        removeItem(it->second.get());
+        _commentGraphicsObjects.erase(it);
+        Q_EMIT modified(this);
+    }
+}
+
+void BasicGraphicsScene::addComment(QUuid const &commentId, std::unique_ptr<CommentGraphicsObject> comment)
+{
+    addItem(comment.get());
+    _commentGraphicsObjects[commentId] = std::move(comment);
+    Q_EMIT modified(this);
+}
+
+CommentGraphicsObject *BasicGraphicsScene::commentGraphicsObject(QUuid const &commentId)
+{
+    auto it = _commentGraphicsObjects.find(commentId);
+    if (it != _commentGraphicsObjects.end()) {
+        return it->second.get();
+    }
     return nullptr;
 }
 

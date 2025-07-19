@@ -11,6 +11,7 @@
 #include "AbstractNodePainter.hpp"
 #include "BasicGraphicsScene.hpp"
 #include "ConnectionGraphicsObject.hpp"
+#include "CommentGraphicsObject.hpp"
 #include "ConnectionIdUtils.hpp"
 #include "NodeConnectionInteraction.hpp"
 #include "StyleCollection.hpp"
@@ -170,6 +171,31 @@ QVariant NodeGraphicsObject::itemChange(GraphicsItemChange change, const QVarian
 {
     if (change == ItemScenePositionHasChanged && scene()) {
         moveConnections();
+    }
+
+    if (change == ItemPositionHasChanged && scene()) {
+        // Check for comment box interactions
+        auto nodeScene = qobject_cast<BasicGraphicsScene*>(scene());
+        if (nodeScene) {
+            QRectF nodeRect = sceneBoundingRect();
+            
+            // Check all comment boxes
+            for (auto const& [commentId, commentGO] : nodeScene->comments()) {
+                if (commentGO) {
+                    QRectF commentRect = commentGO->sceneBoundingRect();
+                    bool isInside = commentRect.contains(nodeRect);
+                    bool isGrouped = commentGO->containsNode(_nodeId);
+                    
+                    if (isInside && !isGrouped) {
+                        // Node dragged into comment box - add it
+                        commentGO->addNode(_nodeId);
+                    } else if (!isInside && isGrouped && !commentGO->isSelected()) {
+                        // Node dragged out of comment box (and comment is not being dragged)
+                        commentGO->removeNode(_nodeId);
+                    }
+                }
+            }
+        }
     }
 
     return QGraphicsObject::itemChange(change, value);

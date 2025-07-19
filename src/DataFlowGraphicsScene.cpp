@@ -1,5 +1,6 @@
 #include "DataFlowGraphicsScene.hpp"
 
+#include "CommentGraphicsObject.hpp"
 #include "ConnectionGraphicsObject.hpp"
 #include "GraphicsView.hpp"
 #include "NodeDelegateModelRegistry.hpp"
@@ -157,7 +158,36 @@ bool DataFlowGraphicsScene::save() const
 
         QFile file(fileName);
         if (file.open(QIODevice::WriteOnly)) {
-            file.write(QJsonDocument(_graphModel.save()).toJson());
+            QJsonObject sceneJson = _graphModel.save();
+            
+            // Add comments to the saved data
+            QJsonArray commentsArray;
+            for (auto const& [commentId, commentGO] : comments()) {
+                QJsonObject commentJson;
+                commentJson["id"] = commentId.toString();
+                commentJson["text"] = commentGO->commentText();
+                commentJson["pos"] = QJsonObject{{"x", commentGO->pos().x()}, {"y", commentGO->pos().y()}};
+                
+                QRectF rect = commentGO->boundingRect();
+                commentJson["rect"] = QJsonObject{
+                    {"x", rect.x()},
+                    {"y", rect.y()},
+                    {"width", rect.width()},
+                    {"height", rect.height()}
+                };
+                
+                // Save grouped node IDs
+                QJsonArray groupedNodes;
+                for (NodeId nodeId : commentGO->groupedNodes()) {
+                    groupedNodes.append(static_cast<qint64>(nodeId));
+                }
+                commentJson["groupedNodes"] = groupedNodes;
+                
+                commentsArray.append(commentJson);
+            }
+            sceneJson["comments"] = commentsArray;
+            
+            file.write(QJsonDocument(sceneJson).toJson());
             return true;
         }
     }
@@ -182,8 +212,35 @@ bool DataFlowGraphicsScene::load()
     clearScene();
 
     QByteArray const wholeFile = file.readAll();
+    QJsonObject sceneJson = QJsonDocument::fromJson(wholeFile).object();
 
-    _graphModel.load(QJsonDocument::fromJson(wholeFile).object());
+    _graphModel.load(sceneJson);
+
+    // Load comments
+    QJsonArray commentsArray = sceneJson["comments"].toArray();
+    for (QJsonValue commentVal : commentsArray) {
+        QJsonObject commentJson = commentVal.toObject();
+        
+        QUuid commentId = QUuid::fromString(commentJson["id"].toString());
+        auto commentGO = std::make_unique<CommentGraphicsObject>(*this, commentId);
+        
+        // Restore comment properties
+        commentGO->setCommentText(commentJson["text"].toString());
+        
+        QJsonObject posObj = commentJson["pos"].toObject();
+        commentGO->setPos(posObj["x"].toDouble(), posObj["y"].toDouble());
+        
+        // Restore grouped nodes
+        std::unordered_set<NodeId> groupedNodes;
+        QJsonArray groupedNodesArray = commentJson["groupedNodes"].toArray();
+        for (QJsonValue nodeVal : groupedNodesArray) {
+            groupedNodes.insert(static_cast<NodeId>(nodeVal.toInteger()));
+        }
+        commentGO->setGroupedNodes(groupedNodes);
+        
+        // Add to scene
+        addComment(commentId, std::move(commentGO));
+    }
 
     Q_EMIT sceneLoaded();
 

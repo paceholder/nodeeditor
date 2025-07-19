@@ -19,6 +19,8 @@
 
 #include <QtOpenGL>
 #include <QtWidgets>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QGraphicsTextItem>
 
 #include <cmath>
 #include <iostream>
@@ -302,6 +304,28 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
     switch (event->key()) {
     case Qt::Key_Shift:
         setDragMode(QGraphicsView::RubberBandDrag);
+        break;
+
+    case Qt::Key_C:
+        if (!(event->modifiers() & Qt::ControlModifier)) {
+            // Check if any widget has focus (text editing)
+            if (!QApplication::focusWidget() || 
+                (!QApplication::focusWidget()->inherits("QLineEdit") && 
+                 !QApplication::focusWidget()->inherits("QTextEdit") &&
+                 !QApplication::focusWidget()->inherits("QPlainTextEdit"))) {
+                
+                // Also check if any QGraphicsTextItem has focus
+                auto focusItem = scene() ? scene()->focusItem() : nullptr;
+                if (!focusItem || !dynamic_cast<QGraphicsTextItem*>(focusItem)) {
+                    // Only trigger on 'C' without Ctrl (Ctrl+C is for copy)
+                    if (nodeScene()) {
+                        nodeScene()->createCommentFromSelection();
+                        event->accept();
+                        return;
+                    }
+                }
+            }
+        }
         break;
 
     default:

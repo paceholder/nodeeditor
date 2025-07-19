@@ -74,6 +74,7 @@ set(CPP_SOURCE_FILES
   src/AbstractGraphModel.cpp
   src/AbstractNodeGeometry.cpp
   src/BasicGraphicsScene.cpp
+  src/CommentGraphicsObject.cpp
   src/ConnectionGraphicsObject.cpp
   src/ConnectionState.cpp
   src/ConnectionStyle.cpp
@@ -103,6 +104,7 @@ set(HPP_HEADER_FILES
   include/QtNodes/internal/AbstractNodeGeometry.hpp
   include/QtNodes/internal/AbstractNodePainter.hpp
   include/QtNodes/internal/BasicGraphicsScene.hpp
+  include/QtNodes/internal/CommentGraphicsObject.hpp
   include/QtNodes/internal/Compiler.hpp
   include/QtNodes/internal/ConnectionGraphicsObject.hpp
   include/QtNodes/internal/ConnectionIdHash.hpp

@@ -8,6 +8,7 @@
 #include <memory>
 #include <tuple>
 #include <unordered_map>
+#include <unordered_set>
 
 #include "AbstractGraphModel.hpp"
 #include "AbstractNodeGeometry.hpp"
@@ -27,6 +28,7 @@ class AbstractNodePainter;
 class ConnectionGraphicsObject;
 class NodeGraphicsObject;
 class NodeStyle;
+class CommentGraphicsObject;
 
 /// An instance of QGraphicsScene, holds connections and nodes.
 class NODE_EDITOR_PUBLIC BasicGraphicsScene : public QGraphicsScene
@@ -99,6 +101,17 @@ public:
     Qt::Orientation orientation() const { return _orientation; }
 
     void setOrientation(Qt::Orientation const orientation);
+
+    /// Comment-related methods
+    QUuid createCommentFromSelection();
+    
+    void deleteComment(QUuid const &commentId);
+    
+    void addComment(QUuid const &commentId, std::unique_ptr<CommentGraphicsObject> comment);
+    
+    CommentGraphicsObject *commentGraphicsObject(QUuid const &commentId);
+    
+    std::unordered_map<QUuid, std::unique_ptr<CommentGraphicsObject>> const& comments() const { return _commentGraphicsObjects; }
 
 public:
     /// Can @return an instance of the scene context menu in subclass.
@@ -184,6 +197,8 @@ private:
     QUndoStack *_undoStack;
 
     Qt::Orientation _orientation;
+
+    std::unordered_map<QUuid, std::unique_ptr<CommentGraphicsObject>> _commentGraphicsObjects;
 };
 
 } // namespace QtNodes

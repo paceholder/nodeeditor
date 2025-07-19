@@ -1,6 +1,7 @@
 #include "UndoCommands.hpp"
 
 #include "BasicGraphicsScene.hpp"
+#include "CommentGraphicsObject.hpp"
 #include "ConnectionGraphicsObject.hpp"
 #include "ConnectionIdUtils.hpp"
 #include "Definitions.hpp"
@@ -47,8 +48,37 @@ static QJsonObject serializeSelectedItems(BasicGraphicsScene *scene)
         }
     }
 
+    QJsonArray commentsJsonArray;
+    // Serialize selected comments
+    for (QGraphicsItem *item : scene->selectedItems()) {
+        if (auto c = dynamic_cast<CommentGraphicsObject *>(item)) {
+            QJsonObject commentJson;
+            commentJson["id"] = c->id().toString();
+            commentJson["text"] = c->commentText();
+            commentJson["pos"] = QJsonObject{{"x", c->pos().x()}, {"y", c->pos().y()}};
+            commentJson["rect"] = QJsonObject{
+                {"x", c->boundingRect().x()},
+                {"y", c->boundingRect().y()},
+                {"width", c->boundingRect().width()},
+                {"height", c->boundingRect().height()}
+            };
+            
+            // Save grouped node IDs - only save those that are also selected
+            QJsonArray groupedNodes;
+            for (NodeId nodeId : c->groupedNodes()) {
+                if (selectedNodes.count(nodeId) > 0) {
+                    groupedNodes.append(static_cast<qint64>(nodeId));
+                }
+            }
+            commentJson["groupedNodes"] = groupedNodes;
+            
+            commentsJsonArray.append(commentJson);
+        }
+    }
+
     serializedScene["nodes"] = nodesJsonArray;
     serializedScene["connections"] = connJsonArray;
+    serializedScene["comments"] = commentsJsonArray;
 
     return serializedScene;
 }
@@ -80,6 +110,35 @@ static void insertSerializedItems(QJsonObject const &json, BasicGraphicsScene *s
         graphModel.addConnection(connId);
 
         scene->connectionGraphicsObject(connId)->setSelected(true);
+    }
+
+    // Restore comments
+    QJsonArray const &commentsJsonArray = json["comments"].toArray();
+    for (QJsonValue comment : commentsJsonArray) {
+        QJsonObject commentJson = comment.toObject();
+        
+        QUuid commentId = QUuid::fromString(commentJson["id"].toString());
+        auto commentGO = std::make_unique<CommentGraphicsObject>(*scene, commentId);
+        
+        // Restore comment properties
+        commentGO->setCommentText(commentJson["text"].toString());
+        
+        QJsonObject posObj = commentJson["pos"].toObject();
+        commentGO->setPos(posObj["x"].toDouble(), posObj["y"].toDouble());
+        
+        // Restore grouped nodes
+        std::unordered_set<NodeId> groupedNodes;
+        QJsonArray groupedNodesArray = commentJson["groupedNodes"].toArray();
+        for (QJsonValue nodeVal : groupedNodesArray) {
+            groupedNodes.insert(static_cast<NodeId>(nodeVal.toInteger()));
+        }
+        commentGO->setGroupedNodes(groupedNodes);
+        
+        // Select the comment
+        commentGO->setSelected(true);
+        
+        // Add to scene using the public method
+        scene->addComment(commentId, std::move(commentGO));
     }
 }
 
@@ -187,12 +246,39 @@ DeleteCommand::DeleteCommand(BasicGraphicsScene *scene)
         }
     }
 
+    QJsonArray commentsJsonArray;
+    // Save selected comments
+    for (QGraphicsItem *item : _scene->selectedItems()) {
+        if (auto c = dynamic_cast<CommentGraphicsObject *>(item)) {
+            QJsonObject commentJson;
+            commentJson["id"] = c->id().toString();
+            commentJson["text"] = c->commentText();
+            commentJson["pos"] = QJsonObject{{"x", c->pos().x()}, {"y", c->pos().y()}};
+            commentJson["rect"] = QJsonObject{
+                {"x", c->boundingRect().x()},
+                {"y", c->boundingRect().y()},
+                {"width", c->boundingRect().width()},
+                {"height", c->boundingRect().height()}
+            };
+            
+            // Save grouped node IDs
+            QJsonArray groupedNodes;
+            for (NodeId nodeId : c->groupedNodes()) {
+                groupedNodes.append(static_cast<qint64>(nodeId));
+            }
+            commentJson["groupedNodes"] = groupedNodes;
+            
+            commentsJsonArray.append(commentJson);
+        }
+    }
+
     // If nothing is deleted, cancel this operation
-    if (connJsonArray.isEmpty() && nodesJsonArray.isEmpty())
+    if (connJsonArray.isEmpty() && nodesJsonArray.isEmpty() && commentsJsonArray.isEmpty())
         setObsolete(true);
 
     _sceneJson["nodes"] = nodesJsonArray;
     _sceneJson["connections"] = connJsonArray;
+    _sceneJson["comments"] = commentsJsonArray;
 }
 
 void DeleteCommand::undo()
@@ -203,6 +289,14 @@ void DeleteCommand::undo()
 void DeleteCommand::redo()
 {
     deleteSerializedItems(_sceneJson, _scene->graphModel());
+    
+    // Delete comments
+    QJsonArray commentsJsonArray = _sceneJson["comments"].toArray();
+    for (QJsonValueRef comment : commentsJsonArray) {
+        QJsonObject commentJson = comment.toObject();
+        QUuid commentId = QUuid::fromString(commentJson["id"].toString());
+        _scene->deleteComment(commentId);
+    }
 }
 
 //-------------------------------------
