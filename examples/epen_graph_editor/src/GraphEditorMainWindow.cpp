@@ -42,11 +42,11 @@ GraphEditorWindow::GraphEditorWindow(DataFlowGraphicsScene *scene, DataFlowModel
     });
 
     // Create initial nodes
-    QtNodes::NodeId newIdInput = _model->addNodeType(NodeTypes::Video_Input);
+    QtNodes::NodeId newIdInput = _model->addNode("VideoInput");
     QPointF inputScenePos = mapToScene(0, 0);
     _model->setNodeData(newIdInput, NodeRole::Position, inputScenePos);
 
-    QtNodes::NodeId newIdOutput = _model->addNodeType(NodeTypes::Video_Output);
+    QtNodes::NodeId newIdOutput = _model->addNode("VideoOutput");
     QPointF outputScenePos = mapToScene(400, 0);
     _model->setNodeData(newIdOutput, NodeRole::Position, outputScenePos);
 
@@ -235,7 +235,7 @@ void GraphEditorWindow::createFloatingProperties()
 
 void GraphEditorWindow::createNodeAtPosition(const QPointF &scenePos, const QString nodeType)
 {
-    QtNodes::NodeId newId = _model->addNodeName(nodeType);
+    QtNodes::NodeId newId = _model->addNode(nodeType);
     _model->setNodeData(newId, NodeRole::Position, scenePos);
 
     // The node selection will be handled by the scene's nodeSelected signal

@@ -7,7 +7,7 @@ DataFlowModel::DataFlowModel(std::shared_ptr<NodeDelegateModelRegistry> registry
 NodeId DataFlowModel::addNode(QString const nodeType)
 {
     if (nodeType == "VideoOutput") {
-        auto it = nodesMap.find(NodeTypes::Video_Output);
+        auto it = nodesMap.find(nodeType);
         if (it != nodesMap.end()) {
             const std::unordered_set<NodeId> &nodeSet = it->second;
             if (nodeSet.size() > 0) {
@@ -26,78 +26,35 @@ NodeId DataFlowModel::addNode(QString const nodeType)
     _nodeNames[newNodeId] = QString(nodeType);
     OperationDataModel *nodeModel = delegateModel<OperationDataModel>(newNodeId);
 
-    auto nodeTypeEnum = stringToNodeType(nodeType);
-    if (nodeTypeEnum && nodeModel) {
-        NodeTypes type = *nodeTypeEnum;
-        nodeModel->setNodeName(generateNewNodeName(type, nodeType));
-        nodesMap[type].insert(newNodeId);
+    if (nodeModel) {
+        nodeModel->setNodeName(generateNewNodeName(nodeType));
+        nodesMap[nodeType].insert(newNodeId);
     }
     return newNodeId;
-}
-
-NodeId DataFlowModel::addNodeType(NodeTypes type)
-{
-    QString nodeTypeName = nodeTypeToName[type];
-    NodeId newNodeId = addNode(nodeTypeName);
-    return newNodeId;
-}
-
-NodeId DataFlowModel::addNodeName(QString const nodeTypeName)
-{
-    auto nodeType = stringToNodeType(nodeTypeName);
-    if (nodeType) {
-        NodeTypes type = *nodeType;
-        return addNodeType(type);
-    }
-    return QtNodes::InvalidNodeId;
 }
 
 bool DataFlowModel::deleteNode(NodeId const nodeId)
 {
     QVariant nodeTypeName = nodeData(nodeId, QtNodes::NodeRole::Type);
-    auto nodeType = stringToNodeType(nodeTypeName.toString());
     if (nodeTypeName == "VideoOutput") {
         return false;
     } else if (nodeTypeName == "VideoInput") {
-        if (nodeType) {
-            NodeTypes type = *nodeType;
-            auto it = nodesMap.find(type);
-            if (it != nodesMap.end()) {
-                const std::unordered_set<NodeId> &nodeSet = it->second;
-                if (nodeSet.size() == 1) {
-                    return false;
-                }
+        auto it = nodesMap.find(nodeTypeName.toString());
+        if (it != nodesMap.end()) {
+            const std::unordered_set<NodeId> &nodeSet = it->second;
+            if (nodeSet.size() == 1) {
+                return false;
             }
         }
     }
     _nodeWidgets.erase(nodeId);
     _nodePortCounts.erase(nodeId);
-    if (nodeType) {
-        NodeTypes type = *nodeType;
-        auto it = nodesMap.find(type);
-        if (it != nodesMap.end()) {
-            it->second.erase(nodeId);
-        }
+    auto it = nodesMap.find(nodeTypeName.toString());
+    if (it != nodesMap.end()) {
+        it->second.erase(nodeId);
     }
 
     return DataFlowGraphModel::deleteNode(nodeId);
-}
-
-std::optional<NodeTypes> DataFlowModel::stringToNodeType(const QString &str) const
-{
-    static const QHash<QString, NodeTypes> map = [] {
-        QHash<QString, NodeTypes> m;
-        for (auto it = nodeTypeToName.begin(); it != nodeTypeToName.end(); ++it)
-            m[it.value()] = it.key();
-        return m;
-    }();
-
-    auto it = map.find(str);
-    if (it != map.end()) {
-        return it.value();
-    } else {
-        return std::nullopt;
-    }
 }
 
 PortAddRemoveWidget *DataFlowModel::widget(NodeId nodeId) const
@@ -188,9 +145,9 @@ void DataFlowModel::removeProcessNodePort(NodeId nodeId, PortType portType, Port
     Q_EMIT nodeUpdated(nodeId);
 }
 
-QString DataFlowModel::generateNewNodeName(NodeTypes type, QString typeNamePrefix)
+QString DataFlowModel::generateNewNodeName(QString typeNamePrefix)
 {
-    auto it = nodesMap.find(type);
+    auto it = nodesMap.find(typeNamePrefix);
     int nodeCount = 0;
     if (it != nodesMap.end()) {
         const std::unordered_set<NodeId> &nodeSet = it->second;

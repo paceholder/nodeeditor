@@ -15,44 +15,6 @@ using QtNodes::NodeRole;
 using QtNodes::PortIndex;
 using QtNodes::PortType;
 
-enum class NodeTypes {
-    Video_Input,
-    Video_Output,
-    FixBuffer,
-    Process,
-    InBuffer,
-    OutBuffer,
-    InImage,
-    OutImage,
-    SliderBuffer,
-    CheckboxBuffer,
-    Color4Buffer,
-    PlainNumberBuffer
-};
-
-const QMap<NodeTypes, QString> nodeTypeToName = {
-    {NodeTypes::Video_Input, "VideoInput"},
-    {NodeTypes::Video_Output, "VideoOutput"},
-    {NodeTypes::FixBuffer, "FixBuffer"},
-    {NodeTypes::Process, "Process"},
-    {NodeTypes::InBuffer, "InBuffer"},
-    {NodeTypes::OutBuffer, "OutBuffer"},
-    {NodeTypes::SliderBuffer, "SliderBuffer"},
-    {NodeTypes::InImage, "InImage"},
-    {NodeTypes::OutImage, "OutImage"},
-    {NodeTypes::CheckboxBuffer, "CheckboxBuffer"},
-    {NodeTypes::Color4Buffer, "Color4Buffer"},
-    {NodeTypes::PlainNumberBuffer, "PlainNumberBuffer"},
-};
-
-namespace std {
-template<>
-struct hash<NodeTypes>
-{
-    std::size_t operator()(NodeTypes c) const { return static_cast<std::size_t>(c); }
-};
-} // namespace std
-
 class DataFlowModel : public DataFlowGraphModel
 {
 public:
@@ -61,10 +23,6 @@ public:
     NodeId addNode(QString const nodeType) override;
 
     bool detachPossible(ConnectionId const) const override { return true; }
-
-    NodeId addNodeType(NodeTypes type);
-
-    NodeId addNodeName(QString const nodeTypeName);
 
     bool deleteNode(NodeId const nodeId) override;
 
@@ -77,10 +35,8 @@ public:
     void removeProcessNodePort(NodeId nodeId, PortType portType, PortIndex portIndex);
 
 private:
-    QString generateNewNodeName(NodeTypes nodeType, QString typeNamePrefix);
-    std::optional<NodeTypes> stringToNodeType(const QString &str) const;
-
-    std::unordered_map<NodeTypes, std::unordered_set<NodeId>> nodesMap;
+    QString generateNewNodeName(QString typeNamePrefix);
+    std::unordered_map<QString, std::unordered_set<NodeId>> nodesMap;
     struct NodePortCount
     {
         unsigned int in = 0;
