@@ -27,6 +27,7 @@ class OperationDataModel : public NodeDelegateModel
 
 public:
     Q_PROPERTY(QString Name MEMBER _name NOTIFY propertyChanged)
+
     OperationDataModel();
     ~OperationDataModel() = default;
 
@@ -39,12 +40,8 @@ public:
     void setInData(std::shared_ptr<NodeData> data, PortIndex portIndex) override;
 
     QWidget *embeddedWidget() override { return nullptr; }
-    virtual void setupProperties(QtVariantPropertyManager *, QtTreePropertyBrowser *);
 
-    virtual void deselected(QtVariantPropertyManager *variantManager,
-                            QtTreePropertyBrowser *browser);
-
-    virtual bool valueChanged(QString propertyName, const QVariant &val);
+    virtual void deselected();
 
     void setNodeName(QString);
     QString getDisplayName(QString propertyName);

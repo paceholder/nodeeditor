@@ -171,23 +171,9 @@ void FloatingToolbar::setupUI()
                   buttonFont,
                   layout);
 
-    addNodeButton("Gpu Input Buffer",
-                  QString::fromUtf8("\u2B16"),
-                  ">>",
-                  "Create a Gpu Input Buffer node",
-                  true,
-                  "InBuffer",
-                  buttonFont,
-                  layout);
+    addSeparator(layout);
 
-    addNodeButton("Gpu Output Buffer",
-                  QString::fromUtf8("\u2B17"),
-                  ">>",
-                  "Create a Gpu Output Buffer node",
-                  true,
-                  "OutBuffer",
-                  buttonFont,
-                  layout);
+    addCategory(layout, "UI Buffers:");
 
     addNodeButton("Slider Input Buffer",
                   QString::fromUtf8("\u2B30"),

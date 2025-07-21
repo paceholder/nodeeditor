@@ -78,7 +78,7 @@ void FloatingProperties::clearProperties()
 {
     m_currentNodeId = InvalidNodeId;
     if (_currentNode != nullptr) {
-        _currentNode->deselected(_variantManager, _properties);
+        _currentNode->deselected();
         _currentNode = nullptr;
     }
     if (_properties) {
@@ -99,7 +99,7 @@ void FloatingProperties::setNode(OperationDataModel *node)
 {
     _lockPropertyUpdate = true;
     if (_currentNode != nullptr) {
-        _currentNode->deselected(_variantManager, _properties);
+        _currentNode->deselected();
         _currentNode = nullptr;
     }
     _currentNode = node;

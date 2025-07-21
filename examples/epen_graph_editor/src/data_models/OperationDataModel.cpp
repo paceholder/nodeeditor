@@ -44,15 +44,9 @@ void OperationDataModel::setInData(std::shared_ptr<NodeData> data, PortIndex por
     }
 }
 
-void OperationDataModel::setupProperties(QtVariantPropertyManager *variantManager,
-                                         QtTreePropertyBrowser *browser)
-{}
 
-void OperationDataModel::deselected(QtVariantPropertyManager *variantManager,
-                                    QtTreePropertyBrowser *browser)
+void OperationDataModel::deselected()
 {}
-
-bool OperationDataModel::valueChanged(QString propertyName, const QVariant &val) {}
 
 void OperationDataModel::setNodeName(QString name)
 {

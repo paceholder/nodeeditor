@@ -10,10 +10,6 @@
 #include "data_models/CheckboxInputBuffer.hpp"
 #include "data_models/Color4InputBuffer.hpp"
 #include "data_models/FixedBuffer.hpp"
-#include "data_models/GpuInputBuffer.hpp"
-#include "data_models/GpuOutputBuffer.hpp"
-#include "data_models/InputImage.hpp"
-#include "data_models/OutputImage.hpp"
 #include "data_models/PlainNumberInputBuffer.hpp"
 #include "data_models/Process.hpp"
 #include "data_models/SliderInputBuffer.hpp"
@@ -35,11 +31,7 @@ static std::shared_ptr<NodeDelegateModelRegistry> registerDataModels()
     ret->registerModel<VideoOutput>();
     ret->registerModel<FixedBuffer>();
     ret->registerModel<Process>();
-    ret->registerModel<GpuInputBuffer>();
-    ret->registerModel<GpuOutputBuffer>();
     ret->registerModel<SliderInputBuffer>();
-    ret->registerModel<InputImage>();
-    ret->registerModel<OutputImage>();
     ret->registerModel<CheckboxInputBuffer>();
     ret->registerModel<Color4InputBuffer>();
     ret->registerModel<PlainNumberInputBuffer>();
