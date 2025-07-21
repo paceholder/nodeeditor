@@ -178,13 +178,26 @@ void FloatingToolbar::setupNodeCategories()
 
     ExpandableCategoryWidget *typeCategory = new ExpandableCategoryWidget("unsigned int", 1);
     m_categories[QString("Scalar_%1").arg("unsigned int")] = typeCategory;
-    addNodeButton("Slider Input Buffer",
-                  QString::fromUtf8("\u2B30"),
-                  ">>",
-                  "Create a UI unsigned int Slider Buffer node",
-                  true,
-                  "SliderBuffer_unsignedInt",
-                  typeCategory);
+    QWidget *container = new QWidget();
+    QVBoxLayout *containerLayout = new QVBoxLayout(container);
+    containerLayout->setContentsMargins(0, 0, 0, 0);
+    containerLayout->setSpacing(1);
+
+    containerLayout->addWidget(addNodeButton("Slider Input Buffer",
+                                             QString::fromUtf8("\u2B30"),
+                                             ">>",
+                                             "Create a UI unsigned int Slider Buffer node",
+                                             true,
+                                             "Scalar_UnsignedInt_Slider"));
+
+    containerLayout->addWidget(addNodeButton("Plain Number Input Buffer",
+                                             QString::fromUtf8("\u2B30"),
+                                             ">>",
+                                             "Create a UI unsigned int Plain Number Buffer node",
+                                             true,
+                                             "Scalar_UnsignedInt_Plain"));
+
+    typeCategory->setContentWidget(container);
     scalarCategory->addWidget(typeCategory);
 
     // Add separator
@@ -204,23 +217,13 @@ void FloatingToolbar::setupNodeCategories()
     addNodeButtonsToCategory(otherCategory, otherNodes);
 
     // Set initial expanded state
-    scalarCategory->setExpanded(false);
+    scalarCategory->setExpanded(true);
     otherCategory->setExpanded(true);
 }
 
-void FloatingToolbar::addNodeButton(QString name,
-                                    QString icon,
-                                    QString fallback,
-                                    QString tooltip,
-                                    bool enabled,
-                                    QString actionName,
-                                    ExpandableCategoryWidget *layout)
+DraggableButton *FloatingToolbar::addNodeButton(
+    QString name, QString icon, QString fallback, QString tooltip, bool enabled, QString actionName)
 {
-    QWidget *container = new QWidget();
-    QVBoxLayout *containerLayout = new QVBoxLayout(container);
-    containerLayout->setContentsMargins(0, 0, 0, 0);
-    containerLayout->setSpacing(1);
-
     DraggableButton *btn = new DraggableButton(actionName, this);
     QString buttonText = createSafeButtonText(icon, name);
     btn->setText(buttonText);
@@ -228,8 +231,7 @@ void FloatingToolbar::addNodeButton(QString name,
     btn->setEnabled(enabled);
     btn->setFont(m_buttonFont);
     btn->setProperty("nodeType", name);
-    containerLayout->addWidget(btn);
-    layout->setContentWidget(container);
+    return btn;
 }
 
 void FloatingToolbar::addNodeButtonsToCategory(ExpandableCategoryWidget *category,

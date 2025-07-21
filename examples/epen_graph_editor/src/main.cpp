@@ -9,7 +9,8 @@
 #include "DataFlowModel.hpp"
 #include "data_models/FixedBuffer.hpp"
 #include "data_models/Process.hpp"
-#include "data_models/SliderBuffer_unsignedInt.hpp"
+#include "data_models/Scalar_UnsignedInt_Plain.hpp"
+#include "data_models/Scalar_UnsignedInt_Slider.hpp"
 #include "data_models/VideoInput.hpp"
 #include "data_models/VideoOutput.hpp"
 #include <QtGui/QScreen>
@@ -29,7 +30,9 @@ static std::shared_ptr<NodeDelegateModelRegistry> registerDataModels()
     ret->registerModel<FixedBuffer>();
     ret->registerModel<Process>();
 
-    ret->registerModel<SliderBuffer_unsignedInt>();
+    ret->registerModel<Scalar_UnsignedInt_Slider>();
+    ret->registerModel<Scalar_UnsignedInt_Plain>();
+
     return ret;
 }
 

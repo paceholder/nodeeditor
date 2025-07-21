@@ -37,13 +37,13 @@ private:
         bool enabled;
     };
 
-    void addNodeButton(QString name,
+    DraggableButton* addNodeButton(QString name,
                        QString icon,
                        QString fallback,
                        QString tooltip,
                        bool enabled,
-                       QString actionName,
-                       ExpandableCategoryWidget *layout);
+                       QString actionName
+                       );
     QString createSafeButtonText(const QString &icon, const QString &text);
     DraggableButton *createNodeButton(const NodeButtonInfo &info, QWidget *parent = nullptr);
 
