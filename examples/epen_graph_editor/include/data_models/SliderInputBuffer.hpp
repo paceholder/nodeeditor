@@ -1,11 +1,9 @@
 #pragma once
-#include "NumberInputBufferBase.hpp"
-class SliderInputBuffer : public NumberInputBufferBase
+#include "OperationDataModel.hpp"
+class SliderInputBuffer : public OperationDataModel
 {
     Q_OBJECT
 public:
-    Q_PROPERTY(double Value1 MEMBER m_value1 NOTIFY propertyChanged)
-    Q_PROPERTY(double Value2 MEMBER m_value2 NOTIFY propertyChanged)
 
     enum class VarTypes { Float, Int, Float4 };
     SliderInputBuffer() { displayNameMap["Value1"] = "My custom value"; }
@@ -47,8 +45,4 @@ public:
 
         return result;
     }
-
-private:
-    double m_value1 = 0.123;
-    double m_value2 = 42;
 };

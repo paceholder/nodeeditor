@@ -1,7 +1,7 @@
 #pragma once
-#include "NumberInputBufferBase.hpp"
+#include "OperationDataModel.hpp"
 
-class PlainNumberInputBuffer : public NumberInputBufferBase
+class PlainNumberInputBuffer : public OperationDataModel
 {
     Q_OBJECT
 public:

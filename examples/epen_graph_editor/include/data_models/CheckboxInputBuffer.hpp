@@ -3,7 +3,10 @@
 
 class CheckboxInputBuffer : public OperationDataModel
 {
+    Q_OBJECT
 public:
+    Q_PROPERTY(bool Default_Value MEMBER _defaultValue NOTIFY propertyChanged)
+    CheckboxInputBuffer() { displayNameMap["Default_Value"] = "Default Value"; }
     virtual ~CheckboxInputBuffer() {}
 
 public:
@@ -42,9 +45,6 @@ public:
         return result;
     }
 
-
 private:
-    QtVariantProperty *_defaultValueItem;
-
     bool _defaultValue = false;
 };

@@ -3,7 +3,10 @@
 
 class Color4InputBuffer : public OperationDataModel
 {
+    Q_OBJECT
 public:
+    Q_PROPERTY(QColor Default_Value MEMBER _defaultValue NOTIFY propertyChanged)
+    Color4InputBuffer() { displayNameMap["Default_Value"] = "Default Value"; }
     virtual ~Color4InputBuffer() {}
 
 public:
@@ -42,9 +45,6 @@ public:
         return result;
     }
 
-
 private:
-    QtVariantProperty *_defaultValueItem;
-
     QColor _defaultValue{255, 255, 255, 255};
 };
