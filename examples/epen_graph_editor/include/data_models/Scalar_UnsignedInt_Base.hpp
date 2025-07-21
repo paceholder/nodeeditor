@@ -6,7 +6,7 @@ class Scalar_UnsignedInt_Base : public UIBufferBase
 public:
     Q_PROPERTY(int Default_Value MEMBER _defaultValue WRITE setDefaultValue NOTIFY propertyChanged)
     Q_PROPERTY(int Min MEMBER _min WRITE setMinValue NOTIFY propertyChanged)
-    Q_PROPERTY(int Max MEMBER _min WRITE setMaxValue NOTIFY propertyChanged)
+    Q_PROPERTY(int Max MEMBER _max WRITE setMaxValue NOTIFY propertyChanged)
 
     void setDefaultValue(int v)
     {

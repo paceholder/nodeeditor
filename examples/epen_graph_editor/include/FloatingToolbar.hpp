@@ -53,8 +53,6 @@ private:
 
     void addSeparator(QVBoxLayout *layout);
 
-    // Store references to expandable categories for easy access
-    QMap<QString, ExpandableCategoryWidget *> m_categories;
     QFont m_buttonFont;
 };
 

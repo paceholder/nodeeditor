@@ -171,13 +171,13 @@ void FloatingToolbar::setupNodeCategories()
 
     // Create Scalar category
     ExpandableCategoryWidget *scalarCategory = new ExpandableCategoryWidget("Scalar", 0);
-    m_categories["Scalar"] = scalarCategory;
+
     layout->addWidget(scalarCategory);
 
     // Add subcategories for Scalar
 
-    ExpandableCategoryWidget *typeCategory = new ExpandableCategoryWidget("unsigned int", 1);
-    m_categories[QString("Scalar_%1").arg("unsigned int")] = typeCategory;
+    ExpandableCategoryWidget *typeCategoryScalarUnsignedInt = new ExpandableCategoryWidget("unsigned int", 1);
+
     QWidget *container = new QWidget();
     QVBoxLayout *containerLayout = new QVBoxLayout(container);
     containerLayout->setContentsMargins(0, 0, 0, 0);
@@ -197,15 +197,43 @@ void FloatingToolbar::setupNodeCategories()
                                              true,
                                              "Scalar_UnsignedInt_Plain"));
 
-    typeCategory->setContentWidget(container);
-    scalarCategory->addWidget(typeCategory);
+    typeCategoryScalarUnsignedInt->setContentWidget(container);
+    scalarCategory->addWidget(typeCategoryScalarUnsignedInt);
+
+    //---------------
+
+    ExpandableCategoryWidget *typeCategoryScalarInt = new ExpandableCategoryWidget("int", 1);
+
+    container = new QWidget();
+    containerLayout = new QVBoxLayout(container);
+    containerLayout->setContentsMargins(0, 0, 0, 0);
+    containerLayout->setSpacing(1);
+
+    containerLayout->addWidget(addNodeButton("Slider Input Buffer",
+                                             QString::fromUtf8("\u2B30"),
+                                             ">>",
+                                             "Create a UI int Slider Buffer node",
+                                             true,
+                                             "Scalar_Int_Slider"));
+
+    containerLayout->addWidget(addNodeButton("Plain Number Input Buffer",
+                                             QString::fromUtf8("\u2B30"),
+                                             ">>",
+                                             "Create a UI int Plain Number Buffer node",
+                                             true,
+                                             "Scalar_Int_Plain"));
+
+    typeCategoryScalarInt->setContentWidget(container);
+    scalarCategory->addWidget(typeCategoryScalarInt);
+
+    //------------------------
 
     // Add separator
     addSeparator(layout);
 
     // Add Other Nodes category
     ExpandableCategoryWidget *otherCategory = new ExpandableCategoryWidget("Other Nodes", 0);
-    m_categories["Other"] = otherCategory;
+
     layout->addWidget(otherCategory);
 
     QVector<NodeButtonInfo> otherNodes

@@ -9,6 +9,8 @@
 #include "DataFlowModel.hpp"
 #include "data_models/FixedBuffer.hpp"
 #include "data_models/Process.hpp"
+#include "data_models/Scalar_Int_Plain.hpp"
+#include "data_models/Scalar_Int_Slider.hpp"
 #include "data_models/Scalar_UnsignedInt_Plain.hpp"
 #include "data_models/Scalar_UnsignedInt_Slider.hpp"
 #include "data_models/VideoInput.hpp"
@@ -32,6 +34,9 @@ static std::shared_ptr<NodeDelegateModelRegistry> registerDataModels()
 
     ret->registerModel<Scalar_UnsignedInt_Slider>();
     ret->registerModel<Scalar_UnsignedInt_Plain>();
+
+    ret->registerModel<Scalar_Int_Plain>();
+    ret->registerModel<Scalar_Int_Slider>();
 
     return ret;
 }
