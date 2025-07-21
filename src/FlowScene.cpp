@@ -2,6 +2,8 @@
 
 #include <iostream>
 #include <stdexcept>
+#include <set>
+#include <tuple>
 
 #include <QtWidgets/QGraphicsSceneMoveEvent>
 #include <QtWidgets/QFileDialog>
@@ -856,6 +858,8 @@ saveToMemory() const
   sceneJson["nodes"] = nodesJsonArray;
 
   QJsonArray connectionJsonArray;
+  std::set<std::tuple<QUuid, PortIndex, QUuid, PortIndex>> uniqueConnections;
+  
   for (auto const & pair : _connections)
   {
     auto const &connection = pair.second;
@@ -863,7 +867,23 @@ saveToMemory() const
     QJsonObject connectionJson = connection->save();
 
     if (!connectionJson.isEmpty())
-      connectionJsonArray.append(connectionJson);
+    {
+      // Extract connection details for duplicate detection
+      QUuid nodeInId = QUuid(connectionJson["in_id"].toString());
+      QUuid nodeOutId = QUuid(connectionJson["out_id"].toString());
+      PortIndex portIndexIn = connectionJson["in_index"].toInt();
+      PortIndex portIndexOut = connectionJson["out_index"].toInt();
+      
+      // Create a unique identifier tuple
+      auto connectionKey = std::make_tuple(nodeInId, portIndexIn, nodeOutId, portIndexOut);
+      
+      // Only add if we haven't seen this connection before
+      if (uniqueConnections.find(connectionKey) == uniqueConnections.end())
+      {
+        uniqueConnections.insert(connectionKey);
+        connectionJsonArray.append(connectionJson);
+      }
+    }
   }
 
   sceneJson["connections"] = connectionJsonArray;

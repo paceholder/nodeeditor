@@ -460,7 +460,7 @@ FlowView::
 deleteSelectedNodes()
 {
 	QJsonObject sceneJson = selectionToJson(true);
-
+  qDebug() << sceneJson;
   std::vector<QUuid> nodeIds;
   std::vector<QUuid> connectionsIds;
   for (QGraphicsItem * item : _scene->selectedItems())
@@ -652,7 +652,8 @@ QJsonObject FlowView::selectionToJson(bool includePartialConnections)
   QJsonObject sceneJson;
   QJsonArray nodesJsonArray;
   QJsonArray connectionJsonArray;
-  std::vector<QUuid> addedIds;
+  std::set<QUuid> addedNodeIds;
+  std::set<QUuid> addedConnectionIds;
   
   for (QGraphicsItem * item : _scene->selectedItems())
 	{
@@ -660,35 +661,41 @@ QJsonObject FlowView::selectionToJson(bool includePartialConnections)
 		{
         Node& node = n->node();
         nodesJsonArray.append(node.save());
-        addedIds.push_back(node.id());
+        addedNodeIds.insert(node.id());
 
-        if(includePartialConnections)
+        if(includePartialConnections) //find all connections of that node, even if the other node is not selected
         {
           std::vector<Connection*> allConnections = node.nodeState().allConnections();
           for(int i=0; i<allConnections.size(); i++)
           {
+            if(addedConnectionIds.find(allConnections[i]->id()) != addedConnectionIds.end())
+              continue; //Already added this connection
+            
             QJsonObject connectionJson = allConnections[i]->save();
             if (!connectionJson.isEmpty())
+            {
               connectionJsonArray.append(connectionJson);
+              addedConnectionIds.insert(allConnections[i]->id());
+            }
           }
         }
     }
   }
 
   for (QGraphicsItem * item : _scene->selectedItems())
-	{
+  {
     if (auto c = qgraphicsitem_cast<ConnectionGraphicsObject*>(item)) {
         Connection& connection = c->connection();
 
-        if((std::find(addedIds.begin(), addedIds.end(), connection.getNode(PortType::In)->id())  != addedIds.end() && 
-            std::find(addedIds.begin(), addedIds.end(), connection.getNode(PortType::Out)->id()) != addedIds.end()) || includePartialConnections) {
+        if(addedConnectionIds.find(connection.id()) == addedConnectionIds.end()) {
           QJsonObject connectionJson = connection.save();
-          
           if (!connectionJson.isEmpty())
             connectionJsonArray.append(connectionJson);
+            addedConnectionIds.insert(connection.id());
         }
     }
   }
+
   
   QJsonArray groupJsonArray;
   for (QGraphicsItem * item : _scene->selectedItems())
