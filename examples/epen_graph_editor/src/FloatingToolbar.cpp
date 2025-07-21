@@ -306,6 +306,52 @@ void FloatingToolbar::setupNodeCategories()
     typeCategoryScalarFloat->setContentWidget(container);
     scalarCategory->addWidget(typeCategoryScalarFloat);
     //----------
+    ExpandableCategoryWidget *typeCategoryScalarBoolean = new ExpandableCategoryWidget("bool", 1);
+
+    container = new QWidget();
+    containerLayout = new QVBoxLayout(container);
+    containerLayout->setContentsMargins(0, 0, 0, 0);
+    containerLayout->setSpacing(1);
+
+    containerLayout->addWidget(addNodeButton("Checkbox Input Buffer",
+                                             QString::fromUtf8("\u2B30"),
+                                             ">>",
+                                             "Create a UI boolean Checkbox Buffer node",
+                                             true,
+                                             "Scalar_Boolean_Checkbox"));
+
+    containerLayout->addWidget(addNodeButton("Fixed Buffer",
+                                             QString::fromUtf8("\u2B30"),
+                                             ">>",
+                                             "Create a float Fixed Buffer node",
+                                             true,
+                                             "Scalar_Boolean_Fixed"));
+    typeCategoryScalarBoolean->setContentWidget(container);
+    scalarCategory->addWidget(typeCategoryScalarBoolean);
+    //----------
+    ExpandableCategoryWidget *typeCategoryScalarFloat4 = new ExpandableCategoryWidget("float4", 1);
+
+    container = new QWidget();
+    containerLayout = new QVBoxLayout(container);
+    containerLayout->setContentsMargins(0, 0, 0, 0);
+    containerLayout->setSpacing(1);
+
+    containerLayout->addWidget(addNodeButton("Color Input Buffer",
+                                             QString::fromUtf8("\u2B30"),
+                                             ">>",
+                                             "Create a UI float4 Color Buffer node",
+                                             true,
+                                             "Scalar_Float4_Color"));
+
+    containerLayout->addWidget(addNodeButton("Fixed Buffer",
+                                             QString::fromUtf8("\u2B30"),
+                                             ">>",
+                                             "Create a float4 Fixed Buffer node",
+                                             true,
+                                             "Scalar_Float4_Fixed"));
+    typeCategoryScalarFloat4->setContentWidget(container);
+    scalarCategory->addWidget(typeCategoryScalarFloat4);
+    //------------------
     // Add separator
     addSeparator(layout);
 
