@@ -27,7 +27,7 @@ NodeId DataFlowModel::addNode(QString const nodeType)
     OperationDataModel *nodeModel = delegateModel<OperationDataModel>(newNodeId);
 
     auto nodeTypeEnum = stringToNodeType(nodeType);
-    if (nodeTypeEnum) {
+    if (nodeTypeEnum && nodeModel) {
         NodeTypes type = *nodeTypeEnum;
         nodeModel->setNodeName(generateNewNodeName(type, nodeType));
         nodesMap[type].insert(newNodeId);

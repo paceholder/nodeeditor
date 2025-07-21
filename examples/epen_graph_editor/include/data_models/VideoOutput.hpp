@@ -3,6 +3,7 @@
 
 class VideoOutput : public OperationDataModel
 {
+    Q_OBJECT
 public:
     virtual ~VideoOutput() {}
 
@@ -30,8 +31,6 @@ public:
         }
         return QString();
     }
-
-    QString name() const override { return QStringLiteral("VideoOutput"); }
 
     unsigned int nPorts(PortType portType) const override
     {

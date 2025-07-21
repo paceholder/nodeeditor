@@ -3,6 +3,7 @@
 
 class Process : public OperationDataModel
 {
+    Q_OBJECT
 public:
     virtual ~Process() {}
 
@@ -27,8 +28,6 @@ public:
         }
         return QString();
     }
-
-    QString name() const override { return QStringLiteral("Process"); }
 
     unsigned int nPorts(PortType portType) const override
     {

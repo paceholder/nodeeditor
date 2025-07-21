@@ -45,6 +45,8 @@ public:
 
     void setNodeName(QString);
 
+    QString name() const override { return metaObject()->className(); }
+
 protected:
     std::weak_ptr<VideoData> _number1;
     std::weak_ptr<VideoData> _number2;

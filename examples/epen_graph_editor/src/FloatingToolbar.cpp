@@ -199,7 +199,7 @@ void FloatingToolbar::setupNodeCategories()
         = {{"Video Input", "◀", "<", "Create a video input node", "VideoInput", true},
            {"Video Output", "▶", ">", "Create a video output node", "VideoOutput", false},
            {"Process", "♦", "*", "Create a processing node", "Process", true},
-           {"Fixed Buffer", "⬛", "=", "Create a Fixed Buffer node", "FixBuffer", true}};
+           {"Fixed Buffer", "⬛", "=", "Create a Fixed Buffer node", "FixedBuffer", true}};
 
     addNodeButtonsToCategory(otherCategory, otherNodes);
 

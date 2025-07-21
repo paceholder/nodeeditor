@@ -3,6 +3,7 @@
 
 class FixedBuffer : public OperationDataModel
 {
+    Q_OBJECT
 public:
     virtual ~FixedBuffer() {}
 
@@ -27,8 +28,6 @@ public:
         }
         return QString();
     }
-
-    QString name() const override { return QStringLiteral("FixBuffer"); }
 
     unsigned int nPorts(PortType portType) const override
     {
