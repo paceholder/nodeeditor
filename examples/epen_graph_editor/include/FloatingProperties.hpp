@@ -3,7 +3,7 @@
 
 #include "FloatingPanelBase.hpp"
 #include "data_models/OperationDataModel.hpp"
-#include "qttreepropertybrowser.h"
+#include "ObjectPropertyBrowser.hpp"
 #include "qtvariantproperty.h"
 #include <QDate>
 #include <QLineEdit>
@@ -44,13 +44,12 @@ private:
     NodeId m_currentNodeId;
 
     OperationDataModel *_currentNode;
-    QtTreePropertyBrowser *_properties;
+    ObjectPropertyBrowser *_properties;
     QtVariantPropertyManager *_variantManager;
     QtVariantEditorFactory *_variantFactory;
-
+    QMap<QtProperty *, const char*> propertyMap;
     bool _lockPropertyUpdate = false;
-private slots:
-    void propertyValueChanged(QtProperty *property, const QVariant &val);
+
 };
 
 #endif // FLOATINGPROPERTIES_HPP

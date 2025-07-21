@@ -4,8 +4,11 @@ class SliderInputBuffer : public NumberInputBufferBase
 {
     Q_OBJECT
 public:
-    enum class VarTypes { Float, Int, Float4 };
+    Q_PROPERTY(double Value1 MEMBER m_value1 NOTIFY propertyChanged)
+    Q_PROPERTY(double Value2 MEMBER m_value2 NOTIFY propertyChanged)
 
+    enum class VarTypes { Float, Int, Float4 };
+    SliderInputBuffer() { displayNameMap["Value1"] = "My custom value"; }
     Q_ENUM(VarTypes)
 
     virtual ~SliderInputBuffer() {}
@@ -44,4 +47,8 @@ public:
 
         return result;
     }
+
+private:
+    double m_value1 = 0.123;
+    double m_value2 = 42;
 };

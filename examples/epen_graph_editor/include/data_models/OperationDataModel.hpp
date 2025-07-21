@@ -26,6 +26,7 @@ class OperationDataModel : public NodeDelegateModel
     Q_OBJECT
 
 public:
+    Q_PROPERTY(QString Name MEMBER _name NOTIFY propertyChanged)
     OperationDataModel();
     ~OperationDataModel() = default;
 
@@ -46,12 +47,15 @@ public:
     virtual bool valueChanged(QString propertyName, const QVariant &val);
 
     void setNodeName(QString);
+    QString getDisplayName(QString propertyName);
+
 protected:
+    QMap<QString, QString> displayNameMap;
     std::weak_ptr<VideoData> _number1;
     std::weak_ptr<VideoData> _number2;
 
     std::shared_ptr<VideoData> _result;
     QString _name;
-
-    QtVariantProperty *_nameItem;
+signals:
+    void propertyChanged();
 };

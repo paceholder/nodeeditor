@@ -56,7 +56,7 @@ void FloatingProperties::setupUI()
 
     QVBoxLayout *layout = getContentLayout();
 
-    _properties = new QtTreePropertyBrowser();
+    _properties = new ObjectPropertyBrowser(this);
     _properties->setRowHeight(30);
 
     _properties->setFactoryForManager(_variantManager, _variantFactory);
@@ -72,23 +72,7 @@ void FloatingProperties::setupUI()
     adjustSize();
 }
 
-void FloatingProperties::connectSignals()
-{
-    connect(_variantManager,
-            &QtVariantPropertyManager::valueChanged,
-            this,
-            &FloatingProperties::propertyValueChanged);
-}
-
-void FloatingProperties::propertyValueChanged(QtProperty *property, const QVariant &val)
-{
-    if (_lockPropertyUpdate)
-        return;
-    QString propertyName = property->propertyName();
-    if (_currentNode != nullptr) {
-        _currentNode->valueChanged(propertyName, val);
-    }
-}
+void FloatingProperties::connectSignals() {}
 
 void FloatingProperties::clearProperties()
 {
@@ -119,8 +103,6 @@ void FloatingProperties::setNode(OperationDataModel *node)
         _currentNode = nullptr;
     }
     _currentNode = node;
-    _properties->clear();
-
-    _currentNode->setupProperties(_variantManager, _properties);
+    _properties->setActiveObject(_currentNode);
     _lockPropertyUpdate = false;
 }
