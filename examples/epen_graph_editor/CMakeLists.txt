@@ -10,5 +10,5 @@ target_include_directories(epen_graph_editor
     include
 )
 
-target_link_libraries(epen_graph_editor PRIVATE  Qt6PropertyBrowser QtNodes Qt6::Core
+target_link_libraries(epen_graph_editor PRIVATE  QtPropertyBrowser QtNodes Qt6::Core
     Qt6::Widgets)

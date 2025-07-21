@@ -3,10 +3,6 @@
 #include <QtNodes/NodeDelegateModel>
 
 #include "VideoData.hpp"
-#include "qteditorfactory.h"
-#include "qtpropertymanager.h"
-#include "qttreepropertybrowser.h"
-#include "qtvariantproperty.h"
 #include <iostream>
 #include <QMetaEnum>
 #include <QtCore/QJsonObject>

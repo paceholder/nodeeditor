@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.11)
 cmake_policy(SET CMP0072 NEW) # new in 3.11. The NEW behavior for this policy is to set OpenGL_GL_PREFERENCE to GLVND.
 cmake_policy(SET CMP0068 NEW) # new in 3.9. The NEW behavior of this policy is to ignore the RPATH settings for install_name on macOS.
 
+include(FetchContent)
 
 project(QtNodesLibrary CXX)
 
@@ -52,6 +53,16 @@ if(USE_QT6)
 else()
   find_package(QT NAMES Qt5 REQUIRED COMPONENTS Widgets)
 endif()
+
+FetchContent_Declare(
+  qt-property-browser
+  GIT_REPOSITORY https://github.com/ramin-raeisi/qt-property-browser.git
+  GIT_TAG epen/6.9.1
+  GIT_SHALLOW TRUE
+  SOURCE_DIR "${CMAKE_SOURCE_DIR}/external/qt-property-browser"
+  BINARY_DIR "${CMAKE_BINARY_DIR}/external/qt-property-browser"
+)
+FetchContent_MakeAvailable(qt-property-browser)
 
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Widgets Gui OpenGL)
 message(STATUS "QT_VERSION: ${QT_VERSION}, QT_DIR: ${QT_DIR}")

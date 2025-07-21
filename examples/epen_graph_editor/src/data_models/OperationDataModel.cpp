@@ -1,6 +1,5 @@
 #include "data_models/OperationDataModel.hpp"
 #include "VideoData.hpp"
-#include "qtpropertymanager.h"
 
 OperationDataModel::OperationDataModel()
 {

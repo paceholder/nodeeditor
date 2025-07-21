@@ -57,7 +57,6 @@ void FloatingProperties::setupUI()
     QVBoxLayout *layout = getContentLayout();
 
     _properties = new ObjectPropertyBrowser(this);
-    _properties->setRowHeight(30);
 
     _properties->setFactoryForManager(_variantManager, _variantFactory);
     _properties->setPropertiesWithoutValueMarked(true);

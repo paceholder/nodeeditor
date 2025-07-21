@@ -4,7 +4,6 @@
 #include "FloatingPanelBase.hpp"
 #include "data_models/OperationDataModel.hpp"
 #include "ObjectPropertyBrowser.hpp"
-#include "qtvariantproperty.h"
 #include <QDate>
 #include <QLineEdit>
 #include <QLocale>
