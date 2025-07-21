@@ -52,13 +52,3 @@ void OperationDataModel::setNodeName(QString name)
 {
     _name = name;
 }
-
-QString OperationDataModel::getDisplayName(QString propertyName)
-{
-    QString value = displayNameMap.value(propertyName);
-
-    if (value.isEmpty()) {
-        return propertyName;
-    }
-    return value;
-}

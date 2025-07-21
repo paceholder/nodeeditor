@@ -21,8 +21,7 @@ void ObjectPropertyBrowser::setActiveObject(OperationDataModel *obj)
 
     for (int i = 1; i < obj->metaObject()->propertyCount(); i++) {
         QMetaProperty mp = obj->metaObject()->property(i);
-        QtVariantProperty *property = variantManager->addProperty(mp.type(),
-                                                                  obj->getDisplayName(mp.name()));
+        QtVariantProperty *property = variantManager->addProperty(mp.type(), setupName(mp.name()));
         property->setEnabled(mp.isWritable());
         propertyMap[property] = mp.name();
         addProperty(property);
@@ -52,4 +51,10 @@ void ObjectPropertyBrowser::objectUpdated()
             SIGNAL(valueChanged(QtProperty *, QVariant)),
             this,
             SLOT(valueChanged(QtProperty *, QVariant)));
+}
+
+QString ObjectPropertyBrowser::setupName(QString name)
+{
+    name.replace('_', ' ');
+    return name;
 }

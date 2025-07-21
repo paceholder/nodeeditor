@@ -20,6 +20,7 @@ public:
     void setActiveObject(OperationDataModel *obj);
 
 private:
+QString setupName(QString name);
     QtVariantPropertyManager *variantManager;
     OperationDataModel *currentlyConnectedObject = nullptr;
     QMap<QtProperty *, const char*> propertyMap;

@@ -2,8 +2,8 @@
 #define FLOATING_TOOLBAR_HPP
 
 #include "DraggableButton.hpp"
-#include "FloatingPanelBase.hpp"
 #include "ExpandableCategoryWidget.hpp"
+#include "FloatingPanelBase.hpp"
 #include <QMap>
 
 class FloatingToolbar : public FloatingPanelBase
@@ -27,7 +27,8 @@ protected:
     void connectSignals() override;
 
 private:
-    struct NodeButtonInfo {
+    struct NodeButtonInfo
+    {
         QString name;
         QString icon;
         QString fallback;
@@ -36,17 +37,24 @@ private:
         bool enabled;
     };
 
+    void addNodeButton(QString name,
+                       QString icon,
+                       QString fallback,
+                       QString tooltip,
+                       bool enabled,
+                       QString actionName,
+                       ExpandableCategoryWidget *layout);
     QString createSafeButtonText(const QString &icon, const QString &text);
-    DraggableButton* createNodeButton(const NodeButtonInfo &info, QWidget *parent = nullptr);
-    
+    DraggableButton *createNodeButton(const NodeButtonInfo &info, QWidget *parent = nullptr);
+
     void setupNodeCategories();
-    void addNodeButtonsToCategory(ExpandableCategoryWidget *category, 
-                                 const QVector<NodeButtonInfo> &buttons);
-    
+    void addNodeButtonsToCategory(ExpandableCategoryWidget *category,
+                                  const QVector<NodeButtonInfo> &buttons);
+
     void addSeparator(QVBoxLayout *layout);
-    
+
     // Store references to expandable categories for easy access
-    QMap<QString, ExpandableCategoryWidget*> m_categories;
+    QMap<QString, ExpandableCategoryWidget *> m_categories;
     QFont m_buttonFont;
 };
 

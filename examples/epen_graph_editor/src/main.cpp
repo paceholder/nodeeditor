@@ -7,12 +7,9 @@
 #include <QtWidgets/QApplication>
 
 #include "DataFlowModel.hpp"
-#include "data_models/CheckboxInputBuffer.hpp"
-#include "data_models/Color4InputBuffer.hpp"
 #include "data_models/FixedBuffer.hpp"
-#include "data_models/PlainNumberInputBuffer.hpp"
 #include "data_models/Process.hpp"
-#include "data_models/SliderInputBuffer.hpp"
+#include "data_models/SliderBuffer_unsignedInt.hpp"
 #include "data_models/VideoInput.hpp"
 #include "data_models/VideoOutput.hpp"
 #include <QtGui/QScreen>
@@ -31,11 +28,8 @@ static std::shared_ptr<NodeDelegateModelRegistry> registerDataModels()
     ret->registerModel<VideoOutput>();
     ret->registerModel<FixedBuffer>();
     ret->registerModel<Process>();
-    ret->registerModel<SliderInputBuffer>();
-    ret->registerModel<CheckboxInputBuffer>();
-    ret->registerModel<Color4InputBuffer>();
-    ret->registerModel<PlainNumberInputBuffer>();
 
+    ret->registerModel<SliderBuffer_unsignedInt>();
     return ret;
 }
 

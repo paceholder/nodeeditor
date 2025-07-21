@@ -1,13 +1,13 @@
 #include "FloatingToolbar.hpp"
 #include "GraphEditorMainWindow.hpp"
+#include <QAction>
 #include <QApplication>
 #include <QDebug>
 #include <QFrame>
 #include <QLabel>
+#include <QMenu>
 #include <QPushButton>
 #include <QVBoxLayout>
-#include <QMenu>
-#include <QAction>
 
 FloatingToolbar::FloatingToolbar(GraphEditorWindow *parent)
     : FloatingPanelBase(parent, "Tools")
@@ -60,7 +60,7 @@ QString FloatingToolbar::createSafeButtonText(const QString &icon, const QString
     return icon + " " + text;
 }
 
-DraggableButton* FloatingToolbar::createNodeButton(const NodeButtonInfo &info, QWidget *parent)
+DraggableButton *FloatingToolbar::createNodeButton(const NodeButtonInfo &info, QWidget *parent)
 {
     DraggableButton *btn = new DraggableButton(info.actionName, parent);
     QString buttonText = createSafeButtonText(info.icon, info.name);
@@ -69,31 +69,29 @@ DraggableButton* FloatingToolbar::createNodeButton(const NodeButtonInfo &info, Q
     btn->setEnabled(info.enabled);
     btn->setFont(m_buttonFont);
     btn->setProperty("nodeType", info.name);
-    
+
     // Style for node buttons
-    btn->setStyleSheet(
-        "DraggableButton {"
-        "   padding: 4px 8px;"
-        "   margin: 1px;"
-        "   border: 1px solid #ccc;"
-        "   border-radius: 3px;"
-        "   background-color: white;"
-        "   text-align: left;"
-        "   font-size: 10px;"
-        "}"
-        "DraggableButton:hover {"
-        "   background-color: #e8f0fe;"
-        "   border-color: #4285f4;"
-        "}"
-        "DraggableButton:pressed {"
-        "   background-color: #d2e3fc;"
-        "}"
-        "DraggableButton:disabled {"
-        "   background-color: #f5f5f5;"
-        "   color: #999;"
-        "}"
-    );
-    
+    btn->setStyleSheet("DraggableButton {"
+                       "   padding: 4px 8px;"
+                       "   margin: 1px;"
+                       "   border: 1px solid #ccc;"
+                       "   border-radius: 3px;"
+                       "   background-color: white;"
+                       "   text-align: left;"
+                       "   font-size: 10px;"
+                       "}"
+                       "DraggableButton:hover {"
+                       "   background-color: #e8f0fe;"
+                       "   border-color: #4285f4;"
+                       "}"
+                       "DraggableButton:pressed {"
+                       "   background-color: #d2e3fc;"
+                       "}"
+                       "DraggableButton:disabled {"
+                       "   background-color: #f5f5f5;"
+                       "   color: #999;"
+                       "}");
+
     return btn;
 }
 
@@ -129,23 +127,22 @@ void FloatingToolbar::setupUI()
     btnZoomOut->setFont(m_buttonFont);
     btnResetView->setFont(m_buttonFont);
 
-    QString viewButtonStyle = 
-        "QPushButton {"
-        "   padding: 4px 8px;"
-        "   margin: 1px;"
-        "   border: 1px solid #ccc;"
-        "   border-radius: 3px;"
-        "   background-color: white;"
-        "   text-align: left;"
-        "   font-size: 10px;"
-        "}"
-        "QPushButton:hover {"
-        "   background-color: #f0f0f0;"
-        "   border-color: #999;"
-        "}"
-        "QPushButton:pressed {"
-        "   background-color: #e0e0e0;"
-        "}";
+    QString viewButtonStyle = "QPushButton {"
+                              "   padding: 4px 8px;"
+                              "   margin: 1px;"
+                              "   border: 1px solid #ccc;"
+                              "   border-radius: 3px;"
+                              "   background-color: white;"
+                              "   text-align: left;"
+                              "   font-size: 10px;"
+                              "}"
+                              "QPushButton:hover {"
+                              "   background-color: #f0f0f0;"
+                              "   border-color: #999;"
+                              "}"
+                              "QPushButton:pressed {"
+                              "   background-color: #e0e0e0;"
+                              "}";
 
     btnZoomIn->setStyleSheet(viewButtonStyle);
     btnZoomOut->setStyleSheet(viewButtonStyle);
@@ -171,103 +168,83 @@ void FloatingToolbar::setupUI()
 void FloatingToolbar::setupNodeCategories()
 {
     QVBoxLayout *layout = getContentLayout();
-    
-    // Define data types
-    QVector<QString> dataTypes = {"unsigned int", "float", "double"};
-    
-    // Define node types for each data type
-    QVector<NodeButtonInfo> nodeTypes = {
-        {"Slider", "S", "S", "Slider input node", "SliderBuffer", true},
-        {"Checkbox", "C", "C", "Checkbox input node", "CheckboxBuffer", true},
-        {"Color4", "P", "P", "Color4 input node", "Color4Buffer", true}
-    };
-    
+
     // Create Scalar category
     ExpandableCategoryWidget *scalarCategory = new ExpandableCategoryWidget("Scalar", 0);
     m_categories["Scalar"] = scalarCategory;
     layout->addWidget(scalarCategory);
-    
+
     // Add subcategories for Scalar
-    for (const QString &dataType : dataTypes) {
-        ExpandableCategoryWidget *typeCategory = new ExpandableCategoryWidget(dataType, 1);
-        m_categories[QString("Scalar_%1").arg(dataType)] = typeCategory;
-        
-        // Create buttons for this type
-        QVector<NodeButtonInfo> buttons;
-        for (const auto &nodeType : nodeTypes) {
-            NodeButtonInfo info = nodeType;
-            info.name = QString("%1 %2").arg(dataType).arg(nodeType.name);
-            info.actionName = QString("%1_%2_%3").arg("Scalar").arg(dataType).arg(nodeType.actionName);
-            info.tooltip = QString("Create %1 %2 for Scalar").arg(dataType).arg(nodeType.tooltip);
-            buttons.append(info);
-        }
-        
-        addNodeButtonsToCategory(typeCategory, buttons);
-        scalarCategory->addWidget(typeCategory);
-    }
-    
-    // Create Array category
-    ExpandableCategoryWidget *arrayCategory = new ExpandableCategoryWidget("Array", 0);
-    m_categories["Array"] = arrayCategory;
-    layout->addWidget(arrayCategory);
-    
-    // Add subcategories for Array
-    for (const QString &dataType : dataTypes) {
-        ExpandableCategoryWidget *typeCategory = new ExpandableCategoryWidget(dataType, 1);
-        m_categories[QString("Array_%1").arg(dataType)] = typeCategory;
-        
-        // Create buttons for this type
-        QVector<NodeButtonInfo> buttons;
-        for (const auto &nodeType : nodeTypes) {
-            NodeButtonInfo info = nodeType;
-            info.name = QString("%1[] %2").arg(dataType).arg(nodeType.name);
-            info.actionName = QString("%1_%2_%3").arg("Array").arg(dataType).arg(nodeType.actionName);
-            info.tooltip = QString("Create %1 %2 for Array").arg(dataType).arg(nodeType.tooltip);
-            buttons.append(info);
-        }
-        
-        addNodeButtonsToCategory(typeCategory, buttons);
-        arrayCategory->addWidget(typeCategory);
-    }
-    
+
+    ExpandableCategoryWidget *typeCategory = new ExpandableCategoryWidget("unsigned int", 1);
+    m_categories[QString("Scalar_%1").arg("unsigned int")] = typeCategory;
+    addNodeButton("Slider Input Buffer",
+                  QString::fromUtf8("\u2B30"),
+                  ">>",
+                  "Create a UI unsigned int Slider Buffer node",
+                  true,
+                  "SliderBuffer_unsignedInt",
+                  typeCategory);
+    scalarCategory->addWidget(typeCategory);
+
     // Add separator
     addSeparator(layout);
-    
+
     // Add Other Nodes category
     ExpandableCategoryWidget *otherCategory = new ExpandableCategoryWidget("Other Nodes", 0);
     m_categories["Other"] = otherCategory;
     layout->addWidget(otherCategory);
-    
-    QVector<NodeButtonInfo> otherNodes = {
-        {"Video Input", "◀", "<", "Create a video input node", "VideoInput", true},
-        {"Video Output", "▶", ">", "Create a video output node", "VideoOutput", false},
-        {"Process", "♦", "*", "Create a processing node", "Process", true},
-        {"Input Image", "⬆", "<<", "Create an Input Image node", "InImage", true},
-        {"Output Image", "⬇", ">>", "Create an Output Image node", "OutImage", true},
-        {"Fixed Buffer", "⬛", "=", "Create a Fixed Buffer node", "FixBuffer", true}
-    };
-    
+
+    QVector<NodeButtonInfo> otherNodes
+        = {{"Video Input", "◀", "<", "Create a video input node", "VideoInput", true},
+           {"Video Output", "▶", ">", "Create a video output node", "VideoOutput", false},
+           {"Process", "♦", "*", "Create a processing node", "Process", true},
+           {"Fixed Buffer", "⬛", "=", "Create a Fixed Buffer node", "FixBuffer", true}};
+
     addNodeButtonsToCategory(otherCategory, otherNodes);
-    
+
     // Set initial expanded state
     scalarCategory->setExpanded(false);
-    arrayCategory->setExpanded(false);
     otherCategory->setExpanded(true);
 }
 
-void FloatingToolbar::addNodeButtonsToCategory(ExpandableCategoryWidget *category, 
-                                              const QVector<NodeButtonInfo> &buttons)
+void FloatingToolbar::addNodeButton(QString name,
+                                    QString icon,
+                                    QString fallback,
+                                    QString tooltip,
+                                    bool enabled,
+                                    QString actionName,
+                                    ExpandableCategoryWidget *layout)
 {
     QWidget *container = new QWidget();
     QVBoxLayout *containerLayout = new QVBoxLayout(container);
     containerLayout->setContentsMargins(0, 0, 0, 0);
     containerLayout->setSpacing(1);
-    
+
+    DraggableButton *btn = new DraggableButton(actionName, this);
+    QString buttonText = createSafeButtonText(icon, name);
+    btn->setText(buttonText);
+    btn->setToolTip(tooltip);
+    btn->setEnabled(enabled);
+    btn->setFont(m_buttonFont);
+    btn->setProperty("nodeType", name);
+    containerLayout->addWidget(btn);
+    layout->setContentWidget(container);
+}
+
+void FloatingToolbar::addNodeButtonsToCategory(ExpandableCategoryWidget *category,
+                                               const QVector<NodeButtonInfo> &buttons)
+{
+    QWidget *container = new QWidget();
+    QVBoxLayout *containerLayout = new QVBoxLayout(container);
+    containerLayout->setContentsMargins(0, 0, 0, 0);
+    containerLayout->setSpacing(1);
+
     for (const auto &buttonInfo : buttons) {
         DraggableButton *btn = createNodeButton(buttonInfo, container);
         containerLayout->addWidget(btn);
     }
-    
+
     category->setContentWidget(container);
 }
 

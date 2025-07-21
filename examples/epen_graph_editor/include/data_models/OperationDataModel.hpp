@@ -44,10 +44,8 @@ public:
     virtual void deselected();
 
     void setNodeName(QString);
-    QString getDisplayName(QString propertyName);
 
 protected:
-    QMap<QString, QString> displayNameMap;
     std::weak_ptr<VideoData> _number1;
     std::weak_ptr<VideoData> _number2;
 
