@@ -3,6 +3,8 @@
 
 #include "DraggableButton.hpp"
 #include "FloatingPanelBase.hpp"
+#include "ExpandableCategoryWidget.hpp"
+#include <QMap>
 
 class FloatingToolbar : public FloatingPanelBase
 {
@@ -25,17 +27,27 @@ protected:
     void connectSignals() override;
 
 private:
+    struct NodeButtonInfo {
+        QString name;
+        QString icon;
+        QString fallback;
+        QString tooltip;
+        QString actionName;
+        bool enabled;
+    };
+
     QString createSafeButtonText(const QString &icon, const QString &text);
-    void addNodeButton(QString name,
-                       QString icon,
-                       QString fallback,
-                       QString tooltip,
-                       bool enabled,
-                       QString actionName,
-                       QFont buttonFont,
-                       QVBoxLayout *layout);
+    DraggableButton* createNodeButton(const NodeButtonInfo &info, QWidget *parent = nullptr);
+    
+    void setupNodeCategories();
+    void addNodeButtonsToCategory(ExpandableCategoryWidget *category, 
+                                 const QVector<NodeButtonInfo> &buttons);
+    
     void addSeparator(QVBoxLayout *layout);
-    void addCategory(QVBoxLayout *layout, QString name);
+    
+    // Store references to expandable categories for easy access
+    QMap<QString, ExpandableCategoryWidget*> m_categories;
+    QFont m_buttonFont;
 };
 
 #endif // FLOATING_TOOLBAR_HPP
