@@ -228,6 +228,31 @@ void FloatingToolbar::setupNodeCategories()
 
     //------------------------
 
+    ExpandableCategoryWidget *typeCategoryScalarDouble = new ExpandableCategoryWidget("double", 1);
+
+    container = new QWidget();
+    containerLayout = new QVBoxLayout(container);
+    containerLayout->setContentsMargins(0, 0, 0, 0);
+    containerLayout->setSpacing(1);
+
+    containerLayout->addWidget(addNodeButton("Slider Input Buffer",
+                                             QString::fromUtf8("\u2B30"),
+                                             ">>",
+                                             "Create a UI double Slider Buffer node",
+                                             true,
+                                             "Scalar_Double_Slider"));
+
+    containerLayout->addWidget(addNodeButton("Plain Number Input Buffer",
+                                             QString::fromUtf8("\u2B30"),
+                                             ">>",
+                                             "Create a UI double Plain Number Buffer node",
+                                             true,
+                                             "Scalar_Double_Plain"));
+
+    typeCategoryScalarDouble->setContentWidget(container);
+    scalarCategory->addWidget(typeCategoryScalarDouble);
+
+    //------------------------
     // Add separator
     addSeparator(layout);
 

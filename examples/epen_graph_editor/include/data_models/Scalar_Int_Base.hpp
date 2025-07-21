@@ -9,7 +9,7 @@ public:
     Q_PROPERTY(int Max MEMBER _max NOTIFY propertyChanged)
 
 private:
-    uint _defaultValue;
-    uint _min;
-    uint _max;
+    int _defaultValue;
+    int _min;
+    int _max;
 };
