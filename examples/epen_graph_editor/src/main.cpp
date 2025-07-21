@@ -11,12 +11,20 @@
 #include "data_models/Process.hpp"
 #include "data_models/Scalar_Double_Plain.hpp"
 #include "data_models/Scalar_Double_Slider.hpp"
+#include "data_models/Scalar_Double_Fixed.hpp"
+
 #include "data_models/Scalar_Float_Plain.hpp"
 #include "data_models/Scalar_Float_Slider.hpp"
+#include "data_models/Scalar_Float_Fixed.hpp"
+
+#include "data_models/Scalar_Int_Fixed.hpp"
 #include "data_models/Scalar_Int_Plain.hpp"
 #include "data_models/Scalar_Int_Slider.hpp"
+
+#include "data_models/Scalar_UnsignedInt_Fixed.hpp"
 #include "data_models/Scalar_UnsignedInt_Plain.hpp"
 #include "data_models/Scalar_UnsignedInt_Slider.hpp"
+
 #include "data_models/VideoInput.hpp"
 #include "data_models/VideoOutput.hpp"
 #include <QtGui/QScreen>
@@ -38,15 +46,20 @@ static std::shared_ptr<NodeDelegateModelRegistry> registerDataModels()
 
     ret->registerModel<Scalar_UnsignedInt_Slider>();
     ret->registerModel<Scalar_UnsignedInt_Plain>();
+    ret->registerModel<Scalar_UnsignedInt_Fixed>();
 
     ret->registerModel<Scalar_Int_Plain>();
     ret->registerModel<Scalar_Int_Slider>();
+    ret->registerModel<Scalar_Int_Fixed>();
 
     ret->registerModel<Scalar_Double_Plain>();
     ret->registerModel<Scalar_Double_Slider>();
-
+    ret->registerModel<Scalar_Double_Fixed>();
+    
     ret->registerModel<Scalar_Float_Plain>();
     ret->registerModel<Scalar_Float_Slider>();
+    ret->registerModel<Scalar_Float_Fixed>();
+    
     return ret;
 }
 

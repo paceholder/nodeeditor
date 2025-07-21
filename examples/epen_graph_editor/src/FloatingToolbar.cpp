@@ -198,6 +198,13 @@ void FloatingToolbar::setupNodeCategories()
                                              true,
                                              "Scalar_UnsignedInt_Plain"));
 
+    containerLayout->addWidget(addNodeButton("Fixed Buffer",
+                                             QString::fromUtf8("\u2B30"),
+                                             ">>",
+                                             "Create an unsigned int fixed Buffer node",
+                                             true,
+                                             "Scalar_UnsignedInt_Fixed"));
+
     typeCategoryScalarUnsignedInt->setContentWidget(container);
     scalarCategory->addWidget(typeCategoryScalarUnsignedInt);
 
@@ -223,6 +230,13 @@ void FloatingToolbar::setupNodeCategories()
                                              "Create a UI int Plain Number Buffer node",
                                              true,
                                              "Scalar_Int_Plain"));
+
+    containerLayout->addWidget(addNodeButton("Fixed Buffer",
+                                             QString::fromUtf8("\u2B30"),
+                                             ">>",
+                                             "Create an int fixed Buffer node",
+                                             true,
+                                             "Scalar_Int_Fixed"));
 
     typeCategoryScalarInt->setContentWidget(container);
     scalarCategory->addWidget(typeCategoryScalarInt);
@@ -250,6 +264,13 @@ void FloatingToolbar::setupNodeCategories()
                                              true,
                                              "Scalar_Double_Plain"));
 
+    containerLayout->addWidget(addNodeButton("Fixed Buffer",
+                                             QString::fromUtf8("\u2B30"),
+                                             ">>",
+                                             "Create a double fixed Buffer node",
+                                             true,
+                                             "Scalar_Double_Fixed"));
+
     typeCategoryScalarDouble->setContentWidget(container);
     scalarCategory->addWidget(typeCategoryScalarDouble);
 
@@ -276,6 +297,12 @@ void FloatingToolbar::setupNodeCategories()
                                              true,
                                              "Scalar_Float_Plain"));
 
+    containerLayout->addWidget(addNodeButton("Fixed Buffer",
+                                             QString::fromUtf8("\u2B30"),
+                                             ">>",
+                                             "Create a float Fixed Buffer node",
+                                             true,
+                                             "Scalar_Float_Fixed"));
     typeCategoryScalarFloat->setContentWidget(container);
     scalarCategory->addWidget(typeCategoryScalarFloat);
     //----------
