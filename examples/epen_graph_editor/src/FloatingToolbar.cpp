@@ -352,6 +352,45 @@ void FloatingToolbar::setupNodeCategories()
     typeCategoryScalarFloat4->setContentWidget(container);
     scalarCategory->addWidget(typeCategoryScalarFloat4);
     //------------------
+
+    ExpandableCategoryWidget *arrayCategory = new ExpandableCategoryWidget("Array", 0);
+
+    layout->addWidget(arrayCategory);
+
+    container = new QWidget();
+    arrayCategory->addWidget(container);
+    containerLayout = new QVBoxLayout(container);
+    containerLayout->setContentsMargins(0, 0, 0, 0);
+    containerLayout->setSpacing(1);
+
+    containerLayout->addWidget(addNodeButton("Fixed Double Buffer",
+                                             QString::fromUtf8("\u2B30"),
+                                             ">>",
+                                             "Create a double Fixed Array Buffer node",
+                                             true,
+                                             "Array_Double_Fixed"));
+
+    containerLayout->addWidget(addNodeButton("Fixed Float Buffer",
+                                             QString::fromUtf8("\u2B30"),
+                                             ">>",
+                                             "Create a float Fixed Array Buffer node",
+                                             true,
+                                             "Array_Float_Fixed"));
+
+    containerLayout->addWidget(addNodeButton("Fixed Int Buffer",
+                                             QString::fromUtf8("\u2B30"),
+                                             ">>",
+                                             "Create an int Fixed Array Buffer node",
+                                             true,
+                                             "Array_Int_Fixed"));
+
+    containerLayout->addWidget(addNodeButton("Fixed Unsigned Int Buffer",
+                                             QString::fromUtf8("\u2B30"),
+                                             ">>",
+                                             "Create an unsigned int Fixed Array Buffer node",
+                                             true,
+                                             "Array_UnsignedInt_Fixed"));
+
     // Add separator
     addSeparator(layout);
 
@@ -371,6 +410,7 @@ void FloatingToolbar::setupNodeCategories()
     // Set initial expanded state
     scalarCategory->setExpanded(true);
     otherCategory->setExpanded(true);
+    arrayCategory->setExpanded(false);
 }
 
 DraggableButton *FloatingToolbar::addNodeButton(

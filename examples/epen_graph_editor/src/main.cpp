@@ -31,6 +31,11 @@
 #include "data_models/Scalar_Float4_Color.hpp"
 #include "data_models/Scalar_Float4_Fixed.hpp"
 
+#include "data_models/Array_Double_Fixed.hpp"
+#include "data_models/Array_Float_Fixed.hpp"
+#include "data_models/Array_Int_Fixed.hpp"
+#include "data_models/Array_UnsignedInt_Fixed.hpp"
+
 #include "data_models/VideoInput.hpp"
 #include "data_models/VideoOutput.hpp"
 #include <QtGui/QScreen>
@@ -71,6 +76,11 @@ static std::shared_ptr<NodeDelegateModelRegistry> registerDataModels()
 
     ret->registerModel<Scalar_Float4_Color>();
     ret->registerModel<Scalar_Float4_Fixed>();
+
+    ret->registerModel<Array_Double_Fixed>();
+    ret->registerModel<Array_Float_Fixed>();
+    ret->registerModel<Array_Int_Fixed>();
+    ret->registerModel<Array_UnsignedInt_Fixed>();
 
     return ret;
 }
