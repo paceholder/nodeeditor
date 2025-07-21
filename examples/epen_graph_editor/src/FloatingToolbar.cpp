@@ -176,7 +176,8 @@ void FloatingToolbar::setupNodeCategories()
 
     // Add subcategories for Scalar
 
-    ExpandableCategoryWidget *typeCategoryScalarUnsignedInt = new ExpandableCategoryWidget("unsigned int", 1);
+    ExpandableCategoryWidget *typeCategoryScalarUnsignedInt
+        = new ExpandableCategoryWidget("unsigned int", 1);
 
     QWidget *container = new QWidget();
     QVBoxLayout *containerLayout = new QVBoxLayout(container);
@@ -253,6 +254,31 @@ void FloatingToolbar::setupNodeCategories()
     scalarCategory->addWidget(typeCategoryScalarDouble);
 
     //------------------------
+
+    ExpandableCategoryWidget *typeCategoryScalarFloat = new ExpandableCategoryWidget("float", 1);
+
+    container = new QWidget();
+    containerLayout = new QVBoxLayout(container);
+    containerLayout->setContentsMargins(0, 0, 0, 0);
+    containerLayout->setSpacing(1);
+
+    containerLayout->addWidget(addNodeButton("Slider Input Buffer",
+                                             QString::fromUtf8("\u2B30"),
+                                             ">>",
+                                             "Create a UI float Slider Buffer node",
+                                             true,
+                                             "Scalar_Float_Slider"));
+
+    containerLayout->addWidget(addNodeButton("Plain Number Input Buffer",
+                                             QString::fromUtf8("\u2B30"),
+                                             ">>",
+                                             "Create a UI float Plain Number Buffer node",
+                                             true,
+                                             "Scalar_Float_Plain"));
+
+    typeCategoryScalarFloat->setContentWidget(container);
+    scalarCategory->addWidget(typeCategoryScalarFloat);
+    //----------
     // Add separator
     addSeparator(layout);
 

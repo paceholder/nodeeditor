@@ -11,6 +11,8 @@
 #include "data_models/Process.hpp"
 #include "data_models/Scalar_Double_Plain.hpp"
 #include "data_models/Scalar_Double_Slider.hpp"
+#include "data_models/Scalar_Float_Plain.hpp"
+#include "data_models/Scalar_Float_Slider.hpp"
 #include "data_models/Scalar_Int_Plain.hpp"
 #include "data_models/Scalar_Int_Slider.hpp"
 #include "data_models/Scalar_UnsignedInt_Plain.hpp"
@@ -42,6 +44,9 @@ static std::shared_ptr<NodeDelegateModelRegistry> registerDataModels()
 
     ret->registerModel<Scalar_Double_Plain>();
     ret->registerModel<Scalar_Double_Slider>();
+
+    ret->registerModel<Scalar_Float_Plain>();
+    ret->registerModel<Scalar_Float_Slider>();
     return ret;
 }
 
