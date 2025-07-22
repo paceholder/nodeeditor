@@ -1,11 +1,11 @@
 #pragma once
 
 #include "Definitions.hpp"
+#include "Export.hpp"
 
 #include <QUndoCommand>
 #include <QtCore/QJsonObject>
 #include <QtCore/QPointF>
-#include "Export.hpp"
 
 #include <unordered_set>
 
