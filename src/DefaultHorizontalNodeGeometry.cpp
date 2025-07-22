@@ -79,7 +79,7 @@ QPointF DefaultHorizontalNodeGeometry::portPosition(NodeId const nodeId,
 
     QPointF result;
 
-    double totalHeight = 0.0;
+    double totalHeight = _graphModel.nodeData<int>(nodeId, NodeRole::PortOffset);;
 
     totalHeight += captionRect(nodeId).height();
     totalHeight += _portSpasing;

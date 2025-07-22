@@ -236,6 +236,9 @@ QVariant DataFlowGraphModel::nodeData(NodeId nodeId, NodeRole role) const
         auto w = model->embeddedWidget();
         result = QVariant::fromValue(w);
     } break;
+    case NodeRole::PortOffset: {
+        result = 0;
+    }
     }
 
     return result;
@@ -261,6 +264,7 @@ bool DataFlowGraphModel::setNodeData(NodeId nodeId, NodeRole role, QVariant valu
 
     switch (role) {
     case NodeRole::Type:
+    case NodeRole::PortOffset:
         break;
     case NodeRole::Position: {
         _nodeGeometryData[nodeId].pos = value.value<QPointF>();
@@ -476,7 +480,8 @@ void DataFlowGraphModel::loadNode(QJsonObject const &nodeJson)
         connect(model.get(),
                 &NodeDelegateModel::portsAboutToBeDeleted,
                 this,
-                [restoredNodeId, this](PortType const portType, PortIndex const first, PortIndex const last) {
+                [restoredNodeId,
+                 this](PortType const portType, PortIndex const first, PortIndex const last) {
                     portsAboutToBeDeleted(restoredNodeId, portType, first, last);
                 });
 
@@ -488,7 +493,8 @@ void DataFlowGraphModel::loadNode(QJsonObject const &nodeJson)
         connect(model.get(),
                 &NodeDelegateModel::portsAboutToBeInserted,
                 this,
-                [restoredNodeId, this](PortType const portType, PortIndex const first, PortIndex const last) {
+                [restoredNodeId,
+                 this](PortType const portType, PortIndex const first, PortIndex const last) {
                     portsAboutToBeInserted(restoredNodeId, portType, first, last);
                 });
 

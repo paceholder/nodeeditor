@@ -55,7 +55,7 @@ public:
     /**
    * Adds a single `[+][-]` button group to a given layout.
    */
-    QHBoxLayout *addButtonGroupToLayout(QVBoxLayout *vbl, unsigned int portIndex, bool deletable);
+    QHBoxLayout *addButtonGroupToLayout(QVBoxLayout *vbl, unsigned int portIndex);
 
     /**
    * Removes a single `[+][-]` button group from a given layout.
@@ -66,6 +66,8 @@ private Q_SLOTS:
     void onPlusClicked();
 
     void onMinusClicked();
+    void addLeftPort();
+    void removeLeftPort();
 
 private:
     /**
@@ -81,4 +83,7 @@ private:
 
     QVBoxLayout *_left;
     QVBoxLayout *_right;
+
+    int _leftPorts = 1;
+    int _rightPorts = 1;
 };

@@ -21,7 +21,7 @@ NodeId DataFlowModel::addNode(QString const nodeType)
         widget(newNodeId)->populateButtons(PortType::In, 1);
         _nodePortCounts[newNodeId].out = 1;
         widget(newNodeId)->populateButtons(PortType::Out, 1);
-        _nodeSize[newNodeId] = QSize(250, 130);
+        _nodeSize[newNodeId] = QSize(275, 180);
     }
     _nodeNames[newNodeId] = QString(nodeType);
     OperationDataModel *nodeModel = delegateModel<OperationDataModel>(newNodeId);
@@ -62,6 +62,7 @@ PortAddRemoveWidget *DataFlowModel::widget(NodeId nodeId) const
     auto it = _nodeWidgets.find(nodeId);
     if (it == _nodeWidgets.end()) {
         _nodeWidgets[nodeId] = new PortAddRemoveWidget(nodeId, *const_cast<DataFlowModel *>(this));
+        _nodeWidgets[nodeId]->resize(10, 10);
     }
 
     return _nodeWidgets[nodeId];
@@ -70,8 +71,10 @@ PortAddRemoveWidget *DataFlowModel::widget(NodeId nodeId) const
 QVariant DataFlowModel::nodeData(NodeId nodeId, NodeRole role) const
 {
     QVariant nodeTypeName = DataFlowGraphModel::nodeData(nodeId, QtNodes::NodeRole::Type);
-    if (nodeTypeName == "Process") {
+    if (nodeTypeName.toString() == "Process") {
         switch (role) {
+        case NodeRole::PortOffset:
+            return 35;
         case NodeRole::Size:
             return _nodeSize[nodeId];
         case NodeRole::InPortCount:
@@ -80,9 +83,8 @@ QVariant DataFlowModel::nodeData(NodeId nodeId, NodeRole role) const
         case NodeRole::OutPortCount:
             return _nodePortCounts[nodeId].out;
 
-        case NodeRole::Widget: {
+        case NodeRole::Widget:
             return QVariant::fromValue(widget(nodeId));
-        }
         }
     }
     return DataFlowGraphModel::nodeData(nodeId, role);
@@ -95,6 +97,7 @@ bool DataFlowModel::setNodeData(NodeId nodeId, NodeRole role, QVariant value)
         switch (role) {
         case NodeRole::Size:
             _nodeSize[nodeId] = value.value<QSize>();
+            _nodeSize[nodeId].setHeight(_nodeSize[nodeId].height() + 60);
             return true;
         case NodeRole::InPortCount:
             _nodePortCounts[nodeId].in = value.toUInt();
