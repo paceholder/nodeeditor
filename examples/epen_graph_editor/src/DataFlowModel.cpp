@@ -1,4 +1,5 @@
 #include "DataFlowModel.hpp"
+#include "data_models/Process.hpp"
 
 DataFlowModel::DataFlowModel(std::shared_ptr<NodeDelegateModelRegistry> registry)
     : DataFlowGraphModel(std::move(registry))
@@ -117,7 +118,10 @@ bool DataFlowModel::setNodeData(NodeId nodeId, NodeRole role, QVariant value)
     return DataFlowGraphModel::setNodeData(nodeId, role, value);
 }
 
-void DataFlowModel::addProcessNodePort(NodeId nodeId, PortType portType, PortIndex portIndex)
+void DataFlowModel::addProcessNodePort(NodeId nodeId,
+                                       PortType portType,
+                                       PortIndex portIndex,
+                                       bool isImage)
 {
     PortIndex first = portIndex;
     PortIndex last = first;
@@ -125,8 +129,12 @@ void DataFlowModel::addProcessNodePort(NodeId nodeId, PortType portType, PortInd
 
     if (portType == PortType::In)
         _nodePortCounts[nodeId].in++;
-    else
+    else {
+        Process *nodeModel = delegateModel<Process>(nodeId);
         _nodePortCounts[nodeId].out++;
+        nodeModel->setPortType(_nodePortCounts[nodeId].out, isImage);
+    }
+
     portsInserted();
 
     Q_EMIT nodeUpdated(nodeId);

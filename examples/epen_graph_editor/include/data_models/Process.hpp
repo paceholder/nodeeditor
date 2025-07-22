@@ -7,7 +7,6 @@ class Process : public OperationDataModel
 public:
     virtual ~Process() {}
 
-public:
     QString caption() const override { return QStringLiteral("Process"); }
 
     bool portCaptionVisible(PortType portType, PortIndex portIndex) const override
@@ -21,7 +20,9 @@ public:
     {
         switch (portType) {
         case PortType::Out:
-            return QStringLiteral("Video");
+
+            return nodeTypeMap.value(portIndex) ? QStringLiteral("Image")
+                                                : QStringLiteral("Buffer");
 
         default:
             break;
@@ -40,4 +41,9 @@ public:
 
         return result;
     }
+
+    void setPortType(PortIndex portIndex, bool isImage) { nodeTypeMap[portIndex - 1] = isImage; }
+
+private:
+    QMap<PortIndex, bool> nodeTypeMap{{0, true}};
 };

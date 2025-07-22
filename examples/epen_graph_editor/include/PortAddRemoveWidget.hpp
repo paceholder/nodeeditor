@@ -1,12 +1,9 @@
 #pragma once
 
-#include <QPushButton>
 #include <QWidget>
-
-#include <QtNodes/Definitions>
-
-#include <QHBoxLayout>
 #include <QVBoxLayout>
+#include <QPushButton>
+#include <QtNodes/Definitions>
 
 using QtNodes::NodeId;
 using QtNodes::PortIndex;
@@ -14,76 +11,36 @@ using QtNodes::PortType;
 
 class DataFlowModel;
 
-/**
- *                PortAddRemoveWidget
- *
- * ```
- *       _left                         _right
- *       layout                        layout
- *     ----------------------------------------
- *     |         |                  |         |
- *     | [+] [-] |                  | [+] [-] |
- *     |         |                  |         |
- *     | [+] [-] |                  | [+] [-] |
- *     |         |                  |         |
- *     | [+] [-] |                  | [+] [-] |
- *     |         |                  |         |
- *     | [+] [-] |                  |         |
- *     |         |                  |         |
- *     |_________|__________________|_________|
- * ```
- *
- * The widget has two main vertical layouts containing groups of buttons for
- * adding and removing ports. Each such a `[+] [-]` group is contained in a
- * dedicated QHVBoxLayout.
- *
- */
 class PortAddRemoveWidget : public QWidget
 {
     Q_OBJECT
+
 public:
     PortAddRemoveWidget(NodeId nodeId, DataFlowModel &model, QWidget *parent = nullptr);
-
     ~PortAddRemoveWidget();
 
-    /**
-   * Called from constructor, creates all button groups according to models'port
-   * counts.
-   */
     void populateButtons(PortType portType, unsigned int nPorts);
 
-    /**
-   * Adds a single `[+][-]` button group to a given layout.
-   */
-    QHBoxLayout *addButtonGroupToLayout(QVBoxLayout *vbl, unsigned int portIndex);
-
-    /**
-   * Removes a single `[+][-]` button group from a given layout.
-   */
-    void removeButtonGroupFromLayout(QVBoxLayout *vbl, unsigned int portIndex);
-
-private Q_SLOTS:
-    void onPlusClicked();
-
-    void onMinusClicked();
+private slots:
     void addLeftPort();
     void removeLeftPort();
+    void addRightPortI();
+    void addRightPortB();
+    void removeRightPort();
+    void onPlusClicked();
+    void onMinusClicked();
 
 private:
-    /**
-   * @param buttonIndex is the index of a button in the layout.
-   * Plus button has the index 0.
-   * Minus button has the index 1.
-   */
+    void addRightPort(bool isRight);
+    QHBoxLayout *addButtonGroupToLayout(QVBoxLayout *vbl, unsigned int portIndex);
+    void removeButtonGroupFromLayout(QVBoxLayout *vbl, unsigned int portIndex);
     std::pair<PortType, PortIndex> findWhichPortWasClicked(QObject *sender, int const buttonIndex);
 
 private:
-    NodeId const _nodeId;
+    NodeId _nodeId;
     DataFlowModel &_model;
-
     QVBoxLayout *_left;
     QVBoxLayout *_right;
-
-    int _leftPorts = 1;
-    int _rightPorts = 1;
+    int _leftPorts = 0;
+    int _rightPorts = 0;
 };

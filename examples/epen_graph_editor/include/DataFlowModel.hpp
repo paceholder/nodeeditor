@@ -30,7 +30,7 @@ public:
 
     bool setNodeData(NodeId nodeId, NodeRole role, QVariant value) override;
 
-    void addProcessNodePort(NodeId nodeId, PortType portType, PortIndex portIndex);
+    void addProcessNodePort(NodeId nodeId, PortType portType, PortIndex portIndex,bool isImage);
 
     void removeProcessNodePort(NodeId nodeId, PortType portType, PortIndex portIndex);
 
