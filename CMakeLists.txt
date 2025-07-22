@@ -60,16 +60,6 @@ if (${QT_VERSION} VERSION_LESS 5.11.0)
   message(FATAL_ERROR "Requires qt version >= 5.11.0, Your current version is ${QT_VERSION}")
 endif()
 
-if (${QT_VERSION_MAJOR} EQUAL 6)
-  qt_add_resources(RESOURCES ./resources/resources.qrc)
-else()
-  qt5_add_resources(RESOURCES ./resources/resources.qrc)
-endif()
-
-# Unfortunately, as we have a split include/src, AUTOMOC doesn't work.
-# We'll have to manually specify some files
-set(CMAKE_AUTOMOC ON)
-
 set(CPP_SOURCE_FILES
   src/AbstractGraphModel.cpp
   src/AbstractNodeGeometry.cpp
@@ -95,6 +85,7 @@ set(CPP_SOURCE_FILES
   src/StyleCollection.cpp
   src/UndoCommands.cpp
   src/locateNode.cpp
+  resources/resources.qrc
 )
 
 set(HPP_HEADER_FILES
@@ -141,7 +132,6 @@ set(HPP_HEADER_FILES
 add_library(QtNodes
   ${CPP_SOURCE_FILES}
   ${HPP_HEADER_FILES}
-  ${RESOURCES}
 )
 
 add_library(QtNodes::QtNodes ALIAS QtNodes)
@@ -204,24 +194,8 @@ set_target_properties(QtNodes
 ######
 # Moc
 ##
+set_target_properties(QtNodes PROPERTIES AUTOMOC ON AUTORCC ON)
 
-file(GLOB_RECURSE HEADERS_TO_MOC include/QtNodes/internal/*.hpp)
-
-if (${QT_VERSION_MAJOR} EQUAL 6)
-  qt_wrap_cpp(nodes_moc
-      ${HEADERS_TO_MOC}
-      TARGET QtNodes
-    OPTIONS --no-notes # Don't display a note for the headers which don't produce a moc_*.cpp
-  )
-else()
-  qt5_wrap_cpp(nodes_moc
-  ${HEADERS_TO_MOC}
-  TARGET QtNodes
-  OPTIONS --no-notes # Don't display a note for the headers which don't produce a moc_*.cpp
-  )
-endif()
-
-target_sources(QtNodes PRIVATE ${nodes_moc})
 
 ###########
 # Examples
