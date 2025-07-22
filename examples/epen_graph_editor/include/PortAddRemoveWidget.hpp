@@ -1,8 +1,8 @@
 #pragma once
 
-#include <QWidget>
-#include <QVBoxLayout>
 #include <QPushButton>
+#include <QVBoxLayout>
+#include <QWidget>
 #include <QtNodes/Definitions>
 
 using QtNodes::NodeId;
@@ -19,16 +19,18 @@ public:
     PortAddRemoveWidget(NodeId nodeId, DataFlowModel &model, QWidget *parent = nullptr);
     ~PortAddRemoveWidget();
 
-
 private slots:
-    void addLeftPort();
+
     void removeLeftPort();
     void addRightPortI();
     void addRightPortB();
+    void addLeftPortI();
+    void addLeftPortB();
     void removeRightPort();
 
 private:
-    void addRightPort(bool isRight);
+    void addRightPort(bool);
+    void addLeftPort(bool);
     std::pair<PortType, PortIndex> findWhichPortWasClicked(QObject *sender, int const buttonIndex);
 
 private:

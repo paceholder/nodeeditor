@@ -8,8 +8,8 @@ static const int SPACER_WIDTH = 25;
 static const int SPACER_HEIGHT = 22;
 static const int RIGHT_SPACER_HEIGHT = 10;
 
-static const int LEFT_SPACING = 13;
-static const int RIGHT_SPACING = 13;
+static const int FIRST_NODE_SPACING = 21;
+static const int NODE_SPACING = 13;
 static const int CENTER_SPACING = 50;
 
 PortAddRemoveWidget::PortAddRemoveWidget(NodeId nodeId, DataFlowModel &model, QWidget *parent)
@@ -17,64 +17,83 @@ PortAddRemoveWidget::PortAddRemoveWidget(NodeId nodeId, DataFlowModel &model, QW
     , _nodeId(nodeId)
     , _model(model)
 {
+    // Widget constructor with proper top-alignment
     setSizePolicy(QSizePolicy::Policy::Minimum, QSizePolicy::Policy::Expanding);
 
     QHBoxLayout *hl = new QHBoxLayout(this);
     hl->setContentsMargins(0, 0, 0, 0);
     hl->setSpacing(0);
 
+    // Create left layout WITHOUT stretch at the beginning
     _left = new QVBoxLayout();
-    _left->setSpacing(LEFT_SPACING);
+    _left->setSpacing(NODE_SPACING);
     _left->setContentsMargins(0, 0, 0, 0);
-    _left->addStretch();
+    // Don't add stretch here - we'll add it at the end
 
+    // Create right layout WITHOUT stretch at the beginning
     _right = new QVBoxLayout();
-    _right->setSpacing(RIGHT_SPACING);
+    _right->setSpacing(NODE_SPACING);
     _right->setContentsMargins(0, 0, 0, 0);
-    _right->addStretch();
+    // Don't add stretch here - we'll add it at the end
 
     hl->addLayout(_left);
     hl->addSpacing(CENTER_SPACING);
     hl->addLayout(_right);
 
-    auto buttonAdd = new QPushButton("+");
-    buttonAdd->setFixedHeight(BUTTON_HEIGHT);
-    _left->insertWidget(0, buttonAdd);
-    connect(buttonAdd, &QPushButton::clicked, this, &PortAddRemoveWidget::addLeftPort);
+    // LEFT SIDE: Add I and B buttons
+    auto topButtonsLeftRow = new QHBoxLayout();
+    topButtonsLeftRow->setContentsMargins(0, 0, 0, 0);
+    topButtonsLeftRow->setSpacing(4); // Add small spacing between buttons
 
-    // Add empty spacer below + button
+    auto buttonILeft = new QPushButton("I");
+    buttonILeft->setFixedHeight(BUTTON_HEIGHT);
+    topButtonsLeftRow->addWidget(buttonILeft);
 
-    // Spacer for first port (non-deletable)
-    QWidget *spacer = new QWidget();
-    spacer->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
-    spacer->setFixedSize(SPACER_WIDTH, SPACER_HEIGHT);
-    _left->insertWidget(1, spacer);
+    auto buttonBLeft = new QPushButton("B");
+    buttonBLeft->setFixedHeight(BUTTON_HEIGHT);
+    topButtonsLeftRow->addWidget(buttonBLeft);
 
-    auto topButtonsRow = new QHBoxLayout();
-    topButtonsRow->setContentsMargins(0, 0, 0, 0);
+    // Add the button layout to the top of left side
+    _left->addLayout(topButtonsLeftRow);
 
-    _right->insertLayout(0, topButtonsRow);
+    // Add 13-pixel spacer after buttons
+    _left->addSpacing(FIRST_NODE_SPACING);
+
+    // Connect left buttons
+    connect(buttonBLeft, &QPushButton::clicked, this, &PortAddRemoveWidget::addLeftPortB);
+    connect(buttonILeft, &QPushButton::clicked, this, &PortAddRemoveWidget::addLeftPortI);
+
+    // RIGHT SIDE: Add I and B buttons
+    auto topButtonsRightRow = new QHBoxLayout();
+    topButtonsRightRow->setContentsMargins(0, 0, 0, 0);
+    topButtonsRightRow->setSpacing(4); // Add small spacing between buttons
 
     auto buttonI = new QPushButton("I");
     buttonI->setFixedHeight(BUTTON_HEIGHT);
-    topButtonsRow->addWidget(buttonI);
+    topButtonsRightRow->addWidget(buttonI);
 
     auto buttonB = new QPushButton("B");
     buttonB->setFixedHeight(BUTTON_HEIGHT);
-    topButtonsRow->addWidget(buttonB);
+    topButtonsRightRow->addWidget(buttonB);
 
-    // Connect I and B buttons to add right ports
+    // Add the button layout to the top of right side
+    _right->addLayout(topButtonsRightRow);
+
+    // Add 13-pixel spacer after buttons
+    _right->addSpacing(FIRST_NODE_SPACING);
+
+    // Connect right buttons
     connect(buttonI, &QPushButton::clicked, this, &PortAddRemoveWidget::addRightPortI);
     connect(buttonB, &QPushButton::clicked, this, &PortAddRemoveWidget::addRightPortB);
 
-    // Add spacer for first right port (non-deletable)
-    QWidget *rightSpacer = new QWidget();
-    rightSpacer->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
-    rightSpacer->setFixedSize(SPACER_WIDTH, RIGHT_SPACER_HEIGHT);
-    _right->insertWidget(1, rightSpacer);
+    // Add stretch at the END to push everything to the top
+    _left->addStretch();
+    _right->addStretch();
+
+    // Alternative approach if you need more control over the spacer
 }
 
-void PortAddRemoveWidget::addLeftPort()
+void PortAddRemoveWidget::addLeftPort(bool isImage)
 {
     auto button = new QPushButton("-");
     button->setFixedHeight(BUTTON_HEIGHT);
@@ -84,7 +103,7 @@ void PortAddRemoveWidget::addLeftPort()
     _left->insertWidget(_leftPorts + 2, button);
 
     // Trigger changes in the model
-    _model.addProcessNodePort(_nodeId, PortType::In, _leftPorts, false);
+    _model.addProcessNodePort(_nodeId, PortType::In, _leftPorts, isImage);
     _leftPorts++;
 
     adjustSize();
@@ -122,7 +141,7 @@ void PortAddRemoveWidget::removeLeftPort()
 
     _leftPorts--;
     // Trigger changes in the model
-    _model.removeProcessNodePort(_nodeId, PortType::In, portIndex);
+    _model.removeProcessNodePort(_nodeId, PortType::In, buttonIndex - 1);
 
     adjustSize();
 }
@@ -137,7 +156,17 @@ void PortAddRemoveWidget::addRightPortB()
     addRightPort(false);
 }
 
-void PortAddRemoveWidget::addRightPort(bool isRight)
+void PortAddRemoveWidget::addLeftPortI()
+{
+    addLeftPort(true);
+}
+
+void PortAddRemoveWidget::addLeftPortB()
+{
+    addLeftPort(false);
+}
+
+void PortAddRemoveWidget::addRightPort(bool isImage)
 {
     auto button = new QPushButton("-");
     button->setFixedHeight(BUTTON_HEIGHT);
@@ -146,7 +175,7 @@ void PortAddRemoveWidget::addRightPort(bool isRight)
     _right->insertWidget(_rightPorts + 2, button);
 
     // Trigger changes in the model
-    _model.addProcessNodePort(_nodeId, PortType::Out, _rightPorts, isRight);
+    _model.addProcessNodePort(_nodeId, PortType::Out, _rightPorts, isImage);
     _rightPorts++;
 
     adjustSize();

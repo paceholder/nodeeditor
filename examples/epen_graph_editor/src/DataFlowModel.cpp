@@ -126,13 +126,13 @@ void DataFlowModel::addProcessNodePort(NodeId nodeId,
     PortIndex first = portIndex;
     PortIndex last = first;
     portsAboutToBeInserted(nodeId, portType, first, last);
-
-    if (portType == PortType::In)
+    Process *nodeModel = delegateModel<Process>(nodeId);
+    if (portType == PortType::In) {
         _nodePortCounts[nodeId].in++;
-    else {
-        Process *nodeModel = delegateModel<Process>(nodeId);
+        nodeModel->setPortTypeLeft(_nodePortCounts[nodeId].in, isImage);
+    } else {
         _nodePortCounts[nodeId].out++;
-        nodeModel->setPortType(_nodePortCounts[nodeId].out, isImage);
+        nodeModel->setPortTypeRight(_nodePortCounts[nodeId].out, isImage);
     }
 
     portsInserted();
@@ -145,12 +145,12 @@ void DataFlowModel::removeProcessNodePort(NodeId nodeId, PortType portType, Port
     PortIndex first = portIndex;
     PortIndex last = first;
     portsAboutToBeDeleted(nodeId, portType, first, last);
-
-    if (portType == PortType::In)
+    Process *nodeModel = delegateModel<Process>(nodeId);
+    if (portType == PortType::In) {
+        nodeModel->removePortTypeLeft(portIndex);
         _nodePortCounts[nodeId].in--;
-    else {
-        Process *nodeModel = delegateModel<Process>(nodeId);
-        nodeModel->removePortType(portIndex);
+    } else {
+        nodeModel->removePortTypeRight(portIndex);
         _nodePortCounts[nodeId].out--;
     }
 

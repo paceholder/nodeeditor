@@ -80,10 +80,13 @@ public:
         switch (portType) {
         case PortType::Out:
 
-            return nodeTypeMap.at(portIndex) ? QStringLiteral("Image") : QStringLiteral("Buffer");
+            return nodeTypeMapRight.at(portIndex) ? QStringLiteral("Image")
+                                                  : QStringLiteral("Buffer");
 
         default:
-            break;
+        case PortType::In:
+            return nodeTypeMapLeft.at(portIndex) ? QStringLiteral("Image")
+                                                 : QStringLiteral("Buffer");
         }
         return QString();
     }
@@ -100,20 +103,33 @@ public:
         return result;
     }
 
-    void setPortType(PortIndex portIndex, bool isImage)
+    void setPortTypeRight(PortIndex portIndex, bool isImage)
     {
-        nodeTypeMap.insert(portIndex - 1, isImage);
+        nodeTypeMapRight.insert(portIndex - 1, isImage);
     }
 
-    void removePortType(PortIndex portIndex)
+    void removePortTypeRight(PortIndex portIndex)
     {
-        if (portIndex < nodeTypeMap.size()) {
-            nodeTypeMap.removeAt(portIndex);
+        if (portIndex < nodeTypeMapRight.size()) {
+            nodeTypeMapRight.removeAt(portIndex);
+        }
+    }
+
+    void setPortTypeLeft(PortIndex portIndex, bool isImage)
+    {
+        nodeTypeMapLeft.insert(portIndex - 1, isImage);
+    }
+
+    void removePortTypeLeft(PortIndex portIndex)
+    {
+        if (portIndex < nodeTypeMapLeft.size()) {
+            nodeTypeMapLeft.removeAt(portIndex);
         }
     }
 
 private:
-    QVector<bool> nodeTypeMap{true};
+    QVector<bool> nodeTypeMapRight{true};
+    QVector<bool> nodeTypeMapLeft{true};
 
     Size *_grid;
     Size *_block;
