@@ -30,8 +30,6 @@ option(BUILD_DEBUG_POSTFIX_D "Append d suffix to debug libraries" OFF)
 option(QT_NODES_FORCE_TEST_COLOR "Force colorized unit test output" OFF)
 option(USE_QT6 "Build with Qt6 (Enabled by default)" ON)
 
-enable_testing()
-
 if(QT_NODES_DEVELOPER_DEFAULTS)
   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
   set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
@@ -212,9 +210,11 @@ endif()
 ##################
 # Automated Tests
 ##
+enable_testing()
+
 
 if(BUILD_TESTING)
-  #add_subdirectory(test)
+  add_subdirectory(test)
 endif()
 
 ###############

@@ -2,10 +2,10 @@
 
 #include <QtCore/QPoint>
 #include <QtCore/QPointF>
+#include <QtTest/QtTest>
 
 #include <catch2/catch.hpp>
 
-#include <QtTest>
 
 namespace Catch {
 template<>

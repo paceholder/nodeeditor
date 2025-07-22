@@ -225,6 +225,8 @@ void NodeGraphicsObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
                                                                                    portToCheck,
                                                                                    portIndex);
 
+            // From the moment of creation a draft connection
+            // grabs the mouse events and waits for the mouse button release
             nodeScene()->makeDraftConnection(incompleteConnectionId);
         }
     }

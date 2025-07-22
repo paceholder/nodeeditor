@@ -1,10 +1,10 @@
 #pragma once
 
+#include <QtNodes/NodeDelegateModel>
+
 #include <utility>
 
-#include <QtNodes/NodeDataModel>
-
-class StubNodeDataModel : public QtNodes::NodeDataModel
+class StubNodeDataModel : public QtNodes::NodeDelegateModel
 {
 public:
     QString name() const override { return _name; }

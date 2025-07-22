@@ -100,14 +100,15 @@ bool NodeConnectionInteraction::disconnect(PortType portToDisconnect) const
     ConnectionId incompleteConnectionId = makeIncompleteConnectionId(connectionId, portToDisconnect);
 
     // Grabs the mouse
-    auto const &draftConnection = _scene.makeDraftConnection(incompleteConnectionId);
+    auto const &draftConnection = 
+      _scene.makeDraftConnection(incompleteConnectionId);
 
     QPointF const looseEndPos = draftConnection->mapFromScene(scenePos);
     draftConnection->setEndPoint(portToDisconnect, looseEndPos);
 
-    // Repaint connection points.
-    NodeId connectedNodeId = getNodeId(oppositePort(portToDisconnect), connectionId);
-    _scene.nodeGraphicsObject(connectedNodeId)->update();
+     //Repaint connection points.
+    //NodeId connectedNodeId = getNodeId(oppositePort(portToDisconnect), connectionId);
+    //_scene.nodeGraphicsObject(connectedNodeId)->update();
 
     NodeId disconnectedNodeId = getNodeId(portToDisconnect, connectionId);
     _scene.nodeGraphicsObject(disconnectedNodeId)->update();
