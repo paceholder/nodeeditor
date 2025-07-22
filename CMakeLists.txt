@@ -13,6 +13,10 @@ set(CMAKE_DISABLE_SOURCE_CHANGES  ON)
 set(OpenGL_GL_PREFERENCE LEGACY)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# Enable AUTOMOC globally for all targets (needed for examples with Q_OBJECT)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+
 get_directory_property(_has_parent PARENT_DIRECTORY)
 if(_has_parent)
   set(is_root_project OFF)
@@ -188,12 +192,6 @@ set_target_properties(QtNodes
     LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
 )
-
-######
-# Moc
-##
-set_target_properties(QtNodes PROPERTIES AUTOMOC ON AUTORCC ON)
-
 
 ###########
 # Examples

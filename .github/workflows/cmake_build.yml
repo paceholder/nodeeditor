@@ -101,4 +101,4 @@ jobs:
       if: startsWith (matrix.os, 'windows')
       run: |
         cd build
-        ctest --output-on-failure --progress
+        ctest -C ${{ matrix.configuration }} --output-on-failure --progress
