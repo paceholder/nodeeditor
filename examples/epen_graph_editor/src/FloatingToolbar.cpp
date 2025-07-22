@@ -169,237 +169,199 @@ void FloatingToolbar::setupNodeCategories()
 {
     QVBoxLayout *layout = getContentLayout();
 
-    // Create Scalar category
-    ExpandableCategoryWidget *scalarCategory = new ExpandableCategoryWidget("Scalar", 0);
+    // Node Selection Label
+    QLabel *nodeLabel = new QLabel("Node Selection:");
+    nodeLabel->setStyleSheet("font-weight: bold; color: #333; padding: 5px;");
+    layout->addWidget(nodeLabel);
 
-    layout->addWidget(scalarCategory);
+    // Category combo box
+    m_categoryCombo = new QComboBox();
 
-    // Add subcategories for Scalar
+    layout->addWidget(m_categoryCombo);
 
-    ExpandableCategoryWidget *typeCategoryScalarUnsignedInt
-        = new ExpandableCategoryWidget("unsigned int", 1);
+    // Subcategory combo box
+    m_subCategoryCombo = new QComboBox();
+    m_subCategoryCombo->hide(); // Initially hidden
+    layout->addWidget(m_subCategoryCombo);
 
-    QWidget *container = new QWidget();
-    QVBoxLayout *containerLayout = new QVBoxLayout(container);
-    containerLayout->setContentsMargins(0, 0, 0, 0);
-    containerLayout->setSpacing(1);
+    // Container for node buttons
+    m_nodeButtonContainer = new QWidget();
+    m_nodeButtonLayout = new QVBoxLayout(m_nodeButtonContainer);
+    m_nodeButtonLayout->setContentsMargins(5, 5, 5, 5);
+    m_nodeButtonLayout->setSpacing(2);
+    layout->addWidget(m_nodeButtonContainer);
 
-    containerLayout->addWidget(addNodeButton("Slider Input Buffer",
-                                             QString::fromUtf8("\u2B30"),
-                                             ">>",
-                                             "Create a UI unsigned int Slider Buffer node",
-                                             true,
-                                             "Scalar_UnsignedInt_Slider"));
+    // Initialize categories data
+    // Scalar category with subcategories
+    Category scalarCategory;
+    scalarCategory.name = "Scalar";
 
-    containerLayout->addWidget(addNodeButton("Plain Number Input Buffer",
-                                             QString::fromUtf8("\u2B30"),
-                                             ">>",
-                                             "Create a UI unsigned int Plain Number Buffer node",
-                                             true,
-                                             "Scalar_UnsignedInt_Plain"));
+    // unsigned int subcategory
+    SubCategory unsignedIntSub;
+    unsignedIntSub.name = "unsigned int";
+    unsignedIntSub.buttons = {{"Slider Input Buffer",
+                               QString::fromUtf8("\u2B30"),
+                               ">>",
+                               "Create a UI unsigned int Slider Buffer node",
+                               "Scalar_UnsignedInt_Slider",
+                               true},
+                              {"Plain Number Input Buffer",
+                               QString::fromUtf8("\u2B30"),
+                               ">>",
+                               "Create a UI unsigned int Plain Number Buffer node",
+                               "Scalar_UnsignedInt_Plain",
+                               true},
+                              {"Fixed Buffer",
+                               QString::fromUtf8("\u2B30"),
+                               ">>",
+                               "Create an unsigned int fixed Buffer node",
+                               "Scalar_UnsignedInt_Fixed",
+                               true}};
+    scalarCategory.subCategories.append(unsignedIntSub);
 
-    containerLayout->addWidget(addNodeButton("Fixed Buffer",
-                                             QString::fromUtf8("\u2B30"),
-                                             ">>",
-                                             "Create an unsigned int fixed Buffer node",
-                                             true,
-                                             "Scalar_UnsignedInt_Fixed"));
+    // int subcategory
+    SubCategory intSub;
+    intSub.name = "int";
+    intSub.buttons = {{"Slider Input Buffer",
+                       QString::fromUtf8("\u2B30"),
+                       ">>",
+                       "Create a UI int Slider Buffer node",
+                       "Scalar_Int_Slider",
+                       true},
+                      {"Plain Number Input Buffer",
+                       QString::fromUtf8("\u2B30"),
+                       ">>",
+                       "Create a UI int Plain Number Buffer node",
+                       "Scalar_Int_Plain",
+                       true},
+                      {"Fixed Buffer",
+                       QString::fromUtf8("\u2B30"),
+                       ">>",
+                       "Create an int fixed Buffer node",
+                       "Scalar_Int_Fixed",
+                       true}};
+    scalarCategory.subCategories.append(intSub);
 
-    typeCategoryScalarUnsignedInt->setContentWidget(container);
-    scalarCategory->addWidget(typeCategoryScalarUnsignedInt);
+    // double subcategory
+    SubCategory doubleSub;
+    doubleSub.name = "double";
+    doubleSub.buttons = {{"Slider Input Buffer",
+                          QString::fromUtf8("\u2B30"),
+                          ">>",
+                          "Create a UI double Slider Buffer node",
+                          "Scalar_Double_Slider",
+                          true},
+                         {"Plain Number Input Buffer",
+                          QString::fromUtf8("\u2B30"),
+                          ">>",
+                          "Create a UI double Plain Number Buffer node",
+                          "Scalar_Double_Plain",
+                          true},
+                         {"Fixed Buffer",
+                          QString::fromUtf8("\u2B30"),
+                          ">>",
+                          "Create a double fixed Buffer node",
+                          "Scalar_Double_Fixed",
+                          true}};
+    scalarCategory.subCategories.append(doubleSub);
 
-    //---------------
+    // float subcategory
+    SubCategory floatSub;
+    floatSub.name = "float";
+    floatSub.buttons = {{"Slider Input Buffer",
+                         QString::fromUtf8("\u2B30"),
+                         ">>",
+                         "Create a UI float Slider Buffer node",
+                         "Scalar_Float_Slider",
+                         true},
+                        {"Plain Number Input Buffer",
+                         QString::fromUtf8("\u2B30"),
+                         ">>",
+                         "Create a UI float Plain Number Buffer node",
+                         "Scalar_Float_Plain",
+                         true},
+                        {"Fixed Buffer",
+                         QString::fromUtf8("\u2B30"),
+                         ">>",
+                         "Create a float Fixed Buffer node",
+                         "Scalar_Float_Fixed",
+                         true}};
+    scalarCategory.subCategories.append(floatSub);
 
-    ExpandableCategoryWidget *typeCategoryScalarInt = new ExpandableCategoryWidget("int", 1);
+    // bool subcategory
+    SubCategory boolSub;
+    boolSub.name = "bool";
+    boolSub.buttons = {{"Checkbox Input Buffer",
+                        QString::fromUtf8("\u2B30"),
+                        ">>",
+                        "Create a UI boolean Checkbox Buffer node",
+                        "Scalar_Boolean_Checkbox",
+                        true},
+                       {"Fixed Buffer",
+                        QString::fromUtf8("\u2B30"),
+                        ">>",
+                        "Create a float Fixed Buffer node",
+                        "Scalar_Boolean_Fixed",
+                        true}};
+    scalarCategory.subCategories.append(boolSub);
 
-    container = new QWidget();
-    containerLayout = new QVBoxLayout(container);
-    containerLayout->setContentsMargins(0, 0, 0, 0);
-    containerLayout->setSpacing(1);
+    // float4 subcategory
+    SubCategory float4Sub;
+    float4Sub.name = "float4";
+    float4Sub.buttons = {{"Color Input Buffer",
+                          QString::fromUtf8("\u2B30"),
+                          ">>",
+                          "Create a UI float4 Color Buffer node",
+                          "Scalar_Float4_Color",
+                          true},
+                         {"Fixed Buffer",
+                          QString::fromUtf8("\u2B30"),
+                          ">>",
+                          "Create a float4 Fixed Buffer node",
+                          "Scalar_Float4_Fixed",
+                          true}};
+    scalarCategory.subCategories.append(float4Sub);
 
-    containerLayout->addWidget(addNodeButton("Slider Input Buffer",
-                                             QString::fromUtf8("\u2B30"),
-                                             ">>",
-                                             "Create a UI int Slider Buffer node",
-                                             true,
-                                             "Scalar_Int_Slider"));
+    m_categories.append(scalarCategory);
 
-    containerLayout->addWidget(addNodeButton("Plain Number Input Buffer",
-                                             QString::fromUtf8("\u2B30"),
-                                             ">>",
-                                             "Create a UI int Plain Number Buffer node",
-                                             true,
-                                             "Scalar_Int_Plain"));
+    // Array category (no subcategories)
+    Category arrayCategory;
+    arrayCategory.name = "Array";
+    SubCategory arraySub;
+    arraySub.name = ""; // Empty name for categories without subcategories
+    arraySub.buttons = {{"Fixed Double Buffer",
+                         QString::fromUtf8("\u2B30"),
+                         ">>",
+                         "Create a double Fixed Array Buffer node",
+                         "Array_Double_Fixed",
+                         true},
+                        {"Fixed Float Buffer",
+                         QString::fromUtf8("\u2B30"),
+                         ">>",
+                         "Create a float Fixed Array Buffer node",
+                         "Array_Float_Fixed",
+                         true},
+                        {"Fixed Int Buffer",
+                         QString::fromUtf8("\u2B30"),
+                         ">>",
+                         "Create an int Fixed Array Buffer node",
+                         "Array_Int_Fixed",
+                         true},
+                        {"Fixed Unsigned Int Buffer",
+                         QString::fromUtf8("\u2B30"),
+                         ">>",
+                         "Create an unsigned int Fixed Array Buffer node",
+                         "Array_UnsignedInt_Fixed",
+                         true}};
+    arrayCategory.subCategories.append(arraySub);
+    m_categories.append(arrayCategory);
 
-    containerLayout->addWidget(addNodeButton("Fixed Buffer",
-                                             QString::fromUtf8("\u2B30"),
-                                             ">>",
-                                             "Create an int fixed Buffer node",
-                                             true,
-                                             "Scalar_Int_Fixed"));
-
-    typeCategoryScalarInt->setContentWidget(container);
-    scalarCategory->addWidget(typeCategoryScalarInt);
-
-    //------------------------
-
-    ExpandableCategoryWidget *typeCategoryScalarDouble = new ExpandableCategoryWidget("double", 1);
-
-    container = new QWidget();
-    containerLayout = new QVBoxLayout(container);
-    containerLayout->setContentsMargins(0, 0, 0, 0);
-    containerLayout->setSpacing(1);
-
-    containerLayout->addWidget(addNodeButton("Slider Input Buffer",
-                                             QString::fromUtf8("\u2B30"),
-                                             ">>",
-                                             "Create a UI double Slider Buffer node",
-                                             true,
-                                             "Scalar_Double_Slider"));
-
-    containerLayout->addWidget(addNodeButton("Plain Number Input Buffer",
-                                             QString::fromUtf8("\u2B30"),
-                                             ">>",
-                                             "Create a UI double Plain Number Buffer node",
-                                             true,
-                                             "Scalar_Double_Plain"));
-
-    containerLayout->addWidget(addNodeButton("Fixed Buffer",
-                                             QString::fromUtf8("\u2B30"),
-                                             ">>",
-                                             "Create a double fixed Buffer node",
-                                             true,
-                                             "Scalar_Double_Fixed"));
-
-    typeCategoryScalarDouble->setContentWidget(container);
-    scalarCategory->addWidget(typeCategoryScalarDouble);
-
-    //------------------------
-
-    ExpandableCategoryWidget *typeCategoryScalarFloat = new ExpandableCategoryWidget("float", 1);
-
-    container = new QWidget();
-    containerLayout = new QVBoxLayout(container);
-    containerLayout->setContentsMargins(0, 0, 0, 0);
-    containerLayout->setSpacing(1);
-
-    containerLayout->addWidget(addNodeButton("Slider Input Buffer",
-                                             QString::fromUtf8("\u2B30"),
-                                             ">>",
-                                             "Create a UI float Slider Buffer node",
-                                             true,
-                                             "Scalar_Float_Slider"));
-
-    containerLayout->addWidget(addNodeButton("Plain Number Input Buffer",
-                                             QString::fromUtf8("\u2B30"),
-                                             ">>",
-                                             "Create a UI float Plain Number Buffer node",
-                                             true,
-                                             "Scalar_Float_Plain"));
-
-    containerLayout->addWidget(addNodeButton("Fixed Buffer",
-                                             QString::fromUtf8("\u2B30"),
-                                             ">>",
-                                             "Create a float Fixed Buffer node",
-                                             true,
-                                             "Scalar_Float_Fixed"));
-    typeCategoryScalarFloat->setContentWidget(container);
-    scalarCategory->addWidget(typeCategoryScalarFloat);
-    //----------
-    ExpandableCategoryWidget *typeCategoryScalarBoolean = new ExpandableCategoryWidget("bool", 1);
-
-    container = new QWidget();
-    containerLayout = new QVBoxLayout(container);
-    containerLayout->setContentsMargins(0, 0, 0, 0);
-    containerLayout->setSpacing(1);
-
-    containerLayout->addWidget(addNodeButton("Checkbox Input Buffer",
-                                             QString::fromUtf8("\u2B30"),
-                                             ">>",
-                                             "Create a UI boolean Checkbox Buffer node",
-                                             true,
-                                             "Scalar_Boolean_Checkbox"));
-
-    containerLayout->addWidget(addNodeButton("Fixed Buffer",
-                                             QString::fromUtf8("\u2B30"),
-                                             ">>",
-                                             "Create a float Fixed Buffer node",
-                                             true,
-                                             "Scalar_Boolean_Fixed"));
-    typeCategoryScalarBoolean->setContentWidget(container);
-    scalarCategory->addWidget(typeCategoryScalarBoolean);
-    //----------
-    ExpandableCategoryWidget *typeCategoryScalarFloat4 = new ExpandableCategoryWidget("float4", 1);
-
-    container = new QWidget();
-    containerLayout = new QVBoxLayout(container);
-    containerLayout->setContentsMargins(0, 0, 0, 0);
-    containerLayout->setSpacing(1);
-
-    containerLayout->addWidget(addNodeButton("Color Input Buffer",
-                                             QString::fromUtf8("\u2B30"),
-                                             ">>",
-                                             "Create a UI float4 Color Buffer node",
-                                             true,
-                                             "Scalar_Float4_Color"));
-
-    containerLayout->addWidget(addNodeButton("Fixed Buffer",
-                                             QString::fromUtf8("\u2B30"),
-                                             ">>",
-                                             "Create a float4 Fixed Buffer node",
-                                             true,
-                                             "Scalar_Float4_Fixed"));
-    typeCategoryScalarFloat4->setContentWidget(container);
-    scalarCategory->addWidget(typeCategoryScalarFloat4);
-    //------------------
-
-    ExpandableCategoryWidget *arrayCategory = new ExpandableCategoryWidget("Array", 0);
-
-    layout->addWidget(arrayCategory);
-
-    container = new QWidget();
-    arrayCategory->addWidget(container);
-    containerLayout = new QVBoxLayout(container);
-    containerLayout->setContentsMargins(0, 0, 0, 0);
-    containerLayout->setSpacing(1);
-
-    containerLayout->addWidget(addNodeButton("Fixed Double Buffer",
-                                             QString::fromUtf8("\u2B30"),
-                                             ">>",
-                                             "Create a double Fixed Array Buffer node",
-                                             true,
-                                             "Array_Double_Fixed"));
-
-    containerLayout->addWidget(addNodeButton("Fixed Float Buffer",
-                                             QString::fromUtf8("\u2B30"),
-                                             ">>",
-                                             "Create a float Fixed Array Buffer node",
-                                             true,
-                                             "Array_Float_Fixed"));
-
-    containerLayout->addWidget(addNodeButton("Fixed Int Buffer",
-                                             QString::fromUtf8("\u2B30"),
-                                             ">>",
-                                             "Create an int Fixed Array Buffer node",
-                                             true,
-                                             "Array_Int_Fixed"));
-
-    containerLayout->addWidget(addNodeButton("Fixed Unsigned Int Buffer",
-                                             QString::fromUtf8("\u2B30"),
-                                             ">>",
-                                             "Create an unsigned int Fixed Array Buffer node",
-                                             true,
-                                             "Array_UnsignedInt_Fixed"));
-
-    // Add separator
-    addSeparator(layout);
-
-    // Add Other Nodes category
-    ExpandableCategoryWidget *otherCategory = new ExpandableCategoryWidget("Other Nodes", 0);
-
-    layout->addWidget(otherCategory);
-
-    QVector<NodeButtonInfo> otherNodes
+    // Other Nodes category (no subcategories)
+    Category otherCategory;
+    otherCategory.name = "Other Nodes";
+    SubCategory otherSub;
+    otherSub.name = ""; // Empty name for categories without subcategories
+    otherSub.buttons
         = {{"Video Input", "◀", "<", "Create a video input node", "VideoInput", true},
            {"Video Output", "▶", ">", "Create a video output node", "VideoOutput", false},
            {"Process", "♦", "*", "Create a processing node", "Process", true},
@@ -409,13 +371,108 @@ void FloatingToolbar::setupNodeCategories()
             "Create a Callback Managed Buffer node",
             "CallbackManaged",
             true}};
+    otherCategory.subCategories.append(otherSub);
+    m_categories.append(otherCategory);
 
-    addNodeButtonsToCategory(otherCategory, otherNodes);
+    // Populate category combo box
+    m_categoryCombo->addItem("Select Type");
+    for (const auto &category : m_categories) {
+        m_categoryCombo->addItem(category.name);
+    }
 
-    // Set initial expanded state
-    scalarCategory->setExpanded(true);
-    otherCategory->setExpanded(true);
-    arrayCategory->setExpanded(false);
+    // Connect signals
+    connect(m_categoryCombo,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &FloatingToolbar::onCategoryChanged);
+    connect(m_subCategoryCombo,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &FloatingToolbar::onSubCategoryChanged);
+}
+
+void FloatingToolbar::onCategoryChanged(int index)
+{
+    clearNodeButtons();
+    m_subCategoryCombo->clear();
+    m_subCategoryCombo->hide();
+
+    if (index <= 0 || index > m_categories.size()) {
+        return;
+    }
+
+    const Category &category = m_categories[index - 1];
+
+    // Check if this category has real subcategories (not just a single empty one)
+    bool hasSubCategories = category.subCategories.size() > 1
+                            || (category.subCategories.size() == 1
+                                && !category.subCategories[0].name.isEmpty());
+
+    if (hasSubCategories) {
+        // Show subcategory combo
+        m_subCategoryCombo->show();
+        m_subCategoryCombo->addItem("Select Variable Type");
+        for (const auto &subCategory : category.subCategories) {
+            m_subCategoryCombo->addItem(subCategory.name);
+        }
+    } else {
+        // No subcategories, show buttons directly
+        if (!category.subCategories.isEmpty()) {
+            updateNodeButtons();
+        }
+    }
+}
+
+void FloatingToolbar::onSubCategoryChanged(int index)
+{
+    clearNodeButtons();
+
+    if (index <= 0) {
+        return;
+    }
+
+    updateNodeButtons();
+}
+
+void FloatingToolbar::updateNodeButtons()
+{
+    int categoryIndex = m_categoryCombo->currentIndex();
+    if (categoryIndex <= 0 || categoryIndex > m_categories.size()) {
+        return;
+    }
+
+    const Category &category = m_categories[categoryIndex - 1];
+
+    // Determine which subcategory to use
+    int subCategoryIndex = 0;
+    bool hasSubCategories = category.subCategories.size() > 1
+                            || (category.subCategories.size() == 1
+                                && !category.subCategories[0].name.isEmpty());
+
+    if (hasSubCategories) {
+        subCategoryIndex = m_subCategoryCombo->currentIndex() - 1;
+        if (subCategoryIndex < 0 || subCategoryIndex >= category.subCategories.size()) {
+            return;
+        }
+    }
+
+    const SubCategory &subCategory = category.subCategories[subCategoryIndex];
+
+    // Create buttons for the selected subcategory
+    for (const auto &buttonInfo : subCategory.buttons) {
+        DraggableButton *btn = createNodeButton(buttonInfo, m_nodeButtonContainer);
+        m_nodeButtonLayout->addWidget(btn);
+        m_currentNodeButtons.append(btn);
+    }
+}
+
+void FloatingToolbar::clearNodeButtons()
+{
+    for (auto *btn : m_currentNodeButtons) {
+        m_nodeButtonLayout->removeWidget(btn);
+        btn->deleteLater();
+    }
+    m_currentNodeButtons.clear();
 }
 
 DraggableButton *FloatingToolbar::addNodeButton(
