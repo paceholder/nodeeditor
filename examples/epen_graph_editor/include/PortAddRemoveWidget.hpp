@@ -19,7 +19,6 @@ public:
     PortAddRemoveWidget(NodeId nodeId, DataFlowModel &model, QWidget *parent = nullptr);
     ~PortAddRemoveWidget();
 
-    void populateButtons(PortType portType, unsigned int nPorts);
 
 private slots:
     void addLeftPort();
@@ -27,13 +26,9 @@ private slots:
     void addRightPortI();
     void addRightPortB();
     void removeRightPort();
-    void onPlusClicked();
-    void onMinusClicked();
 
 private:
     void addRightPort(bool isRight);
-    QHBoxLayout *addButtonGroupToLayout(QVBoxLayout *vbl, unsigned int portIndex);
-    void removeButtonGroupFromLayout(QVBoxLayout *vbl, unsigned int portIndex);
     std::pair<PortType, PortIndex> findWhichPortWasClicked(QObject *sender, int const buttonIndex);
 
 private:

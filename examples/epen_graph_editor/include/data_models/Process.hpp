@@ -21,8 +21,7 @@ public:
         switch (portType) {
         case PortType::Out:
 
-            return nodeTypeMap.value(portIndex) ? QStringLiteral("Image")
-                                                : QStringLiteral("Buffer");
+            return nodeTypeMap.at(portIndex) ? QStringLiteral("Image") : QStringLiteral("Buffer");
 
         default:
             break;
@@ -42,8 +41,18 @@ public:
         return result;
     }
 
-    void setPortType(PortIndex portIndex, bool isImage) { nodeTypeMap[portIndex - 1] = isImage; }
+    void setPortType(PortIndex portIndex, bool isImage)
+    {
+        nodeTypeMap.insert(portIndex - 1, isImage);
+    }
+
+    void removePortType(PortIndex portIndex)
+    {
+        if (portIndex  < nodeTypeMap.size()) {
+            nodeTypeMap.removeAt(portIndex );
+        }
+    }
 
 private:
-    QMap<PortIndex, bool> nodeTypeMap{{0, true}};
+    QVector<bool> nodeTypeMap{true};
 };

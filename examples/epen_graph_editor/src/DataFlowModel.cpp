@@ -19,9 +19,9 @@ NodeId DataFlowModel::addNode(QString const nodeType)
     NodeId newNodeId = DataFlowGraphModel::addNode(nodeType);
     if (nodeType == "Process") {
         _nodePortCounts[newNodeId].in = 1;
-        widget(newNodeId)->populateButtons(PortType::In, 1);
+        //widget(newNodeId)->populateButtons(PortType::In, 1);
         _nodePortCounts[newNodeId].out = 1;
-        widget(newNodeId)->populateButtons(PortType::Out, 1);
+        //widget(newNodeId)->populateButtons(PortType::Out, 1);
         _nodeSize[newNodeId] = QSize(275, 180);
     }
     _nodeNames[newNodeId] = QString(nodeType);
@@ -102,12 +102,12 @@ bool DataFlowModel::setNodeData(NodeId nodeId, NodeRole role, QVariant value)
             return true;
         case NodeRole::InPortCount:
             _nodePortCounts[nodeId].in = value.toUInt();
-            widget(nodeId)->populateButtons(PortType::In, value.toUInt());
+            //widget(nodeId)->populateButtons(PortType::In, value.toUInt());
             return false;
 
         case NodeRole::OutPortCount:
             _nodePortCounts[nodeId].out = value.toUInt();
-            widget(nodeId)->populateButtons(PortType::Out, value.toUInt());
+            //widget(nodeId)->populateButtons(PortType::Out, value.toUInt());
             return false;
 
         case NodeRole::Widget:
@@ -148,8 +148,11 @@ void DataFlowModel::removeProcessNodePort(NodeId nodeId, PortType portType, Port
 
     if (portType == PortType::In)
         _nodePortCounts[nodeId].in--;
-    else
+    else {
+        Process *nodeModel = delegateModel<Process>(nodeId);
+        nodeModel->removePortType(portIndex);
         _nodePortCounts[nodeId].out--;
+    }
 
     portsDeleted();
 

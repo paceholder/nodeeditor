@@ -17,7 +17,6 @@ PortAddRemoveWidget::PortAddRemoveWidget(NodeId nodeId, DataFlowModel &model, QW
     , _nodeId(nodeId)
     , _model(model)
 {
-    // 10 + 45 * i
     setSizePolicy(QSizePolicy::Policy::Minimum, QSizePolicy::Policy::Expanding);
 
     QHBoxLayout *hl = new QHBoxLayout(this);
@@ -100,8 +99,7 @@ void PortAddRemoveWidget::removeLeftPort()
 
     // Find the index of the clicked button in the left layout
     int buttonIndex = -1;
-    for (int i = 3; i < _left->count();
-         ++i) { // Start from 3 to skip + button, empty spacer, and first port spacer
+    for (int i = 2; i < _left->count(); ++i) {
         QLayoutItem *item = _left->itemAt(i);
         if (item && item->widget() == clickedButton) {
             buttonIndex = i;
@@ -188,7 +186,7 @@ void PortAddRemoveWidget::removeRightPort()
     _rightPorts--;
 
     // Trigger changes in the model
-    _model.removeProcessNodePort(_nodeId, PortType::Out, portIndex);
+    _model.removeProcessNodePort(_nodeId, PortType::Out, buttonIndex - 1);
 
     adjustSize();
 }
@@ -196,97 +194,6 @@ void PortAddRemoveWidget::removeRightPort()
 PortAddRemoveWidget::~PortAddRemoveWidget()
 {
     //
-}
-
-void PortAddRemoveWidget::populateButtons(PortType portType, unsigned int nPorts)
-{
-    /*QVBoxLayout *vl = (portType == PortType::In) ? _left : _right;
-
-    if (vl->count() - 1 < nPorts)
-        while (vl->count() - 1 < nPorts) {
-            addButtonGroupToLayout(vl, 0);
-        }
-
-    if (vl->count() - 1 > nPorts) {
-        while (vl->count() - 1 > nPorts) {
-            removeButtonGroupFromLayout(vl, 0);
-        }
-    }*/
-}
-
-QHBoxLayout *PortAddRemoveWidget::addButtonGroupToLayout(QVBoxLayout *vbl, unsigned int portIndex)
-{
-    auto l = new QHBoxLayout();
-    l->setContentsMargins(0, 0, 0, 0);
-
-    /*auto button = new QPushButton("+");
-    button->setFixedHeight(25);
-    l->addWidget(button);
-    connect(button, &QPushButton::clicked, this, &PortAddRemoveWidget::onPlusClicked);*/
-
-    auto button = new QPushButton("-");
-    button->setFixedHeight(25);
-    l->addWidget(button);
-    connect(button, &QPushButton::clicked, this, &PortAddRemoveWidget::onMinusClicked);
-
-    vbl->insertLayout(portIndex, l);
-
-    return l;
-}
-
-void PortAddRemoveWidget::removeButtonGroupFromLayout(QVBoxLayout *vbl, unsigned int portIndex)
-{
-    // Last item in the layout is always a spacer
-    /*if (vbl->count() > 1) {
-        auto item = vbl->itemAt(portIndex);
-
-        // Delete [+] and [-] QPushButton widgets
-        item->layout()->itemAt(0)->widget()->deleteLater();
-        item->layout()->itemAt(1)->widget()->deleteLater();
-
-        vbl->removeItem(item);
-
-        delete item;
-    }*/
-}
-
-void PortAddRemoveWidget::onPlusClicked()
-{
-    // index of the plus button in the QHBoxLayout
-    int const plusButtonIndex = 0;
-
-    PortType portType;
-    PortIndex portIndex;
-
-    // All existing "plus" buttons trigger the same slot. We need to find out which
-    // button has been actually clicked.
-    std::tie(portType, portIndex) = findWhichPortWasClicked(QObject::sender(), plusButtonIndex);
-
-    // We add new "plus-minus" button group to the chosen layout.
-    addButtonGroupToLayout((portType == PortType::In) ? _left : _right, portIndex + 1);
-
-    // Trigger changes in the model
-    _model.addProcessNodePort(_nodeId, portType, portIndex + 1, false);
-
-    adjustSize();
-}
-
-void PortAddRemoveWidget::onMinusClicked()
-{
-    // index of the minus button in the QHBoxLayout
-    int const minusButtonIndex = 1;
-
-    PortType portType;
-    PortIndex portIndex;
-
-    std::tie(portType, portIndex) = findWhichPortWasClicked(QObject::sender(), minusButtonIndex);
-
-    removeButtonGroupFromLayout((portType == PortType::In) ? _left : _right, portIndex);
-
-    // Trigger changes in the model
-    _model.removeProcessNodePort(_nodeId, portType, portIndex);
-
-    adjustSize();
 }
 
 std::pair<PortType, PortIndex> PortAddRemoveWidget::findWhichPortWasClicked(QObject *sender,
