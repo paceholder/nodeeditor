@@ -1,14 +1,14 @@
 #pragma once
 #include "OperationDataModel.hpp"
 
-class FixedBuffer : public OperationDataModel
+class CallbackManaged : public OperationDataModel
 {
     Q_OBJECT
 public:
-    virtual ~FixedBuffer() {}
+    virtual ~CallbackManaged() {}
 
 public:
-    QString caption() const override { return QStringLiteral("Fixed Buffer"); }
+    QString caption() const override { return QStringLiteral("Callback Managed Buffer"); }
 
     bool portCaptionVisible(PortType portType, PortIndex portIndex) const override
     {
