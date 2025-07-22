@@ -4,8 +4,8 @@
 #include "DraggableButton.hpp"
 #include "ExpandableCategoryWidget.hpp"
 #include "FloatingPanelBase.hpp"
-#include <QMap>
 #include <QComboBox>
+#include <QMap>
 #include <QVector>
 
 class FloatingToolbar : public FloatingPanelBase
@@ -51,13 +51,12 @@ private:
         QVector<SubCategory> subCategories;
     };
 
-    DraggableButton* addNodeButton(QString name,
-                       QString icon,
-                       QString fallback,
-                       QString tooltip,
-                       bool enabled,
-                       QString actionName
-                       );
+    DraggableButton *addNodeButton(QString name,
+                                   QString icon,
+                                   QString fallback,
+                                   QString tooltip,
+                                   bool enabled,
+                                   QString actionName);
     QString createSafeButtonText(const QString &icon, const QString &text);
     DraggableButton *createNodeButton(const NodeButtonInfo &info, QWidget *parent = nullptr);
 
@@ -72,18 +71,21 @@ private:
     void clearNodeButtons();
 
     QFont m_buttonFont;
-    
+
     // Combo boxes for category selection
     QComboBox *m_categoryCombo;
     QComboBox *m_subCategoryCombo;
     QWidget *m_nodeButtonContainer;
     QVBoxLayout *m_nodeButtonLayout;
-    
+
     // Data structure to store categories
     QVector<Category> m_categories;
-    
+
     // Currently displayed node buttons
-    QVector<DraggableButton*> m_currentNodeButtons;
+    QVector<DraggableButton *> m_currentNodeButtons;
+
+    // Other nodes buttons (always visible)
+    QVector<DraggableButton *> m_otherNodeButtons;
 };
 
 #endif // FLOATING_TOOLBAR_HPP

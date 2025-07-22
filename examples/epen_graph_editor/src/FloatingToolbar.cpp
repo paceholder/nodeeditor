@@ -169,6 +169,40 @@ void FloatingToolbar::setupNodeCategories()
 {
     QVBoxLayout *layout = getContentLayout();
 
+    // Other Nodes section (always visible)
+    QLabel *otherNodesLabel = new QLabel("Other Nodes:");
+    otherNodesLabel->setStyleSheet("font-weight: bold; color: #333; padding: 5px;");
+    layout->addWidget(otherNodesLabel);
+
+    // Container for other nodes buttons
+    QWidget *otherNodesContainer = new QWidget();
+    QVBoxLayout *otherNodesLayout = new QVBoxLayout(otherNodesContainer);
+    otherNodesLayout->setContentsMargins(20, 0, 5, 5);
+    otherNodesLayout->setSpacing(2);
+
+    // Create Other Nodes buttons
+    QVector<NodeButtonInfo> otherNodeButtons
+        = {{"Video Input", "◀", "<", "Create a video input node", "VideoInput", true},
+           {"Video Output", "▶", ">", "Create a video output node", "VideoOutput", false},
+           {"Process", "♦", "*", "Create a processing node", "Process", true},
+           {"Callback Managed Buffer",
+            "⬛",
+            "=",
+            "Create a Callback Managed Buffer node",
+            "CallbackManaged",
+            true}};
+
+    for (const auto &buttonInfo : otherNodeButtons) {
+        DraggableButton *btn = createNodeButton(buttonInfo, otherNodesContainer);
+        otherNodesLayout->addWidget(btn);
+        m_otherNodeButtons.append(btn);
+    }
+
+    layout->addWidget(otherNodesContainer);
+
+    // Add separator
+    addSeparator(layout);
+
     // Node Selection Label
     QLabel *nodeLabel = new QLabel("Node Selection:");
     nodeLabel->setStyleSheet("font-weight: bold; color: #333; padding: 5px;");
@@ -356,26 +390,8 @@ void FloatingToolbar::setupNodeCategories()
     arrayCategory.subCategories.append(arraySub);
     m_categories.append(arrayCategory);
 
-    // Other Nodes category (no subcategories)
-    Category otherCategory;
-    otherCategory.name = "Other Nodes";
-    SubCategory otherSub;
-    otherSub.name = ""; // Empty name for categories without subcategories
-    otherSub.buttons
-        = {{"Video Input", "◀", "<", "Create a video input node", "VideoInput", true},
-           {"Video Output", "▶", ">", "Create a video output node", "VideoOutput", false},
-           {"Process", "♦", "*", "Create a processing node", "Process", true},
-           {"Callback Managed Buffer",
-            "⬛",
-            "=",
-            "Create a Callback Managed Buffer node",
-            "CallbackManaged",
-            true}};
-    otherCategory.subCategories.append(otherSub);
-    m_categories.append(otherCategory);
-
     // Populate category combo box
-    m_categoryCombo->addItem("Select Type");
+    m_categoryCombo->addItem("Select Type...");
     for (const auto &category : m_categories) {
         m_categoryCombo->addItem(category.name);
     }
@@ -411,7 +427,7 @@ void FloatingToolbar::onCategoryChanged(int index)
     if (hasSubCategories) {
         // Show subcategory combo
         m_subCategoryCombo->show();
-        m_subCategoryCombo->addItem("Select Variable Type");
+        m_subCategoryCombo->addItem("Select Data Type...");
         for (const auto &subCategory : category.subCategories) {
             m_subCategoryCombo->addItem(subCategory.name);
         }
