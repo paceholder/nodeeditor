@@ -49,8 +49,13 @@ void DefaultVerticalNodeGeometry::recomputeSize(NodeId const nodeId) const
     }
 
     QRectF const capRect = captionRect(nodeId);
+    QRectF const lblRect = labelRect(nodeId);
 
     height += capRect.height();
+    if (!lblRect.isNull()) {
+        height += lblRect.height();
+        height += _portSpasing / 2;
+    }
 
     height += _portSpasing;
     height += _portSpasing;
@@ -80,7 +85,11 @@ void DefaultVerticalNodeGeometry::recomputeSize(NodeId const nodeId) const
         width = std::max(width, static_cast<unsigned int>(w->width()));
     }
 
-    width = std::max(width, static_cast<unsigned int>(capRect.width()));
+    unsigned int textWidth = static_cast<unsigned int>(capRect.width());
+    if (!lblRect.isNull())
+        textWidth = std::max(textWidth, static_cast<unsigned int>(lblRect.width()));
+
+    width = std::max(width, textWidth);
 
     width += _portSpasing;
     width += _portSpasing;
@@ -185,12 +194,30 @@ QPointF DefaultVerticalNodeGeometry::captionPosition(NodeId const nodeId) const
 
 QPointF DefaultVerticalNodeGeometry::labelPosition(const NodeId nodeId) const
 {
-    return QPointF();
+    QSize size = _graphModel.nodeData<QSize>(nodeId, NodeRole::Size);
+
+    QRectF rect = labelRect(nodeId);
+
+    unsigned int step = portCaptionsHeight(nodeId, PortType::In);
+    step += _portSpasing;
+    step += captionRect(nodeId).height();
+    step += _portSpasing / 2;
+
+    return QPointF(0.5 * (size.width() - rect.width()), step + rect.height());
 }
 
 QRectF DefaultVerticalNodeGeometry::labelRect(NodeId const nodeId) const
 {
-    return QRectF();
+    if (!_graphModel.nodeData<bool>(nodeId, NodeRole::LabelVisible))
+        return QRectF();
+
+    QString nickname = _graphModel.nodeData<QString>(nodeId, NodeRole::Label);
+
+    QRectF rect = _boldFontMetrics.boundingRect(nickname);
+    rect.setWidth(rect.width() * 0.5);
+    rect.setHeight(rect.height() * 0.5);
+
+    return rect;
 }
 
 QPointF DefaultVerticalNodeGeometry::widgetPosition(NodeId const nodeId) const
@@ -198,6 +225,8 @@ QPointF DefaultVerticalNodeGeometry::widgetPosition(NodeId const nodeId) const
     QSize size = _graphModel.nodeData<QSize>(nodeId, NodeRole::Size);
 
     unsigned int captionHeight = captionRect(nodeId).height();
+    if (_graphModel.nodeData<bool>(nodeId, NodeRole::LabelVisible))
+        captionHeight += labelRect(nodeId).height() + _portSpasing / 2;
 
     if (auto w = _graphModel.nodeData<QWidget *>(nodeId, NodeRole::Widget)) {
         // If the widget wants to use as much vertical space as possible,
