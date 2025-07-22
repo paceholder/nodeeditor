@@ -107,8 +107,8 @@ bool NodeConnectionInteraction::disconnect(PortType portToDisconnect) const
     draftConnection->setEndPoint(portToDisconnect, looseEndPos);
 
      //Repaint connection points.
-    //NodeId connectedNodeId = getNodeId(oppositePort(portToDisconnect), connectionId);
-    //_scene.nodeGraphicsObject(connectedNodeId)->update();
+    NodeId connectedNodeId = getNodeId(oppositePort(portToDisconnect), connectionId);
+    _scene.nodeGraphicsObject(connectedNodeId)->update();
 
     NodeId disconnectedNodeId = getNodeId(portToDisconnect, connectionId);
     _scene.nodeGraphicsObject(disconnectedNodeId)->update();
