@@ -8,20 +8,22 @@ static const int SPACER_WIDTH = 25;
 static const int SPACER_HEIGHT = 22;
 static const int RIGHT_SPACER_HEIGHT = 10;
 
-static const int FIRST_NODE_SPACING = 21;
+static const int FIRST_NODE_SPACING = 27;
 static const int NODE_SPACING = 13;
 static const int CENTER_SPACING = 50;
+static const QString BUTTON_STYLE = "background-color: grey;padding: 5px;";
 
 PortAddRemoveWidget::PortAddRemoveWidget(NodeId nodeId, DataFlowModel &model, QWidget *parent)
     : QWidget(parent)
     , _nodeId(nodeId)
     , _model(model)
 {
+    setStyleSheet("background-color: transparent;padding: 0px;");
     // Widget constructor with proper top-alignment
     setSizePolicy(QSizePolicy::Policy::Minimum, QSizePolicy::Policy::Expanding);
 
     QHBoxLayout *hl = new QHBoxLayout(this);
-    hl->setContentsMargins(0, 0, 0, 0);
+    hl->setContentsMargins(0, 0, 0, 10);
     hl->setSpacing(0);
 
     // Create left layout WITHOUT stretch at the beginning
@@ -48,10 +50,12 @@ PortAddRemoveWidget::PortAddRemoveWidget(NodeId nodeId, DataFlowModel &model, QW
     auto buttonILeft = new QPushButton("I");
     buttonILeft->setFixedHeight(BUTTON_HEIGHT);
     topButtonsLeftRow->addWidget(buttonILeft);
+    buttonILeft->setStyleSheet(BUTTON_STYLE);
 
     auto buttonBLeft = new QPushButton("B");
     buttonBLeft->setFixedHeight(BUTTON_HEIGHT);
     topButtonsLeftRow->addWidget(buttonBLeft);
+    buttonBLeft->setStyleSheet(BUTTON_STYLE);
 
     // Add the button layout to the top of left side
     _left->addLayout(topButtonsLeftRow);
@@ -71,10 +75,12 @@ PortAddRemoveWidget::PortAddRemoveWidget(NodeId nodeId, DataFlowModel &model, QW
     auto buttonI = new QPushButton("I");
     buttonI->setFixedHeight(BUTTON_HEIGHT);
     topButtonsRightRow->addWidget(buttonI);
+    buttonI->setStyleSheet(BUTTON_STYLE);
 
     auto buttonB = new QPushButton("B");
     buttonB->setFixedHeight(BUTTON_HEIGHT);
     topButtonsRightRow->addWidget(buttonB);
+    buttonB->setStyleSheet(BUTTON_STYLE);
 
     // Add the button layout to the top of right side
     _right->addLayout(topButtonsRightRow);
@@ -89,14 +95,13 @@ PortAddRemoveWidget::PortAddRemoveWidget(NodeId nodeId, DataFlowModel &model, QW
     // Add stretch at the END to push everything to the top
     _left->addStretch();
     _right->addStretch();
-
-    // Alternative approach if you need more control over the spacer
 }
 
 void PortAddRemoveWidget::addLeftPort(bool isImage)
 {
     auto button = new QPushButton("-");
     button->setFixedHeight(BUTTON_HEIGHT);
+    button->setStyleSheet(BUTTON_STYLE);
     connect(button, &QPushButton::clicked, this, &PortAddRemoveWidget::removeLeftPort);
 
     // Insert after + button (0), first port spacer (1), and existing ports
@@ -170,6 +175,7 @@ void PortAddRemoveWidget::addRightPort(bool isImage)
 {
     auto button = new QPushButton("-");
     button->setFixedHeight(BUTTON_HEIGHT);
+    button->setStyleSheet(BUTTON_STYLE);
     connect(button, &QPushButton::clicked, this, &PortAddRemoveWidget::removeRightPort);
 
     _right->insertWidget(_rightPorts + 2, button);
