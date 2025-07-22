@@ -8,7 +8,7 @@ class Size : public QObject
     Q_OBJECT
     Q_PROPERTY(QString X MEMBER _x )
     Q_PROPERTY(QString Y MEMBER _y )
-    Q_PROPERTY(QString X MEMBER _z)
+    Q_PROPERTY(QString Z MEMBER _z)
 
 public:
     Size(QString x, QString y, QString z, QObject *parent = nullptr)

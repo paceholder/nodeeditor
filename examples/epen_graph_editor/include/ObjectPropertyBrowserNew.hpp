@@ -21,14 +21,15 @@ private slots:
     void objectUpdated();
 
 private:
-    QtVariantProperty* createPropertyForMetaProperty(QObject *parentObj, const QMetaProperty &mp);
-    void addQObjectProperties(QObject *obj, QtVariantProperty *parentProperty);
+    QtVariantProperty* createPropertyForMetaProperty(QObject *parentObj, const QMetaProperty &mp, const QString &parentPath = "");
+    void addQObjectProperties(QObject *obj, QtVariantProperty *parentProperty, const QString &parentPath);
     void updatePropertyValues(QObject *rootObj);
     QString setupName(QString name);
 
     QtVariantPropertyManager *variantManager;
-    QMap<QtProperty*, const char*> propertyMap;
-    QObject *currentlyConnectedObject = nullptr;  // Changed from OperationDataModel* to QObject*
+    QMap<QtProperty*, QString> propertyMap;  // Changed from const char* to QString
+    QObject *currentlyConnectedObject = nullptr;
+    QList<QMetaObject::Connection> activeConnections;  // Track all active connections
 };
 
 #endif // OBJECTPROPERTYBROWSER_HPP
