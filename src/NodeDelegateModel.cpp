@@ -51,4 +51,9 @@ void NodeDelegateModel::setNodeStyle(NodeStyle const &style)
     _nodeStyle = style;
 }
 
+void NodeDelegateModel::setBackgroundColor(QColor const &color)
+{
+    _nodeStyle.setBackgroundColor(color);
+}
+
 } // namespace QtNodes
