@@ -25,6 +25,7 @@ public:
     ~FloatingProperties();
 
     void setNode(OperationDataModel *node);
+    void unsetNode();
 signals:
     void propertyChanged(const QString &name, const QVariant &value);
     void nodeSelected(int nodeId);
@@ -47,8 +48,6 @@ private:
     QtVariantPropertyManager *_variantManager;
     QtVariantEditorFactory *_variantFactory;
     QMap<QtProperty *, const char*> propertyMap;
-    bool _lockPropertyUpdate = false;
-
 };
 
 #endif // FLOATINGPROPERTIES_HPP

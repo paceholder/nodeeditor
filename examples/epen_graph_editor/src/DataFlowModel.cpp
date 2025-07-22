@@ -3,8 +3,13 @@
 
 DataFlowModel::DataFlowModel(std::shared_ptr<NodeDelegateModelRegistry> registry)
     : DataFlowGraphModel(std::move(registry))
+
 {}
 
+void DataFlowModel::setFloatingProperties(QPointer<FloatingProperties> propertyPanel)
+{
+    _propertyPanel = propertyPanel;
+}
 NodeId DataFlowModel::addNode(QString const nodeType)
 {
     if (nodeType == "VideoOutput") {
@@ -53,7 +58,7 @@ bool DataFlowModel::deleteNode(NodeId const nodeId)
     if (it != nodesMap.end()) {
         it->second.erase(nodeId);
     }
-
+    _propertyPanel->unsetNode();
     return DataFlowGraphModel::deleteNode(nodeId);
 }
 

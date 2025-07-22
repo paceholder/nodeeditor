@@ -1,7 +1,9 @@
 #pragma once
 
+#include "FloatingProperties.hpp"
 #include "PortAddRemoveWidget.hpp"
 #include "data_models/OperationDataModel.hpp"
+#include <QPointer>
 #include <QtNodes/DataFlowGraphModel>
 
 using QtNodes::ConnectionId;
@@ -18,7 +20,7 @@ using QtNodes::PortType;
 class DataFlowModel : public DataFlowGraphModel
 {
 public:
-    DataFlowModel(std::shared_ptr<NodeDelegateModelRegistry> registry);
+    DataFlowModel(std::shared_ptr<NodeDelegateModelRegistry>);
 
     NodeId addNode(QString const nodeType) override;
 
@@ -30,9 +32,10 @@ public:
 
     bool setNodeData(NodeId nodeId, NodeRole role, QVariant value) override;
 
-    void addProcessNodePort(NodeId nodeId, PortType portType, PortIndex portIndex,bool isImage);
+    void addProcessNodePort(NodeId nodeId, PortType portType, PortIndex portIndex, bool isImage);
 
     void removeProcessNodePort(NodeId nodeId, PortType portType, PortIndex portIndex);
+    void setFloatingProperties(QPointer<FloatingProperties>);
 
 private:
     QString generateNewNodeName(QString typeNamePrefix);
@@ -47,4 +50,6 @@ private:
     mutable std::unordered_map<NodeId, QSize> _nodeSize;
     mutable std::unordered_map<NodeId, QString> _nodeNames;
     PortAddRemoveWidget *widget(NodeId nodeId) const;
+
+    QPointer<FloatingProperties> _propertyPanel;
 };

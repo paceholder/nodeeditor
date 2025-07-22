@@ -60,7 +60,7 @@ private:
 
     QPointer<FloatingToolbar> m_toolbar;
     QPointer<FloatingProperties> m_properties;
-    //SimpleGraphModel *m_graphModel;
+
     bool m_toolbarCreated;
     bool m_propertiesCreated;
     QString _currentMode;

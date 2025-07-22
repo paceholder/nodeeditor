@@ -191,6 +191,7 @@ void GraphEditorWindow::createFloatingProperties()
     // Create the floating properties panel
     m_properties = new FloatingProperties(this);
 
+    _model->setFloatingProperties(m_properties);
     if (!m_properties) {
         qDebug() << "Failed to create properties panel!";
         return;

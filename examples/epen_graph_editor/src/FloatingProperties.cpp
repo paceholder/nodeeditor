@@ -96,12 +96,15 @@ void FloatingProperties::resizeEvent(QResizeEvent *event)
 
 void FloatingProperties::setNode(OperationDataModel *node)
 {
-    _lockPropertyUpdate = true;
     if (_currentNode != nullptr) {
         _currentNode->deselected();
         _currentNode = nullptr;
     }
     _currentNode = node;
     _properties->setActiveObject(_currentNode);
-    _lockPropertyUpdate = false;
+}
+
+void FloatingProperties::unsetNode()
+{
+    _currentNode = nullptr;
 }
