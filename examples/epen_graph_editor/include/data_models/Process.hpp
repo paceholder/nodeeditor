@@ -96,9 +96,9 @@ public:
         unsigned int result;
 
         if (portType == PortType::In)
-            result = 1;
+            result = 0;
         else
-            result = 1;
+            result = 0;
 
         return result;
     }

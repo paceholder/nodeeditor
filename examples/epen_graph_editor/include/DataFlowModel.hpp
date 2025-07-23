@@ -41,6 +41,9 @@ public:
 
     QPair<float, float> getProcessNodeRange(NodeId nodeId, QPointF currentPos);
 
+    void setSelectedNode(OperationDataModel *, NodeId);
+    void deselectNode();
+
 private:
     QString generateNewNodeName(QString typeNamePrefix);
     std::unordered_map<QString, std::unordered_set<NodeId>> nodesMap;

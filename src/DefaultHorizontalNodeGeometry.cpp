@@ -12,7 +12,7 @@ namespace QtNodes {
 DefaultHorizontalNodeGeometry::DefaultHorizontalNodeGeometry(AbstractGraphModel &graphModel)
     : AbstractNodeGeometry(graphModel)
     , _portSize(20)
-    , _portSpasing(10)
+    , _portSpasing(16)
     , _fontMetrics(QFont())
     , _boldFontMetrics(QFont())
 {

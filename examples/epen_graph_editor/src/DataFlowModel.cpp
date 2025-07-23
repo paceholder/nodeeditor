@@ -23,8 +23,8 @@ NodeId DataFlowModel::addNode(QString const nodeType)
     }
     NodeId newNodeId = DataFlowGraphModel::addNode(nodeType);
     if (nodeType == "Process") {
-        _nodePortCounts[newNodeId].in = 1;
-        _nodePortCounts[newNodeId].out = 1;
+        _nodePortCounts[newNodeId].in = 0;
+        _nodePortCounts[newNodeId].out = 0;
         _processNodeSize[newNodeId] = QSize(300, 120);
         Q_EMIT nodeUpdated(newNodeId);
     }
@@ -132,7 +132,7 @@ void DataFlowModel::addProcessNodePort(NodeId nodeId,
                                        PortIndex portIndex,
                                        bool isImage)
 {
-    PortIndex first = portIndex+1;
+    PortIndex first = portIndex + 1;
     PortIndex last = first;
     portsAboutToBeInserted(nodeId, portType, first, last);
     Process *nodeModel = delegateModel<Process>(nodeId);
@@ -240,3 +240,13 @@ QPair<float, float> DataFlowModel::getProcessNodeRange(NodeId nodeId, QPointF cu
     }
     return qMakePair(std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
 }
+
+void DataFlowModel::setSelectedNode(OperationDataModel *node, NodeId nodeId)
+{
+    if (nodeData(nodeId, QtNodes::NodeRole::Type).toString() == "Process") {
+        PortAddRemoveWidget *nodeWidget = widget(nodeId);
+        nodeWidget->rootSelected();
+    }
+}
+
+void DataFlowModel::deselectNode() {}

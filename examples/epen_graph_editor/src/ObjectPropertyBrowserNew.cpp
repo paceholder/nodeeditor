@@ -47,12 +47,6 @@ QtVariantProperty* ObjectPropertyBrowser::createPropertyForMetaProperty(QObject 
 {
     QVariant value = mp.read(parentObj);
     
-    // Debug output
-    qDebug() << "Property:" << mp.name() 
-             << "Type:" << mp.typeName() 
-             << "TypeId:" << mp.type()
-             << "Value type:" << value.typeName()
-             << "Value userType:" << value.userType();
     
     // More robust check for QObject pointers
     bool isQObjectPointer = false;
@@ -62,7 +56,6 @@ QtVariantProperty* ObjectPropertyBrowser::createPropertyForMetaProperty(QObject 
     if (value.canConvert<QObject*>()) {
         subObj = value.value<QObject*>();
         if (subObj) {
-            qDebug() << "  -> Detected as QObject* via canConvert";
             isQObjectPointer = true;
         }
     }
@@ -70,7 +63,6 @@ QtVariantProperty* ObjectPropertyBrowser::createPropertyForMetaProperty(QObject 
     // Method 2: Check if it's registered as QObjectStar
     if (!isQObjectPointer && mp.type() == QMetaType::QObjectStar) {
         subObj = value.value<QObject*>();
-        qDebug() << "  -> Detected as QMetaType::QObjectStar";
         isQObjectPointer = true;
     }
     
@@ -88,15 +80,13 @@ QtVariantProperty* ObjectPropertyBrowser::createPropertyForMetaProperty(QObject 
                 }
             }
             if (subObj) {
-                qDebug() << "  -> Detected via type name:" << typeName;
                 isQObjectPointer = true;
             }
         }
     }
     
     if (isQObjectPointer && subObj) {
-        qDebug() << "  -> Creating group for QObject:" << subObj->metaObject()->className();
-        
+
         // Create a group property for the QObject
         QtVariantProperty *groupProperty = variantManager->addProperty(
             QtVariantPropertyManager::groupTypeId(), 
@@ -127,12 +117,10 @@ QtVariantProperty* ObjectPropertyBrowser::createPropertyForMetaProperty(QObject 
     if (typeId == QMetaType::UnknownType) {
         typeId = QMetaType::type(mp.typeName());
         if (typeId == QMetaType::UnknownType) {
-            qDebug() << "  -> Skipping unknown type";
             return nullptr;
         }
     }
     
-    qDebug() << "  -> Creating regular property with typeId:" << typeId;
     
     QtVariantProperty *property = variantManager->addProperty(typeId, setupName(mp.name()));
     property->setEnabled(mp.isWritable());

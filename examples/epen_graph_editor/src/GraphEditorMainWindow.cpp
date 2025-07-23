@@ -268,6 +268,9 @@ void GraphEditorWindow::onNodeSelected(NodeId nodeId)
     if (m_properties) {
         m_properties->setNode(nodeModel);
     }
+    if (_model) {
+        _model->setSelectedNode(nodeModel,nodeId);
+    }
 }
 
 void GraphEditorWindow::onNodeDeselected()
@@ -277,8 +280,9 @@ void GraphEditorWindow::onNodeDeselected()
     if (m_properties) {
         m_properties->clearProperties();
     }
-
-    qDebug() << "Node deselected";
+    if (_model) {
+        _model->deselectNode();
+    }
 }
 
 void GraphEditorWindow::drawBackground(QPainter *painter, const QRectF &r)

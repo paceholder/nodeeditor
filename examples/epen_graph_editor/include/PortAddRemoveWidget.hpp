@@ -1,6 +1,8 @@
 #pragma once
 
+#include <QButtonGroup>
 #include <QPushButton>
+#include <QRadioButton>
 #include <QVBoxLayout>
 #include <QWidget>
 #include <QtNodes/Definitions>
@@ -19,19 +21,22 @@ public:
     PortAddRemoveWidget(NodeId nodeId, DataFlowModel &model, QWidget *parent = nullptr);
     ~PortAddRemoveWidget();
 
+    void rootSelected();
 private slots:
-
     void removeLeftPort();
     void addRightPortI();
     void addRightPortB();
     void addLeftPortI();
     void addLeftPortB();
     void removeRightPort();
-
+    void onLeftRadioButtonToggled(bool checked);
+    void onRightRadioButtonToggled(bool checked);
+    void leftMinusClicked();
+    void rightMinusClicked();
 private:
     void addRightPort(bool);
     void addLeftPort(bool);
-    std::pair<PortType, PortIndex> findWhichPortWasClicked(QObject *sender, int const buttonIndex);
+    int findWhichRadioWasClicked(QVBoxLayout *, QObject *);
 
 private:
     NodeId _nodeId;
@@ -40,4 +45,13 @@ private:
     QVBoxLayout *_right;
     int _leftPorts = 0;
     int _rightPorts = 0;
+
+    // Radio button group to ensure only one is selected across both sides
+    QButtonGroup *_radioGroup;
+
+    QPushButton *_letMinusButton;
+    QPushButton *_rightMinusButton;
+
+    int _selectedLeftPortIndex = -1;
+    int _selectedRightPortIndex = -1;
 };

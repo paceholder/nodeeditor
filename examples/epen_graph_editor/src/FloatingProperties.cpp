@@ -83,6 +83,7 @@ void FloatingProperties::clearProperties()
     if (_properties) {
         _properties->clear();
     }
+    unsetNode();
 }
 
 void FloatingProperties::resizeEvent(QResizeEvent *event)
