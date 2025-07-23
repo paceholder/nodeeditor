@@ -9,7 +9,7 @@ Development Progress
 - [✅ done] Website with documentation
 - [✅ done] ``ConnectionPaintDelegate``
 - [✅ done] Unit-Tests
-- [➡️  work in progress] Ctrl+D for copying and inserting a selection duplicate
+- [✅ done] Ctrl+D for copying and inserting a selection duplicate
 - [⏸ not started] Node groups
 - [⏸ not started] Check how styles work and what needs to be done. See old pull-requests
 - [☝ help needed] Python bindings. Maybe a wrapper using Shiboken
