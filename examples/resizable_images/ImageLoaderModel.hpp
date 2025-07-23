@@ -30,7 +30,7 @@ public:
 public:
     QString caption() const override { return QString("Image Source"); }
 
-    QString name() const override { return QString("ImageLoaderModel"); }
+    QString name() const override { return QString(">ImageLoaderModel"); }
 
 public:
     virtual QString modelName() const { return QString("Source Image"); }

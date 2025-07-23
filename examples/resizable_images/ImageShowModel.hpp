@@ -28,7 +28,7 @@ public:
 public:
     QString caption() const override { return QString("Image Display"); }
 
-    QString name() const override { return QString("ImageShowModel"); }
+    QString name() const override { return QString(">ImageShowModel"); }
 
 public:
     virtual QString modelName() const { return QString("Resulting Image"); }
