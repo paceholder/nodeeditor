@@ -39,6 +39,8 @@ public:
 
     float getlastProcessLeft();
 
+    QPair<float, float> getProcessNodeRange(NodeId nodeId, QPointF currentPos);
+
 private:
     QString generateNewNodeName(QString typeNamePrefix);
     std::unordered_map<QString, std::unordered_set<NodeId>> nodesMap;
@@ -49,7 +51,7 @@ private:
     };
     mutable std::unordered_map<NodeId, NodePortCount> _nodePortCounts;
     mutable std::unordered_map<NodeId, PortAddRemoveWidget *> _nodeWidgets;
-    mutable std::unordered_map<NodeId, QSize> _nodeSize;
+    mutable std::unordered_map<NodeId, QSize> _processNodeSize;
     mutable std::unordered_map<NodeId, QString> _nodeNames;
     PortAddRemoveWidget *widget(NodeId nodeId) const;
 

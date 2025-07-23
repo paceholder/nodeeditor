@@ -25,7 +25,7 @@ NodeId DataFlowModel::addNode(QString const nodeType)
     if (nodeType == "Process") {
         _nodePortCounts[newNodeId].in = 1;
         _nodePortCounts[newNodeId].out = 1;
-        _nodeSize[newNodeId] = QSize(300, 120);
+        _processNodeSize[newNodeId] = QSize(300, 120);
         Q_EMIT nodeUpdated(newNodeId);
     }
     _nodeNames[newNodeId] = QString(nodeType);
@@ -81,7 +81,7 @@ QVariant DataFlowModel::nodeData(NodeId nodeId, NodeRole role) const
         case NodeRole::PortOffset:
             return 35;
         case NodeRole::Size:
-            return _nodeSize[nodeId];
+            return _processNodeSize[nodeId];
         case NodeRole::InPortCount:
             return _nodePortCounts[nodeId].in;
 
@@ -99,10 +99,17 @@ bool DataFlowModel::setNodeData(NodeId nodeId, NodeRole role, QVariant value)
 {
     QVariant nodeTypeName = DataFlowGraphModel::nodeData(nodeId, QtNodes::NodeRole::Type);
     if (nodeTypeName == "Process") {
+        if (role == NodeRole::Position) {
+            QPointF pos = value.value<QPointF>();
+            QPair<float, float> nodeRange = getProcessNodeRange(nodeId, pos);
+            QSize size = _processNodeSize[nodeId];
+            if ((pos.x() < nodeRange.first) || ((pos.x() + size.width()) > nodeRange.second))
+                return false;
+        }
         switch (role) {
         case NodeRole::Size:
-            _nodeSize[nodeId] = value.value<QSize>();
-            _nodeSize[nodeId].setHeight(_nodeSize[nodeId].height() + 15);
+            _processNodeSize[nodeId] = value.value<QSize>();
+            _processNodeSize[nodeId].setHeight(_processNodeSize[nodeId].height() + 15);
             return true;
         case NodeRole::InPortCount:
             _nodePortCounts[nodeId].in = value.toUInt();
@@ -193,4 +200,42 @@ float DataFlowModel::getlastProcessLeft()
         return lastNodeRight;
     }
     return -2;
+}
+
+QPair<float, float> DataFlowModel::getProcessNodeRange(NodeId nodeId, QPointF currentPos)
+{
+    QSize size = _processNodeSize[nodeId];
+    float currentNodeCenterX = currentPos.x() + size.width() / 2;
+    auto it = nodesMap.find("Process");
+    if (it != nodesMap.end()) {
+        const std::unordered_set<NodeId> &nodeSet = it->second;
+        NodeId leftNeighbor = InvalidNodeId;
+        NodeId rightNeighbor = InvalidNodeId;
+        QPair<float, float> leftNeighborRange = qMakePair(std::numeric_limits<int>::min(),
+                                                          std::numeric_limits<int>::min());
+        QPair<float, float> rightNeighborRange = qMakePair(std::numeric_limits<int>::max(),
+                                                           std::numeric_limits<int>::max());
+
+        for (const NodeId &node : nodeSet) {
+            if (node == nodeId)
+                continue;
+            QPointF position = nodeData(node, NodeRole::Position).value<QPointF>();
+            QSize size = _processNodeSize[node];
+            float nodeLeft = position.x();
+            float nodeRight = position.x() + size.width();
+            if (nodeLeft < currentNodeCenterX) { //left
+                if (nodeLeft > leftNeighborRange.first) {
+                    leftNeighborRange.first = nodeLeft;
+                    leftNeighborRange.second = nodeRight;
+                }
+            } else { // right
+                if (nodeLeft < rightNeighborRange.first) {
+                    rightNeighborRange.first = nodeLeft;
+                    rightNeighborRange.second = nodeRight;
+                }
+            }
+        }
+        return qMakePair(leftNeighborRange.second + 25, rightNeighborRange.first - 25);
+    }
+    return qMakePair(std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
 }
