@@ -132,10 +132,11 @@ void DataFlowModel::addProcessNodePort(NodeId nodeId,
                                        PortIndex portIndex,
                                        bool isImage)
 {
-    PortIndex first = portIndex;
+    PortIndex first = portIndex+1;
     PortIndex last = first;
     portsAboutToBeInserted(nodeId, portType, first, last);
     Process *nodeModel = delegateModel<Process>(nodeId);
+
     if (portType == PortType::In) {
         _nodePortCounts[nodeId].in++;
         nodeModel->setPortTypeLeft(_nodePortCounts[nodeId].in, isImage);
