@@ -30,7 +30,7 @@ GraphEditorWindow::GraphEditorWindow(DataFlowGraphicsScene *scene, DataFlowModel
     // Setup context menu
     //setupNodeCreation();
 
-    setWindowTitle("Simple Node Graph");
+    setWindowTitle("Graph Editor");
     resize(800, 600);
 
     setAcceptDrops(true);
@@ -121,7 +121,18 @@ void GraphEditorWindow::mousePressEvent(QMouseEvent *event)
 
 void GraphEditorWindow::dragEnterEvent(QDragEnterEvent *event)
 {
+    if (event->mimeData()->text() == "Process") {
+        _allowedDropAreaLeft = _model->getlastProcessLeft();
+        translate(0.01, 0.01);
+    }
     event->acceptProposedAction();
+}
+
+void GraphEditorWindow::dragLeaveEvent(QDragLeaveEvent *event)
+{
+    _allowedDropAreaLeft = -1;
+    translate(0.01, 0.01);
+    event->accept();
 }
 
 void GraphEditorWindow::dropEvent(QDropEvent *event)
@@ -129,10 +140,19 @@ void GraphEditorWindow::dropEvent(QDropEvent *event)
     event->acceptProposedAction();
     QPointF scenePos = mapToScene(event->position().toPoint());
     createNodeAtPosition(scenePos, event->mimeData()->text());
+    _allowedDropAreaLeft = -1;
+    translate(0.01, 0.01);
 }
 
 void GraphEditorWindow::dragMoveEvent(QDragMoveEvent *event)
 {
+    if (_allowedDropAreaLeft >= 0) {
+        auto const scenePos = mapToScene(event->pos());
+        if (scenePos.x() < _allowedDropAreaLeft) {
+            event->ignore();
+            return;
+        }
+    }
     event->acceptProposedAction();
 }
 

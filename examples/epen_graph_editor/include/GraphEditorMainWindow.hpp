@@ -52,6 +52,7 @@ protected:
     void dragMoveEvent(QDragMoveEvent *event) override;
 
     void drawBackground(QPainter *painter, const QRectF &r) override;
+    void dragLeaveEvent(QDragLeaveEvent *event) override;
 
 private:
     void createFloatingToolbar();

@@ -171,3 +171,26 @@ QString DataFlowModel::generateNewNodeName(QString typeNamePrefix)
     }
     return typeNamePrefix + QString("%1").arg(nodeCount + 1, 3, 10, QChar('0'));
 }
+
+float DataFlowModel::getlastProcessLeft()
+{
+    auto it = nodesMap.find("Process");
+    int nodeCount = 0;
+    if (it != nodesMap.end()) {
+        const std::unordered_set<NodeId> &nodeSet = it->second;
+        nodeCount = nodeSet.size();
+        if (nodeCount == 0)
+            return -2;
+        int lastNodeRight = std::numeric_limits<int>::min();
+        for (const NodeId &node : nodeSet) {
+            QPointF position = nodeData(node, NodeRole::Position).value<QPointF>();
+            QSize size = nodeData(node, NodeRole::Size).value<QSize>();
+            float nodeRight = position.x() + size.width();
+            if (nodeRight > lastNodeRight) {
+                lastNodeRight = nodeRight;
+            }
+        }
+        return lastNodeRight;
+    }
+    return -2;
+}

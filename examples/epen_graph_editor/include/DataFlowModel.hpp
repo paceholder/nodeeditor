@@ -37,6 +37,8 @@ public:
     void removeProcessNodePort(NodeId nodeId, PortType portType, PortIndex portIndex);
     void setFloatingProperties(QPointer<FloatingProperties>);
 
+    float getlastProcessLeft();
+
 private:
     QString generateNewNodeName(QString typeNamePrefix);
     std::unordered_map<QString, std::unordered_set<NodeId>> nodesMap;
