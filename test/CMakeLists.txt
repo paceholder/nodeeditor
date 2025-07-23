@@ -16,7 +16,6 @@ add_executable(test_nodes
   src/TestBasicGraphicsScene.cpp
   src/TestUIInteraction.cpp
   include/ApplicationSetup.hpp
-  include/CatchStringMakers.hpp
   include/StubNodeDataModel.hpp
   include/TestGraphModel.hpp
 )

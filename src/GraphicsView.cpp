@@ -280,6 +280,7 @@ void GraphicsView::onDeleteSelectedObjects()
 
 void GraphicsView::onDuplicateSelectedObjects()
 {
+    qDebug() << "ON DUPLICATE";
     QPointF const pastePosition = scenePastePosition();
 
     nodeScene()->undoStack().push(new CopyCommand(nodeScene()));
