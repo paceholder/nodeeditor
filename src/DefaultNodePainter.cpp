@@ -9,6 +9,7 @@
 #include "BasicGraphicsScene.hpp"
 #include "ConnectionGraphicsObject.hpp"
 #include "ConnectionIdUtils.hpp"
+#include "NodeDelegateModel.hpp"
 #include "NodeGraphicsObject.hpp"
 #include "NodeState.hpp"
 #include "StyleCollection.hpp"
@@ -32,6 +33,8 @@ void DefaultNodePainter::paint(QPainter *painter, NodeGraphicsObject &ngo) const
     drawEntryLabels(painter, ngo);
 
     drawResizeRect(painter, ngo);
+
+    drawValidationIcon(painter, ngo);
 }
 
 void DefaultNodePainter::drawNodeRect(QPainter *painter, NodeGraphicsObject &ngo) const
@@ -48,7 +51,28 @@ void DefaultNodePainter::drawNodeRect(QPainter *painter, NodeGraphicsObject &ngo
 
     NodeStyle nodeStyle(json.object());
 
-    auto color = ngo.isSelected() ? nodeStyle.SelectedBoundaryColor : nodeStyle.NormalBoundaryColor;
+    QVariant var = model.nodeData(nodeId, NodeRole::ValidationState);
+    bool invalid = false;
+
+    QColor color = ngo.isSelected() ? nodeStyle.SelectedBoundaryColor
+                                    : nodeStyle.NormalBoundaryColor;
+
+    if (var.canConvert<NodeValidationState>()) {
+        auto state = var.value<NodeValidationState>();
+        switch (state._state) {
+        case NodeValidationState::State::Error: {
+            invalid = true;
+            color = nodeStyle.ErrorColor;
+        } break;
+        case NodeValidationState::State::Warning: {
+            invalid = true;
+            color = nodeStyle.WarningColor;
+            break;
+        default:
+            break;
+        }
+        }
+    }
 
     if (ngo.nodeState().hovered()) {
         QPen p(color, nodeStyle.HoveredPenWidth);
@@ -58,15 +82,17 @@ void DefaultNodePainter::drawNodeRect(QPainter *painter, NodeGraphicsObject &ngo
         painter->setPen(p);
     }
 
-    QLinearGradient gradient(QPointF(0.0, 0.0), QPointF(2.0, size.height()));
+    if (invalid) {
+        painter->setBrush(color);
+    } else {
+        QLinearGradient gradient(QPointF(0.0, 0.0), QPointF(2.0, size.height()));
+        gradient.setColorAt(0.0, nodeStyle.GradientColor0);
+        gradient.setColorAt(0.10, nodeStyle.GradientColor1);
+        gradient.setColorAt(0.90, nodeStyle.GradientColor2);
+        gradient.setColorAt(1.0, nodeStyle.GradientColor3);
 
-    gradient.setColorAt(0.0, nodeStyle.GradientColor0);
-    gradient.setColorAt(0.10, nodeStyle.GradientColor1);
-    gradient.setColorAt(0.90, nodeStyle.GradientColor2);
-    gradient.setColorAt(1.0, nodeStyle.GradientColor3);
-
-    painter->setBrush(gradient);
-
+        painter->setBrush(gradient);
+    }
     QRectF boundary(0, 0, size.width(), size.height());
 
     double const radius = 3.0;
@@ -268,6 +294,44 @@ void DefaultNodePainter::drawResizeRect(QPainter *painter, NodeGraphicsObject &n
 
         painter->drawEllipse(geometry.resizeHandleRect(nodeId));
     }
+}
+
+void DefaultNodePainter::drawValidationIcon(QPainter *painter, NodeGraphicsObject &ngo) const
+{
+    AbstractGraphModel &model = ngo.graphModel();
+    NodeId const nodeId = ngo.nodeId();
+    AbstractNodeGeometry &geometry = ngo.nodeScene()->nodeGeometry();
+
+    QVariant var = model.nodeData(nodeId, NodeRole::ValidationState);
+    if (!var.canConvert<NodeValidationState>())
+        return;
+
+    auto state = var.value<NodeValidationState>();
+    if (state._state == NodeValidationState::State::Valid)
+        return;
+
+    QJsonDocument json = QJsonDocument::fromVariant(model.nodeData(nodeId, NodeRole::Style));
+    NodeStyle nodeStyle(json.object());
+
+    QSize size = geometry.size(nodeId);
+
+    QIcon icon(":/info-tooltip.svg");
+    QSize iconSize(16, 16);
+    QPixmap pixmap = icon.pixmap(iconSize);
+
+    QColor color = (state._state == NodeValidationState::State::Error) ? nodeStyle.ErrorColor
+                                                                       : nodeStyle.WarningColor;
+
+    QPainter imgPainter(&pixmap);
+    imgPainter.setCompositionMode(QPainter::CompositionMode_SourceIn);
+    imgPainter.fillRect(pixmap.rect(), color);
+    imgPainter.end();
+
+    QPointF center(size.width(), 0.0);
+    center += QPointF(iconSize.width() / 2.0, -iconSize.height() / 2.0);
+
+    painter->drawPixmap(center.toPoint() - QPoint(iconSize.width() / 2, iconSize.height() / 2),
+                        pixmap);
 }
 
 } // namespace QtNodes
