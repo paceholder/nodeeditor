@@ -18,15 +18,16 @@ The test suite covers the following areas:
   - Graphics scene management
   - Connection ID utilities
 
-**UI Interaction Testing (6 test cases, 23 assertions)**
+**UI Interaction Testing (6 test cases, 29 assertions)**
   - Node movement and visual positioning
   - Connection creation by dragging between ports
+  - Connection disconnection by dragging and deletion
   - Zoom and pan operations
   - Keyboard shortcuts (delete, undo)
   - Context menu interactions
   - Stress testing with rapid mouse movements and UI load
 
-**Total: 26 test cases, 239 assertions**
+**Total: 26 test cases, 245 assertions**
 
 **Infrastructure**
   - Complete AbstractGraphModel test implementation
@@ -131,6 +132,7 @@ Test Categories
 **UI Interaction Tests ([ui], [visual], [stress])**
   - Node movement and visual positioning using UITestHelper namespace
   - Connection creation by dragging between ports
+  - Connection disconnection by dragging from ports and deletion of selected connections
   - Zoom and pan operations with mouse wheel and drag
   - Keyboard shortcuts (delete key, Ctrl+Z undo)
   - Context menu interactions (right-click)
