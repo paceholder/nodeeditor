@@ -1,7 +1,7 @@
 #include "ApplicationSetup.hpp"
-#include "StubNodeDataModel.hpp"
 
 #include <QtNodes/DataFlowGraphModel>
+#include <QtNodes/NodeDelegateModel>
 #include <QtNodes/NodeDelegateModelRegistry>
 #include <QtNodes/Definitions>
 
@@ -15,11 +15,12 @@
 using QtNodes::ConnectionId;
 using QtNodes::DataFlowGraphModel;
 using QtNodes::InvalidNodeId;
+using QtNodes::NodeDelegateModel;
 using QtNodes::NodeDelegateModelRegistry;
 using QtNodes::NodeId;
 using QtNodes::NodeRole;
 
-class SerializableTestModel : public StubNodeDataModel
+class SerializableTestModel : public NodeDelegateModel
 {
 public:
     QString name() const override { return "SerializableTestModel"; }
@@ -29,6 +30,10 @@ public:
     {
         return (portType == QtNodes::PortType::In) ? 1 : 1;
     }
+    QtNodes::NodeDataType dataType(QtNodes::PortType, QtNodes::PortIndex) const override { return {}; }
+    void setInData(std::shared_ptr<QtNodes::NodeData>, QtNodes::PortIndex const) override {}
+    std::shared_ptr<QtNodes::NodeData> outData(QtNodes::PortIndex const) override { return nullptr; }
+    QWidget* embeddedWidget() override { return nullptr; }
 };
 
 TEST_CASE("DataFlowGraphModel serialization", "[serialization]")

@@ -1,21 +1,26 @@
-#include "StubNodeDataModel.hpp"
-
+#include <QtNodes/NodeDelegateModel>
 #include <QtNodes/NodeDelegateModelRegistry>
 
 #include <catch2/catch.hpp>
 
+using QtNodes::NodeDelegateModel;
 using QtNodes::NodeDelegateModelRegistry;
 
 namespace {
-class TestModelWithStaticName : public StubNodeDataModel
+class TestModelWithStaticName : public NodeDelegateModel
 {
 public:
     static QString Name() { return "StaticNameModel"; }
     QString name() const override { return "StaticNameModel"; }
     QString caption() const override { return "Static Name Model"; }
+    unsigned int nPorts(QtNodes::PortType) const override { return 0; }
+    QtNodes::NodeDataType dataType(QtNodes::PortType, QtNodes::PortIndex) const override { return {}; }
+    void setInData(std::shared_ptr<QtNodes::NodeData>, QtNodes::PortIndex const) override {}
+    std::shared_ptr<QtNodes::NodeData> outData(QtNodes::PortIndex const) override { return nullptr; }
+    QWidget* embeddedWidget() override { return nullptr; }
 };
 
-class TestModelWithName : public StubNodeDataModel
+class TestModelWithName : public NodeDelegateModel
 {
 public:
     TestModelWithName(const QString &name = "DefaultName")
@@ -24,6 +29,11 @@ public:
     
     QString name() const override { return _modelName; }
     QString caption() const override { return QString("Model: %1").arg(_modelName); }
+    unsigned int nPorts(QtNodes::PortType) const override { return 0; }
+    QtNodes::NodeDataType dataType(QtNodes::PortType, QtNodes::PortIndex) const override { return {}; }
+    void setInData(std::shared_ptr<QtNodes::NodeData>, QtNodes::PortIndex const) override {}
+    std::shared_ptr<QtNodes::NodeData> outData(QtNodes::PortIndex const) override { return nullptr; }
+    QWidget* embeddedWidget() override { return nullptr; }
 
 private:
     QString _modelName;
