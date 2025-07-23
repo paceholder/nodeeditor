@@ -17,12 +17,17 @@ public:
         return true;
     }
 
+    NodeDataType dataType(PortType portType, PortIndex portIndex) const override
+    {
+        return IMAGE_DATA_TYPE;
+    }
+
     QString portCaption(PortType portType, PortIndex portIndex) const override
     {
         switch (portType) {
         case PortType::In:
             if (portIndex == 0)
-                return QStringLiteral("Video");
+                return QStringLiteral("Image");
 
             break;
 

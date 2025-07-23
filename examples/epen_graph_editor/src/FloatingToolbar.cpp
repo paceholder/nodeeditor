@@ -189,7 +189,13 @@ void FloatingToolbar::setupNodeCategories()
             "⬛",
             "=",
             "Create a Callback Managed Buffer node",
-            "CallbackManaged",
+            "CallbackManagedBuffer",
+            true},
+           {"Callback Managed Image",
+            "⬛",
+            "=",
+            "Create a Callback Managed Image node",
+            "CallbackManagedImage",
             true}};
 
     for (const auto &buttonInfo : otherNodeButtons) {

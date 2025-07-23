@@ -1,14 +1,14 @@
 #pragma once
 #include "OperationDataModel.hpp"
 
-class VideoInput : public OperationDataModel
+class CallbackManagedImage : public OperationDataModel
 {
     Q_OBJECT
 public:
-    virtual ~VideoInput() {}
+    virtual ~CallbackManagedImage() {}
 
 public:
-    QString caption() const override { return QStringLiteral("Video Input"); }
+    QString caption() const override { return QStringLiteral("Callback Managed Image"); }
 
     bool portCaptionVisible(PortType portType, PortIndex portIndex) const override
     {
@@ -21,17 +21,12 @@ public:
     {
         switch (portType) {
         case PortType::Out:
-            return QStringLiteral("Image");
+            return QStringLiteral("Buffer");
 
         default:
             break;
         }
         return QString();
-    }
-
-    NodeDataType dataType(PortType portType, PortIndex portIndex) const override
-    {
-        return IMAGE_DATA_TYPE;
     }
 
     unsigned int nPorts(PortType portType) const override
@@ -44,5 +39,10 @@ public:
             result = 1;
 
         return result;
+    }
+
+    NodeDataType dataType(PortType portType, PortIndex portIndex) const override
+    {
+        return IMAGE_DATA_TYPE;
     }
 };

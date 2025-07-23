@@ -2,20 +2,21 @@
 
 #include <QtNodes/NodeDelegateModel>
 
-#include "VideoData.hpp"
 #include <iostream>
 #include <QMetaEnum>
 #include <QtCore/QJsonObject>
 #include <QtCore/QObject>
 #include <QtWidgets/QLabel>
 
-class VideoData;
-
 using QtNodes::NodeData;
 using QtNodes::NodeDataType;
 using QtNodes::NodeDelegateModel;
 using QtNodes::PortIndex;
 using QtNodes::PortType;
+
+static const NodeDataType IMAGE_DATA_TYPE{"image", "Image"};
+static const NodeDataType BUFFER_DATA_TYPE{"buffer", "BUFFER"};
+
 
 class OperationDataModel : public NodeDelegateModel
 {
@@ -44,10 +45,6 @@ public:
     QString name() const override { return metaObject()->className(); }
 
 protected:
-    std::weak_ptr<VideoData> _number1;
-    std::weak_ptr<VideoData> _number2;
-
-    std::shared_ptr<VideoData> _result;
     QString _name;
 signals:
     void propertyChanged();

@@ -127,6 +127,22 @@ public:
         }
     }
 
+    NodeDataType dataType(PortType portType, PortIndex portIndex) const override
+    {
+        NodeDataType result = BUFFER_DATA_TYPE;
+
+        switch (portType) {
+        case PortType::Out:
+
+            return nodeTypeMapRight.at(portIndex) ? IMAGE_DATA_TYPE : BUFFER_DATA_TYPE;
+
+        default:
+        case PortType::In:
+            return nodeTypeMapLeft.at(portIndex) ? IMAGE_DATA_TYPE : BUFFER_DATA_TYPE;
+        }
+        return result;
+    }
+
 private:
     QVector<bool> nodeTypeMapRight{true};
     QVector<bool> nodeTypeMapLeft{true};

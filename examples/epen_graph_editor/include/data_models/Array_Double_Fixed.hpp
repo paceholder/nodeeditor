@@ -9,6 +9,11 @@ public:
 
     QString caption() const override { return QStringLiteral("Double Array Fixed Buffer"); }
 
+    NodeDataType dataType(PortType portType, PortIndex portIndex) const override
+    {
+        return BUFFER_DATA_TYPE;
+    }
+
 private:
     QString _value;
 };

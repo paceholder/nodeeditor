@@ -13,11 +13,16 @@ public:
         return true;
     }
 
+    NodeDataType dataType(PortType portType, PortIndex portIndex) const override
+    {
+        return BUFFER_DATA_TYPE;
+    }
+
     QString portCaption(PortType portType, PortIndex portIndex) const override
     {
         switch (portType) {
         case PortType::Out:
-            return QStringLiteral("Video");
+            return QStringLiteral("Buffer");
 
         default:
             break;

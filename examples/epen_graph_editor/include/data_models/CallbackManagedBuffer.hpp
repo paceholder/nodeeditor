@@ -1,11 +1,11 @@
 #pragma once
 #include "OperationDataModel.hpp"
 
-class CallbackManaged : public OperationDataModel
+class CallbackManagedBuffer : public OperationDataModel
 {
     Q_OBJECT
 public:
-    virtual ~CallbackManaged() {}
+    virtual ~CallbackManagedBuffer() {}
 
 public:
     QString caption() const override { return QStringLiteral("Callback Managed Buffer"); }
@@ -21,7 +21,7 @@ public:
     {
         switch (portType) {
         case PortType::Out:
-            return QStringLiteral("Video");
+            return QStringLiteral("Image");
 
         default:
             break;
@@ -39,5 +39,10 @@ public:
             result = 1;
 
         return result;
+    }
+
+    NodeDataType dataType(PortType portType, PortIndex portIndex) const override
+    {
+        return BUFFER_DATA_TYPE;
     }
 };
