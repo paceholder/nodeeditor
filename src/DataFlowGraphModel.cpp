@@ -203,7 +203,7 @@ QVariant DataFlowGraphModel::nodeData(NodeId nodeId, NodeRole role) const
         break;
 
     case NodeRole::CaptionVisible:
-        result = model->captionVisible();
+        result = model->widgetEmbeddable() ? model->captionVisible() : true;
         break;
 
     case NodeRole::Caption:
@@ -232,10 +232,17 @@ QVariant DataFlowGraphModel::nodeData(NodeId nodeId, NodeRole role) const
         result = model->nPorts(PortType::Out);
         break;
 
+    case NodeRole::WidgetEmbeddable:
+        result = model->widgetEmbeddable();
+        break;
+
     case NodeRole::Widget: {
         auto w = model->embeddedWidget();
         result = QVariant::fromValue(w);
     } break;
+
+    default:
+        break;
     }
 
     return result;
@@ -245,7 +252,7 @@ NodeFlags DataFlowGraphModel::nodeFlags(NodeId nodeId) const
 {
     auto it = _models.find(nodeId);
 
-    if (it != _models.end() && it->second->resizable())
+    if (it != _models.end() && it->second->widgetEmbeddable() && it->second->resizable())
         return NodeFlag::Resizable;
 
     return NodeFlag::NoFlags;
@@ -293,7 +300,13 @@ bool DataFlowGraphModel::setNodeData(NodeId nodeId, NodeRole role, QVariant valu
     case NodeRole::OutPortCount:
         break;
 
+    case NodeRole::WidgetEmbeddable:
+        break;
+
     case NodeRole::Widget:
+        break;
+
+    default:
         break;
     }
 
@@ -333,7 +346,9 @@ QVariant DataFlowGraphModel::portData(NodeId nodeId,
 
     case PortRole::Caption:
         result = model->portCaption(portType, portIndex);
+        break;
 
+    default:
         break;
     }
 
