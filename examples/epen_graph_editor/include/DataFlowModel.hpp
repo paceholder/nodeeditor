@@ -3,6 +3,7 @@
 #include "FloatingProperties.hpp"
 #include "PortAddRemoveWidget.hpp"
 #include "data_models/OperationDataModel.hpp"
+#include "data_models/Process.hpp"
 #include <QPointer>
 #include <QtNodes/DataFlowGraphModel>
 
@@ -19,6 +20,8 @@ using QtNodes::PortType;
 
 class DataFlowModel : public DataFlowGraphModel
 {
+    Q_OBJECT
+
 public:
     DataFlowModel(std::shared_ptr<NodeDelegateModelRegistry>);
 
@@ -43,6 +46,10 @@ public:
 
     void setSelectedNode(OperationDataModel *, NodeId);
     void deselectNode();
+
+    void setSelectedPort(NodeId nodeId, bool isRightPort, int portIndex);
+signals:
+    void nodePortSelected(bool isRightPort, Process *node, int portIndex);
 
 private:
     QString generateNewNodeName(QString typeNamePrefix);

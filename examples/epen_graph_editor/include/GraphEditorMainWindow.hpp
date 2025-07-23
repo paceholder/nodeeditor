@@ -41,6 +41,8 @@ public slots:
     void onNodeSelected(NodeId nodeId);
     void onNodeDeselected();
 
+    void nodePortSelected(bool isRightPort, Process *node, int portIndex);
+
 protected:
     // Override to maintain toolbar position
     void moveEvent(QMoveEvent *event) override;
@@ -64,7 +66,7 @@ private:
 
     bool m_toolbarCreated;
     bool m_propertiesCreated;
-    QString _currentMode;
+
     DataFlowModel *_model;
     NodeId m_currentSelectedNodeId;
 

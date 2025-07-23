@@ -22,8 +22,6 @@ NodeDataType OperationDataModel::dataType(PortType, PortIndex) const
     return IMAGE_DATA_TYPE;
 }
 
-void OperationDataModel::deselected() {}
-
 void OperationDataModel::setNodeName(QString name)
 {
     _name = name;

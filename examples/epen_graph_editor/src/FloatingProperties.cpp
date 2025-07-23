@@ -18,8 +18,6 @@
 
 FloatingProperties::FloatingProperties(GraphEditorWindow *parent)
     : FloatingPanelBase(parent, "Properties")
-    , m_currentNodeId(InvalidNodeId)
-    , _currentNode(nullptr)
     , _properties(nullptr)
     , _variantManager(new QtVariantPropertyManager())
     , _variantFactory(new QtVariantEditorFactory())
@@ -75,15 +73,11 @@ void FloatingProperties::connectSignals() {}
 
 void FloatingProperties::clearProperties()
 {
-    m_currentNodeId = InvalidNodeId;
-    if (_currentNode != nullptr) {
-        _currentNode->deselected();
-        _currentNode = nullptr;
-    }
+
     if (_properties) {
         _properties->clear();
     }
-    unsetNode();
+    unsetObject();
 }
 
 void FloatingProperties::resizeEvent(QResizeEvent *event)
@@ -95,17 +89,11 @@ void FloatingProperties::resizeEvent(QResizeEvent *event)
     }
 }
 
-void FloatingProperties::setNode(OperationDataModel *node)
+void FloatingProperties::setObject(QObject *obj)
 {
-    if (_currentNode != nullptr) {
-        _currentNode->deselected();
-        _currentNode = nullptr;
-    }
-    _currentNode = node;
-    _properties->setActiveObject(_currentNode);
+    _properties->setActiveObject(obj);
 }
 
-void FloatingProperties::unsetNode()
+void FloatingProperties::unsetObject()
 {
-    _currentNode = nullptr;
 }

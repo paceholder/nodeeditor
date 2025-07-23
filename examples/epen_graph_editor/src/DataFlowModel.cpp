@@ -1,5 +1,4 @@
 #include "DataFlowModel.hpp"
-#include "data_models/Process.hpp"
 
 DataFlowModel::DataFlowModel(std::shared_ptr<NodeDelegateModelRegistry> registry)
     : DataFlowGraphModel(std::move(registry))
@@ -58,7 +57,7 @@ bool DataFlowModel::deleteNode(NodeId const nodeId)
     if (it != nodesMap.end()) {
         it->second.erase(nodeId);
     }
-    _propertyPanel->unsetNode();
+    _propertyPanel->unsetObject();
     return DataFlowGraphModel::deleteNode(nodeId);
 }
 
@@ -250,3 +249,11 @@ void DataFlowModel::setSelectedNode(OperationDataModel *node, NodeId nodeId)
 }
 
 void DataFlowModel::deselectNode() {}
+
+void DataFlowModel::setSelectedPort(NodeId nodeId, bool isRightPort, int portIndex)
+{
+    Process *nodeModel = delegateModel<Process>(nodeId);
+    if (nodeModel) {
+        emit nodePortSelected(isRightPort, nodeModel, portIndex);
+    }
+}

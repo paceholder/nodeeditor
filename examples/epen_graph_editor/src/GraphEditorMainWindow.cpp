@@ -23,13 +23,9 @@ GraphEditorWindow::GraphEditorWindow(DataFlowGraphicsScene *scene, DataFlowModel
     , m_properties(nullptr)
     , m_toolbarCreated(false)
     , m_propertiesCreated(false)
-    , _currentMode("pan")
     , _model(model)
     , m_currentSelectedNodeId(InvalidNodeId)
 {
-    // Setup context menu
-    //setupNodeCreation();
-
     setWindowTitle("Graph Editor");
     resize(800, 600);
 
@@ -40,6 +36,8 @@ GraphEditorWindow::GraphEditorWindow(DataFlowGraphicsScene *scene, DataFlowModel
     connect(scene, &BasicGraphicsScene::nodeSelected, this, [this](QtNodes::NodeId nodeId) {
         onNodeSelected(nodeId);
     });
+
+    connect(_model, &DataFlowModel::nodePortSelected, this, &GraphEditorWindow::nodePortSelected);
 
     // Create initial nodes
     QtNodes::NodeId newIdInput = _model->addNode("VideoInput");
@@ -108,12 +106,6 @@ void GraphEditorWindow::mousePressEvent(QMouseEvent *event)
     // You'll need to implement this based on your scene's node handling
     QGraphicsItem *item = scene()->itemAt(mapToScene(event->pos()), QTransform());
     if (item) {
-        // Check if this is a node item and get its ID
-        // This is a simplified example - adjust based on your actual node implementation
-        // auto nodeItem = dynamic_cast<NodeGraphicsObject*>(item);
-        // if (nodeItem) {
-        //     onNodeSelected(nodeItem->nodeId());
-        // }
     } else {
         onNodeDeselected();
     }
@@ -195,7 +187,6 @@ void GraphEditorWindow::createFloatingToolbar()
     m_toolbar->raise();
 
     // Set initial dock position (optional - start docked to left)
-    // m_toolbar->setDockPosition(FloatingToolbar::DockedLeft);
 
     qDebug() << "Toolbar created. Visible:" << m_toolbar->isVisible()
              << "Geometry:" << m_toolbar->geometry();
@@ -214,32 +205,9 @@ void GraphEditorWindow::createFloatingProperties()
         return;
     }
 
-    // Connect to the properties panel's node selection signals if needed
-    connect(m_properties,
-            &FloatingProperties::nodeSelected,
-            this,
-            &GraphEditorWindow::onNodeSelected);
-    connect(m_properties,
-            &FloatingProperties::nodeDeselected,
-            this,
-            &GraphEditorWindow::onNodeDeselected);
-
-    // If you have node selection in your scene, connect it
-    // Example (adjust based on your actual implementation):
-    // auto dataFlowScene = dynamic_cast<DataFlowGraphicsScene*>(scene());
-    // if (dataFlowScene) {
-    //     connect(dataFlowScene, &DataFlowGraphicsScene::nodeSelected,
-    //             this, &GraphEditorWindow::onNodeSelected);
-    //     connect(dataFlowScene, &DataFlowGraphicsScene::nodeDeselected,
-    //             this, &GraphEditorWindow::onNodeDeselected);
-    // }
-
     // Show the properties panel
     m_properties->show();
     m_properties->raise();
-
-    // Start docked to the right by default
-    // m_properties->setDockPosition(FloatingProperties::DockedRight);
 
     qDebug() << "Properties panel created. Visible:" << m_properties->isVisible()
              << "Geometry:" << m_properties->geometry();
@@ -266,10 +234,10 @@ void GraphEditorWindow::onNodeSelected(NodeId nodeId)
 
     OperationDataModel *nodeModel = _model->delegateModel<OperationDataModel>(nodeId);
     if (m_properties) {
-        m_properties->setNode(nodeModel);
+        m_properties->setObject(nodeModel);
     }
     if (_model) {
-        _model->setSelectedNode(nodeModel,nodeId);
+        _model->setSelectedNode(nodeModel, nodeId);
     }
 }
 
@@ -310,5 +278,12 @@ void GraphEditorWindow::drawBackground(QPainter *painter, const QRectF &r)
             // Draw the rectangle
             painter->drawRect(QRectF(left, r.top(), r.right() - left, r.height()));
         }
+    }
+}
+
+void GraphEditorWindow::nodePortSelected(bool isRightPort, Process *node, int portIndex)
+{
+    if (m_properties) {
+        m_properties->setObject(node->findPort(portIndex, isRightPort));
     }
 }

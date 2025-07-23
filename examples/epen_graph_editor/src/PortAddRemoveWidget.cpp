@@ -246,6 +246,7 @@ void PortAddRemoveWidget::onLeftRadioButtonToggled(bool checked)
         _rightMinusButton->setEnabled(false);
         _selectedLeftPortIndex = radioIndex;
         _selectedRightPortIndex = -1;
+        _model.setSelectedPort(_nodeId, false, radioIndex);
     }
 }
 
@@ -257,6 +258,7 @@ void PortAddRemoveWidget::onRightRadioButtonToggled(bool checked)
         _letMinusButton->setEnabled(false);
         _selectedRightPortIndex = radioIndex;
         _selectedLeftPortIndex = -1;
+        _model.setSelectedPort(_nodeId, true, radioIndex);
     }
 }
 

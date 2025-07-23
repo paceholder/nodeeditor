@@ -3,6 +3,99 @@
 #include <QMetaType>
 #include <QObject>
 
+class PortBase : public QObject
+{
+    Q_OBJECT
+public:
+    PortBase(QObject *parent = nullptr)
+        : QObject(parent)
+    {}
+    virtual bool isImage() { return true; }
+signals:
+    void propertyChanged();
+};
+
+class ImagePort : public PortBase
+{
+    Q_OBJECT
+public:
+    Q_PROPERTY(float Width MEMBER _width NOTIFY propertyChanged)
+    Q_PROPERTY(float Height MEMBER _height NOTIFY propertyChanged)
+
+    ImagePort(float width, float height, QObject *parent = nullptr)
+        : PortBase(parent)
+        , _width(width)
+        , _height(height)
+    {}
+
+    // Copy constructor
+    ImagePort(const ImagePort &other, QObject *parent = nullptr)
+        : PortBase(parent)
+        , _width(other._width)
+        , _height(other._height)
+    {}
+
+    // Assignment operator
+    ImagePort &operator=(const ImagePort &other)
+    {
+        if (this != &other) {
+            _width = other._width;
+            _height = other._height;
+        }
+        return *this;
+    }
+
+    // Comparison operators
+    bool operator==(const ImagePort &other) const
+    {
+        return _width == other._width && _height == other._height;
+    }
+
+    bool operator!=(const ImagePort &other) const { return !(*this == other); }
+
+private:
+    float _width;
+    float _height;
+};
+
+class BufferPort : public PortBase
+{
+    Q_OBJECT
+public:
+    Q_PROPERTY(uint Length MEMBER _length NOTIFY propertyChanged)
+
+    bool isImage() override { return false; }
+
+public:
+    BufferPort(uint length, QObject *parent = nullptr)
+        : PortBase(parent)
+        , _length(length)
+    {}
+
+    // Copy constructor
+    BufferPort(const BufferPort &other, QObject *parent = nullptr)
+        : PortBase(parent)
+        , _length(other._length)
+    {}
+
+    // Assignment operator
+    BufferPort &operator=(const BufferPort &other)
+    {
+        if (this != &other) {
+            _length = other._length;
+        }
+        return *this;
+    }
+
+    // Comparison operators
+    bool operator==(const BufferPort &other) const { return _length == other._length; }
+
+    bool operator!=(const BufferPort &other) const { return !(*this == other); }
+
+private:
+    uint _length;
+};
+
 class Size : public QObject
 {
     Q_OBJECT
@@ -52,6 +145,8 @@ private:
 };
 
 Q_DECLARE_METATYPE(Size *)
+Q_DECLARE_METATYPE(BufferPort *)
+Q_DECLARE_METATYPE(ImagePort *)
 
 class Process : public OperationDataModel
 {
@@ -80,13 +175,13 @@ public:
         switch (portType) {
         case PortType::Out:
 
-            return nodeTypeMapRight.at(portIndex) ? QStringLiteral("Image")
-                                                  : QStringLiteral("Buffer");
+            return _rightPorts.at(portIndex)->isImage() ? QStringLiteral("Image")
+                                                        : QStringLiteral("Buffer");
 
         default:
         case PortType::In:
-            return nodeTypeMapLeft.at(portIndex) ? QStringLiteral("Image")
-                                                 : QStringLiteral("Buffer");
+            return _leftPorts.at(portIndex)->isImage() ? QStringLiteral("Image")
+                                                       : QStringLiteral("Buffer");
         }
         return QString();
     }
@@ -105,25 +200,35 @@ public:
 
     void setPortTypeRight(PortIndex portIndex, bool isImage)
     {
-        nodeTypeMapRight.insert(portIndex - 1, isImage);
+        if (isImage) {
+            _rightPorts.insert(portIndex - 1, new ImagePort(100, 100, this));
+        } else {
+            _rightPorts.insert(portIndex - 1, new BufferPort(1024, this));
+        }
     }
 
     void removePortTypeRight(PortIndex portIndex)
     {
-        if (portIndex < nodeTypeMapRight.size()) {
-            nodeTypeMapRight.removeAt(portIndex);
+        if (portIndex < _rightPorts.size()) {
+            _rightPorts.at(portIndex);
+            _rightPorts.removeAt(portIndex);
         }
     }
 
     void setPortTypeLeft(PortIndex portIndex, bool isImage)
     {
-        nodeTypeMapLeft.insert(portIndex - 1, isImage);
+        if (isImage) {
+            _leftPorts.insert(portIndex - 1, new ImagePort(100, 100, this));
+        } else {
+            _leftPorts.insert(portIndex - 1, new BufferPort(1024, this));
+        }
     }
 
     void removePortTypeLeft(PortIndex portIndex)
     {
-        if (portIndex < nodeTypeMapLeft.size()) {
-            nodeTypeMapLeft.removeAt(portIndex);
+        if (portIndex < _leftPorts.size()) {
+            delete _leftPorts.at(portIndex);
+            _leftPorts.removeAt(portIndex);
         }
     }
 
@@ -134,19 +239,27 @@ public:
         switch (portType) {
         case PortType::Out:
 
-            return nodeTypeMapRight.at(portIndex) ? IMAGE_DATA_TYPE : BUFFER_DATA_TYPE;
+            return _rightPorts.at(portIndex)->isImage() ? IMAGE_DATA_TYPE : BUFFER_DATA_TYPE;
 
         default:
         case PortType::In:
-            return nodeTypeMapLeft.at(portIndex) ? IMAGE_DATA_TYPE : BUFFER_DATA_TYPE;
+            return _leftPorts.at(portIndex)->isImage() ? IMAGE_DATA_TYPE : BUFFER_DATA_TYPE;
         }
         return result;
     }
 
-private:
-    QVector<bool> nodeTypeMapRight{true};
-    QVector<bool> nodeTypeMapLeft{true};
+    QObject *findPort(int portIndex, bool isRightPort)
+    {
+        if (isRightPort) {
+            return _rightPorts.at(portIndex);
+        }
+        return _leftPorts.at(portIndex);
+    }
 
+private:
     Size *_grid;
     Size *_block;
+
+    QVector<PortBase *> _leftPorts{};
+    QVector<PortBase *> _rightPorts{};
 };

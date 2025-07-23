@@ -38,7 +38,6 @@ public:
 
     QWidget *embeddedWidget() override { return nullptr; }
 
-    virtual void deselected();
 
     void setNodeName(QString);
 
