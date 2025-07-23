@@ -105,6 +105,27 @@ NodeId DataFlowGraphModel::addNode(QString const nodeType)
 
 bool DataFlowGraphModel::connectionPossible(ConnectionId const connectionId) const
 {
+    // Check if nodes exist
+    if (!nodeExists(connectionId.outNodeId) || !nodeExists(connectionId.inNodeId)) {
+        return false;
+    }
+
+    // Check port bounds
+    auto checkPortBounds = [&](PortType const portType) {
+        NodeId const nodeId = getNodeId(portType, connectionId);
+        PortIndex const portIndex = getPortIndex(portType, connectionId);
+        
+        auto it = _models.find(nodeId);
+        if (it == _models.end()) return false;
+        
+        unsigned int portCount = it->second->nPorts(portType);
+        return portIndex < portCount;
+    };
+
+    if (!checkPortBounds(PortType::Out) || !checkPortBounds(PortType::In)) {
+        return false;
+    }
+
     auto getDataType = [&](PortType const portType) {
         return portData(getNodeId(portType, connectionId),
                         portType,

@@ -4,7 +4,7 @@
 
 #include <QtNodes/ConnectionIdUtils>
 
-#include <QJsonArray>
+#include <QtCore/QJsonArray>
 
 #include <iterator>
 
@@ -12,10 +12,6 @@ DynamicPortsModel::DynamicPortsModel()
     : _nextNodeId{0}
 {}
 
-DynamicPortsModel::~DynamicPortsModel()
-{
-    //
-}
 
 std::unordered_set<NodeId> DynamicPortsModel::allNodeIds() const
 {

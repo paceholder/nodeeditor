@@ -37,7 +37,7 @@ public:
 public:
     DynamicPortsModel();
 
-    ~DynamicPortsModel() override;
+    ~DynamicPortsModel() override = default;
 
     std::unordered_set<NodeId> allNodeIds() const override;
 
