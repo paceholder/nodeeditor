@@ -165,9 +165,6 @@ void GraphEditorWindow::createFloatingToolbar()
         return;
     }
 
-    // Connect toolbar signals
-    connect(m_toolbar, &FloatingToolbar::specificNodeRequested, this, &GraphEditorWindow::goToMode);
-
     // Connect other signals as needed
     connect(m_toolbar, &FloatingToolbar::fillColorChanged, [this](const QColor &color) {
         qDebug() << "Color changed to:" << color.name();
@@ -196,12 +193,6 @@ void GraphEditorWindow::createFloatingProperties()
         qDebug() << "Failed to create properties panel!";
         return;
     }
-
-    // Connect properties panel signals
-    connect(m_properties,
-            &FloatingProperties::propertyChanged,
-            this,
-            &GraphEditorWindow::onPropertyChanged);
 
     // Connect to the properties panel's node selection signals if needed
     connect(m_properties,
@@ -249,26 +240,6 @@ void GraphEditorWindow::createNodeAtCursor()
     createNodeAtPosition(posView, "ImageShowModel");
 }
 
-void GraphEditorWindow::goToMode(QString mode)
-{
-    _currentMode = mode;
-    qDebug() << "Mode changed to:" << mode;
-
-    // Handle different modes
-    if (mode == "VideoInput") {
-        createNodeAtCursor();
-    } else if (mode == "VideoOutput") {
-        // Create video output node
-        QPointF posView = mapToScene(mapFromGlobal(QCursor::pos()));
-        createNodeAtPosition(posView, "VideoOutput");
-    } else if (mode == "Process") {
-        // Create process node
-        QPointF posView = mapToScene(mapFromGlobal(QCursor::pos()));
-        createNodeAtPosition(posView, "Process");
-    }
-    // Add more mode handlers as needed
-}
-
 void GraphEditorWindow::onNodeSelected(NodeId nodeId)
 {
     m_currentSelectedNodeId = nodeId;
@@ -290,34 +261,30 @@ void GraphEditorWindow::onNodeDeselected()
     qDebug() << "Node deselected";
 }
 
-void GraphEditorWindow::onPropertyChanged(const QString &name, const QVariant &value)
+void GraphEditorWindow::drawBackground(QPainter *painter, const QRectF &r)
 {
-    qDebug() << "Property changed:" << name << "=" << value;
+    GraphicsView::drawBackground(painter, r);
 
-    // Handle property changes here
-    // Update your node model with the new property value
-    if (_model && m_currentSelectedNodeId >= 0) {
-        QtNodes::NodeId nodeId = static_cast<QtNodes::NodeId>(m_currentSelectedNodeId);
+    if (_allowedDropAreaLeft != -1) {
+        float left = _allowedDropAreaLeft;
+        if (left == -2)
+            left = r.left();
+        if (left <= r.right()) {
+            if (left < r.left())
+                left = r.left();
+            // Set anti-aliasing (optional for smoother edges)
+            painter->setRenderHint(QPainter::Antialiasing);
 
-        if (name == "name") {
-            // Update node name
-            // _model->setNodeData(nodeId, NodeRole::Name, value);
-        } else if (name == "x" || name == "y") {
-            // Update node position
-            QPointF currentPos = _model->nodeData(nodeId, NodeRole::Position).toPointF();
-            if (name == "x") {
-                currentPos.setX(value.toDouble());
-            } else {
-                currentPos.setY(value.toDouble());
-            }
-            _model->setNodeData(nodeId, NodeRole::Position, currentPos);
-        } else if (name == "width" || name == "height") {
-            // Update node size if supported
-            // _model->setNodeData(nodeId, NodeRole::Size, value);
-        } else if (name == "enabled") {
-            // Update node enabled state
-            // _model->setNodeData(nodeId, NodeRole::Enabled, value);
+            QColor semiTransparentBlue(0, 0, 255, 50);
+
+            // Set brush with the color
+            painter->setBrush(QBrush(semiTransparentBlue));
+
+            // Set pen to no border (optional)
+            painter->setPen(Qt::NoPen);
+
+            // Draw the rectangle
+            painter->drawRect(QRectF(left, r.top(), r.right() - left, r.height()));
         }
-        // Add more property handlers as needed
     }
 }

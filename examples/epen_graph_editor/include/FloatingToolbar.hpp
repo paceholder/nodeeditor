@@ -17,7 +17,6 @@ public:
     ~FloatingToolbar() = default;
 
 signals:
-    void specificNodeRequested(QString actionName);
     void fillColorChanged(const QColor &color);
     void zoomInRequested();
     void zoomOutRequested();

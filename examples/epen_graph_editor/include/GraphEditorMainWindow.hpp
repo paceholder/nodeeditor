@@ -36,12 +36,10 @@ public slots:
 
     // Slot for creating a node at cursor position
     void createNodeAtCursor();
-    void goToMode(QString mode);
 
     // Slots for node selection and property changes
     void onNodeSelected(NodeId nodeId);
     void onNodeDeselected();
-    void onPropertyChanged(const QString &name, const QVariant &value);
 
 protected:
     // Override to maintain toolbar position
@@ -53,33 +51,7 @@ protected:
     void dropEvent(QDropEvent *event) override;
     void dragMoveEvent(QDragMoveEvent *event) override;
 
-    void drawBackground(QPainter *painter, const QRectF &r) override
-    {
-        GraphicsView::drawBackground(painter, r);
-
-        if (_allowedDropAreaLeft != -1) {
-            float left = _allowedDropAreaLeft;
-            if (left == -2)
-                left = r.left();
-            if (left <= r.right()) {
-                if (left < r.left())
-                    left = r.left();
-                // Set anti-aliasing (optional for smoother edges)
-                painter->setRenderHint(QPainter::Antialiasing);
-
-                QColor semiTransparentBlue(0, 0, 255, 50);
-
-                // Set brush with the color
-                painter->setBrush(QBrush(semiTransparentBlue));
-
-                // Set pen to no border (optional)
-                painter->setPen(Qt::NoPen);
-
-                // Draw the rectangle
-                painter->drawRect(QRectF(left, r.top(), r.right() - left, r.height()));
-            }
-        }
-    }
+    void drawBackground(QPainter *painter, const QRectF &r) override;
 
 private:
     void createFloatingToolbar();

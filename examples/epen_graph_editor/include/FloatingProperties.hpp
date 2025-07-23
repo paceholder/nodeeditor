@@ -27,7 +27,6 @@ public:
     void setNode(OperationDataModel *node);
     void unsetNode();
 signals:
-    void propertyChanged(const QString &name, const QVariant &value);
     void nodeSelected(int nodeId);
     void nodeDeselected();
 

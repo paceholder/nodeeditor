@@ -1,6 +1,6 @@
 #include "GraphEditorMainWindow.hpp"
+#include "GraphEditorScene.hpp"
 #include <QtNodes/DataFlowGraphModel>
-#include <QtNodes/DataFlowGraphicsScene>
 #include <QtNodes/GraphicsView>
 #include <QtNodes/NodeData>
 #include <QtNodes/NodeDelegateModelRegistry>
@@ -42,7 +42,6 @@
 #include <QtWidgets/QApplication>
 
 using QtNodes::ConnectionStyle;
-using QtNodes::DataFlowGraphicsScene;
 using QtNodes::DataFlowGraphModel;
 using QtNodes::GraphicsView;
 using QtNodes::NodeDelegateModelRegistry;
@@ -93,7 +92,7 @@ int main(int argc, char *argv[])
 
     DataFlowModel dataFlowGraphModel(registry);
 
-    DataFlowGraphicsScene scene(dataFlowGraphModel);
+    GraphEditorScene scene(dataFlowGraphModel);
 
     GraphEditorWindow view(&scene, &dataFlowGraphModel);
     view.showNormal();
