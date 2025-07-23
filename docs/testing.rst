@@ -18,7 +18,14 @@ The test suite covers the following areas:
   - Graphics scene management
   - Connection ID utilities
 
-**UI Interaction Testing (6 test cases, 29 assertions)**
+**Data Flow Testing (5 test cases, 46 assertions)**
+  - Real data transfer between connected nodes using NodeDelegateModel pattern
+  - Programmatic and interactive connection creation with data propagation
+  - Multiple output connections (one-to-many data distribution)
+  - Connection lifecycle testing (creation, data flow, disconnection)
+  - Custom node delegate models with embedded widgets and signal handling
+
+**Visual UI Interaction Testing (3 test cases, 5 assertions)**
   - Node movement and visual positioning
   - Connection creation by dragging between ports
   - Connection disconnection by dragging and deletion
@@ -27,7 +34,7 @@ The test suite covers the following areas:
   - Context menu interactions
   - Stress testing with rapid mouse movements and UI load
 
-**Total: 26 test cases, 245 assertions**
+**Total: 28 test cases, 267 assertions**
 
 **Infrastructure**
   - Complete AbstractGraphModel test implementation

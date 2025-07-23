@@ -15,15 +15,15 @@ add_executable(test_nodes
   src/TestUndoCommands.cpp
   src/TestBasicGraphicsScene.cpp
   src/TestUIInteraction.cpp
+  src/TestDataFlow.cpp
   include/ApplicationSetup.hpp
-  include/StubNodeDataModel.hpp
   include/TestGraphModel.hpp
+  include/UITestHelper.hpp
+  include/TestDataFlowNodes.hpp
 )
 
 target_include_directories(test_nodes
   PRIVATE
-    ../src
-    ../include/QtNodes/internal
     include
 )
 

@@ -1,5 +1,6 @@
 #include "ApplicationSetup.hpp"
 #include "TestGraphModel.hpp"
+#include "UITestHelper.hpp"
 
 #include <QtNodes/internal/BasicGraphicsScene.hpp>
 #include <QtNodes/internal/GraphicsView.hpp>
@@ -29,49 +30,6 @@ using QtNodes::NodeId;
 using QtNodes::NodeRole;
 using QtNodes::PortIndex;
 using QtNodes::PortType;
-
-namespace UITestHelper
-{
-    void simulateMousePress(QGraphicsView* view, QPointF scenePos, Qt::MouseButton button = Qt::LeftButton)
-    {
-        QPointF viewPos = view->mapFromScene(scenePos);
-        QMouseEvent pressEvent(QEvent::MouseButtonPress, viewPos.toPoint(), 
-                              view->mapToGlobal(viewPos.toPoint()), button, button, Qt::NoModifier);
-        QApplication::sendEvent(view->viewport(), &pressEvent);
-    }
-
-    void simulateMouseMove(QGraphicsView* view, QPointF scenePos)
-    {
-        QPointF viewPos = view->mapFromScene(scenePos);
-        QMouseEvent moveEvent(QEvent::MouseMove, viewPos.toPoint(), 
-                             view->mapToGlobal(viewPos.toPoint()), Qt::NoButton, Qt::LeftButton, Qt::NoModifier);
-        QApplication::sendEvent(view->viewport(), &moveEvent);
-    }
-
-    void simulateMouseRelease(QGraphicsView* view, QPointF scenePos, Qt::MouseButton button = Qt::LeftButton)
-    {
-        QPointF viewPos = view->mapFromScene(scenePos);
-        QMouseEvent releaseEvent(QEvent::MouseButtonRelease, viewPos.toPoint(), 
-                                view->mapToGlobal(viewPos.toPoint()), button, Qt::NoButton, Qt::NoModifier);
-        QApplication::sendEvent(view->viewport(), &releaseEvent);
-    }
-
-    void simulateMouseDrag(QGraphicsView* view, QPointF fromScene, QPointF toScene)
-    {
-        simulateMousePress(view, fromScene);
-        QTest::qWait(10); // Small delay for realism
-        simulateMouseMove(view, toScene);
-        QTest::qWait(10);
-        simulateMouseRelease(view, toScene);
-        QTest::qWait(10);
-    }
-
-    void waitForUI(int ms = 10)
-    {
-        QTest::qWait(ms);
-        QApplication::processEvents();
-    }
-}
 
 TEST_CASE("UI Interaction - Node Movement", "[ui][visual]")
 {
