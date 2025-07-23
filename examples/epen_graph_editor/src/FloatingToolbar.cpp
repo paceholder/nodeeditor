@@ -182,8 +182,8 @@ void FloatingToolbar::setupNodeCategories()
 
     // Create Other Nodes buttons
     QVector<NodeButtonInfo> otherNodeButtons
-        = {{"Video Input", "◀", "<", "Create a video input node", "VideoInput", true},
-           {"Video Output", "▶", ">", "Create a video output node", "VideoOutput", false},
+        = {{"Video Input", "◀", "<", "Create a video input node", "VideoInput", false},
+           {"Video Output", "▶", ">", "Create a video output node", "VideoOutput", true},
            {"Process", "♦", "*", "Create a processing node", "Process", true},
            {"Callback Managed Buffer",
             "⬛",

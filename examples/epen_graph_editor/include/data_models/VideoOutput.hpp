@@ -24,17 +24,7 @@ public:
 
     QString portCaption(PortType portType, PortIndex portIndex) const override
     {
-        switch (portType) {
-        case PortType::In:
-            if (portIndex == 0)
-                return QStringLiteral("Image");
-
-            break;
-
-        default:
-            break;
-        }
-        return QString();
+        return QStringLiteral("Image");
     }
 
     unsigned int nPorts(PortType portType) const override
@@ -44,7 +34,7 @@ public:
         if (portType == PortType::In)
             result = 1;
         else
-            result = 0;
+            result = 1;
 
         return result;
     }

@@ -12,7 +12,7 @@ void DataFlowModel::setFloatingProperties(QPointer<FloatingProperties> propertyP
 }
 NodeId DataFlowModel::addNode(QString const nodeType)
 {
-    if (nodeType == "VideoOutput") {
+    if (nodeType == "VideoInput") {
         auto it = nodesMap.find(nodeType);
         if (it != nodesMap.end()) {
             const std::unordered_set<NodeId> &nodeSet = it->second;
@@ -41,9 +41,9 @@ NodeId DataFlowModel::addNode(QString const nodeType)
 bool DataFlowModel::deleteNode(NodeId const nodeId)
 {
     QVariant nodeTypeName = nodeData(nodeId, QtNodes::NodeRole::Type);
-    if (nodeTypeName == "VideoOutput") {
+    if (nodeTypeName == "VideoInput") {
         return false;
-    } else if (nodeTypeName == "VideoInput") {
+    } else if (nodeTypeName == "VideoOutput") {
         auto it = nodesMap.find(nodeTypeName.toString());
         if (it != nodesMap.end()) {
             const std::unordered_set<NodeId> &nodeSet = it->second;
