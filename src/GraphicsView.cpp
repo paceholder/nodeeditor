@@ -5,6 +5,9 @@
 #include "NodeGraphicsObject.hpp"
 #include "StyleCollection.hpp"
 #include "UndoCommands.hpp"
+#include "Definitions.hpp"
+
+#include <QtWidgets/QLineEdit>
 
 #include <QtWidgets/QGraphicsScene>
 
@@ -300,6 +303,66 @@ void GraphicsView::onPasteObjects()
 void GraphicsView::keyPressEvent(QKeyEvent *event)
 {
     switch (event->key()) {
+    case Qt::Key_F2: {
+        BasicGraphicsScene *sc = nodeScene();
+        if (sc) {
+            QList<QGraphicsItem *> items = sc->selectedItems();
+            NodeGraphicsObject *ngo = nullptr;
+            for (QGraphicsItem *it : items) {
+                ngo = qgraphicsitem_cast<NodeGraphicsObject *>(it);
+                if (ngo)
+                    break;
+            }
+            if (ngo) {
+                if (!_labelEdit) {
+                    _labelEdit = new QLineEdit(this);
+                    connect(_labelEdit, &QLineEdit::editingFinished, [this]() {
+                        if (_editingNodeId != InvalidNodeId) {
+                            nodeScene()->graphModel().setNodeData(
+                                _editingNodeId,
+                                NodeRole::LabelVisible,
+                                true);
+                            nodeScene()->graphModel().setNodeData(
+                                _editingNodeId,
+                                NodeRole::Label,
+                                _labelEdit->text());
+                        }
+                        _labelEdit->hide();
+                        _editingNodeId = InvalidNodeId;
+                    });
+                }
+
+                _editingNodeId = ngo->nodeId();
+
+                // Ensure label is visible for geometry calculations
+                sc->graphModel().setNodeData(_editingNodeId,
+                                           NodeRole::LabelVisible,
+                                           true);
+
+                AbstractNodeGeometry &geom = sc->nodeGeometry();
+                QPointF labelPos = geom.labelPosition(_editingNodeId);
+                QPointF scenePos = ngo->mapToScene(labelPos);
+                QSize sz = _labelEdit->sizeHint();
+                QPoint viewPos = mapFromScene(scenePos).toPoint();
+                _labelEdit->move(viewPos.x() - sz.width() / 2,
+                                 viewPos.y() - sz.height() / 2);
+                bool visible = sc->graphModel()
+                                    .nodeData(_editingNodeId, NodeRole::LabelVisible)
+                                    .toBool();
+                QString current = sc->graphModel()
+                                      .nodeData(_editingNodeId, NodeRole::Label)
+                                      .toString();
+                if (!visible && current.isEmpty())
+                    _labelEdit->clear();
+                else
+                    _labelEdit->setText(current);
+                _labelEdit->resize(sz);
+                _labelEdit->show();
+                _labelEdit->setFocus();
+                return;
+            }
+        }
+    } break;
     case Qt::Key_Shift:
         setDragMode(QGraphicsView::RubberBandDrag);
         break;

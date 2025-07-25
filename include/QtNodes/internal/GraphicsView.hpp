@@ -3,6 +3,9 @@
 #include <QtWidgets/QGraphicsView>
 
 #include "Export.hpp"
+#include "Definitions.hpp"
+
+class QLineEdit;
 
 namespace QtNodes {
 
@@ -93,5 +96,8 @@ private:
 
     QPointF _clickPos;
     ScaleRange _scaleRange;
+
+    QLineEdit *_labelEdit = nullptr;
+    NodeId _editingNodeId = InvalidNodeId;
 };
 } // namespace QtNodes

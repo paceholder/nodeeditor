@@ -98,6 +98,9 @@ NodeId DataFlowGraphModel::addNode(QString const nodeType)
 
         _models[newId] = std::move(model);
 
+        _labels[newId] = _models[newId]->label();
+        _labelsVisible[newId] = _models[newId]->labelVisible();
+
         Q_EMIT nodeCreated(newId);
 
         return newId;
@@ -296,11 +299,11 @@ QVariant DataFlowGraphModel::nodeData(NodeId nodeId, NodeRole role) const
     } break;
 
     case NodeRole::LabelVisible:
-        result = model->labelVisible();
+        result = _labelsVisible[nodeId];
         break;
 
     case NodeRole::Label:
-        result = model->label();
+        result = _labels[nodeId];
         break;
     }
 
@@ -360,6 +363,28 @@ bool DataFlowGraphModel::setNodeData(NodeId nodeId, NodeRole role, QVariant valu
         break;
 
     case NodeRole::Widget:
+        break;
+
+    case NodeRole::ValidationState: {
+        if (value.canConvert<NodeValidationState>()) {
+            auto state = value.value<NodeValidationState>();
+            if (auto node = delegateModel<NodeDelegateModel>(nodeId); node != nullptr) {
+                node->setValidatonState(state);
+            }
+        }
+        Q_EMIT nodeUpdated(nodeId);
+    } break;
+
+    case NodeRole::LabelVisible:
+        _labelsVisible[nodeId] = value.toBool();
+        Q_EMIT nodeUpdated(nodeId);
+        result = true;
+        break;
+
+    case NodeRole::Label:
+        _labels[nodeId] = value.toString();
+        Q_EMIT nodeUpdated(nodeId);
+        result = true;
         break;
     }
 
@@ -468,6 +493,8 @@ bool DataFlowGraphModel::deleteNode(NodeId const nodeId)
     }
 
     _nodeGeometryData.erase(nodeId);
+    _labels.erase(nodeId);
+    _labelsVisible.erase(nodeId);
     _models.erase(nodeId);
 
     Q_EMIT nodeDeleted(nodeId);
@@ -482,6 +509,9 @@ QJsonObject DataFlowGraphModel::saveNode(NodeId const nodeId) const
     nodeJson["id"] = static_cast<qint64>(nodeId);
 
     nodeJson["internal-data"] = _models.at(nodeId)->save();
+
+    nodeJson["label"] = _labels.at(nodeId);
+    nodeJson["labelVisible"] = _labelsVisible.at(nodeId);
 
     {
         QPointF const pos = nodeData(nodeId, NodeRole::Position).value<QPointF>();
@@ -574,6 +604,11 @@ void DataFlowGraphModel::loadNode(QJsonObject const &nodeJson)
         QPointF const pos(posJson["x"].toDouble(), posJson["y"].toDouble());
 
         setNodeData(restoredNodeId, NodeRole::Position, pos);
+
+        _labels[restoredNodeId] = nodeJson["label"].toString(model->label());
+        _labelsVisible[restoredNodeId] = nodeJson.contains("labelVisible")
+                                             ? nodeJson["labelVisible"].toBool()
+                                             : model->labelVisible();
 
         _models[restoredNodeId]->load(internalDataJson);
     } else {
