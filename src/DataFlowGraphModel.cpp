@@ -299,11 +299,11 @@ QVariant DataFlowGraphModel::nodeData(NodeId nodeId, NodeRole role) const
     } break;
 
     case NodeRole::LabelVisible:
-        result = _labelsVisible[nodeId];
+        result = _labelsVisible.at(nodeId);
         break;
 
     case NodeRole::Label:
-        result = _labels[nodeId];
+        result = _labels.at(nodeId);
         break;
     }
 

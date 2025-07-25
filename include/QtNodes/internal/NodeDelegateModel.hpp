@@ -63,7 +63,7 @@ public:
     virtual bool portCaptionVisible(PortType, PortIndex) const { return false; }
 
     /// Nicknames can be assigned to nodes and shown in GUI
-    virtual QString label() const { return QString("Teste"); }
+    virtual QString label() const { return QString(); }
 
     /// It is possible to hide the nickname in GUI
     virtual bool labelVisible() const { return true; }

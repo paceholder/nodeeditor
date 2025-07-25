@@ -201,11 +201,12 @@ void DefaultNodePainter::drawNodeCaption(QPainter *painter, NodeGraphicsObject &
     if (!model.nodeData(nodeId, NodeRole::CaptionVisible).toBool())
         return;
 
+    QString const nickname = model.nodeData(nodeId, NodeRole::Label).toString();
     QString const name = model.nodeData(nodeId, NodeRole::Caption).toString();
 
     QFont f = painter->font();
-    f.setBold(!model.nodeData(nodeId, NodeRole::LabelVisible).toBool());
-    f.setItalic(model.nodeData(nodeId, NodeRole::LabelVisible).toBool());
+    f.setBold(nickname.isEmpty());
+    f.setItalic(!nickname.isEmpty());
 
     QPointF position = geometry.captionPosition(nodeId);
 
