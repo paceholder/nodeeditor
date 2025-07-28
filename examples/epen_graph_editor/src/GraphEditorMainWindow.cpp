@@ -1,4 +1,5 @@
 #include "GraphEditorMainWindow.hpp"
+#include "FloatingCodeEditor.hpp"
 #include "FloatingProperties.hpp"
 #include "FloatingToolbar.hpp"
 #include <QAction>
@@ -21,8 +22,10 @@ GraphEditorWindow::GraphEditorWindow(DataFlowGraphicsScene *scene, DataFlowModel
     : GraphicsView(scene)
     , m_toolbar(nullptr)
     , m_properties(nullptr)
+    , m_codeEditor(nullptr)
     , m_toolbarCreated(false)
     , m_propertiesCreated(false)
+    , m_codeEditorCreated(false)
     , _model(model)
     , m_currentSelectedNodeId(InvalidNodeId)
 {
@@ -75,6 +78,13 @@ void GraphEditorWindow::showEvent(QShowEvent *event)
         // Create properties panel slightly after toolbar
         QTimer::singleShot(150, this, [this]() { createFloatingProperties(); });
     }
+
+    // Create code editor panel
+    if (!m_codeEditorCreated && isVisible()) {
+        m_codeEditorCreated = true;
+        // Create code editor panel after other panels
+        QTimer::singleShot(200, this, [this]() { createFloatingCodeEditor(); });
+    }
 }
 
 void GraphEditorWindow::moveEvent(QMoveEvent *event)
@@ -95,6 +105,11 @@ void GraphEditorWindow::resizeEvent(QResizeEvent *event)
     // Update properties position if it's docked
     if (m_properties && m_properties->isVisible() && m_properties->isDocked()) {
         m_properties->updatePosition();
+    }
+
+    // Update code editor position if it's docked
+    if (m_codeEditor && m_codeEditor->isVisible() && m_codeEditor->isDocked()) {
+        m_codeEditor->updatePosition();
     }
 }
 
@@ -213,6 +228,41 @@ void GraphEditorWindow::createFloatingProperties()
              << "Geometry:" << m_properties->geometry();
 }
 
+void GraphEditorWindow::createFloatingCodeEditor()
+{
+    qDebug() << "Creating floating code editor...";
+
+    // Create the floating code editor
+    m_codeEditor = new FloatingCodeEditor(this);
+
+    if (!m_codeEditor) {
+        qDebug() << "Failed to create code editor!";
+        return;
+    }
+
+    // Connect compile signal
+    connect(m_codeEditor,
+            &FloatingCodeEditor::compileRequested,
+            this,
+            &GraphEditorWindow::onCompileRequested);
+
+    // Connect language change signal if needed
+    connect(m_codeEditor, &FloatingCodeEditor::languageChanged, [this](const QString &language) {
+        qDebug() << "Code editor language changed to:" << language;
+        // Handle language change if needed
+    });
+
+    // Show the code editor
+    m_codeEditor->show();
+    m_codeEditor->raise();
+
+    // Optionally start docked to bottom
+    m_codeEditor->setDockPosition(FloatingPanelBase::DockedBottom);
+
+    qDebug() << "Code editor created. Visible:" << m_codeEditor->isVisible()
+             << "Geometry:" << m_codeEditor->geometry();
+}
+
 void GraphEditorWindow::createNodeAtPosition(const QPointF &scenePos, const QString nodeType)
 {
     QtNodes::NodeId newId = _model->addNode(nodeType);
@@ -250,6 +300,32 @@ void GraphEditorWindow::onNodeDeselected()
     }
     if (_model) {
         _model->deselectNode();
+    }
+}
+
+void GraphEditorWindow::onCompileRequested(const QString &code, const QString &language)
+{
+    qDebug() << "Compile requested for language:" << language;
+    qDebug() << "Code length:" << code.length() << "characters";
+
+    // Here you can add your actual compilation logic
+    // For now, just log the request
+
+    // Example: Send to your backend compiler or process the code
+    if (language == "OpenCL") {
+        // Handle OpenCL compilation
+        qDebug() << "Compiling OpenCL kernel...";
+    } else if (language == "CUDA") {
+        // Handle CUDA compilation
+        qDebug() << "Compiling CUDA kernel...";
+    } else if (language == "Metal") {
+        // Handle Metal compilation
+        qDebug() << "Compiling Metal shader...";
+    }
+
+    // You can also update node properties or send to processing nodes
+    if (_model) {
+        // Example: _model->compileKernel(code, language);
     }
 }
 

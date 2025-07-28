@@ -21,6 +21,7 @@ using QtNodes::NodeId;
 
 class FloatingToolbar;
 class FloatingProperties;
+class FloatingCodeEditor;
 class SimpleGraphModel;
 
 class GraphEditorWindow : public GraphicsView
@@ -43,6 +44,10 @@ public slots:
 
     void nodePortSelected(bool isRightPort, Process *node, int portIndex);
 
+private slots:
+    // Code editor compile handler
+    void onCompileRequested(const QString &code, const QString &language);
+
 protected:
     // Override to maintain toolbar position
     void moveEvent(QMoveEvent *event) override;
@@ -59,13 +64,16 @@ protected:
 private:
     void createFloatingToolbar();
     void createFloatingProperties();
+    void createFloatingCodeEditor();
     void setupNodeCreation();
 
     QPointer<FloatingToolbar> m_toolbar;
     QPointer<FloatingProperties> m_properties;
+    QPointer<FloatingCodeEditor> m_codeEditor;
 
     bool m_toolbarCreated;
     bool m_propertiesCreated;
+    bool m_codeEditorCreated;
 
     DataFlowModel *_model;
     NodeId m_currentSelectedNodeId;

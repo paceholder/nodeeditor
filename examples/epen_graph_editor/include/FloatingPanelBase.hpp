@@ -20,7 +20,8 @@ public:
     enum DockPosition {
         Floating,
         DockedLeft,
-        DockedRight
+        DockedRight,
+        DockedBottom  // Add bottom docking support
     };
 
     explicit FloatingPanelBase(GraphEditorWindow *parent = nullptr, const QString &title = "Panel");
@@ -37,6 +38,9 @@ public:
     int dockedWidth() const { return m_dockedWidth; }
     void setFloatingWidth(int width) { m_floatingWidth = width; }
     int floatingWidth() const { return m_floatingWidth; }
+    void setDockedHeight(int height) { m_dockedHeight = height; }  // For bottom docking
+    int dockedHeight() const { return m_dockedHeight; }
+    void setDockingDistance(int distance) { m_dockingDistance = distance; }
 
 protected:
     // Override these to customize panel behavior
@@ -86,6 +90,7 @@ protected:
     int m_dockMargin;
     int m_dockingDistance;
     int m_dockedWidth;
+    int m_dockedHeight;  // Height when docked to bottom
     int m_floatingWidth;
     int m_floatHeight;
     

@@ -19,6 +19,7 @@ FloatingPanelBase::FloatingPanelBase(GraphEditorWindow *parent, const QString &t
     , m_dockMargin(0)
     , m_dockingDistance(40)
     , m_dockedWidth(200)
+    , m_dockedHeight(300)  // Initialize default docked height
     , m_floatingWidth(150)
     , m_panelTitle(title)
 {
@@ -147,6 +148,7 @@ FloatingPanelBase::DockPosition FloatingPanelBase::checkDockingZone(const QPoint
         return Floating;
 
     int parentWidth = parentWidget()->width();
+    int parentHeight = parentWidget()->height();
 
     // Check left edge
     if (pos.x() <= m_dockingDistance) {
@@ -156,6 +158,11 @@ FloatingPanelBase::DockPosition FloatingPanelBase::checkDockingZone(const QPoint
     // Check right edge
     if (pos.x() + width() >= parentWidth - m_dockingDistance) {
         return DockedRight;
+    }
+
+    // Check bottom edge
+    if (pos.y() + height() >= parentHeight - m_dockingDistance) {
+        return DockedBottom;
     }
 
     return Floating;
@@ -173,6 +180,7 @@ void FloatingPanelBase::updateDockedGeometry()
     }
 
     QRect targetGeometry;
+    int parentWidth = parentWidget()->width();
     int parentHeight = parentWidget()->height();
 
     // Remove size constraints for docking
@@ -191,6 +199,12 @@ void FloatingPanelBase::updateDockedGeometry()
                                m_dockMargin,
                                m_dockedWidth,
                                parentHeight - 2 * m_dockMargin);
+        break;
+    case DockedBottom:
+        targetGeometry = QRect(m_dockMargin,
+                               parentHeight - m_dockedHeight - m_dockMargin,
+                               parentWidth - 2 * m_dockMargin,
+                               m_dockedHeight);
         break;
     default:
         return;
