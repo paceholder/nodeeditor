@@ -35,8 +35,16 @@ GPULanguageLexer::GPULanguageLexer(QObject *parent)
     // Common GPU types
     m_types = {
         "size_t", "ptrdiff_t", "uint", "ushort", "uchar", "ulong",
-        "int2", "int3", "int4", "float2", "float3", "float4",
-        "uint2", "uint3", "uint4", "double2", "double3", "double4"
+        "int2", "int3", "int4", "int8", "int16",
+        "float2", "float3", "float4", "float8", "float16",
+        "uint2", "uint3", "uint4", "uint8", "uint16",
+        "double2", "double3", "double4", "double8", "double16",
+        "char2", "char3", "char4", "char8", "char16",
+        "uchar2", "uchar3", "uchar4", "uchar8", "uchar16",
+        "short2", "short3", "short4", "short8", "short16",
+        "ushort2", "ushort3", "ushort4", "ushort8", "ushort16",
+        "long2", "long3", "long4", "long8", "long16",
+        "ulong2", "ulong3", "ulong4", "ulong8", "ulong16"
     };
 }
 
@@ -125,23 +133,52 @@ void GPULanguageLexer::setLanguageMode(const QString &language)
 {
     m_language = language;
     m_languageKeywords.clear();
+    m_builtinFunctions.clear();
     
     if (language == "OpenCL") {
         m_languageKeywords = {
             "__kernel", "kernel", "__global", "global", "__local", "local",
             "__constant", "constant", "__private", "private", "__read_only",
-            "read_only", "__write_only", "write_only", "__read_write", "read_write",
+            "read_only", "__write_only", "write_only", "__read_write", "read_write"
+        };
+        
+        m_builtinFunctions = {
             "get_global_id", "get_global_size", "get_local_id", "get_local_size",
-            "get_group_id", "get_num_groups", "get_work_dim", "barrier",
-            "CLK_LOCAL_MEM_FENCE", "CLK_GLOBAL_MEM_FENCE"
+            "get_group_id", "get_num_groups", "get_work_dim", "get_global_offset",
+            "barrier", "mem_fence", "read_mem_fence", "write_mem_fence",
+            "CLK_LOCAL_MEM_FENCE", "CLK_GLOBAL_MEM_FENCE",
+            // Math functions
+            "sin", "cos", "tan", "asin", "acos", "atan", "sinh", "cosh", "tanh",
+            "exp", "log", "log2", "log10", "pow", "sqrt", "cbrt", "hypot",
+            "fabs", "fmin", "fmax", "fma", "mad", "clamp", "mix", "step",
+            "smoothstep", "sign", "cross", "dot", "distance", "length", "normalize",
+            // Conversion functions
+            "convert_char", "convert_uchar", "convert_short", "convert_ushort",
+            "convert_int", "convert_uint", "convert_long", "convert_ulong",
+            "convert_float", "convert_double",
+            // Vector functions
+            "vload", "vstore", "shuffle", "shuffle2"
         };
     } else if (language == "CUDA") {
         m_languageKeywords = {
             "__global__", "__device__", "__host__", "__constant__", "__shared__",
-            "__restrict__", "__noinline__", "__forceinline__",
+            "__restrict__", "__noinline__", "__forceinline__"
+        };
+        
+        m_builtinFunctions = {
             "threadIdx", "blockIdx", "blockDim", "gridDim", "warpSize",
             "__syncthreads", "__threadfence", "__threadfence_block",
-            "atomicAdd", "atomicSub", "atomicExch", "atomicMin", "atomicMax"
+            "atomicAdd", "atomicSub", "atomicExch", "atomicMin", "atomicMax",
+            "atomicInc", "atomicDec", "atomicCAS", "atomicAnd", "atomicOr", "atomicXor",
+            // Math functions
+            "sinf", "cosf", "tanf", "asinf", "acosf", "atanf", "atan2f",
+            "sinhf", "coshf", "tanhf", "expf", "exp2f", "exp10f", "expm1f",
+            "logf", "log2f", "log10f", "log1pf", "powf", "sqrtf", "rsqrtf",
+            "cbrtf", "hypotf", "fabsf", "fminf", "fmaxf", "fmaf",
+            "truncf", "roundf", "floorf", "ceilf",
+            // CUDA runtime
+            "cudaMalloc", "cudaFree", "cudaMemcpy", "cudaMemset",
+            "cudaMallocManaged", "cudaDeviceSynchronize", "cudaGetLastError"
         };
     } else if (language == "Metal") {
         m_languageKeywords = {
@@ -150,6 +187,19 @@ void GPULanguageLexer::setLanguageMode(const QString &language)
             "[[thread_position_in_grid]]", "[[threads_per_grid]]",
             "[[thread_position_in_threadgroup]]", "[[threadgroup_position_in_grid]]",
             "[[stage_in]]", "[[position]]", "metal", "half", "half2", "half3", "half4"
+        };
+        
+        m_builtinFunctions = {
+            "sin", "cos", "tan", "asin", "acos", "atan", "atan2",
+            "sinh", "cosh", "tanh", "exp", "exp2", "exp10", "log", "log2", "log10",
+            "pow", "sqrt", "rsqrt", "fabs", "fmin", "fmax", "fma",
+            "clamp", "mix", "step", "smoothstep", "sign",
+            "cross", "dot", "distance", "length", "normalize",
+            "reflect", "refract", "all", "any",
+            // Metal specific
+            "threadgroup_barrier", "simdgroup_barrier",
+            "atomic_store_explicit", "atomic_load_explicit",
+            "atomic_exchange_explicit", "atomic_fetch_add_explicit"
         };
     }
 }
@@ -161,12 +211,22 @@ void GPULanguageLexer::setDarkMode(bool dark)
 
 bool GPULanguageLexer::isKeyword(const QString &word) const
 {
-    return m_keywords.contains(word) || m_types.contains(word);
+    return m_keywords.contains(word);
 }
 
 bool GPULanguageLexer::isLanguageKeyword(const QString &word) const
 {
     return m_languageKeywords.contains(word);
+}
+
+bool GPULanguageLexer::isBuiltinFunction(const QString &word) const
+{
+    return m_builtinFunctions.contains(word);
+}
+
+bool GPULanguageLexer::isBuiltinType(const QString &word) const
+{
+    return m_types.contains(word);
 }
 
 bool GPULanguageLexer::isNumber(const QString &text) const
@@ -311,8 +371,14 @@ void GPULanguageLexer::styleText(int start, int end)
                 setStyling(wordLen, LanguageKeyword);
             } else if (isKeyword(word)) {
                 setStyling(wordLen, Keyword);
+            } else if (isBuiltinType(word)) {
+                setStyling(wordLen, Keyword);
+            } else if (isBuiltinFunction(word)) {
+                setStyling(wordLen, LanguageKeyword);
             } else {
                 setStyling(wordLen, Identifier);
+                // Track this identifier
+                m_identifiers.insert(word);
             }
             continue;
         }
@@ -357,6 +423,8 @@ FloatingCodeEditor::FloatingCodeEditor(GraphEditorWindow *parent)
     , m_darkModeCheckBox(nullptr)
     , m_lexer(nullptr)
     , m_isDarkMode(false)  // Default to light mode
+    , m_errorCheckTimer(nullptr)
+    , m_errorIndicator(0)
 {
     // Set panel-specific dimensions
     setFloatingWidth(600);
@@ -460,6 +528,9 @@ void FloatingCodeEditor::setupUI()
     m_lexer = new GPULanguageLexer(m_codeEditor);
     m_codeEditor->setLexer(m_lexer);
 
+    // Setup error indicator
+    setupErrorIndicator();
+
     // Apply initial theme (light mode by default)
     if (m_isDarkMode) {
         applyDarkTheme();
@@ -484,6 +555,11 @@ void FloatingCodeEditor::setupUI()
 
     layout->addWidget(m_codeEditor, 1);  // Give maximum space to editor
 
+    // Setup error checking timer
+    m_errorCheckTimer = new QTimer(this);
+    m_errorCheckTimer->setSingleShot(true);
+    m_errorCheckTimer->setInterval(500); // Check after 500ms of no typing
+    
     // Initial size
     getContentWidget()->adjustSize();
     adjustSize();
@@ -525,6 +601,137 @@ void FloatingCodeEditor::setupCommonEditorFeatures()
     // Edge marker
     m_codeEditor->setEdgeMode(QsciScintilla::EdgeLine);
     m_codeEditor->setEdgeColumn(80);
+}
+
+void FloatingCodeEditor::setupErrorIndicator()
+{
+    // Define a custom indicator for errors
+    m_errorIndicator = 1; // Use indicator number 1
+    
+    // Set up the error indicator style (squiggly underline)
+    m_codeEditor->indicatorDefine(QsciScintilla::SquiggleIndicator, m_errorIndicator);
+    m_codeEditor->setIndicatorForegroundColor(QColor("#ff0000"), m_errorIndicator);
+    m_codeEditor->setIndicatorDrawUnder(true, m_errorIndicator);
+}
+
+void FloatingCodeEditor::checkForErrors()
+{
+    // Clear previous error indicators
+    m_codeEditor->clearIndicatorRange(0, 0, m_codeEditor->lines(), 0, m_errorIndicator);
+    m_errors.clear();
+    
+    // Get all text
+    QString text = m_codeEditor->text();
+    QStringList lines = text.split('\n');
+    
+    // Clear lexer's identifier tracking
+    m_lexer->clearIdentifiers();
+    
+    // Force a re-lex to collect identifiers
+    m_codeEditor->recolor();
+    
+    // Get declared identifiers from lexer
+    QSet<QString> declaredIdentifiers = m_lexer->getIdentifiers();
+    
+    // Track variable declarations
+    QSet<QString> declaredVariables;
+    QSet<QString> usedVariables;
+    
+    // Simple parsing to find declarations and usage
+    for (int lineNum = 0; lineNum < lines.size(); ++lineNum) {
+        QString line = lines[lineNum].trimmed();
+        
+        // Skip empty lines and comments
+        if (line.isEmpty() || line.startsWith("//")) continue;
+        
+        // Check for variable declarations (simplified)
+        QRegularExpression declRegex;
+        if (getCurrentLanguage() == "OpenCL") {
+            declRegex.setPattern("(?:__global|__local|__private|__constant|global|local|private|constant)?\\s*(?:const\\s+)?(?:unsigned\\s+)?(?:char|uchar|short|ushort|int|uint|long|ulong|float|double|half|bool|size_t|ptrdiff_t|int2|int3|int4|float2|float3|float4|uint2|uint3|uint4|double2|double3|double4)(?:\\s*\\*)?\\s+(\\w+)");
+        } else if (getCurrentLanguage() == "CUDA") {
+            declRegex.setPattern("(?:__device__|__shared__|__constant__)?\\s*(?:const\\s+)?(?:unsigned\\s+)?(?:char|short|int|long|float|double|bool|size_t|dim3|int2|int3|int4|float2|float3|float4|uint2|uint3|uint4)(?:\\s*\\*)?\\s+(\\w+)");
+        } else { // Metal
+            declRegex.setPattern("(?:device|constant|threadgroup|thread)?\\s*(?:const\\s+)?(?:char|short|int|long|float|double|half|bool|size_t|int2|int3|int4|float2|float3|float4|uint2|uint3|uint4|half2|half3|half4)(?:\\s*\\*)?\\s+(\\w+)");
+        }
+        
+        QRegularExpressionMatchIterator it = declRegex.globalMatch(line);
+        while (it.hasNext()) {
+            QRegularExpressionMatch match = it.next();
+            declaredVariables.insert(match.captured(1));
+        }
+        
+        // Check for undefined variables (simplified - looks for word usage)
+        QRegularExpression usageRegex("\\b(\\w+)\\s*(?:\\[|\\.|\\(|\\)|;|,|\\+|-|\\*|/|=|<|>|&|\\||!)");
+        QRegularExpressionMatchIterator usageIt = usageRegex.globalMatch(line);
+        while (usageIt.hasNext()) {
+            QRegularExpressionMatch match = usageIt.next();
+            QString word = match.captured(1);
+            
+            // Skip if it's a keyword, type, or number
+            if (m_lexer->isKeyword(word) || m_lexer->isLanguageKeyword(word) || 
+                m_lexer->isBuiltinFunction(word) || m_lexer->isBuiltinType(word) ||
+                word.at(0).isDigit()) {
+                continue;
+            }
+            
+            // Check if variable is used but not declared
+            if (!declaredVariables.contains(word) && !word.isEmpty()) {
+                // Find the position in the line
+                int columnStart = match.capturedStart(1);
+                int columnEnd = match.capturedEnd(1);
+                
+                // Calculate absolute position
+                int lineStartPos = 0;
+                for (int i = 0; i < lineNum; ++i) {
+                    lineStartPos += lines[i].length() + 1; // +1 for newline
+                }
+                
+                int startPos = lineStartPos + columnStart;
+                int endPos = lineStartPos + columnEnd;
+                
+                // Add error indicator
+                m_codeEditor->fillIndicatorRange(lineNum, columnStart, lineNum, columnEnd, m_errorIndicator);
+                
+                // Store error info
+                ErrorInfo error;
+                error.line = lineNum;
+                error.indexStart = startPos;
+                error.indexEnd = endPos;
+                error.message = QString("Undefined variable '%1'").arg(word);
+                m_errors.append(error);
+            }
+        }
+        
+        // Check for language-specific syntax errors
+        if (getCurrentLanguage() == "OpenCL") {
+            // Check for missing semicolons
+            if (!line.endsWith(';') && !line.endsWith('{') && !line.endsWith('}') && 
+                !line.startsWith('#') && !line.contains("//") && line.length() > 2) {
+                if (line.contains("__kernel") || line.contains("if") || line.contains("for") || 
+                    line.contains("while") || line.contains("else")) {
+                    // These don't need semicolons
+                } else {
+                    m_codeEditor->fillIndicatorRange(lineNum, line.length(), lineNum, line.length() + 1, m_errorIndicator);
+                    ErrorInfo error;
+                    error.line = lineNum;
+                    error.message = "Missing semicolon";
+                    m_errors.append(error);
+                }
+            }
+        }
+    }
+}
+
+void FloatingCodeEditor::onTextChanged()
+{
+    // Reset the timer whenever text changes
+    m_errorCheckTimer->stop();
+    m_errorCheckTimer->start();
+}
+
+void FloatingCodeEditor::performErrorCheck()
+{
+    checkForErrors();
 }
 
 void FloatingCodeEditor::applyDarkTheme()
@@ -611,6 +818,12 @@ void FloatingCodeEditor::connectSignals()
     connect(m_codeEditor, &QsciScintilla::textChanged, this, &FloatingCodeEditor::onCodeChanged);
     
     connect(m_darkModeCheckBox, &QCheckBox::toggled, this, &FloatingCodeEditor::onThemeToggled);
+    
+    // Connect text change to error checking
+    connect(m_codeEditor, &QsciScintilla::textChanged, this, &FloatingCodeEditor::onTextChanged);
+    
+    // Connect timer to error checking
+    connect(m_errorCheckTimer, &QTimer::timeout, this, &FloatingCodeEditor::performErrorCheck);
 }
 
 void FloatingCodeEditor::onLanguageChanged(int index)

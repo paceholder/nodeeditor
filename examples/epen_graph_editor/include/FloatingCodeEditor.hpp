@@ -4,6 +4,8 @@
 #include "FloatingPanelBase.hpp"
 #include <Qsci/qsciscintilla.h>
 #include <Qsci/qscilexercustom.h>
+#include <QTimer>
+#include <QSet>
 #include <memory>
 
 class QComboBox;
@@ -41,10 +43,18 @@ public:
     
     void setLanguageMode(const QString &language);
     void setDarkMode(bool dark);
-
-private:
+    
+    // Get all identifiers from the text
+    QSet<QString> getIdentifiers() const { return m_identifiers; }
+    void clearIdentifiers() { m_identifiers.clear(); }
+    
+    // Public helper methods for error checking
     bool isKeyword(const QString &word) const;
     bool isLanguageKeyword(const QString &word) const;
+    bool isBuiltinFunction(const QString &word) const;
+    bool isBuiltinType(const QString &word) const;
+
+private:
     bool isNumber(const QString &text) const;
     
     QString m_language;
@@ -52,6 +62,8 @@ private:
     QStringList m_keywords;
     QStringList m_languageKeywords;
     QStringList m_types;
+    QStringList m_builtinFunctions;
+    QSet<QString> m_identifiers;  // Track all identifiers found
 };
 
 class FloatingCodeEditor : public FloatingPanelBase
@@ -88,12 +100,23 @@ private slots:
     void onCompileClicked();
     void onCodeChanged();
     void onThemeToggled(bool checked);
+    void onTextChanged();
+    void performErrorCheck();
 
 private:
     void updateHighlighter();
     void setupCommonEditorFeatures();
     void applyDarkTheme();
     void applyLightTheme();
+    void setupErrorIndicator();
+    void checkForErrors();
+    
+    struct ErrorInfo {
+        int line;
+        int indexStart;
+        int indexEnd;
+        QString message;
+    };
 
     // UI elements
     QComboBox *m_languageCombo;
@@ -109,6 +132,11 @@ private:
     
     // Theme
     bool m_isDarkMode;
+    
+    // Error checking
+    QTimer *m_errorCheckTimer;
+    QList<ErrorInfo> m_errors;
+    int m_errorIndicator;
 };
 
 #endif // FLOATINGCODEEDITOR_HPP
