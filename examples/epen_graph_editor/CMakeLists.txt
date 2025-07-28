@@ -11,4 +11,4 @@ target_include_directories(epen_graph_editor
 )
 
 target_link_libraries(epen_graph_editor PRIVATE  QtPropertyBrowser QtNodes Qt6::Core
-    Qt6::Widgets)
+    Qt6::Widgets ${QSCINTILLA_TARGET_NAME} )
