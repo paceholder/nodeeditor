@@ -584,3 +584,10 @@ feature_summary(WHAT ALL)
 
 # Build examples option
 option(BUILD_EXAMPLES "Build example applications" ON)
+
+# Export the target name to parent scope
+set(QSCINTILLA_TARGET_NAME ${QSCINTILLA_TARGET_NAME} PARENT_SCOPE)
+set(QSCINTILLA_TARGET_NAME ${QSCINTILLA_TARGET_NAME} CACHE INTERNAL "QScintilla target name")
+
+# Create an alias for easier usage
+add_library(QScintilla::QScintilla ALIAS ${QSCINTILLA_TARGET_NAME})
