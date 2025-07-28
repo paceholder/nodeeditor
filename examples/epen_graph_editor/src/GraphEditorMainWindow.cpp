@@ -30,7 +30,7 @@ GraphEditorWindow::GraphEditorWindow(DataFlowGraphicsScene *scene, DataFlowModel
     , m_currentSelectedNodeId(InvalidNodeId)
 {
     setWindowTitle("Graph Editor");
-    resize(800, 600);
+    resize(1024, 768);
 
     setAcceptDrops(true);
     viewport()->setAcceptDrops(true); // Important for drag and drop
