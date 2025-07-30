@@ -1,7 +1,7 @@
 #include "GraphEditorMainWindow.hpp"
-#include "FloatingCodeEditor.hpp"
-#include "FloatingProperties.hpp"
-#include "FloatingToolbar.hpp"
+#include "panels/FloatingCodeEditor.hpp"
+#include "panels/FloatingProperties.hpp"
+#include "panels/FloatingToolbar.hpp"
 #include <QAction>
 #include <QApplication>
 #include <QCursor>

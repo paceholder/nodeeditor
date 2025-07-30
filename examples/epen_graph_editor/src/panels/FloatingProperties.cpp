@@ -1,4 +1,4 @@
-#include "FloatingProperties.hpp"
+#include "panels/FloatingProperties.hpp"
 #include "GraphEditorMainWindow.hpp"
 #include <QApplication>
 #include <QCheckBox>

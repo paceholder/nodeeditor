@@ -1,4 +1,4 @@
-#include "FloatingToolbar.hpp"
+#include "panels/FloatingToolbar.hpp"
 #include "GraphEditorMainWindow.hpp"
 #include <QAction>
 #include <QApplication>

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "FloatingProperties.hpp"
+#include "panels/FloatingProperties.hpp"
 #include "PortAddRemoveWidget.hpp"
 #include "data_models/OperationDataModel.hpp"
 #include "data_models/Process.hpp"

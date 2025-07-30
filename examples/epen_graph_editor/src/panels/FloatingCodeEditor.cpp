@@ -1,4 +1,4 @@
-#include "FloatingCodeEditor.hpp"
+#include "panels/FloatingCodeEditor.hpp"
 #include "GraphEditorMainWindow.hpp"
 #include <QApplication>
 #include <QComboBox>

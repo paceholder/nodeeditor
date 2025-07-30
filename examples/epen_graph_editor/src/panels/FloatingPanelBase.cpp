@@ -1,4 +1,4 @@
-#include "FloatingPanelBase.hpp"
+#include "panels/FloatingPanelBase.hpp"
 #include "GraphEditorMainWindow.hpp"
 #include <QApplication>
 #include <QDebug>
