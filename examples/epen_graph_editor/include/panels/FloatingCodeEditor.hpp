@@ -7,11 +7,14 @@
 #include <QTimer>
 #include <QSet>
 #include <memory>
+#include <map>
 
 class QComboBox;
 class QPushButton;
 class QCheckBox;
 class GraphEditorWindow;
+class CompileResultsWidget;
+class SimpleGPUCompiler;
 
 // Custom lexer for GPU languages
 class GPULanguageLexer : public QsciLexerCustom
@@ -84,6 +87,9 @@ public:
 
     // Enable/disable editing
     void setReadOnly(bool readOnly);
+    
+    // Compilation results buffer
+    QByteArray getCompiledBinary() const { return m_compiledBinary; }
 
 signals:
     void compileRequested(const QString &code, const QString &language);
@@ -102,6 +108,8 @@ private slots:
     void onThemeToggled(bool checked);
     void onTextChanged();
     void performErrorCheck();
+    void onResultsCloseRequested();
+    void onMessageClicked(int line, int column);
 
 private:
     void updateHighlighter();
@@ -110,6 +118,9 @@ private:
     void applyLightTheme();
     void setupErrorIndicator();
     void checkForErrors();
+    void performCompilation();
+    void initializeCompilers();
+    void showCompileResults(bool show);
     
     struct ErrorInfo {
         int line;
@@ -123,6 +134,7 @@ private:
     QsciScintilla *m_codeEditor;
     QPushButton *m_compileButton;
     QCheckBox *m_darkModeCheckBox;
+    CompileResultsWidget *m_resultsWidget;
     
     // Lexer
     GPULanguageLexer *m_lexer;
@@ -137,6 +149,12 @@ private:
     QTimer *m_errorCheckTimer;
     QList<ErrorInfo> m_errors;
     int m_errorIndicator;
+    
+    // Compilers
+    std::map<QString, std::unique_ptr<SimpleGPUCompiler>> m_compilers;
+    
+    // Compilation result
+    QByteArray m_compiledBinary;
 };
 
 #endif // FLOATINGCODEEDITOR_HPP
