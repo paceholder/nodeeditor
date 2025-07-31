@@ -110,21 +110,18 @@ bool DataFlowGraphModel::connectionPossible(ConnectionId const connectionId) con
         return false;
     }
 
-    // Check port bounds
+    // Check port bounds, i.e. that we do not connect non-existing port numbers
     auto checkPortBounds = [&](PortType const portType) {
         NodeId const nodeId = getNodeId(portType, connectionId);
-        PortIndex const portIndex = getPortIndex(portType, connectionId);
-        
-        auto it = _models.find(nodeId);
-        if (it == _models.end()) return false;
-        
-        unsigned int portCount = it->second->nPorts(portType);
-        return portIndex < portCount;
-    };
+        auto portCountRole = (portType == PortType::Out) ?
+                             NodeRole::OutPortCount :
+                             NodeRole::InPortCount;
 
-    if (!checkPortBounds(PortType::Out) || !checkPortBounds(PortType::In)) {
-        return false;
-    }
+        std::size_t const portCount =
+          nodeData(nodeId, portCountRole).toUInt();
+
+        return getPortIndex(portType, connectionId) < portCount;
+    };
 
     auto getDataType = [&](PortType const portType) {
         return portData(getNodeId(portType, connectionId),
@@ -146,7 +143,10 @@ bool DataFlowGraphModel::connectionPossible(ConnectionId const connectionId) con
     };
 
     return getDataType(PortType::Out).id == getDataType(PortType::In).id
-           && portVacant(PortType::Out) && portVacant(PortType::In);
+           && portVacant(PortType::Out)
+           && portVacant(PortType::In)
+           && checkPortBounds(PortType::Out)
+           && checkPortBounds(PortType::In);
 }
 
 void DataFlowGraphModel::addConnection(ConnectionId const connectionId)
