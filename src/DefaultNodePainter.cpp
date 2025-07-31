@@ -1,9 +1,5 @@
 #include "DefaultNodePainter.hpp"
 
-#include <cmath>
-
-#include <QtCore/QMargins>
-
 #include "AbstractGraphModel.hpp"
 #include "AbstractNodeGeometry.hpp"
 #include "BasicGraphicsScene.hpp"
@@ -12,6 +8,11 @@
 #include "NodeGraphicsObject.hpp"
 #include "NodeState.hpp"
 #include "StyleCollection.hpp"
+
+#include <QtCore/QMargins>
+
+#include <cmath>
+
 
 namespace QtNodes {
 

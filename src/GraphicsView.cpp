@@ -21,7 +21,6 @@
 #include <QtWidgets>
 
 #include <cmath>
-#include <iostream>
 
 using QtNodes::BasicGraphicsScene;
 using QtNodes::GraphicsView;

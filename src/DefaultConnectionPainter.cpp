@@ -1,13 +1,14 @@
 #include "DefaultConnectionPainter.hpp"
 
-#include <QtGui/QIcon>
-
 #include "AbstractGraphModel.hpp"
 #include "ConnectionGraphicsObject.hpp"
 #include "ConnectionState.hpp"
 #include "Definitions.hpp"
 #include "NodeData.hpp"
 #include "StyleCollection.hpp"
+
+#include <QtGui/QIcon>
+
 
 namespace QtNodes {
 
