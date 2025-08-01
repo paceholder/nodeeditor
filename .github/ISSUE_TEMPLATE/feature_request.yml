@@ -1,6 +1,5 @@
 name: Feature request
 description: Request new functionality or enhancements.
-type: Feature
 body:
   - type: textarea
     id: idea
