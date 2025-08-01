@@ -229,14 +229,14 @@ Citing
 
 ::
 
-    Dmitry Pinaev et al, Qt Nodes, (2022), GitHub repository, https://github.com/paceholder/nodeeditor
+    Dmitry Pinaev et al, Qt Nodes, (2013-2025), GitHub repository, https://github.com/paceholder/nodeeditor
 
 BibTeX::
 
-    @misc{Pinaev2022,
+    @misc{Pinaev2025,
       author = {Dmitry Pinaev et al},
       title = {QtNodes. Node Editor},
-      year = {2017},
+      year = {2025},
       publisher = {GitHub},
       journal = {GitHub repository},
       howpublished = {\url{https://github.com/paceholder/nodeeditor}},
