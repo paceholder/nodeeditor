@@ -336,8 +336,9 @@ QVariant DataFlowGraphModel::portData(NodeId nodeId,
 
     switch (role) {
     case PortRole::Data:
-        if (portType == PortType::Out)
+        if (portType == PortType::Out) {
             result = QVariant::fromValue(model->outData(portIndex));
+        }
         break;
 
     case PortRole::DataType:
