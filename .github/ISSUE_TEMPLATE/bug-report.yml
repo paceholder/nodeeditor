@@ -1,6 +1,5 @@
 name: Bug report
 description: Report crashes or incorrect behaviour of existing functionality in QtNodes.
-type: Bug
 body:
   - type: textarea
     id: steps
