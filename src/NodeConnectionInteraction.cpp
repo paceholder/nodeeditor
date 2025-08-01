@@ -21,37 +21,25 @@ NodeConnectionInteraction::NodeConnectionInteraction(NodeGraphicsObject &ngo,
     , _scene(scene)
 {}
 
+
+// This is the chneck from the perspective of the ConnectionGraphicsObject
 bool NodeConnectionInteraction::canConnect(PortIndex *portIndex) const
 {
     // 1. Connection requires a port.
-
-    PortType requiredPort = _cgo.connectionState().requiredPort();
-
+    PortType const requiredPort = _cgo.connectionState().requiredPort();
     if (requiredPort == PortType::None) {
         return false;
     }
 
-    NodeId connectedNodeId = getNodeId(oppositePort(requiredPort), _cgo.connectionId());
-
-    // 2. Forbid connecting the node to itself.
-
-    if (_ngo.nodeId() == connectedNodeId)
-        return false;
-
-    // 3. Connection loose end is above the node port.
-
-    QPointF connectionPoint = _cgo.sceneTransform().map(_cgo.endPoint(requiredPort));
-
+    // 2. Connection loose end is above the node port.
+    QPointF const connectionPoint = _cgo.sceneTransform().map(_cgo.endPoint(requiredPort));
     *portIndex = nodePortIndexUnderScenePoint(requiredPort, connectionPoint);
-
     if (*portIndex == InvalidPortIndex) {
         return false;
     }
 
-    // 4. Model allows connection.
-
+    // 3. Model permits connection.
     AbstractGraphModel &model = _ngo.nodeScene()->graphModel();
-
     ConnectionId connectionId = makeCompleteConnectionId(_cgo.connectionId(), // incomplete
                                                          _ngo.nodeId(),       // missing node id
                                                          *portIndex);         // missing port index
