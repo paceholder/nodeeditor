@@ -113,6 +113,29 @@ TEST_CASE("DataFlowGraphModel connections", "[dataflow]")
         ConnectionId invalidIn{node1, 0, node2, 2};
         CHECK_FALSE(model.connectionPossible(invalidIn));
     }
+
+    SECTION("Loop connection between three nodes")
+    {
+      NodeId node3 = model.addNode("TestNode");
+
+      ConnectionId connId12{node1, 0, node2, 0};
+
+      CHECK(model.connectionPossible(connId12));
+      model.addConnection(connId12);
+      CHECK(model.connectionExists(connId12));
+
+      ConnectionId connId23{node2, 0, node3, 0};
+
+      CHECK(model.connectionPossible(connId23));
+      model.addConnection(connId23);
+      CHECK(model.connectionExists(connId23));
+
+      ConnectionId connId31{node3, 0, node1, 0};
+
+      CHECK_FALSE(model.connectionPossible(connId31));
+      model.addConnection(connId31);
+      CHECK(model.connectionExists(connId31));
+    }
 }
 
 TEST_CASE("DataFlowGraphModel serialization support", "[dataflow]")
