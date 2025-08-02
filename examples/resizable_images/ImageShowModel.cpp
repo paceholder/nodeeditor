@@ -24,6 +24,11 @@ ImageShowModel::ImageShowModel()
     _label->installEventFilter(this);
 }
 
+ImageShowModel::~ImageShowModel()
+{
+    delete _label;
+}
+
 unsigned int ImageShowModel::nPorts(PortType portType) const
 {
     unsigned int result = 1;

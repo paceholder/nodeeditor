@@ -21,7 +21,9 @@ class StyleCollection;
  * AbstractGraphModel.
  * This class is the same what has been called NodeDataModel before v3.
  */
-class NODE_EDITOR_PUBLIC NodeDelegateModel : public QObject, public Serializable
+class NODE_EDITOR_PUBLIC NodeDelegateModel
+    : public QObject
+    , public Serializable
 {
     Q_OBJECT
 
@@ -72,6 +74,8 @@ public:
      * we'll gonna have a dangling pointer.
      */
     virtual QWidget *embeddedWidget() = 0;
+
+    virtual bool widgetEmbeddable() const { return true; }
 
     virtual bool resizable() const { return false; }
 

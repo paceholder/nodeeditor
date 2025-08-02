@@ -139,6 +139,10 @@ QVariant DynamicPortsModel::nodeData(NodeId nodeId, NodeRole role) const
         result = _nodePortCounts[nodeId].out;
         break;
 
+    case NodeRole::WidgetEmbeddable:
+        result = true;
+        break;
+
     case NodeRole::Widget: {
         result = QVariant::fromValue(widget(nodeId));
         break;
@@ -188,6 +192,9 @@ bool DynamicPortsModel::setNodeData(NodeId nodeId, NodeRole role, QVariant value
     case NodeRole::OutPortCount:
         _nodePortCounts[nodeId].out = value.toUInt();
         widget(nodeId)->populateButtons(PortType::Out, value.toUInt());
+        break;
+
+    case NodeRole::WidgetEmbeddable:
         break;
 
     case NodeRole::Widget:
