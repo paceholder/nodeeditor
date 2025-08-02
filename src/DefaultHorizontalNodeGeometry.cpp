@@ -12,7 +12,7 @@ namespace QtNodes {
 DefaultHorizontalNodeGeometry::DefaultHorizontalNodeGeometry(AbstractGraphModel &graphModel)
     : AbstractNodeGeometry(graphModel)
     , _portSize(20)
-    , _portSpasing(10)
+    , _portSpasing(16)
     , _fontMetrics(QFont())
     , _boldFontMetrics(QFont())
 {
@@ -79,7 +79,7 @@ QPointF DefaultHorizontalNodeGeometry::portPosition(NodeId const nodeId,
 
     QPointF result;
 
-    double totalHeight = 0.0;
+    double totalHeight = _graphModel.nodeData<int>(nodeId, NodeRole::PortOffset);;
 
     totalHeight += captionRect(nodeId).height();
     totalHeight += _portSpasing;
