@@ -1,6 +1,9 @@
 #include "panels/FloatingCodeEditor.hpp"
 #include "GraphEditorMainWindow.hpp"
-#include "SimpleGPUCompiler.hpp"
+#include "compilers/SimpleGPUCompiler.hpp"
+#include "compilers/OpenCLCompiler.hpp"
+#include "compilers/CUDACompiler.hpp"
+#include "compilers/MetalCompiler.hpp"
 #include "panels/CompileResultsWidget.hpp"
 #include <QApplication>
 #include <QCheckBox>
