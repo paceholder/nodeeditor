@@ -4,7 +4,7 @@
 #include <QWidget>
 #include <QVector>
 #include <functional>
-#include "panels/SimpleGPUCompiler.hpp"
+#include "SimpleGPUCompiler.hpp"
 
 QT_BEGIN_NAMESPACE
 class QTextEdit;

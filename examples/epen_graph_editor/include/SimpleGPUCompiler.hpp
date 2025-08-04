@@ -124,18 +124,4 @@ private:
     bool m_initialized;
 };
 #endif
-
-// GLSL compiler is always available as fallback
-class GLSLComputeCompiler : public SimpleGPUCompiler
-{
-public:
-    GLSLComputeCompiler();
-    ~GLSLComputeCompiler() override;
-
-    bool isAvailable() const override { return true; }
-    QString getName() const override { return "GLSL Compute"; }
-    CompileResult compile(const QString &source, const QString &kernelName = "kernel") override;
-    QStringList getAvailableDevices() const override;
-};
-
 #endif // SIMPLEGPUCOMPILER_HPP

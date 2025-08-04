@@ -1,6 +1,6 @@
 #include "panels/FloatingCodeEditor.hpp"
 #include "panels/CompileResultsWidget.hpp"
-#include "panels/SimpleGPUCompiler.hpp"
+#include "SimpleGPUCompiler.hpp"
 #include "GraphEditorMainWindow.hpp"
 #include <QApplication>
 #include <QComboBox>
