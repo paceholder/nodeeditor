@@ -285,7 +285,12 @@ void GPULanguageLexer::setLanguageMode(const QString &language)
 
 void GPULanguageLexer::setDarkMode(bool dark)
 {
-    m_isDarkMode = dark;
+    if (m_isDarkMode != dark) {
+        m_isDarkMode = dark;
+        // Emit property changed signal to trigger lexer refresh
+        emit propertyChanged("font", "");
+        emit propertyChanged("color", "");
+    }
 }
 
 bool GPULanguageLexer::isKeyword(const QString &word) const
@@ -905,9 +910,55 @@ void FloatingCodeEditor::performErrorCheck()
     checkForErrors();
 }
 
+void FloatingCodeEditor::updateLexerColors()
+{
+    if (!m_lexer) return;
+    
+    // Manually set all colors, papers, and fonts for each style
+    for (int style = GPULanguageLexer::Default; style <= GPULanguageLexer::Preprocessor; ++style) {
+        m_lexer->setColor(m_lexer->defaultColor(style), style);
+        m_lexer->setPaper(m_lexer->defaultPaper(style), style);
+        m_lexer->setFont(m_lexer->defaultFont(style), style);
+    }
+}
+
+void FloatingCodeEditor::forceRefreshLexer()
+{
+    if (m_lexer && m_codeEditor) {
+        // Store current cursor position and text
+        int line, col;
+        m_codeEditor->getCursorPosition(&line, &col);
+        QString currentText = m_codeEditor->text();
+        
+        // Update lexer colors explicitly
+        updateLexerColors();
+        
+        // Force complete refresh
+        m_codeEditor->SendScintilla(QsciScintilla::SCI_CLEARDOCUMENTSTYLE);
+        m_codeEditor->SendScintilla(QsciScintilla::SCI_STYLERESETDEFAULT);
+        
+        // Remove and re-add lexer
+        m_codeEditor->setLexer(nullptr);
+        QApplication::processEvents();
+        m_codeEditor->setLexer(m_lexer);
+        
+        // Force recoloring
+        m_codeEditor->SendScintilla(QsciScintilla::SCI_COLOURISE, 0, currentText.length());
+        m_codeEditor->recolor();
+        
+        // Restore cursor position
+        m_codeEditor->setCursorPosition(line, col);
+    }
+}
+
 void FloatingCodeEditor::applyDarkTheme()
 {
-    // Dark theme colors
+    // Update lexer mode first
+    if (m_lexer) {
+        m_lexer->setDarkMode(true);
+    }
+    
+    // Dark theme colors for editor
     m_codeEditor->setPaper(QColor("#1e1e1e"));
     m_codeEditor->setColor(QColor("#d4d4d4"));
     
@@ -933,17 +984,19 @@ void FloatingCodeEditor::applyDarkTheme()
     // Folding
     m_codeEditor->setFoldMarginColors(QColor("#2b2b2b"), QColor("#2b2b2b"));
     
-    // Update lexer
-    if (m_lexer) {
-        m_lexer->setDarkMode(true);
-        m_codeEditor->setLexer(nullptr);
-        m_codeEditor->setLexer(m_lexer);
-    }
+    // Update lexer colors explicitly and force refresh
+    updateLexerColors();
+    forceRefreshLexer();
 }
 
 void FloatingCodeEditor::applyLightTheme()
 {
-    // Light theme colors
+    // Update lexer mode first
+    if (m_lexer) {
+        m_lexer->setDarkMode(false);
+    }
+    
+    // Light theme colors for editor
     m_codeEditor->setPaper(QColor("#ffffff"));
     m_codeEditor->setColor(QColor("#000000"));
     
@@ -969,12 +1022,9 @@ void FloatingCodeEditor::applyLightTheme()
     // Folding
     m_codeEditor->setFoldMarginColors(QColor("#f0f0f0"), QColor("#f0f0f0"));
     
-    // Update lexer
-    if (m_lexer) {
-        m_lexer->setDarkMode(false);
-        m_codeEditor->setLexer(nullptr);
-        m_codeEditor->setLexer(m_lexer);
-    }
+    // Update lexer colors explicitly and force refresh
+    updateLexerColors();
+    forceRefreshLexer();
 }
 
 void FloatingCodeEditor::connectSignals()
@@ -1081,6 +1131,9 @@ void FloatingCodeEditor::onThemeToggled(bool checked)
     } else {
         applyLightTheme();
     }
+    
+    // Additional delayed refresh as backup
+    QTimer::singleShot(100, this, &FloatingCodeEditor::forceRefreshLexer);
 }
 
 void FloatingCodeEditor::updateHighlighter()
@@ -1088,9 +1141,8 @@ void FloatingCodeEditor::updateHighlighter()
     QString language = getCurrentLanguage();
     m_lexer->setLanguageMode(language);
     
-    // Force refresh
-    m_codeEditor->setLexer(nullptr);
-    m_codeEditor->setLexer(m_lexer);
+    // Force refresh with the new method
+    forceRefreshLexer();
     
     // Setup auto-completion
     QsciAPIs *api = new QsciAPIs(m_lexer);
@@ -1283,8 +1335,7 @@ void FloatingCodeEditor::onMessageClicked(int line, int column)
         
         // Clear selection after a delay
         QTimer::singleShot(2000, [this]() {
-            //m_codeEditor->clearSelection();
-            // To Do : fix this
+            m_codeEditor->setSelection(-1, -1, -1, -1); // Clear selection
         });
         
         // Focus the editor

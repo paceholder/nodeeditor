@@ -121,6 +121,8 @@ private:
     void performCompilation();
     void initializeCompilers();
     void showCompileResults(bool show);
+    void forceRefreshLexer();  // Added method for forcing lexer refresh
+    void updateLexerColors();  // Added method for updating lexer colors explicitly
     
     struct ErrorInfo {
         int line;
