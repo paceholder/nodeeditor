@@ -4,19 +4,32 @@
 #include <QString>
 #include <QVector>
 #include <QByteArray>
+#include <QLibrary>
 #include <memory>
 
-#ifdef HAS_OPENCL
+// Always include headers, but make them optional
 #ifdef __APPLE__
-#include <OpenCL/opencl.h>
+    #ifdef __has_include
+        #if __has_include(<OpenCL/opencl.h>)
+            #define HAS_OPENCL_HEADERS
+            #include <OpenCL/opencl.h>
+        #endif
+    #endif
 #else
-#include <CL/cl.h>
-#endif
+    #ifdef __has_include
+        #if __has_include(<CL/cl.h>)
+            #define HAS_OPENCL_HEADERS
+            #include <CL/cl.h>
+        #endif
+    #endif
 #endif
 
-#ifdef HAS_CUDA
-#include <cuda.h>
-#include <nvrtc.h>
+#ifdef __has_include
+    #if __has_include(<cuda.h>) && __has_include(<nvrtc.h>)
+        #define HAS_CUDA_HEADERS
+        #include <cuda.h>
+        #include <nvrtc.h>
+    #endif
 #endif
 
 class SimpleGPUCompiler
@@ -53,6 +66,9 @@ public:
     // Get compiler name
     virtual QString getName() const = 0;
     
+    // Get availability error message if not available
+    virtual QString getAvailabilityError() const = 0;
+    
     // Compile source code
     virtual CompileResult compile(const QString &source, const QString &kernelName = "kernel") = 0;
     
@@ -64,7 +80,7 @@ protected:
     QVector<CompileMessage> parseCompilerOutput(const QString &output);
 };
 
-#ifdef HAS_OPENCL
+// Always define all compiler classes, but implementation varies based on runtime availability
 class OpenCLCompiler : public SimpleGPUCompiler
 {
 public:
@@ -73,21 +89,27 @@ public:
 
     bool isAvailable() const override;
     QString getName() const override { return "OpenCL"; }
+    QString getAvailabilityError() const override { return m_availabilityError; }
     CompileResult compile(const QString &source, const QString &kernelName = "kernel") override;
     QStringList getAvailableDevices() const override;
 
 private:
     bool initializeOpenCL();
     void cleanup();
+    bool loadOpenCLLibrary();
     
-    cl_platform_id m_platform;
-    cl_device_id m_device;
-    cl_context m_context;
+    // Function pointers for OpenCL functions
+    struct OpenCLFunctions;
+    std::unique_ptr<OpenCLFunctions> m_functions;
+    
+    std::unique_ptr<QLibrary> m_openclLib;
+    void* m_platform;
+    void* m_device;
+    void* m_context;
     bool m_initialized;
+    QString m_availabilityError;
 };
-#endif
 
-#ifdef HAS_CUDA
 class CUDACompiler : public SimpleGPUCompiler
 {
 public:
@@ -96,19 +118,26 @@ public:
 
     bool isAvailable() const override;
     QString getName() const override { return "CUDA"; }
+    QString getAvailabilityError() const override { return m_availabilityError; }
     CompileResult compile(const QString &source, const QString &kernelName = "kernel") override;
     QStringList getAvailableDevices() const override;
 
 private:
     bool initializeCUDA();
     void cleanup();
+    bool loadCUDALibraries();
     
+    // Function pointers for CUDA functions
+    struct CUDAFunctions;
+    std::unique_ptr<CUDAFunctions> m_functions;
+    
+    std::unique_ptr<QLibrary> m_cudaLib;
+    std::unique_ptr<QLibrary> m_nvrtcLib;
     bool m_initialized;
     int m_deviceCount;
+    QString m_availabilityError;
 };
-#endif
 
-#ifdef HAS_METAL
 class MetalCompiler : public SimpleGPUCompiler
 {
 public:
@@ -117,11 +146,13 @@ public:
 
     bool isAvailable() const override;
     QString getName() const override { return "Metal"; }
+    QString getAvailabilityError() const override { return m_availabilityError; }
     CompileResult compile(const QString &source, const QString &kernelName = "kernel") override;
     QStringList getAvailableDevices() const override;
 
 private:
     bool m_initialized;
+    QString m_availabilityError;
 };
-#endif
+
 #endif // SIMPLEGPUCOMPILER_HPP
