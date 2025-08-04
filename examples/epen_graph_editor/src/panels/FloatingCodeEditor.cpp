@@ -204,82 +204,6 @@ void GPULanguageLexer::setLanguageMode(const QString &language)
             "atomic_store_explicit", "atomic_load_explicit",
             "atomic_exchange_explicit", "atomic_fetch_add_explicit"
         };
-    } else if (language == "GLSL Compute") {
-        m_languageKeywords = {
-            "attribute", "const", "uniform", "varying", "buffer", "shared",
-            "coherent", "volatile", "restrict", "readonly", "writeonly",
-            "layout", "centroid", "flat", "smooth", "noperspective", "patch",
-            "sample", "invariant", "precise", "subroutine", "in", "out", "inout"
-        };
-        
-        m_builtinFunctions = {
-            "gl_GlobalInvocationID", "gl_LocalInvocationID", "gl_WorkGroupID",
-            "gl_LocalInvocationIndex", "gl_WorkGroupSize", "gl_NumWorkGroups",
-            // Math functions
-            "radians", "degrees", "sin", "cos", "tan", "asin", "acos", "atan",
-            "sinh", "cosh", "tanh", "asinh", "acosh", "atanh",
-            "pow", "exp", "log", "exp2", "log2", "sqrt", "inversesqrt",
-            "abs", "sign", "floor", "trunc", "round", "roundEven", "ceil", "fract",
-            "mod", "modf", "min", "max", "clamp", "mix", "step", "smoothstep",
-            "isnan", "isinf", "floatBitsToInt", "floatBitsToUint",
-            "intBitsToFloat", "uintBitsToFloat", "fma", "frexp", "ldexp",
-            // Geometric functions
-            "length", "distance", "dot", "cross", "normalize", "faceforward",
-            "reflect", "refract",
-            // Matrix functions
-            "matrixCompMult", "outerProduct", "transpose", "determinant", "inverse",
-            // Vector functions
-            "lessThan", "lessThanEqual", "greaterThan", "greaterThanEqual",
-            "equal", "notEqual", "any", "all", "not",
-            // Texture functions
-            "texture", "textureSize", "textureOffset", "texelFetch", "texelFetchOffset",
-            "textureProjOffset", "textureLodOffset", "textureProj", "textureLod",
-            "textureGrad", "textureGradOffset", "textureProjGrad", "textureProjGradOffset",
-            // Derivative functions
-            "dFdx", "dFdy", "fwidth",
-            // Noise functions
-            "noise", "noise1", "noise2", "noise3", "noise4",
-            // Atomic functions
-            "atomicAdd", "atomicMin", "atomicMax", "atomicAnd", "atomicOr",
-            "atomicXor", "atomicExchange", "atomicCompSwap",
-            // Barrier functions
-            "barrier", "memoryBarrier", "memoryBarrierAtomicCounter",
-            "memoryBarrierBuffer", "memoryBarrierShared", "memoryBarrierImage",
-            "groupMemoryBarrier"
-        };
-        
-        // Add GLSL types
-        m_types.append({
-            "vec2", "vec3", "vec4", "dvec2", "dvec3", "dvec4",
-            "bvec2", "bvec3", "bvec4", "ivec2", "ivec3", "ivec4",
-            "uvec2", "uvec3", "uvec4", "mat2", "mat3", "mat4",
-            "mat2x2", "mat2x3", "mat2x4", "mat3x2", "mat3x3", "mat3x4",
-            "mat4x2", "mat4x3", "mat4x4", "dmat2", "dmat3", "dmat4",
-            "dmat2x2", "dmat2x3", "dmat2x4", "dmat3x2", "dmat3x3", "dmat3x4",
-            "dmat4x2", "dmat4x3", "dmat4x4", "sampler1D", "sampler2D", "sampler3D",
-            "samplerCube", "sampler1DShadow", "sampler2DShadow", "samplerCubeShadow",
-            "sampler1DArray", "sampler2DArray", "sampler1DArrayShadow",
-            "sampler2DArrayShadow", "isampler1D", "isampler2D", "isampler3D",
-            "isamplerCube", "isampler1DArray", "isampler2DArray",
-            "usampler1D", "usampler2D", "usampler3D", "usamplerCube",
-            "usampler1DArray", "usampler2DArray", "sampler2DRect",
-            "sampler2DRectShadow", "isampler2DRect", "usampler2DRect",
-            "samplerBuffer", "isamplerBuffer", "usamplerBuffer",
-            "sampler2DMS", "isampler2DMS", "usampler2DMS",
-            "sampler2DMSArray", "isampler2DMSArray", "usampler2DMSArray",
-            "samplerCubeArray", "samplerCubeArrayShadow",
-            "isamplerCubeArray", "usamplerCubeArray",
-            "image1D", "iimage1D", "uimage1D", "image2D", "iimage2D", "uimage2D",
-            "image3D", "iimage3D", "uimage3D", "image2DRect", "iimage2DRect",
-            "uimage2DRect", "imageCube", "iimageCube", "uimageCube",
-            "imageBuffer", "iimageBuffer", "uimageBuffer",
-            "image1DArray", "iimage1DArray", "uimage1DArray",
-            "image2DArray", "iimage2DArray", "uimage2DArray",
-            "imageCubeArray", "iimageCubeArray", "uimageCubeArray",
-            "image2DMS", "iimage2DMS", "uimage2DMS",
-            "image2DMSArray", "iimage2DMSArray", "uimage2DMSArray",
-            "atomic_uint"
-        });
     }
 }
 
@@ -520,7 +444,7 @@ FloatingCodeEditor::FloatingCodeEditor(GraphEditorWindow *parent)
     setDockingDistance(40);
 
     // Setup languages
-    m_supportedLanguages = {"OpenCL", "CUDA", "Metal", "GLSL Compute"};
+    m_supportedLanguages = {"OpenCL", "CUDA", "Metal"};
     
     // Initialize compilers
     initializeCompilers();
@@ -681,35 +605,7 @@ void FloatingCodeEditor::setupUI()
                          "        output[idx] = input[idx] * 2.0f;\n"
                          "    }\n"
                          "}";
-        } else if (firstLang == "GLSL Compute") {
-            defaultCode = "#version 430 core\n\n"
-                         "layout(local_size_x = 64) in;\n\n"
-                         "layout(std430, binding = 0) buffer InputBuffer {\n"
-                         "    float input[];\n"
-                         "};\n\n"
-                         "layout(std430, binding = 1) buffer OutputBuffer {\n"
-                         "    float output[];\n"
-                         "};\n\n"
-                         "uniform int size;\n\n"
-                         "void main() {\n"
-                         "    uint idx = gl_GlobalInvocationID.x;\n"
-                         "    if (idx < size) {\n"
-                         "        output[idx] = input[idx] * 2.0f;\n"
-                         "    }\n"
-                         "}";
         }
-    } else {
-        defaultCode = "// No GPU compilers available.\n"
-                     "// Please install GPU drivers to enable compilation.\n"
-                     "//\n"
-                     "// Supported compilers:\n"
-                     "// - OpenCL: Included with GPU drivers\n"
-                     "// - CUDA: Included with NVIDIA drivers\n"
-                     "// - GLSL: Should always be available\n"
-                     "//\n"
-                     "// Try:\n"
-                     "// 1. Installing/updating GPU drivers\n"
-                     "// 2. Restarting the application\n";
     }
     
     m_codeEditor->setText(defaultCode);
@@ -826,8 +722,6 @@ void FloatingCodeEditor::checkForErrors()
             declRegex.setPattern("(?:__device__|__shared__|__constant__)?\\s*(?:const\\s+)?(?:unsigned\\s+)?(?:char|short|int|long|float|double|bool|size_t|dim3|int2|int3|int4|float2|float3|float4|uint2|uint3|uint4)(?:\\s*\\*)?\\s+(\\w+)");
         } else if (getCurrentLanguage() == "Metal") {
             declRegex.setPattern("(?:device|constant|threadgroup|thread)?\\s*(?:const\\s+)?(?:char|short|int|long|float|double|half|bool|size_t|int2|int3|int4|float2|float3|float4|uint2|uint3|uint4|half2|half3|half4)(?:\\s*\\*)?\\s+(\\w+)");
-        } else { // GLSL
-            declRegex.setPattern("(?:uniform|buffer|shared)?\\s*(?:const\\s+)?(?:bool|int|uint|float|double|vec2|vec3|vec4|ivec2|ivec3|ivec4|uvec2|uvec3|uvec4|mat2|mat3|mat4)\\s+(\\w+)");
         }
         
         QRegularExpressionMatchIterator it = declRegex.globalMatch(line);
@@ -1089,24 +983,6 @@ void FloatingCodeEditor::onLanguageChanged(int index)
             "    }\n"
             "}"
         );
-    } else if (language == "GLSL Compute") {
-        m_codeEditor->setText(
-            "#version 430 core\n\n"
-            "layout(local_size_x = 64) in;\n\n"
-            "layout(std430, binding = 0) buffer InputBuffer {\n"
-            "    float input[];\n"
-            "};\n\n"
-            "layout(std430, binding = 1) buffer OutputBuffer {\n"
-            "    float output[];\n"
-            "};\n\n"
-            "uniform int size;\n\n"
-            "void main() {\n"
-            "    uint idx = gl_GlobalInvocationID.x;\n"
-            "    if (idx < size) {\n"
-            "        output[idx] = input[idx] * 2.0f;\n"
-            "    }\n"
-            "}"
-        );
     }
     
     emit languageChanged(getCurrentLanguage());
@@ -1174,16 +1050,6 @@ void FloatingCodeEditor::updateHighlighter()
         for (const QString &keyword : keywords) {
             api->add(keyword);
         }
-    } else if (language == "GLSL Compute") {
-        QStringList keywords = {
-            "#version", "layout", "in", "out", "uniform", "buffer", "shared",
-            "gl_GlobalInvocationID", "gl_LocalInvocationID", "gl_WorkGroupID",
-            "gl_WorkGroupSize", "gl_NumWorkGroups", "barrier", "memoryBarrier",
-            "local_size_x", "local_size_y", "local_size_z", "binding", "std430"
-        };
-        for (const QString &keyword : keywords) {
-            api->add(keyword);
-        }
     }
     
     api->prepare();
@@ -1246,9 +1112,6 @@ void FloatingCodeEditor::initializeCompilers()
         m_compilers["Metal"] = std::move(metalCompiler);
     }
 #endif
-    
-    // Always add GLSL compute as fallback
-    m_compilers["GLSL Compute"] = std::make_unique<GLSLComputeCompiler>();
 }
 
 void FloatingCodeEditor::performCompilation()
