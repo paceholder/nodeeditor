@@ -2,7 +2,6 @@
 #define FLOATINGCODEEDITOR_HPP
 
 #include "FloatingPanelBase.hpp"
-#include <QTimer>
 #include <memory>
 #include <map>
 
@@ -50,8 +49,6 @@ private slots:
     void onThemeToggled(bool checked);
     void onResultsCloseRequested();
     void onMessageClicked(int line, int column);
-    void onTextChanged();
-    void performErrorCheck();
 
 private:
     void setupUI();
@@ -60,8 +57,6 @@ private:
     void applyDarkTheme();
     void applyLightTheme();
     void setupCommonEditorFeatures();
-    void setupErrorIndicator();
-    void checkForErrors();
     void updateLexerColors();
     void forceRefreshLexer();
     
@@ -83,17 +78,6 @@ private:
     QStringList m_supportedLanguages;
     bool m_isDarkMode;
     QByteArray m_compiledBinary;
-    
-    // Error checking
-    QTimer *m_errorCheckTimer;
-    int m_errorIndicator;
-    struct ErrorInfo {
-        int line;
-        int indexStart;
-        int indexEnd;
-        QString message;
-    };
-    QList<ErrorInfo> m_errors;
 
     // Compilers
     std::map<QString, std::unique_ptr<SimpleGPUCompiler>> m_compilers;

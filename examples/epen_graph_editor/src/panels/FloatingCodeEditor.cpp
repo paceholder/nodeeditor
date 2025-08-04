@@ -15,10 +15,10 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QPushButton>
-#include <QRegularExpression>
 #include <QSplitter>
 #include <QStandardItemModel>
 #include <QVBoxLayout>
+#include <QTimer>
 #include <Qsci/qsciapis.h>
 #include <Qsci/qsciscintilla.h>
 
@@ -31,8 +31,6 @@ FloatingCodeEditor::FloatingCodeEditor(GraphEditorWindow *parent)
     , m_resultsWidget(nullptr)
     , m_lexer(nullptr)
     , m_isDarkMode(false) // Default to light mode
-    , m_errorCheckTimer(nullptr)
-    , m_errorIndicator(0)
 {
     // Set panel-specific dimensions
     setFloatingWidth(600);
@@ -141,9 +139,6 @@ void FloatingCodeEditor::setupUI()
     m_lexer = new GPULanguageLexer(m_codeEditor);
     m_codeEditor->setLexer(m_lexer);
 
-    // Setup error indicator
-    setupErrorIndicator();
-
     // Apply initial theme (light mode by default)
     if (m_isDarkMode) {
         applyDarkTheme();
@@ -211,11 +206,6 @@ void FloatingCodeEditor::setupUI()
 
     layout->addWidget(splitter, 1); // Give maximum space to editor
 
-    // Setup error checking timer
-    m_errorCheckTimer = new QTimer(this);
-    m_errorCheckTimer->setSingleShot(true);
-    m_errorCheckTimer->setInterval(500); // Check after 500ms of no typing
-
     // Initial size
     getContentWidget()->adjustSize();
     adjustSize();
@@ -257,157 +247,6 @@ void FloatingCodeEditor::setupCommonEditorFeatures()
     // Edge marker
     m_codeEditor->setEdgeMode(QsciScintilla::EdgeLine);
     m_codeEditor->setEdgeColumn(80);
-}
-
-void FloatingCodeEditor::setupErrorIndicator()
-{
-    // Define a custom indicator for errors
-    m_errorIndicator = 1; // Use indicator number 1
-
-    // Set up the error indicator style (squiggly underline)
-    m_codeEditor->indicatorDefine(QsciScintilla::SquiggleIndicator, m_errorIndicator);
-    m_codeEditor->setIndicatorForegroundColor(QColor("#ff0000"), m_errorIndicator);
-    m_codeEditor->setIndicatorDrawUnder(true, m_errorIndicator);
-}
-
-void FloatingCodeEditor::checkForErrors()
-{
-    // Clear previous error indicators
-    m_codeEditor->clearIndicatorRange(0, 0, m_codeEditor->lines(), 0, m_errorIndicator);
-    m_errors.clear();
-
-    // Get all text
-    QString text = m_codeEditor->text();
-    QStringList lines = text.split('\n');
-
-    // Clear lexer's identifier tracking
-    m_lexer->clearIdentifiers();
-
-    // Force a re-lex to collect identifiers
-    m_codeEditor->recolor();
-
-    // Get declared identifiers from lexer
-    QSet<QString> declaredIdentifiers = m_lexer->getIdentifiers();
-
-    // Track variable declarations
-    QSet<QString> declaredVariables;
-    QSet<QString> usedVariables;
-
-    // Simple parsing to find declarations and usage
-    for (int lineNum = 0; lineNum < lines.size(); ++lineNum) {
-        QString line = lines[lineNum].trimmed();
-
-        // Skip empty lines and comments
-        if (line.isEmpty() || line.startsWith("//"))
-            continue;
-
-        // Check for variable declarations (simplified)
-        QRegularExpression declRegex;
-        if (getCurrentLanguage() == "OpenCL") {
-            declRegex.setPattern(
-                "(?:__global|__local|__private|__constant|global|local|private|constant)?\\s*(?:"
-                "const\\s+)?(?:unsigned\\s+)?(?:char|uchar|short|ushort|int|uint|long|ulong|float|"
-                "double|half|bool|size_t|ptrdiff_t|int2|int3|int4|float2|float3|float4|uint2|uint3|"
-                "uint4|double2|double3|double4)(?:\\s*\\*)?\\s+(\\w+)");
-        } else if (getCurrentLanguage() == "CUDA") {
-            declRegex.setPattern(
-                "(?:__device__|__shared__|__constant__)?\\s*(?:const\\s+)?(?:unsigned\\s+)?(?:char|"
-                "short|int|long|float|double|bool|size_t|dim3|int2|int3|int4|float2|float3|float4|"
-                "uint2|uint3|uint4)(?:\\s*\\*)?\\s+(\\w+)");
-        } else if (getCurrentLanguage() == "Metal") {
-            declRegex.setPattern(
-                "(?:device|constant|threadgroup|thread)?\\s*(?:const\\s+)?(?:char|short|int|long|"
-                "float|double|half|bool|size_t|int2|int3|int4|float2|float3|float4|uint2|uint3|"
-                "uint4|half2|half3|half4)(?:\\s*\\*)?\\s+(\\w+)");
-        }
-
-        QRegularExpressionMatchIterator it = declRegex.globalMatch(line);
-        while (it.hasNext()) {
-            QRegularExpressionMatch match = it.next();
-            declaredVariables.insert(match.captured(1));
-        }
-
-        // Check for undefined variables (simplified - looks for word usage)
-        QRegularExpression usageRegex(
-            "\\b(\\w+)\\s*(?:\\[|\\.|\\(|\\)|;|,|\\+|-|\\*|/|=|<|>|&|\\||!)");
-        QRegularExpressionMatchIterator usageIt = usageRegex.globalMatch(line);
-        while (usageIt.hasNext()) {
-            QRegularExpressionMatch match = usageIt.next();
-            QString word = match.captured(1);
-
-            // Skip if it's a keyword, type, or number
-            if (m_lexer->isKeyword(word) || m_lexer->isLanguageKeyword(word)
-                || m_lexer->isBuiltinFunction(word) || m_lexer->isBuiltinType(word)
-                || word.at(0).isDigit()) {
-                continue;
-            }
-
-            // Check if variable is used but not declared
-            if (!declaredVariables.contains(word) && !word.isEmpty()) {
-                // Find the position in the line
-                int columnStart = match.capturedStart(1);
-                int columnEnd = match.capturedEnd(1);
-
-                // Calculate absolute position
-                int lineStartPos = 0;
-                for (int i = 0; i < lineNum; ++i) {
-                    lineStartPos += lines[i].length() + 1; // +1 for newline
-                }
-
-                int startPos = lineStartPos + columnStart;
-                int endPos = lineStartPos + columnEnd;
-
-                // Add error indicator
-                m_codeEditor->fillIndicatorRange(lineNum,
-                                                 columnStart,
-                                                 lineNum,
-                                                 columnEnd,
-                                                 m_errorIndicator);
-
-                // Store error info
-                ErrorInfo error;
-                error.line = lineNum;
-                error.indexStart = startPos;
-                error.indexEnd = endPos;
-                error.message = QString("Undefined variable '%1'").arg(word);
-                m_errors.append(error);
-            }
-        }
-
-        // Check for language-specific syntax errors
-        if (getCurrentLanguage() == "OpenCL") {
-            // Check for missing semicolons
-            if (!line.endsWith(';') && !line.endsWith('{') && !line.endsWith('}')
-                && !line.startsWith('#') && !line.contains("//") && line.length() > 2) {
-                if (line.contains("__kernel") || line.contains("if") || line.contains("for")
-                    || line.contains("while") || line.contains("else")) {
-                    // These don't need semicolons
-                } else {
-                    m_codeEditor->fillIndicatorRange(lineNum,
-                                                     line.length(),
-                                                     lineNum,
-                                                     line.length() + 1,
-                                                     m_errorIndicator);
-                    ErrorInfo error;
-                    error.line = lineNum;
-                    error.message = "Missing semicolon";
-                    m_errors.append(error);
-                }
-            }
-        }
-    }
-}
-
-void FloatingCodeEditor::onTextChanged()
-{
-    // Reset the timer whenever text changes
-    m_errorCheckTimer->stop();
-    m_errorCheckTimer->start();
-}
-
-void FloatingCodeEditor::performErrorCheck()
-{
-    checkForErrors();
 }
 
 void FloatingCodeEditor::updateLexerColors()
@@ -540,12 +379,6 @@ void FloatingCodeEditor::connectSignals()
     connect(m_codeEditor, &QsciScintilla::textChanged, this, &FloatingCodeEditor::onCodeChanged);
 
     connect(m_darkModeCheckBox, &QCheckBox::toggled, this, &FloatingCodeEditor::onThemeToggled);
-
-    // Connect text change to error checking
-    connect(m_codeEditor, &QsciScintilla::textChanged, this, &FloatingCodeEditor::onTextChanged);
-
-    // Connect timer to error checking
-    connect(m_errorCheckTimer, &QTimer::timeout, this, &FloatingCodeEditor::performErrorCheck);
 }
 
 void FloatingCodeEditor::onLanguageChanged(int index)
