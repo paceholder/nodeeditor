@@ -41,6 +41,8 @@ public:
 
     QRect resizeHandleRect(NodeId const nodeId) const override;
 
+    int getPortSpasing() override { return _portSpasing; }
+
 private:
     QRectF portTextRect(NodeId const nodeId,
                         PortType const portType,

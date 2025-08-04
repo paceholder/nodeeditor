@@ -208,7 +208,14 @@ void DefaultNodePainter::drawNodeCaption(QPainter *painter, NodeGraphicsObject &
     f.setBold(nickname.isEmpty());
     f.setItalic(!nickname.isEmpty());
 
-    QPointF position = geometry.captionPosition(nodeId);
+    QFontMetricsF metrics(f);
+
+    QRectF bounding = metrics.boundingRect(name);
+    QRectF capRect = geometry.captionRect(nodeId);
+    QPointF capPos = geometry.captionPosition(nodeId);
+    double centerX = capPos.x() + capRect.width() / 2.0;
+
+    QPointF position(centerX - bounding.width() / 2.0, capPos.y());
 
     QJsonDocument json = QJsonDocument::fromVariant(model.nodeData(nodeId, NodeRole::Style));
     NodeStyle nodeStyle(json.object());
@@ -235,8 +242,19 @@ void DefaultNodePainter::drawNodeLabel(QPainter *painter, NodeGraphicsObject &ng
 
     QFont f = painter->font();
     f.setBold(true);
+    f.setItalic(false);
 
-    QPointF position = geometry.labelPosition(nodeId);
+    QFontMetricsF metrics(f);
+
+    QRectF bounding = metrics.boundingRect(nickname);
+    QRectF capRect = geometry.captionRect(nodeId);
+    QPointF capPos = geometry.captionPosition(nodeId);
+    double centerX = capPos.x() + capRect.width() / 2.0;
+
+    double textHeight = metrics.height();
+    double y = capPos.y() - textHeight - 2.0;
+
+    QPointF position(centerX - bounding.width() / 2.0, y);
 
     QJsonDocument json = QJsonDocument::fromVariant(model.nodeData(nodeId, NodeRole::Style));
     NodeStyle nodeStyle(json.object());
