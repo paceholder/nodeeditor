@@ -301,6 +301,7 @@ void FloatingCodeEditor::maximizePanel()
 
     // If docked, undock first
     if (isDocked()) {
+        m_isMaximized = true;
         setDockPosition(FloatingPanelBase::Floating);
         QTimer::singleShot(0, this, [this, parentRect]() {
             setGeometry(0, 0, parentRect.width(), parentRect.height());
@@ -309,7 +310,6 @@ void FloatingCodeEditor::maximizePanel()
             m_maximizeButton->setText("◱");
             m_maximizeButton->setToolTip("Restore");
             raise();
-            m_isMaximized = true;
         });
     } else {
         setGeometry(0, 0, parentRect.width(), parentRect.height());
@@ -826,4 +826,13 @@ void FloatingCodeEditor::onMessageClicked(int line, int column)
     m_codeEditor->ensureLineVisible(line);
     m_codeEditor->highlightLine(line);
     m_codeEditor->setFocus();
+}
+
+void FloatingCodeEditor::dockChanged(bool isFloat)
+{
+    if (isFloat && !m_isMaximized) {
+        m_maximizeButton->hide();
+    } else {
+        m_maximizeButton->show();
+    }
 }

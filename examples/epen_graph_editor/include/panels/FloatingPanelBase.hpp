@@ -55,7 +55,7 @@ protected:
     virtual void connectSignals() = 0;
     virtual QString getPanelStyleSheet() const;
     virtual QString getContentStyleSheet() const;
-    
+    virtual void dockChanged(bool isFloat);
     // Event handlers
     void paintEvent(QPaintEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
