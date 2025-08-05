@@ -294,8 +294,13 @@ QVariant DataFlowGraphModel::nodeData(NodeId nodeId, NodeRole role) const
         break;
 
     case NodeRole::Widget: {
-        auto w = model->embeddedWidget();
+        auto *w = model->embeddedWidget();
         result = QVariant::fromValue(w);
+    } break;
+
+    case NodeRole::ValidationState: {
+        auto validationState = model->validationState();
+        result = QVariant::fromValue(validationState);
     } break;
     }
 
@@ -356,6 +361,16 @@ bool DataFlowGraphModel::setNodeData(NodeId nodeId, NodeRole role, QVariant valu
 
     case NodeRole::Widget:
         break;
+
+    case NodeRole::ValidationState: {
+        if (value.canConvert<NodeValidationState>()) {
+            auto state = value.value<NodeValidationState>();
+            if (auto node = delegateModel<NodeDelegateModel>(nodeId); node != nullptr) {
+                node->setValidatonState(state);
+            }
+        }
+        Q_EMIT nodeUpdated(nodeId);
+    } break;
     }
 
     return result;
@@ -538,7 +553,8 @@ void DataFlowGraphModel::loadNode(QJsonObject const &nodeJson)
         connect(model.get(),
                 &NodeDelegateModel::portsAboutToBeDeleted,
                 this,
-                [restoredNodeId, this](PortType const portType, PortIndex const first, PortIndex const last) {
+                [restoredNodeId,
+                 this](PortType const portType, PortIndex const first, PortIndex const last) {
                     portsAboutToBeDeleted(restoredNodeId, portType, first, last);
                 });
 
@@ -550,7 +566,8 @@ void DataFlowGraphModel::loadNode(QJsonObject const &nodeJson)
         connect(model.get(),
                 &NodeDelegateModel::portsAboutToBeInserted,
                 this,
-                [restoredNodeId, this](PortType const portType, PortIndex const first, PortIndex const last) {
+                [restoredNodeId,
+                 this](PortType const portType, PortIndex const first, PortIndex const last) {
                     portsAboutToBeInserted(restoredNodeId, portType, first, last);
                 });
 

@@ -1,5 +1,10 @@
 #pragma once
 
+#include <memory>
+
+#include <QMetaType>
+#include <QtWidgets/QWidget>
+
 #include "Definitions.hpp"
 #include "Export.hpp"
 #include "NodeData.hpp"
@@ -12,6 +17,24 @@
 
 
 namespace QtNodes {
+
+/**
+ * Describes whether a node configuration is usable and defines a description message
+ */
+struct NodeValidationState
+{
+    enum class State : int {
+        Valid = 0,    ///< All required inputs are present and correct.
+        Warning = 1,  ///< Some inputs are missing or questionable, processing may be unreliable.
+        Error = 2,    ///< Inputs or settings are invalid, preventing successful computation.
+    };
+    bool isValid() { return _state == State::Valid; };
+    QString const message() { return _stateMessage; }
+    State state() { return _state; }
+
+    State _state{State::Valid};
+    QString _stateMessage{""};
+};
 
 class StyleCollection;
 
@@ -45,9 +68,17 @@ public:
     /// It is possible to hide port caption in GUI
     virtual bool portCaptionVisible(PortType, PortIndex) const { return false; }
 
+    /// Validation State will default to Valid, but you can manipulate it by overriding in an inherited class
+    virtual NodeValidationState validationState() const { return _nodeValidationState; }
+
+public:
     QJsonObject save() const override;
+
     void load(QJsonObject const &) override;
 
+    void setValidatonState(const NodeValidationState &validationState);
+
+public:
     virtual unsigned int nPorts(PortType portType) const = 0;
 
     virtual NodeDataType dataType(PortType portType, PortIndex portIndex) const = 0;
@@ -55,6 +86,7 @@ public:
     virtual ConnectionPolicy portConnectionPolicy(PortType, PortIndex) const;
 
     NodeStyle const &nodeStyle() const;
+
     void setNodeStyle(NodeStyle const &style);
 
     virtual void setInData(std::shared_ptr<NodeData> nodeData, PortIndex const portIndex) = 0;
@@ -117,6 +149,10 @@ Q_SIGNALS:
 
 private:
     NodeStyle _nodeStyle;
+
+    NodeValidationState _nodeValidationState;
 };
 
 } // namespace QtNodes
+
+Q_DECLARE_METATYPE(QtNodes::NodeValidationState)
