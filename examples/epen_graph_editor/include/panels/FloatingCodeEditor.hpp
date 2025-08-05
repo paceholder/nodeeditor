@@ -8,11 +8,10 @@
 class QComboBox;
 class QCheckBox;
 class QPushButton;
-class QsciScintilla;
+class CodeEditor;
 class CompileResultsWidget;
 class SimpleGPUCompiler;
 class GraphEditorWindow;
-class GPULanguageLexer;
 
 class FloatingCodeEditor : public FloatingPanelBase
 {
@@ -22,7 +21,7 @@ public:
     explicit FloatingCodeEditor(GraphEditorWindow *parent = nullptr);
     ~FloatingCodeEditor() override;
 
-    // Code editor API
+    // Code editor API (delegates to CodeEditor)
     void setCode(const QString &code);
     QString getCode() const;
     
@@ -60,6 +59,7 @@ private slots:
     void onResultsCloseRequested();
     void onMessageClicked(int line, int column);
     void onMaximizeClicked();
+    void onEditorLanguageChanged(const QString &language);
 
 private:
     // Resize handling
@@ -80,12 +80,6 @@ private:
     
     void setupUI();
     void connectSignals();
-    void updateHighlighter();
-    void applyDarkTheme();
-    void applyLightTheme();
-    void setupCommonEditorFeatures();
-    void updateLexerColors();
-    void forceRefreshLexer();
     
     // Compiler management
     void initializeCompilers();
@@ -100,16 +94,13 @@ private:
 
     // UI elements
     QComboBox *m_languageCombo;
-    QsciScintilla *m_codeEditor;
+    CodeEditor *m_codeEditor;  // Changed from QsciScintilla
     QPushButton *m_compileButton;
     QCheckBox *m_darkModeCheckBox;
     CompileResultsWidget *m_resultsWidget;
-    GPULanguageLexer *m_lexer;
     QPushButton *m_maximizeButton;
 
     // State
-    QStringList m_supportedLanguages;
-    bool m_isDarkMode;
     QByteArray m_compiledBinary;
     
     // Maximize state
