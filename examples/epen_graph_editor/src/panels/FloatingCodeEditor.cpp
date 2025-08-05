@@ -35,7 +35,10 @@ FloatingCodeEditor::FloatingCodeEditor(GraphEditorWindow *parent)
     // Set panel-specific dimensions
     setFloatingWidth(600);
     setDockedWidth(700);
-    setDockedHeight(400);
+    setDockedHeight(450);  // Larger default height for code editor
+    
+    // Set higher priority for code editor
+    setPanelPriority(2);  // Higher priority than other panels (default is 1)
 
     // Support bottom docking in addition to left/right
     setDockingDistance(40);
@@ -49,6 +52,7 @@ FloatingCodeEditor::FloatingCodeEditor(GraphEditorWindow *parent)
 
     // Initialize compilers
     initializeCompilers();
+    
     // Initial floating size and position
     setFixedWidth(floatingWidth());
     setFixedHeight(500);
@@ -63,6 +67,11 @@ FloatingCodeEditor::FloatingCodeEditor(GraphEditorWindow *parent)
     // Ensure editor is on top
     raise();
     m_floatHeight = height();
+    
+    // Start docked to bottom after a short delay to ensure proper initialization
+    QTimer::singleShot(300, this, [this]() {
+        setDockPosition(FloatingPanelBase::DockedBottom);
+    });
 }
 
 FloatingCodeEditor::~FloatingCodeEditor() = default;
@@ -71,6 +80,12 @@ void FloatingCodeEditor::setupUI()
 {
     // Call base class setup
     setupBaseUI("Code Editor");
+    
+    // Ensure scroll area is properly configured for code editor
+    if (m_scrollArea) {
+        m_scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+        m_scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    }
 
     QVBoxLayout *layout = getContentLayout();
     layout->setSpacing(5);
@@ -721,7 +736,7 @@ void FloatingCodeEditor::showCompileResults(bool show)
         m_resultsWidget->hide();
         // Restore original size
         if (isDocked() && dockPosition() == DockedBottom) {
-            setDockedHeight(400);
+            setDockedHeight(450);
             updatePosition();
         }
     }

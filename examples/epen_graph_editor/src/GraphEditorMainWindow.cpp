@@ -97,19 +97,21 @@ void GraphEditorWindow::resizeEvent(QResizeEvent *event)
 {
     GraphicsView::resizeEvent(event);
 
-    // Update toolbar position if it's docked
-    if (m_toolbar && m_toolbar->isVisible() && m_toolbar->isDocked()) {
-        m_toolbar->updatePosition();
-    }
+    // Update all docked panels
+    updateDockedPanelLayouts();
+}
 
-    // Update properties position if it's docked
-    if (m_properties && m_properties->isVisible() && m_properties->isDocked()) {
-        m_properties->updatePosition();
-    }
-
-    // Update code editor position if it's docked
-    if (m_codeEditor && m_codeEditor->isVisible() && m_codeEditor->isDocked()) {
-        m_codeEditor->updatePosition();
+void GraphEditorWindow::updateDockedPanelLayouts()
+{
+    // Find all floating panels
+    QList<FloatingPanelBase*> dockedPanels;
+    for (QObject* obj : children()) {
+        if (FloatingPanelBase* panel = qobject_cast<FloatingPanelBase*>(obj)) {
+            if (panel->isVisible() && panel->isDocked()) {
+                dockedPanels.append(panel);
+                panel->updatePosition();
+            }
+        }
     }
 }
 
@@ -196,12 +198,17 @@ void GraphEditorWindow::createFloatingToolbar()
     connect(m_toolbar, &FloatingToolbar::fillColorChanged, [this](const QColor &color) {
         qDebug() << "Color changed to:" << color.name();
     });
+    
+    // Connect dock position changes
+    connect(m_toolbar, &FloatingPanelBase::dockPositionChanged,
+            this, &GraphEditorWindow::updateDockedPanelLayouts);
 
     // Show the toolbar
     m_toolbar->show();
     m_toolbar->raise();
 
     // Set initial dock position (optional - start docked to left)
+    m_toolbar->setDockPosition(FloatingPanelBase::DockedLeft);
 
     qDebug() << "Toolbar created. Visible:" << m_toolbar->isVisible()
              << "Geometry:" << m_toolbar->geometry();
@@ -219,10 +226,17 @@ void GraphEditorWindow::createFloatingProperties()
         qDebug() << "Failed to create properties panel!";
         return;
     }
+    
+    // Connect dock position changes
+    connect(m_properties, &FloatingPanelBase::dockPositionChanged,
+            this, &GraphEditorWindow::updateDockedPanelLayouts);
 
     // Show the properties panel
     m_properties->show();
     m_properties->raise();
+    
+    // Start docked to right
+    m_properties->setDockPosition(FloatingPanelBase::DockedRight);
 
     qDebug() << "Properties panel created. Visible:" << m_properties->isVisible()
              << "Geometry:" << m_properties->geometry();
@@ -251,13 +265,16 @@ void GraphEditorWindow::createFloatingCodeEditor()
         qDebug() << "Code editor language changed to:" << language;
         // Handle language change if needed
     });
+    
+    // Connect dock position changes
+    connect(m_codeEditor, &FloatingPanelBase::dockPositionChanged,
+            this, &GraphEditorWindow::updateDockedPanelLayouts);
 
     // Show the code editor
     m_codeEditor->show();
     m_codeEditor->raise();
 
-    // Optionally start docked to bottom
-    m_codeEditor->setDockPosition(FloatingPanelBase::DockedBottom);
+    // Start docked to bottom - will be done after a delay in FloatingCodeEditor constructor
 
     qDebug() << "Code editor created. Visible:" << m_codeEditor->isVisible()
              << "Geometry:" << m_codeEditor->geometry();

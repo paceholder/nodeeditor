@@ -43,6 +43,9 @@ public slots:
     void onNodeDeselected();
 
     void nodePortSelected(bool isRightPort, Process *node, int portIndex);
+    
+    // Panel layout management
+    void updateDockedPanelLayouts();
 
 private slots:
     // Code editor compile handler

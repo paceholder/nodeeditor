@@ -21,6 +21,7 @@ FloatingPanelBase::FloatingPanelBase(GraphEditorWindow *parent, const QString &t
     , m_dockedWidth(200)
     , m_dockedHeight(300)  // Initialize default docked height
     , m_floatingWidth(150)
+    , m_priority(1)        // Default priority
     , m_panelTitle(title)
 {
     // Keep it as a child widget with these flags
@@ -94,6 +95,10 @@ QString FloatingPanelBase::getPanelStyleSheet() const
            "}"
            "QScrollBar::handle:vertical:hover {"
            "   background: #a0a0a0;"
+           "}"
+           "QScrollBar::add-line:vertical,"
+           "QScrollBar::sub-line:vertical {"
+           "   height: 0px;"
            "}";
 }
 
@@ -122,6 +127,7 @@ void FloatingPanelBase::setDockPosition(DockPosition position)
     if (m_dockPosition == position)
         return;
 
+    DockPosition oldPosition = m_dockPosition;
     m_dockPosition = position;
 
     if (position == Floating) {
@@ -139,6 +145,14 @@ void FloatingPanelBase::setDockPosition(DockPosition position)
     } else {
         // Apply docked geometry
         updateDockedGeometry();
+    }
+    
+    // Emit signal after position change
+    emit dockPositionChanged(position);
+    
+    // Update all panels if we're docking/undocking from bottom
+    if (oldPosition == DockedBottom || position == DockedBottom) {
+        updateAllDockedPanels();
     }
 }
 
@@ -173,42 +187,74 @@ void FloatingPanelBase::applyDocking(DockPosition position)
     setDockPosition(position);
 }
 
+int FloatingPanelBase::getBottomPanelHeight() const
+{
+    if (!m_graphEditor) return 0;
+    
+    // Find bottom-docked panel with highest priority
+    FloatingPanelBase* bottomPanel = nullptr;
+    int maxPriority = -1;
+    
+    for (QObject* obj : m_graphEditor->children()) {
+        if (FloatingPanelBase* panel = qobject_cast<FloatingPanelBase*>(obj)) {
+            if (panel->dockPosition() == DockedBottom && panel->panelPriority() > maxPriority) {
+                bottomPanel = panel;
+                maxPriority = panel->panelPriority();
+            }
+        }
+    }
+    
+    return bottomPanel ? bottomPanel->dockedHeight() : 0;
+}
+
+QRect FloatingPanelBase::calculateDockedGeometry(DockPosition position)
+{
+    if (!parentWidget()) return QRect();
+    
+    int parentWidth = parentWidget()->width();
+    int parentHeight = parentWidget()->height();
+    int bottomPanelHeight = 0;
+    
+    // Check if there's a bottom panel (only for side panels)
+    if (position != DockedBottom) {
+        bottomPanelHeight = getBottomPanelHeight();
+    }
+    
+    switch (position) {
+    case DockedLeft:
+        return QRect(m_dockMargin,
+                     m_dockMargin,
+                     m_dockedWidth,
+                     parentHeight - 2 * m_dockMargin - bottomPanelHeight);
+                     
+    case DockedRight:
+        return QRect(parentWidth - m_dockedWidth - m_dockMargin,
+                     m_dockMargin,
+                     m_dockedWidth,
+                     parentHeight - 2 * m_dockMargin - bottomPanelHeight);
+                     
+    case DockedBottom:
+        return QRect(m_dockMargin,
+                     parentHeight - m_dockedHeight - m_dockMargin,
+                     parentWidth - 2 * m_dockMargin,
+                     m_dockedHeight);
+                     
+    default:
+        return QRect();
+    }
+}
+
 void FloatingPanelBase::updateDockedGeometry()
 {
     if (!parentWidget() || m_dockPosition == Floating) {
         return;
     }
 
-    QRect targetGeometry;
-    int parentWidth = parentWidget()->width();
-    int parentHeight = parentWidget()->height();
-
     // Remove size constraints for docking
     setMinimumSize(0, 0);
     setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
 
-    switch (m_dockPosition) {
-    case DockedLeft:
-        targetGeometry = QRect(m_dockMargin,
-                               m_dockMargin,
-                               m_dockedWidth,
-                               parentHeight - 2 * m_dockMargin);
-        break;
-    case DockedRight:
-        targetGeometry = QRect(parentWidget()->width() - m_dockedWidth - m_dockMargin,
-                               m_dockMargin,
-                               m_dockedWidth,
-                               parentHeight - 2 * m_dockMargin);
-        break;
-    case DockedBottom:
-        targetGeometry = QRect(m_dockMargin,
-                               parentHeight - m_dockedHeight - m_dockMargin,
-                               parentWidth - 2 * m_dockMargin,
-                               m_dockedHeight);
-        break;
-    default:
-        return;
-    }
+    QRect targetGeometry = calculateDockedGeometry(m_dockPosition);
 
     if (m_geometryAnimation->state() == QAbstractAnimation::Running) {
         m_geometryAnimation->stop();
@@ -227,14 +273,30 @@ void FloatingPanelBase::updateDockedGeometry()
                                        .arg(objectName));
 }
 
+void FloatingPanelBase::updateAllDockedPanels()
+{
+    if (!m_graphEditor) return;
+    
+    // Update all docked panels to adjust for bottom panel
+    for (QObject* obj : m_graphEditor->children()) {
+        if (FloatingPanelBase* panel = qobject_cast<FloatingPanelBase*>(obj)) {
+            if (panel != this && panel->isDocked()) {
+                panel->updatePosition();
+            }
+        }
+    }
+}
+
 void FloatingPanelBase::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
 
-    // Draw shadow
-    QRect shadowRect = rect().adjusted(4, 4, -4, -4);
-    painter.fillRect(shadowRect, QColor(0, 0, 0, 30));
+    // Draw shadow only when floating
+    if (m_dockPosition == Floating) {
+        QRect shadowRect = rect().adjusted(4, 4, -4, -4);
+        painter.fillRect(shadowRect, QColor(0, 0, 0, 30));
+    }
 
     // Draw docking preview
     if (m_dragging && m_previewDockPosition != Floating && m_previewDockPosition != m_dockPosition) {
@@ -271,6 +333,7 @@ void FloatingPanelBase::mouseMoveEvent(QMouseEvent *event)
 
         // If currently docked, undock first
         if (m_dockPosition != Floating) {
+            DockPosition oldPosition = m_dockPosition;
             m_dockPosition = Floating;
             setFixedWidth(m_floatingWidth);
             // Adjust position to keep mouse on title bar
@@ -281,6 +344,11 @@ void FloatingPanelBase::mouseMoveEvent(QMouseEvent *event)
             }
             setFixedHeight(m_floatHeight);
             m_contentWidget->setStyleSheet(getContentStyleSheet());
+            
+            // Update other panels if we were docked at bottom
+            if (oldPosition == DockedBottom) {
+                updateAllDockedPanels();
+            }
         }
 
         // Keep within parent bounds

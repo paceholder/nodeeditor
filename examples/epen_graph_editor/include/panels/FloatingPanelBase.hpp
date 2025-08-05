@@ -41,6 +41,13 @@ public:
     void setDockedHeight(int height) { m_dockedHeight = height; }  // For bottom docking
     int dockedHeight() const { return m_dockedHeight; }
     void setDockingDistance(int distance) { m_dockingDistance = distance; }
+    
+    // Priority system
+    void setPanelPriority(int priority) { m_priority = priority; }
+    int panelPriority() const { return m_priority; }
+
+signals:
+    void dockPositionChanged(DockPosition newPosition);
 
 protected:
     // Override these to customize panel behavior
@@ -69,6 +76,9 @@ private:
     DockPosition checkDockingZone(const QPoint &pos);
     void applyDocking(DockPosition position);
     void updateDockedGeometry();
+    QRect calculateDockedGeometry(DockPosition position);
+    void updateAllDockedPanels();
+    int getBottomPanelHeight() const;
 
 protected:
     GraphEditorWindow *m_graphEditor;
@@ -93,6 +103,7 @@ protected:
     int m_dockedHeight;  // Height when docked to bottom
     int m_floatingWidth;
     int m_floatHeight;
+    int m_priority;      // Panel priority (higher = more important)
     
     // Panel title
     QString m_panelTitle;

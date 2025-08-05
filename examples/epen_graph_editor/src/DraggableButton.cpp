@@ -9,7 +9,7 @@ DraggableButton::DraggableButton(QString actionName, QWidget *parent)
     : QPushButton(parent)
     , _actionName(actionName)
 {
-    setMinimumSize(20, 20);
+    setMinimumSize(20, 30);
     setStyleSheet("background-color: lightgray; border: 1px solid black;");
 }
 
