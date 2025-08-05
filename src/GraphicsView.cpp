@@ -434,3 +434,25 @@ QPointF GraphicsView::scenePastePosition()
 
     return mapToScene(origin);
 }
+
+void GraphicsView::zoomFitAll()
+{
+    fitInView(scene()->itemsBoundingRect(), Qt::KeepAspectRatio);
+    //clipCurrentScale();
+}
+
+void GraphicsView::zoomFitSelected()
+{
+    if(scene()->selectedItems().count() > 0){
+
+        QRectF unitedBoundingRect{};
+
+        for(QGraphicsItem * item : scene()->selectedItems())
+        {
+            unitedBoundingRect = unitedBoundingRect.united(item->mapRectToScene(item->boundingRect()));
+        }
+
+        fitInView(unitedBoundingRect, Qt::KeepAspectRatio);
+        //clipCurrentScale();
+    }
+}
