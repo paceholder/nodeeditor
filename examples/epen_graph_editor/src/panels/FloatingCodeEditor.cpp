@@ -19,6 +19,7 @@
 #include <QStandardItemModel>
 #include <QVBoxLayout>
 #include <QTimer>
+#include <QMoveEvent>
 #include <Qsci/qsciapis.h>
 #include <Qsci/qsciscintilla.h>
 
@@ -30,7 +31,16 @@ FloatingCodeEditor::FloatingCodeEditor(GraphEditorWindow *parent)
     , m_darkModeCheckBox(nullptr)
     , m_resultsWidget(nullptr)
     , m_lexer(nullptr)
+    , m_maximizeButton(nullptr)
     , m_isDarkMode(false) // Default to light mode
+    , m_isMaximized(false)
+    , m_preMaximizeDockPosition(FloatingPanelBase::Floating)
+    , m_preMaximizeDockedHeight(450)
+    , m_preMaximizeDockedWidth(700)
+    , m_preMaximizeFloatHeight(500)
+    , m_resizing(false)
+    , m_resizeEdge(NoEdge)
+    , m_resizeStartHeight(0)
 {
     // Set panel-specific dimensions
     setFloatingWidth(600);
@@ -42,6 +52,9 @@ FloatingCodeEditor::FloatingCodeEditor(GraphEditorWindow *parent)
 
     // Support bottom docking in addition to left/right
     setDockingDistance(40);
+    
+    // Enable mouse tracking for resize cursor
+    setMouseTracking(true);
 
     // Setup languages
     m_supportedLanguages = {"OpenCL", "CUDA", "Metal"};
@@ -54,8 +67,8 @@ FloatingCodeEditor::FloatingCodeEditor(GraphEditorWindow *parent)
     initializeCompilers();
     
     // Initial floating size and position
-    setFixedWidth(floatingWidth());
-    setFixedHeight(500);
+    setMinimumSize(400, 300);  // Set minimum size for resizing
+    resize(floatingWidth(), 500);
     if (parent) {
         m_floatingGeometry = QRect((parent->width() - floatingWidth()) / 2,
                                    (parent->height() - 500) / 2,
@@ -81,8 +94,10 @@ void FloatingCodeEditor::setupUI()
     // Call base class setup
     setupBaseUI("Code Editor");
     
-    // Ensure scroll area is properly configured for code editor
+    // Install event filter on scroll area for resize handling when docked
     if (m_scrollArea) {
+        m_scrollArea->installEventFilter(this);
+        m_scrollArea->setMouseTracking(true);
         m_scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
         m_scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     }
@@ -138,6 +153,31 @@ void FloatingCodeEditor::setupUI()
     m_darkModeCheckBox = new QCheckBox("Dark Mode");
     m_darkModeCheckBox->setChecked(m_isDarkMode);
     topLayout->addWidget(m_darkModeCheckBox);
+    
+    // Add spacing before maximize button
+    topLayout->addSpacing(10);
+    
+    // Maximize button
+    m_maximizeButton = new QPushButton();
+    m_maximizeButton->setFixedSize(24, 24);
+    m_maximizeButton->setToolTip("Maximize");
+    m_maximizeButton->setStyleSheet("QPushButton {"
+                                    "   background-color: transparent;"
+                                    "   border: 1px solid #ccc;"
+                                    "   border-radius: 3px;"
+                                    "   font-family: monospace;"
+                                    "   font-size: 16px;"
+                                    "   padding: 0px;"
+                                    "}"
+                                    "QPushButton:hover {"
+                                    "   background-color: #e0e0e0;"
+                                    "   border-color: #999;"
+                                    "}"
+                                    "QPushButton:pressed {"
+                                    "   background-color: #d0d0d0;"
+                                    "}");
+    m_maximizeButton->setText("□");  // Unicode square symbol for maximize
+    topLayout->addWidget(m_maximizeButton);
 
     layout->addWidget(topWidget);
 
@@ -394,6 +434,8 @@ void FloatingCodeEditor::connectSignals()
     connect(m_codeEditor, &QsciScintilla::textChanged, this, &FloatingCodeEditor::onCodeChanged);
 
     connect(m_darkModeCheckBox, &QCheckBox::toggled, this, &FloatingCodeEditor::onThemeToggled);
+    
+    connect(m_maximizeButton, &QPushButton::clicked, this, &FloatingCodeEditor::onMaximizeClicked);
 }
 
 void FloatingCodeEditor::onLanguageChanged(int index)
@@ -459,6 +501,115 @@ void FloatingCodeEditor::onThemeToggled(bool checked)
 
     // Additional delayed refresh as backup
     QTimer::singleShot(100, this, &FloatingCodeEditor::forceRefreshLexer);
+}
+
+void FloatingCodeEditor::onMaximizeClicked()
+{
+    toggleMaximize();
+}
+
+void FloatingCodeEditor::toggleMaximize()
+{
+    if (m_isMaximized) {
+        restoreFromMaximized();
+    } else {
+        maximizePanel();
+    }
+}
+
+void FloatingCodeEditor::maximizePanel()
+{
+    if (!parentWidget()) return;
+    
+    // Store current state
+    m_preMaximizeDockPosition = dockPosition();
+    m_preMaximizeDockedHeight = dockedHeight();
+    m_preMaximizeDockedWidth = dockedWidth();
+    
+    if (isDocked()) {
+        m_preMaximizeGeometry = m_floatingGeometry;
+        m_preMaximizeFloatHeight = m_floatHeight;
+    } else {
+        m_preMaximizeGeometry = geometry();
+        m_preMaximizeFloatHeight = height();
+    }
+    
+    // Get parent dimensions
+    QRect parentRect = parentWidget()->rect();
+    
+    // If docked, undock first
+    if (isDocked()) {
+        setDockPosition(FloatingPanelBase::Floating);
+        QTimer::singleShot(0, this, [this, parentRect]() {
+            setGeometry(0, 0, parentRect.width(), parentRect.height());
+            setMinimumSize(parentRect.size());
+            setMaximumSize(parentRect.size());
+            m_maximizeButton->setText("◱");
+            m_maximizeButton->setToolTip("Restore");
+            raise();
+            m_isMaximized = true;
+        });
+    } else {
+        setGeometry(0, 0, parentRect.width(), parentRect.height());
+        setMinimumSize(parentRect.size());
+        setMaximumSize(parentRect.size());
+        m_maximizeButton->setText("◱");
+        m_maximizeButton->setToolTip("Restore");
+        raise();
+        m_isMaximized = true;
+    }
+}
+
+void FloatingCodeEditor::restoreFromMaximized()
+{
+    // Restore size constraints
+    setMinimumSize(QSize(0, 0));
+    setMaximumSize(QSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX));
+    
+    // Unset fixed size
+    setFixedSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
+    
+    // Restore previous dock state
+    if (m_preMaximizeDockPosition != FloatingPanelBase::Floating) {
+        // Restore docked dimensions first
+        setDockedHeight(m_preMaximizeDockedHeight);
+        setDockedWidth(m_preMaximizeDockedWidth);
+        
+        // Set appropriate size before docking
+        if (m_preMaximizeDockPosition == FloatingPanelBase::DockedLeft || 
+            m_preMaximizeDockPosition == FloatingPanelBase::DockedRight) {
+            setFixedWidth(m_preMaximizeDockedWidth);
+        } else if (m_preMaximizeDockPosition == FloatingPanelBase::DockedBottom) {
+            setFixedHeight(m_preMaximizeDockedHeight);
+        }
+        
+        // Restore dock position
+        setDockPosition(m_preMaximizeDockPosition);
+    } else {
+        // Restore floating state
+        // First restore the proper floating size
+        setFixedWidth(floatingWidth());
+        setFixedHeight(m_preMaximizeGeometry.height());
+        
+        // Then restore position and size
+        setGeometry(m_preMaximizeGeometry);
+        
+        // Update the stored floating geometry
+        m_floatingGeometry = m_preMaximizeGeometry;
+    }
+    
+    // Update button appearance
+    m_maximizeButton->setText("□");  // Unicode maximize symbol
+    m_maximizeButton->setToolTip("Maximize");
+    
+    m_isMaximized = false;
+}
+
+void FloatingCodeEditor::setMaximized(bool maximized)
+{
+    if (maximized != m_isMaximized) {
+        toggleMaximize();
+    }
 }
 
 void FloatingCodeEditor::updateHighlighter()
@@ -566,9 +717,215 @@ void FloatingCodeEditor::setReadOnly(bool readOnly)
     m_compileButton->setEnabled(!readOnly);
 }
 
-void FloatingCodeEditor::resizeEvent(QResizeEvent *event)
+void FloatingCodeEditor::mousePressEvent(QMouseEvent *event)
 {
-    FloatingPanelBase::resizeEvent(event);
+    if (event->button() == Qt::LeftButton && !m_isMaximized) {
+        if (!isDocked()) {
+            // Handle resize for floating mode
+            m_resizeEdge = getResizeEdge(event->pos());
+            if (m_resizeEdge != NoEdge) {
+                m_resizing = true;
+                m_resizeStartPos = event->globalPosition().toPoint();
+                m_resizeStartGeometry = geometry();
+                event->accept();
+                return;
+            }
+        }
+    }
+    
+    // Pass to base class for dragging
+    FloatingPanelBase::mousePressEvent(event);
+}
+
+void FloatingCodeEditor::mouseMoveEvent(QMouseEvent *event)
+{
+    if (!m_isMaximized) {
+        if (m_resizing && (event->buttons() & Qt::LeftButton)) {
+            // Handle resizing
+            QPoint delta = event->globalPosition().toPoint() - m_resizeStartPos;
+            QRect newGeometry = m_resizeStartGeometry;
+            
+            switch (m_resizeEdge) {
+                case TopEdge:
+                    newGeometry.setTop(m_resizeStartGeometry.top() + delta.y());
+                    break;
+                case BottomEdge:
+                    newGeometry.setBottom(m_resizeStartGeometry.bottom() + delta.y());
+                    break;
+                case LeftEdge:
+                    newGeometry.setLeft(m_resizeStartGeometry.left() + delta.x());
+                    break;
+                case RightEdge:
+                    newGeometry.setRight(m_resizeStartGeometry.right() + delta.x());
+                    break;
+                case TopLeftCorner:
+                    newGeometry.setTopLeft(m_resizeStartGeometry.topLeft() + delta);
+                    break;
+                case TopRightCorner:
+                    newGeometry.setTop(m_resizeStartGeometry.top() + delta.y());
+                    newGeometry.setRight(m_resizeStartGeometry.right() + delta.x());
+                    break;
+                case BottomLeftCorner:
+                    newGeometry.setBottom(m_resizeStartGeometry.bottom() + delta.y());
+                    newGeometry.setLeft(m_resizeStartGeometry.left() + delta.x());
+                    break;
+                case BottomRightCorner:
+                    newGeometry.setBottomRight(m_resizeStartGeometry.bottomRight() + delta);
+                    break;
+                default:
+                    break;
+            }
+            
+            // Apply minimum size constraints
+            if (newGeometry.width() >= minimumWidth() && newGeometry.height() >= minimumHeight()) {
+                setGeometry(newGeometry);
+                
+                // Update floating geometry for base class
+                if (!isDocked()) {
+                    m_floatingGeometry = newGeometry;
+                    m_floatHeight = newGeometry.height();
+                }
+            }
+            
+            event->accept();
+            return;
+        } else if (!isDocked()) {
+            // Update cursor based on position
+            updateCursor(event->pos());
+        }
+    }
+    
+    // Pass to base class for dragging
+    FloatingPanelBase::mouseMoveEvent(event);
+}
+
+void FloatingCodeEditor::mouseReleaseEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton) {
+        m_resizing = false;
+        m_resizeEdge = NoEdge;
+        setCursor(Qt::ArrowCursor);
+    }
+    
+    FloatingPanelBase::mouseReleaseEvent(event);
+}
+
+void FloatingCodeEditor::paintEvent(QPaintEvent *event)
+{
+    FloatingPanelBase::paintEvent(event);
+    
+    // Draw resize grip for docked bottom mode
+    if (isDocked() && dockPosition() == DockedBottom && !m_isMaximized) {
+        QPainter painter(this);
+        painter.setRenderHint(QPainter::Antialiasing);
+        
+        // Draw resize handle at top edge
+        int handleHeight = 4;
+        QRect handleRect(0, 0, width(), handleHeight);
+        painter.fillRect(handleRect, QColor(200, 200, 200, 100));
+        
+        // Draw grip lines
+        painter.setPen(QPen(QColor(150, 150, 150), 1));
+        int centerX = width() / 2;
+        int lineWidth = 30;
+        for (int i = -1; i <= 1; i++) {
+            int y = 2 + i;
+            painter.drawLine(centerX - lineWidth/2, y, centerX + lineWidth/2, y);
+        }
+    }
+}
+
+bool FloatingCodeEditor::eventFilter(QObject *obj, QEvent *event)
+{
+    if (obj == m_scrollArea && isDocked() && dockPosition() == DockedBottom && !m_isMaximized) {
+        if (event->type() == QEvent::MouseButtonPress) {
+            QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
+            if (mouseEvent->button() == Qt::LeftButton && mouseEvent->pos().y() < RESIZE_MARGIN) {
+                m_resizing = true;
+                m_resizeStartPos = mouseEvent->globalPosition().toPoint();
+                m_resizeStartHeight = dockedHeight();
+                return true;
+            }
+        } else if (event->type() == QEvent::MouseMove) {
+            QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
+            if (m_resizing && (mouseEvent->buttons() & Qt::LeftButton)) {
+                int delta = m_resizeStartPos.y() - mouseEvent->globalPosition().toPoint().y();
+                int newHeight = qMax(200, qMin(parentWidget()->height() - 100, m_resizeStartHeight + delta));
+                setDockedHeight(newHeight);
+                updatePosition();
+                return true;
+            } else if (mouseEvent->pos().y() < RESIZE_MARGIN) {
+                m_scrollArea->setCursor(Qt::SizeVerCursor);
+            } else {
+                m_scrollArea->setCursor(Qt::ArrowCursor);
+            }
+        } else if (event->type() == QEvent::MouseButtonRelease) {
+            m_resizing = false;
+            m_scrollArea->setCursor(Qt::ArrowCursor);
+        }
+    }
+    
+    return FloatingPanelBase::eventFilter(obj, event);
+}
+
+void FloatingCodeEditor::moveEvent(QMoveEvent *event)
+{
+    FloatingPanelBase::moveEvent(event);
+    
+    // If we're maximized, prevent movement away from (0,0)
+    if (m_isMaximized && (x() != 0 || y() != 0)) {
+        move(0, 0);
+    }
+}
+
+FloatingCodeEditor::ResizeEdge FloatingCodeEditor::getResizeEdge(const QPoint &pos)
+{
+    if (isDocked()) return NoEdge;
+    
+    QRect r = rect();
+    bool onLeft = pos.x() < RESIZE_MARGIN;
+    bool onRight = pos.x() > r.width() - RESIZE_MARGIN;
+    bool onTop = pos.y() < RESIZE_MARGIN;
+    bool onBottom = pos.y() > r.height() - RESIZE_MARGIN;
+    
+    if (onTop && onLeft) return TopLeftCorner;
+    if (onTop && onRight) return TopRightCorner;
+    if (onBottom && onLeft) return BottomLeftCorner;
+    if (onBottom && onRight) return BottomRightCorner;
+    if (onTop) return TopEdge;
+    if (onBottom) return BottomEdge;
+    if (onLeft) return LeftEdge;
+    if (onRight) return RightEdge;
+    
+    return NoEdge;
+}
+
+void FloatingCodeEditor::updateCursor(const QPoint &pos)
+{
+    if (m_resizing || isDocked()) return;
+    
+    ResizeEdge edge = getResizeEdge(pos);
+    switch (edge) {
+        case TopEdge:
+        case BottomEdge:
+            setCursor(Qt::SizeVerCursor);
+            break;
+        case LeftEdge:
+        case RightEdge:
+            setCursor(Qt::SizeHorCursor);
+            break;
+        case TopLeftCorner:
+        case BottomRightCorner:
+            setCursor(Qt::SizeFDiagCursor);
+            break;
+        case TopRightCorner:
+        case BottomLeftCorner:
+            setCursor(Qt::SizeBDiagCursor);
+            break;
+        default:
+            setCursor(Qt::ArrowCursor);
+            break;
+    }
 }
 
 void FloatingCodeEditor::initializeCompilers()
@@ -670,7 +1027,6 @@ void FloatingCodeEditor::updateCompilerAvailability()
         m_compileButton->setToolTip("");
     }
 }
-
 void FloatingCodeEditor::performCompilation()
 {
     QString language = getCurrentLanguage();
@@ -728,17 +1084,30 @@ void FloatingCodeEditor::showCompileResults(bool show)
     if (show) {
         m_resultsWidget->show();
         // Adjust splitter sizes if needed
-        if (isDocked() && dockPosition() == DockedBottom) {
+        if (isDocked() && dockPosition() == DockedBottom && !m_isMaximized) {
             setDockedHeight(600); // Increase height when showing results
             updatePosition();
         }
     } else {
         m_resultsWidget->hide();
         // Restore original size
-        if (isDocked() && dockPosition() == DockedBottom) {
+        if (isDocked() && dockPosition() == DockedBottom && !m_isMaximized) {
             setDockedHeight(450);
             updatePosition();
         }
+    }
+}
+
+void FloatingCodeEditor::resizeEvent(QResizeEvent *event)
+{
+    FloatingPanelBase::resizeEvent(event);
+    
+    // If we're maximized and parent resized, update our size
+    if (m_isMaximized && parentWidget()) {
+        QRect parentRect = parentWidget()->rect();
+        setGeometry(parentRect);
+        setMinimumSize(parentRect.size());
+        setMaximumSize(parentRect.size());
     }
 }
 
