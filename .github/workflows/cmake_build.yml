@@ -69,7 +69,9 @@ jobs:
 
     - name: Setup (Linux)
       if: startsWith (matrix.os, 'ubuntu')
-      run: sudo apt-get install libxkbcommon-dev
+      run: |
+        sudo apt-get update
+        sudo apt-get install libxkbcommon-dev xvfb
 
     - name: Setup VS tools (Windows)
       if: startsWith (matrix.os, 'windows')
@@ -82,3 +84,21 @@ jobs:
 
     - name: Build with ${{ matrix.compiler }}
       run: cmake --build build --config ${{ matrix.configuration }}
+
+    - name: Run Tests (Linux)
+      if: startsWith (matrix.os, 'ubuntu')
+      run: |
+        cd build
+        xvfb-run -a ctest --output-on-failure --progress
+
+    - name: Run Tests (macOS)
+      if: startsWith (matrix.os, 'macos')
+      run: |
+        cd build
+        ctest --output-on-failure --progress
+
+    - name: Run Tests (Windows)
+      if: startsWith (matrix.os, 'windows')
+      run: |
+        cd build
+        ctest -C ${{ matrix.configuration }} --output-on-failure --progress

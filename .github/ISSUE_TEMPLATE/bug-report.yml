@@ -1,0 +1,63 @@
+name: Bug report
+description: Report crashes or incorrect behaviour of existing functionality in QtNodes.
+body:
+  - type: textarea
+    id: steps
+    attributes:
+      label: Description with steps to reproduce
+      description: Please also describe the actual (current) and expected behaviour and include a code snippet where relevant
+      placeholder: |
+        1. go to ...
+        2. then click on ...
+        3. then ...
+        Actual behaviour:
+        Expected behaviour:
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Supporting files, videos and screenshots
+      description: |
+        * A short screen recording (ideally 20sec or less) or screenshot
+      placeholder: |
+        Click into this text box and paste your files, videos and screenshots here.
+    validations:
+      required: true
+  - type: input
+    id: qt_version
+    attributes:
+      label: Qt Version
+      description: What version of Qt does this bug occur on?
+      placeholder: Qt 5/6?
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: Operating system
+      description: What OS does this bug occur on?
+      placeholder: Windows 11, macOS 13, Ubuntu 22.04, etc.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Further information which may be relevant to this bug
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      description: "Before submitting your bug report, please make sure the following requirements are met:"
+      options:
+        - label: "I have verified that this issue has not been logged before, by searching the [issue tracker](https://github.com/paceholder/nodeeditor/issues) for similar issues"
+          required: true
+        - label: "I have attached all requested files and information to this report"
+          required: true
+        - label: "I have attempted to identify the root problem as concisely as possible, and have used minimal reproducible examples where possible"
+          required: true
+  - type: markdown
+    attributes:
+      value: If an issue does not meet these requirements, it may be closed without investigation.

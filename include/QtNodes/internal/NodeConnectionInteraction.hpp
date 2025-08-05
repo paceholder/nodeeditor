@@ -1,10 +1,8 @@
 #pragma once
 
-#include <memory>
+#include "Definitions.hpp"
 
 #include <QtCore/QPointF>
-
-#include "Definitions.hpp"
 
 namespace QtNodes {
 
@@ -12,8 +10,9 @@ class ConnectionGraphicsObject;
 class NodeGraphicsObject;
 class BasicGraphicsScene;
 
-/// Class wraps conecting and disconnecting checks.
 /**
+ * @brief Class wraps conecting and disconnecting checks.
+ *
  * An instance should be created on the stack and destroyed
  * automatically when the operation is completed
  */
@@ -25,27 +24,33 @@ public:
                               BasicGraphicsScene &scene);
 
     /**
-   * Can connect when following conditions are met:
-   * 1. Connection 'requires' a port.
-   * 2. Connection loose end is above the node port.
-   * 3. Source and target `nodeId`s are different.
-   * 4. GraphModel permits connection.
-   */
+     * @brief We check connection possibility from the perspecpive of
+     * ConnectionGraphicsObject first and just then ask the GraphModel
+     *
+     * Can connect when following conditions are met:
+     * 1. ConnectionGrachicsObject::connectionState() 'requires' a port.
+     * 2. Connection loose end is geometrically above the node port.
+     * 3. GraphModel permits connection
+     *    - Here we check specific data type
+     *    - multi-connection policy
+     *    -  New connection does not introduce a loop if
+     *       `AbstractGrphModel::loopsEnabled()` forbits it.
+     */
     bool canConnect(PortIndex *portIndex) const;
 
     /// Creates a new connectino if possible.
     /**
-   * 1. Check conditions from 'canConnect'.
-   * 2. Creates new connection with `GraphModel::addConnection`.
-   * 3. Adjust connection geometry.
-   */
+     * 1. Check conditions from 'canConnect'.
+     * 2. Creates new connection with `GraphModel::addConnection`.
+     * 3. Adjust connection geometry.
+     */
     bool tryConnect() const;
 
     /**
-   * 1. Delete connection with `GraphModel::deleteConnection`.
-   * 2. Create a "draft" connection with incomplete `ConnectionId`.
-   * 3. Repaint both previously connected nodes.
-   */
+     * 1. Delete connection with `GraphModel::deleteConnection`.
+     * 2. Create a "draft" connection with incomplete `ConnectionId`.
+     * 3. Repaint both previously connected nodes.
+     */
     bool disconnect(PortType portToDisconnect) const;
 
 private:

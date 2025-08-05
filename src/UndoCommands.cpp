@@ -13,7 +13,6 @@
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QGraphicsObject>
 
-#include <typeinfo>
 
 namespace QtNodes {
 
