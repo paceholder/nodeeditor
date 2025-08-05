@@ -1,10 +1,10 @@
 #include "CodeEditor.hpp"
 #include "GPULanguageLexer.hpp"
-#include <QVBoxLayout>
 #include <QApplication>
 #include <QFont>
 #include <QFontDatabase>
 #include <QTimer>
+#include <QVBoxLayout>
 #include <Qsci/qsciapis.h>
 #include <Qsci/qsciscintilla.h>
 
@@ -14,13 +14,14 @@ CodeEditor::CodeEditor(QWidget *parent)
     , m_lexer(nullptr)
     , m_currentLanguage("OpenCL")
     , m_isDarkMode(false)
+    , _processNode(nullptr)
 {
     // Setup supported languages
     m_supportedLanguages = {"OpenCL", "CUDA", "Metal"};
-    
+
     // Setup UI
     setupEditor();
-    
+
     // Set initial language and code
     setLanguage(m_currentLanguage);
 }
@@ -31,28 +32,27 @@ void CodeEditor::setupEditor()
 {
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
-    
+
     // Create editor
     m_editor = new QsciScintilla(this);
     layout->addWidget(m_editor);
-    
+
     // Setup common features
     setupCommonEditorFeatures();
-    
+
     // Create and set custom lexer
     m_lexer = new GPULanguageLexer(m_editor);
     m_editor->setLexer(m_lexer);
-    
+
     // Apply initial theme
     if (m_isDarkMode) {
         applyDarkTheme();
     } else {
         applyLightTheme();
     }
-    
+
     // Connect signals
-    connect(m_editor, &QsciScintilla::textChanged, 
-            this, &CodeEditor::onTextChanged);
+    connect(m_editor, &QsciScintilla::textChanged, this, &CodeEditor::onTextChanged);
 }
 
 void CodeEditor::setupCommonEditorFeatures()
@@ -108,10 +108,10 @@ void CodeEditor::setLanguage(const QString &language)
     if (m_supportedLanguages.contains(language) && language != m_currentLanguage) {
         m_currentLanguage = language;
         updateHighlighter();
-        
+
         // Set default code for the language
         setCode(getDefaultCode(language));
-        
+
         emit languageChanged(language);
     }
 }
@@ -135,13 +135,13 @@ void CodeEditor::setDarkMode(bool dark)
 {
     if (m_isDarkMode != dark) {
         m_isDarkMode = dark;
-        
+
         if (m_isDarkMode) {
             applyDarkTheme();
         } else {
             applyLightTheme();
         }
-        
+
         // Additional delayed refresh as backup
         QTimer::singleShot(100, this, &CodeEditor::forceRefreshLexer);
     }
@@ -169,7 +169,7 @@ void CodeEditor::highlightLine(int line, int duration)
     if (line > 0) {
         // QScintilla uses 0-based line numbers
         int sciLine = line - 1;
-        
+
         // Highlight the line temporarily
         m_editor->setSelectionBackgroundColor(QColor(255, 200, 200));
         m_editor->setSelection(sciLine, 0, sciLine, m_editor->lineLength(sciLine));
@@ -186,18 +186,13 @@ void CodeEditor::setFocus()
     m_editor->setFocus();
 }
 
-void CodeEditor::onTextChanged()
-{
-    emit codeChanged();
-}
-
 void CodeEditor::updateHighlighter()
 {
     m_lexer->setLanguageMode(m_currentLanguage);
-    
+
     // Force refresh with the new method
     forceRefreshLexer();
-    
+
     // Setup auto-completion
     setupAutoCompletion();
 }
@@ -207,31 +202,56 @@ void CodeEditor::setupAutoCompletion()
     QsciAPIs *api = new QsciAPIs(m_lexer);
 
     if (m_currentLanguage == "OpenCL") {
-        QStringList keywords = {
-            "__kernel", "kernel", "__global", "global",
-            "__local", "local", "__constant", "constant",
-            "__private", "private", "get_global_id", "get_global_size",
-            "get_local_id", "get_local_size", "barrier",
-            "CLK_LOCAL_MEM_FENCE", "CLK_GLOBAL_MEM_FENCE"
-        };
+        QStringList keywords = {"__kernel",
+                                "kernel",
+                                "__global",
+                                "global",
+                                "__local",
+                                "local",
+                                "__constant",
+                                "constant",
+                                "__private",
+                                "private",
+                                "get_global_id",
+                                "get_global_size",
+                                "get_local_id",
+                                "get_local_size",
+                                "barrier",
+                                "CLK_LOCAL_MEM_FENCE",
+                                "CLK_GLOBAL_MEM_FENCE"};
         for (const QString &keyword : keywords) {
             api->add(keyword);
         }
     } else if (m_currentLanguage == "CUDA") {
-        QStringList keywords = {
-            "__global__", "__device__", "__host__", "__constant__",
-            "__shared__", "threadIdx", "blockIdx", "blockDim",
-            "gridDim", "warpSize", "__syncthreads", "atomicAdd", "atomicSub"
-        };
+        QStringList keywords = {"__global__",
+                                "__device__",
+                                "__host__",
+                                "__constant__",
+                                "__shared__",
+                                "threadIdx",
+                                "blockIdx",
+                                "blockDim",
+                                "gridDim",
+                                "warpSize",
+                                "__syncthreads",
+                                "atomicAdd",
+                                "atomicSub"};
         for (const QString &keyword : keywords) {
             api->add(keyword);
         }
     } else if (m_currentLanguage == "Metal") {
-        QStringList keywords = {
-            "kernel", "vertex", "fragment", "device",
-            "constant", "threadgroup", "thread", "metal",
-            "half", "float2", "float3", "float4"
-        };
+        QStringList keywords = {"kernel",
+                                "vertex",
+                                "fragment",
+                                "device",
+                                "constant",
+                                "threadgroup",
+                                "thread",
+                                "metal",
+                                "half",
+                                "float2",
+                                "float3",
+                                "float4"};
         for (const QString &keyword : keywords) {
             api->add(keyword);
         }
@@ -361,36 +381,36 @@ void CodeEditor::applyLightTheme()
 
 QString CodeEditor::getDefaultCode(const QString &language) const
 {
+    if (!_processNode)
+        return "";
     if (language == "OpenCL") {
-        return "__kernel void example(__global float* input,\n"
-               "                      __global float* output,\n"
-               "                      const int size) {\n"
-               "    int idx = get_global_id(0);\n"
-               "    if (idx < size) {\n"
-               "        output[idx] = input[idx] * 2.0f;\n"
-               "    }\n"
-               "}";
+        return _processNode->getOpenclProgram();
     } else if (language == "CUDA") {
-        return "__global__ void example(float* input,\n"
-               "                        float* output,\n"
-               "                        int size) {\n"
-               "    int idx = blockIdx.x * blockDim.x + threadIdx.x;\n"
-               "    if (idx < size) {\n"
-               "        output[idx] = input[idx] * 2.0f;\n"
-               "    }\n"
-               "}";
+        return _processNode->getCudaProgram();
     } else if (language == "Metal") {
-        return "#include <metal_stdlib>\n"
-               "using namespace metal;\n\n"
-               "kernel void example(device float* input [[buffer(0)]],\n"
-               "                    device float* output [[buffer(1)]],\n"
-               "                    uint idx [[thread_position_in_grid]],\n"
-               "                    uint size [[threads_per_grid]]) {\n"
-               "    if (idx < size) {\n"
-               "        output[idx] = input[idx] * 2.0f;\n"
-               "    }\n"
-               "}";
+        return _processNode->getMetalProgram();
     }
-    
+
     return "";
+}
+
+void CodeEditor::setProcessNode(Process *processNode)
+{
+    _processNode = processNode;
+    setCode(getDefaultCode(getCurrentLanguage()));
+}
+
+void CodeEditor::onTextChanged()
+{
+    if (!_processNode)
+        return;
+    QString language = getCurrentLanguage();
+    if (language == "OpenCL") {
+        return _processNode->setOpenclProgram(getCode());
+    } else if (language == "CUDA") {
+        return _processNode->setCudaProgram(getCode());
+    } else if (language == "Metal") {
+        return _processNode->setMetalProgram(getCode());
+    }
+    emit codeChanged();
 }

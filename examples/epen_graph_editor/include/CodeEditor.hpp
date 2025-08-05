@@ -1,10 +1,11 @@
 #ifndef CODEEDITOR_HPP
 #define CODEEDITOR_HPP
 
-#include <QWidget>
+#include "data_models/Process.hpp"
+#include <memory>
 #include <QString>
 #include <QStringList>
-#include <memory>
+#include <QWidget>
 
 class QsciScintilla;
 class GPULanguageLexer;
@@ -21,30 +22,30 @@ public:
     // Code management
     void setCode(const QString &code);
     QString getCode() const;
-    
+
     // Language management
     void setLanguage(const QString &language);
     QString getCurrentLanguage() const;
     QStringList getSupportedLanguages() const { return m_supportedLanguages; }
-    
+
     // Editor settings
     void setReadOnly(bool readOnly);
     bool isReadOnly() const;
-    
+
     // Theme management
     void setDarkMode(bool dark);
     bool isDarkMode() const { return m_isDarkMode; }
-    
+
     // Editor access (for advanced operations)
-    QsciScintilla* editor() { return m_editor; }
-    const QsciScintilla* editor() const { return m_editor; }
-    
+    QsciScintilla *editor() { return m_editor; }
+    const QsciScintilla *editor() const { return m_editor; }
+
     // Cursor and selection
     void setCursorPosition(int line, int column);
     void getCursorPosition(int &line, int &column) const;
     void ensureLineVisible(int line);
     void highlightLine(int line, int duration = 2000);
-    
+    void setProcessNode(Process *processNode);
     // Focus
     void setFocus();
 
@@ -64,18 +65,19 @@ private:
     void applyDarkTheme();
     void applyLightTheme();
     void setupAutoCompletion();
-    
+
     // Default code generators
     QString getDefaultCode(const QString &language) const;
 
     // UI elements
     QsciScintilla *m_editor;
     GPULanguageLexer *m_lexer;
-    
+
     // State
     QString m_currentLanguage;
     QStringList m_supportedLanguages;
     bool m_isDarkMode;
+    Process *_processNode;
 };
 
 #endif // CODEEDITOR_HPP

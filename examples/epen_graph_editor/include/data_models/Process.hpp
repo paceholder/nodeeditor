@@ -178,10 +178,47 @@ public:
 
     QObject *findPort(int portIndex, bool isRightPort);
 
+    void setCudaProgram(QString code);
+    void setMetalProgram(QString code);
+    void setOpenclProgram(QString code);
+
+    QString getCudaProgram();
+    QString getMetalProgram();
+    QString getOpenclProgram();
+
 private:
     Size *_grid;
     Size *_block;
 
     QVector<PortBase *> _leftPorts{};
     QVector<PortBase *> _rightPorts{};
+
+    QString _cudaProgram = "__global__ void example(float* input,\n"
+                           "                        float* output,\n"
+                           "                        int size) {\n"
+                           "    int idx = blockIdx.x * blockDim.x + threadIdx.x;\n"
+                           "    if (idx < size) {\n"
+                           "        output[idx] = input[idx] * 2.0f;\n"
+                           "    }\n"
+                           "}";
+
+    QString _metalProgram = "#include <metal_stdlib>\n"
+                            "using namespace metal;\n\n"
+                            "kernel void example(device float* input [[buffer(0)]],\n"
+                            "                    device float* output [[buffer(1)]],\n"
+                            "                    uint idx [[thread_position_in_grid]],\n"
+                            "                    uint size [[threads_per_grid]]) {\n"
+                            "    if (idx < size) {\n"
+                            "        output[idx] = input[idx] * 2.0f;\n"
+                            "    }\n"
+                            "}";
+
+    QString _openclProgram = "__kernel void example(__global float* input,\n"
+                             "                      __global float* output,\n"
+                             "                      const int size) {\n"
+                             "    int idx = get_global_id(0);\n"
+                             "    if (idx < size) {\n"
+                             "        output[idx] = input[idx] * 2.0f;\n"
+                             "    }\n"
+                             "}";
 };

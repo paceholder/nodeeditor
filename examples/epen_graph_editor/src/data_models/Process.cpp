@@ -104,3 +104,29 @@ QObject *Process::findPort(int portIndex, bool isRightPort)
     }
     return _leftPorts.at(portIndex);
 }
+
+QString Process::getCudaProgram()
+{
+    return _cudaProgram;
+}
+QString Process::getMetalProgram()
+{
+    return _metalProgram;
+}
+QString Process::getOpenclProgram()
+{
+    return _openclProgram;
+}
+
+void Process::setCudaProgram(QString code)
+{
+    _cudaProgram = code;
+}
+void Process::setMetalProgram(QString code)
+{
+    _metalProgram = code;
+}
+void Process::setOpenclProgram(QString code)
+{
+    _openclProgram = code;
+}

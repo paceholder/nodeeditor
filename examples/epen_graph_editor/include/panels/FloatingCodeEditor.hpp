@@ -2,8 +2,9 @@
 #define FLOATINGCODEEDITOR_HPP
 
 #include "FloatingPanelBase.hpp"
-#include <memory>
+#include "data_models/Process.hpp"
 #include <map>
+#include <memory>
 
 class QComboBox;
 class QCheckBox;
@@ -24,19 +25,20 @@ public:
     // Code editor API (delegates to CodeEditor)
     void setCode(const QString &code);
     QString getCode() const;
-    
+
     void setLanguage(const QString &language);
     QString getCurrentLanguage() const;
-    
+
     void setReadOnly(bool readOnly);
-    
+
     // Get compiled binary if available
     QByteArray getCompiledBinary() const { return m_compiledBinary; }
-    
+
     // Maximize/restore functionality
     bool isMaximized() const { return m_isMaximized; }
     void setMaximized(bool maximized);
 
+    void showPanel(Process *processNode);
 signals:
     void codeChanged();
     void languageChanged(const QString &language);
@@ -60,13 +62,13 @@ private slots:
 private:
     void setupUI() override;
     void connectSignals() override;
-    
+
     // Compiler management
     void initializeCompilers();
     void performCompilation();
     void showCompileResults(bool show);
     void updateCompilerAvailability();
-    
+
     // Maximize/restore functionality
     void toggleMaximize();
     void restoreFromMaximized();
@@ -74,7 +76,7 @@ private:
 
     // UI elements
     QComboBox *m_languageCombo;
-    CodeEditor *m_codeEditor;  // Changed from QsciScintilla
+    CodeEditor *m_codeEditor; // Changed from QsciScintilla
     QPushButton *m_compileButton;
     QCheckBox *m_darkModeCheckBox;
     CompileResultsWidget *m_resultsWidget;
@@ -82,7 +84,7 @@ private:
 
     // State
     QByteArray m_compiledBinary;
-    
+
     // Maximize state
     bool m_isMaximized;
     QRect m_preMaximizeGeometry;

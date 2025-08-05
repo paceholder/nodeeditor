@@ -312,8 +312,8 @@ void GraphEditorWindow::onNodeSelected(NodeId nodeId)
     }
     if (_model) {
         _model->setSelectedNode(nodeModel, nodeId);
-        if (qobject_cast<Process *>(nodeModel)) {
-            m_codeEditor->show();
+        if (Process *processNode = qobject_cast<Process *>(nodeModel)) {
+            m_codeEditor->showPanel(processNode);
             m_toolbar->updatePosition();
             m_properties->updatePosition();
         } else {

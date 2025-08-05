@@ -43,7 +43,7 @@ FloatingCodeEditor::FloatingCodeEditor(GraphEditorWindow *parent)
 
     // Support bottom docking in addition to left/right
     setDockingDistance(40);
-    
+
     // Enable resizing for code editor panel
     setResizable(true);
 
@@ -611,4 +611,10 @@ void FloatingCodeEditor::dockChanged(bool isFloat)
     } else {
         m_maximizeButton->show();
     }
+}
+
+void FloatingCodeEditor::showPanel(Process *processNode)
+{
+    m_codeEditor->setProcessNode(processNode);
+    show();
 }
