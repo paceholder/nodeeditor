@@ -45,6 +45,10 @@ public:
     // Priority system
     void setPanelPriority(int priority) { m_priority = priority; }
     int panelPriority() const { return m_priority; }
+    
+    // Resize control
+    void setResizable(bool resizable) { m_isResizable = resizable; }
+    bool isResizable() const { return m_isResizable; }
 
 signals:
     void dockPositionChanged(DockPosition newPosition);
@@ -56,6 +60,7 @@ protected:
     virtual QString getPanelStyleSheet() const;
     virtual QString getContentStyleSheet() const;
     virtual void dockChanged(bool isFloat);
+    
     // Event handlers
     void paintEvent(QPaintEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
@@ -63,6 +68,8 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event) override;
     void showEvent(QShowEvent *event) override;
     void resizeEvent(QResizeEvent *event) override;
+    void enterEvent(QEnterEvent *event) override;
+    void leaveEvent(QEvent *event) override;
 
     // Helper methods for derived classes
     void setupBaseUI(const QString &title);
@@ -72,6 +79,22 @@ protected:
     QScrollArea *getScrollArea() const { return m_scrollArea; }
 
 private:
+    // Resize handling
+    enum ResizeEdge {
+        NoEdge,
+        TopEdge,
+        BottomEdge,
+        LeftEdge,
+        RightEdge,
+        TopLeftCorner,
+        TopRightCorner,
+        BottomLeftCorner,
+        BottomRightCorner
+    };
+    
+    ResizeEdge getResizeEdge(const QPoint &pos);
+    void updateCursor(const QPoint &pos);
+    
     // Docking helpers
     DockPosition checkDockingZone(const QPoint &pos);
     void applyDocking(DockPosition position);
@@ -107,6 +130,17 @@ protected:
     
     // Panel title
     QString m_panelTitle;
+    
+    // Resize control
+    bool m_isResizable;
+    
+    // Resize state
+    bool m_resizing;
+    ResizeEdge m_resizeEdge;
+    QPoint m_resizeStartPos;
+    QRect m_resizeStartGeometry;
+    int m_resizeStartHeight;
+    static const int RESIZE_MARGIN = 10;  // Increased from 8 to 10 for easier grabbing
 };
 
 #endif // FLOATING_PANEL_BASE_HPP

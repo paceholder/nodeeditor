@@ -32,9 +32,6 @@ FloatingCodeEditor::FloatingCodeEditor(GraphEditorWindow *parent)
     , m_preMaximizeDockedHeight(450)
     , m_preMaximizeDockedWidth(700)
     , m_preMaximizeFloatHeight(500)
-    , m_resizing(false)
-    , m_resizeEdge(NoEdge)
-    , m_resizeStartHeight(0)
 {
     // Set panel-specific dimensions
     setFloatingWidth(600);
@@ -46,9 +43,9 @@ FloatingCodeEditor::FloatingCodeEditor(GraphEditorWindow *parent)
 
     // Support bottom docking in addition to left/right
     setDockingDistance(40);
-
-    // Enable mouse tracking for resize cursor
-    setMouseTracking(true);
+    
+    // Enable resizing for code editor panel
+    setResizable(true);
 
     // Initialize UI
     setupUI();
@@ -82,14 +79,6 @@ void FloatingCodeEditor::setupUI()
 {
     // Call base class setup
     setupBaseUI("Code Editor");
-
-    // Install event filter on scroll area for resize handling when docked
-    if (m_scrollArea) {
-        m_scrollArea->installEventFilter(this);
-        m_scrollArea->setMouseTracking(true);
-        m_scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-        m_scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-    }
 
     QVBoxLayout *layout = getContentLayout();
     layout->setSpacing(5);
@@ -405,159 +394,6 @@ void FloatingCodeEditor::setReadOnly(bool readOnly)
     m_compileButton->setEnabled(!readOnly);
 }
 
-void FloatingCodeEditor::mousePressEvent(QMouseEvent *event)
-{
-    if (event->button() == Qt::LeftButton && !m_isMaximized) {
-        if (!isDocked()) {
-            // Handle resize for floating mode
-            m_resizeEdge = getResizeEdge(event->pos());
-            if (m_resizeEdge != NoEdge) {
-                m_resizing = true;
-                m_resizeStartPos = event->globalPosition().toPoint();
-                m_resizeStartGeometry = geometry();
-                event->accept();
-                return;
-            }
-        }
-    }
-
-    // Pass to base class for dragging
-    FloatingPanelBase::mousePressEvent(event);
-}
-
-void FloatingCodeEditor::mouseMoveEvent(QMouseEvent *event)
-{
-    if (!m_isMaximized) {
-        if (m_resizing && (event->buttons() & Qt::LeftButton)) {
-            // Handle resizing
-            QPoint delta = event->globalPosition().toPoint() - m_resizeStartPos;
-            QRect newGeometry = m_resizeStartGeometry;
-
-            switch (m_resizeEdge) {
-            case TopEdge:
-                newGeometry.setTop(m_resizeStartGeometry.top() + delta.y());
-                break;
-            case BottomEdge:
-                newGeometry.setBottom(m_resizeStartGeometry.bottom() + delta.y());
-                break;
-            case LeftEdge:
-                newGeometry.setLeft(m_resizeStartGeometry.left() + delta.x());
-                break;
-            case RightEdge:
-                newGeometry.setRight(m_resizeStartGeometry.right() + delta.x());
-                break;
-            case TopLeftCorner:
-                newGeometry.setTopLeft(m_resizeStartGeometry.topLeft() + delta);
-                break;
-            case TopRightCorner:
-                newGeometry.setTop(m_resizeStartGeometry.top() + delta.y());
-                newGeometry.setRight(m_resizeStartGeometry.right() + delta.x());
-                break;
-            case BottomLeftCorner:
-                newGeometry.setBottom(m_resizeStartGeometry.bottom() + delta.y());
-                newGeometry.setLeft(m_resizeStartGeometry.left() + delta.x());
-                break;
-            case BottomRightCorner:
-                newGeometry.setBottomRight(m_resizeStartGeometry.bottomRight() + delta);
-                break;
-            default:
-                break;
-            }
-
-            // Apply minimum size constraints
-            if (newGeometry.width() >= minimumWidth() && newGeometry.height() >= minimumHeight()) {
-                setGeometry(newGeometry);
-
-                // Update floating geometry for base class
-                if (!isDocked()) {
-                    m_floatingGeometry = newGeometry;
-                    m_floatHeight = newGeometry.height();
-                }
-            }
-
-            event->accept();
-            return;
-        } else if (!isDocked()) {
-            // Update cursor based on position
-            updateCursor(event->pos());
-        }
-    }
-
-    // Pass to base class for dragging
-    FloatingPanelBase::mouseMoveEvent(event);
-}
-
-void FloatingCodeEditor::mouseReleaseEvent(QMouseEvent *event)
-{
-    if (event->button() == Qt::LeftButton) {
-        m_resizing = false;
-        m_resizeEdge = NoEdge;
-        setCursor(Qt::ArrowCursor);
-    }
-
-    FloatingPanelBase::mouseReleaseEvent(event);
-}
-
-void FloatingCodeEditor::paintEvent(QPaintEvent *event)
-{
-    FloatingPanelBase::paintEvent(event);
-
-    // Draw resize grip for docked bottom mode
-    if (isDocked() && dockPosition() == DockedBottom && !m_isMaximized) {
-        QPainter painter(this);
-        painter.setRenderHint(QPainter::Antialiasing);
-
-        // Draw resize handle at top edge
-        int handleHeight = 4;
-        QRect handleRect(0, 0, width(), handleHeight);
-        painter.fillRect(handleRect, QColor(200, 200, 200, 100));
-
-        // Draw grip lines
-        painter.setPen(QPen(QColor(150, 150, 150), 1));
-        int centerX = width() / 2;
-        int lineWidth = 30;
-        for (int i = -1; i <= 1; i++) {
-            int y = 2 + i;
-            painter.drawLine(centerX - lineWidth / 2, y, centerX + lineWidth / 2, y);
-        }
-    }
-}
-
-bool FloatingCodeEditor::eventFilter(QObject *obj, QEvent *event)
-{
-    if (obj == m_scrollArea && isDocked() && dockPosition() == DockedBottom && !m_isMaximized) {
-        if (event->type() == QEvent::MouseButtonPress) {
-            QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
-            if (mouseEvent->button() == Qt::LeftButton && mouseEvent->pos().y() < RESIZE_MARGIN) {
-                m_resizing = true;
-                m_resizeStartPos = mouseEvent->globalPosition().toPoint();
-                m_resizeStartHeight = dockedHeight();
-                return true;
-            }
-        } else if (event->type() == QEvent::MouseMove) {
-            QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
-            if (m_resizing && (mouseEvent->buttons() & Qt::LeftButton)) {
-                int delta = m_resizeStartPos.y() - mouseEvent->globalPosition().toPoint().y();
-                int newHeight = qMax(200,
-                                     qMin(parentWidget()->height() - 100,
-                                          m_resizeStartHeight + delta));
-                setDockedHeight(newHeight);
-                updatePosition();
-                return true;
-            } else if (mouseEvent->pos().y() < RESIZE_MARGIN) {
-                m_scrollArea->setCursor(Qt::SizeVerCursor);
-            } else {
-                m_scrollArea->setCursor(Qt::ArrowCursor);
-            }
-        } else if (event->type() == QEvent::MouseButtonRelease) {
-            m_resizing = false;
-            m_scrollArea->setCursor(Qt::ArrowCursor);
-        }
-    }
-
-    return FloatingPanelBase::eventFilter(obj, event);
-}
-
 void FloatingCodeEditor::moveEvent(QMoveEvent *event)
 {
     FloatingPanelBase::moveEvent(event);
@@ -565,66 +401,6 @@ void FloatingCodeEditor::moveEvent(QMoveEvent *event)
     // If we're maximized, prevent movement away from (0,0)
     if (m_isMaximized && (x() != 0 || y() != 0)) {
         move(0, 0);
-    }
-}
-
-FloatingCodeEditor::ResizeEdge FloatingCodeEditor::getResizeEdge(const QPoint &pos)
-{
-    if (isDocked())
-        return NoEdge;
-
-    QRect r = rect();
-    bool onLeft = pos.x() < RESIZE_MARGIN;
-    bool onRight = pos.x() > r.width() - RESIZE_MARGIN;
-    bool onTop = pos.y() < RESIZE_MARGIN;
-    bool onBottom = pos.y() > r.height() - RESIZE_MARGIN;
-
-    if (onTop && onLeft)
-        return TopLeftCorner;
-    if (onTop && onRight)
-        return TopRightCorner;
-    if (onBottom && onLeft)
-        return BottomLeftCorner;
-    if (onBottom && onRight)
-        return BottomRightCorner;
-    if (onTop)
-        return TopEdge;
-    if (onBottom)
-        return BottomEdge;
-    if (onLeft)
-        return LeftEdge;
-    if (onRight)
-        return RightEdge;
-
-    return NoEdge;
-}
-
-void FloatingCodeEditor::updateCursor(const QPoint &pos)
-{
-    if (m_resizing || isDocked())
-        return;
-
-    ResizeEdge edge = getResizeEdge(pos);
-    switch (edge) {
-    case TopEdge:
-    case BottomEdge:
-        setCursor(Qt::SizeVerCursor);
-        break;
-    case LeftEdge:
-    case RightEdge:
-        setCursor(Qt::SizeHorCursor);
-        break;
-    case TopLeftCorner:
-    case BottomRightCorner:
-        setCursor(Qt::SizeFDiagCursor);
-        break;
-    case TopRightCorner:
-    case BottomLeftCorner:
-        setCursor(Qt::SizeBDiagCursor);
-        break;
-    default:
-        setCursor(Qt::ArrowCursor);
-        break;
     }
 }
 
