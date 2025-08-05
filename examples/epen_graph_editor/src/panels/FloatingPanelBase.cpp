@@ -197,7 +197,7 @@ int FloatingPanelBase::getBottomPanelHeight() const
     
     for (QObject* obj : m_graphEditor->children()) {
         if (FloatingPanelBase* panel = qobject_cast<FloatingPanelBase*>(obj)) {
-            if (panel->dockPosition() == DockedBottom && panel->panelPriority() > maxPriority) {
+            if (panel->dockPosition() == DockedBottom && panel->panelPriority() > maxPriority && panel->isVisible()) {
                 bottomPanel = panel;
                 maxPriority = panel->panelPriority();
             }
