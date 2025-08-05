@@ -26,6 +26,7 @@
 #include <stdexcept>
 #include <utility>
 
+
 namespace QtNodes {
 
 DataFlowGraphicsScene::DataFlowGraphicsScene(DataFlowGraphModel &graphModel, QObject *parent)

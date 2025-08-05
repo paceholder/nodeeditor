@@ -1,9 +1,5 @@
 #include "DefaultNodePainter.hpp"
 
-#include <cmath>
-
-#include <QtCore/QMargins>
-
 #include "AbstractGraphModel.hpp"
 #include "AbstractNodeGeometry.hpp"
 #include "BasicGraphicsScene.hpp"
@@ -12,6 +8,11 @@
 #include "NodeGraphicsObject.hpp"
 #include "NodeState.hpp"
 #include "StyleCollection.hpp"
+
+#include <QtCore/QMargins>
+
+#include <cmath>
+
 
 namespace QtNodes {
 
@@ -89,11 +90,10 @@ void DefaultNodePainter::drawConnectionPoints(QPainter *painter, NodeGraphicsObj
     auto reducedDiameter = diameter * 0.6;
 
     for (PortType portType : {PortType::Out, PortType::In}) {
-        size_t const n = model
-                             .nodeData(nodeId,
-                                       (portType == PortType::Out) ? NodeRole::OutPortCount
-                                                                   : NodeRole::InPortCount)
-                             .toUInt();
+
+        auto portCountRole = (portType == PortType::Out) ? NodeRole::OutPortCount
+                                                         : NodeRole::InPortCount;
+        size_t const n = model.nodeData(nodeId, portCountRole).toUInt();
 
         for (PortIndex portIndex = 0; portIndex < n; ++portIndex) {
             QPointF p = geometry.portPosition(nodeId, portType, portIndex);
