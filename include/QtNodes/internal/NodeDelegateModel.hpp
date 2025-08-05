@@ -1,13 +1,10 @@
 #pragma once
 
-<<<<<<< HEAD
 #include <memory>
 
 #include <QMetaType>
 #include <QtWidgets/QWidget>
 
-=======
->>>>>>> 545c018199f39ec7174e4a3ec43807d24b55c967
 #include "Definitions.hpp"
 #include "Export.hpp"
 #include "NodeData.hpp"
