@@ -74,7 +74,7 @@ Dependencies
 
 * Qt >5.15
 * CMake 3.8
-* Catch2 (add `Catch2_DIR` to the system variable, pointing to the folder containing `Catch2Config.cmake`)
+* Catch2 (you might need to add `Catch2_DIR` to the system variable, pointing to the folder containing `Catch2Config.cmake`)
 
 
 Current State (v3)
