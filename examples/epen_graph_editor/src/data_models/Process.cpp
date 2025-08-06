@@ -1,4 +1,5 @@
 #include "data_models/Process.hpp"
+#include "CodeEditor.hpp"
 
 Process::Process()
     : _grid(new Size("", "", "", this))
@@ -107,26 +108,79 @@ QObject *Process::findPort(int portIndex, bool isRightPort)
 
 QString Process::getCudaProgram()
 {
-    return _cudaProgram;
+    return _cudaProgram.replace("<MainFunctionName>", _name);
 }
+
 QString Process::getMetalProgram()
 {
-    return _metalProgram;
+    return _metalProgram.replace("<MainFunctionName>", _name);
 }
+
 QString Process::getOpenclProgram()
 {
-    return _openclProgram;
+    return _openclProgram.replace("<MainFunctionName>", _name);
 }
 
 void Process::setCudaProgram(QString code)
 {
-    _cudaProgram = code;
+    _cudaProgram = code.replace(_name, "<MainFunctionName>");
 }
+
 void Process::setMetalProgram(QString code)
 {
-    _metalProgram = code;
+    _metalProgram = code.replace(_name, "<MainFunctionName>");
 }
+
 void Process::setOpenclProgram(QString code)
 {
-    _openclProgram = code;
+    _openclProgram = code.replace(_name, "<MainFunctionName>");
+}
+
+QSet<int> Process::findReadonlyLines(QString programCode)
+{
+    QSet<int> lineSet{};
+    QStringList lines = programCode.split('\n');
+    bool functionNameFound = false;
+    for (int i = 0; i < lines.size(); ++i) {
+        if (functionNameFound) {
+            if (lines[i].contains("{")) {
+                break;
+            }
+            lineSet << i;
+        }
+        if (lines[i].contains("<MainFunctionName>")) {
+            functionNameFound = true;
+            lineSet << i;
+            continue;
+        }
+    }
+    return lineSet;
+}
+
+QSet<int> Process::getCudaReadonlyLines()
+{
+    return findReadonlyLines(_cudaProgram);
+}
+
+QSet<int> Process::getOpenclReadonlyLines()
+{
+    return findReadonlyLines(_openclProgram);
+}
+
+QSet<int> Process::getMetalReadonlyLines()
+{
+    return findReadonlyLines(_metalProgram);
+}
+
+void Process::setEditor(CodeEditor *editor)
+{
+    _editor = editor;
+}
+
+void Process::setName(QString newName)
+{
+    _name = newName;
+    if (_editor) {
+        _editor->updateCode();
+    }
 }

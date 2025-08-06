@@ -1,5 +1,6 @@
 #include "CodeEditor.hpp"
 #include "GPULanguageLexer.hpp"
+#include "data_models/Process.hpp"
 #include <QApplication>
 #include <QFont>
 #include <QFontDatabase>
@@ -94,7 +95,10 @@ void CodeEditor::setupCommonEditorFeatures()
 
 void CodeEditor::setCode(const QString &code)
 {
+    if (!_processNode)
+        return;
     m_editor->setText(code);
+    setReadOnlyLines();
 }
 
 QString CodeEditor::getCode() const
@@ -396,6 +400,7 @@ QString CodeEditor::getDefaultCode(const QString &language) const
 void CodeEditor::setProcessNode(Process *processNode)
 {
     _processNode = processNode;
+    processNode->setEditor(this);
     setCode(getDefaultCode(getCurrentLanguage()));
 }
 
@@ -405,11 +410,37 @@ void CodeEditor::onTextChanged()
         return;
     QString language = getCurrentLanguage();
     if (language == "OpenCL") {
-        return _processNode->setOpenclProgram(getCode());
+        _processNode->setOpenclProgram(getCode());
     } else if (language == "CUDA") {
-        return _processNode->setCudaProgram(getCode());
+        _processNode->setCudaProgram(getCode());
     } else if (language == "Metal") {
-        return _processNode->setMetalProgram(getCode());
+        _processNode->setMetalProgram(getCode());
     }
+    setReadOnlyLines();
     emit codeChanged();
+}
+
+void CodeEditor::updateCode()
+{
+    QString language = getCurrentLanguage();
+    if (!_processNode)
+        return;
+    if (language == "OpenCL") {
+        setCode(_processNode->getOpenclProgram());
+    } else if (language == "CUDA") {
+        setCode(_processNode->getCudaProgram());
+    } else if (language == "Metal") {
+        setCode(_processNode->getMetalProgram());
+    }
+}
+
+void CodeEditor::setReadOnlyLines()
+{
+    if (m_currentLanguage == "OpenCL") {
+        m_editor->setReadonlyLines(_processNode->getOpenclReadonlyLines());
+    } else if (m_currentLanguage == "CUDA") {
+        m_editor->setReadonlyLines(_processNode->getCudaReadonlyLines());
+    } else if (m_currentLanguage == "Metal") {
+        m_editor->setReadonlyLines(_processNode->getMetalReadonlyLines());
+    }
 }

@@ -1,7 +1,11 @@
-#pragma once
+#ifndef PROCESS_HPP
+#define PROCESS_HPP
+
 #include "OperationDataModel.hpp"
 #include <QMetaType>
 #include <QObject>
+
+class CodeEditor;
 
 class PortBase : public QObject
 {
@@ -186,16 +190,30 @@ public:
     QString getMetalProgram();
     QString getOpenclProgram();
 
+    QSet<int> getCudaReadonlyLines();
+
+    QSet<int> getOpenclReadonlyLines();
+
+    QSet<int> getMetalReadonlyLines();
+
+    void setEditor(CodeEditor *editor);
+
+protected:
+    void setName(QString newName) override;
+
 private:
+    QSet<int> findReadonlyLines(QString programCode);
     Size *_grid;
     Size *_block;
 
     QVector<PortBase *> _leftPorts{};
     QVector<PortBase *> _rightPorts{};
 
-    QString _cudaProgram = "__global__ void example(float* input,\n"
+    CodeEditor *_editor;
+    QString _cudaProgram = "__global__ void <MainFunctionName>(float* input,\n"
                            "                        float* output,\n"
-                           "                        int size) {\n"
+                           "                        int size) \n"
+                           "{\n"
                            "    int idx = blockIdx.x * blockDim.x + threadIdx.x;\n"
                            "    if (idx < size) {\n"
                            "        output[idx] = input[idx] * 2.0f;\n"
@@ -204,21 +222,25 @@ private:
 
     QString _metalProgram = "#include <metal_stdlib>\n"
                             "using namespace metal;\n\n"
-                            "kernel void example(device float* input [[buffer(0)]],\n"
+                            "kernel void <MainFunctionName>(device float* input [[buffer(0)]],\n"
                             "                    device float* output [[buffer(1)]],\n"
                             "                    uint idx [[thread_position_in_grid]],\n"
-                            "                    uint size [[threads_per_grid]]) {\n"
+                            "                    uint size [[threads_per_grid]])\n"
+                            "{\n"
                             "    if (idx < size) {\n"
                             "        output[idx] = input[idx] * 2.0f;\n"
                             "    }\n"
                             "}";
 
-    QString _openclProgram = "__kernel void example(__global float* input,\n"
+    QString _openclProgram = "__kernel void <MainFunctionName>(__global float* input,\n"
                              "                      __global float* output,\n"
-                             "                      const int size) {\n"
+                             "                      const int size)\n"
+                             "{\n"
                              "    int idx = get_global_id(0);\n"
                              "    if (idx < size) {\n"
                              "        output[idx] = input[idx] * 2.0f;\n"
                              "    }\n"
                              "}";
 };
+
+#endif

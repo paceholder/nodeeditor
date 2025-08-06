@@ -17,13 +17,12 @@ using QtNodes::PortType;
 static const NodeDataType IMAGE_DATA_TYPE{"image", "Image"};
 static const NodeDataType BUFFER_DATA_TYPE{"buffer", "BUFFER"};
 
-
 class OperationDataModel : public NodeDelegateModel
 {
     Q_OBJECT
 
 public:
-    Q_PROPERTY(QString Name MEMBER _name NOTIFY propertyChanged)
+    Q_PROPERTY(QString Name MEMBER _name WRITE setName NOTIFY propertyChanged)
 
     OperationDataModel();
     ~OperationDataModel() = default;
@@ -38,13 +37,13 @@ public:
 
     QWidget *embeddedWidget() override { return nullptr; }
 
-
     void setNodeName(QString);
 
     QString name() const override { return metaObject()->className(); }
 
 protected:
     QString _name;
+    virtual void setName(QString newName) { _name = newName; }
 signals:
     void propertyChanged();
 };
