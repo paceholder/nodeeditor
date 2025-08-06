@@ -6,10 +6,59 @@
 #include <QString>
 #include <QStringList>
 #include <QWidget>
+#include <Qsci/qsciscintilla.h>
+#include <QKeyEvent>
 
 class QsciScintilla;
 class GPULanguageLexer;
 class QsciAPIs;
+
+class ReadOnlyLinesEditor : public QsciScintilla {
+public:
+    ReadOnlyLinesEditor(QWidget *parent = nullptr) : QsciScintilla(parent) {
+        // Mark lines 0 and 3 as read-only
+        readOnlyLines = {0, 3};
+        
+        // Define a marker for background color
+        markerDefine(QsciScintilla::Background, READONLY_MARKER);
+        
+        // Set grey background color for read-only lines
+        setMarkerBackgroundColor(QColor(220, 220, 220), READONLY_MARKER);  // Light grey
+        
+        // Apply the grey background to read-only lines
+        for (int line : readOnlyLines) {
+            markerAdd(line, READONLY_MARKER);
+        }
+    }
+    
+protected:
+    void keyPressEvent(QKeyEvent *event) override {
+        // Get current line
+        int line, col;
+        getCursorPosition(&line, &col);
+        
+        // If on read-only line and not navigation key
+        if (readOnlyLines.contains(line) && 
+            event->key() != Qt::Key_Up && 
+            event->key() != Qt::Key_Down &&
+            event->key() != Qt::Key_Left && 
+            event->key() != Qt::Key_Right &&
+            event->key() != Qt::Key_Home &&
+            event->key() != Qt::Key_End &&
+            event->key() != Qt::Key_PageUp &&
+            event->key() != Qt::Key_PageDown) {
+            // Block the key press
+            return;
+        }
+        
+        // Otherwise, normal handling
+        QsciScintilla::keyPressEvent(event);
+    }
+    
+private:
+    QSet<int> readOnlyLines;
+    static const int READONLY_MARKER = 1;
+};
 
 class CodeEditor : public QWidget
 {
@@ -70,7 +119,7 @@ private:
     QString getDefaultCode(const QString &language) const;
 
     // UI elements
-    QsciScintilla *m_editor;
+    ReadOnlyLinesEditor *m_editor;
     GPULanguageLexer *m_lexer;
 
     // State

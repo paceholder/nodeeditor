@@ -6,7 +6,6 @@
 #include <QTimer>
 #include <QVBoxLayout>
 #include <Qsci/qsciapis.h>
-#include <Qsci/qsciscintilla.h>
 
 CodeEditor::CodeEditor(QWidget *parent)
     : QWidget(parent)
@@ -34,7 +33,7 @@ void CodeEditor::setupEditor()
     layout->setContentsMargins(0, 0, 0, 0);
 
     // Create editor
-    m_editor = new QsciScintilla(this);
+    m_editor = new ReadOnlyLinesEditor(this);
     layout->addWidget(m_editor);
 
     // Setup common features
