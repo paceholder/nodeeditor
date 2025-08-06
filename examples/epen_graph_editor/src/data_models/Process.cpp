@@ -123,17 +123,17 @@ QString Process::getOpenclProgram()
 
 void Process::setCudaProgram(QString code)
 {
-    _cudaProgram = code.replace(_name, "<MainFunctionName>");
+    _cudaProgram = code.replace("void " + _name + "(", "void <MainFunctionName>(");
 }
 
 void Process::setMetalProgram(QString code)
 {
-    _metalProgram = code.replace(_name, "<MainFunctionName>");
+    _metalProgram = code.replace("void " + _name + "(", "void <MainFunctionName>(");
 }
 
 void Process::setOpenclProgram(QString code)
 {
-    _openclProgram = code.replace(_name, "<MainFunctionName>");
+    _openclProgram = code.replace("void " + _name + "(", "void <MainFunctionName>(");
 }
 
 QSet<int> Process::findReadonlyLines(QString programCode)
@@ -179,6 +179,8 @@ void Process::setEditor(CodeEditor *editor)
 
 void Process::setName(QString newName)
 {
+    if (newName == "")
+        return;
     _name = newName;
     if (_editor) {
         _editor->updateCode();

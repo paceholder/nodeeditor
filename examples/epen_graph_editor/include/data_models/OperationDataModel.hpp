@@ -22,7 +22,7 @@ class OperationDataModel : public NodeDelegateModel
     Q_OBJECT
 
 public:
-    Q_PROPERTY(QString Name MEMBER _name WRITE setName NOTIFY propertyChanged)
+    Q_PROPERTY(QString Name READ getName WRITE setName NOTIFY propertyChanged)
 
     OperationDataModel();
     ~OperationDataModel() = default;
@@ -40,6 +40,7 @@ public:
     void setNodeName(QString);
 
     QString name() const override { return metaObject()->className(); }
+    QString getName() { return _name; }
 
 protected:
     QString _name;
