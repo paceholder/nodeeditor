@@ -29,6 +29,7 @@ NodeId DataFlowModel::addNode(QString const nodeType)
     }
     _nodeNames[newNodeId] = QString(nodeType);
     OperationDataModel *nodeModel = delegateModel<OperationDataModel>(newNodeId);
+    nodeModel->setNodeId(newNodeId);
 
     if (nodeModel) {
         nodeModel->setNodeName(generateNewNodeName(nodeType));
@@ -256,4 +257,11 @@ void DataFlowModel::setSelectedPort(NodeId nodeId, bool isRightPort, int portInd
     if (nodeModel) {
         emit nodePortSelected(isRightPort, nodeModel, portIndex);
     }
+}
+
+void DataFlowModel::notifyPortInsertion(NodeId nodeId)
+{
+    portsInserted();
+
+    Q_EMIT nodeUpdated(nodeId);
 }

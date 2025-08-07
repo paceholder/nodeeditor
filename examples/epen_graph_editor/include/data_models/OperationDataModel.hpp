@@ -13,6 +13,7 @@ using QtNodes::NodeDataType;
 using QtNodes::NodeDelegateModel;
 using QtNodes::PortIndex;
 using QtNodes::PortType;
+using QtNodes::NodeId;
 
 static const NodeDataType IMAGE_DATA_TYPE{"image", "Image"};
 static const NodeDataType BUFFER_DATA_TYPE{"buffer", "BUFFER"};
@@ -42,8 +43,11 @@ public:
     QString name() const override { return metaObject()->className(); }
     QString getName() { return _name; }
 
+    void setNodeId(NodeId newNodeId) { _nodeId = newNodeId; }
+
 protected:
     QString _name;
+    NodeId _nodeId;
     virtual void setName(QString newName) { _name = newName; }
 signals:
     void propertyChanged();

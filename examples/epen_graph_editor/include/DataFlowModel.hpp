@@ -1,9 +1,9 @@
 #pragma once
 
-#include "panels/FloatingProperties.hpp"
 #include "PortAddRemoveWidget.hpp"
 #include "data_models/OperationDataModel.hpp"
 #include "data_models/Process.hpp"
+#include "panels/FloatingProperties.hpp"
 #include <QPointer>
 #include <QtNodes/DataFlowGraphModel>
 
@@ -48,6 +48,10 @@ public:
     void deselectNode();
 
     void setSelectedPort(NodeId nodeId, bool isRightPort, int portIndex);
+
+    void notifyPortInsertion(NodeId nodeId);
+
+    PortAddRemoveWidget *widget(NodeId nodeId) const;
 signals:
     void nodePortSelected(bool isRightPort, Process *node, int portIndex);
 
@@ -63,7 +67,6 @@ private:
     mutable std::unordered_map<NodeId, PortAddRemoveWidget *> _nodeWidgets;
     mutable std::unordered_map<NodeId, QSize> _processNodeSize;
     mutable std::unordered_map<NodeId, QString> _nodeNames;
-    PortAddRemoveWidget *widget(NodeId nodeId) const;
 
     QPointer<FloatingProperties> _propertyPanel;
 };

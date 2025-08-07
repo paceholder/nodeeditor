@@ -54,6 +54,11 @@ GraphEditorWindow::GraphEditorWindow(DataFlowGraphicsScene *scene, DataFlowModel
 
     _model->addConnection(ConnectionId{newIdInput, 0, newIdOutput, 0});
 
+    QtNodes::NodeId newIdProcess = _model->addNode("Process");
+    _model->setNodeData(newIdProcess, NodeRole::Position, QPointF{100, -500});
+    Process *process = _model->delegateModel<Process>(newIdProcess);
+    process->addInput(_model, true, "Test1");
+
     setupScale(0.8);
 }
 

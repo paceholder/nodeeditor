@@ -2,103 +2,14 @@
 #define PROCESS_HPP
 
 #include "OperationDataModel.hpp"
+#include "PortAddRemoveWidget.hpp"
 #include <QMetaType>
 #include <QObject>
+#include "ports/BufferPort.hpp"
+#include "ports/ImagePort.hpp"
 
+class DataFlowMode;
 class CodeEditor;
-
-class PortBase : public QObject
-{
-    Q_OBJECT
-public:
-    PortBase(QObject *parent = nullptr)
-        : QObject(parent)
-    {}
-    virtual bool isImage() { return true; }
-signals:
-    void propertyChanged();
-};
-
-class ImagePort : public PortBase
-{
-    Q_OBJECT
-public:
-    Q_PROPERTY(float Width MEMBER _width NOTIFY propertyChanged)
-    Q_PROPERTY(float Height MEMBER _height NOTIFY propertyChanged)
-
-    ImagePort(float width, float height, QObject *parent = nullptr)
-        : PortBase(parent)
-        , _width(width)
-        , _height(height)
-    {}
-
-    // Copy constructor
-    ImagePort(const ImagePort &other, QObject *parent = nullptr)
-        : PortBase(parent)
-        , _width(other._width)
-        , _height(other._height)
-    {}
-
-    // Assignment operator
-    ImagePort &operator=(const ImagePort &other)
-    {
-        if (this != &other) {
-            _width = other._width;
-            _height = other._height;
-        }
-        return *this;
-    }
-
-    // Comparison operators
-    bool operator==(const ImagePort &other) const
-    {
-        return _width == other._width && _height == other._height;
-    }
-
-    bool operator!=(const ImagePort &other) const { return !(*this == other); }
-
-private:
-    float _width;
-    float _height;
-};
-
-class BufferPort : public PortBase
-{
-    Q_OBJECT
-public:
-    Q_PROPERTY(uint Length MEMBER _length NOTIFY propertyChanged)
-
-    bool isImage() override { return false; }
-
-public:
-    BufferPort(uint length, QObject *parent = nullptr)
-        : PortBase(parent)
-        , _length(length)
-    {}
-
-    // Copy constructor
-    BufferPort(const BufferPort &other, QObject *parent = nullptr)
-        : PortBase(parent)
-        , _length(other._length)
-    {}
-
-    // Assignment operator
-    BufferPort &operator=(const BufferPort &other)
-    {
-        if (this != &other) {
-            _length = other._length;
-        }
-        return *this;
-    }
-
-    // Comparison operators
-    bool operator==(const BufferPort &other) const { return _length == other._length; }
-
-    bool operator!=(const BufferPort &other) const { return !(*this == other); }
-
-private:
-    uint _length;
-};
 
 class Size : public QObject
 {
@@ -197,6 +108,8 @@ public:
     QSet<int> getMetalReadonlyLines();
 
     void setEditor(CodeEditor *editor);
+
+    PortBase *addInput(DataFlowModel *model, bool isImage, QString name);
 
 protected:
     void setName(QString newName) override;

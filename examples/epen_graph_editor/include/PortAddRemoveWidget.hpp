@@ -22,17 +22,20 @@ public:
     ~PortAddRemoveWidget();
 
     void rootSelected();
+
+    void addLeftPortView(bool isImage);
 private slots:
-    void removeLeftPort();
     void addRightPortI();
     void addRightPortB();
     void addLeftPortI();
     void addLeftPortB();
+    void removeLeftPort();
     void removeRightPort();
     void onLeftRadioButtonToggled(bool checked);
     void onRightRadioButtonToggled(bool checked);
     void leftMinusClicked();
     void rightMinusClicked();
+
 private:
     void addRightPort(bool);
     void addLeftPort(bool);

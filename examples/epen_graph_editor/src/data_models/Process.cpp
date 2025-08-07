@@ -1,5 +1,6 @@
 #include "data_models/Process.hpp"
 #include "CodeEditor.hpp"
+#include "DataFlowModel.hpp"
 
 Process::Process()
     : _grid(new Size("", "", "", this))
@@ -41,9 +42,9 @@ unsigned int Process::nPorts(PortType portType) const
     unsigned int result;
 
     if (portType == PortType::In)
-        result = 0;
+        result = _leftPorts.size();
     else
-        result = 0;
+        result = _rightPorts.size();
 
     return result;
 }
@@ -51,9 +52,9 @@ unsigned int Process::nPorts(PortType portType) const
 void Process::setPortTypeRight(PortIndex portIndex, bool isImage)
 {
     if (isImage) {
-        _rightPorts.insert(portIndex - 1, new ImagePort(100, 100, this));
+        _rightPorts.insert(portIndex - 1, new ImagePort("test1", 100, 100, this));
     } else {
-        _rightPorts.insert(portIndex - 1, new BufferPort(1024, this));
+        _rightPorts.insert(portIndex - 1, new BufferPort("test1", 1024, this));
     }
 }
 
@@ -68,9 +69,9 @@ void Process::removePortTypeRight(PortIndex portIndex)
 void Process::setPortTypeLeft(PortIndex portIndex, bool isImage)
 {
     if (isImage) {
-        _leftPorts.insert(portIndex - 1, new ImagePort(100, 100, this));
+        _leftPorts.insert(portIndex - 1, new ImagePort("test2", 100, 100, this));
     } else {
-        _leftPorts.insert(portIndex - 1, new BufferPort(1024, this));
+        _leftPorts.insert(portIndex - 1, new BufferPort("test2", 1024, this));
     }
 }
 
@@ -185,4 +186,17 @@ void Process::setName(QString newName)
     if (_editor) {
         _editor->updateCode();
     }
+}
+
+PortBase *Process::addInput(DataFlowModel *model, bool isImage, QString name)
+{
+    portsAboutToBeInserted(PortType::In, _leftPorts.size(), _leftPorts.size());
+    PortBase *newPort = new ImagePort(name, 100, 100, this);
+    _leftPorts.append(newPort);
+    portsInserted();
+    PortAddRemoveWidget *widget = model->widget(_nodeId);
+    if (widget) {
+        widget->addLeftPortView(isImage);
+    }
+    return newPort;
 }
