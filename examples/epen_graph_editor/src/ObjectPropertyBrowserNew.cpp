@@ -1,6 +1,7 @@
 #include "ObjectPropertyBrowserNew.hpp"
 #include <QDebug>
 #include <QMetaType>
+#include <QMetaEnum>
 
 ObjectPropertyBrowser::ObjectPropertyBrowser(QWidget *parent)
     : QtTreePropertyBrowser(parent)
@@ -47,6 +48,30 @@ QtVariantProperty* ObjectPropertyBrowser::createPropertyForMetaProperty(QObject 
 {
     QVariant value = mp.read(parentObj);
     
+    // Check if this is an enum property
+    if (mp.isEnumType()) {
+        // Create enum property as a combobox
+        QtVariantProperty *property = variantManager->addProperty(QtVariantPropertyManager::enumTypeId(), setupName(mp.name()));
+        property->setEnabled(mp.isWritable());
+        
+        // Get the enum metadata
+        QMetaEnum metaEnum = mp.enumerator();
+        
+        // Build list of enum names
+        QStringList enumNames;
+        for (int i = 0; i < metaEnum.keyCount(); i++) {
+            enumNames << QString::fromLatin1(metaEnum.key(i));
+        }
+        
+        // Set the enum names for the combobox
+        property->setAttribute("enumNames", enumNames);
+        
+        // Build the property path
+        QString path = parentPath.isEmpty() ? QString(mp.name()) : QString("%1.%2").arg(parentPath).arg(mp.name());
+        propertyMap[property] = path;
+        
+        return property;
+    }
     
     // More robust check for QObject pointers
     bool isQObjectPointer = false;
@@ -168,13 +193,50 @@ void ObjectPropertyBrowser::valueChanged(QtProperty *property, const QVariant &v
             }
         }
         
-        // Set the final property
-        bool success = obj->setProperty(parts.last().toLatin1(), value);
+        // Get the property name
+        QString propName = parts.last();
+        
+        // Check if this is an enum property
+        const QMetaObject *metaObj = obj->metaObject();
+        int propIndex = metaObj->indexOfProperty(propName.toLatin1());
+        if (propIndex != -1) {
+            QMetaProperty mp = metaObj->property(propIndex);
+            if (mp.isEnumType()) {
+                // Convert enum index back to enum value
+                QMetaEnum metaEnum = mp.enumerator();
+                int enumValue = metaEnum.value(value.toInt());
+                bool success = obj->setProperty(propName.toLatin1(), enumValue);
+                if (!success) {
+                    qDebug() << "Failed to set enum property:" << propName << "on object:" << obj;
+                }
+                return;
+            }
+        }
+        
+        // Set the final property (non-enum)
+        bool success = obj->setProperty(propName.toLatin1(), value);
         if (!success) {
-            qDebug() << "Failed to set property:" << parts.last() << "on object:" << obj;
+            qDebug() << "Failed to set property:" << propName << "on object:" << obj;
         }
     } else {
         // Regular property
+        // Check if this is an enum property
+        const QMetaObject *metaObj = currentlyConnectedObject->metaObject();
+        int propIndex = metaObj->indexOfProperty(propertyPath.toLatin1());
+        if (propIndex != -1) {
+            QMetaProperty mp = metaObj->property(propIndex);
+            if (mp.isEnumType()) {
+                // Convert enum index back to enum value
+                QMetaEnum metaEnum = mp.enumerator();
+                int enumValue = metaEnum.value(value.toInt());
+                bool success = currentlyConnectedObject->setProperty(propertyPath.toLatin1(), enumValue);
+                if (!success) {
+                    qDebug() << "Failed to set enum property:" << propertyPath;
+                }
+                return;
+            }
+        }
+        
         bool success = currentlyConnectedObject->setProperty(propertyPath.toLatin1(), value);
         if (!success) {
             qDebug() << "Failed to set property:" << propertyPath;
@@ -231,12 +293,54 @@ void ObjectPropertyBrowser::updatePropertyValues(QObject *rootObj)
             }
             
             if (obj) {
-                QVariant value = obj->property(parts.last().toLatin1());
+                QString propName = parts.last();
+                QVariant value = obj->property(propName.toLatin1());
+                
+                // Check if this is an enum property
+                const QMetaObject *metaObj = obj->metaObject();
+                int propIndex = metaObj->indexOfProperty(propName.toLatin1());
+                if (propIndex != -1) {
+                    QMetaProperty mp = metaObj->property(propIndex);
+                    if (mp.isEnumType() && varProp) {
+                        // Convert enum value to index for the combobox
+                        QMetaEnum metaEnum = mp.enumerator();
+                        int enumIndex = metaEnum.keyToValue(metaEnum.valueToKey(value.toInt()));
+                        // Find the index in the enum
+                        for (int k = 0; k < metaEnum.keyCount(); k++) {
+                            if (metaEnum.value(k) == value.toInt()) {
+                                variantManager->setValue(property, k);
+                                break;
+                            }
+                        }
+                        continue;
+                    }
+                }
+                
                 variantManager->setValue(property, value);
             }
         } else {
             // Regular property
             QVariant value = rootObj->property(propertyPath.toLatin1());
+            
+            // Check if this is an enum property
+            const QMetaObject *metaObj = rootObj->metaObject();
+            int propIndex = metaObj->indexOfProperty(propertyPath.toLatin1());
+            if (propIndex != -1) {
+                QMetaProperty mp = metaObj->property(propIndex);
+                if (mp.isEnumType() && varProp) {
+                    // Convert enum value to index for the combobox
+                    QMetaEnum metaEnum = mp.enumerator();
+                    // Find the index in the enum
+                    for (int k = 0; k < metaEnum.keyCount(); k++) {
+                        if (metaEnum.value(k) == value.toInt()) {
+                            variantManager->setValue(property, k);
+                            break;
+                        }
+                    }
+                    continue;
+                }
+            }
+            
             variantManager->setValue(property, value);
         }
     }
