@@ -107,10 +107,31 @@ QObject *Process::findPort(int portIndex, bool isRightPort)
 
 QString Process::getCudaPrototype(bool raw)
 {
-    QString rawPrototype = "__global__ void <MainFunctionName>() \n";
+    QString rawPrototype = "__global__ void <MainFunctionName>(<MainFunctionParams>)\n";
     if (raw)
         return rawPrototype;
     rawPrototype.replace("<MainFunctionName>", _name);
+    QString parameters = "";
+    QString paramDelimiter = ",\n\t\t\t";
+    for (PortBase *p : _leftPorts) {
+        if (p->isImage()) {
+            if (parameters != "")
+                parameters += paramDelimiter;
+            parameters += "cudaTextureObject_t " + p->getName() + paramDelimiter + "unsigned int "
+                          + p->getName() + "Width" + paramDelimiter + "unsigned int " + p->getName()
+                          + "Height";
+        }
+    }
+    for (PortBase *p : _rightPorts) {
+        if (p->isImage()) {
+            if (parameters != "")
+                parameters += paramDelimiter;
+            parameters += "cudaSurfaceObject_t " + p->getName() + paramDelimiter + "unsigned int "
+                          + p->getName() + "Width" + paramDelimiter + "unsigned int " + p->getName()
+                          + "Height";
+        }
+    }
+    rawPrototype.replace("<MainFunctionParams>", parameters);
     return rawPrototype;
 }
 
@@ -124,14 +145,14 @@ QString Process::getOpenclPrototype(bool raw)
     for (PortBase *p : _leftPorts) {
         if (p->isImage()) {
             if (parameters != "")
-                parameters += ",\n";
+                parameters += ",\n\t\t\t";
             parameters += "__read_only image2d_t " + p->getName();
         }
     }
     for (PortBase *p : _rightPorts) {
         if (p->isImage()) {
             if (parameters != "")
-                parameters += ",\n";
+                parameters += ",\n\t\t\t";
             parameters += "__write_only image2d_t " + p->getName();
         }
     }
@@ -145,6 +166,27 @@ QString Process::getMetalPrototype(bool raw)
     if (raw)
         return rawPrototype;
     rawPrototype.replace("<MainFunctionName>", _name);
+    QString parameters = "";
+    int textureId = 0;
+    for (PortBase *p : _leftPorts) {
+        if (p->isImage()) {
+            if (parameters != "")
+                parameters += ",\n\t\t\t";
+            parameters += "texture2d<half, access::read> " + p->getName() + " [[texture("
+                          + QString::number(textureId) + ")]]";
+            textureId++;
+        }
+    }
+    for (PortBase *p : _rightPorts) {
+        if (p->isImage()) {
+            if (parameters != "")
+                parameters += ",\n\t\t\t";
+            parameters += "texture2d<half, access::write> " + p->getName() + " [[texture("
+                          + QString::number(textureId) + ")]]";
+            textureId++;
+        }
+    }
+    rawPrototype.replace("<MainFunctionParams>", parameters);
     return rawPrototype;
 }
 
