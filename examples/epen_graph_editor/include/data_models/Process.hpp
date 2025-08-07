@@ -122,7 +122,7 @@ private:
 
     QString getMetalPrototype(bool raw);
 
-    QSet<int> findReadonlyLines(QString programCode);
+    QSet<int> findReadonlyLines(QString programCode, QString prototype);
     PortBase *createPortObject(bool isImage, QString name);
 
     Size *_grid;
@@ -132,29 +132,18 @@ private:
     QVector<PortBase *> _rightPorts{};
 
     CodeEditor *_editor;
-    QString _cudaProgram = "<FUNCTION_PROTOTYPE>\n"
+    QString _cudaProgram = "<FUNCTION_PROTOTYPE>"
                            "{\n"
-                           "    int idx = blockIdx.x * blockDim.x + threadIdx.x;\n"
-                           "    if (idx < size) {\n"
-                           "        output[idx] = input[idx] * 2.0f;\n"
-                           "    }\n"
                            "}";
 
     QString _metalProgram = "#include <metal_stdlib>\n"
                             "using namespace metal;\n\n"
-                            "<FUNCTION_PROTOTYPE>\n"
+                            "<FUNCTION_PROTOTYPE>"
                             "{\n"
-                            "    if (idx < size) {\n"
-                            "        output[idx] = input[idx] * 2.0f;\n"
-                            "    }\n"
                             "}";
 
-    QString _openclProgram = "<FUNCTION_PROTOTYPE>\n"
+    QString _openclProgram = "<FUNCTION_PROTOTYPE>"
                              "{\n"
-                             "    int idx = get_global_id(0);\n"
-                             "    if (idx < size) {\n"
-                             "        output[idx] = input[idx] * 2.0f;\n"
-                             "    }\n"
                              "}";
 private slots:
     void portPropertyChanged();

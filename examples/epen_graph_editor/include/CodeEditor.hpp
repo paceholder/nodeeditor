@@ -129,6 +129,7 @@ private:
     QStringList m_supportedLanguages;
     bool m_isDarkMode;
     Process *_processNode;
+    bool _codeUpdateLock = false;
 };
 
 #endif // CODEEDITOR_HPP

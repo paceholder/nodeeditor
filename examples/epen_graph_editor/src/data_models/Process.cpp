@@ -60,6 +60,9 @@ void Process::removePortTypeRight(PortIndex portIndex)
         _rightPorts.at(portIndex);
         _rightPorts.removeAt(portIndex);
     }
+    if (_editor) {
+        _editor->updateCode();
+    }
 }
 
 void Process::setPortTypeLeft(PortIndex portIndex, PortBase *port)
@@ -72,6 +75,9 @@ void Process::removePortTypeLeft(PortIndex portIndex)
     if (portIndex < _leftPorts.size()) {
         delete _leftPorts.at(portIndex);
         _leftPorts.removeAt(portIndex);
+    }
+    if (_editor) {
+        _editor->updateCode();
     }
 }
 
@@ -144,17 +150,20 @@ QString Process::getMetalPrototype(bool raw)
 
 QString Process::getCudaProgram()
 {
-    return _cudaProgram.replace("<FUNCTION_PROTOTYPE>", getCudaPrototype(false));
+    QString cudaProgram(_cudaProgram);
+    return cudaProgram.replace("<FUNCTION_PROTOTYPE>", getCudaPrototype(false));
 }
 
 QString Process::getMetalProgram()
 {
-    return _metalProgram.replace("<FUNCTION_PROTOTYPE>", getMetalPrototype(false));
+    QString metalProgram(_metalProgram);
+    return metalProgram.replace("<FUNCTION_PROTOTYPE>", getMetalPrototype(false));
 }
 
 QString Process::getOpenclProgram()
 {
-    return _openclProgram.replace("<FUNCTION_PROTOTYPE>", getOpenclPrototype(false));
+    QString openclProgram(_openclProgram);
+    return openclProgram.replace("<FUNCTION_PROTOTYPE>", getOpenclPrototype(false));
 }
 
 void Process::setCudaProgram(QString code)
@@ -172,21 +181,25 @@ void Process::setOpenclProgram(QString code)
     _openclProgram = code.replace(getOpenclPrototype(false), "<FUNCTION_PROTOTYPE>");
 }
 
-QSet<int> Process::findReadonlyLines(QString programCode)
+QSet<int> Process::findReadonlyLines(QString programCode, QString prototype)
 {
     QSet<int> lineSet{};
     QStringList lines = programCode.split('\n');
+    QStringList prototypeLines = prototype.split('\n');
+    prototypeLines.removeAll("");
     bool functionNameFound = false;
     for (int i = 0; i < lines.size(); ++i) {
         if (functionNameFound) {
-            if (lines[i].contains("{")) {
+            lineSet << i;
+            if (lines[i] == prototypeLines[prototypeLines.size() - 1]) {
                 break;
             }
-            lineSet << i;
         }
-        if (lines[i].contains("<MainFunctionName>")) {
+        if (lines[i] == prototypeLines[0]) {
             functionNameFound = true;
             lineSet << i;
+            if (prototypeLines.size() == 1)
+                break;
             continue;
         }
     }
@@ -195,17 +208,17 @@ QSet<int> Process::findReadonlyLines(QString programCode)
 
 QSet<int> Process::getCudaReadonlyLines()
 {
-    return findReadonlyLines(_cudaProgram);
+    return findReadonlyLines(getCudaProgram(), getCudaPrototype(false));
 }
 
 QSet<int> Process::getOpenclReadonlyLines()
 {
-    return findReadonlyLines(_openclProgram);
+    return findReadonlyLines(getOpenclProgram(), getOpenclPrototype(false));
 }
 
 QSet<int> Process::getMetalReadonlyLines()
 {
-    return findReadonlyLines(_metalProgram);
+    return findReadonlyLines(getMetalProgram(), getMetalPrototype(false));
 }
 
 void Process::setEditor(CodeEditor *editor)

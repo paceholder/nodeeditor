@@ -97,8 +97,10 @@ void CodeEditor::setCode(const QString &code)
 {
     if (!_processNode)
         return;
+    _codeUpdateLock = true;
     m_editor->setText(code);
     setReadOnlyLines();
+    _codeUpdateLock = false;
 }
 
 QString CodeEditor::getCode() const
@@ -406,6 +408,8 @@ void CodeEditor::setProcessNode(Process *processNode)
 
 void CodeEditor::onTextChanged()
 {
+    if (_codeUpdateLock)
+        return;
     if (!_processNode)
         return;
     QString language = getCurrentLanguage();
@@ -425,6 +429,7 @@ void CodeEditor::updateCode()
     QString language = getCurrentLanguage();
     if (!_processNode)
         return;
+
     if (language == "OpenCL") {
         setCode(_processNode->getOpenclProgram());
     } else if (language == "CUDA") {
