@@ -279,12 +279,15 @@ void Process::setName(QString newName)
     }
 }
 
-PortBase *Process::createPortObject(bool isImage, QString name)
+PortBase *Process::createPortObject(bool isImage, bool isRight, QString name)
 {
     PortBase *newPort = nullptr;
-    if (isImage)
-        newPort = new ImagePort(name, 100, 100, this);
-    else
+    if (isImage) {
+        if (isRight)
+            newPort = new OutputImagePort(name, 100, 100, this);
+        else
+            newPort = new ImagePort(name, 100, 100, this);
+    } else
         newPort = new BufferPort(name, 1000, this);
     connect(newPort, &PortBase::propertyChanged, this, &Process::portPropertyChanged);
     return newPort;
@@ -300,7 +303,7 @@ void Process::portPropertyChanged()
 PortBase *Process::addInput(DataFlowModel *model, bool isImage, QString name)
 {
     PortAddRemoveWidget *widget = model->widget(_nodeId);
-    PortBase *newPort = createPortObject(isImage, name);
+    PortBase *newPort = createPortObject(isImage, false, name);
     if (widget) {
         widget->addLeftPort(newPort);
     }
@@ -312,7 +315,7 @@ PortBase *Process::addInput(DataFlowModel *model, bool isImage, QString name)
 
 PortBase *Process::addOutput(DataFlowModel *model, bool isImage, QString name)
 {
-    PortBase *newPort = createPortObject(isImage, name);
+    PortBase *newPort = createPortObject(isImage, true, name);
     PortAddRemoveWidget *widget = model->widget(_nodeId);
     if (widget) {
         widget->addRightPort(newPort);

@@ -5,6 +5,7 @@
 #include "PortAddRemoveWidget.hpp"
 #include "ports/BufferPort.hpp"
 #include "ports/ImagePort.hpp"
+#include "ports/OutputImagePort.hpp"
 #include <QMetaType>
 #include <QObject>
 
@@ -123,7 +124,7 @@ private:
     QString getMetalPrototype(bool raw);
 
     QSet<int> findReadonlyLines(QString programCode, QString prototype);
-    PortBase *createPortObject(bool isImage, QString name);
+    PortBase *createPortObject(bool isImage, bool isRight, QString name);
 
     Size *_grid;
     Size *_block;
