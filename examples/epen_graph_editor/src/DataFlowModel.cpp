@@ -265,3 +265,15 @@ void DataFlowModel::notifyPortInsertion(NodeId nodeId)
 
     Q_EMIT nodeUpdated(nodeId);
 }
+
+void DataFlowModel::addProcessPort(NodeId nodeId, bool isRight, bool isImage)
+{
+    Process *nodeModel = delegateModel<Process>(nodeId);
+    if (!nodeModel)
+        return;
+    if (isRight) {
+        nodeModel->addOutput(this, isImage, "output001");
+    } else {
+        nodeModel->addInput(this, isImage, "input001");
+    }
+}

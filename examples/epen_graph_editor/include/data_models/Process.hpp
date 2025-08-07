@@ -3,10 +3,10 @@
 
 #include "OperationDataModel.hpp"
 #include "PortAddRemoveWidget.hpp"
-#include <QMetaType>
-#include <QObject>
 #include "ports/BufferPort.hpp"
 #include "ports/ImagePort.hpp"
+#include <QMetaType>
+#include <QObject>
 
 class DataFlowMode;
 class CodeEditor;
@@ -110,12 +110,21 @@ public:
     void setEditor(CodeEditor *editor);
 
     PortBase *addInput(DataFlowModel *model, bool isImage, QString name);
+    PortBase *addOutput(DataFlowModel *model, bool isImage, QString name);
 
 protected:
     void setName(QString newName) override;
 
 private:
+    QString getCudaPrototype(bool raw);
+
+    QString getOpenclPrototype(bool raw);
+
+    QString getMetalPrototype(bool raw);
+
     QSet<int> findReadonlyLines(QString programCode);
+    PortBase *createPortObject(bool isImage, QString name);
+
     Size *_grid;
     Size *_block;
 
@@ -123,9 +132,7 @@ private:
     QVector<PortBase *> _rightPorts{};
 
     CodeEditor *_editor;
-    QString _cudaProgram = "__global__ void <MainFunctionName>(float* input,\n"
-                           "                        float* output,\n"
-                           "                        int size) \n"
+    QString _cudaProgram = "<FUNCTION_PROTOTYPE>\n"
                            "{\n"
                            "    int idx = blockIdx.x * blockDim.x + threadIdx.x;\n"
                            "    if (idx < size) {\n"
@@ -135,25 +142,22 @@ private:
 
     QString _metalProgram = "#include <metal_stdlib>\n"
                             "using namespace metal;\n\n"
-                            "kernel void <MainFunctionName>(device float* input [[buffer(0)]],\n"
-                            "                    device float* output [[buffer(1)]],\n"
-                            "                    uint idx [[thread_position_in_grid]],\n"
-                            "                    uint size [[threads_per_grid]])\n"
+                            "<FUNCTION_PROTOTYPE>\n"
                             "{\n"
                             "    if (idx < size) {\n"
                             "        output[idx] = input[idx] * 2.0f;\n"
                             "    }\n"
                             "}";
 
-    QString _openclProgram = "__kernel void <MainFunctionName>(__global float* input,\n"
-                             "                      __global float* output,\n"
-                             "                      const int size)\n"
+    QString _openclProgram = "<FUNCTION_PROTOTYPE>\n"
                              "{\n"
                              "    int idx = get_global_id(0);\n"
                              "    if (idx < size) {\n"
                              "        output[idx] = input[idx] * 2.0f;\n"
                              "    }\n"
                              "}";
+private slots:
+    void portPropertyChanged();
 };
 
 #endif

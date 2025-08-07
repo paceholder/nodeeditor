@@ -4,9 +4,9 @@
 #include "data_models/OperationDataModel.hpp"
 #include "data_models/Process.hpp"
 #include "panels/FloatingProperties.hpp"
+#include "ports/PortBase.hpp"
 #include <QPointer>
 #include <QtNodes/DataFlowGraphModel>
-#include "ports/PortBase.hpp"
 
 using QtNodes::ConnectionId;
 using QtNodes::DataFlowGraphModel;
@@ -53,6 +53,8 @@ public:
     void notifyPortInsertion(NodeId nodeId);
 
     PortAddRemoveWidget *widget(NodeId nodeId) const;
+
+    void addProcessPort(NodeId nodeId, bool isRight, bool isImage);
 signals:
     void nodePortSelected(bool isRightPort, Process *node, int portIndex);
 

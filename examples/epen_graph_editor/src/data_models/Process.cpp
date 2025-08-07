@@ -99,34 +99,77 @@ QObject *Process::findPort(int portIndex, bool isRightPort)
     return _leftPorts.at(portIndex);
 }
 
+QString Process::getCudaPrototype(bool raw)
+{
+    QString rawPrototype = "__global__ void <MainFunctionName>() \n";
+    if (raw)
+        return rawPrototype;
+    rawPrototype.replace("<MainFunctionName>", _name);
+    return rawPrototype;
+}
+
+QString Process::getOpenclPrototype(bool raw)
+{
+    QString rawPrototype = "void __kernel <MainFunctionName>(<MainFunctionParams>)\n";
+    if (raw)
+        return rawPrototype;
+    rawPrototype.replace("<MainFunctionName>", _name);
+    QString parameters = "";
+    for (PortBase *p : _leftPorts) {
+        if (p->isImage()) {
+            if (parameters != "")
+                parameters += ",\n";
+            parameters += "__read_only image2d_t " + p->getName();
+        }
+    }
+    for (PortBase *p : _rightPorts) {
+        if (p->isImage()) {
+            if (parameters != "")
+                parameters += ",\n";
+            parameters += "__write_only image2d_t " + p->getName();
+        }
+    }
+    rawPrototype.replace("<MainFunctionParams>", parameters);
+    return rawPrototype;
+}
+
+QString Process::getMetalPrototype(bool raw)
+{
+    QString rawPrototype = "kernel void <MainFunctionName>(<MainFunctionParams>)\n";
+    if (raw)
+        return rawPrototype;
+    rawPrototype.replace("<MainFunctionName>", _name);
+    return rawPrototype;
+}
+
 QString Process::getCudaProgram()
 {
-    return _cudaProgram.replace("<MainFunctionName>", _name);
+    return _cudaProgram.replace("<FUNCTION_PROTOTYPE>", getCudaPrototype(false));
 }
 
 QString Process::getMetalProgram()
 {
-    return _metalProgram.replace("<MainFunctionName>", _name);
+    return _metalProgram.replace("<FUNCTION_PROTOTYPE>", getMetalPrototype(false));
 }
 
 QString Process::getOpenclProgram()
 {
-    return _openclProgram.replace("<MainFunctionName>", _name);
+    return _openclProgram.replace("<FUNCTION_PROTOTYPE>", getOpenclPrototype(false));
 }
 
 void Process::setCudaProgram(QString code)
 {
-    _cudaProgram = code.replace("void " + _name + "(", "void <MainFunctionName>(");
+    _cudaProgram = code.replace(getCudaPrototype(false), "<FUNCTION_PROTOTYPE>");
 }
 
 void Process::setMetalProgram(QString code)
 {
-    _metalProgram = code.replace("void " + _name + "(", "void <MainFunctionName>(");
+    _metalProgram = code.replace(getMetalPrototype(false), "<FUNCTION_PROTOTYPE>");
 }
 
 void Process::setOpenclProgram(QString code)
 {
-    _openclProgram = code.replace("void " + _name + "(", "void <MainFunctionName>(");
+    _openclProgram = code.replace(getOpenclPrototype(false), "<FUNCTION_PROTOTYPE>");
 }
 
 QSet<int> Process::findReadonlyLines(QString programCode)
@@ -180,12 +223,46 @@ void Process::setName(QString newName)
     }
 }
 
+PortBase *Process::createPortObject(bool isImage, QString name)
+{
+    PortBase *newPort = nullptr;
+    if (isImage)
+        newPort = new ImagePort(name, 100, 100, this);
+    else
+        newPort = new BufferPort(name, 1000, this);
+    connect(newPort, &PortBase::propertyChanged, this, &Process::portPropertyChanged);
+    return newPort;
+}
+
+void Process::portPropertyChanged()
+{
+    if (_editor) {
+        _editor->updateCode();
+    }
+}
+
 PortBase *Process::addInput(DataFlowModel *model, bool isImage, QString name)
 {
-    PortBase *newPort = new ImagePort(name, 100, 100, this);
     PortAddRemoveWidget *widget = model->widget(_nodeId);
+    PortBase *newPort = createPortObject(isImage, name);
     if (widget) {
         widget->addLeftPort(newPort);
+    }
+    if (_editor) {
+        _editor->updateCode();
+    }
+    return newPort;
+}
+
+PortBase *Process::addOutput(DataFlowModel *model, bool isImage, QString name)
+{
+    PortBase *newPort = createPortObject(isImage, name);
+    PortAddRemoveWidget *widget = model->widget(_nodeId);
+    if (widget) {
+        widget->addRightPort(newPort);
+    }
+    if (_editor) {
+        _editor->updateCode();
     }
     return newPort;
 }

@@ -117,22 +117,22 @@ void PortAddRemoveWidget::removeLeftPort() {}
 
 void PortAddRemoveWidget::addRightPortI()
 {
-    addRightPort(new ImagePort("image001", 100, 100));
+    _model.addProcessPort(_nodeId, true, true);
 }
 
 void PortAddRemoveWidget::addRightPortB()
 {
-    addRightPort(new BufferPort("buffer001", 1000));
+    _model.addProcessPort(_nodeId, true, false);
 }
 
 void PortAddRemoveWidget::addLeftPortI()
 {
-    addLeftPort(new ImagePort("image001", 100, 100));
+    _model.addProcessPort(_nodeId, false, true);
 }
 
 void PortAddRemoveWidget::addLeftPortB()
 {
-    addLeftPort(new BufferPort("buffer001", 1000));
+    _model.addProcessPort(_nodeId, false, false);
 }
 
 void PortAddRemoveWidget::addRightPort(PortBase *port)

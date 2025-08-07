@@ -16,6 +16,7 @@ public:
         , _name(name)
     {}
     virtual bool isImage() { return true; }
+    QString getName() { return _name; }
 signals:
     void propertyChanged();
 
