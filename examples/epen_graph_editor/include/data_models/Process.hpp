@@ -139,6 +139,7 @@ private:
     QString _metalProgram = "#include <metal_stdlib>\n"
                             "using namespace metal;\n\n"
                             "<FUNCTION_PROTOTYPE>"
+                            "\t\t\t,uint2 gid [[thread_position_in_grid]])\n"
                             "{\n"
                             "}";
 

@@ -163,7 +163,7 @@ QString Process::getOpenclPrototype(bool raw)
 
 QString Process::getMetalPrototype(bool raw)
 {
-    QString rawPrototype = "kernel void <MainFunctionName>(<MainFunctionParams>)\n";
+    QString rawPrototype = "kernel void <MainFunctionName>(<MainFunctionParams>\n";
     if (raw)
         return rawPrototype;
     rawPrototype.replace("<MainFunctionName>", _name);
