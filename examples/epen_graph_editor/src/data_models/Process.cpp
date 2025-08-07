@@ -142,17 +142,18 @@ QString Process::getOpenclPrototype(bool raw)
         return rawPrototype;
     rawPrototype.replace("<MainFunctionName>", _name);
     QString parameters = "";
+    QString paramDelimiter = ",\n\t\t\t";
     for (PortBase *p : _leftPorts) {
         if (p->isImage()) {
             if (parameters != "")
-                parameters += ",\n\t\t\t";
+                parameters += paramDelimiter;
             parameters += "__read_only image2d_t " + p->getName();
         }
     }
     for (PortBase *p : _rightPorts) {
         if (p->isImage()) {
             if (parameters != "")
-                parameters += ",\n\t\t\t";
+                parameters += paramDelimiter;
             parameters += "__write_only image2d_t " + p->getName();
         }
     }

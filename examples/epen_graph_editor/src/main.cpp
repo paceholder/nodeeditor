@@ -7,7 +7,6 @@
 #include <QtWidgets/QApplication>
 
 #include "DataFlowModel.hpp"
-#include "data_models/CallbackManagedBuffer.hpp"
 #include "data_models/CallbackManagedImage.hpp"
 #include "data_models/Process.hpp"
 #include "data_models/Scalar_Double_Fixed.hpp"
@@ -37,6 +36,15 @@
 #include "data_models/Array_Int_Fixed.hpp"
 #include "data_models/Array_UnsignedInt_Fixed.hpp"
 
+#include "data_models/Array_Double_InputCallback.hpp"
+#include "data_models/Array_Double_OutputCallback.hpp"
+#include "data_models/Array_Float_InputCallback.hpp"
+#include "data_models/Array_Float_OutputCallback.hpp"
+#include "data_models/Array_Int_InputCallback.hpp"
+#include "data_models/Array_Int_OutputCallback.hpp"
+#include "data_models/Array_UnsignedInt_InputCallback.hpp"
+#include "data_models/Array_UnsignedInt_OutputCallback.hpp"
+
 #include "data_models/VideoInput.hpp"
 #include "data_models/VideoOutput.hpp"
 #include <QtGui/QScreen>
@@ -52,7 +60,6 @@ static std::shared_ptr<NodeDelegateModelRegistry> registerDataModels()
     auto ret = std::make_shared<NodeDelegateModelRegistry>();
     ret->registerModel<VideoInput>();
     ret->registerModel<VideoOutput>();
-    ret->registerModel<CallbackManagedBuffer>();
     ret->registerModel<CallbackManagedImage>();
     ret->registerModel<Process>();
 
@@ -82,6 +89,15 @@ static std::shared_ptr<NodeDelegateModelRegistry> registerDataModels()
     ret->registerModel<Array_Float_Fixed>();
     ret->registerModel<Array_Int_Fixed>();
     ret->registerModel<Array_UnsignedInt_Fixed>();
+
+    ret->registerModel<Array_Double_InputCallback>();
+    ret->registerModel<Array_Double_OutputCallback>();
+    ret->registerModel<Array_Float_InputCallback>();
+    ret->registerModel<Array_Float_OutputCallback>();
+    ret->registerModel<Array_Int_InputCallback>();
+    ret->registerModel<Array_Int_OutputCallback>();
+    ret->registerModel<Array_UnsignedInt_InputCallback>();
+    ret->registerModel<Array_UnsignedInt_OutputCallback>();
 
     return ret;
 }

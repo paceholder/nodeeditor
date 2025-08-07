@@ -185,12 +185,6 @@ void FloatingToolbar::setupNodeCategories()
         = {{"Video Input", "◀", "<", "Create a video input node", "VideoInput", false},
            {"Video Output", "▶", ">", "Create a video output node", "VideoOutput", true},
            {"Process", "♦", "*", "Create a processing node", "Process", true},
-           {"Callback Managed Buffer",
-            "⬛",
-            "=",
-            "Create a Callback Managed Buffer node",
-            "CallbackManagedBuffer",
-            true},
            {"Callback Managed Image",
             "⬛",
             "=",
@@ -364,36 +358,102 @@ void FloatingToolbar::setupNodeCategories()
 
     m_categories.append(scalarCategory);
 
-    // Array category (no subcategories)
+    // Array category with subcategories
     Category arrayCategory;
     arrayCategory.name = "Array";
-    SubCategory arraySub;
-    arraySub.name = ""; // Empty name for categories without subcategories
-    arraySub.buttons = {{"Fixed Double Buffer",
-                         QString::fromUtf8("\u2B30"),
-                         ">>",
-                         "Create a double Fixed Array Buffer node",
-                         "Array_Double_Fixed",
-                         true},
-                        {"Fixed Float Buffer",
-                         QString::fromUtf8("\u2B30"),
-                         ">>",
-                         "Create a float Fixed Array Buffer node",
-                         "Array_Float_Fixed",
-                         true},
-                        {"Fixed Int Buffer",
-                         QString::fromUtf8("\u2B30"),
-                         ">>",
-                         "Create an int Fixed Array Buffer node",
-                         "Array_Int_Fixed",
-                         true},
-                        {"Fixed Unsigned Int Buffer",
-                         QString::fromUtf8("\u2B30"),
-                         ">>",
-                         "Create an unsigned int Fixed Array Buffer node",
-                         "Array_UnsignedInt_Fixed",
-                         true}};
-    arrayCategory.subCategories.append(arraySub);
+    
+    // Double array subcategory
+    SubCategory arrayDoubleSub;
+    arrayDoubleSub.name = "Double";
+    arrayDoubleSub.buttons = {{"Fixed Double Buffer",
+                               QString::fromUtf8("\u2B30"),
+                               ">>",
+                               "Create a double Fixed Array Buffer node",
+                               "Array_Double_Fixed",
+                               true},
+                              {"Input Double Array Callback Managed Buffer",
+                               QString::fromUtf8("\u2B30"),
+                               ">>",
+                               "Create a double Input Callback Managed Array Buffer node",
+                               "Array_Double_InputCallback",
+                               true},
+                              {"Output Double Array Callback Managed Buffer",
+                               QString::fromUtf8("\u2B30"),
+                               ">>",
+                               "Create a double Output Callback Managed Array Buffer node",
+                               "Array_Double_OutputCallback",
+                               true}};
+    arrayCategory.subCategories.append(arrayDoubleSub);
+    
+    // Float array subcategory
+    SubCategory arrayFloatSub;
+    arrayFloatSub.name = "float";
+    arrayFloatSub.buttons = {{"Fixed Float Buffer",
+                              QString::fromUtf8("\u2B30"),
+                              ">>",
+                              "Create a float Fixed Array Buffer node",
+                              "Array_Float_Fixed",
+                              true},
+                             {"Input Float Array Callback Managed Buffer",
+                              QString::fromUtf8("\u2B30"),
+                              ">>",
+                              "Create a float Input Callback Managed Array Buffer node",
+                              "Array_Float_InputCallback",
+                              true},
+                             {"Output Float Array Callback Managed Buffer",
+                              QString::fromUtf8("\u2B30"),
+                              ">>",
+                              "Create a float Output Callback Managed Array Buffer node",
+                              "Array_Float_OutputCallback",
+                              true}};
+    arrayCategory.subCategories.append(arrayFloatSub);
+    
+    // Int array subcategory
+    SubCategory arrayIntSub;
+    arrayIntSub.name = "int";
+    arrayIntSub.buttons = {{"Fixed Int Buffer",
+                            QString::fromUtf8("\u2B30"),
+                            ">>",
+                            "Create an int Fixed Array Buffer node",
+                            "Array_Int_Fixed",
+                            true},
+                           {"Input Int Array Callback Managed Buffer",
+                            QString::fromUtf8("\u2B30"),
+                            ">>",
+                            "Create an int Input Callback Managed Array Buffer node",
+                            "Array_Int_InputCallback",
+                            true},
+                           {"Output Int Array Callback Managed Buffer",
+                            QString::fromUtf8("\u2B30"),
+                            ">>",
+                            "Create an int Output Callback Managed Array Buffer node",
+                            "Array_Int_OutputCallback",
+                            true}};
+    arrayCategory.subCategories.append(arrayIntSub);
+    
+    // Unsigned int array subcategory
+    SubCategory arrayUnsignedIntSub;
+    arrayUnsignedIntSub.name = "unsigned int";
+    arrayUnsignedIntSub.buttons = {{"Fixed Unsigned Int Buffer",
+                                    QString::fromUtf8("\u2B30"),
+                                    ">>",
+                                    "Create an unsigned int Fixed Array Buffer node",
+                                    "Array_UnsignedInt_Fixed",
+                                    true},
+                                   {"Input Unsigned Int Array Callback Managed Buffer",
+                                    QString::fromUtf8("\u2B30"),
+                                    ">>",
+                                    "Create an unsigned int Input Callback Managed Array Buffer node",
+                                    "Array_UnsignedInt_InputCallback",
+                                    true},
+                                   {"Output Unsigned Int Array Callback Managed Buffer",
+                                    QString::fromUtf8("\u2B30"),
+                                    ">>",
+                                    "Create an unsigned int Output Callback Managed Array Buffer node",
+                                    "Array_UnsignedInt_OutputCallback",
+                                    true}};
+    arrayCategory.subCategories.append(arrayUnsignedIntSub);
+    
     m_categories.append(arrayCategory);
 
     // Populate category combo box
