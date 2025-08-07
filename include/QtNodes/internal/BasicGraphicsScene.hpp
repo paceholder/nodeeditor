@@ -17,7 +17,6 @@
 #include <tuple>
 #include <unordered_map>
 
-
 class QUndoStack;
 
 namespace QtNodes {
