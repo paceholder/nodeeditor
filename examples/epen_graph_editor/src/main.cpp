@@ -7,7 +7,8 @@
 #include <QtWidgets/QApplication>
 
 #include "DataFlowModel.hpp"
-#include "data_models/CallbackManagedImage.hpp"
+#include "data_models/InputCallbackManagedImage.hpp"
+#include "data_models/OutputCallbackManagedImage.hpp"
 #include "data_models/Process.hpp"
 #include "data_models/Scalar_Double_Fixed.hpp"
 #include "data_models/Scalar_Double_Plain.hpp"
@@ -60,7 +61,8 @@ static std::shared_ptr<NodeDelegateModelRegistry> registerDataModels()
     auto ret = std::make_shared<NodeDelegateModelRegistry>();
     ret->registerModel<VideoInput>();
     ret->registerModel<VideoOutput>();
-    ret->registerModel<CallbackManagedImage>();
+    ret->registerModel<InputCallbackManagedImage>();
+    ret->registerModel<OutputCallbackManagedImage>();
     ret->registerModel<Process>();
 
     ret->registerModel<Scalar_UnsignedInt_Slider>();

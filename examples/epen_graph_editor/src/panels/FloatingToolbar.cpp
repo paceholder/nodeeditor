@@ -185,11 +185,17 @@ void FloatingToolbar::setupNodeCategories()
         = {{"Video Input", "◀", "<", "Create a video input node", "VideoInput", false},
            {"Video Output", "▶", ">", "Create a video output node", "VideoOutput", true},
            {"Process", "♦", "*", "Create a processing node", "Process", true},
-           {"Callback Managed Image",
+           {"Input Callback Managed Image",
             "⬛",
             "=",
-            "Create a Callback Managed Image node",
-            "CallbackManagedImage",
+            "Create an Input Callback Managed Image node",
+            "InputCallbackManagedImage",
+            true},
+           {"Output Callback Managed Image",
+            "⬛",
+            "=",
+            "Create an Output Callback Managed Image node",
+            "OutputCallbackManagedImage",
             true}};
 
     for (const auto &buttonInfo : otherNodeButtons) {
@@ -361,7 +367,7 @@ void FloatingToolbar::setupNodeCategories()
     // Array category with subcategories
     Category arrayCategory;
     arrayCategory.name = "Array";
-    
+
     // Double array subcategory
     SubCategory arrayDoubleSub;
     arrayDoubleSub.name = "Double";
@@ -384,7 +390,7 @@ void FloatingToolbar::setupNodeCategories()
                                "Array_Double_OutputCallback",
                                true}};
     arrayCategory.subCategories.append(arrayDoubleSub);
-    
+
     // Float array subcategory
     SubCategory arrayFloatSub;
     arrayFloatSub.name = "float";
@@ -407,7 +413,7 @@ void FloatingToolbar::setupNodeCategories()
                               "Array_Float_OutputCallback",
                               true}};
     arrayCategory.subCategories.append(arrayFloatSub);
-    
+
     // Int array subcategory
     SubCategory arrayIntSub;
     arrayIntSub.name = "int";
@@ -430,30 +436,31 @@ void FloatingToolbar::setupNodeCategories()
                             "Array_Int_OutputCallback",
                             true}};
     arrayCategory.subCategories.append(arrayIntSub);
-    
+
     // Unsigned int array subcategory
     SubCategory arrayUnsignedIntSub;
     arrayUnsignedIntSub.name = "unsigned int";
-    arrayUnsignedIntSub.buttons = {{"Fixed Unsigned Int Buffer",
-                                    QString::fromUtf8("\u2B30"),
-                                    ">>",
-                                    "Create an unsigned int Fixed Array Buffer node",
-                                    "Array_UnsignedInt_Fixed",
-                                    true},
-                                   {"Input Unsigned Int Array Callback Managed Buffer",
-                                    QString::fromUtf8("\u2B30"),
-                                    ">>",
-                                    "Create an unsigned int Input Callback Managed Array Buffer node",
-                                    "Array_UnsignedInt_InputCallback",
-                                    true},
-                                   {"Output Unsigned Int Array Callback Managed Buffer",
-                                    QString::fromUtf8("\u2B30"),
-                                    ">>",
-                                    "Create an unsigned int Output Callback Managed Array Buffer node",
-                                    "Array_UnsignedInt_OutputCallback",
-                                    true}};
+    arrayUnsignedIntSub.buttons
+        = {{"Fixed Unsigned Int Buffer",
+            QString::fromUtf8("\u2B30"),
+            ">>",
+            "Create an unsigned int Fixed Array Buffer node",
+            "Array_UnsignedInt_Fixed",
+            true},
+           {"Input Unsigned Int Array Callback Managed Buffer",
+            QString::fromUtf8("\u2B30"),
+            ">>",
+            "Create an unsigned int Input Callback Managed Array Buffer node",
+            "Array_UnsignedInt_InputCallback",
+            true},
+           {"Output Unsigned Int Array Callback Managed Buffer",
+            QString::fromUtf8("\u2B30"),
+            ">>",
+            "Create an unsigned int Output Callback Managed Array Buffer node",
+            "Array_UnsignedInt_OutputCallback",
+            true}};
     arrayCategory.subCategories.append(arrayUnsignedIntSub);
-    
+
     m_categories.append(arrayCategory);
 
     // Populate category combo box
