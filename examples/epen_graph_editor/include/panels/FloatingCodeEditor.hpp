@@ -63,6 +63,7 @@ private:
     void setupUI() override;
     void connectSignals() override;
 
+    void updateCompileButtonState();
     // Compiler management
     void initializeCompilers();
     void performCompilation();

@@ -217,6 +217,9 @@ void FloatingCodeEditor::onLanguageChanged(int index)
     QString language = getCurrentLanguage();
     m_codeEditor->setLanguage(language);
 
+    // Update compile button state based on compiler availability
+    updateCompileButtonState();
+
     emit languageChanged(language);
 }
 
@@ -391,7 +394,12 @@ QString FloatingCodeEditor::getCurrentLanguage() const
 void FloatingCodeEditor::setReadOnly(bool readOnly)
 {
     m_codeEditor->setReadOnly(readOnly);
-    m_compileButton->setEnabled(!readOnly);
+    if (!readOnly) {
+        // Only enable compile button if the current language is available
+        updateCompileButtonState();
+    } else {
+        m_compileButton->setEnabled(false);
+    }
 }
 
 void FloatingCodeEditor::moveEvent(QMoveEvent *event)
@@ -460,7 +468,6 @@ void FloatingCodeEditor::updateCompilerAvailability()
     // Clear and rebuild combo box
     m_languageCombo->clear();
 
-    bool hasAnyCompiler = false;
     QStringList supportedLanguages = m_codeEditor->getSupportedLanguages();
 
     for (const QString &lang : supportedLanguages) {
@@ -468,42 +475,43 @@ void FloatingCodeEditor::updateCompilerAvailability()
         if (it != m_compilers.end() && it->second) {
             if (it->second->isAvailable()) {
                 m_languageCombo->addItem(lang);
-                hasAnyCompiler = true;
             } else {
-                // Add disabled item to show what's not available
+                // Add item with "(Not Available)" suffix
                 QString itemText = lang + " (Not Available)";
                 m_languageCombo->addItem(itemText);
-                int index = m_languageCombo->count() - 1;
-
-                // Get the model and disable the item
-                QStandardItemModel *model = qobject_cast<QStandardItemModel *>(
-                    m_languageCombo->model());
-                if (model) {
-                    QStandardItem *item = model->item(index);
-                    if (item) {
-                        item->setEnabled(false);
-                        item->setToolTip(it->second->getAvailabilityError());
-                    }
-                }
             }
         }
     }
 
     // Restore selection if possible
     int index = m_languageCombo->findText(currentSelection);
-    if (index >= 0 && m_languageCombo->itemText(index) == currentSelection) {
+    if (index >= 0) {
         m_languageCombo->setCurrentIndex(index);
     }
 
-    // Enable/disable compile button
-    m_compileButton->setEnabled(hasAnyCompiler);
+    // Update compile button state
+    updateCompileButtonState();
+}
 
-    if (!hasAnyCompiler) {
-        m_compileButton->setToolTip(
-            "No GPU compilers are available. Please install appropriate drivers.");
+void FloatingCodeEditor::updateCompileButtonState()
+{
+    QString currentLang = getCurrentLanguage();
+    auto it = m_compilers.find(currentLang);
+    
+    bool isAvailable = false;
+    QString tooltip;
+    
+    if (it != m_compilers.end() && it->second) {
+        isAvailable = it->second->isAvailable();
+        if (!isAvailable) {
+            tooltip = it->second->getAvailabilityError();
+        }
     } else {
-        m_compileButton->setToolTip("");
+        tooltip = "No compiler available for " + currentLang;
     }
+    
+    m_compileButton->setEnabled(isAvailable && !m_codeEditor->isReadOnly());
+    m_compileButton->setToolTip(tooltip);
 }
 
 void FloatingCodeEditor::performCompilation()
@@ -553,9 +561,9 @@ void FloatingCodeEditor::performCompilation()
     // Show results
     showCompileResults(true);
 
-    // Re-enable compile button
-    m_compileButton->setEnabled(true);
+    // Re-enable compile button based on current language availability
     m_compileButton->setText("Compile");
+    updateCompileButtonState();
 }
 
 void FloatingCodeEditor::showCompileResults(bool show)
