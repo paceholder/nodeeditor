@@ -49,13 +49,9 @@ unsigned int Process::nPorts(PortType portType) const
     return result;
 }
 
-void Process::setPortTypeRight(PortIndex portIndex, bool isImage)
+void Process::setPortTypeRight(PortIndex portIndex, PortBase *port)
 {
-    if (isImage) {
-        _rightPorts.insert(portIndex - 1, new ImagePort("test1", 100, 100, this));
-    } else {
-        _rightPorts.insert(portIndex - 1, new BufferPort("test1", 1024, this));
-    }
+    _rightPorts.insert(portIndex - 1, port);
 }
 
 void Process::removePortTypeRight(PortIndex portIndex)
@@ -66,13 +62,9 @@ void Process::removePortTypeRight(PortIndex portIndex)
     }
 }
 
-void Process::setPortTypeLeft(PortIndex portIndex, bool isImage)
+void Process::setPortTypeLeft(PortIndex portIndex, PortBase *port)
 {
-    if (isImage) {
-        _leftPorts.insert(portIndex - 1, new ImagePort("test2", 100, 100, this));
-    } else {
-        _leftPorts.insert(portIndex - 1, new BufferPort("test2", 1024, this));
-    }
+    _leftPorts.insert(portIndex - 1, port);
 }
 
 void Process::removePortTypeLeft(PortIndex portIndex)
@@ -190,13 +182,10 @@ void Process::setName(QString newName)
 
 PortBase *Process::addInput(DataFlowModel *model, bool isImage, QString name)
 {
-    portsAboutToBeInserted(PortType::In, _leftPorts.size(), _leftPorts.size());
     PortBase *newPort = new ImagePort(name, 100, 100, this);
-    _leftPorts.append(newPort);
-    portsInserted();
     PortAddRemoveWidget *widget = model->widget(_nodeId);
     if (widget) {
-        widget->addLeftPortView(isImage);
+        widget->addLeftPort(newPort);
     }
     return newPort;
 }

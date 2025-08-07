@@ -6,6 +6,7 @@
 #include "panels/FloatingProperties.hpp"
 #include <QPointer>
 #include <QtNodes/DataFlowGraphModel>
+#include "ports/PortBase.hpp"
 
 using QtNodes::ConnectionId;
 using QtNodes::DataFlowGraphModel;
@@ -35,7 +36,7 @@ public:
 
     bool setNodeData(NodeId nodeId, NodeRole role, QVariant value) override;
 
-    void addProcessNodePort(NodeId nodeId, PortType portType, PortIndex portIndex, bool isImage);
+    void addProcessNodePort(NodeId nodeId, PortType portType, PortIndex portIndex, PortBase *port);
 
     void removeProcessNodePort(NodeId nodeId, PortType portType, PortIndex portIndex);
     void setFloatingProperties(QPointer<FloatingProperties>);

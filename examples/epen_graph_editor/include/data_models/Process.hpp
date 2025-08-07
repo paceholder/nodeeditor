@@ -81,11 +81,11 @@ public:
 
     unsigned int nPorts(PortType portType) const override;
 
-    void setPortTypeRight(PortIndex portIndex, bool isImage);
+    void setPortTypeRight(PortIndex portIndex, PortBase *port);
 
     void removePortTypeRight(PortIndex portIndex);
 
-    void setPortTypeLeft(PortIndex portIndex, bool isImage);
+    void setPortTypeLeft(PortIndex portIndex, PortBase *port);
 
     void removePortTypeLeft(PortIndex portIndex);
 

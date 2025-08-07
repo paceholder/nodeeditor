@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ports/PortBase.hpp"
 #include <QButtonGroup>
 #include <QPushButton>
 #include <QRadioButton>
@@ -23,7 +24,8 @@ public:
 
     void rootSelected();
 
-    void addLeftPortView(bool isImage);
+    void addRightPort(PortBase *);
+    void addLeftPort(PortBase *);
 private slots:
     void addRightPortI();
     void addRightPortB();
@@ -37,8 +39,6 @@ private slots:
     void rightMinusClicked();
 
 private:
-    void addRightPort(bool);
-    void addLeftPort(bool);
     int findWhichRadioWasClicked(QVBoxLayout *, QObject *);
 
 private:

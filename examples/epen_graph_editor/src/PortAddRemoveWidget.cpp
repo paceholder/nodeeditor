@@ -1,6 +1,8 @@
 #include "PortAddRemoveWidget.hpp"
 
 #include "DataFlowModel.hpp"
+#include "ports/BufferPort.hpp"
+#include "ports/ImagePort.hpp"
 
 // Layout constants
 static const int BUTTON_HEIGHT = 25;
@@ -111,7 +113,50 @@ PortAddRemoveWidget::PortAddRemoveWidget(NodeId nodeId, DataFlowModel &model, QW
     _right->addStretch();
 }
 
-void PortAddRemoveWidget::addLeftPort(bool isImage)
+void PortAddRemoveWidget::removeLeftPort() {}
+
+void PortAddRemoveWidget::addRightPortI()
+{
+    addRightPort(new ImagePort("image001", 100, 100));
+}
+
+void PortAddRemoveWidget::addRightPortB()
+{
+    addRightPort(new BufferPort("buffer001", 1000));
+}
+
+void PortAddRemoveWidget::addLeftPortI()
+{
+    addLeftPort(new ImagePort("image001", 100, 100));
+}
+
+void PortAddRemoveWidget::addLeftPortB()
+{
+    addLeftPort(new BufferPort("buffer001", 1000));
+}
+
+void PortAddRemoveWidget::addRightPort(PortBase *port)
+{
+    // Create radio button
+    auto radioButton = new QRadioButton();
+    radioButton->setFixedSize(20, BUTTON_HEIGHT);
+    _radioGroup->addButton(radioButton);
+    connect(radioButton,
+            &QRadioButton::toggled,
+            this,
+            &PortAddRemoveWidget::onRightRadioButtonToggled);
+
+    // Insert after + button (0), first port spacer (1), and existing ports
+    _right->insertWidget(_rightPorts + 1, radioButton, 0, Qt::AlignRight);
+
+    // Trigger changes in the model
+    _model.addProcessNodePort(_nodeId, PortType::Out, _rightPorts, port);
+    _rightPorts++;
+
+    adjustSize();
+}
+
+void PortAddRemoveWidget::addLeftPort(PortBase *port)
 {
     // Create radio button
     auto radioButton = new QRadioButton();
@@ -127,51 +172,8 @@ void PortAddRemoveWidget::addLeftPort(bool isImage)
     _left->insertWidget(_leftPorts + 1, radioButton);
 
     // Trigger changes in the model
-    _model.addProcessNodePort(_nodeId, PortType::In, _leftPorts, isImage);
+    _model.addProcessNodePort(_nodeId, PortType::In, _leftPorts, port);
     _leftPorts++;
-
-    adjustSize();
-}
-
-void PortAddRemoveWidget::removeLeftPort() {}
-
-void PortAddRemoveWidget::addRightPortI()
-{
-    addRightPort(true);
-}
-
-void PortAddRemoveWidget::addRightPortB()
-{
-    addRightPort(false);
-}
-
-void PortAddRemoveWidget::addLeftPortI()
-{
-    addLeftPort(true);
-}
-
-void PortAddRemoveWidget::addLeftPortB()
-{
-    addLeftPort(false);
-}
-
-void PortAddRemoveWidget::addRightPort(bool isImage)
-{
-    // Create radio button
-    auto radioButton = new QRadioButton();
-    radioButton->setFixedSize(20, BUTTON_HEIGHT);
-    _radioGroup->addButton(radioButton);
-    connect(radioButton,
-            &QRadioButton::toggled,
-            this,
-            &PortAddRemoveWidget::onRightRadioButtonToggled);
-
-    // Insert after + button (0), first port spacer (1), and existing ports
-    _right->insertWidget(_rightPorts + 1, radioButton, 0, Qt::AlignRight);
-
-    // Trigger changes in the model
-    _model.addProcessNodePort(_nodeId, PortType::Out, _rightPorts, isImage);
-    _rightPorts++;
 
     adjustSize();
 }
@@ -328,28 +330,6 @@ void PortAddRemoveWidget::rightMinusClicked()
     _rightPorts--;
     _rightMinusButton->setEnabled(false);
     _model.removeProcessNodePort(_nodeId, PortType::Out, _selectedRightPortIndex);
-
-    adjustSize();
-}
-
-void PortAddRemoveWidget::addLeftPortView(bool isImage)
-{
-    // Create radio button
-    auto radioButton = new QRadioButton();
-    radioButton->setFixedSize(20, BUTTON_HEIGHT);
-    radioButton->setStyleSheet(RADIO_STYLE);
-    _radioGroup->addButton(radioButton);
-    connect(radioButton,
-            &QRadioButton::toggled,
-            this,
-            &PortAddRemoveWidget::onLeftRadioButtonToggled);
-
-    // Insert after + button (0), first port spacer (1), and existing ports
-    _left->insertWidget(_leftPorts + 1, radioButton);
-
-    // Trigger changes in the model
-    _model.addProcessNodePort(_nodeId, PortType::In, _leftPorts, isImage);
-    _leftPorts++;
 
     adjustSize();
 }

@@ -130,7 +130,7 @@ bool DataFlowModel::setNodeData(NodeId nodeId, NodeRole role, QVariant value)
 void DataFlowModel::addProcessNodePort(NodeId nodeId,
                                        PortType portType,
                                        PortIndex portIndex,
-                                       bool isImage)
+                                       PortBase *port)
 {
     PortIndex first = portIndex + 1;
     PortIndex last = first;
@@ -139,10 +139,10 @@ void DataFlowModel::addProcessNodePort(NodeId nodeId,
 
     if (portType == PortType::In) {
         _nodePortCounts[nodeId].in++;
-        nodeModel->setPortTypeLeft(_nodePortCounts[nodeId].in, isImage);
+        nodeModel->setPortTypeLeft(_nodePortCounts[nodeId].in, port);
     } else {
         _nodePortCounts[nodeId].out++;
-        nodeModel->setPortTypeRight(_nodePortCounts[nodeId].out, isImage);
+        nodeModel->setPortTypeRight(_nodePortCounts[nodeId].out, port);
     }
 
     portsInserted();
