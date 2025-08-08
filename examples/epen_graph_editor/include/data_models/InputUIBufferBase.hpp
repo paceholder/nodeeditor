@@ -21,7 +21,7 @@ public:
     QString portCaption(PortType portType, PortIndex portIndex) const override
     {
         switch (portType) {
-        case PortType::In:
+        case PortType::Out:
             return QStringLiteral("Buffer");
 
         default:
@@ -34,7 +34,7 @@ public:
     {
         unsigned int result;
 
-        if (portType == PortType::In)
+        if (portType == PortType::Out)
             result = 1;
         else
             result = 0;

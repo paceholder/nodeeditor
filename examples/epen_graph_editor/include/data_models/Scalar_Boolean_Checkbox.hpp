@@ -1,6 +1,6 @@
 #pragma once
-#include "OutputUIBufferBase.hpp"
-class Scalar_Boolean_Checkbox : public OutputUIBufferBase
+#include "InputUIBufferBase.hpp"
+class Scalar_Boolean_Checkbox : public InputUIBufferBase
 {
     Q_OBJECT
 public:
