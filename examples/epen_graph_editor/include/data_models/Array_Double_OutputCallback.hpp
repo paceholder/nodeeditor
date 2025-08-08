@@ -17,6 +17,13 @@ public:
         return BUFFER_DATA_TYPE;
     }
 
+    QString getVariableType(UIBufferBase::LanguageTypes language,
+                            QString variableName,
+                            bool isInput) override
+    {
+        return "double* " + variableName;
+    }
+
 private:
     QString _value;
 };

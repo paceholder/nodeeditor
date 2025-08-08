@@ -121,7 +121,8 @@ QString Process::getCudaPrototype(bool raw)
                 continue;
             if (parameters != "")
                 parameters += paramDelimiter;
-            parameters += bufferNode->getVariableType(UIBufferBase::CUDA, p->getName(), true);
+            parameters += "const "
+                          + bufferNode->getVariableType(UIBufferBase::CUDA, p->getName(), true);
         }
     }
     for (PortBase *p : _leftPorts) {
@@ -173,7 +174,8 @@ QString Process::getOpenclPrototype(bool raw)
                 continue;
             if (parameters != "")
                 parameters += paramDelimiter;
-            parameters += bufferNode->getVariableType(UIBufferBase::OPENCL, p->getName(), true);
+            parameters += "__global const "
+                          + bufferNode->getVariableType(UIBufferBase::OPENCL, p->getName(), true);
         }
     }
     for (PortBase *p : _leftPorts) {
@@ -200,7 +202,8 @@ QString Process::getOpenclPrototype(bool raw)
                 continue;
             if (parameters != "")
                 parameters += paramDelimiter;
-            parameters += bufferNode->getVariableType(UIBufferBase::OPENCL, p->getName(), false);
+            parameters += "__global "
+                          + bufferNode->getVariableType(UIBufferBase::OPENCL, p->getName(), false);
         }
     }
     rawPrototype.replace("<MainFunctionParams>", parameters);
@@ -236,8 +239,10 @@ QString Process::getMetalPrototype(bool raw)
             idIndex++;
         }
     }
+    int bufferIndex = 0;
     if (MainFunctionInputParams != "") {
         MainFunctionInputParams += "\n};\n";
+        bufferIndex++;
     }
     rawPrototype.replace("<MainFunctionInputParams>", MainFunctionInputParams);
     rawPrototype.replace("<MainFunctionName>", _name);
@@ -275,7 +280,10 @@ QString Process::getMetalPrototype(bool raw)
                 continue;
             if (parameters != "")
                 parameters += paramDelimiter;
-            parameters += bufferNode->getVariableType(UIBufferBase::METAL, p->getName(), false);
+            parameters += "device "
+                          + bufferNode->getVariableType(UIBufferBase::METAL, p->getName(), false)
+                          + "[[ buffer(" + QString::number(bufferIndex) + ") ]]";
+            bufferIndex++;
         }
     }
     rawPrototype.replace("<MainFunctionParams>", parameters);

@@ -1,6 +1,6 @@
 #pragma once
-#include "OutputUIBufferBase.hpp"
-class Array_Int_Fixed : public OutputUIBufferBase
+#include "InputUIBufferBase.hpp"
+class Array_Int_Fixed : public InputUIBufferBase
 {
     Q_OBJECT
 public:
@@ -11,6 +11,13 @@ public:
     NodeDataType dataType(PortType portType, PortIndex portIndex) const override
     {
         return BUFFER_DATA_TYPE;
+    }
+
+    QString getVariableType(UIBufferBase::LanguageTypes language,
+                            QString variableName,
+                            bool isInput) override
+    {
+        return "int* " + variableName;
     }
 
 private:

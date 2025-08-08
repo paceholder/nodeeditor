@@ -17,6 +17,13 @@ public:
         return BUFFER_DATA_TYPE;
     }
 
+    QString getVariableType(UIBufferBase::LanguageTypes language,
+                            QString variableName,
+                            bool isInput) override
+    {
+        return "unsigned int* " + variableName;
+    }
+
 private:
     QString _value;
 };
