@@ -174,7 +174,7 @@ QString Process::getOpenclPrototype(bool raw)
                 continue;
             if (parameters != "")
                 parameters += paramDelimiter;
-            parameters += "__global const "
+            parameters += (bufferNode->isPointer() ? QString("__global") : QString("")) + " const "
                           + bufferNode->getVariableType(UIBufferBase::OPENCL, p->getName(), true);
         }
     }
@@ -226,6 +226,8 @@ QString Process::getMetalPrototype(bool raw)
             UIBufferBase *bufferNode = port->getBufferNode();
             if (!bufferNode)
                 continue;
+            if (bufferNode->isPointer())
+                continue;
             if (MainFunctionInputParams == "") {
                 MainFunctionInputParams = "struct InputParameters {";
             }
@@ -251,6 +253,23 @@ QString Process::getMetalPrototype(bool raw)
                              ? ""
                              : "constant InputParameters& params [[buffer(0)]]";
     int textureId = 0;
+
+    for (PortBase *p : _leftPorts) {
+        if (!p->isImage()) {
+            BufferPort *port = dynamic_cast<BufferPort *>(p);
+            UIBufferBase *bufferNode = port->getBufferNode();
+            if (!bufferNode)
+                continue;
+            if (!bufferNode->isPointer())
+                continue;
+            if (parameters != "")
+                parameters += paramDelimiter;
+            parameters += "device const "
+                          + bufferNode->getVariableType(UIBufferBase::OPENCL, p->getName(), true)
+                          + +" [[buffer(" + QString::number(bufferIndex) + ")]]";
+            bufferIndex++;
+        }
+    }
 
     for (PortBase *p : _leftPorts) {
         if (p->isImage()) {

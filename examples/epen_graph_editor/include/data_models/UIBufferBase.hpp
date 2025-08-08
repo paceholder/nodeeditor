@@ -18,4 +18,6 @@ public:
     {
         return " UNDEFINED " + variableName;
     }
+
+    virtual bool isPointer() { return false; }
 };

@@ -24,6 +24,7 @@ public:
         return "float* " + variableName;
     }
 
+    bool isPointer() override { return true; }
 private:
     QString _value;
 };

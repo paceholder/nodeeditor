@@ -20,6 +20,7 @@ public:
         return "unsigned int* " + variableName;
     }
 
+    bool isPointer() override { return true; }
 private:
     QString _value;
 };
