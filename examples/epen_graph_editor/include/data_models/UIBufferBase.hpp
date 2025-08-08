@@ -16,6 +16,6 @@ public:
                                     QString variableName,
                                     bool isInput)
     {
-        return variableName;
+        return " UNDEFINED " + variableName;
     }
 };

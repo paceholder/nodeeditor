@@ -8,6 +8,13 @@ public:
     Q_PROPERTY(double Min MEMBER _min NOTIFY propertyChanged)
     Q_PROPERTY(double Max MEMBER _max NOTIFY propertyChanged)
 
+    QString getVariableType(UIBufferBase::LanguageTypes language,
+                            QString variableName,
+                            bool isInput) override
+    {
+        return "double " + variableName;
+    }
+
 private:
     double _defaultValue;
     double _min;

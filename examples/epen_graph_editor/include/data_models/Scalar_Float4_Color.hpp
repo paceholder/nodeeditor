@@ -33,6 +33,13 @@ public:
         emit propertyChanged();
     }
 
+    QString getVariableType(UIBufferBase::LanguageTypes language,
+                            QString variableName,
+                            bool isInput) override
+    {
+        return "float4 " + variableName;
+    }
+
 private:
     QColor _defaultValue{255, 255, 255, 255};
     Color *_defaultValueF;

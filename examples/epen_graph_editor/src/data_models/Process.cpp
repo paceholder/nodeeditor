@@ -209,24 +209,44 @@ QString Process::getOpenclPrototype(bool raw)
 
 QString Process::getMetalPrototype(bool raw)
 {
-    QString rawPrototype = "kernel void <MainFunctionName>(<MainFunctionParams>\n";
+    QString rawPrototype
+        = "<MainFunctionInputParams>kernel void <MainFunctionName>(<MainFunctionParams>\n";
     if (raw)
         return rawPrototype;
-    rawPrototype.replace("<MainFunctionName>", _name);
-    QString parameters = "";
-    int textureId = 0;
-    QString paramDelimiter = ",\n\t\t\t";
+
+    QString MainFunctionInputParams = "";
+
+    int idIndex = 0;
     for (PortBase *p : _leftPorts) {
         if (!p->isImage()) {
             BufferPort *port = dynamic_cast<BufferPort *>(p);
             UIBufferBase *bufferNode = port->getBufferNode();
             if (!bufferNode)
                 continue;
-            if (parameters != "")
-                parameters += paramDelimiter;
-            parameters += bufferNode->getVariableType(UIBufferBase::METAL, p->getName(), true);
+            if (MainFunctionInputParams == "") {
+                MainFunctionInputParams = "struct InputParameters {";
+            }
+
+            MainFunctionInputParams += "\n\t";
+            MainFunctionInputParams += bufferNode->getVariableType(UIBufferBase::METAL,
+                                                                   p->getName(),
+                                                                   true)
+                                       + "[[id(" + QString::number(idIndex) + ")]];";
+
+            idIndex++;
         }
     }
+    if (MainFunctionInputParams != "") {
+        MainFunctionInputParams += "\n};\n";
+    }
+    rawPrototype.replace("<MainFunctionInputParams>", MainFunctionInputParams);
+    rawPrototype.replace("<MainFunctionName>", _name);
+    QString paramDelimiter = ",\n\t\t\t";
+    QString parameters = MainFunctionInputParams == ""
+                             ? ""
+                             : "constant InputParameters& params [[buffer(0)]]";
+    int textureId = 0;
+
     for (PortBase *p : _leftPorts) {
         if (p->isImage()) {
             if (parameters != "")

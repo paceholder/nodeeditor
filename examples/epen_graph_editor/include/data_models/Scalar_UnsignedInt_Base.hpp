@@ -8,6 +8,13 @@ public:
     Q_PROPERTY(uint Min MEMBER _min NOTIFY propertyChanged)
     Q_PROPERTY(uint Max MEMBER _max NOTIFY propertyChanged)
 
+    QString getVariableType(UIBufferBase::LanguageTypes language,
+                            QString variableName,
+                            bool isInput) override
+    {
+        return "unsigned int " + variableName;
+    }
+
 private:
     uint _defaultValue;
     uint _min;

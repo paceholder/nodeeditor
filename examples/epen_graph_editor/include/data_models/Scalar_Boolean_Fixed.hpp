@@ -8,6 +8,14 @@ public:
 
     QString caption() const override { return QStringLiteral("boolean Checkbox Fixed Buffer"); }
 
+    QString getVariableType(UIBufferBase::LanguageTypes language,
+                            QString variableName,
+                            bool isInput) override
+    {
+        if (language == UIBufferBase::CUDA)
+            return "uchar " + variableName;
+        return "bool " + variableName;
+    }
 
 private:
     bool _value;

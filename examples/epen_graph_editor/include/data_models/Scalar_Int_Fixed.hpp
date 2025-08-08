@@ -8,6 +8,13 @@ public:
 
     QString caption() const override { return QStringLiteral("int Fixed Buffer"); }
 
+    QString getVariableType(UIBufferBase::LanguageTypes language,
+                            QString variableName,
+                            bool isInput) override
+    {
+        return "int " + variableName;
+    }
+
 private:
     int _value;
 };
