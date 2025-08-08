@@ -1,4 +1,5 @@
 #include "DataFlowModel.hpp"
+#include "data_models/UIBufferBase.hpp"
 
 DataFlowModel::DataFlowModel(std::shared_ptr<NodeDelegateModelRegistry> registry)
     : DataFlowGraphModel(std::move(registry))
@@ -283,7 +284,34 @@ void DataFlowModel::addConnection(ConnectionId const connectionId)
 {
     DataFlowGraphModel::addConnection(connectionId);
     Process *inProcessNode = delegateModel<Process>(connectionId.inNodeId);
-    if(inProcessNode!=nullptr){
-        
+    if (inProcessNode != nullptr) {
+        UIBufferBase *bufferNode = delegateModel<UIBufferBase>(connectionId.outNodeId);
+        if (bufferNode)
+            inProcessNode->addInPortConnection(bufferNode, connectionId.inPortIndex);
+    } else {
+        Process *outProcessNode = delegateModel<Process>(connectionId.outNodeId);
+        if (outProcessNode != nullptr) {
+            UIBufferBase *bufferNode = delegateModel<UIBufferBase>(connectionId.inNodeId);
+            if (bufferNode)
+                inProcessNode->addOutPortConnection(bufferNode, connectionId.outPortIndex);
+        }
+    }
+}
+
+bool DataFlowModel::deleteConnection(ConnectionId const connectionId)
+{
+    DataFlowGraphModel::deleteConnection(connectionId);
+    Process *inProcessNode = delegateModel<Process>(connectionId.inNodeId);
+    if (inProcessNode != nullptr) {
+        UIBufferBase *bufferNode = delegateModel<UIBufferBase>(connectionId.outNodeId);
+        if (bufferNode)
+            inProcessNode->removeInPortConnection(connectionId.inPortIndex);
+    } else {
+        Process *outProcessNode = delegateModel<Process>(connectionId.outNodeId);
+        if (outProcessNode != nullptr) {
+            UIBufferBase *bufferNode = delegateModel<UIBufferBase>(connectionId.inNodeId);
+            if (bufferNode)
+                inProcessNode->removeOutPortConnection(connectionId.outPortIndex);
+        }
     }
 }

@@ -28,6 +28,7 @@ public:
 
     NodeId addNode(QString const nodeType) override;
     void addConnection(ConnectionId const connectionId) override;
+    bool deleteConnection(ConnectionId const connectionId) override;
     
     bool detachPossible(ConnectionId const) const override { return true; }
 

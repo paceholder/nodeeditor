@@ -2,6 +2,7 @@
 #define BUFFERPORT_HPP
 
 #include "PortBase.hpp"
+#include "data_models/UIBufferBase.hpp"
 
 class BufferPort : public PortBase
 {
@@ -12,6 +13,11 @@ public:
     bool isImage() override { return false; }
 
 public:
+    void setBuffer(UIBufferBase *bufferNode) { _bufferNode = bufferNode; }
+
+    UIBufferBase *getBufferNode() { return _bufferNode; }
+    void removeBuffer() { _bufferNode = nullptr; }
+
     BufferPort(QString name, uint length, QObject *parent = nullptr)
         : PortBase(name, parent)
         , _length(length)
@@ -43,6 +49,7 @@ public:
 
 private:
     uint _length;
+    UIBufferBase *_bufferNode = nullptr;
 };
 
 #endif

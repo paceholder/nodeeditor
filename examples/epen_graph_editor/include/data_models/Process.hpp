@@ -3,6 +3,7 @@
 
 #include "OperationDataModel.hpp"
 #include "PortAddRemoveWidget.hpp"
+#include "data_models/UIBufferBase.hpp"
 #include "ports/BufferPort.hpp"
 #include "ports/ImagePort.hpp"
 #include "ports/OutputImagePort.hpp"
@@ -112,6 +113,12 @@ public:
 
     PortBase *addInput(DataFlowModel *model, bool isImage, QString name);
     PortBase *addOutput(DataFlowModel *model, bool isImage, QString name);
+
+    void addInPortConnection(UIBufferBase *bufferNode, int inPortIndex);
+    void addOutPortConnection(UIBufferBase *bufferNode, int outPortIndex);
+
+    void removeInPortConnection(int inPortIndex);
+    void removeOutPortConnection(int outPortIndex);
 
 protected:
     void setName(QString newName) override;
