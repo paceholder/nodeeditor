@@ -59,6 +59,10 @@ GraphEditorWindow::GraphEditorWindow(DataFlowGraphicsScene *scene, DataFlowModel
     Process *process = _model->delegateModel<Process>(newIdProcess);
     process->addInput(_model, true, "Test1");
     process->addInput(_model, false, "Test2");
+    process->addOutput(_model, false, "out1");
+
+    QtNodes::NodeId newIdOut = _model->addNode("Array_Double_OutputCallback");
+    _model->setNodeData(newIdOut, NodeRole::Position, QPointF{700, -500});
 
     setupScale(0.8);
 }

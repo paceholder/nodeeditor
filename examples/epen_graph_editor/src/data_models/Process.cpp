@@ -234,7 +234,7 @@ QString Process::getMetalPrototype(bool raw)
             MainFunctionInputParams += bufferNode->getVariableType(UIBufferBase::METAL,
                                                                    p->getName(),
                                                                    true)
-                                       + "[[id(" + QString::number(idIndex) + ")]];";
+                                       + " [[id(" + QString::number(idIndex) + ")]];";
 
             idIndex++;
         }
@@ -282,7 +282,7 @@ QString Process::getMetalPrototype(bool raw)
                 parameters += paramDelimiter;
             parameters += "device "
                           + bufferNode->getVariableType(UIBufferBase::METAL, p->getName(), false)
-                          + "[[ buffer(" + QString::number(bufferIndex) + ") ]]";
+                          + " [[ buffer(" + QString::number(bufferIndex) + ") ]]";
             bufferIndex++;
         }
     }
@@ -440,7 +440,7 @@ void Process::addOutPortConnection(UIBufferBase *bufferNode, int outPortIndex)
 {
     if (_rightPorts.at(outPortIndex)->isImage())
         throw std::runtime_error("Image port");
-    BufferPort *port = dynamic_cast<BufferPort *>(_leftPorts.at(outPortIndex));
+    BufferPort *port = dynamic_cast<BufferPort *>(_rightPorts.at(outPortIndex));
     port->setBuffer(bufferNode);
     if (_editor) {
         _editor->updateCode();
@@ -449,7 +449,7 @@ void Process::addOutPortConnection(UIBufferBase *bufferNode, int outPortIndex)
 
 void Process::removeInPortConnection(int inPortIndex)
 {
-    if (_rightPorts.at(inPortIndex)->isImage())
+    if (_leftPorts.at(inPortIndex)->isImage())
         throw std::runtime_error("Image port");
     BufferPort *port = dynamic_cast<BufferPort *>(_leftPorts.at(inPortIndex));
     port->removeBuffer();
@@ -462,7 +462,7 @@ void Process::removeOutPortConnection(int outPortIndex)
 {
     if (_rightPorts.at(outPortIndex)->isImage())
         throw std::runtime_error("Image port");
-    BufferPort *port = dynamic_cast<BufferPort *>(_leftPorts.at(outPortIndex));
+    BufferPort *port = dynamic_cast<BufferPort *>(_rightPorts.at(outPortIndex));
     port->removeBuffer();
     if (_editor) {
         _editor->updateCode();

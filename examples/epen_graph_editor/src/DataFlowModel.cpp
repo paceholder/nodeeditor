@@ -293,7 +293,7 @@ void DataFlowModel::addConnection(ConnectionId const connectionId)
         if (outProcessNode != nullptr) {
             UIBufferBase *bufferNode = delegateModel<UIBufferBase>(connectionId.inNodeId);
             if (bufferNode)
-                inProcessNode->addOutPortConnection(bufferNode, connectionId.outPortIndex);
+                outProcessNode->addOutPortConnection(bufferNode, connectionId.outPortIndex);
         }
     }
 }
@@ -311,7 +311,7 @@ bool DataFlowModel::deleteConnection(ConnectionId const connectionId)
         if (outProcessNode != nullptr) {
             UIBufferBase *bufferNode = delegateModel<UIBufferBase>(connectionId.inNodeId);
             if (bufferNode)
-                inProcessNode->removeOutPortConnection(connectionId.outPortIndex);
+                outProcessNode->removeOutPortConnection(connectionId.outPortIndex);
         }
     }
 }
