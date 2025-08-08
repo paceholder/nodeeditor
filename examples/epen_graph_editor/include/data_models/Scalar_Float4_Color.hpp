@@ -1,8 +1,8 @@
 #pragma once
 #include "Color.hpp"
-#include "UIBufferBase.hpp"
+#include "OutputUIBufferBase.hpp"
 
-class Scalar_Float4_Color : public UIBufferBase
+class Scalar_Float4_Color : public OutputUIBufferBase
 {
     Q_OBJECT
 public:

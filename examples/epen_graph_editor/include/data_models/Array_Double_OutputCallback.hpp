@@ -1,7 +1,7 @@
 #pragma once
-#include "UIBufferBase.hpp"
+#include "OutputUIBufferBase.hpp"
 
-class Array_Double_OutputCallback : public UIBufferBase
+class Array_Double_OutputCallback : public OutputUIBufferBase
 {
     Q_OBJECT
 public:

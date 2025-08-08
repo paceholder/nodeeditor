@@ -1,6 +1,6 @@
 #pragma once
-#include "UIBufferBase.hpp"
-class Scalar_Float_Base : public UIBufferBase
+#include "OutputUIBufferBase.hpp"
+class Scalar_Float_Base : public OutputUIBufferBase
 {
     Q_OBJECT
 public:

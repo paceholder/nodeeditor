@@ -1,6 +1,6 @@
 #pragma once
-#include "UIBufferBase.hpp"
-class Array_UnsignedInt_Fixed : public UIBufferBase
+#include "OutputUIBufferBase.hpp"
+class Array_UnsignedInt_Fixed : public OutputUIBufferBase
 {
     Q_OBJECT
 public:

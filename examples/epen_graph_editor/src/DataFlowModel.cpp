@@ -9,6 +9,7 @@ void DataFlowModel::setFloatingProperties(QPointer<FloatingProperties> propertyP
 {
     _propertyPanel = propertyPanel;
 }
+
 NodeId DataFlowModel::addNode(QString const nodeType)
 {
     if (nodeType == "VideoInput") {
@@ -275,5 +276,14 @@ void DataFlowModel::addProcessPort(NodeId nodeId, bool isRight, bool isImage)
         nodeModel->addOutput(this, isImage, "output001");
     } else {
         nodeModel->addInput(this, isImage, "input001");
+    }
+}
+
+void DataFlowModel::addConnection(ConnectionId const connectionId)
+{
+    DataFlowGraphModel::addConnection(connectionId);
+    Process *inProcessNode = delegateModel<Process>(connectionId.inNodeId);
+    if(inProcessNode!=nullptr){
+        
     }
 }

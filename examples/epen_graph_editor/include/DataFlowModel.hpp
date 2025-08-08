@@ -27,7 +27,8 @@ public:
     DataFlowModel(std::shared_ptr<NodeDelegateModelRegistry>);
 
     NodeId addNode(QString const nodeType) override;
-
+    void addConnection(ConnectionId const connectionId) override;
+    
     bool detachPossible(ConnectionId const) const override { return true; }
 
     bool deleteNode(NodeId const nodeId) override;
