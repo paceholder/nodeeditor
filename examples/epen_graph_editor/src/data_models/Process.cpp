@@ -152,9 +152,11 @@ QString Process::getOpenclPrototype(bool raw)
     }
     for (PortBase *p : _rightPorts) {
         if (p->isImage()) {
+            OutputImagePort *port = dynamic_cast<OutputImagePort *>(p);
             if (parameters != "")
                 parameters += paramDelimiter;
-            parameters += "__write_only image2d_t " + p->getName();
+            parameters += (port->isReadWrite() ? QString("read_write") : QString("__write_only"))
+                          + " image2d_t " + p->getName();
         }
     }
     rawPrototype.replace("<MainFunctionParams>", parameters);
@@ -180,10 +182,12 @@ QString Process::getMetalPrototype(bool raw)
     }
     for (PortBase *p : _rightPorts) {
         if (p->isImage()) {
+            OutputImagePort *port = dynamic_cast<OutputImagePort *>(p);
             if (parameters != "")
                 parameters += ",\n\t\t\t";
-            parameters += "texture2d<half, access::write> " + p->getName() + " [[texture("
-                          + QString::number(textureId) + ")]]";
+            parameters += "texture2d<half, access::"
+                          + (port->isReadWrite() ? QString("read_write") : QString("write")) + "> "
+                          + p->getName() + " [[texture(" + QString::number(textureId) + ")]]";
             textureId++;
         }
     }

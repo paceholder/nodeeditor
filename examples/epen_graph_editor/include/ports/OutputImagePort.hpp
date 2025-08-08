@@ -35,6 +35,8 @@ public:
 
     bool operator!=(const OutputImagePort &other) const { return !(*this == other); }
 
+    bool isReadWrite() { return _accessType == AccessType::ReadWrite; }
+
 private:
     AccessType _accessType;
 };
