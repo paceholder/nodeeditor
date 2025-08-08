@@ -1,0 +1,20 @@
+#pragma once
+#include "InputUIBufferBase.hpp"
+class Scalar_Int_Fixed : public InputUIBufferBase
+{
+    Q_OBJECT
+public:
+    Q_PROPERTY(int Value MEMBER _value NOTIFY propertyChanged)
+
+    QString caption() const override { return QStringLiteral("int Fixed Buffer"); }
+
+    QString getVariableType(UIBufferBase::LanguageTypes language,
+                            QString variableName,
+                            bool isInput) override
+    {
+        return "int " + variableName;
+    }
+
+private:
+    int _value;
+};

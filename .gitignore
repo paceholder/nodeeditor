@@ -1,7 +1,7 @@
 *.pyc
 CMakeLists.txt.user
 
-build*/
+build/
 .vscode/
 
 tags

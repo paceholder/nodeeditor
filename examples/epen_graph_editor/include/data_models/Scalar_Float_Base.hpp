@@ -1,0 +1,22 @@
+#pragma once
+#include "InputUIBufferBase.hpp"
+class Scalar_Float_Base : public InputUIBufferBase
+{
+    Q_OBJECT
+public:
+    Q_PROPERTY(float Default_Value MEMBER _defaultValue NOTIFY propertyChanged)
+    Q_PROPERTY(float Min MEMBER _min NOTIFY propertyChanged)
+    Q_PROPERTY(float Max MEMBER _max NOTIFY propertyChanged)
+
+    QString getVariableType(UIBufferBase::LanguageTypes language,
+                            QString variableName,
+                            bool isInput) override
+    {
+        return "float " + variableName;
+    }
+
+private:
+    float _defaultValue;
+    float _min;
+    float _max;
+};
