@@ -1,7 +1,7 @@
 #pragma once
-#include "OutputUIBufferBase.hpp"
+#include "InputUIBufferBase.hpp"
 
-class Array_UnsignedInt_InputCallback : public OutputUIBufferBase
+class Array_UnsignedInt_InputCallback : public InputUIBufferBase
 {
     Q_OBJECT
 public:
