@@ -166,18 +166,20 @@ void GraphicsView::centerScene()
 
 void GraphicsView::contextMenuEvent(QContextMenuEvent *event)
 {
+    QGraphicsView::contextMenuEvent(event);
+    QMenu *menu;
+
     if (itemAt(event->pos())) {
-        QGraphicsView::contextMenuEvent(event);
-        return;
+        menu = nodeScene()->createFreezeMenu(mapToScene(event->pos()));
+    } else {
+        menu = nodeScene()->createSceneMenu(mapToScene(event->pos()));
     }
-
-    auto const scenePos = mapToScene(event->pos());
-
-    QMenu *menu = nodeScene()->createSceneMenu(scenePos);
 
     if (menu) {
         menu->exec(event->globalPos());
     }
+
+    return;
 }
 
 void GraphicsView::wheelEvent(QWheelEvent *event)

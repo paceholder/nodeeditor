@@ -109,6 +109,8 @@ public:
      */
     virtual QMenu *createSceneMenu(QPointF const scenePos);
 
+    QMenu *createFreezeMenu(QPointF const scenePos);
+
 Q_SIGNALS:
     void modified(BasicGraphicsScene *);
     void nodeMoved(NodeId const nodeId, QPointF const &newLocation);

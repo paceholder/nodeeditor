@@ -11,6 +11,10 @@
 
 #include <QUndoStack>
 
+#include <QHeaderView>
+#include <QLineEdit>
+#include <QTreeWidget>
+#include <QWidgetAction>
 #include <QtWidgets/QFileDialog>
 #include <QtWidgets/QGraphicsSceneMoveEvent>
 
@@ -196,6 +200,64 @@ QMenu *BasicGraphicsScene::createSceneMenu(QPointF const scenePos)
 {
     Q_UNUSED(scenePos);
     return nullptr;
+}
+
+QMenu *BasicGraphicsScene::createFreezeMenu(QPointF const scenePos)
+{
+    QMenu *menu = new QMenu();
+
+    auto *txtBox = new QLineEdit(menu);
+    txtBox->setPlaceholderText(QStringLiteral("Filter"));
+    txtBox->setClearButtonEnabled(true);
+
+    auto *txtBoxAction = new QWidgetAction(menu);
+    txtBoxAction->setDefaultWidget(txtBox);
+    menu->addAction(txtBoxAction);
+
+    QTreeWidget *treeView = new QTreeWidget(menu);
+    treeView->header()->close();
+
+    treeView->setMaximumHeight(100);
+    treeView->setMaximumWidth(150);
+
+    auto *treeViewAction = new QWidgetAction(menu);
+    treeViewAction->setDefaultWidget(treeView);
+    menu->addAction(treeViewAction);
+
+    auto freezeItem = new QTreeWidgetItem(treeView);
+    freezeItem->setText(0, "Freeze");
+
+    auto unfreezeItem = new QTreeWidgetItem(treeView);
+    unfreezeItem->setText(0, "Unfreeze");
+
+    treeView->expandAll();
+
+    connect(treeView, &QTreeWidget::itemClicked, [this, menu, scenePos](QTreeWidgetItem *item, int) {
+        if (item->text(0) == "Freeze") {
+            menu->close();
+            return;
+        }
+        if (item->text(0) == "Unfreeze") {
+            menu->close();
+            return;
+        }
+    });
+
+    // Filtro
+    connect(txtBox, &QLineEdit::textChanged, [treeView](const QString &text) {
+        QTreeWidgetItemIterator it(treeView);
+        while (*it) {
+            auto modelName = (*it)->text(0);
+            const bool match = (modelName.contains(text, Qt::CaseInsensitive));
+            (*it)->setHidden(!match);
+            ++it;
+        }
+    });
+
+    txtBox->setFocus();
+    menu->setAttribute(Qt::WA_DeleteOnClose);
+
+    return menu;
 }
 
 void BasicGraphicsScene::traverseGraphAndPopulateGraphicsObjects()
