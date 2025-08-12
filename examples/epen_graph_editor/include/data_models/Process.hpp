@@ -111,8 +111,8 @@ public:
 
     void setEditor(CodeEditor *editor);
 
-    PortBase *addInput(DataFlowModel *model, bool isImage, QString name);
-    PortBase *addOutput(DataFlowModel *model, bool isImage, QString name);
+    PortBase *addInput(DataFlowModel *model, bool isImage);
+    PortBase *addOutput(DataFlowModel *model, bool isImage);
 
     void addInPortConnection(UIBufferBase *bufferNode, int inPortIndex);
     void addOutPortConnection(UIBufferBase *bufferNode, int outPortIndex);
@@ -131,7 +131,7 @@ private:
     QString getMetalPrototype(bool raw);
 
     QSet<int> findReadonlyLines(QString programCode, QString prototype);
-    PortBase *createPortObject(bool isImage, bool isRight, QString name);
+    PortBase *createPortObject(DataFlowModel *model, bool isImage, bool isRight);
 
     Size *_grid;
     Size *_block;

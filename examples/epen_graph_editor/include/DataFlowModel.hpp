@@ -29,7 +29,7 @@ public:
     NodeId addNode(QString const nodeType) override;
     void addConnection(ConnectionId const connectionId) override;
     bool deleteConnection(ConnectionId const connectionId) override;
-    
+
     bool detachPossible(ConnectionId const) const override { return true; }
 
     bool deleteNode(NodeId const nodeId) override;
@@ -57,6 +57,11 @@ public:
     PortAddRemoveWidget *widget(NodeId nodeId) const;
 
     void addProcessPort(NodeId nodeId, bool isRight, bool isImage);
+
+    QString getInputImagePortName();
+    QString getInputBufferPortName();
+    QString getOutputImagePortName();
+    QString getOutputBufferPortName();
 signals:
     void nodePortSelected(bool isRightPort, Process *node, int portIndex);
 
@@ -74,4 +79,9 @@ private:
     mutable std::unordered_map<NodeId, QString> _nodeNames;
 
     QPointer<FloatingProperties> _propertyPanel;
+
+    int _inputImagePortCount = 0;
+    int _inputBufferPortCount = 0;
+    int _outputImagePortCount = 0;
+    int _outputBufferPortCount = 0;
 };

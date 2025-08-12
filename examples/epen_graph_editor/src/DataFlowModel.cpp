@@ -274,9 +274,9 @@ void DataFlowModel::addProcessPort(NodeId nodeId, bool isRight, bool isImage)
     if (!nodeModel)
         return;
     if (isRight) {
-        nodeModel->addOutput(this, isImage, "output001");
+        nodeModel->addOutput(this, isImage);
     } else {
-        nodeModel->addInput(this, isImage, "input001");
+        nodeModel->addInput(this, isImage);
     }
 }
 
@@ -314,4 +314,24 @@ bool DataFlowModel::deleteConnection(ConnectionId const connectionId)
                 outProcessNode->removeOutPortConnection(connectionId.outPortIndex);
         }
     }
+}
+QString DataFlowModel::getInputImagePortName()
+{
+    _inputImagePortCount++;
+    return QString("InputImage%1").arg(_inputImagePortCount, 3, 10, QChar('0'));
+}
+QString DataFlowModel::getInputBufferPortName()
+{
+    _inputBufferPortCount++;
+    return QString("InputBuffer%1").arg(_inputBufferPortCount, 3, 10, QChar('0'));
+}
+QString DataFlowModel::getOutputImagePortName()
+{
+    _outputImagePortCount++;
+    return QString("OutputImage%1").arg(_outputImagePortCount, 3, 10, QChar('0'));
+}
+QString DataFlowModel::getOutputBufferPortName()
+{
+    _outputBufferPortCount++;
+    return QString("OutputBuffer%1").arg(_outputBufferPortCount, 3, 10, QChar('0'));
 }
