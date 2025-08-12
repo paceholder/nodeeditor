@@ -1,5 +1,4 @@
 #include "MathOperationDataModel.hpp"
-
 #include "DecimalData.hpp"
 
 unsigned int MathOperationDataModel::nPorts(PortType portType) const
@@ -21,7 +20,12 @@ NodeDataType MathOperationDataModel::dataType(PortType, PortIndex) const
 
 std::shared_ptr<NodeData> MathOperationDataModel::outData(PortIndex)
 {
-    return std::static_pointer_cast<NodeData>(_result);
+    auto output = std::static_pointer_cast<NodeData>(_result);
+    if (output) {
+        //setFrozenState();
+    }
+
+    return output;
 }
 
 void MathOperationDataModel::setInData(std::shared_ptr<NodeData> data, PortIndex portIndex)
