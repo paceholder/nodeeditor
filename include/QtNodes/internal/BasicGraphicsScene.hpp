@@ -110,6 +110,8 @@ public:
 
     QMenu *createFreezeMenu(QPointF const scenePos);
 
+    void freezeModelAndConnections(bool isFreeze);
+
 Q_SIGNALS:
     void modified(BasicGraphicsScene *);
     void nodeMoved(NodeId const nodeId, QPointF const &newLocation);

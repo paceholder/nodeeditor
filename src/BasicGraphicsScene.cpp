@@ -236,67 +236,13 @@ QMenu *BasicGraphicsScene::createFreezeMenu(QPointF const scenePos)
 
     connect(treeView, &QTreeWidget::itemClicked, [this, menu, scenePos](QTreeWidgetItem *item, int) {
         if (item->text(0) == "Freeze") {
-            for (QGraphicsItem *item : selectedItems()) {
-                if (auto n = qgraphicsitem_cast<NodeGraphicsObject *>(item)) {
-                    unsigned int portCount
-                        = graphModel().nodeData(n->nodeId(), NodeRole::OutPortCount).toUInt();
-                    for (int i = 0; i < portCount; i++) {
-                        auto graphConnections = graphModel().connections(n->nodeId(),
-                                                                         QtNodes::PortType::Out,
-                                                                         QtNodes::PortIndex(i));
-
-                        for (auto const &c : graphConnections) {
-                            if (auto *cgo = connectionGraphicsObject(c)) {
-                                // NodeEditor3 does not expose connection geometry
-                                // directly. Update the graphics object to reflect
-                                // the frozen state if available.
-                                cgo->connectionState().setFrozen(true);
-                                cgo->update();
-                            }
-                        }
-                    }
-
-                    if (auto *dfModel = dynamic_cast<DataFlowGraphModel *>(&graphModel())) {
-                        if (auto *delegate = dfModel->delegateModel<NodeDelegateModel>(
-                                n->nodeId())) {
-                            delegate->setFrozenState(true);
-                        }
-                    }
-                }
-            }
+            freezeModelAndConnections(true);
 
             menu->close();
             return;
         }
         if (item->text(0) == "Unfreeze") {
-            for (QGraphicsItem *item : selectedItems()) {
-                if (auto n = qgraphicsitem_cast<NodeGraphicsObject *>(item)) {
-                    unsigned int portCount
-                        = graphModel().nodeData(n->nodeId(), NodeRole::OutPortCount).toUInt();
-                    for (int i = 0; i < portCount; i++) {
-                        auto graphConnections = graphModel().connections(n->nodeId(),
-                                                                         QtNodes::PortType::Out,
-                                                                         QtNodes::PortIndex(i));
-
-                        for (auto const &c : graphConnections) {
-                            if (auto *cgo = connectionGraphicsObject(c)) {
-                                // NodeEditor3 does not expose connection geometry
-                                // directly. Update the graphics object to reflect
-                                // the frozen state if available.
-                                cgo->connectionState().setFrozen(false);
-                                cgo->update();
-                            }
-                        }
-                    }
-
-                    if (auto *dfModel = dynamic_cast<DataFlowGraphModel *>(&graphModel())) {
-                        if (auto *delegate = dfModel->delegateModel<NodeDelegateModel>(
-                                n->nodeId())) {
-                            delegate->setFrozenState(false);
-                        }
-                    }
-                }
-            }
+            freezeModelAndConnections(false);
 
             menu->close();
             return;
@@ -442,6 +388,34 @@ void BasicGraphicsScene::onModelReset()
     clear();
 
     traverseGraphAndPopulateGraphicsObjects();
+}
+
+void BasicGraphicsScene::freezeModelAndConnections(bool isFreeze)
+{
+    for (QGraphicsItem *item : selectedItems()) {
+        if (auto n = qgraphicsitem_cast<NodeGraphicsObject *>(item)) {
+            unsigned int portCount
+                = graphModel().nodeData(n->nodeId(), NodeRole::OutPortCount).toUInt();
+            for (int i = 0; i < portCount; i++) {
+                auto graphConnections = graphModel().connections(n->nodeId(),
+                                                                 QtNodes::PortType::Out,
+                                                                 QtNodes::PortIndex(i));
+
+                for (auto const &c : graphConnections) {
+                    if (auto *cgo = connectionGraphicsObject(c)) {
+                        cgo->connectionState().setFrozen(isFreeze);
+                        cgo->update();
+                    }
+                }
+            }
+
+            if (auto *dfModel = dynamic_cast<DataFlowGraphModel *>(&graphModel())) {
+                if (auto *delegate = dfModel->delegateModel<NodeDelegateModel>(n->nodeId())) {
+                    delegate->setFrozenState(isFreeze);
+                }
+            }
+        }
+    }
 }
 
 } // namespace QtNodes

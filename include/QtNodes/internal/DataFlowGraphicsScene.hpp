@@ -28,9 +28,6 @@ public:
     {
         for (auto const &c : connections) {
             if (auto *cgo = connectionGraphicsObject(c)) {
-                // NodeEditor3 does not expose connection geometry
-                // directly. Update the graphics object to reflect
-                // the frozen state if available.
                 cgo->connectionState().setFrozen(state);
                 cgo->update();
             }
