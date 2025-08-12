@@ -41,8 +41,6 @@ GraphEditorWindow::GraphEditorWindow(DataFlowGraphicsScene *scene, DataFlowModel
         onNodeSelected(nodeId);
     });
 
-    connect(_model, &DataFlowModel::nodePortSelected, this, &GraphEditorWindow::nodePortSelected);
-
     // Create initial nodes
     QtNodes::NodeId newIdInput = _model->addNode("VideoInput");
     QPointF inputScenePos = mapToScene(0, 0);
@@ -400,12 +398,5 @@ void GraphEditorWindow::drawBackground(QPainter *painter, const QRectF &r)
             // Draw the rectangle
             painter->drawRect(QRectF(left, r.top(), r.right() - left, r.height()));
         }
-    }
-}
-
-void GraphEditorWindow::nodePortSelected(bool isRightPort, Process *node, int portIndex)
-{
-    if (m_properties) {
-        m_properties->setObject(node->findPort(portIndex, isRightPort));
     }
 }

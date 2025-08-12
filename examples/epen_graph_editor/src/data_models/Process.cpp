@@ -410,15 +410,7 @@ PortBase *Process::createPortObject(DataFlowModel *model, bool isImage, bool isR
                                          : model->getInputBufferPortName(),
                                  1000,
                                  this);
-    connect(newPort, &PortBase::propertyChanged, this, &Process::portPropertyChanged);
     return newPort;
-}
-
-void Process::portPropertyChanged()
-{
-    if (_editor) {
-        _editor->updateCode();
-    }
 }
 
 PortBase *Process::addInput(DataFlowModel *model, bool isImage)

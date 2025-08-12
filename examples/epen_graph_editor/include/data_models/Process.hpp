@@ -154,8 +154,6 @@ private:
     QString _openclProgram = "<FUNCTION_PROTOTYPE>"
                              "{\n"
                              "}";
-private slots:
-    void portPropertyChanged();
 };
 
 #endif

@@ -41,8 +41,6 @@ public slots:
     // Slots for node selection and property changes
     void onNodeSelected(NodeId nodeId);
     void onNodeDeselected();
-
-    void nodePortSelected(bool isRightPort, Process *node, int portIndex);
     
     // Panel layout management
     void updateDockedPanelLayouts();
