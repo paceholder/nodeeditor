@@ -21,9 +21,6 @@ NodeDataType MathOperationDataModel::dataType(PortType, PortIndex) const
 std::shared_ptr<NodeData> MathOperationDataModel::outData(PortIndex)
 {
     auto output = std::static_pointer_cast<NodeData>(_result);
-    if (output) {
-        //setFrozenState();
-    }
 
     return output;
 }
