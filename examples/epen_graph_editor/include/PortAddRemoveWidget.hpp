@@ -1,6 +1,5 @@
 #pragma once
-
-#include "ports/PortBase.hpp"
+#include "ProcessPort.hpp"
 #include <QButtonGroup>
 #include <QPushButton>
 #include <QRadioButton>
@@ -24,8 +23,8 @@ public:
 
     void rootSelected();
 
-    void addRightPort(PortBase *);
-    void addLeftPort(PortBase *);
+    void addRightPort(ProcessPort *);
+    void addLeftPort(ProcessPort *);
 private slots:
     void addRightPortI();
     void addRightPortB();

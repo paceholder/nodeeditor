@@ -4,7 +4,7 @@
 #include "data_models/OperationDataModel.hpp"
 #include "data_models/Process.hpp"
 #include "panels/FloatingProperties.hpp"
-#include "ports/PortBase.hpp"
+#include "ProcessPort.hpp"
 #include <QPointer>
 #include <QtNodes/DataFlowGraphModel>
 
@@ -38,7 +38,7 @@ public:
 
     bool setNodeData(NodeId nodeId, NodeRole role, QVariant value) override;
 
-    void addProcessNodePort(NodeId nodeId, PortType portType, PortIndex portIndex, PortBase *port);
+    void addProcessNodePort(NodeId nodeId, PortType portType, PortIndex portIndex, ProcessPort *port);
 
     void removeProcessNodePort(NodeId nodeId, PortType portType, PortIndex portIndex);
     void setFloatingProperties(QPointer<FloatingProperties>);

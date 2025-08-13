@@ -1,7 +1,7 @@
 #pragma once
-#include "OperationDataModel.hpp"
+#include "CallbackManagedImageBase.hpp"
 
-class OutputCallbackManagedImage : public OperationDataModel
+class OutputCallbackManagedImage : public CallbackManagedImageBase
 {
     Q_OBJECT
 public:
@@ -10,24 +10,6 @@ public:
 public:
     QString caption() const override { return QStringLiteral("Output Callback Managed Image"); }
 
-    bool portCaptionVisible(PortType portType, PortIndex portIndex) const override
-    {
-        Q_UNUSED(portType);
-        Q_UNUSED(portIndex);
-        return true;
-    }
-
-    QString portCaption(PortType portType, PortIndex portIndex) const override
-    {
-        switch (portType) {
-        case PortType::In:
-            return QStringLiteral("Image");
-
-        default:
-            break;
-        }
-        return QString();
-    }
 
     unsigned int nPorts(PortType portType) const override
     {
@@ -41,8 +23,4 @@ public:
         return result;
     }
 
-    NodeDataType dataType(PortType portType, PortIndex portIndex) const override
-    {
-        return IMAGE_DATA_TYPE;
-    }
 };

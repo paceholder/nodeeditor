@@ -4,9 +4,6 @@
 #include "OperationDataModel.hpp"
 #include "PortAddRemoveWidget.hpp"
 #include "data_models/UIBufferBase.hpp"
-#include "ports/BufferPort.hpp"
-#include "ports/ImagePort.hpp"
-#include "ports/OutputImagePort.hpp"
 #include <QMetaType>
 #include <QObject>
 
@@ -62,8 +59,6 @@ private:
 };
 
 Q_DECLARE_METATYPE(Size *)
-Q_DECLARE_METATYPE(BufferPort *)
-Q_DECLARE_METATYPE(ImagePort *)
 
 class Process : public OperationDataModel
 {
@@ -83,11 +78,11 @@ public:
 
     unsigned int nPorts(PortType portType) const override;
 
-    void setPortTypeRight(PortIndex portIndex, PortBase *port);
+    void setPortTypeRight(PortIndex portIndex, ProcessPort *port);
 
     void removePortTypeRight(PortIndex portIndex);
 
-    void setPortTypeLeft(PortIndex portIndex, PortBase *port);
+    void setPortTypeLeft(PortIndex portIndex, ProcessPort *port);
 
     void removePortTypeLeft(PortIndex portIndex);
 
@@ -111,11 +106,11 @@ public:
 
     void setEditor(CodeEditor *editor);
 
-    PortBase *addInput(DataFlowModel *model, bool isImage);
-    PortBase *addOutput(DataFlowModel *model, bool isImage);
+    ProcessPort *addInput(DataFlowModel *model, bool isImage);
+    ProcessPort *addOutput(DataFlowModel *model, bool isImage);
 
-    void addInPortConnection(UIBufferBase *bufferNode, int inPortIndex);
-    void addOutPortConnection(UIBufferBase *bufferNode, int outPortIndex);
+    void addInPortConnection(OperationDataModel *bufferNode, int inPortIndex);
+    void addOutPortConnection(OperationDataModel *bufferNode, int outPortIndex);
 
     void removeInPortConnection(int inPortIndex);
     void removeOutPortConnection(int outPortIndex);
@@ -131,13 +126,13 @@ private:
     QString getMetalPrototype(bool raw);
 
     QSet<int> findReadonlyLines(QString programCode, QString prototype);
-    PortBase *createPortObject(DataFlowModel *model, bool isImage, bool isRight);
+    ProcessPort *createPortObject(DataFlowModel *model, bool isImage, bool isRight);
 
     Size *_grid;
     Size *_block;
 
-    QVector<PortBase *> _leftPorts{};
-    QVector<PortBase *> _rightPorts{};
+    QVector<ProcessPort *> _leftPorts{};
+    QVector<ProcessPort *> _rightPorts{};
 
     CodeEditor *_editor;
     QString _cudaProgram = "<FUNCTION_PROTOTYPE>"

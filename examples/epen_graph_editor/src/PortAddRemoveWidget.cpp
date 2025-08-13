@@ -1,8 +1,7 @@
 #include "PortAddRemoveWidget.hpp"
 
 #include "DataFlowModel.hpp"
-#include "ports/BufferPort.hpp"
-#include "ports/ImagePort.hpp"
+#include "ProcessPort.hpp"
 
 // Layout constants
 static const int BUTTON_HEIGHT = 25;
@@ -135,7 +134,7 @@ void PortAddRemoveWidget::addLeftPortB()
     _model.addProcessPort(_nodeId, false, false);
 }
 
-void PortAddRemoveWidget::addRightPort(PortBase *port)
+void PortAddRemoveWidget::addRightPort(ProcessPort *port)
 {
     // Create radio button
     auto radioButton = new QRadioButton();
@@ -156,7 +155,7 @@ void PortAddRemoveWidget::addRightPort(PortBase *port)
     adjustSize();
 }
 
-void PortAddRemoveWidget::addLeftPort(PortBase *port)
+void PortAddRemoveWidget::addLeftPort(ProcessPort *port)
 {
     // Create radio button
     auto radioButton = new QRadioButton();

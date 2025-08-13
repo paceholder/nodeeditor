@@ -132,7 +132,7 @@ bool DataFlowModel::setNodeData(NodeId nodeId, NodeRole role, QVariant value)
 void DataFlowModel::addProcessNodePort(NodeId nodeId,
                                        PortType portType,
                                        PortIndex portIndex,
-                                       PortBase *port)
+                                       ProcessPort *port)
 {
     PortIndex first = portIndex + 1;
     PortIndex last = first;
@@ -285,15 +285,15 @@ void DataFlowModel::addConnection(ConnectionId const connectionId)
     DataFlowGraphModel::addConnection(connectionId);
     Process *inProcessNode = delegateModel<Process>(connectionId.inNodeId);
     if (inProcessNode != nullptr) {
-        UIBufferBase *bufferNode = delegateModel<UIBufferBase>(connectionId.outNodeId);
-        if (bufferNode)
-            inProcessNode->addInPortConnection(bufferNode, connectionId.inPortIndex);
+        OperationDataModel *otherNode = delegateModel<OperationDataModel>(connectionId.outNodeId);
+        if (otherNode)
+            inProcessNode->addInPortConnection(otherNode, connectionId.inPortIndex);
     } else {
         Process *outProcessNode = delegateModel<Process>(connectionId.outNodeId);
         if (outProcessNode != nullptr) {
-            UIBufferBase *bufferNode = delegateModel<UIBufferBase>(connectionId.inNodeId);
-            if (bufferNode)
-                outProcessNode->addOutPortConnection(bufferNode, connectionId.outPortIndex);
+            OperationDataModel *otherNode = delegateModel<OperationDataModel>(connectionId.inNodeId);
+            if (otherNode)
+                outProcessNode->addOutPortConnection(otherNode, connectionId.outPortIndex);
         }
     }
 }

@@ -49,7 +49,7 @@ unsigned int Process::nPorts(PortType portType) const
     return result;
 }
 
-void Process::setPortTypeRight(PortIndex portIndex, PortBase *port)
+void Process::setPortTypeRight(PortIndex portIndex, ProcessPort *port)
 {
     _rightPorts.insert(portIndex - 1, port);
 }
@@ -65,7 +65,7 @@ void Process::removePortTypeRight(PortIndex portIndex)
     }
 }
 
-void Process::setPortTypeLeft(PortIndex portIndex, PortBase *port)
+void Process::setPortTypeLeft(PortIndex portIndex, ProcessPort *port)
 {
     _leftPorts.insert(portIndex - 1, port);
 }
@@ -113,10 +113,11 @@ QString Process::getCudaPrototype(bool raw)
     rawPrototype.replace("<MainFunctionName>", _name);
     QString parameters = "";
     QString paramDelimiter = ",\n\t\t\t";
-    for (PortBase *p : _leftPorts) {
+    for (ProcessPort *p : _leftPorts) {
+        if (!p->isConnected())
+            continue;
         if (!p->isImage()) {
-            BufferPort *port = dynamic_cast<BufferPort *>(p);
-            UIBufferBase *bufferNode = port->getBufferNode();
+            UIBufferBase *bufferNode = dynamic_cast<UIBufferBase *>(p->getConnectedNode());
             if (!bufferNode)
                 continue;
             if (parameters != "")
@@ -125,7 +126,9 @@ QString Process::getCudaPrototype(bool raw)
                           + bufferNode->getVariableType(UIBufferBase::CUDA, p->getName(), true);
         }
     }
-    for (PortBase *p : _leftPorts) {
+    for (ProcessPort *p : _leftPorts) {
+        if (!p->isConnected())
+            continue;
         if (p->isImage()) {
             if (parameters != "")
                 parameters += paramDelimiter;
@@ -134,7 +137,9 @@ QString Process::getCudaPrototype(bool raw)
                           + "Height";
         }
     }
-    for (PortBase *p : _rightPorts) {
+    for (ProcessPort *p : _rightPorts) {
+        if (!p->isConnected())
+            continue;
         if (p->isImage()) {
             if (parameters != "")
                 parameters += paramDelimiter;
@@ -143,12 +148,11 @@ QString Process::getCudaPrototype(bool raw)
                           + "Height";
         }
     }
-    for (PortBase *p : _rightPorts) {
+    for (ProcessPort *p : _rightPorts) {
+        if (!p->isConnected())
+            continue;
         if (!p->isImage()) {
-            BufferPort *port = dynamic_cast<BufferPort *>(p);
-            UIBufferBase *bufferNode = port->getBufferNode();
-            if (!bufferNode)
-                continue;
+            UIBufferBase *bufferNode = dynamic_cast<UIBufferBase *>(p->getConnectedNode());
             if (parameters != "")
                 parameters += paramDelimiter;
             parameters += bufferNode->getVariableType(UIBufferBase::CUDA, p->getName(), false);
@@ -166,40 +170,41 @@ QString Process::getOpenclPrototype(bool raw)
     rawPrototype.replace("<MainFunctionName>", _name);
     QString parameters = "";
     QString paramDelimiter = ",\n\t\t\t";
-    for (PortBase *p : _leftPorts) {
+    for (ProcessPort *p : _leftPorts) {
+        if (!p->isConnected())
+            continue;
         if (!p->isImage()) {
-            BufferPort *port = dynamic_cast<BufferPort *>(p);
-            UIBufferBase *bufferNode = port->getBufferNode();
-            if (!bufferNode)
-                continue;
+            UIBufferBase *bufferNode = dynamic_cast<UIBufferBase *>(p->getConnectedNode());
             if (parameters != "")
                 parameters += paramDelimiter;
             parameters += (bufferNode->isPointer() ? QString("__global") : QString("")) + " const "
                           + bufferNode->getVariableType(UIBufferBase::OPENCL, p->getName(), true);
         }
     }
-    for (PortBase *p : _leftPorts) {
+    for (ProcessPort *p : _leftPorts) {
+        if (!p->isConnected())
+            continue;
         if (p->isImage()) {
             if (parameters != "")
                 parameters += paramDelimiter;
             parameters += "__read_only image2d_t " + p->getName();
         }
     }
-    for (PortBase *p : _rightPorts) {
+    for (ProcessPort *p : _rightPorts) {
+        if (!p->isConnected())
+            continue;
         if (p->isImage()) {
-            OutputImagePort *port = dynamic_cast<OutputImagePort *>(p);
             if (parameters != "")
                 parameters += paramDelimiter;
-            parameters += (port->isReadWrite() ? QString("read_write") : QString("__write_only"))
+            parameters += (p->isReadWrite() ? QString("read_write") : QString("__write_only"))
                           + " image2d_t " + p->getName();
         }
     }
-    for (PortBase *p : _rightPorts) {
+    for (ProcessPort *p : _rightPorts) {
+        if (!p->isConnected())
+            continue;
         if (!p->isImage()) {
-            BufferPort *port = dynamic_cast<BufferPort *>(p);
-            UIBufferBase *bufferNode = port->getBufferNode();
-            if (!bufferNode)
-                continue;
+            UIBufferBase *bufferNode = dynamic_cast<UIBufferBase *>(p->getConnectedNode());
             if (parameters != "")
                 parameters += paramDelimiter;
             parameters += "__global "
@@ -220,12 +225,11 @@ QString Process::getMetalPrototype(bool raw)
     QString MainFunctionInputParams = "";
 
     int idIndex = 0;
-    for (PortBase *p : _leftPorts) {
+    for (ProcessPort *p : _leftPorts) {
+        if (!p->isConnected())
+            continue;
         if (!p->isImage()) {
-            BufferPort *port = dynamic_cast<BufferPort *>(p);
-            UIBufferBase *bufferNode = port->getBufferNode();
-            if (!bufferNode)
-                continue;
+            UIBufferBase *bufferNode = dynamic_cast<UIBufferBase *>(p->getConnectedNode());
             if (bufferNode->isPointer())
                 continue;
             if (MainFunctionInputParams == "") {
@@ -254,12 +258,11 @@ QString Process::getMetalPrototype(bool raw)
                              : "constant InputParameters& params [[buffer(0)]]";
     int textureId = 0;
 
-    for (PortBase *p : _leftPorts) {
+    for (ProcessPort *p : _leftPorts) {
+        if (!p->isConnected())
+            continue;
         if (!p->isImage()) {
-            BufferPort *port = dynamic_cast<BufferPort *>(p);
-            UIBufferBase *bufferNode = port->getBufferNode();
-            if (!bufferNode)
-                continue;
+            UIBufferBase *bufferNode = dynamic_cast<UIBufferBase *>(p->getConnectedNode());
             if (!bufferNode->isPointer())
                 continue;
             if (parameters != "")
@@ -271,7 +274,9 @@ QString Process::getMetalPrototype(bool raw)
         }
     }
 
-    for (PortBase *p : _leftPorts) {
+    for (ProcessPort *p : _leftPorts) {
+        if (!p->isConnected())
+            continue;
         if (p->isImage()) {
             if (parameters != "")
                 parameters += paramDelimiter;
@@ -280,23 +285,23 @@ QString Process::getMetalPrototype(bool raw)
             textureId++;
         }
     }
-    for (PortBase *p : _rightPorts) {
+    for (ProcessPort *p : _rightPorts) {
+        if (!p->isConnected())
+            continue;
         if (p->isImage()) {
-            OutputImagePort *port = dynamic_cast<OutputImagePort *>(p);
             if (parameters != "")
                 parameters += paramDelimiter;
             parameters += "texture2d<half, access::"
-                          + (port->isReadWrite() ? QString("read_write") : QString("write")) + "> "
+                          + (p->isReadWrite() ? QString("read_write") : QString("write")) + "> "
                           + p->getName() + " [[texture(" + QString::number(textureId) + ")]]";
             textureId++;
         }
     }
-    for (PortBase *p : _rightPorts) {
+    for (ProcessPort *p : _rightPorts) {
+        if (!p->isConnected())
+            continue;
         if (!p->isImage()) {
-            BufferPort *port = dynamic_cast<BufferPort *>(p);
-            UIBufferBase *bufferNode = port->getBufferNode();
-            if (!bufferNode)
-                continue;
+            UIBufferBase *bufferNode = dynamic_cast<UIBufferBase *>(p->getConnectedNode());
             if (parameters != "")
                 parameters += paramDelimiter;
             parameters += "device "
@@ -397,26 +402,15 @@ void Process::setName(QString newName)
     }
 }
 
-PortBase *Process::createPortObject(DataFlowModel *model, bool isImage, bool isRight)
+ProcessPort *Process::createPortObject(DataFlowModel *model, bool isImage, bool isRight)
 {
-    PortBase *newPort = nullptr;
-    if (isImage) {
-        if (isRight)
-            newPort = new OutputImagePort(model->getOutputImagePortName(), 100, 100, this);
-        else
-            newPort = new ImagePort(model->getInputImagePortName(), 100, 100, this);
-    } else
-        newPort = new BufferPort(isRight ? model->getOutputBufferPortName()
-                                         : model->getInputBufferPortName(),
-                                 1000,
-                                 this);
-    return newPort;
+    return new ProcessPort(isImage, this);
 }
 
-PortBase *Process::addInput(DataFlowModel *model, bool isImage)
+ProcessPort *Process::addInput(DataFlowModel *model, bool isImage)
 {
     PortAddRemoveWidget *widget = model->widget(_nodeId);
-    PortBase *newPort = createPortObject(model, isImage, false);
+    ProcessPort *newPort = createPortObject(model, isImage, false);
     if (widget) {
         widget->addLeftPort(newPort);
     }
@@ -426,9 +420,9 @@ PortBase *Process::addInput(DataFlowModel *model, bool isImage)
     return newPort;
 }
 
-PortBase *Process::addOutput(DataFlowModel *model, bool isImage)
+ProcessPort *Process::addOutput(DataFlowModel *model, bool isImage)
 {
-    PortBase *newPort = createPortObject(model, isImage, true);
+    ProcessPort *newPort = createPortObject(model, isImage, true);
     PortAddRemoveWidget *widget = model->widget(_nodeId);
     if (widget) {
         widget->addRightPort(newPort);
@@ -439,23 +433,19 @@ PortBase *Process::addOutput(DataFlowModel *model, bool isImage)
     return newPort;
 }
 
-void Process::addInPortConnection(UIBufferBase *bufferNode, int inPortIndex)
+void Process::addInPortConnection(OperationDataModel *bufferNode, int inPortIndex)
 {
-    if (_leftPorts.at(inPortIndex)->isImage())
-        throw std::runtime_error("Image port");
-    BufferPort *port = dynamic_cast<BufferPort *>(_leftPorts.at(inPortIndex));
-    port->setBuffer(bufferNode);
+    ProcessPort *port = dynamic_cast<ProcessPort *>(_leftPorts.at(inPortIndex));
+    port->setConnection(bufferNode);
     if (_editor) {
         _editor->updateCode();
     }
 }
 
-void Process::addOutPortConnection(UIBufferBase *bufferNode, int outPortIndex)
+void Process::addOutPortConnection(OperationDataModel *bufferNode, int outPortIndex)
 {
-    if (_rightPorts.at(outPortIndex)->isImage())
-        throw std::runtime_error("Image port");
-    BufferPort *port = dynamic_cast<BufferPort *>(_rightPorts.at(outPortIndex));
-    port->setBuffer(bufferNode);
+    ProcessPort *port = dynamic_cast<ProcessPort *>(_rightPorts.at(outPortIndex));
+    port->setConnection(bufferNode);
     if (_editor) {
         _editor->updateCode();
     }
@@ -463,10 +453,8 @@ void Process::addOutPortConnection(UIBufferBase *bufferNode, int outPortIndex)
 
 void Process::removeInPortConnection(int inPortIndex)
 {
-    if (_leftPorts.at(inPortIndex)->isImage())
-        throw std::runtime_error("Image port");
-    BufferPort *port = dynamic_cast<BufferPort *>(_leftPorts.at(inPortIndex));
-    port->removeBuffer();
+    ProcessPort *port = dynamic_cast<ProcessPort *>(_leftPorts.at(inPortIndex));
+    port->removeConnection();
     if (_editor) {
         _editor->updateCode();
     }
@@ -474,10 +462,8 @@ void Process::removeInPortConnection(int inPortIndex)
 
 void Process::removeOutPortConnection(int outPortIndex)
 {
-    if (_rightPorts.at(outPortIndex)->isImage())
-        throw std::runtime_error("Image port");
-    BufferPort *port = dynamic_cast<BufferPort *>(_rightPorts.at(outPortIndex));
-    port->removeBuffer();
+    ProcessPort *port = dynamic_cast<ProcessPort *>(_rightPorts.at(outPortIndex));
+    port->removeConnection();
     if (_editor) {
         _editor->updateCode();
     }
