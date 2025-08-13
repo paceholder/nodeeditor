@@ -6,13 +6,15 @@
 // Layout constants
 static const int BUTTON_HEIGHT = 25;
 
-//static const int FIRST_NODE_SPACING = 27;
-static const int NODE_SPACING = 13;
+static const int LEFT_NODE_SPACING = 13;
+static const int RIGHT_NODE_SPACING = 7;
 static const int CENTER_SPACING = 50;
 static const QString BUTTON_STYLE = "background-color: grey;padding: 5px;margin:0px;";
 static const QString RADIO_STYLE = "QRadioButton { background-color: transparent; padding: 0px; "
                                    "margin: 0px; spacing: 0px; height:10px; }"
                                    "QRadioButton::indicator { width: 16px; height: 16px; }";
+static const QString TOGGLE_STYLE = "QPushButton { background-color: #505050; color: white; "
+                                    "padding: 0px; margin: 0px; font-size: 11px; }";
 
 PortAddRemoveWidget::PortAddRemoveWidget(NodeId nodeId, DataFlowModel &model, QWidget *parent)
     : QWidget(parent)
@@ -33,13 +35,13 @@ PortAddRemoveWidget::PortAddRemoveWidget(NodeId nodeId, DataFlowModel &model, QW
 
     // Create left layout WITHOUT stretch at the beginning
     _left = new QVBoxLayout();
-    _left->setSpacing(NODE_SPACING);
+    _left->setSpacing(LEFT_NODE_SPACING);
     _left->setContentsMargins(0, 0, 0, 0);
     // Don't add stretch here - we'll add it at the end
 
     // Create right layout WITHOUT stretch at the beginning
     _right = new QVBoxLayout();
-    _right->setSpacing(NODE_SPACING);
+    _right->setSpacing(RIGHT_NODE_SPACING);
     _right->setContentsMargins(0, 0, 0, 0);
     // Don't add stretch here - we'll add it at the end
 
@@ -82,7 +84,8 @@ PortAddRemoveWidget::PortAddRemoveWidget(NodeId nodeId, DataFlowModel &model, QW
     auto topButtonsRightRow = new QHBoxLayout();
     topButtonsRightRow->setContentsMargins(0, 0, 0, 0);
     topButtonsRightRow->setSpacing(4); // Add small spacing between buttons
-
+    topButtonsRightRow->addStretch();
+    
     auto buttonI = new QPushButton("I");
     buttonI->setFixedHeight(BUTTON_HEIGHT);
     topButtonsRightRow->addWidget(buttonI);
@@ -136,6 +139,36 @@ void PortAddRemoveWidget::addLeftPortB()
 
 void PortAddRemoveWidget::addRightPort(ProcessPort *port)
 {
+    // Create container widget for the port
+    auto portWidget = new QWidget();
+    portWidget->setFixedSize(100, BUTTON_HEIGHT);
+    portWidget->setContentsMargins(0, 0, 0, 0);
+    portWidget->setStyleSheet(RADIO_STYLE);
+    auto portLayout = new QHBoxLayout(portWidget);
+    portLayout->setContentsMargins(0, 0, 0, 0);
+    portLayout->setSpacing(0);
+    portLayout->addStretch();
+    // For image ports, add toggle button
+    if (port->isImage()) {
+        auto toggleButton = new QPushButton("W");
+        toggleButton->setFixedSize(20, BUTTON_HEIGHT);
+        toggleButton->setStyleSheet(TOGGLE_STYLE);
+        toggleButton->setCheckable(true);
+        toggleButton->setChecked(false); // Start in Write mode
+
+        // Store the toggle button reference
+        _rightPortToggles[_rightPorts] = toggleButton;
+
+        // Connect toggle to handle state changes
+        connect(toggleButton, &QPushButton::toggled, this, [this, toggleButton](bool checked) {
+            toggleButton->setText(checked ? "RW" : "W");
+            // Notify model about the mode change
+            onRightPortModeChanged(_rightPorts, checked);
+        });
+
+        portLayout->addWidget(toggleButton, 0, Qt::AlignRight);
+    }
+
     // Create radio button
     auto radioButton = new QRadioButton();
     radioButton->setFixedSize(20, BUTTON_HEIGHT);
@@ -145,8 +178,10 @@ void PortAddRemoveWidget::addRightPort(ProcessPort *port)
             this,
             &PortAddRemoveWidget::onRightRadioButtonToggled);
 
-    // Insert after + button (0), first port spacer (1), and existing ports
-    _right->insertWidget(_rightPorts + 1, radioButton, 0, Qt::AlignRight);
+    portLayout->addWidget(radioButton, 0, Qt::AlignRight);
+
+    // Insert after buttons and existing ports
+    _right->insertWidget(_rightPorts + 1, portWidget, 0, Qt::AlignRight);
 
     // Trigger changes in the model
     _model.addProcessNodePort(_nodeId, PortType::Out, _rightPorts, port);
@@ -263,6 +298,12 @@ void PortAddRemoveWidget::onRightRadioButtonToggled(bool checked)
     }
 }
 
+void PortAddRemoveWidget::onRightPortModeChanged(int portIndex, bool isReadWrite)
+{
+    // Notify the model about the mode change
+    //_model.setProcessPortMode(_nodeId, PortType::Out, portIndex, isReadWrite);
+}
+
 PortAddRemoveWidget::~PortAddRemoveWidget()
 {
     //
@@ -272,13 +313,25 @@ int PortAddRemoveWidget::findWhichRadioWasClicked(QVBoxLayout *layout, QObject *
 {
     for (int i = 0; i < layout->count(); ++i) {
         auto layoutItem = layout->itemAt(i);
-        auto radioButton = dynamic_cast<QRadioButton *>(layoutItem->widget());
 
-        if (!radioButton)
-            continue;
-        if (sender == radioButton) {
+        // Check if it's a direct radio button (for left side)
+        auto radioButton = dynamic_cast<QRadioButton *>(layoutItem->widget());
+        if (radioButton && sender == radioButton) {
             return i - 1;
-            break;
+        }
+
+        // Check if it's a container widget with radio button (for right side)
+        auto widget = layoutItem->widget();
+        if (widget) {
+            auto hLayout = qobject_cast<QHBoxLayout *>(widget->layout());
+            if (hLayout) {
+                for (int j = 0; j < hLayout->count(); ++j) {
+                    auto radio = qobject_cast<QRadioButton *>(hLayout->itemAt(j)->widget());
+                    if (radio && sender == radio) {
+                        return i - 1;
+                    }
+                }
+            }
         }
     }
     return -1;
@@ -317,14 +370,42 @@ void PortAddRemoveWidget::leftMinusClicked()
 
 void PortAddRemoveWidget::rightMinusClicked()
 {
-    QRadioButton *radio = qobject_cast<QRadioButton *>(
-        _right->itemAt(_selectedRightPortIndex + 1)->widget());
-    if (radio) {
-        _radioGroup->removeButton(radio);
+    // Get the port widget container
+    auto portWidget = _right->itemAt(_selectedRightPortIndex + 1)->widget();
+    if (!portWidget)
+        return;
+
+    // Find and remove radio button from group
+    auto portLayout = qobject_cast<QHBoxLayout *>(portWidget->layout());
+    if (portLayout) {
+        for (int i = 0; i < portLayout->count(); ++i) {
+            QRadioButton *radio = qobject_cast<QRadioButton *>(portLayout->itemAt(i)->widget());
+            if (radio) {
+                _radioGroup->removeButton(radio);
+                break;
+            }
+        }
     }
 
-    radio->deleteLater();
-    delete radio;
+    // Remove from toggle map if it exists
+    auto it = _rightPortToggles.find(_selectedRightPortIndex);
+    if (it != _rightPortToggles.end()) {
+        _rightPortToggles.erase(it);
+
+        // Update remaining toggle indices
+        std::map<int, QPushButton *> updatedToggles;
+        for (auto &[idx, toggle] : _rightPortToggles) {
+            if (idx > _selectedRightPortIndex) {
+                updatedToggles[idx - 1] = toggle;
+            } else {
+                updatedToggles[idx] = toggle;
+            }
+        }
+        _rightPortToggles = updatedToggles;
+    }
+
+    // Remove the widget
+    portWidget->deleteLater();
 
     _rightPorts--;
     _rightMinusButton->setEnabled(false);

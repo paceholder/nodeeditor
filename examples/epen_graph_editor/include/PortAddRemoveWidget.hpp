@@ -6,6 +6,7 @@
 #include <QVBoxLayout>
 #include <QWidget>
 #include <QtNodes/Definitions>
+#include <map>
 
 using QtNodes::NodeId;
 using QtNodes::PortIndex;
@@ -36,6 +37,7 @@ private slots:
     void onRightRadioButtonToggled(bool checked);
     void leftMinusClicked();
     void rightMinusClicked();
+    void onRightPortModeChanged(int portIndex, bool isReadWrite);
 
 private:
     int findWhichRadioWasClicked(QVBoxLayout *, QObject *);
@@ -56,4 +58,7 @@ private:
 
     int _selectedLeftPortIndex = -1;
     int _selectedRightPortIndex = -1;
+    
+    // Map to track toggle buttons for image ports
+    std::map<int, QPushButton*> _rightPortToggles;
 };

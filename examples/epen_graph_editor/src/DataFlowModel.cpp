@@ -110,8 +110,8 @@ bool DataFlowModel::setNodeData(NodeId nodeId, NodeRole role, QVariant value)
         }
         switch (role) {
         case NodeRole::Size:
-            _processNodeSize[nodeId] = value.value<QSize>();
-            _processNodeSize[nodeId].setHeight(_processNodeSize[nodeId].height() + 15);
+            _processNodeSize[nodeId] = _processNodeSize[nodeId];
+            _processNodeSize[nodeId].setHeight(_processNodeSize[nodeId].height() + 35);
             return true;
         case NodeRole::InPortCount:
             _nodePortCounts[nodeId].in = value.toUInt();
