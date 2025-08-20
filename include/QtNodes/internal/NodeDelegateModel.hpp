@@ -85,6 +85,10 @@ public:
     /// Returns the curent processing status
     virtual NodeProcessingStatus processingStatus() const { return _processingStatus; }
 
+    /// Progress is used in GUI
+    virtual QString progressValue() const = 0;
+
+public:
     QJsonObject save() const override;
 
     void load(QJsonObject const &) override;

@@ -38,6 +38,8 @@ void DefaultNodePainter::paint(QPainter *painter, NodeGraphicsObject &ngo) const
     drawResizeRect(painter, ngo);
 
     drawValidationIcon(painter, ngo);
+
+    drawProgressValue(painter, ngo);
 }
 
 void DefaultNodePainter::drawNodeRect(QPainter *painter, NodeGraphicsObject &ngo) const
@@ -373,6 +375,32 @@ void DefaultNodePainter::drawValidationIcon(QPainter *painter, NodeGraphicsObjec
                         pixmap);
 
     painter->restore();
+}
+
+void DefaultNodePainter::drawProgressValue(QPainter *painter, NodeGraphicsObject &ngo) const
+{
+    AbstractGraphModel &model = ngo.graphModel();
+    NodeId const nodeId = ngo.nodeId();
+    AbstractNodeGeometry &geometry = ngo.nodeScene()->nodeGeometry();
+
+    QString const nodeProgress = model.nodeData(nodeId, NodeRole::ProgressValue).toString();
+
+    QFont font = painter->font();
+    font.setBold(true);
+    auto rect = QFontMetrics(font).boundingRect(nodeProgress);
+
+    QSize size = geometry.size(nodeId);
+    QPointF position(rect.width() / 2.0, size.height() - rect.height());
+
+    QJsonDocument json = QJsonDocument::fromVariant(model.nodeData(nodeId, NodeRole::Style));
+    NodeStyle nodeStyle(json.object());
+
+    painter->setFont(font);
+    painter->setPen(nodeStyle.FontColor);
+    painter->drawText(position, nodeProgress);
+
+    font.setBold(false);
+    painter->setFont(font);
 }
 
 } // namespace QtNodes
