@@ -41,6 +41,7 @@ enum class NodeShape {
     Rectangle = 1,
     Trapezoid = 2,
     Pentagon = 3,
+    Circle = 4,
 };
 Q_ENUM_NS(NodeShape)
 

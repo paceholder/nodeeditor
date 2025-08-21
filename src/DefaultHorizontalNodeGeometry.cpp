@@ -62,6 +62,10 @@ void DefaultHorizontalNodeGeometry::recomputeSize(NodeId const nodeId) const
     case NodeShape::Pentagon:
         width += height / 2;
         break;
+    case NodeShape::Circle: {
+        width = height;
+        break;
+    }
     case NodeShape::RoundedRectangle:
     case NodeShape::Rectangle:
     default:
