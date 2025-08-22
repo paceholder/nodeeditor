@@ -387,10 +387,11 @@ void DefaultNodePainter::drawProgressValue(QPainter *painter, NodeGraphicsObject
 
     QFont font = painter->font();
     font.setBold(true);
+    font.setPointSize(5);
     auto rect = QFontMetrics(font).boundingRect(nodeProgress);
 
     QSize size = geometry.size(nodeId);
-    QPointF position(rect.width() / 2.0, size.height() - rect.height());
+    QPointF position(rect.width() / 4.0, size.height() - 0.5 * rect.height());
 
     QJsonDocument json = QJsonDocument::fromVariant(model.nodeData(nodeId, NodeRole::Style));
     NodeStyle nodeStyle(json.object());
