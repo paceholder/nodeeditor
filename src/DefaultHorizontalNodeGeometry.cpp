@@ -63,7 +63,9 @@ void DefaultHorizontalNodeGeometry::recomputeSize(NodeId const nodeId) const
         width += height / 2;
         break;
     case NodeShape::Circle: {
-        width = height;
+        auto diameter = std::max(width, height);
+        width = diameter;
+        height = diameter;
         break;
     }
     case NodeShape::RoundedRectangle:
@@ -120,6 +122,9 @@ QPointF DefaultHorizontalNodeGeometry::portPosition(NodeId const nodeId,
                 midPoint += offset;
                 x -= std::abs(offset);
             }
+            result = QPointF(x, midPoint);
+        } else if (shape == NodeShape::Circle) {
+            double midPoint = size.height() / 2;
             result = QPointF(x, midPoint);
         }
         break;

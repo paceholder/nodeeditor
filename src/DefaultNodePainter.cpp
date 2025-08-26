@@ -97,8 +97,8 @@ void DefaultNodePainter::drawNodeRect(QPainter *painter, NodeGraphicsObject &ngo
     }
 
     case NodeShape::Circle: {
-        QRectF circleRect(boundary.x(), boundary.y(), size.width(), size.height());
-        painter->drawEllipse(circleRect);
+        double radius = std::max(size.width(), size.height()) / 2.0;
+        painter->drawEllipse(boundary.center(), radius, radius);
         break;
     }
 
