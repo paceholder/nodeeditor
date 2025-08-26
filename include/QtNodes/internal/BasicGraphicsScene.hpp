@@ -5,8 +5,8 @@
 #include "ConnectionIdHash.hpp"
 #include "Definitions.hpp"
 #include "Export.hpp"
-
 #include "QUuidStdHash.hpp"
+#include "UndoCommands.hpp"
 
 #include <QtCore/QUuid>
 #include <QtWidgets/QGraphicsScene>
@@ -16,7 +16,6 @@
 #include <memory>
 #include <tuple>
 #include <unordered_map>
-
 
 class QUndoStack;
 
@@ -28,6 +27,8 @@ class AbstractNodePainter;
 class ConnectionGraphicsObject;
 class NodeGraphicsObject;
 class NodeStyle;
+class DeleteCommand;
+class CopyCommand;
 
 /// An instance of QGraphicsScene, holds connections and nodes.
 class NODE_EDITOR_PUBLIC BasicGraphicsScene : public QGraphicsScene
@@ -110,6 +111,8 @@ public:
      */
     virtual QMenu *createSceneMenu(QPointF const scenePos);
 
+    QMenu *createFreezeMenu(QPointF const scenePos);
+
 Q_SIGNALS:
     void modified(BasicGraphicsScene *);
     void nodeMoved(NodeId const nodeId, QPointF const &newLocation);
@@ -150,6 +153,10 @@ public Q_SLOTS:
     void onNodeUpdated(NodeId const nodeId);
     void onNodeClicked(NodeId const nodeId);
     void onModelReset();
+
+    void onCopySelectedObjects() { undoStack().push(new CopyCommand(this)); }
+
+    void onDeleteSelectedObjects() { undoStack().push(new DeleteCommand(this)); }
 
 private:
     AbstractGraphModel &_graphModel;

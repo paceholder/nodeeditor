@@ -92,6 +92,7 @@ void GraphicsView::setScene(BasicGraphicsScene *scene)
         _deleteSelectionAction = new QAction(QStringLiteral("Delete Selection"), this);
         _deleteSelectionAction->setShortcutContext(Qt::ShortcutContext::WidgetShortcut);
         _deleteSelectionAction->setShortcut(QKeySequence(QKeySequence::Delete));
+        _deleteSelectionAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_X));
         _deleteSelectionAction->setAutoRepeat(false);
         connect(_deleteSelectionAction,
                 &QAction::triggered,
@@ -166,18 +167,20 @@ void GraphicsView::centerScene()
 
 void GraphicsView::contextMenuEvent(QContextMenuEvent *event)
 {
+    QGraphicsView::contextMenuEvent(event);
+    QMenu *menu;
+
     if (itemAt(event->pos())) {
-        QGraphicsView::contextMenuEvent(event);
-        return;
+        menu = nodeScene()->createFreezeMenu(mapToScene(event->pos()));
+    } else {
+        menu = nodeScene()->createSceneMenu(mapToScene(event->pos()));
     }
-
-    auto const scenePos = mapToScene(event->pos());
-
-    QMenu *menu = nodeScene()->createSceneMenu(scenePos);
 
     if (menu) {
         menu->exec(event->globalPos());
     }
+
+    return;
 }
 
 void GraphicsView::wheelEvent(QWheelEvent *event)

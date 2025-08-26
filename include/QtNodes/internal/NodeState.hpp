@@ -38,6 +38,8 @@ public:
 
     void resetConnectionForReaction();
 
+    NodeGraphicsObject &nodeGraphicsObject() { return _ngo; }
+
 private:
     NodeGraphicsObject &_ngo;
 
