@@ -29,6 +29,7 @@ class NodeGraphicsObject;
 class NodeStyle;
 class DeleteCommand;
 class CopyCommand;
+class ConnectionId;
 
 /// An instance of QGraphicsScene, holds connections and nodes.
 class NODE_EDITOR_PUBLIC BasicGraphicsScene : public QGraphicsScene
@@ -86,6 +87,8 @@ public:
 
     /// Deletes all the nodes. Connections are removed automatically.
     void clearScene();
+
+    std::vector<std::shared_ptr<ConnectionId>> connectionsWithinGroup(const QUuid &groupID);
 
 public:
     /**

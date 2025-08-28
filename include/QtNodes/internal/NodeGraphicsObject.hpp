@@ -52,6 +52,8 @@ public:
 
     void updateQWidgetEmbedPos();
 
+    QJsonObject save() const;
+
 protected:
     void paint(QPainter *painter,
                QStyleOptionGraphicsItem const *option,

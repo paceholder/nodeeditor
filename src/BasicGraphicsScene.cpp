@@ -156,6 +156,27 @@ void BasicGraphicsScene::clearScene()
     }
 }
 
+std::vector<std::shared_ptr<ConnectionId>> BasicGraphicsScene::connectionsWithinGroup(
+    const QUuid &groupID)
+{
+    std::vector<std::shared_ptr<ConnectionId>> ret{};
+
+    for (auto const &connection : _connectionGraphicsObjects) {
+        // @TODO: find correct replacement to v1's Node class
+        // look into ConnectionsIdUtils.hpp
+
+        //auto node1 = connection.second->getNode(PortType::In)->nodeGroup().lock();
+        //auto node2 = connection.second->getNode(PortType::Out)->nodeGroup().lock();
+        //if (node1 && node2) {
+        //    if ((node1->id() == node2->id()) && (node1->id() == groupID)) {
+        //        ret.push_back(connection.second);
+        //    }
+        //}
+    }
+
+    return ret;
+}
+
 NodeGraphicsObject *BasicGraphicsScene::nodeGraphicsObject(NodeId nodeId)
 {
     NodeGraphicsObject *ngo = nullptr;

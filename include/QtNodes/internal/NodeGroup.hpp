@@ -1,32 +1,34 @@
 #pragma once
 
+#include <QtCore/QByteArray>
 #include <QtCore/QObject>
 #include <QtCore/QUuid>
-#include <QtCore/QByteArray>
 
 #include <vector>
 
-#include "GroupGraphicsObject.hpp"
 #include "DataFlowGraphModel.hpp"
-#include "NodeState.hpp"
 #include "Export.hpp"
+#include "GroupGraphicsObject.hpp"
+#include "NodeState.hpp"
 //#include "memory.hpp"
-#include "Connection.hpp"
+#include "Definitions.hpp"
+#include "NodeConnectionInteraction.hpp"
 
-namespace QtNodes
-{
+namespace QtNodes {
 
 class DataFlowGraphModel;
 class GroupGraphicsObject;
 class NodeState;
+class ConnectionId;
+class NodeConnectionInteraction;
+class NodeGraphicsObject;
 
 /**
  * @brief The NodeGroup class defines a controller for node groups. It is
  * responsible for managing the group's data and the interactions with other
  * classes.
  */
-class NODE_EDITOR_PUBLIC NodeGroup
-    : public QObject
+class NODE_EDITOR_PUBLIC NodeGroup : public QObject
 {
     Q_OBJECT
 
@@ -39,10 +41,10 @@ public:
    * @param name Group's name. If none is given, it is automatically generated.
    * @param parent Parent object.
    */
-    NodeGroup(std::vector<NodeState*> nodes,
-              const QUuid& uid,
+    NodeGroup(std::vector<NodeGraphicsObject *> nodes,
+              const QUuid &uid,
               QString name = QString(),
-              QObject* parent = nullptr);
+              QObject *parent = nullptr);
 
 public:
     /**
@@ -50,50 +52,42 @@ public:
    * file.
    * @return A byte array containing this group's data (in JSON format).
    */
-    QByteArray
-    saveToFile() const;
+    QByteArray saveToFile() const;
 
     /**
    * @brief Returns this group's universal ID.
    */
-    QUuid
-    id() const;
+    QUuid id() const;
 
     /**
    * @brief Returns a reference to this group's graphical object.
    */
-    GroupGraphicsObject &
-    groupGraphicsObject();
+    GroupGraphicsObject &groupGraphicsObject();
 
     /**
    * @brief Returns a const reference to this group's graphical object.
    */
-    GroupGraphicsObject const &
-    groupGraphicsObject() const;
+    GroupGraphicsObject const &groupGraphicsObject() const;
 
     /**
    * @brief Returns the list of nodes that belong to this group.
    */
-    std::vector<NodeState*>&
-    childNodes();
+    std::vector<NodeGraphicsObject *> &childNodes();
 
     /**
    * @brief Returns a list of IDs of the nodes that belong to this group.
    */
-    std::vector<QUuid>
-    nodeIDs() const;
+    std::vector<NodeId> nodeIDs() const;
 
     /**
    * @brief Returns this group's name.
    */
-    QString const &
-    name() const;
+    QString const &name() const;
 
     /**
    * @brief Associates a GroupGraphicsObject with this group.
    */
-    void
-    setGraphicsObject(std::unique_ptr<GroupGraphicsObject>&& graphics_object);
+    void setGraphicsObject(std::unique_ptr<GroupGraphicsObject> &&graphics_object);
 
     /**
    * @brief Returns whether the group's list of nodes is empty.
@@ -111,15 +105,13 @@ public Q_SLOTS:
    * @brief Adds a node to this group.
    * @param node Pointer to the node to be added.
    */
-    void
-    addNode(QtNodes::DataFlowGraphModel* node);
+    void addNode(QtNodes::NodeGraphicsObject *node);
 
     /**
    * @brief Removes a node from this group.
    * @param node Pointer to the node to be removed.
    */
-    void
-    removeNode(QtNodes::DataFlowGraphModel* node);
+    void removeNode(QtNodes::NodeGraphicsObject *node);
 
 private:
     /**
@@ -135,12 +127,11 @@ private:
    */
     QUuid _uid;
 
-
     // data
     /**
    * @brief List of pointers of nodes that belong to this group.
    */
-    std::vector<NodeState*> _childNodes;
+    std::vector<NodeGraphicsObject *> _childNodes;
 
     // painting
     /**
@@ -154,4 +145,4 @@ private:
    */
     static int _groupCount;
 };
-}
+} // namespace QtNodes

@@ -7,9 +7,8 @@
 #include <QtCore/QPointer>
 #include <QtCore/QUuid>
 
-#include "Export.hpp"
-
 #include "Definitions.hpp"
+#include "Export.hpp"
 #include "NodeData.hpp"
 
 namespace QtNodes {
@@ -37,8 +36,6 @@ public:
     void storeConnectionForReaction(ConnectionGraphicsObject const *cgo);
 
     void resetConnectionForReaction();
-
-    NodeGraphicsObject &nodeGraphicsObject() { return _ngo; }
 
 private:
     NodeGraphicsObject &_ngo;

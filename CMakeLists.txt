@@ -87,6 +87,8 @@ set(CPP_SOURCE_FILES
   src/StyleCollection.cpp
   src/UndoCommands.cpp
   src/locateNode.cpp
+  src/GroupGraphicsObject.cpp
+  src/NodeGroup.cpp
   resources/resources.qrc
 )
 
@@ -127,6 +129,8 @@ set(HPP_HEADER_FILES
   include/QtNodes/internal/DefaultVerticalNodeGeometry.hpp
   include/QtNodes/internal/NodeConnectionInteraction.hpp
   include/QtNodes/internal/UndoCommands.hpp
+  include/QtNodes/internal/NodeGroup.hpp
+  include/QtNodes/internal/GroupGraphicsObject.hpp
 )
 
 # If we want to give the option to build a static library,

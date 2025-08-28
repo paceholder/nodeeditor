@@ -1,21 +1,23 @@
 #include "NodeGroup.hpp"
-
-#include <QJsonDocument>
+#include "NodeConnectionInteraction.hpp"
 #include <QJsonArray>
+#include <QJsonDocument>
 
 #include <utility>
 
-using QtNodes::GroupGraphicsObject;
 using QtNodes::DataFlowGraphModel;
+using QtNodes::GroupGraphicsObject;
+using QtNodes::NodeConnectionInteraction;
+using QtNodes::NodeGraphicsObject;
 using QtNodes::NodeGroup;
+using QtNodes::NodeId;
 
 int NodeGroup::_groupCount = 0;
 
-NodeGroup::
-    NodeGroup(std::vector<DataFlowGraphModel*> nodes,
-              const QUuid& uid,
-              QString name,
-              QObject* parent)
+NodeGroup::NodeGroup(std::vector<NodeGraphicsObject *> nodes,
+                     const QUuid &uid,
+                     QString name,
+                     QObject *parent)
     : QObject(parent)
     , _name(std::move(name))
     , _uid(uid)
@@ -25,9 +27,7 @@ NodeGroup::
     _groupCount++;
 }
 
-QByteArray
-    NodeGroup::
-    saveToFile() const
+QByteArray NodeGroup::saveToFile() const
 {
     QJsonObject groupJson;
 
@@ -35,112 +35,91 @@ QByteArray
     groupJson["id"] = _uid.toString();
 
     QJsonArray nodesJson;
-    for (auto const & node : _childNodes)
-    {
+    for (auto const &node : _childNodes) {
         nodesJson.append(node->save());
     }
     groupJson["nodes"] = nodesJson;
 
-    QJsonArray connectionsJson;
-    auto groupConnections = _groupGraphicsObject->connections();
-    for (auto const & connection : groupConnections)
-    {
-        connectionsJson.append(connection->save());
-    }
-    groupJson["connections"] = connectionsJson;
+    //@TODO: create save function for a connection (look into ConnectionId)
+
+    //QJsonArray connectionsJson;
+    //auto groupConnections = _groupGraphicsObject->connections();
+    //for (auto const &connection : groupConnections) {
+    //    connectionsJson.append(connection->save());
+    //}
+    //groupJson["connections"] = connectionsJson;
 
     QJsonDocument groupDocument(groupJson);
 
     return groupDocument.toJson();
 }
 
-QUuid
-    NodeGroup::
-    id() const
+QUuid NodeGroup::id() const
 {
     return _uid;
 }
 
-GroupGraphicsObject&
-    NodeGroup::
-    groupGraphicsObject()
+GroupGraphicsObject &NodeGroup::groupGraphicsObject()
 {
     return *_groupGraphicsObject;
 }
 
-GroupGraphicsObject const&
-    NodeGroup::
-    groupGraphicsObject() const
+GroupGraphicsObject const &NodeGroup::groupGraphicsObject() const
 {
     return *_groupGraphicsObject;
 }
 
-std::vector<Node*>&
-    NodeGroup::
-    childNodes()
+std::vector<NodeGraphicsObject *> &NodeGroup::childNodes()
 {
     return _childNodes;
 }
 
-std::vector<QUuid>
-    NodeGroup::
-    nodeIDs() const
+std::vector<NodeId> NodeGroup::nodeIDs() const
 {
-    std::vector<QUuid> ret{};
+    std::vector<NodeId> ret{};
     ret.reserve(_childNodes.size());
 
-    for (auto const & node : _childNodes)
-    {
-        ret.push_back(node->id());
+    for (auto const &node : _childNodes) {
+        ret.push_back(node->nodeId());
     }
 
     return ret;
 }
 
-QString const&
-NodeGroup::name() const
+QString const &NodeGroup::name() const
 {
     return _name;
 }
 
-void
-    NodeGroup::
-    setGraphicsObject(std::unique_ptr<GroupGraphicsObject>&& graphics_object)
+void NodeGroup::setGraphicsObject(std::unique_ptr<GroupGraphicsObject> &&graphics_object)
 {
     _groupGraphicsObject = std::move(graphics_object);
     _groupGraphicsObject->lock(true);
 }
 
-bool
-    NodeGroup::
-    empty() const
+bool NodeGroup::empty() const
 {
     return _childNodes.empty();
 }
 
-int
-    NodeGroup::
-    groupCount()
+int NodeGroup::groupCount()
 {
     return _groupCount;
 }
 
-void
-    NodeGroup::
-    addNode(Node* node)
+void NodeGroup::addNode(NodeGraphicsObject *node)
 {
     _childNodes.push_back(node);
 }
 
-void
-    NodeGroup::
-    removeNode(Node* node)
+void NodeGroup::removeNode(NodeGraphicsObject *node)
 {
     auto nodeIt = std::find(_childNodes.begin(), _childNodes.end(), node);
-    if (nodeIt != _childNodes.end())
-    {
-        (*nodeIt)->unsetNodeGroup();
-        _childNodes.erase(nodeIt);
-        groupGraphicsObject().positionLockedIcon();
-    }
+    // @TODO: create function to unset group in Node class
+
+    //if (nodeIt != _childNodes.end()) {
+    //    (*nodeIt)->unsetNodeGroup();
+    //    _childNodes.erase(nodeIt);
+    //    groupGraphicsObject().positionLockedIcon();
+    //}
 }

@@ -16,7 +16,6 @@
 
 #include <cstdlib>
 
-
 namespace QtNodes {
 
 NodeGraphicsObject::NodeGraphicsObject(BasicGraphicsScene &scene, NodeId nodeId)
@@ -379,6 +378,24 @@ void NodeGraphicsObject::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 void NodeGraphicsObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
     Q_EMIT nodeScene()->nodeContextMenu(_nodeId, mapToScene(event->pos()));
+}
+
+QJsonObject NodeGraphicsObject::save() const
+{
+    //@TODO: create correct save logic, similar to v1's Node save
+
+    //QJsonObject nodeJson;
+    //
+    //nodeJson["id"] = _uid.toString();
+    //
+    //nodeJson["model"] = _nodeDataModel->save();
+    //
+    //QJsonObject obj;
+    //obj["x"] = _nodeGraphicsObject->pos().x();
+    //obj["y"] = _nodeGraphicsObject->pos().y();
+    //nodeJson["position"] = obj;
+    //
+    //return nodeJson;
 }
 
 } // namespace QtNodes

@@ -1,45 +1,36 @@
 #include "GroupGraphicsObject.hpp"
-#include "NodeState.hpp"
+#include "BasicGraphicsScene.hpp"
+#include "NodeConnectionInteraction.hpp"
+#include "NodeGraphicsObject.hpp"
 #include <QGraphicsSceneMouseEvent>
 #include <QStyleOptionGraphicsItem>
 #include <QtNodes/DataFlowGraphModel>
 
-#include "BasicGraphicsScene.hpp"
-
+using QtNodes::BasicGraphicsScene;
+using QtNodes::ConnectionId;
+using QtNodes::DataFlowGraphModel;
 using QtNodes::GroupGraphicsObject;
+using QtNodes::NodeConnectionInteraction;
 using QtNodes::NodeGraphicsObject;
 using QtNodes::NodeGroup;
-using QtNodes::DataFlowGraphModel;
-using QtNodes::BasicGraphicsScene;
-using QtNodes::NodeState;
 
+IconGraphicsItem::IconGraphicsItem(QGraphicsItem *parent)
+    : QGraphicsPixmapItem(parent)
+{}
 
-IconGraphicsItem::
-    IconGraphicsItem(QGraphicsItem* parent)
-    : QGraphicsPixmapItem(parent) {}
-
-
-IconGraphicsItem::
-    IconGraphicsItem(const QPixmap& pixmap, QGraphicsItem* parent)
+IconGraphicsItem::IconGraphicsItem(const QPixmap &pixmap, QGraphicsItem *parent)
     : QGraphicsPixmapItem(pixmap, parent)
 {
     _scaleFactor = _iconSize / pixmap.size().width();
     setScale(_scaleFactor);
 }
 
-
-double
-    IconGraphicsItem::
-    scaleFactor() const
+double IconGraphicsItem::scaleFactor() const
 {
     return _scaleFactor;
 }
 
-
-
-GroupGraphicsObject::
-    GroupGraphicsObject(BasicGraphicsScene& scene,
-                        NodeGroup& nodeGroup)
+GroupGraphicsObject::GroupGraphicsObject(BasicGraphicsScene &scene, NodeGroup &nodeGroup)
     : _scene(scene)
     , _group(nodeGroup)
     , _possibleChild(nullptr)
@@ -67,219 +58,156 @@ GroupGraphicsObject::
     setAcceptHoverEvents(true);
 }
 
-
-GroupGraphicsObject::
-    ~GroupGraphicsObject()
+GroupGraphicsObject::~GroupGraphicsObject()
 {
     _scene.removeItem(this);
 }
 
-NodeGroup&
-    GroupGraphicsObject::
-    group()
+NodeGroup &GroupGraphicsObject::group()
 {
     return _group;
 }
 
-
-NodeGroup const&
-    GroupGraphicsObject::
-    group() const
+NodeGroup const &GroupGraphicsObject::group() const
 {
     return _group;
 }
 
-
-QRectF
-    GroupGraphicsObject::
-    boundingRect() const
+QRectF GroupGraphicsObject::boundingRect() const
 {
     QRectF ret{};
-    for (auto& node : _group.childNodes())
-    {
-        NodeGraphicsObject* ngo = node->nodeGraphicsObject();
+    for (auto &node : _group.childNodes()) {
+        NodeGraphicsObject *ngo = node->nodeGraphicsObject();
 
         ret |= ngo->mapRectToScene(ngo->boundingRect());
     }
-    if (_possibleChild)
-    {
+    if (_possibleChild) {
         ret |= _possibleChild->mapRectToScene(_possibleChild->boundingRect());
     }
     return mapRectFromScene(ret.marginsAdded(_margins));
 }
 
-void
-    GroupGraphicsObject::
-    setFillColor(const QColor& color)
+void GroupGraphicsObject::setFillColor(const QColor &color)
 {
     _currentFillColor = color;
     update();
 }
 
-void
-    GroupGraphicsObject::
-    setBorderColor(const QColor& color)
+void GroupGraphicsObject::setBorderColor(const QColor &color)
 {
     _currentBorderColor = color;
     _borderPen.setColor(_currentBorderColor);
 }
 
-
-void
-    GroupGraphicsObject::
-    moveConnections()
+void GroupGraphicsObject::moveConnections()
 {
-    for (auto& node : group().childNodes())
-    {
+    for (auto &node : group().childNodes()) {
         node->nodeGraphicsObject().moveConnections();
     }
 }
 
-
-void
-    GroupGraphicsObject::
-    moveNodes(const QPointF& offset)
+void GroupGraphicsObject::moveNodes(const QPointF &offset)
 {
-    for (auto& node : group().childNodes())
-    {
-        node->nodeGraphicsObject().moveBy(offset.x(), offset.y());
+    for (auto &node : group().childNodes()) {
+        auto nodeGraphics = node->nodeGraphicsObject();
+        auto newPosition = QPointF(nodeGraphics->x() + offset.x(), nodeGraphics->y() + offset.y());
+        nodeGraphics->setPos(newPosition);
+        nodeGraphics->update();
     }
 }
 
-
-void
-    GroupGraphicsObject::
-    lock(bool locked)
+void GroupGraphicsObject::lock(bool locked)
 {
-    for (auto& node : _group.childNodes())
-    {
+    for (auto &node : _group.childNodes()) {
         node->nodeGraphicsObject().lock(locked);
     }
     _lockedGraphicsItem->setVisible(locked);
     _unlockedGraphicsItem->setVisible(!locked);
-    setFillColor(locked? kLockedFillColor : kUnlockedFillColor);
+    setFillColor(locked ? kLockedFillColor : kUnlockedFillColor);
     _locked = locked;
-    setZValue(locked? _groupAreaZValue : -_groupAreaZValue);
+    setZValue(locked ? _groupAreaZValue : -_groupAreaZValue);
 }
 
-
-bool
-    GroupGraphicsObject::
-    locked() const
+bool GroupGraphicsObject::locked() const
 {
     return _locked;
 }
 
-
-void
-    GroupGraphicsObject::
-    positionLockedIcon()
+void GroupGraphicsObject::positionLockedIcon()
 {
-    _lockedGraphicsItem->setPos(boundingRect().topRight()
-                                + QPointF(-(_roundedBorderRadius
-                                           + IconGraphicsItem::iconSize()),
-                                         _roundedBorderRadius));
-    _unlockedGraphicsItem->setPos(boundingRect().topRight()
-                                  + QPointF(-(_roundedBorderRadius
-                                              + IconGraphicsItem::iconSize()),
-                                            _roundedBorderRadius));
+    _lockedGraphicsItem->setPos(
+        boundingRect().topRight()
+        + QPointF(-(_roundedBorderRadius + IconGraphicsItem::iconSize()), _roundedBorderRadius));
+    _unlockedGraphicsItem->setPos(
+        boundingRect().topRight()
+        + QPointF(-(_roundedBorderRadius + IconGraphicsItem::iconSize()), _roundedBorderRadius));
 }
 
-
-void
-    GroupGraphicsObject::
-    setHovered(bool hovered)
+void GroupGraphicsObject::setHovered(bool hovered)
 {
-    hovered?
-        setFillColor(locked()? kLockedHoverColor : kUnlockedHoverColor) :
-        setFillColor(locked()? kLockedFillColor : kUnlockedFillColor);
+    hovered ? setFillColor(locked() ? kLockedHoverColor : kUnlockedHoverColor)
+            : setFillColor(locked() ? kLockedFillColor : kUnlockedFillColor);
 
-    for (auto& node : _group.childNodes())
-    {
+    for (auto &node : _group.childNodes()) {
         node->nodeGeometry().setHovered(hovered);
         node->nodeGraphicsObject().update();
     }
     update();
 }
 
-
-void
-    GroupGraphicsObject::
-    setPossibleChild(QtNodes::NodeGraphicsObject* possibleChild)
+void GroupGraphicsObject::setPossibleChild(QtNodes::NodeGraphicsObject *possibleChild)
 {
     _possibleChild = possibleChild;
 }
 
-
-void
-    GroupGraphicsObject::
-    unsetPossibleChild()
+void GroupGraphicsObject::unsetPossibleChild()
 {
     _possibleChild = nullptr;
 }
 
-
-std::vector<std::shared_ptr<Connection> >
-    GroupGraphicsObject::
-    connections() const
+std::vector<std::shared_ptr<ConnectionId>> GroupGraphicsObject::connections() const
 {
     return _scene.connectionsWithinGroup(group().id());
 }
 
-
-void
-    GroupGraphicsObject::
-    setPosition(const QPointF& position)
+void GroupGraphicsObject::setPosition(const QPointF &position)
 {
     QPointF diffPos = position - scenePos();
     moveNodes(diffPos);
     moveConnections();
 }
 
-
-void
-    GroupGraphicsObject::
-    hoverEnterEvent(QGraphicsSceneHoverEvent* event)
+void GroupGraphicsObject::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
     Q_UNUSED(event);
     setHovered(true);
 }
 
-void
-    GroupGraphicsObject::
-    hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
+void GroupGraphicsObject::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
     Q_UNUSED(event);
     setHovered(false);
 }
 
-void
-    GroupGraphicsObject::
-    mouseMoveEvent(QGraphicsSceneMouseEvent* event)
+void GroupGraphicsObject::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
     QGraphicsItem::mouseMoveEvent(event);
-    if (event->lastPos() != event->pos())
-    {
+    if (event->lastPos() != event->pos()) {
         auto diff = event->pos() - event->lastPos();
         moveNodes(diff);
         moveConnections();
     }
 }
 
-void
-    GroupGraphicsObject::
-    mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
+void GroupGraphicsObject::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     QGraphicsItem::mouseDoubleClickEvent(event);
     lock(!locked());
 }
 
-
-void
-    GroupGraphicsObject::
-    paint(QPainter* painter,
-          const QStyleOptionGraphicsItem* option,
-          QWidget* widget)
+void GroupGraphicsObject::paint(QPainter *painter,
+                                const QStyleOptionGraphicsItem *option,
+                                QWidget *widget)
 {
     Q_UNUSED(widget);
     prepareGeometryChange();
@@ -288,7 +216,7 @@ void
     painter->setClipRect(option->exposedRect);
     painter->setBrush(_currentFillColor);
 
-    setBorderColor(isSelected()? kSelectedBorderColor : kUnselectedBorderColor);
+    setBorderColor(isSelected() ? kSelectedBorderColor : kUnselectedBorderColor);
     painter->setPen(_borderPen);
 
     painter->drawRoundedRect(rect(), _roundedBorderRadius, _roundedBorderRadius);
