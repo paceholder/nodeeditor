@@ -95,6 +95,13 @@ void DefaultNodePainter::drawNodeRect(QPainter *painter, NodeGraphicsObject &ngo
         painter->drawPolygon(pentagonPoints, POINTS);
         break;
     }
+
+    case NodeShape::Circle: {
+        double radius = std::max(size.width(), size.height()) / 2.0;
+        painter->drawEllipse(boundary.center(), radius, radius);
+        break;
+    }
+
     case NodeShape::RoundedRectangle: // default is rounded rectangle
     default:
         double const radius = 3.0;
