@@ -50,6 +50,8 @@ public:
     /// Repaints the node once with reacting ports.
     void reactToConnection(ConnectionGraphicsObject const *cgo);
 
+    void lock(bool locked);
+
     void updateQWidgetEmbedPos();
 
     QJsonObject save() const;
@@ -80,6 +82,8 @@ private:
     AbstractGraphModel &_graphModel;
 
     NodeState _nodeState;
+
+    bool _locked;
 
     // either nullptr or owned by parent QGraphicsItem
     QGraphicsProxyWidget *_proxyWidget;

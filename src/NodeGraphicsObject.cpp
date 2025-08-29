@@ -22,6 +22,7 @@ NodeGraphicsObject::NodeGraphicsObject(BasicGraphicsScene &scene, NodeId nodeId)
     : _nodeId(nodeId)
     , _graphModel(scene.graphModel())
     , _nodeState(*this)
+    , _locked(false)
     , _proxyWidget(nullptr)
 {
     scene.addItem(this);
@@ -186,8 +187,12 @@ QVariant NodeGraphicsObject::itemChange(GraphicsItemChange change, const QVarian
 
 void NodeGraphicsObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    //if (_nodeState.locked())
-    //return;
+    //@TODO: create clearSelection method in AbstractGraphModel class
+
+    //if (_locked) {
+    //    _graphModel.clearSelection();
+    //    return;
+    //}
 
     AbstractNodeGeometry &geometry = nodeScene()->nodeGeometry();
 
@@ -289,11 +294,46 @@ void NodeGraphicsObject::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
             event->accept();
         }
     } else {
-        auto diff = event->pos() - event->lastPos();
+        QGraphicsObject::mouseMoveEvent(event);
 
-        nodeScene()->undoStack().push(new MoveNodeCommand(nodeScene(), diff));
+        //@TODO: solve grouping logic
 
-        event->accept();
+        //if (event->lastPos() != event->pos()) {
+        //    if (auto nodeGroup = node().nodeGroup().lock(); nodeGroup) {
+        //        nodeGroup->groupGraphicsObject().moveConnections();
+        //        if (nodeGroup->groupGraphicsObject().locked()) {
+        //            nodeGroup->groupGraphicsObject().moveNodes(diff);
+        //       }
+        //    } else {
+        //        moveConnections();
+        //        /// if it intersects with a group, expand group
+        //        QList<QGraphicsItem *> overlapItems = collidingItems();
+        //        for (auto &item : overlapItems) {
+        //            auto ggo = qgraphicsitem_cast<GroupGraphicsObject *>(item);
+        //            if (ggo != nullptr) {
+        //                if (!ggo->locked()) {
+        //                    if (!_draggingIntoGroup) {
+        //                        _draggingIntoGroup = true;
+        //                        _possibleGroup = ggo;
+        //                        _originalGroupSize = _possibleGroup->mapRectToScene(ggo->rect());
+        //                       _possibleGroup->setPossibleChild(this);
+        //                        break;
+        //                    } else {
+        //                       if (ggo == _possibleGroup) {
+        //                            if (!boundingRect().intersects(
+        //                                    mapRectFromScene(_originalGroupSize))) {
+        //                                _draggingIntoGroup = false;
+        //                                _originalGroupSize = QRectF();
+        //                                _possibleGroup->unsetPossibleChild();
+        //                                _possibleGroup = nullptr;
+        //                            }
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    }
+        event->ignore();
     }
 
     QRectF r = nodeScene()->sceneRect();
@@ -380,6 +420,14 @@ void NodeGraphicsObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     Q_EMIT nodeScene()->nodeContextMenu(_nodeId, mapToScene(event->pos()));
 }
 
+void NodeGraphicsObject::lock(bool locked)
+{
+    _locked = locked;
+
+    setFlag(QGraphicsItem::ItemIsFocusable, !locked);
+    setFlag(QGraphicsItem::ItemIsSelectable, !locked);
+}
+
 QJsonObject NodeGraphicsObject::save() const
 {
     //@TODO: create correct save logic, similar to v1's Node save
@@ -396,6 +444,9 @@ QJsonObject NodeGraphicsObject::save() const
     //nodeJson["position"] = obj;
     //
     //return nodeJson;
+
+    QJsonObject nodeJson;
+    return nodeJson;
 }
 
 } // namespace QtNodes

@@ -3,6 +3,7 @@
 #include "NodeConnectionInteraction.hpp"
 #include "NodeGraphicsObject.hpp"
 #include <QGraphicsSceneMouseEvent>
+#include <QPainter>
 #include <QStyleOptionGraphicsItem>
 #include <QtNodes/DataFlowGraphModel>
 
@@ -77,9 +78,7 @@ QRectF GroupGraphicsObject::boundingRect() const
 {
     QRectF ret{};
     for (auto &node : _group.childNodes()) {
-        NodeGraphicsObject *ngo = node->nodeGraphicsObject();
-
-        ret |= ngo->mapRectToScene(ngo->boundingRect());
+        ret |= node->mapRectToScene(node->boundingRect());
     }
     if (_possibleChild) {
         ret |= _possibleChild->mapRectToScene(_possibleChild->boundingRect());
@@ -102,24 +101,23 @@ void GroupGraphicsObject::setBorderColor(const QColor &color)
 void GroupGraphicsObject::moveConnections()
 {
     for (auto &node : group().childNodes()) {
-        node->nodeGraphicsObject().moveConnections();
+        node->moveConnections();
     }
 }
 
 void GroupGraphicsObject::moveNodes(const QPointF &offset)
 {
     for (auto &node : group().childNodes()) {
-        auto nodeGraphics = node->nodeGraphicsObject();
-        auto newPosition = QPointF(nodeGraphics->x() + offset.x(), nodeGraphics->y() + offset.y());
-        nodeGraphics->setPos(newPosition);
-        nodeGraphics->update();
+        auto newPosition = QPointF(node->x() + offset.x(), node->y() + offset.y());
+        node->setPos(newPosition);
+        node->update();
     }
 }
 
 void GroupGraphicsObject::lock(bool locked)
 {
     for (auto &node : _group.childNodes()) {
-        node->nodeGraphicsObject().lock(locked);
+        node->lock(locked);
     }
     _lockedGraphicsItem->setVisible(locked);
     _unlockedGraphicsItem->setVisible(!locked);
@@ -149,8 +147,10 @@ void GroupGraphicsObject::setHovered(bool hovered)
             : setFillColor(locked() ? kLockedFillColor : kUnlockedFillColor);
 
     for (auto &node : _group.childNodes()) {
-        node->nodeGeometry().setHovered(hovered);
-        node->nodeGraphicsObject().update();
+        //@TODO: solve setHovered method... it is in NodeState
+
+        //node->nodeScene()->nodeGeometry().setHovered(hovered);
+        node->update();
     }
     update();
 }
