@@ -52,7 +52,6 @@ void DefaultNodePainter::drawNodeRect(QPainter *painter, NodeGraphicsObject &ngo
     NodeStyle nodeStyle(json.object());
 
     QVariant var = model.nodeData(nodeId, NodeRole::ValidationState);
-    bool invalid = false;
 
     QColor color = ngo.isSelected() ? nodeStyle.SelectedBoundaryColor
                                     : nodeStyle.NormalBoundaryColor;
@@ -61,11 +60,9 @@ void DefaultNodePainter::drawNodeRect(QPainter *painter, NodeGraphicsObject &ngo
         auto state = var.value<NodeValidationState>();
         switch (state._state) {
         case NodeValidationState::State::Error: {
-            invalid = true;
             color = nodeStyle.ErrorColor;
         } break;
         case NodeValidationState::State::Warning: {
-            invalid = true;
             color = nodeStyle.WarningColor;
             break;
         default:
@@ -82,17 +79,14 @@ void DefaultNodePainter::drawNodeRect(QPainter *painter, NodeGraphicsObject &ngo
         painter->setPen(p);
     }
 
-    if (invalid) {
-        painter->setBrush(color);
-    } else {
-        QLinearGradient gradient(QPointF(0.0, 0.0), QPointF(2.0, size.height()));
-        gradient.setColorAt(0.0, nodeStyle.GradientColor0);
-        gradient.setColorAt(0.10, nodeStyle.GradientColor1);
-        gradient.setColorAt(0.90, nodeStyle.GradientColor2);
-        gradient.setColorAt(1.0, nodeStyle.GradientColor3);
+    QLinearGradient gradient(QPointF(0.0, 0.0), QPointF(2.0, size.height()));
+    gradient.setColorAt(0.0, nodeStyle.GradientColor0);
+    gradient.setColorAt(0.10, nodeStyle.GradientColor1);
+    gradient.setColorAt(0.90, nodeStyle.GradientColor2);
+    gradient.setColorAt(1.0, nodeStyle.GradientColor3);
 
-        painter->setBrush(gradient);
-    }
+    painter->setBrush(gradient);
+
     QRectF boundary(0, 0, size.width(), size.height());
 
     double const radius = 3.0;
