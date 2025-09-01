@@ -147,9 +147,8 @@ void GroupGraphicsObject::setHovered(bool hovered)
             : setFillColor(locked() ? kLockedFillColor : kUnlockedFillColor);
 
     for (auto &node : _group.childNodes()) {
-        //@TODO: solve setHovered method... it is in NodeState
-
-        //node->nodeScene()->nodeGeometry().setHovered(hovered);
+        auto &ngo = node->nodeScene()->nodeGraphicsObject(node->nodeId());
+        ngo->nodeState().setHovered(hovered);
         node->update();
     }
     update();
