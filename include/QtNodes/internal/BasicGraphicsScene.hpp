@@ -5,6 +5,8 @@
 #include "ConnectionIdHash.hpp"
 #include "Definitions.hpp"
 #include "Export.hpp"
+#include "GroupGraphicsObject.hpp"
+#include "NodeGroup.hpp"
 #include "QUuidStdHash.hpp"
 #include "UndoCommands.hpp"
 
@@ -30,6 +32,8 @@ class NodeStyle;
 class DeleteCommand;
 class CopyCommand;
 class ConnectionId;
+class NodeGroup;
+class GroupGraphicsObject;
 
 /// An instance of QGraphicsScene, holds connections and nodes.
 class NODE_EDITOR_PUBLIC BasicGraphicsScene : public QGraphicsScene
@@ -89,6 +93,44 @@ public:
     void clearScene();
 
     std::vector<std::shared_ptr<ConnectionId>> connectionsWithinGroup(const QUuid &groupID);
+
+    /**
+   * @brief Creates a group in the scene containing the given nodes.
+   * @param nodes Reference to the list of nodes to be included in the group.
+   * @param name Group's name.
+   * @return Pointer to the newly-created group.
+   */
+    std::weak_ptr<NodeGroup> createGroup(std::vector<NodeGraphicsObject *> &nodes,
+                                         QString name = QStringLiteral(""));
+
+    /**
+   * @brief Creates a group in the scene containing the currently selected nodes.
+   * @param name Group's name
+   * @return Pointer to the newly-created group.
+   */
+    std::weak_ptr<NodeGroup> createGroupFromSelection(QString groupName = QStringLiteral(""));
+
+    /**
+   * @brief Restores a group from a JSON object.
+   * @param groupJson JSON object containing the group data.
+   * @return Pair consisting of a pointer to the newly-created group and the mapping
+   * between old and new nodes.
+   */
+    std::pair<std::weak_ptr<NodeGroup>, std::unordered_map<QUuid, QUuid>> restoreGroup(
+        QJsonObject const &groupJson);
+
+    /**
+   * @brief Returns a const reference to the mapping of existing groups.
+   */
+    std::unordered_map<QUuid, std::shared_ptr<NodeGroup>> const &groups() const;
+
+    /**
+   * @brief Loads a group from a file specified by the user.
+   * @return Pointer to the newly-created group.
+   */
+    std::weak_ptr<NodeGroup> loadGroupFile();
+
+    std::vector<NodeGraphicsObject *> selectedNodes() const;
 
 public:
     /**
@@ -166,9 +208,11 @@ private:
 
     using UniqueNodeGraphicsObject = std::unique_ptr<NodeGraphicsObject>;
     using UniqueConnectionGraphicsObject = std::unique_ptr<ConnectionGraphicsObject>;
+    using SharedGroup = std::shared_ptr<NodeGroup>;
 
     std::unordered_map<NodeId, UniqueNodeGraphicsObject> _nodeGraphicsObjects;
     std::unordered_map<ConnectionId, UniqueConnectionGraphicsObject> _connectionGraphicsObjects;
+    std::unordered_map<QUuid, SharedGroup> _groups{};
     std::unique_ptr<ConnectionGraphicsObject> _draftConnection;
     std::unique_ptr<AbstractNodeGeometry> _nodeGeometry;
     std::unique_ptr<AbstractNodePainter> _nodePainter;

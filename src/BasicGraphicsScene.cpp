@@ -348,6 +348,107 @@ void BasicGraphicsScene::onModelReset()
     traverseGraphAndPopulateGraphicsObjects();
 }
 
+std::weak_ptr<NodeGroup> BasicGraphicsScene::createGroup(std::vector<NodeGraphicsObject *> &nodes,
+                                                         QString groupName)
+{
+    if (nodes.empty())
+        return std::weak_ptr<NodeGroup>();
+
+    //@TODO: understand how nodeGroup is called (unordered map in header)
+    // create removeNode and removeNodeFromGroup function
+
+    // remove nodes from their previous group
+    //for (auto *node : nodes) {
+    //    if (!node->nodeGroup().expired())
+    //        removeNodeFromGroup(node->id());
+    //}
+
+    if (groupName == QStringLiteral("")) {
+        groupName = "Group " + QString::number(NodeGroup::groupCount());
+    }
+    auto group = std::make_shared<NodeGroup>(nodes, QUuid::createUuid(), groupName, this);
+    auto ggo = std::make_unique<GroupGraphicsObject>(*this, *group);
+
+    group->setGraphicsObject(std::move(ggo));
+
+    for (auto &nodePtr : nodes) {
+        auto node = _nodeGraphicsObjects[nodePtr->nodeId()].get();
+
+        // @TODO: create function to set group in Node class
+
+        //node->setNodeGroup(group);
+    }
+
+    std::weak_ptr<NodeGroup> groupWeakPtr = group;
+
+    _groups[group->id()] = std::move(group);
+
+    return groupWeakPtr;
+}
+
+std::vector<NodeGraphicsObject *> BasicGraphicsScene::selectedNodes() const
+{
+    QList<QGraphicsItem *> graphicsItems = selectedItems();
+
+    std::vector<NodeGraphicsObject *> result;
+    result.reserve(graphicsItems.size());
+
+    for (QGraphicsItem *item : graphicsItems) {
+        auto ngo = qgraphicsitem_cast<NodeGraphicsObject *>(item);
+
+        if (ngo) {
+            result.push_back(ngo);
+        }
+    }
+
+    return result;
+}
+
+std::weak_ptr<QtNodes::NodeGroup> BasicGraphicsScene::createGroupFromSelection(QString groupName)
+{
+    auto nodes = selectedNodes();
+    return createGroup(nodes, groupName);
+}
+
+std::pair<std::weak_ptr<NodeGroup>, std::unordered_map<QUuid, QUuid>>
+BasicGraphicsScene::restoreGroup(QJsonObject const &groupJson)
+{
+    // since the new nodes will have the same IDs as in the file and the connections
+    // need these old IDs to be restored, we must create new IDs and map them to the
+    // old ones so the connections are properly restored
+    std::unordered_map<QUuid, QUuid> IDsMap{};
+
+    std::vector<NodeGraphicsObject *> group_children{};
+
+    QJsonArray nodesJson = groupJson["nodes"].toArray();
+    for (const QJsonValueRef nodeJson : nodesJson) {
+        auto oldID = QUuid(nodeJson.toObject()["id"].toString());
+
+        //@TODO: create laodNodeToMap method in v3
+
+        //auto &nodeRef = loadNodeToMap(nodeJson.toObject(), _nodes, false);
+
+        //auto newID = nodeRef.id();
+
+        //IDsMap.insert(std::make_pair(oldID, newID));
+        //group_children.push_back(&nodeRef);
+    }
+
+    QJsonArray connectionJsonArray = groupJson["connections"].toArray();
+    for (auto connection : connectionJsonArray) {
+        //@TODO: create loadConnectionToMap method in v3
+
+        //loadConnectionToMap(connection.toObject(), _nodes, _connections, IDsMap);
+    }
+
+    return std::make_pair(createGroup(group_children, groupJson["name"].toString()), IDsMap);
+}
+
+std::unordered_map<QUuid, std::shared_ptr<NodeGroup>> const &BasicGraphicsScene::groups() const
+{
+    return _groups;
+}
+
 QMenu *BasicGraphicsScene::createFreezeMenu(QPointF const scenePos)
 {
     QMenu *menu = new QMenu();
