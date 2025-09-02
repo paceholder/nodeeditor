@@ -136,10 +136,13 @@ Qt Creator
 ----------
 
 1. Open `CMakeLists.txt` as project.
-2. If you don't have the `Catch2` library installed, go to `Build Settings`, disable the checkbox `BUILD_TESTING`.
-3. `Build -> Run CMake`
-4. `Build -> Build All`
-5. Click the button `Run`
+2. `Build -> Run CMake`
+3. `Build -> Build All`
+4. Click the button `Run`
+
+.. note::
+   The project includes unit tests built with Catch2. If you don't have Catch2 installed, 
+   you can disable testing by setting `-DBUILD_TESTING=OFF` in CMake configuration.
 
 
 With Cmake using `vcpkg`
@@ -151,6 +154,39 @@ With Cmake using `vcpkg`
 ::
 
    -DCMAKE_TOOLCHAIN_FILE=<vcpkg_dir>/scripts/buildsystems/scripts/buildsystems/vcpkg.cmake
+
+
+Testing
+=======
+
+QtNodes includes a comprehensive unit test suite built with Catch2.
+
+**Running Tests**
+
+From the build directory:
+
+::
+
+    # Build tests
+    make test_nodes
+    
+    # Run all tests
+    ./bin/test_nodes
+    
+    # Run specific categories
+    ./bin/test_nodes "[core]"        # Core functionality tests
+    ./bin/test_nodes "[graphics]"    # Graphics system tests
+
+**Test Coverage**
+
+* Core model operations (node CRUD, connections)
+* Signal emission verification (AbstractGraphModel signals)
+* Serialization (JSON save/load) 
+* Undo system integration
+* Graphics scene management
+* Connection utilities
+
+For detailed testing documentation, see the `Testing Guide <https://qtnodes.readthedocs.io/en/latest/testing.html>`_.
 
 
 Help Needed
@@ -193,14 +229,14 @@ Citing
 
 ::
 
-    Dmitry Pinaev et al, Qt Nodes, (2022), GitHub repository, https://github.com/paceholder/nodeeditor
+    Dmitry Pinaev et al, Qt Nodes, (2013-2025), GitHub repository, https://github.com/paceholder/nodeeditor
 
 BibTeX::
 
-    @misc{Pinaev2022,
+    @misc{Pinaev2025,
       author = {Dmitry Pinaev et al},
       title = {QtNodes. Node Editor},
-      year = {2017},
+      year = {2025},
       publisher = {GitHub},
       journal = {GitHub repository},
       howpublished = {\url{https://github.com/paceholder/nodeeditor}},
