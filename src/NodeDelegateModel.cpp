@@ -24,6 +24,11 @@ void NodeDelegateModel::load(QJsonObject const &)
     //
 }
 
+void NodeDelegateModel::setValidatonState(const NodeValidationState &validationState)
+{
+    _nodeValidationState = validationState;
+}
+
 ConnectionPolicy NodeDelegateModel::portConnectionPolicy(PortType portType, PortIndex) const
 {
     auto result = ConnectionPolicy::One;

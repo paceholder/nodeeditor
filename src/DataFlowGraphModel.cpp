@@ -1,8 +1,11 @@
 #include "DataFlowGraphModel.hpp"
+
 #include "ConnectionIdHash.hpp"
+#include "Definitions.hpp"
 
 #include <QJsonArray>
 
+#include <stack>
 #include <stdexcept>
 
 namespace QtNodes {
@@ -105,6 +108,22 @@ NodeId DataFlowGraphModel::addNode(QString const nodeType)
 
 bool DataFlowGraphModel::connectionPossible(ConnectionId const connectionId) const
 {
+    // Check if nodes exist
+    if (!nodeExists(connectionId.outNodeId) || !nodeExists(connectionId.inNodeId)) {
+        return false;
+    }
+
+    // Check port bounds, i.e. that we do not connect non-existing port numbers
+    auto checkPortBounds = [&](PortType const portType) {
+        NodeId const nodeId = getNodeId(portType, connectionId);
+        auto portCountRole = (portType == PortType::Out) ? NodeRole::OutPortCount
+                                                         : NodeRole::InPortCount;
+
+        std::size_t const portCount = nodeData(nodeId, portCountRole).toUInt();
+
+        return getPortIndex(portType, connectionId) < portCount;
+    };
+
     auto getDataType = [&](PortType const portType) {
         return portData(getNodeId(portType, connectionId),
                         portType,
@@ -124,8 +143,42 @@ bool DataFlowGraphModel::connectionPossible(ConnectionId const connectionId) con
         return connected.empty() || (policy == ConnectionPolicy::Many);
     };
 
-    return getDataType(PortType::Out).id == getDataType(PortType::In).id
-           && portVacant(PortType::Out) && portVacant(PortType::In);
+    bool const basicChecks = getDataType(PortType::Out).id == getDataType(PortType::In).id
+                             && portVacant(PortType::Out) && portVacant(PortType::In)
+                             && checkPortBounds(PortType::Out) && checkPortBounds(PortType::In);
+
+    // In data-flow mode (this class) it's important to forbid graph loops.
+    // We perform depth-first graph traversal starting from the "Input" port of
+    // the given connection. We should never encounter the starting "Out" node.
+
+    auto hasLoops = [this, &connectionId]() -> bool {
+        std::stack<NodeId> filo;
+        filo.push(connectionId.inNodeId);
+
+        while (!filo.empty()) {
+            auto id = filo.top();
+            filo.pop();
+
+            if (id == connectionId.outNodeId) { // LOOP!
+                return true;
+            }
+
+            // Add out-connections to continue interations
+            std::size_t const nOutPorts = nodeData(id, NodeRole::OutPortCount).toUInt();
+
+            for (PortIndex index = 0; index < nOutPorts; ++index) {
+                auto const &outConnectionIds = connections(id, PortType::Out, index);
+
+                for (auto cid : outConnectionIds) {
+                    filo.push(cid.inNodeId);
+                }
+            }
+        }
+
+        return false;
+    };
+
+    return basicChecks && (loopsEnabled() || !hasLoops());
 }
 
 void DataFlowGraphModel::addConnection(ConnectionId const connectionId)
@@ -233,8 +286,13 @@ QVariant DataFlowGraphModel::nodeData(NodeId nodeId, NodeRole role) const
         break;
 
     case NodeRole::Widget: {
-        auto w = model->embeddedWidget();
+        auto *w = model->embeddedWidget();
         result = QVariant::fromValue(w);
+    } break;
+
+    case NodeRole::ValidationState: {
+        auto validationState = model->validationState();
+        result = QVariant::fromValue(validationState);
     } break;
     }
 
@@ -295,6 +353,16 @@ bool DataFlowGraphModel::setNodeData(NodeId nodeId, NodeRole role, QVariant valu
 
     case NodeRole::Widget:
         break;
+
+    case NodeRole::ValidationState: {
+        if (value.canConvert<NodeValidationState>()) {
+            auto state = value.value<NodeValidationState>();
+            if (auto node = delegateModel<NodeDelegateModel>(nodeId); node != nullptr) {
+                node->setValidatonState(state);
+            }
+        }
+        Q_EMIT nodeUpdated(nodeId);
+    } break;
     }
 
     return result;
@@ -315,8 +383,9 @@ QVariant DataFlowGraphModel::portData(NodeId nodeId,
 
     switch (role) {
     case PortRole::Data:
-        if (portType == PortType::Out)
+        if (portType == PortType::Out) {
             result = QVariant::fromValue(model->outData(portIndex));
+        }
         break;
 
     case PortRole::DataType:
@@ -476,7 +545,8 @@ void DataFlowGraphModel::loadNode(QJsonObject const &nodeJson)
         connect(model.get(),
                 &NodeDelegateModel::portsAboutToBeDeleted,
                 this,
-                [restoredNodeId, this](PortType const portType, PortIndex const first, PortIndex const last) {
+                [restoredNodeId,
+                 this](PortType const portType, PortIndex const first, PortIndex const last) {
                     portsAboutToBeDeleted(restoredNodeId, portType, first, last);
                 });
 
@@ -488,7 +558,8 @@ void DataFlowGraphModel::loadNode(QJsonObject const &nodeJson)
         connect(model.get(),
                 &NodeDelegateModel::portsAboutToBeInserted,
                 this,
-                [restoredNodeId, this](PortType const portType, PortIndex const first, PortIndex const last) {
+                [restoredNodeId,
+                 this](PortType const portType, PortIndex const first, PortIndex const last) {
                     portsAboutToBeInserted(restoredNodeId, portType, first, last);
                 });
 

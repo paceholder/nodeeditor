@@ -1,11 +1,12 @@
 #include "ConnectionState.hpp"
 
-#include <QtCore/QDebug>
-#include <QtCore/QPointF>
-
 #include "BasicGraphicsScene.hpp"
 #include "ConnectionGraphicsObject.hpp"
 #include "NodeGraphicsObject.hpp"
+
+#include <QtCore/QDebug>
+#include <QtCore/QPointF>
+
 
 namespace QtNodes {
 

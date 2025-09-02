@@ -1,11 +1,5 @@
 #include "NodeGraphicsObject.hpp"
 
-#include <cstdlib>
-#include <iostream>
-
-#include <QtWidgets/QGraphicsEffect>
-#include <QtWidgets/QtWidgets>
-
 #include "AbstractGraphModel.hpp"
 #include "AbstractNodeGeometry.hpp"
 #include "AbstractNodePainter.hpp"
@@ -13,8 +7,15 @@
 #include "ConnectionGraphicsObject.hpp"
 #include "ConnectionIdUtils.hpp"
 #include "NodeConnectionInteraction.hpp"
+#include "NodeDelegateModel.hpp"
 #include "StyleCollection.hpp"
 #include "UndoCommands.hpp"
+
+#include <QtWidgets/QGraphicsEffect>
+#include <QtWidgets/QtWidgets>
+
+#include <cstdlib>
+
 
 namespace QtNodes {
 
@@ -37,8 +38,7 @@ NodeGraphicsObject::NodeGraphicsObject(BasicGraphicsScene &scene, NodeId nodeId)
 
     NodeStyle nodeStyle(nodeStyleJson);
 
-    if(nodeStyle.ShadowEnabled)
-    {
+    if (nodeStyle.ShadowEnabled) {
         auto effect = new QGraphicsDropShadowEffect;
         effect->setOffset(4, 4);
         effect->setBlurRadius(20);
@@ -79,10 +79,10 @@ BasicGraphicsScene *NodeGraphicsObject::nodeScene() const
 
 void NodeGraphicsObject::updateQWidgetEmbedPos()
 {
-  if (_proxyWidget) {
-    AbstractNodeGeometry &geometry = nodeScene()->nodeGeometry();
-    _proxyWidget->setPos(geometry.widgetPosition(_nodeId));
-  }
+    if (_proxyWidget) {
+        AbstractNodeGeometry &geometry = nodeScene()->nodeGeometry();
+        _proxyWidget->setPos(geometry.widgetPosition(_nodeId));
+    }
 }
 
 void NodeGraphicsObject::embedQWidget()
@@ -161,6 +161,16 @@ void NodeGraphicsObject::reactToConnection(ConnectionGraphicsObject const *cgo)
 
 void NodeGraphicsObject::paint(QPainter *painter, QStyleOptionGraphicsItem const *option, QWidget *)
 {
+    QString tooltip;
+    QVariant var = _graphModel.nodeData(_nodeId, NodeRole::ValidationState);
+    if (var.canConvert<NodeValidationState>()) {
+        auto state = var.value<NodeValidationState>();
+        if (state._state != NodeValidationState::State::Valid) {
+            tooltip = state._stateMessage;
+        }
+    }
+    setToolTip(tooltip);
+
     painter->setClipRect(option->exposedRect);
 
     nodeScene()->nodePainter().paint(painter, *this);
@@ -225,6 +235,8 @@ void NodeGraphicsObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
                                                                                    portToCheck,
                                                                                    portIndex);
 
+            // From the moment of creation a draft connection
+            // grabs the mouse events and waits for the mouse button release
             nodeScene()->makeDraftConnection(incompleteConnectionId);
         }
     }
