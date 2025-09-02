@@ -1,5 +1,6 @@
-<RCC version="1.0">
-    <qresource>
+<RCC>
+    <qresource prefix="/">
         <file>DefaultStyle.json</file>
+        <file>info-tooltip.svg</file>
     </qresource>
 </RCC>
