@@ -1,9 +1,9 @@
 #pragma once
 
+#include "NodeGroup.hpp"
+#include "NodeState.hpp"
 #include <QtCore/QUuid>
 #include <QtWidgets/QGraphicsObject>
-
-#include "NodeState.hpp"
 
 class QGraphicsProxyWidget;
 
@@ -11,6 +11,7 @@ namespace QtNodes {
 
 class BasicGraphicsScene;
 class AbstractGraphModel;
+class NodeGroup;
 
 class NodeGraphicsObject : public QGraphicsObject
 {
@@ -56,6 +57,8 @@ public:
 
     QJsonObject save() const;
 
+    void unsetNodeGroup() { _nodeGroup = std::weak_ptr<NodeGroup>(); }
+
 protected:
     void paint(QPainter *painter,
                QStyleOptionGraphicsItem const *option,
@@ -87,5 +90,7 @@ private:
 
     // either nullptr or owned by parent QGraphicsItem
     QGraphicsProxyWidget *_proxyWidget;
+
+    std::weak_ptr<NodeGroup> _nodeGroup{};
 };
 } // namespace QtNodes

@@ -1,4 +1,5 @@
 #include "NodeGroup.hpp"
+#include "ConnectionIdUtils.hpp"
 #include "NodeConnectionInteraction.hpp"
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -40,14 +41,12 @@ QByteArray NodeGroup::saveToFile() const
     }
     groupJson["nodes"] = nodesJson;
 
-    //@TODO: create save function for a connection (look into ConnectionId)
-
-    //QJsonArray connectionsJson;
-    //auto groupConnections = _groupGraphicsObject->connections();
-    //for (auto const &connection : groupConnections) {
-    //    connectionsJson.append(connection->save());
-    //}
-    //groupJson["connections"] = connectionsJson;
+    QJsonArray connectionsJson;
+    auto groupConnections = _groupGraphicsObject->connections();
+    for (auto const &connection : groupConnections) {
+        connectionsJson.append(toJson(*connection));
+    }
+    groupJson["connections"] = connectionsJson;
 
     QJsonDocument groupDocument(groupJson);
 
@@ -115,11 +114,10 @@ void NodeGroup::addNode(NodeGraphicsObject *node)
 void NodeGroup::removeNode(NodeGraphicsObject *node)
 {
     auto nodeIt = std::find(_childNodes.begin(), _childNodes.end(), node);
-    // @TODO: create function to unset group in Node class
 
-    //if (nodeIt != _childNodes.end()) {
-    //    (*nodeIt)->unsetNodeGroup();
-    //    _childNodes.erase(nodeIt);
-    //    groupGraphicsObject().positionLockedIcon();
-    //}
+    if (nodeIt != _childNodes.end()) {
+        (*nodeIt)->unsetNodeGroup();
+        _childNodes.erase(nodeIt);
+        groupGraphicsObject().positionLockedIcon();
+    }
 }

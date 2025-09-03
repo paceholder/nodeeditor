@@ -1,5 +1,4 @@
 #include "NodeGraphicsObject.hpp"
-
 #include "AbstractGraphModel.hpp"
 #include "AbstractNodeGeometry.hpp"
 #include "AbstractNodePainter.hpp"
@@ -8,6 +7,7 @@
 #include "ConnectionIdUtils.hpp"
 #include "NodeConnectionInteraction.hpp"
 #include "NodeDelegateModel.hpp"
+#include "NodeGroup.hpp"
 #include "StyleCollection.hpp"
 #include "UndoCommands.hpp"
 
