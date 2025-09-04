@@ -43,6 +43,8 @@ public:
 
     double getScale() const;
 
+    bool handleEvent(QEvent *e);
+
 public Q_SLOTS:
     void scaleUp();
 
@@ -62,6 +64,8 @@ Q_SIGNALS:
     void scaleChanged(double scale);
 
 protected:
+    bool handleMouseEvent(QMouseEvent *event);
+
     void contextMenuEvent(QContextMenuEvent *event) override;
 
     void wheelEvent(QWheelEvent *event) override;
@@ -93,5 +97,7 @@ private:
 
     QPointF _clickPos;
     ScaleRange _scaleRange;
+
+    QWidget *m_mouseDownWidget = nullptr;
 };
 } // namespace QtNodes
