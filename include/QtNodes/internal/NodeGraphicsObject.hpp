@@ -2,6 +2,7 @@
 
 #include "NodeGroup.hpp"
 #include "NodeState.hpp"
+#include "NodeDelegateModel.hpp"
 #include <QtCore/QUuid>
 #include <QtWidgets/QGraphicsObject>
 
@@ -12,6 +13,8 @@ namespace QtNodes {
 class BasicGraphicsScene;
 class AbstractGraphModel;
 class NodeGroup;
+class NodeDelegateModel;
+
 
 class NodeGraphicsObject : public QGraphicsObject
 {
@@ -56,6 +59,8 @@ public:
     void updateQWidgetEmbedPos();
 
     QJsonObject save() const;
+
+    void setNodeGroup(std::shared_ptr<NodeGroup> group);
 
     void unsetNodeGroup() { _nodeGroup = std::weak_ptr<NodeGroup>(); }
 

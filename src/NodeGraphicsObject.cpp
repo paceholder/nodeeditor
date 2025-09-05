@@ -10,6 +10,7 @@
 #include "NodeGroup.hpp"
 #include "StyleCollection.hpp"
 #include "UndoCommands.hpp"
+#include <string>
 
 #include <QtWidgets/QGraphicsEffect>
 #include <QtWidgets/QtWidgets>
@@ -140,6 +141,11 @@ void NodeGraphicsObject::setGeometryChanged()
     prepareGeometryChange();
 }
 
+void NodeGraphicsObject::setNodeGroup(std::shared_ptr<NodeGroup> group)
+{
+    _nodeGroup = group;
+}
+
 void NodeGraphicsObject::moveConnections() const
 {
     auto const &connected = _graphModel.allConnectionIds(_nodeId);
@@ -187,12 +193,10 @@ QVariant NodeGraphicsObject::itemChange(GraphicsItemChange change, const QVarian
 
 void NodeGraphicsObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    //@TODO: create clearSelection method in AbstractGraphModel class
-
-    //if (_locked) {
-    //    _graphModel.clearSelection();
-    //    return;
-    //}
+    if (_locked) {
+        nodeScene()->clearSelection();
+        return;
+    }
 
     AbstractNodeGeometry &geometry = nodeScene()->nodeGeometry();
 
@@ -432,20 +436,17 @@ QJsonObject NodeGraphicsObject::save() const
 {
     //@TODO: create correct save logic, similar to v1's Node save
 
-    //QJsonObject nodeJson;
-    //
-    //nodeJson["id"] = _uid.toString();
-    //
-    //nodeJson["model"] = _nodeDataModel->save();
-    //
-    //QJsonObject obj;
-    //obj["x"] = _nodeGraphicsObject->pos().x();
-    //obj["y"] = _nodeGraphicsObject->pos().y();
-    //nodeJson["position"] = obj;
-    //
-    //return nodeJson;
-
     QJsonObject nodeJson;
+
+    //nodeJson["id"] = std::to_string(_nodeId);
+
+    //nodeJson["model"] = _graphModel->save();
+
+    QJsonObject obj;
+    obj["x"] = pos().x();
+    obj["y"] = pos().y();
+    nodeJson["position"] = obj;
+
     return nodeJson;
 }
 

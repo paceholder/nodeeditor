@@ -376,7 +376,7 @@ std::weak_ptr<NodeGroup> BasicGraphicsScene::createGroup(std::vector<NodeGraphic
 
         // @TODO: create function to set group in Node class
 
-        //node->setNodeGroup(group);
+        node->setNodeGroup(group);
     }
 
     std::weak_ptr<NodeGroup> groupWeakPtr = group;
