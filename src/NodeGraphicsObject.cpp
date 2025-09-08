@@ -10,7 +10,7 @@
 #include "NodeGroup.hpp"
 #include "StyleCollection.hpp"
 #include "UndoCommands.hpp"
-#include <string>
+#include <QString>
 
 #include <QtWidgets/QGraphicsEffect>
 #include <QtWidgets/QtWidgets>
@@ -438,7 +438,7 @@ QJsonObject NodeGraphicsObject::save() const
 
     QJsonObject nodeJson;
 
-    //nodeJson["id"] = std::to_string(_nodeId);
+    nodeJson["id"] = QString::number(_nodeId);
 
     //nodeJson["model"] = _graphModel->save();
 
