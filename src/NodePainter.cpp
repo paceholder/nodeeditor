@@ -420,13 +420,17 @@ drawValidationRect(QPainter * painter,
 
     QFontMetrics metrics(f);
 
-    auto rect = metrics.boundingRect(errorMsg);
-
-    QPointF position((geom.width() - rect.width()) / 2.0,
-                     geom.height() - (geom.validationHeight() - diam) / 2.0);
+    // Calculate the available area for text with some padding
+    double padding = 4.0;
+    QRectF textRect(padding,
+                    geom.height() - geom.validationHeight() + padding,
+                    geom.width() - 2 * padding,
+                    geom.validationHeight() - 2 * padding);
 
     painter->setFont(f);
     painter->setPen(nodeStyle.FontColor);
-    painter->drawText(position, errorMsg);
+    
+    // Use drawText with rectangle and flags to enable word wrapping and line breaks
+    painter->drawText(textRect, Qt::AlignCenter | Qt::TextWordWrap, errorMsg);
   }
 }

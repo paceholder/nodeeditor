@@ -285,7 +285,25 @@ validationHeight() const
 {
   QString msg = _dataModel->validationMessage();
 
-  return _boldFontMetrics.boundingRect(msg).height();
+  if (msg.isEmpty())
+    return 0;
+
+  // Calculate height for multi-line text with word wrapping
+  // Use the node width minus padding for text wrapping
+  double padding = 8.0; // 4.0 padding on each side
+  int availableWidth = _width - static_cast<int>(padding);
+  
+  // Ensure we have a minimum width for the calculation
+  if (availableWidth < 50)
+    availableWidth = 50;
+
+  // Use boundingRect with width constraint to get the actual height needed for wrapped text
+  QRect boundingRect = _boldFontMetrics.boundingRect(0, 0, availableWidth, 0,
+                                                     Qt::AlignCenter | Qt::TextWordWrap,
+                                                     msg);
+  
+  // Add some padding for better visual appearance
+  return boundingRect.height() + static_cast<int>(padding);
 }
 
 
@@ -295,7 +313,28 @@ validationWidth() const
 {
   QString msg = _dataModel->validationMessage();
 
-  return _boldFontMetrics.boundingRect(msg).width();
+  if (msg.isEmpty())
+    return 0;
+
+  // Instead of using the full text width, return a reasonable maximum width
+  // that allows for text wrapping. This prevents the node from becoming too wide.
+  double padding = 8.0; // 4.0 padding on each side
+  int availableWidth = _width - static_cast<int>(padding);
+  
+  // Ensure we have a minimum width for the calculation
+  if (availableWidth < 50)
+    availableWidth = 50;
+  QRect boundingRect = _boldFontMetrics.boundingRect(0, 0, availableWidth, 0,
+                                                     Qt::AlignCenter | Qt::TextWordWrap,
+                                                     msg);
+  int singleLineWidth = boundingRect.width();
+  
+  // Set a maximum width - this can be adjusted based on your UI preferences
+  // int maxWidth = 300; // Adjust this value as needed
+  
+  // // Use the smaller of the two: either the natural text width or our maximum
+  // return std::min(singleLineWidth, maxWidth);
+  return singleLineWidth;
 }
 
 
