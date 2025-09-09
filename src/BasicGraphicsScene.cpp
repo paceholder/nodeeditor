@@ -162,16 +162,15 @@ std::vector<std::shared_ptr<ConnectionId>> BasicGraphicsScene::connectionsWithin
     std::vector<std::shared_ptr<ConnectionId>> ret{};
 
     for (auto const &connection : _connectionGraphicsObjects) {
-        // @TODO: find correct replacement to v1's Node class
-        // look into ConnectionsIdUtils.hpp
-
-        //auto node1 = connection.second->getNode(PortType::In)->nodeGroup().lock();
-        //auto node2 = connection.second->getNode(PortType::Out)->nodeGroup().lock();
-        //if (node1 && node2) {
-        //    if ((node1->id() == node2->id()) && (node1->id() == groupID)) {
-        //        ret.push_back(connection.second);
-        //    }
-        //}
+        auto outNode = nodeGraphicsObject(connection.first.outNodeId);
+        auto inNode = nodeGraphicsObject(connection.first.inNodeId);
+        if (outNode && inNode) {
+            auto group1 = outNode->nodeGroup().lock();
+            auto group2 = inNode->nodeGroup().lock();
+            if (group1 && group2 && group1->id() == group2->id() && group1->id() == groupID) {
+                ret.push_back(std::make_shared<ConnectionId>(connection.first));
+            }
+        }
     }
 
     return ret;
@@ -291,6 +290,7 @@ void BasicGraphicsScene::onNodeDeleted(NodeId const nodeId)
 {
     auto it = _nodeGraphicsObjects.find(nodeId);
     if (it != _nodeGraphicsObjects.end()) {
+        removeNodeFromGroup(nodeId);
         _nodeGraphicsObjects.erase(it);
 
         Q_EMIT modified(this);
@@ -354,14 +354,10 @@ std::weak_ptr<NodeGroup> BasicGraphicsScene::createGroup(std::vector<NodeGraphic
     if (nodes.empty())
         return std::weak_ptr<NodeGroup>();
 
-    //@TODO: understand how nodeGroup is called (unordered map in header)
-    // create removeNode and removeNodeFromGroup function
-
-    // remove nodes from their previous group
-    //for (auto *node : nodes) {
-    //    if (!node->nodeGroup().expired())
-    //        removeNodeFromGroup(node->id());
-    //}
+    for (auto *node : nodes) {
+        if (!node->nodeGroup().expired())
+            removeNodeFromGroup(node->nodeId());
+    }
 
     if (groupName == QStringLiteral("")) {
         groupName = "Group " + QString::number(NodeGroup::groupCount());
@@ -373,8 +369,6 @@ std::weak_ptr<NodeGroup> BasicGraphicsScene::createGroup(std::vector<NodeGraphic
 
     for (auto &nodePtr : nodes) {
         auto node = _nodeGraphicsObjects[nodePtr->nodeId()].get();
-
-        // @TODO: create function to set group in Node class
 
         node->setNodeGroup(group);
     }
@@ -402,6 +396,36 @@ std::vector<NodeGraphicsObject *> BasicGraphicsScene::selectedNodes() const
     }
 
     return result;
+}
+
+void BasicGraphicsScene::addNodeToGroup(NodeId nodeId, QUuid const &groupId)
+{
+    auto groupIt = _groups.find(groupId);
+    auto nodeIt = _nodeGraphicsObjects.find(nodeId);
+    if (groupIt == _groups.end() || nodeIt == _nodeGraphicsObjects.end())
+        return;
+
+    auto group = groupIt->second;
+    auto node = nodeIt->second.get();
+    group->addNode(node);
+    node->setNodeGroup(group);
+}
+
+void BasicGraphicsScene::removeNodeFromGroup(NodeId nodeId)
+{
+    auto nodeIt = _nodeGraphicsObjects.find(nodeId);
+    if (nodeIt == _nodeGraphicsObjects.end())
+        return;
+
+    auto group = nodeIt->second->nodeGroup().lock();
+    if (group) {
+        group->removeNode(nodeIt->second.get());
+        if (group->empty()) {
+            _groups.erase(group->id());
+        }
+    }
+    nodeIt->second->unsetNodeGroup();
+    nodeIt->second->lock(false);
 }
 
 std::weak_ptr<QtNodes::NodeGroup> BasicGraphicsScene::createGroupFromSelection(QString groupName)
@@ -467,12 +491,10 @@ QMenu *BasicGraphicsScene::createFreezeMenu(QPointF const scenePos)
     QAction *cutAction = menu->addAction("Cut");
     cutAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_X));
 
-    /*
     // Conexões
     connect(createGroupAction, &QAction::triggered, [this]() {
-        // lógica para criar grupo da seleção
+        createGroupFromSelection();
     });
-    */
 
     connect(copyAction, &QAction::triggered, this, &BasicGraphicsScene::onCopySelectedObjects);
 

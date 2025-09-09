@@ -109,6 +109,9 @@ int NodeGroup::groupCount()
 void NodeGroup::addNode(NodeGraphicsObject *node)
 {
     _childNodes.push_back(node);
+    if (_groupGraphicsObject && _groupGraphicsObject->locked()) {
+        node->lock(true);
+    }
 }
 
 void NodeGroup::removeNode(NodeGraphicsObject *node)

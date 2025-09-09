@@ -1,8 +1,9 @@
 #pragma once
 
+#include "NodeDelegateModel.hpp"
 #include "NodeGroup.hpp"
 #include "NodeState.hpp"
-#include "NodeDelegateModel.hpp"
+#include <QRectF>
 #include <QtCore/QUuid>
 #include <QtWidgets/QGraphicsObject>
 
@@ -14,7 +15,7 @@ class BasicGraphicsScene;
 class AbstractGraphModel;
 class NodeGroup;
 class NodeDelegateModel;
-
+class GroupGraphicsObject;
 
 class NodeGraphicsObject : public QGraphicsObject
 {
@@ -64,6 +65,8 @@ public:
 
     void unsetNodeGroup() { _nodeGroup = std::weak_ptr<NodeGroup>(); }
 
+    std::weak_ptr<NodeGroup> nodeGroup() const { return _nodeGroup; }
+
 protected:
     void paint(QPainter *painter,
                QStyleOptionGraphicsItem const *option,
@@ -92,6 +95,10 @@ private:
     NodeState _nodeState;
 
     bool _locked;
+
+    bool _draggingIntoGroup;
+    GroupGraphicsObject *_possibleGroup;
+    QRectF _originalGroupSize;
 
     // either nullptr or owned by parent QGraphicsItem
     QGraphicsProxyWidget *_proxyWidget;

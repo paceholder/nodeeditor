@@ -132,6 +132,10 @@ public:
 
     std::vector<NodeGraphicsObject *> selectedNodes() const;
 
+    void addNodeToGroup(NodeId nodeId, QUuid const &groupId);
+
+    void removeNodeFromGroup(NodeId nodeId);
+
 public:
     /**
      * @returns NodeGraphicsObject associated with the given nodeId.
