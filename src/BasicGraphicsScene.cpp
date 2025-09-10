@@ -3,7 +3,6 @@
 #include "AbstractNodeGeometry.hpp"
 #include "ConnectionGraphicsObject.hpp"
 #include "ConnectionIdUtils.hpp"
-#include "DataFlowGraphModel.hpp"
 #include "DefaultConnectionPainter.hpp"
 #include "DefaultHorizontalNodeGeometry.hpp"
 #include "DefaultNodePainter.hpp"

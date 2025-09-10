@@ -1,6 +1,5 @@
 #pragma once
 
-#include <QColor>
 #include <QIcon>
 #include <QtCore/QUuid>
 #include <QtWidgets/QGraphicsObject>

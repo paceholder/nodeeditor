@@ -1,6 +1,6 @@
 #include "MathOperationDataModel.hpp"
+
 #include "DecimalData.hpp"
-#include <QTimer>
 
 unsigned int MathOperationDataModel::nPorts(PortType portType) const
 {
