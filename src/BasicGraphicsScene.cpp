@@ -8,8 +8,6 @@
 #include "DefaultHorizontalNodeGeometry.hpp"
 #include "DefaultNodePainter.hpp"
 #include "DefaultVerticalNodeGeometry.hpp"
-#include "GraphicsView.hpp"
-#include "NodeDelegateModel.hpp"
 #include "NodeGraphicsObject.hpp"
 
 #include <QUndoStack>

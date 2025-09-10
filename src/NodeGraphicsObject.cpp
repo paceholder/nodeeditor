@@ -1,12 +1,5 @@
 #include "NodeGraphicsObject.hpp"
 
-#include <cstdlib>
-#include <iostream>
-
-#include <QJsonDocument>
-#include <QtWidgets/QGraphicsEffect>
-#include <QtWidgets/QtWidgets>
-
 #include "AbstractGraphModel.hpp"
 #include "AbstractNodeGeometry.hpp"
 #include "AbstractNodePainter.hpp"
@@ -17,6 +10,11 @@
 #include "NodeDelegateModel.hpp"
 #include "StyleCollection.hpp"
 #include "UndoCommands.hpp"
+
+#include <QtWidgets/QGraphicsEffect>
+#include <QtWidgets/QtWidgets>
+
+#include <cstdlib>
 
 namespace QtNodes {
 
@@ -68,11 +66,11 @@ NodeGraphicsObject::NodeGraphicsObject(BasicGraphicsScene &scene, NodeId nodeId)
     });
 
     QVariant var = _graphModel.nodeData(_nodeId, NodeRole::ProcessingStatus);
-    auto processingStatusValue = var.value<QtNodes::NodeDelegateModel::NodeProcessingStatus>()
+    auto processingStatusValue = var.value<QtNodes::NodeProcessingStatus>()
                                      ._status;
 
     _statusIconActive = processingStatusValue
-                        != QtNodes::NodeDelegateModel::NodeProcessingStatus::Status::NoStatus;
+                        != QtNodes::NodeProcessingStatus::Status::NoStatus;
     _statusIconSize.setWidth(_statusIconActive ? 32 : 0);
     _statusIconSize.setHeight(_statusIconActive ? 32 : 0);
 }
@@ -197,8 +195,9 @@ QVariant NodeGraphicsObject::itemChange(GraphicsItemChange change, const QVarian
 
 void NodeGraphicsObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    //if (_nodeState.locked())
-    //return;
+    if (graphModel().nodeFlags(_nodeId) & NodeFlag::Locked) {
+        return;
+    }
 
     AbstractNodeGeometry &geometry = nodeScene()->nodeGeometry();
 
@@ -245,6 +244,8 @@ void NodeGraphicsObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
                                                                                    portToCheck,
                                                                                    portIndex);
 
+            // From the moment of creation a draft connection
+            // grabs the mouse events and waits for the mouse button release
             nodeScene()->makeDraftConnection(incompleteConnectionId);
         }
     }
@@ -393,11 +394,11 @@ void NodeGraphicsObject::updateStatusIconSize() const
 {
     QVariant var = _graphModel.nodeData(_nodeId, NodeRole::ProcessingStatus);
     auto processingStatusValue
-        = var.value<QtNodes::NodeDelegateModel::NodeProcessingStatus::Status>();
+        = var.value<QtNodes::NodeProcessingStatus::Status>();
 
     bool oldStatus = _statusIconActive;
     _statusIconActive = processingStatusValue
-                        != QtNodes::NodeDelegateModel::NodeProcessingStatus::Status::NoStatus;
+                        != QtNodes::NodeProcessingStatus::Status::NoStatus;
 
     if (oldStatus != _statusIconActive) {
         _statusIconSize.setWidth(_statusIconActive ? 32 : 0);
@@ -425,20 +426,20 @@ const QIcon NodeGraphicsObject::processingStatusIcon() const
 {
     QVariant var = _graphModel.nodeData(_nodeId, NodeRole::ProcessingStatus);
 
-    switch (var.value<QtNodes::NodeDelegateModel::NodeProcessingStatus::Status>()) {
-    case QtNodes::NodeDelegateModel::NodeProcessingStatus::Status::NoStatus:
+    switch (var.value<QtNodes::NodeProcessingStatus::Status>()) {
+    case QtNodes::NodeProcessingStatus::Status::NoStatus:
         return QIcon();
-    case QtNodes::NodeDelegateModel::NodeProcessingStatus::Status::Updated:
+    case QtNodes::NodeProcessingStatus::Status::Updated:
         return _statusUpdated;
-    case QtNodes::NodeDelegateModel::NodeProcessingStatus::Status::Processing:
+    case QtNodes::NodeProcessingStatus::Status::Processing:
         return _statusProcessing;
-    case QtNodes::NodeDelegateModel::NodeProcessingStatus::Status::Pending:
+    case QtNodes::NodeProcessingStatus::Status::Pending:
         return _statusPending;
-    case QtNodes::NodeDelegateModel::NodeProcessingStatus::Status::Empty:
+    case QtNodes::NodeProcessingStatus::Status::Empty:
         return _statusEmpty;
-    case QtNodes::NodeDelegateModel::NodeProcessingStatus::Status::Failed:
+    case QtNodes::NodeProcessingStatus::Status::Failed:
         return _statusInvalid;
-    case QtNodes::NodeDelegateModel::NodeProcessingStatus::Status::Partial:
+    case QtNodes::NodeProcessingStatus::Status::Partial:
         return _statusPartial;
     }
     return _statusInvalid;

@@ -1,11 +1,13 @@
-#include <QAction>
-#include <QScreen>
-#include <QtNodes/BasicGraphicsScene>
-#include <QtNodes/GraphicsView>
+#include <QAction> // Compatible with Qt5 and Qt6
+
+#include <QtGui/QScreen>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QGroupBox>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QRadioButton>
+
+#include <QtNodes/BasicGraphicsScene>
+#include <QtNodes/GraphicsView>
 
 #include "SimpleGraphModel.hpp"
 

@@ -5,7 +5,7 @@
 
 #include <QtCore/QJsonObject>
 #include <QtCore/QPointF>
-#include <QtGui/QUndoCommand>
+#include <QUndoCommand>
 
 #include <unordered_set>
 

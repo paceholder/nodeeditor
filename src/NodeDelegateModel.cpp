@@ -24,7 +24,7 @@ void NodeDelegateModel::load(QJsonObject const &)
     //
 }
 
-void NodeDelegateModel::setValidatonState(const NodeValidationState &validationState)
+void NodeDelegateModel::setValidationState(const NodeValidationState &validationState)
 {
     _nodeValidationState = validationState;
 }

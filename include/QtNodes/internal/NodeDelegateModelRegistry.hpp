@@ -58,6 +58,16 @@ public:
         registerModel<ModelType>(std::move(creator), category);
     }
 
+
+    template <typename ModelCreator>
+    void
+    registerModel(ModelCreator&& creator, QString const& category = "Nodes")
+    {
+      using ModelType = compute_model_type_t<decltype(creator())>;
+      registerModel<ModelType>(std::forward<ModelCreator>(creator), category);
+    }
+
+
 #if 0
   template<typename ModelType>
   void
@@ -65,15 +75,6 @@ public:
                 QString const&      category = "Nodes")
   {
     registerModel<ModelType>(std::move(creator), category);
-  }
-
-
-  template <typename ModelCreator>
-  void
-  registerModel(ModelCreator&& creator, QString const& category = "Nodes")
-  {
-    using ModelType = compute_model_type_t<decltype(creator())>;
-    registerModel<ModelType>(std::forward<ModelCreator>(creator), category);
   }
 
 
