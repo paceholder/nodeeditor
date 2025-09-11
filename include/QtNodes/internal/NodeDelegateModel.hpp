@@ -72,9 +72,6 @@ public:
     /// Caption is used in GUI
     virtual QString caption() const = 0;
 
-    /// It is possible to hide caption in GUI
-    virtual bool captionVisible() const { return true; }
-
     /// Port caption is used in GUI to label individual ports
     virtual QString portCaption(PortType, PortIndex) const { return QString(); }
 
@@ -93,7 +90,7 @@ public:
 
     void setValidationState(const NodeValidationState &validationState);
 
-    void setNodeProcessingStatus(NodeProcessingStatus::Status status);
+    void setNodeProcessingStatus(NodeProcessingStatus status);
 
     virtual unsigned int nPorts(PortType portType) const = 0;
 
@@ -104,8 +101,6 @@ public:
     NodeStyle const &nodeStyle() const;
 
     void setNodeStyle(NodeStyle const &style);
-
-    void setNodeProcessingStatus(NodeProcessingStatus status);
 
 public:
     virtual void setInData(std::shared_ptr<NodeData> nodeData, PortIndex const portIndex) = 0;
