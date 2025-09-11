@@ -21,7 +21,6 @@ public:
                     QtNodes::NodeProcessingStatus::Processing);
 
             emit requestNodeUpdate();
-
         });
         QObject::connect(this, &NodeDelegateModel::computingFinished, this, [this]() {
             this->setNodeProcessingStatus(
@@ -58,6 +57,7 @@ private:
 
                     if (a > b) {
                         setNodeProcessingStatus(QtNodes::NodeProcessingStatus::Failed);
+
                         emit requestNodeUpdate();
                         return;
                     }

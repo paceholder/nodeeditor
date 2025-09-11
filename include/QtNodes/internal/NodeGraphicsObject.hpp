@@ -1,6 +1,5 @@
 #pragma once
 
-#include <QColor>
 #include <QIcon>
 #include <QtCore/QUuid>
 #include <QtWidgets/QGraphicsObject>
@@ -70,24 +69,16 @@ protected:
     QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
 
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
-
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
-
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
-
     void hoverEnterEvent(QGraphicsSceneHoverEvent *event) override;
-
     void hoverLeaveEvent(QGraphicsSceneHoverEvent *event) override;
-
     void hoverMoveEvent(QGraphicsSceneHoverEvent *) override;
-
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
-
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event) override;
 
 private:
     void embedQWidget();
-
     void setLockedState();
 
 private:

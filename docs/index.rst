@@ -10,6 +10,7 @@ QtNodes Documentation
     features
     porting
     development
+    testing
     classes
     notes
     license_link

@@ -34,7 +34,7 @@ public:
 
     void setInData(std::shared_ptr<NodeData> data, PortIndex portIndex) override;
 
-    QWidget *embeddedWidget() override { return nullptr; }  
+    QWidget *embeddedWidget() override { return nullptr; }
 
 protected:
     virtual void compute() = 0;

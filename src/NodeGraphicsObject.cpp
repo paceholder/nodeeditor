@@ -1,12 +1,5 @@
 #include "NodeGraphicsObject.hpp"
 
-#include <cstdlib>
-#include <iostream>
-
-#include <QJsonDocument>
-#include <QtWidgets/QGraphicsEffect>
-#include <QtWidgets/QtWidgets>
-
 #include "AbstractGraphModel.hpp"
 #include "AbstractNodeGeometry.hpp"
 #include "AbstractNodePainter.hpp"
@@ -17,6 +10,11 @@
 #include "NodeDelegateModel.hpp"
 #include "StyleCollection.hpp"
 #include "UndoCommands.hpp"
+
+#include <QtWidgets/QGraphicsEffect>
+#include <QtWidgets/QtWidgets>
+
+#include <cstdlib>
 
 namespace QtNodes {
 
@@ -68,9 +66,11 @@ NodeGraphicsObject::NodeGraphicsObject(BasicGraphicsScene &scene, NodeId nodeId)
     });
 
     QVariant var = _graphModel.nodeData(_nodeId, NodeRole::ProcessingStatus);
+
     auto processingStatusValue = var.value<QtNodes::NodeProcessingStatus>();
 
     _statusIconActive = processingStatusValue != QtNodes::NodeProcessingStatus::NoStatus;
+
     _statusIconSize.setWidth(_statusIconActive ? 32 : 0);
     _statusIconSize.setHeight(_statusIconActive ? 32 : 0);
 }
@@ -195,8 +195,9 @@ QVariant NodeGraphicsObject::itemChange(GraphicsItemChange change, const QVarian
 
 void NodeGraphicsObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    //if (_nodeState.locked())
-    //return;
+    if (graphModel().nodeFlags(_nodeId) & NodeFlag::Locked) {
+        return;
+    }
 
     AbstractNodeGeometry &geometry = nodeScene()->nodeGeometry();
 
@@ -243,6 +244,8 @@ void NodeGraphicsObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
                                                                                    portToCheck,
                                                                                    portIndex);
 
+            // From the moment of creation a draft connection
+            // grabs the mouse events and waits for the mouse button release
             nodeScene()->makeDraftConnection(incompleteConnectionId);
         }
     }
@@ -390,6 +393,7 @@ void NodeGraphicsObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 void NodeGraphicsObject::updateStatusIconSize() const
 {
     QVariant var = _graphModel.nodeData(_nodeId, NodeRole::ProcessingStatus);
+
     auto processingStatusValue = var.value<QtNodes::NodeProcessingStatus>();
 
     bool oldStatus = _statusIconActive;
