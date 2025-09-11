@@ -68,11 +68,9 @@ NodeGraphicsObject::NodeGraphicsObject(BasicGraphicsScene &scene, NodeId nodeId)
     });
 
     QVariant var = _graphModel.nodeData(_nodeId, NodeRole::ProcessingStatus);
-    auto processingStatusValue = var.value<QtNodes::NodeDelegateModel::NodeProcessingStatus>()
-                                     ._status;
+    auto processingStatusValue = var.value<QtNodes::NodeProcessingStatus>();
 
-    _statusIconActive = processingStatusValue
-                        != QtNodes::NodeDelegateModel::NodeProcessingStatus::Status::NoStatus;
+    _statusIconActive = processingStatusValue != QtNodes::NodeProcessingStatus::NoStatus;
     _statusIconSize.setWidth(_statusIconActive ? 32 : 0);
     _statusIconSize.setHeight(_statusIconActive ? 32 : 0);
 }
@@ -392,12 +390,10 @@ void NodeGraphicsObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 void NodeGraphicsObject::updateStatusIconSize() const
 {
     QVariant var = _graphModel.nodeData(_nodeId, NodeRole::ProcessingStatus);
-    auto processingStatusValue
-        = var.value<QtNodes::NodeDelegateModel::NodeProcessingStatus::Status>();
+    auto processingStatusValue = var.value<QtNodes::NodeProcessingStatus>();
 
     bool oldStatus = _statusIconActive;
-    _statusIconActive = processingStatusValue
-                        != QtNodes::NodeDelegateModel::NodeProcessingStatus::Status::NoStatus;
+    _statusIconActive = processingStatusValue != QtNodes::NodeProcessingStatus::NoStatus;
 
     if (oldStatus != _statusIconActive) {
         _statusIconSize.setWidth(_statusIconActive ? 32 : 0);
@@ -425,20 +421,20 @@ const QIcon NodeGraphicsObject::processingStatusIcon() const
 {
     QVariant var = _graphModel.nodeData(_nodeId, NodeRole::ProcessingStatus);
 
-    switch (var.value<QtNodes::NodeDelegateModel::NodeProcessingStatus::Status>()) {
-    case QtNodes::NodeDelegateModel::NodeProcessingStatus::Status::NoStatus:
+    switch (var.value<QtNodes::NodeProcessingStatus>()) {
+    case QtNodes::NodeProcessingStatus::NoStatus:
         return QIcon();
-    case QtNodes::NodeDelegateModel::NodeProcessingStatus::Status::Updated:
+    case QtNodes::NodeProcessingStatus::Updated:
         return _statusUpdated;
-    case QtNodes::NodeDelegateModel::NodeProcessingStatus::Status::Processing:
+    case QtNodes::NodeProcessingStatus::Processing:
         return _statusProcessing;
-    case QtNodes::NodeDelegateModel::NodeProcessingStatus::Status::Pending:
+    case QtNodes::NodeProcessingStatus::Pending:
         return _statusPending;
-    case QtNodes::NodeDelegateModel::NodeProcessingStatus::Status::Empty:
+    case QtNodes::NodeProcessingStatus::Empty:
         return _statusEmpty;
-    case QtNodes::NodeDelegateModel::NodeProcessingStatus::Status::Failed:
+    case QtNodes::NodeProcessingStatus::Failed:
         return _statusInvalid;
-    case QtNodes::NodeDelegateModel::NodeProcessingStatus::Status::Partial:
+    case QtNodes::NodeProcessingStatus::Partial:
         return _statusPartial;
     }
     return _statusInvalid;

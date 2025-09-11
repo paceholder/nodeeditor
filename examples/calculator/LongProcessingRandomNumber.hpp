@@ -18,14 +18,14 @@ public:
     RandomNumberModel() {
         QObject::connect(this, &NodeDelegateModel::computingStarted, this, [this]() {
             this->setNodeProcessingStatus(
-                    NodeDelegateModel::NodeProcessingStatus::Status::Processing);
+                    QtNodes::NodeProcessingStatus::Processing);
 
             emit requestNodeUpdate();
 
         });
         QObject::connect(this, &NodeDelegateModel::computingFinished, this, [this]() {
             this->setNodeProcessingStatus(
-                NodeDelegateModel::NodeProcessingStatus::Status::Updated);
+                QtNodes::NodeProcessingStatus::Updated);
 
             emit requestNodeUpdate();
         });
@@ -57,7 +57,7 @@ private:
                     double b = n2->number();
 
                     if (a > b) {
-                        this->setNodeProcessingStatus(NodeDelegateModel::NodeProcessingStatus::Status::Failed);
+                        setNodeProcessingStatus(QtNodes::NodeProcessingStatus::Failed);
                         emit requestNodeUpdate();
                         return;
                     }

@@ -321,7 +321,7 @@ void DefaultNodePainter::drawProcessingIndicator(QPainter *painter, NodeGraphics
     QSize iconSize(16, 16);
     QPixmap pixmap = icon.pixmap(iconSize);
 
-    QRect r(size.width() - 12.0, size.height() - 12.0, 8.0, 8.0);
+    QRect r(size.width() - 28.0, size.height() - 28.0, 20.0, 20.0);
     painter->drawPixmap(r, pixmap);
 }
 

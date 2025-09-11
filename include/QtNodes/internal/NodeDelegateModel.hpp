@@ -27,6 +27,19 @@ struct NodeValidationState
     QString _stateMessage{""};
 };
 
+/**
+ * Describes the node status, depending on its current situation
+ */
+enum class NodeProcessingStatus : int {
+    NoStatus = 0,   ///
+    Updated = 1,    ///
+    Processing = 2, ///
+    Pending = 3,    ///
+    Empty = 4,      ///
+    Failed = 5,     ///
+    Partial = 6,    ///
+};
+
 class StyleCollection;
 
 /**
@@ -45,24 +58,6 @@ public:
     NodeDelegateModel();
 
     virtual ~NodeDelegateModel() = default;
-
-    /**
-     * Describes the node status, depending on its current situation
-     */
-    struct NodeProcessingStatus
-    {
-        enum class Status : int {
-            NoStatus = 0,   ///
-            Updated = 1,    ///
-            Processing = 2, ///
-            Pending = 3,    ///
-            Empty = 4,      ///
-            Failed = 5,     ///
-            Partial = 6,    ///
-        };
-
-        Status _status{Status::NoStatus};
-    };
 
     /// It is possible to hide caption in GUI
     virtual bool captionVisible() const { return true; }
@@ -83,10 +78,7 @@ public:
     virtual NodeValidationState validationState() const { return _nodeValidationState; }
 
     /// Returns the curent processing status
-    virtual NodeProcessingStatus::Status processingStatus() const
-    {
-        return _processingStatus._status;
-    }
+    virtual NodeProcessingStatus processingStatus() const { return _processingStatus; }
 
 public:
     QJsonObject save() const override;
@@ -107,7 +99,7 @@ public:
 
     void setNodeStyle(NodeStyle const &style);
 
-    void setNodeProcessingStatus(NodeProcessingStatus::Status status);
+    void setNodeProcessingStatus(NodeProcessingStatus status);
 
 public:
     virtual void setInData(std::shared_ptr<NodeData> nodeData, PortIndex const portIndex) = 0;
@@ -187,7 +179,7 @@ private:
 
     NodeValidationState _nodeValidationState;
 
-    NodeProcessingStatus _processingStatus;
+    NodeProcessingStatus _processingStatus = NodeProcessingStatus::Updated;
 };
 
 } // namespace QtNodes
