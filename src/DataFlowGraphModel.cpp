@@ -375,17 +375,17 @@ bool DataFlowGraphModel::setNodeData(NodeId nodeId, NodeRole role, QVariant valu
         Q_EMIT nodeUpdated(nodeId);
     } break;
 
-    case NodeRole::LabelVisible:
+    case NodeRole::LabelVisible: {
         _labelsVisible[nodeId] = value.toBool();
         Q_EMIT nodeUpdated(nodeId);
         result = true;
-        break;
+    } break;
 
-    case NodeRole::Label:
+    case NodeRole::Label: {
         _labels[nodeId] = value.toString();
         Q_EMIT nodeUpdated(nodeId);
         result = true;
-        break;
+    } break;
     }
 
     return result;

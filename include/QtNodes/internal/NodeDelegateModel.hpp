@@ -62,18 +62,20 @@ public:
     /// It is possible to hide port caption in GUI
     virtual bool portCaptionVisible(PortType, PortIndex) const { return false; }
 
+    /// Validation State will default to Valid, but you can manipulate it by overriding in an inherited class
+    virtual NodeValidationState validationState() const { return _nodeValidationState; }
+
     /// Nicknames can be assigned to nodes and shown in GUI
     virtual QString label() const { return QString(); }
 
     /// It is possible to hide the nickname in GUI
     virtual bool labelVisible() const { return true; }
 
-    /// Validation State will default to Valid, but you can manipulate it by overriding in an inherited class
-    virtual NodeValidationState validationState() const { return _nodeValidationState; }
-
 public:
     QJsonObject save() const override;
     void load(QJsonObject const &) override;
+
+    void setValidatonState(const NodeValidationState &validationState);
 
     virtual unsigned int nPorts(PortType portType) const = 0;
 
