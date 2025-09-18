@@ -41,7 +41,7 @@ public:
 
     QRect resizeHandleRect(NodeId const nodeId) const override;
 
-    int getPortSpasing() override { return _portSpasing; }
+    int getPortSpacing() override { return _portSpacing; }
 
 private:
     QRectF portTextRect(NodeId const nodeId,
@@ -59,7 +59,7 @@ private:
     // constness of the Node.
 
     mutable unsigned int _portSize;
-    unsigned int _portSpasing;
+    unsigned int _portSpacing;
     mutable QFontMetrics _fontMetrics;
     mutable QFontMetrics _boldFontMetrics;
 };

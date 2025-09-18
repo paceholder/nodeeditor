@@ -76,7 +76,7 @@ public:
 
     virtual QRect resizeHandleRect(NodeId const nodeId) const = 0;
 
-    virtual int getPortSpasing() = 0;
+    virtual int getPortSpacing() = 0;
 
 protected:
     AbstractGraphModel &_graphModel;
