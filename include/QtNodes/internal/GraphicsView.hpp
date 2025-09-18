@@ -2,8 +2,8 @@
 
 #include <QtWidgets/QGraphicsView>
 
-#include "Export.hpp"
 #include "Definitions.hpp"
+#include "Export.hpp"
 
 class QLineEdit;
 

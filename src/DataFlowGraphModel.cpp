@@ -299,6 +299,10 @@ QVariant DataFlowGraphModel::nodeData(NodeId nodeId, NodeRole role) const
     case NodeRole::Label:
         result = _labels.at(nodeId);
         break;
+
+    case NodeRole::LabelEditable:
+        result = model->labelEditable();
+        break;
     }
 
     return result;
@@ -380,6 +384,9 @@ bool DataFlowGraphModel::setNodeData(NodeId nodeId, NodeRole role, QVariant valu
         Q_EMIT nodeUpdated(nodeId);
         result = true;
     } break;
+
+    case NodeRole::LabelEditable:
+        break;
     }
 
     return result;

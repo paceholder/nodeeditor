@@ -36,6 +36,7 @@ Q_NAMESPACE_EXPORT(NODE_EDITOR_PUBLIC)
         ValidationState = 11, ///< Enum NodeValidationState of the node
         LabelVisible = 12,    ///< `bool` for label visibility.
         Label = 13,           ///< `QString` for node label.
+        LabelEditable = 14,   ///< `bool` to indicate label editing support.
     };
 
 Q_ENUM_NS(NodeRole)

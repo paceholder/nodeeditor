@@ -71,6 +71,9 @@ public:
     /// It is possible to hide the nickname in GUI
     virtual bool labelVisible() const { return true; }
 
+    /// Controls whether the label can be edited or not
+    virtual bool labelEditable() const { return false; }
+
 public:
     QJsonObject save() const override;
     void load(QJsonObject const &) override;

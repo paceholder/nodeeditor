@@ -317,6 +317,12 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
             }
 
             if (ngo) {
+                bool const labelEditable
+                    = sc->graphModel().nodeData(ngo->nodeId(), NodeRole::LabelEditable).toBool();
+
+                if (!labelEditable)
+                    break;
+
                 if (!_labelEdit) {
                     _labelEdit = new QLineEdit(this);
                     _labelEdit->setMaxLength(32);
@@ -361,7 +367,9 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
                 return;
             }
         }
-    } break;
+    }
+
+    break;
     case Qt::Key_Shift:
         setDragMode(QGraphicsView::RubberBandDrag);
         break;
