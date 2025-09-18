@@ -46,6 +46,13 @@ Node(std::unique_ptr<NodeDataModel> && dataModel)
 
 void 
 Node::
+updateEntries()
+{
+  _nodeState.updateEntries();
+}
+
+void 
+Node::
 setInputSelected(int inx, bool selected)
 {
   this->inputSelected[inx] = selected;
@@ -92,6 +99,8 @@ void
 Node::
 updateView()
 {
+  nodeGraphicsObject().setGeometryChanged();
+  nodeGeometry().recalculateSize();
   nodeGeometry().recalculateInOut();
   nodeState().updateEntries();
 

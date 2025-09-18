@@ -152,7 +152,11 @@ FlowView::setScene(FlowScene *scene)
   _deleteSelectionAction = new QAction(QStringLiteral("Delete Selection"), this);
   _deleteSelectionAction->setShortcut(Qt::Key_Delete);
   _deleteSelectionAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-  connect(_deleteSelectionAction, &QAction::triggered, this, &FlowView::deleteSelectedNodes);
+  connect(_deleteSelectionAction, &QAction::triggered, this, [this]() {
+      if (_scene) {
+          _scene->deleteSelectedNodes();
+      }
+  });
   addAction(_deleteSelectionAction);
   
   _duplicateSelectionAction = new QAction(QStringLiteral("Duplicate Selection"), this);
@@ -455,72 +459,16 @@ scaleDown()
 }
 
 
-void
-FlowView::
-deleteSelectedNodes()
-{
-	QJsonObject sceneJson = selectionToJson(true);
-  qDebug() << sceneJson;
-  std::vector<QUuid> nodeIds;
-  std::vector<QUuid> connectionsIds;
-  for (QGraphicsItem * item : _scene->selectedItems())
-  {
-    if(item)
-    {
-      if (auto c = qgraphicsitem_cast<ConnectionGraphicsObject*>(item))
-      {
-          _scene->deleteConnection(c->connection());      
-      }
-    }
-  }
-  for (QGraphicsItem * item : _scene->selectedItems())
-  {
-    if(item)
-    {
-      if (auto c = qgraphicsitem_cast<GroupGraphicsObject*>(item))
-      {
-        _scene->removeGroup(c->group());      
-      }
-      else if (auto c = qgraphicsitem_cast<NodeGraphicsObject*>(item))
-      {
-          _scene->removeNode(c->node());
-      }
-    }
-  }
-  
-  
-  _scene->AddAction(UndoRedoAction(
-    //Undo action
-    [this, sceneJson](void *ptr) 
-    {
-      jsonToScene(sceneJson);
-      return 0;
-    },
-    //Redo action
-    [this, sceneJson](void *ptr)
-    {
-      deleteJsonElements(sceneJson);
-      return 0;
-    },
-    //Name
-    "Deletes nodes"
-  ));
-}
 
-void FlowView::deleteJsonElements(const QJsonObject &jsonDocument)
-{
-  QJsonArray nodesJsonArray = jsonDocument["nodes"].toArray();
-  for (int i = 0; i < nodesJsonArray.size(); ++i)
-  {
-    QJsonObject nodeJson = nodesJsonArray[i].toObject();
-    QUuid id = QUuid( nodeJson["id"].toString() );
-    _scene->removeNodeWithID(id);
-  }
 
+void FlowView::jsonToSceneMousePos(QJsonObject jsonDocument) {
+    QPoint viewPointMouse = this->mapFromGlobal(QCursor::pos());
+    QPointF posViewMouse = this->mapToScene(viewPointMouse);       
+    _scene->jsonToSceneMousePos(jsonDocument, posViewMouse);
 }
 
 void FlowView::copySelectedNodes() {
-  QJsonObject sceneJson = selectionToJson();
+  QJsonObject sceneJson = _scene->selectionToJson();
 
   QJsonDocument document(sceneJson);
   std::string json = document.toJson().toStdString();
@@ -529,218 +477,10 @@ void FlowView::copySelectedNodes() {
   p_Clipboard->setText( QString::fromStdString(json));
 }
 
-void FlowView::jsonToScene(QJsonObject jsonDocument)
-{
-    QJsonArray nodesJsonArray = jsonDocument["nodes"].toArray();
 
 
 
-    for (int i = 0; i < nodesJsonArray.size(); ++i)
-    {
-      _scene->restoreNode(nodesJsonArray[i].toObject(), true);
-    }
 
-    QJsonArray connectionJsonArray = jsonDocument["connections"].toArray();
-    for (int i = 0; i < connectionJsonArray.size(); ++i)
-    {
-      QUuid in = QUuid(connectionJsonArray[i].toObject()["in_id"].toString());      
-      QUuid out = QUuid(connectionJsonArray[i].toObject()["out_id"].toString());
-
-      _scene->pasteConnection(connectionJsonArray[i].toObject(), in, out );
-    }
-    
-    QJsonArray groupsJsonArray = jsonDocument["groups"].toArray();
-    for (int i = 0; i < groupsJsonArray.size(); ++i)
-    {
-      _scene->restoreGroup(groupsJsonArray[i].toObject());
-    }
-}
-
-
-void FlowView::jsonToSceneMousePos(QJsonObject jsonDocument)
-{
-    QJsonArray nodesJsonArray = jsonDocument["nodes"].toArray();
-
-    std::map<QUuid, QUuid> addedIds;
-
-    //Get Bounds of all the selected items 
-    float minx = 10000000000;
-    float miny = 10000000000;
-    float maxx = -1000000000;
-    float maxy = -1000000000;
-    for (int i = 0; i < nodesJsonArray.size(); ++i)
-    {
-      QJsonObject nodeJsonObject = nodesJsonArray[i].toObject();
-      QJsonObject positionJson = nodeJsonObject["position"].toObject();
-      QPointF pos(positionJson["x"].toDouble(), positionJson["y"].toDouble());
-
-      if(pos.x() < minx) minx = pos.x();
-      if(pos.y() < miny) miny = pos.y();
-      if(pos.x() > maxx) maxx = pos.x();
-      if(pos.y() > maxy) maxy = pos.y();     
-    }
-    
-    float centroidX = (maxx - minx) / 2.0 + minx;
-    float centroidY = (maxy - miny) / 2.0 + miny;
-    QPointF centroid(centroidX, centroidY);
-
-    QPoint viewPointMouse = this->mapFromGlobal(QCursor::pos());
-    QPointF posViewMouse = this->mapToScene(viewPointMouse);      
-  
-
-
-
-    for (int i = 0; i < nodesJsonArray.size(); ++i)
-    {
-      QJsonObject nodeJson = nodesJsonArray[i].toObject();
-      QUuid currentId = QUuid( nodeJson["id"].toString() );
-      QUuid newId = _scene->pasteNode(nodesJsonArray[i].toObject(), centroid, posViewMouse);
-
-      addedIds.insert(std::pair<QUuid,QUuid>(currentId, newId));
-      nodesJsonArray[i] = _scene->nodes()[newId]->save();
-    }
-    jsonDocument["nodes"] = nodesJsonArray;
-
-    QJsonArray connectionJsonArray = jsonDocument["connections"].toArray();
-    for (int i = 0; i < connectionJsonArray.size(); ++i)
-    {
-      QJsonObject connectionJson = connectionJsonArray[i].toObject();
-
-      QUuid in = QUuid(connectionJson["in_id"].toString());
-      QUuid newIn = addedIds[in];
-      
-      QUuid out = QUuid(connectionJson["out_id"].toString());
-      QUuid newOut = addedIds[out];
-
-      _scene->pasteConnection(connectionJson, newIn, newOut );
-
-      connectionJson["in_id"] = newIn.toString();
-      connectionJson["out_id"] = newOut.toString();
-      connectionJsonArray[i] = connectionJson;
-    }
-    jsonDocument["connections"] =connectionJsonArray;
-    
-    QJsonArray groupsJsonArray = jsonDocument["groups"].toArray();
-    for (int i = 0; i < groupsJsonArray.size(); ++i)
-    {
-      _scene->pasteGroup(groupsJsonArray[i].toObject(), centroid, posViewMouse);
-    }
-  
-
-    _scene->AddAction(UndoRedoAction(
-        [this, addedIds](void *ptr)
-        {
-          //Delete all the created nodes (and their connections)
-          for(auto &id: addedIds)
-          {
-            _scene->removeNodeWithID(id.second);
-          }
-          return 0;
-        },
-        [this, jsonDocument](void *ptr)
-        {       
-          jsonToScene(jsonDocument); //jsonDocument has now been updated with new IDs and new positions
-          return 0;
-        },
-        "Created Node "
-      ));
-
-}
-
-QJsonObject FlowView::selectionToJson(bool includePartialConnections)
-{
-  QJsonObject sceneJson;
-  QJsonArray nodesJsonArray;
-  QJsonArray connectionJsonArray;
-  std::set<QUuid> addedNodeIds;
-  std::set<QUuid> addedConnectionIds;
-  
-  for (QGraphicsItem * item : _scene->selectedItems())
-	{
-		if (auto n = qgraphicsitem_cast<NodeGraphicsObject*>(item))
-		{
-        Node& node = n->node();
-        nodesJsonArray.append(node.save());
-        addedNodeIds.insert(node.id());
-
-        if(includePartialConnections) //find all connections of that node, even if the other node is not selected
-        {
-          std::vector<Connection*> allConnections = node.nodeState().allConnections();
-          for(int i=0; i<allConnections.size(); i++)
-          {
-            if(addedConnectionIds.find(allConnections[i]->id()) != addedConnectionIds.end())
-              continue; //Already added this connection
-            
-            QJsonObject connectionJson = allConnections[i]->save();
-            if (!connectionJson.isEmpty())
-            {
-              connectionJsonArray.append(connectionJson);
-              addedConnectionIds.insert(allConnections[i]->id());
-            }
-          }
-        }
-    }
-  }
-
-  for (QGraphicsItem * item : _scene->selectedItems())
-  {
-    if (auto c = qgraphicsitem_cast<ConnectionGraphicsObject*>(item)) {
-        Connection& connection = c->connection();
-
-        if(addedConnectionIds.find(connection.id()) == addedConnectionIds.end()) {
-          QJsonObject connectionJson = connection.save();
-          if (!connectionJson.isEmpty())
-            connectionJsonArray.append(connectionJson);
-            addedConnectionIds.insert(connection.id());
-        }
-    }
-  }
-
-  
-  QJsonArray groupJsonArray;
-  for (QGraphicsItem * item : _scene->selectedItems())
-	{
-    if (auto c = qgraphicsitem_cast<GroupGraphicsObject*>(item)) {
-        Group& group = c->group();
-
-        //If collapsed
-        if(group.groupGraphicsObject().isCollapsed())
-        {
-          //Add all child items to nodes array
-          for(int i=0; i<group.groupGraphicsObject().childItems().size(); i++)
-          {
-            NodeGraphicsObject* ngo = dynamic_cast<NodeGraphicsObject*>(group.groupGraphicsObject().childItems()[i]);
-            if(ngo!=nullptr)
-            {
-              Node& node = ngo->node();
-              nodesJsonArray.append(node.save());
-            }
-          }
-
-          //Add all connections to nodes array
-          for(int i=0; i<group.groupGraphicsObject().inOutConnections.size(); i++)
-          {
-            for(int j=0; j<group.groupGraphicsObject().inOutConnections[i].size(); j++)
-            {
-              QJsonObject connectionJson = group.groupGraphicsObject().inOutConnections[i][j]->save();
-              if (!connectionJson.isEmpty())
-                connectionJsonArray.append(connectionJson);              
-            }
-          }
-        }
-
-        QJsonObject groupJson = group.save();
-        if (!groupJson.isEmpty())
-          groupJsonArray.append(groupJson);
-    }
-  }
-
-  sceneJson["nodes"] = nodesJsonArray;
-  sceneJson["connections"] = connectionJsonArray;
-  sceneJson["groups"] = groupJsonArray;
-
-  return sceneJson;
-}
 
 void FlowView::pasteSelectedNodes() {
     QClipboard *p_Clipboard = QApplication::clipboard();  
@@ -756,7 +496,7 @@ void FlowView::pasteSelectedNodes() {
 
 void FlowView::duplicateSelectedNode()
 {
-  QJsonObject selectionJson = selectionToJson();
+  QJsonObject selectionJson = _scene->selectionToJson();
   jsonToSceneMousePos(selectionJson);
 }
 

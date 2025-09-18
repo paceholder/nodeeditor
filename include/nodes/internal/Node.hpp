@@ -56,9 +56,6 @@ public:
   paste(QJsonObject const &json, QUuid ID);
 
   
-  void 
-  updateView();
-  
   void
   eraseInputAtIndex(int portIndex);
 
@@ -101,6 +98,12 @@ public:
 
   NodeDataModel*
   nodeDataModel() const;
+
+  void
+  updateView();
+
+  void 
+  updateEntries();
 
   void setInputSelected(int inx, bool selected);
 

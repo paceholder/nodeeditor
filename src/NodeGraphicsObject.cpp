@@ -335,7 +335,16 @@ mouseMoveEvent(QGraphicsSceneMouseEvent * event)
 
       oldSize += QSize(diff.x(), diff.y());
 
-      w->setFixedSize(oldSize);
+      int minHeight = w->minimumHeight();
+
+      if(oldSize.height() < w->minimumHeight())
+          oldSize.setHeight(w->minimumHeight());
+
+      if(oldSize.width() < w->minimumWidth())
+          oldSize.setWidth(w->minimumWidth());
+
+      
+      w->setMaximumSize(oldSize);
 
       _proxyWidget->setMinimumSize(oldSize);
       _proxyWidget->setMaximumSize(oldSize);
