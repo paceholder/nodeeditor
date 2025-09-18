@@ -28,12 +28,10 @@ public:
 
   void setScene(FlowScene *scene);
 
-  QJsonObject selectionToJson(bool includePartialConnections=false);
-  void jsonToScene(QJsonObject object);
   void jsonToSceneMousePos(QJsonObject object);
-  void deleteJsonElements(const QJsonObject &object);
-
+  
   void goToNode(NodeGraphicsObject *node);
+  
   void goToNodeID(QUuid ID);
 
 
@@ -43,7 +41,6 @@ public slots:
 
   void scaleDown();
   
-  void deleteSelectedNodes();
   
   void duplicateSelectedNode();
 

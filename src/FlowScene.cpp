@@ -148,11 +148,12 @@ createConnection(Node& nodeIn,
 
   auto cgo = std::make_unique<ConnectionGraphicsObject>(*this, *connection);
 
+  // after this function connection points are set to node port
+  connection->setGraphicsObject(std::move(cgo));
+
   nodeIn.nodeState().setConnection(PortType::In, portIndexIn, *connection);
   nodeOut.nodeState().setConnection(PortType::Out, portIndexOut, *connection);
 
-  // after this function connection points are set to node port
-  connection->setGraphicsObject(std::move(cgo));
 
   // trigger data propagation
   nodeOut.onDataUpdated(portIndexOut);
@@ -490,6 +491,12 @@ registry() const
   return *_registry;
 }
 
+std::shared_ptr<DataModelRegistry>
+FlowScene::registryShared() const
+{
+  return _registry;
+}
+
 
 void
 FlowScene::
@@ -731,13 +738,13 @@ connections() const
 }
 
 
-std::vector<std::shared_ptr<Node>>
+std::vector<Node*>
 FlowScene::
 selectedNodes() const
 {
   QList<QGraphicsItem*> graphicsItems = selectedItems();
 
-  std::vector<std::shared_ptr<Node>> ret;
+  std::vector<Node*> ret;
   ret.reserve(graphicsItems.size());
   
 
@@ -748,8 +755,7 @@ selectedNodes() const
     if (ngo != nullptr)
     {
       Node* n = &(ngo->node());
-      std::shared_ptr<Node> ptr(n);
-      ret.push_back(ptr);
+      ret.push_back(n);
     }
   }
 
@@ -1075,6 +1081,291 @@ void FlowScene::ResetHistory()
 int FlowScene::GetHistoryIndex() {
   return historyInx;
 }
+
+
+
+void
+FlowScene::
+deleteSelectedNodes()
+{
+	QJsonObject sceneJson = selectionToJson(true);
+  qDebug() << sceneJson;
+  std::vector<QUuid> nodeIds;
+  std::vector<QUuid> connectionsIds;
+  for (QGraphicsItem * item : selectedItems())
+  {
+    if(item)
+    {
+      if (auto c = qgraphicsitem_cast<ConnectionGraphicsObject*>(item))
+      {
+          deleteConnection(c->connection());      
+      }
+    }
+  }
+  for (QGraphicsItem * item : selectedItems())
+  {
+    if(item)
+    {
+      if (auto c = qgraphicsitem_cast<GroupGraphicsObject*>(item))
+      {
+        removeGroup(c->group());      
+      }
+      else if (auto c = qgraphicsitem_cast<NodeGraphicsObject*>(item))
+      {
+          removeNode(c->node());
+      }
+    }
+  }
+  
+  
+  AddAction(UndoRedoAction(
+    //Undo action
+    [this, sceneJson](void *ptr) 
+    {
+      jsonToScene(sceneJson);
+      return 0;
+    },
+    //Redo action
+    [this, sceneJson](void *ptr)
+    {
+      deleteJsonElements(sceneJson);
+      return 0;
+    },
+    //Name
+    "Deletes nodes"
+  ));
+}
+
+QJsonObject FlowScene::selectionToJson(bool includePartialConnections)
+{
+  QJsonObject sceneJson;
+  QJsonArray nodesJsonArray;
+  QJsonArray connectionJsonArray;
+  std::set<QUuid> addedNodeIds;
+  std::set<QUuid> addedConnectionIds;
+  
+  for (QGraphicsItem * item : selectedItems())
+	{
+		if (auto n = qgraphicsitem_cast<NodeGraphicsObject*>(item))
+		{
+        Node& node = n->node();
+        nodesJsonArray.append(node.save());
+        addedNodeIds.insert(node.id());
+
+        if(includePartialConnections) //find all connections of that node, even if the other node is not selected
+        {
+          std::vector<Connection*> allConnections = node.nodeState().allConnections();
+          for(int i=0; i<allConnections.size(); i++)
+          {
+            if(addedConnectionIds.find(allConnections[i]->id()) != addedConnectionIds.end())
+              continue; //Already added this connection
+            
+            QJsonObject connectionJson = allConnections[i]->save();
+            if (!connectionJson.isEmpty())
+            {
+              connectionJsonArray.append(connectionJson);
+              addedConnectionIds.insert(allConnections[i]->id());
+            }
+          }
+        }
+    }
+  }
+
+  if(!includePartialConnections)
+  {
+    for (QGraphicsItem * item : selectedItems())
+    {
+      if (auto c = qgraphicsitem_cast<ConnectionGraphicsObject*>(item)) {
+          Connection& connection = c->connection();
+          QUuid inNodeId = connection.getNode(PortType::In)->id();
+          QUuid outNodeId = connection.getNode(PortType::Out)->id();
+          if(addedNodeIds.find(inNodeId) == addedNodeIds.end()) continue; //The input node is not selected
+          if(addedNodeIds.find(outNodeId) == addedNodeIds.end()) continue; //The output node is not selected
+          
+          if(addedConnectionIds.find(connection.id()) == addedConnectionIds.end()) {
+            QJsonObject connectionJson = connection.save();
+            if (!connectionJson.isEmpty())
+              connectionJsonArray.append(connectionJson);
+              addedConnectionIds.insert(connection.id());
+          }
+      }
+    }
+  }
+
+  
+  QJsonArray groupJsonArray;
+  for (QGraphicsItem * item : selectedItems())
+	{
+    if (auto c = qgraphicsitem_cast<GroupGraphicsObject*>(item)) {
+        Group& group = c->group();
+
+        //If collapsed
+        if(group.groupGraphicsObject().isCollapsed())
+        {
+          //Add all child items to nodes array
+          for(int i=0; i<group.groupGraphicsObject().childItems().size(); i++)
+          {
+            NodeGraphicsObject* ngo = dynamic_cast<NodeGraphicsObject*>(group.groupGraphicsObject().childItems()[i]);
+            if(ngo!=nullptr)
+            {
+              Node& node = ngo->node();
+              nodesJsonArray.append(node.save());
+            }
+          }
+
+          //Add all connections to nodes array
+          for(int i=0; i<group.groupGraphicsObject().inOutConnections.size(); i++)
+          {
+            for(int j=0; j<group.groupGraphicsObject().inOutConnections[i].size(); j++)
+            {
+              QJsonObject connectionJson = group.groupGraphicsObject().inOutConnections[i][j]->save();
+              if (!connectionJson.isEmpty())
+                connectionJsonArray.append(connectionJson);              
+            }
+          }
+        }
+
+        QJsonObject groupJson = group.save();
+        if (!groupJson.isEmpty())
+          groupJsonArray.append(groupJson);
+    }
+  }
+
+  sceneJson["nodes"] = nodesJsonArray;
+  sceneJson["connections"] = connectionJsonArray;
+  sceneJson["groups"] = groupJsonArray;
+
+  return sceneJson;
+}
+
+void FlowScene::jsonToScene(QJsonObject jsonDocument)
+{
+    QJsonArray nodesJsonArray = jsonDocument["nodes"].toArray();
+
+
+
+    for (int i = 0; i < nodesJsonArray.size(); ++i)
+    {
+      restoreNode(nodesJsonArray[i].toObject(), true);
+    }
+
+    QJsonArray connectionJsonArray = jsonDocument["connections"].toArray();
+    for (int i = 0; i < connectionJsonArray.size(); ++i)
+    {
+      QUuid in = QUuid(connectionJsonArray[i].toObject()["in_id"].toString());      
+      QUuid out = QUuid(connectionJsonArray[i].toObject()["out_id"].toString());
+
+      qDebug() << "Creating connection from " << in << " to " << out;
+
+      pasteConnection(connectionJsonArray[i].toObject(), in, out );
+    }
+    
+    QJsonArray groupsJsonArray = jsonDocument["groups"].toArray();
+    for (int i = 0; i < groupsJsonArray.size(); ++i)
+    {
+      restoreGroup(groupsJsonArray[i].toObject());
+    }
+}
+
+void FlowScene::jsonToSceneMousePos(QJsonObject jsonDocument, QPointF mousePos)
+{
+    QJsonArray nodesJsonArray = jsonDocument["nodes"].toArray();
+
+    std::map<QUuid, QUuid> addedIds;
+
+    //Get Bounds of all the selected items 
+    float minx = 10000000000;
+    float miny = 10000000000;
+    float maxx = -1000000000;
+    float maxy = -1000000000;
+    for (int i = 0; i < nodesJsonArray.size(); ++i)
+    {
+      QJsonObject nodeJsonObject = nodesJsonArray[i].toObject();
+      QJsonObject positionJson = nodeJsonObject["position"].toObject();
+      QPointF pos(positionJson["x"].toDouble(), positionJson["y"].toDouble());
+
+      if(pos.x() < minx) minx = pos.x();
+      if(pos.y() < miny) miny = pos.y();
+      if(pos.x() > maxx) maxx = pos.x();
+      if(pos.y() > maxy) maxy = pos.y();     
+    }
+    
+    float centroidX = (maxx - minx) / 2.0 + minx;
+    float centroidY = (maxy - miny) / 2.0 + miny;
+    QPointF centroid(centroidX, centroidY);
+
+    
+
+
+
+    for (int i = 0; i < nodesJsonArray.size(); ++i)
+    {
+      QJsonObject nodeJson = nodesJsonArray[i].toObject();
+      QUuid currentId = QUuid( nodeJson["id"].toString() );
+      QUuid newId = pasteNode(nodesJsonArray[i].toObject(), centroid, mousePos);
+
+      addedIds.insert(std::pair<QUuid,QUuid>(currentId, newId));
+      nodesJsonArray[i] = nodes()[newId]->save();
+    }
+    jsonDocument["nodes"] = nodesJsonArray;
+
+    QJsonArray connectionJsonArray = jsonDocument["connections"].toArray();
+    for (int i = 0; i < connectionJsonArray.size(); ++i)
+    {
+      QJsonObject connectionJson = connectionJsonArray[i].toObject();
+
+      QUuid in = QUuid(connectionJson["in_id"].toString());
+      QUuid newIn = addedIds[in];
+      
+      QUuid out = QUuid(connectionJson["out_id"].toString());
+      QUuid newOut = addedIds[out];
+
+      pasteConnection(connectionJson, newIn, newOut );
+
+      connectionJson["in_id"] = newIn.toString();
+      connectionJson["out_id"] = newOut.toString();
+      connectionJsonArray[i] = connectionJson;
+    }
+    jsonDocument["connections"] =connectionJsonArray;
+    
+    QJsonArray groupsJsonArray = jsonDocument["groups"].toArray();
+    for (int i = 0; i < groupsJsonArray.size(); ++i)
+    {
+      pasteGroup(groupsJsonArray[i].toObject(), centroid, mousePos);
+    }
+  
+
+    AddAction(UndoRedoAction(
+        [this, addedIds](void *ptr)
+        {
+          //Delete all the created nodes (and their connections)
+          for(auto &id: addedIds)
+          {
+            removeNodeWithID(id.second);
+          }
+          return 0;
+        },
+        [this, jsonDocument](void *ptr)
+        {       
+          jsonToScene(jsonDocument); //jsonDocument has now been updated with new IDs and new positions
+          return 0;
+        },
+        "Created Node "
+      ));
+
+}
+
+void FlowScene::deleteJsonElements(const QJsonObject &jsonDocument)
+{
+  QJsonArray nodesJsonArray = jsonDocument["nodes"].toArray();
+  for (int i = 0; i < nodesJsonArray.size(); ++i)
+  {
+    QJsonObject nodeJson = nodesJsonArray[i].toObject();
+    QUuid id = QUuid( nodeJson["id"].toString() );
+    removeNodeWithID(id);
+  }
+}
+
 
 
 //------------------------------------------------------------------------------

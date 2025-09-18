@@ -103,6 +103,8 @@ public:
 
   DataModelRegistry&registry() const;
 
+  std::shared_ptr<DataModelRegistry>registryShared() const;
+
   void setRegistry(std::shared_ptr<DataModelRegistry> registry);
 
   void iterateOverNodes(std::function<void(Node*)> visitor);
@@ -128,7 +130,7 @@ public:
 
   std::unordered_map<QUuid, std::shared_ptr<Connection> > const &connections() const;
 
-  std::vector<std::shared_ptr<Node>>selectedNodes() const;
+  std::vector<Node*> selectedNodes() const;
 
 public:
 
@@ -153,6 +155,16 @@ public:
   void ResetHistory();
 
   int GetHistoryIndex();
+
+  void deleteSelectedNodes();
+  
+  QJsonObject selectionToJson(bool includePartialConnections=false);
+  
+  void jsonToScene(QJsonObject object);
+  
+  void jsonToSceneMousePos(QJsonObject object, QPointF mousePos);
+  
+  void deleteJsonElements(const QJsonObject &object);
 
 signals:
 
