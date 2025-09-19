@@ -176,7 +176,7 @@ private:
 
     NodeValidationState _nodeValidationState;
 
-    NodeProcessingStatus _processingStatus = NodeProcessingStatus::Updated;
+    NodeProcessingStatus _processingStatus;
 };
 
 } // namespace QtNodes
