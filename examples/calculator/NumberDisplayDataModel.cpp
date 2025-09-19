@@ -4,7 +4,9 @@
 
 NumberDisplayDataModel::NumberDisplayDataModel()
     : _label{nullptr}
-{}
+{
+    this->setNodeProcessingStatus(QtNodes::NodeProcessingStatus::NoStatus);
+}
 
 unsigned int NumberDisplayDataModel::nPorts(PortType portType) const
 {
