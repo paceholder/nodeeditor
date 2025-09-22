@@ -18,7 +18,6 @@ public:
     RandomNumberModel() {
         this->setNodeProcessingStatus(QtNodes::NodeProcessingStatus::Empty);
 
-
         QObject::connect(this, &NodeDelegateModel::computingStarted, this, [this]() {
             if (_number1.lock() && _number2.lock()) {
                 this->setNodeProcessingStatus(

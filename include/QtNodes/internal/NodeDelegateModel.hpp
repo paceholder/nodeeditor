@@ -33,8 +33,8 @@ struct NodeValidationState
 };
 
 /**
-* Describes the node status, depending on its current situation
-*/
+ * Describes the node status, depending on its current situation
+ */
 enum class NodeProcessingStatus : int {
     NoStatus = 0,   ///< No processing status is shown in the Node UI.
     Updated = 1,    ///< Node is up to date; its outputs reflect the current inputs and parameters.
