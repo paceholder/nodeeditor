@@ -43,7 +43,6 @@ enum class NodeProcessingStatus : int {
     Failed = 5,     ///
     Partial = 6,    ///
 };
-Q_DECLARE_METATYPE(QtNodes::NodeProcessingStatus);
 
 class StyleCollection;
 
@@ -183,3 +182,4 @@ private:
 } // namespace QtNodes
 
 Q_DECLARE_METATYPE(QtNodes::NodeValidationState)
+Q_DECLARE_METATYPE(QtNodes::NodeProcessingStatus)
