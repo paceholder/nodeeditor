@@ -386,8 +386,10 @@ bool DataFlowGraphModel::setNodeData(NodeId nodeId, NodeRole role, QVariant valu
         }
         Q_EMIT nodeUpdated(nodeId);
     } break;
-    }
 
+    case NodeRole::ProgressValue:
+        break;
+    }
     return result;
 }
 
