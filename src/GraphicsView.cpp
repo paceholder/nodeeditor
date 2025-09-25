@@ -171,7 +171,10 @@ void GraphicsView::contextMenuEvent(QContextMenuEvent *event)
     QMenu *menu;
 
     if (itemAt(event->pos())) {
-        menu = nodeScene()->createFreezeMenu(mapToScene(event->pos()));
+        if (!nodeScene()->groups().empty())
+            menu = nodeScene()->createGroupMenu(mapToScene(event->pos()));
+        else
+            menu = nodeScene()->createStdMenu(mapToScene(event->pos()));
     } else {
         menu = nodeScene()->createSceneMenu(mapToScene(event->pos()));
     }

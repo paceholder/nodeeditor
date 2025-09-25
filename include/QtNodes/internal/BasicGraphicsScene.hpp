@@ -160,7 +160,9 @@ public:
      */
     virtual QMenu *createSceneMenu(QPointF const scenePos);
 
-    QMenu *createFreezeMenu(QPointF const scenePos);
+    QMenu *createStdMenu(QPointF const scenePos);
+
+    QMenu *createGroupMenu(QPointF const scenePos);
 
 Q_SIGNALS:
     void modified(BasicGraphicsScene *);
