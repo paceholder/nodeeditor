@@ -168,13 +168,25 @@ void GraphicsView::centerScene()
 void GraphicsView::contextMenuEvent(QContextMenuEvent *event)
 {
     QGraphicsView::contextMenuEvent(event);
-    QMenu *menu;
+    QMenu *menu = nullptr;
 
     if (itemAt(event->pos())) {
-        if (!nodeScene()->groups().empty())
-            menu = nodeScene()->createGroupMenu(mapToScene(event->pos()));
-        else
+        bool insideGroup = false;
+
+        for (const auto &pair : nodeScene()->groups()) {
+            std::shared_ptr<NodeGroup> nodeGroupPtr = pair.second;
+            const QPointF &node_point = nodeGroupPtr->groupGraphicsObject().pos();
+
+            if (nodeGroupPtr->groupGraphicsObject().contains(mapToScene(event->pos()))) {
+                menu = nodeScene()->createGroupMenu(node_point);
+                insideGroup = true;
+                break;
+            }
+        }
+
+        if (!insideGroup) {
             menu = nodeScene()->createStdMenu(mapToScene(event->pos()));
+        }
     } else {
         menu = nodeScene()->createSceneMenu(mapToScene(event->pos()));
     }
