@@ -610,7 +610,10 @@ QMenu *BasicGraphicsScene::createStdMenu(QPointF const scenePos)
 
     connect(copyAction, &QAction::triggered, this, &BasicGraphicsScene::onCopySelectedObjects);
 
-    connect(cutAction, &QAction::triggered, this, &BasicGraphicsScene::onDeleteSelectedObjects);
+    connect(cutAction, &QAction::triggered, [this] {
+        onCopySelectedObjects();
+        onDeleteSelectedObjects();
+    });
 
     menu->setAttribute(Qt::WA_DeleteOnClose);
     return menu;
@@ -631,11 +634,13 @@ QMenu *BasicGraphicsScene::createGroupMenu(QPointF const scenePos)
     cutAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_X));
 
     // Connections
-    //connect(createGroupAction, &QAction::triggered, [this]() { createGroupFromSelection(); });
 
     connect(copyAction, &QAction::triggered, this, &BasicGraphicsScene::onCopySelectedObjects);
 
-    connect(cutAction, &QAction::triggered, this, &BasicGraphicsScene::onDeleteSelectedObjects);
+    connect(cutAction, &QAction::triggered, [this] {
+        onCopySelectedObjects();
+        onDeleteSelectedObjects();
+    });
 
     menu->setAttribute(Qt::WA_DeleteOnClose);
     return menu;
