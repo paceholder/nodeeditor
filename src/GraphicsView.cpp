@@ -2,6 +2,7 @@
 
 #include "BasicGraphicsScene.hpp"
 #include "ConnectionGraphicsObject.hpp"
+#include "GroupGraphicsObject.hpp"
 #include "NodeGraphicsObject.hpp"
 #include "StyleCollection.hpp"
 #include "UndoCommands.hpp"
@@ -169,26 +170,30 @@ void GraphicsView::contextMenuEvent(QContextMenuEvent *event)
 {
     QGraphicsView::contextMenuEvent(event);
     QMenu *menu = nullptr;
+    const QPointF scenePos = mapToScene(event->pos());
 
-    if (itemAt(event->pos())) {
-        bool insideGroup = false;
+    auto clickedItems = items(event->pos());
 
-        for (const auto &pair : nodeScene()->groups()) {
-            std::shared_ptr<NodeGroup> nodeGroupPtr = pair.second;
-            const QPointF &node_point = nodeGroupPtr->groupGraphicsObject().pos();
-
-            if (nodeGroupPtr->groupGraphicsObject().contains(mapToScene(event->pos()))) {
-                menu = nodeScene()->createGroupMenu(node_point);
-                insideGroup = true;
-                break;
-            }
+    for (QGraphicsItem *item : clickedItems) {
+        if (auto *nodeItem = qgraphicsitem_cast<NodeGraphicsObject *>(item)) {
+            Q_UNUSED(nodeItem);
+            menu = nodeScene()->createStdMenu(scenePos);
+            break;
         }
 
-        if (!insideGroup) {
-            menu = nodeScene()->createStdMenu(mapToScene(event->pos()));
+        if (auto *groupItem = qgraphicsitem_cast<GroupGraphicsObject *>(item)) {
+            Q_UNUSED(groupItem);
+            menu = nodeScene()->createGroupMenu(scenePos);
+            break;
         }
-    } else {
-        menu = nodeScene()->createSceneMenu(mapToScene(event->pos()));
+    }
+
+    if (!menu) {
+        if (!clickedItems.empty()) {
+            menu = nodeScene()->createStdMenu(scenePos);
+        } else {
+            menu = nodeScene()->createSceneMenu(scenePos);
+        }
     }
 
     if (menu) {
