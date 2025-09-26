@@ -23,11 +23,11 @@
 #include <QtCore/QByteArray>
 #include <QtCore/QDataStream>
 #include <QtCore/QFile>
+#include <QtCore/QIODevice>
 #include <QtCore/QJsonArray>
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
 #include <QtCore/QJsonValue>
-#include <QtCore/QIODevice>
 #include <QtCore/QString>
 #include <QtCore/QtGlobal>
 
@@ -39,8 +39,8 @@
 
 namespace {
 
-using QtNodes::NodeId;
 using QtNodes::InvalidNodeId;
+using QtNodes::NodeId;
 
 NodeId jsonValueToNodeId(QJsonValue const &value)
 {
@@ -578,6 +578,21 @@ QMenu *BasicGraphicsScene::createStdMenu(QPointF const scenePos)
 
     // Submenu "Add to group..."
     QMenu *addToGroupMenu = menu->addMenu("Add to group...");
+
+    for (const auto &[uuid, groupPtr] : _groups) {
+        if (!groupPtr)
+            continue;
+
+        auto groupName = groupPtr->name();
+
+        QAction *groupAction = addToGroupMenu->addAction(groupName);
+
+        for (const auto &node : selectedNodes()) {
+            connect(groupAction, &QAction::triggered, [this, uuid, node]() {
+                this->addNodeToGroup(node->nodeId(), uuid);
+            });
+        }
+    }
 
     // "Create group from selection" action
     QAction *createGroupAction = menu->addAction("Create group from selection");
