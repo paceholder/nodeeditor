@@ -26,6 +26,9 @@
 #include <QtCore/QJsonArray>
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
+#include <QtCore/QJsonValue>
+#include <QtCore/QIODevice>
+#include <QtCore/QString>
 #include <QtCore/QtGlobal>
 
 #include <iostream>
@@ -33,6 +36,53 @@
 #include <unordered_set>
 #include <utility>
 #include <queue>
+
+namespace {
+
+using QtNodes::NodeId;
+using QtNodes::InvalidNodeId;
+
+NodeId jsonValueToNodeId(QJsonValue const &value)
+{
+    if (value.isDouble()) {
+        return static_cast<NodeId>(value.toInt());
+    }
+
+    if (value.isString()) {
+        auto const textValue = value.toString();
+
+        bool ok = false;
+        auto const numericValue = textValue.toULongLong(&ok, 10);
+        if (ok) {
+            return static_cast<NodeId>(numericValue);
+        }
+
+        QUuid uuidValue(textValue);
+        if (!uuidValue.isNull()) {
+            auto const bytes = uuidValue.toRfc4122();
+            if (bytes.size() >= static_cast<int>(sizeof(quint32))) {
+                QDataStream stream(bytes);
+                quint32 value32 = 0U;
+                stream >> value32;
+                return static_cast<NodeId>(value32);
+            }
+        }
+    }
+
+    return InvalidNodeId;
+}
+
+QUuid nodeIdToGroupUuid(NodeId const nodeId)
+{
+    QByteArray bytes(16, 0);
+
+    QDataStream stream(&bytes, QIODevice::WriteOnly);
+    stream << static_cast<quint32>(nodeId);
+
+    return QUuid::fromRfc4122(bytes);
+}
+
+} // namespace
 
 namespace QtNodes {
 
@@ -434,6 +484,54 @@ std::weak_ptr<QtNodes::NodeGroup> BasicGraphicsScene::createGroupFromSelection(Q
     return createGroup(nodes, groupName);
 }
 
+NodeGraphicsObject &BasicGraphicsScene::loadNodeToMap(QJsonObject nodeJson, bool keepOriginalId)
+{
+    NodeId newNodeId = InvalidNodeId;
+
+    if (keepOriginalId) {
+        newNodeId = jsonValueToNodeId(nodeJson["id"]);
+    }
+
+    if (newNodeId == InvalidNodeId) {
+        newNodeId = _graphModel.newNodeId();
+        nodeJson["id"] = static_cast<qint64>(newNodeId);
+    }
+
+    _graphModel.loadNode(nodeJson);
+
+    auto *nodeObject = nodeGraphicsObject(newNodeId);
+    if (!nodeObject) {
+        auto graphicsObject = std::make_unique<NodeGraphicsObject>(*this, newNodeId);
+        nodeObject = graphicsObject.get();
+        _nodeGraphicsObjects[newNodeId] = std::move(graphicsObject);
+    }
+
+    return *nodeObject;
+}
+
+void BasicGraphicsScene::loadConnectionToMap(QJsonObject const &connectionJson,
+                                             std::unordered_map<NodeId, NodeId> const &nodeIdMap)
+{
+    ConnectionId connId = fromJson(connectionJson);
+
+    auto const outIt = nodeIdMap.find(connId.outNodeId);
+    auto const inIt = nodeIdMap.find(connId.inNodeId);
+
+    if (outIt == nodeIdMap.end() || inIt == nodeIdMap.end()) {
+        return;
+    }
+
+    ConnectionId remapped{outIt->second, connId.outPortIndex, inIt->second, connId.inPortIndex};
+
+    if (_graphModel.connectionExists(remapped)) {
+        return;
+    }
+
+    if (_graphModel.connectionPossible(remapped)) {
+        _graphModel.addConnection(remapped);
+    }
+}
+
 std::pair<std::weak_ptr<NodeGroup>, std::unordered_map<QUuid, QUuid>>
 BasicGraphicsScene::restoreGroup(QJsonObject const &groupJson)
 {
@@ -441,28 +539,29 @@ BasicGraphicsScene::restoreGroup(QJsonObject const &groupJson)
     // need these old IDs to be restored, we must create new IDs and map them to the
     // old ones so the connections are properly restored
     std::unordered_map<QUuid, QUuid> IDsMap{};
+    std::unordered_map<NodeId, NodeId> nodeIdMap{};
 
     std::vector<NodeGraphicsObject *> group_children{};
 
     QJsonArray nodesJson = groupJson["nodes"].toArray();
     for (const QJsonValueRef nodeJson : nodesJson) {
-        auto oldID = QUuid(nodeJson.toObject()["id"].toString());
+        QJsonObject nodeObject = nodeJson.toObject();
+        NodeId const oldNodeId = jsonValueToNodeId(nodeObject["id"]);
 
-        //@TODO: create laodNodeToMap method in v3
+        NodeGraphicsObject &nodeRef = loadNodeToMap(nodeObject, false);
+        NodeId const newNodeId = nodeRef.nodeId();
 
-        //auto &nodeRef = loadNodeToMap(nodeJson.toObject(), _nodes, false);
+        if (oldNodeId != InvalidNodeId) {
+            nodeIdMap.emplace(oldNodeId, newNodeId);
+            IDsMap.emplace(nodeIdToGroupUuid(oldNodeId), nodeIdToGroupUuid(newNodeId));
+        }
 
-        //auto newID = nodeRef.id();
-
-        //IDsMap.insert(std::make_pair(oldID, newID));
-        //group_children.push_back(&nodeRef);
+        group_children.push_back(&nodeRef);
     }
 
     QJsonArray connectionJsonArray = groupJson["connections"].toArray();
     for (auto connection : connectionJsonArray) {
-        //@TODO: create loadConnectionToMap method in v3
-
-        //loadConnectionToMap(connection.toObject(), _nodes, _connections, IDsMap);
+        loadConnectionToMap(connection.toObject(), nodeIdMap);
     }
 
     return std::make_pair(createGroup(group_children, groupJson["name"].toString()), IDsMap);
@@ -480,18 +579,18 @@ QMenu *BasicGraphicsScene::createStdMenu(QPointF const scenePos)
     // Submenu "Add to group..."
     QMenu *addToGroupMenu = menu->addMenu("Add to group...");
 
-    // Ação "Create group from selection"
+    // "Create group from selection" action
     QAction *createGroupAction = menu->addAction("Create group from selection");
 
-    // Ação "Copy" com atalho Ctrl+C
+    // "Copy" action Ctrl+C
     QAction *copyAction = menu->addAction("Copy");
     copyAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_C));
 
-    // Ação "Cut" com atalho Ctrl+X
+    // "Cut" action Ctrl+X
     QAction *cutAction = menu->addAction("Cut");
     cutAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_X));
 
-    // Conexões
+    // Connections
     connect(createGroupAction, &QAction::triggered, [this]() { createGroupFromSelection(); });
 
     connect(copyAction, &QAction::triggered, this, &BasicGraphicsScene::onCopySelectedObjects);
@@ -508,15 +607,15 @@ QMenu *BasicGraphicsScene::createGroupMenu(QPointF const scenePos)
 
     QAction *saveGroup = menu->addAction("Save group...");
 
-    // Ação "Copy" com atalho Ctrl+C
+    // "Copy" action Ctrl+C
     QAction *copyAction = menu->addAction("Copy");
     copyAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_C));
 
-    // Ação "Cut" com atalho Ctrl+X
+    // "Cut" action Ctrl+X
     QAction *cutAction = menu->addAction("Cut");
     cutAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_X));
 
-    // Conexões
+    // Connections
     //connect(createGroupAction, &QAction::triggered, [this]() { createGroupFromSelection(); });
 
     connect(copyAction, &QAction::triggered, this, &BasicGraphicsScene::onCopySelectedObjects);

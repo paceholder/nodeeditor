@@ -10,6 +10,7 @@
 #include "QUuidStdHash.hpp"
 #include "UndoCommands.hpp"
 
+#include <QtCore/QJsonObject>
 #include <QtCore/QUuid>
 #include <QtWidgets/QGraphicsScene>
 #include <QtWidgets/QMenu>
@@ -211,6 +212,11 @@ public Q_SLOTS:
 
 private:
     AbstractGraphModel &_graphModel;
+
+    NodeGraphicsObject &loadNodeToMap(QJsonObject nodeJson, bool keepOriginalId = false);
+
+    void loadConnectionToMap(QJsonObject const &connectionJson,
+                             std::unordered_map<NodeId, NodeId> const &nodeIdMap);
 
     using UniqueNodeGraphicsObject = std::unique_ptr<NodeGraphicsObject>;
     using UniqueConnectionGraphicsObject = std::unique_ptr<ConnectionGraphicsObject>;
