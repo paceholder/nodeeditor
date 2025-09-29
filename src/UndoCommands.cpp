@@ -27,6 +27,7 @@ static QJsonObject serializeSelectedItems(BasicGraphicsScene *scene)
 
     QJsonArray nodesJsonArray;
     QJsonArray groupsJsonArray;
+    QJsonArray connJsonArray;
 
     auto appendNode = [&](NodeGraphicsObject *node) {
         if (!node)
@@ -42,6 +43,10 @@ static QJsonObject serializeSelectedItems(BasicGraphicsScene *scene)
         if (auto group = qgraphicsitem_cast<GroupGraphicsObject *>(item)) {
             for (auto *node : group->group().childNodes()) {
                 appendNode(node);
+
+                for (auto const &connectionId : graphModel.allConnectionIds(node->nodeId())) {
+                    connJsonArray.append(toJson(connectionId));
+                }
             }
         }
     }
@@ -49,6 +54,10 @@ static QJsonObject serializeSelectedItems(BasicGraphicsScene *scene)
     for (QGraphicsItem *item : scene->selectedItems()) {
         if (auto ngo = qgraphicsitem_cast<NodeGraphicsObject *>(item)) {
             appendNode(ngo);
+
+            for (auto const &connectionId : graphModel.allConnectionIds(ngo->nodeId())) {
+                connJsonArray.append(toJson(connectionId));
+            }
         }
     }
 
@@ -69,8 +78,6 @@ static QJsonObject serializeSelectedItems(BasicGraphicsScene *scene)
             groupsJsonArray.append(groupJson);
         }
     }
-
-    QJsonArray connJsonArray;
 
     for (QGraphicsItem *item : scene->selectedItems()) {
         if (auto c = qgraphicsitem_cast<ConnectionGraphicsObject *>(item)) {
