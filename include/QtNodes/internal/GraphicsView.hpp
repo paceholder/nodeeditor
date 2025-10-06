@@ -87,6 +87,7 @@ protected:
 private:
     QAction *_clearSelectionAction = nullptr;
     QAction *_deleteSelectionAction = nullptr;
+    QAction *_cutSelectionAction = nullptr;
     QAction *_duplicateSelectionAction = nullptr;
     QAction *_copySelectionAction = nullptr;
     QAction *_pasteAction = nullptr;

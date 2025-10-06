@@ -93,7 +93,6 @@ void GraphicsView::setScene(BasicGraphicsScene *scene)
         _deleteSelectionAction = new QAction(QStringLiteral("Delete Selection"), this);
         _deleteSelectionAction->setShortcutContext(Qt::ShortcutContext::WidgetShortcut);
         _deleteSelectionAction->setShortcut(QKeySequence(QKeySequence::Delete));
-        _deleteSelectionAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_X));
         _deleteSelectionAction->setAutoRepeat(false);
         connect(_deleteSelectionAction,
                 &QAction::triggered,
@@ -101,6 +100,21 @@ void GraphicsView::setScene(BasicGraphicsScene *scene)
                 &GraphicsView::onDeleteSelectedObjects);
 
         addAction(_deleteSelectionAction);
+    }
+
+    {
+        delete _cutSelectionAction;
+        _cutSelectionAction = new QAction(QStringLiteral("Cut Selection"), this);
+        _cutSelectionAction->setShortcutContext(Qt::ShortcutContext::WidgetShortcut);
+        _cutSelectionAction->setShortcut(QKeySequence(QKeySequence::Cut));
+        _cutSelectionAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_X));
+        _cutSelectionAction->setAutoRepeat(false);
+        connect(_cutSelectionAction, &QAction::triggered, [this] {
+            onCopySelectedObjects();
+            onDeleteSelectedObjects();
+        });
+
+        addAction(_cutSelectionAction);
     }
 
     {

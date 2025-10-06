@@ -412,6 +412,7 @@ std::weak_ptr<NodeGroup> BasicGraphicsScene::createGroup(std::vector<NodeGraphic
     if (groupName == QStringLiteral("")) {
         groupName = "Group " + QString::number(NodeGroup::groupCount());
     }
+
     auto group = std::make_shared<NodeGroup>(nodes, QUuid::createUuid(), groupName, this);
     auto ggo = std::make_unique<GroupGraphicsObject>(*this, *group);
 
