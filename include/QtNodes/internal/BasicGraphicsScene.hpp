@@ -102,7 +102,8 @@ public:
    * @return Pointer to the newly-created group.
    */
     std::weak_ptr<NodeGroup> createGroup(std::vector<NodeGraphicsObject *> &nodes,
-                                         QString name = QStringLiteral(""));
+                                         QString name = QStringLiteral(""),
+                                         QUuid groupId = QUuid());
 
     /**
    * @brief Creates a group in the scene containing the currently selected nodes.
@@ -192,6 +193,11 @@ private:
     /// Redraws adjacent nodes for given `connectionId`
     void updateAttachedNodes(ConnectionId const connectionId, PortType const portType);
 
+    NodeGraphicsObject &loadNodeToMap(QJsonObject nodeJson, bool keepOriginalId = false);
+
+    void loadConnectionToMap(QJsonObject const &connectionJson,
+                             std::unordered_map<NodeId, NodeId> const &nodeIdMap);
+
 public Q_SLOTS:
     /// Slot called when the `connectionId` is erased form the AbstractGraphModel.
     void onConnectionDeleted(ConnectionId const connectionId);
@@ -212,11 +218,6 @@ public Q_SLOTS:
 
 private:
     AbstractGraphModel &_graphModel;
-
-    NodeGraphicsObject &loadNodeToMap(QJsonObject nodeJson, bool keepOriginalId = false);
-
-    void loadConnectionToMap(QJsonObject const &connectionJson,
-                             std::unordered_map<NodeId, NodeId> const &nodeIdMap);
 
     using UniqueNodeGraphicsObject = std::unique_ptr<NodeGraphicsObject>;
     using UniqueConnectionGraphicsObject = std::unique_ptr<ConnectionGraphicsObject>;

@@ -399,7 +399,8 @@ void BasicGraphicsScene::onModelReset()
 }
 
 std::weak_ptr<NodeGroup> BasicGraphicsScene::createGroup(std::vector<NodeGraphicsObject *> &nodes,
-                                                         QString groupName)
+                                                         QString groupName,
+                                                         QUuid groupId)
 {
     if (nodes.empty())
         return std::weak_ptr<NodeGroup>();
@@ -409,11 +410,15 @@ std::weak_ptr<NodeGroup> BasicGraphicsScene::createGroup(std::vector<NodeGraphic
             removeNodeFromGroup(node->nodeId());
     }
 
-    if (groupName == QStringLiteral("")) {
+    if (groupName.isEmpty()) {
         groupName = "Group " + QString::number(NodeGroup::groupCount());
     }
 
-    auto group = std::make_shared<NodeGroup>(nodes, QUuid::createUuid(), groupName, this);
+    if (groupId.isNull()) {
+        groupId = QUuid::createUuid();
+    }
+
+    auto group = std::make_shared<NodeGroup>(nodes, groupId, groupName, this);
     auto ggo = std::make_unique<GroupGraphicsObject>(*this, *group);
 
     group->setGraphicsObject(std::move(ggo));
