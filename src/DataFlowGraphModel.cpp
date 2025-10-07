@@ -8,7 +8,6 @@
 #include <stack>
 #include <stdexcept>
 
-
 namespace QtNodes {
 
 DataFlowGraphModel::DataFlowGraphModel(std::shared_ptr<NodeDelegateModelRegistry> registry)
@@ -117,12 +116,10 @@ bool DataFlowGraphModel::connectionPossible(ConnectionId const connectionId) con
     // Check port bounds, i.e. that we do not connect non-existing port numbers
     auto checkPortBounds = [&](PortType const portType) {
         NodeId const nodeId = getNodeId(portType, connectionId);
-        auto portCountRole = (portType == PortType::Out) ?
-                             NodeRole::OutPortCount :
-                             NodeRole::InPortCount;
+        auto portCountRole = (portType == PortType::Out) ? NodeRole::OutPortCount
+                                                         : NodeRole::InPortCount;
 
-        std::size_t const portCount =
-          nodeData(nodeId, portCountRole).toUInt();
+        std::size_t const portCount = nodeData(nodeId, portCountRole).toUInt();
 
         return getPortIndex(portType, connectionId) < portCount;
     };
@@ -146,12 +143,9 @@ bool DataFlowGraphModel::connectionPossible(ConnectionId const connectionId) con
         return connected.empty() || (policy == ConnectionPolicy::Many);
     };
 
-    bool const basicChecks =
-           getDataType(PortType::Out).id == getDataType(PortType::In).id
-           && portVacant(PortType::Out)
-           && portVacant(PortType::In)
-           && checkPortBounds(PortType::Out)
-           && checkPortBounds(PortType::In);
+    bool const basicChecks = getDataType(PortType::Out).id == getDataType(PortType::In).id
+                             && portVacant(PortType::Out) && portVacant(PortType::In)
+                             && checkPortBounds(PortType::Out) && checkPortBounds(PortType::In);
 
     // In data-flow mode (this class) it's important to forbid graph loops.
     // We perform depth-first graph traversal starting from the "Input" port of
@@ -161,17 +155,16 @@ bool DataFlowGraphModel::connectionPossible(ConnectionId const connectionId) con
         std::stack<NodeId> filo;
         filo.push(connectionId.inNodeId);
 
-        while (!filo.empty())
-        {
-            auto id = filo.top(); filo.pop();
+        while (!filo.empty()) {
+            auto id = filo.top();
+            filo.pop();
 
             if (id == connectionId.outNodeId) { // LOOP!
-                  return true;
+                return true;
             }
 
             // Add out-connections to continue interations
-            std::size_t const nOutPorts =
-                nodeData(id, NodeRole::OutPortCount).toUInt();
+            std::size_t const nOutPorts = nodeData(id, NodeRole::OutPortCount).toUInt();
 
             for (PortIndex index = 0; index < nOutPorts; ++index) {
                 auto const &outConnectionIds = connections(id, PortType::Out, index);
@@ -187,7 +180,6 @@ bool DataFlowGraphModel::connectionPossible(ConnectionId const connectionId) con
 
     return basicChecks && (loopsEnabled() || !hasLoops());
 }
-
 
 void DataFlowGraphModel::addConnection(ConnectionId const connectionId)
 {

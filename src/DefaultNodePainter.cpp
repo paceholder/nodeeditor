@@ -14,7 +14,6 @@
 
 #include <cmath>
 
-
 namespace QtNodes {
 
 void DefaultNodePainter::paint(QPainter *painter, NodeGraphicsObject &ngo) const
@@ -116,7 +115,6 @@ void DefaultNodePainter::drawConnectionPoints(QPainter *painter, NodeGraphicsObj
     auto reducedDiameter = diameter * 0.6;
 
     for (PortType portType : {PortType::Out, PortType::In}) {
-
         auto portCountRole = (portType == PortType::Out) ? NodeRole::OutPortCount
                                                          : NodeRole::InPortCount;
         size_t const n = model.nodeData(nodeId, portCountRole).toUInt();
