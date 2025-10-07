@@ -7,12 +7,11 @@
 #include <vector>
 
 #include "DataFlowGraphModel.hpp"
+#include "Definitions.hpp"
 #include "Export.hpp"
 #include "GroupGraphicsObject.hpp"
-#include "NodeState.hpp"
-//#include "memory.hpp"
-#include "Definitions.hpp"
 #include "NodeConnectionInteraction.hpp"
+#include "NodeState.hpp"
 
 namespace QtNodes {
 

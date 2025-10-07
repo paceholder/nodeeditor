@@ -582,7 +582,6 @@ QMenu *BasicGraphicsScene::createStdMenu(QPointF const scenePos)
 {
     QMenu *menu = new QMenu();
 
-    // Submenu "Add to group..."
     QMenu *addToGroupMenu = menu->addMenu("Add to group...");
 
     for (const auto &[uuid, groupPtr] : _groups) {
@@ -600,18 +599,14 @@ QMenu *BasicGraphicsScene::createStdMenu(QPointF const scenePos)
         }
     }
 
-    // "Create group from selection" action
     QAction *createGroupAction = menu->addAction("Create group from selection");
 
-    // "Copy" action Ctrl+C
     QAction *copyAction = menu->addAction("Copy");
     copyAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_C));
 
-    // "Cut" action Ctrl+X
     QAction *cutAction = menu->addAction("Cut");
     cutAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_X));
 
-    // Connections
     connect(createGroupAction, &QAction::triggered, [this]() { createGroupFromSelection(); });
 
     connect(copyAction, &QAction::triggered, this, &BasicGraphicsScene::onCopySelectedObjects);
@@ -631,15 +626,11 @@ QMenu *BasicGraphicsScene::createGroupMenu(QPointF const scenePos)
 
     QAction *saveGroup = menu->addAction("Save group...");
 
-    // "Copy" action Ctrl+C
     QAction *copyAction = menu->addAction("Copy");
     copyAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_C));
 
-    // "Cut" action Ctrl+X
     QAction *cutAction = menu->addAction("Cut");
     cutAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_X));
-
-    // Connections
 
     connect(copyAction, &QAction::triggered, this, &BasicGraphicsScene::onCopySelectedObjects);
 
