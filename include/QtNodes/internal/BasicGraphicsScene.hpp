@@ -132,7 +132,11 @@ public:
    */
     std::weak_ptr<NodeGroup> loadGroupFile();
 
+    void saveGroupFile(const QUuid &groupID);
+
     std::vector<NodeGraphicsObject *> selectedNodes() const;
+
+    std::vector<GroupGraphicsObject *> selectedGroups() const;
 
     void addNodeToGroup(NodeId nodeId, QUuid const &groupId);
 

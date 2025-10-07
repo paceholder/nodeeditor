@@ -454,6 +454,24 @@ std::vector<NodeGraphicsObject *> BasicGraphicsScene::selectedNodes() const
     return result;
 }
 
+std::vector<GroupGraphicsObject *> BasicGraphicsScene::selectedGroups() const
+{
+    QList<QGraphicsItem *> graphicsItems = selectedItems();
+
+    std::vector<GroupGraphicsObject *> result;
+    result.reserve(graphicsItems.size());
+
+    for (QGraphicsItem *item : graphicsItems) {
+        auto ngo = qgraphicsitem_cast<GroupGraphicsObject *>(item);
+
+        if (ngo) {
+            result.push_back(ngo);
+        }
+    }
+
+    return result;
+}
+
 void BasicGraphicsScene::addNodeToGroup(NodeId nodeId, QUuid const &groupId)
 {
     auto groupIt = _groups.find(groupId);
@@ -632,6 +650,12 @@ QMenu *BasicGraphicsScene::createGroupMenu(QPointF const scenePos)
     QAction *cutAction = menu->addAction("Cut");
     cutAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_X));
 
+    connect(saveGroup, &QAction::triggered, [this] {
+        for (auto const &groupGo : selectedGroups()) {
+            saveGroupFile(groupGo->group().id());
+        }
+    });
+
     connect(copyAction, &QAction::triggered, this, &BasicGraphicsScene::onCopySelectedObjects);
 
     connect(cutAction, &QAction::triggered, [this] {
@@ -641,6 +665,57 @@ QMenu *BasicGraphicsScene::createGroupMenu(QPointF const scenePos)
 
     menu->setAttribute(Qt::WA_DeleteOnClose);
     return menu;
+}
+
+void BasicGraphicsScene::saveGroupFile(const QUuid &groupID)
+{
+    QString fileName = QFileDialog::getSaveFileName(nullptr,
+                                                    tr("Save Node Group"),
+                                                    QDir::homePath(),
+                                                    tr("Node Group files (*.group)"));
+
+    if (!fileName.isEmpty()) {
+        if (!fileName.endsWith("group", Qt::CaseInsensitive))
+            fileName += ".group";
+
+        if (auto groupIt = _groups.find(groupID); groupIt != _groups.end()) {
+            QFile file(fileName);
+            if (file.open(QIODevice::WriteOnly)) {
+                file.write(groupIt->second->saveToFile());
+            } else {
+                qDebug() << "Error saving group file!";
+            }
+        } else {
+            qDebug() << "Error! Couldn't find group while saving.";
+        }
+    }
+}
+
+std::weak_ptr<NodeGroup> BasicGraphicsScene::loadGroupFile()
+{
+    QString fileName = QFileDialog::getOpenFileName(nullptr,
+                                                    tr("Open Node Group"),
+                                                    QDir::currentPath(),
+                                                    tr("Node Group files (*.group)"));
+
+    if (!QFileInfo::exists(fileName))
+        return std::weak_ptr<NodeGroup>();
+
+    QFile file(fileName);
+
+    if (!file.open(QIODevice::ReadOnly)) {
+        qDebug() << "Error loading group file!";
+    }
+
+    QDir d = QFileInfo(fileName).absoluteDir();
+    QString absolute = d.absolutePath();
+    QDir::setCurrent(absolute);
+
+    QByteArray wholeFile = file.readAll();
+
+    const QJsonObject fileJson = QJsonDocument::fromJson(wholeFile).object();
+
+    return restoreGroup(fileJson).first;
 }
 
 } // namespace QtNodes
