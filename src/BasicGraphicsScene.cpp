@@ -638,7 +638,7 @@ QMenu *BasicGraphicsScene::createStdMenu(QPointF const scenePos)
     return menu;
 }
 
-QMenu *BasicGraphicsScene::createGroupMenu(QPointF const scenePos)
+QMenu *BasicGraphicsScene::createGroupMenu(QPointF const scenePos, GroupGraphicsObject *groupGo)
 {
     QMenu *menu = new QMenu();
 
@@ -650,10 +650,8 @@ QMenu *BasicGraphicsScene::createGroupMenu(QPointF const scenePos)
     QAction *cutAction = menu->addAction("Cut");
     cutAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_X));
 
-    connect(saveGroup, &QAction::triggered, [this] {
-        for (auto const &groupGo : selectedGroups()) {
-            saveGroupFile(groupGo->group().id());
-        }
+    connect(saveGroup, &QAction::triggered, [this, groupGo] {
+        saveGroupFile(groupGo->group().id());
     });
 
     connect(copyAction, &QAction::triggered, this, &BasicGraphicsScene::onCopySelectedObjects);

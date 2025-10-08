@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
     auto loadAction = menu->addAction("Load Scene");
     loadAction->setShortcut(QKeySequence::Open);
 
-    auto loadGroupAction = menu->addAction("Load Group");
+    auto loadGroupAction = menu->addAction("Load Group...");
     //loadGroupAction->setShortcut(QKeySequence::Open);
 
     QVBoxLayout *l = new QVBoxLayout(&mainWidget);

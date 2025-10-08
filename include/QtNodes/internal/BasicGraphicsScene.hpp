@@ -168,7 +168,7 @@ public:
 
     QMenu *createStdMenu(QPointF const scenePos);
 
-    QMenu *createGroupMenu(QPointF const scenePos);
+    QMenu *createGroupMenu(QPointF const scenePos, GroupGraphicsObject *groupGo);
 
 Q_SIGNALS:
     void modified(BasicGraphicsScene *);

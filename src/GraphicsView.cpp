@@ -197,8 +197,7 @@ void GraphicsView::contextMenuEvent(QContextMenuEvent *event)
         }
 
         if (auto *groupItem = qgraphicsitem_cast<GroupGraphicsObject *>(item)) {
-            Q_UNUSED(groupItem);
-            menu = nodeScene()->createGroupMenu(scenePos);
+            menu = nodeScene()->createGroupMenu(scenePos, groupItem);
             break;
         }
     }
