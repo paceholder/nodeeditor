@@ -259,6 +259,26 @@ DeleteCommand::DeleteCommand(BasicGraphicsScene *scene)
         nodesJsonArray.append(graphModel.saveNode(node->nodeId()));
     };
 
+    QJsonArray groupsJsonArray;
+
+    for (QGraphicsItem *item : _scene->selectedItems()) {
+        if (auto groupGo = qgraphicsitem_cast<GroupGraphicsObject *>(item)) {
+            auto &groupData = groupGo->group();
+
+            QJsonArray groupNodeIdsJsonArray;
+            for (NodeGraphicsObject *node : groupData.childNodes()) {
+                appendNode(node);
+                groupNodeIdsJsonArray.append(static_cast<qint64>(node->nodeId()));
+            }
+
+            QJsonObject groupJson;
+            groupJson["id"] = groupData.id().toString();
+            groupJson["name"] = groupData.name();
+            groupJson["nodes"] = groupNodeIdsJsonArray;
+            groupsJsonArray.append(groupJson);
+        }
+    }
+
     for (QGraphicsItem *item : _scene->selectedItems()) {
         if (auto group = qgraphicsitem_cast<GroupGraphicsObject *>(item)) {
             for (auto *node : group->group().childNodes()) {
@@ -274,11 +294,12 @@ DeleteCommand::DeleteCommand(BasicGraphicsScene *scene)
     }
 
     // If nothing is deleted, cancel this operation
-    if (connJsonArray.isEmpty() && nodesJsonArray.isEmpty())
+    if (connJsonArray.isEmpty() && nodesJsonArray.isEmpty() && groupsJsonArray.isEmpty())
         setObsolete(true);
 
     _sceneJson["nodes"] = nodesJsonArray;
     _sceneJson["connections"] = connJsonArray;
+    _sceneJson["groups"] = groupsJsonArray;
 }
 
 void DeleteCommand::undo()
