@@ -68,6 +68,10 @@ public:
 
     QUndoStack &undoStack();
 
+    void setGroupingEnabled(bool enabled);
+
+    bool groupingEnabled() const { return _groupingEnabled; }
+
 public:
     /**
      * @brief Creates a "draft" instance of ConnectionGraphicsObject.
@@ -237,6 +241,7 @@ private:
     bool _nodeDrag;
     QUndoStack *_undoStack;
     Qt::Orientation _orientation;
+    bool _groupingEnabled;
 };
 
 } // namespace QtNodes

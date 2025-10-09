@@ -95,6 +95,7 @@ BasicGraphicsScene::BasicGraphicsScene(AbstractGraphModel &graphModel, QObject *
     , _nodeDrag(false)
     , _undoStack(new QUndoStack(this))
     , _orientation(Qt::Horizontal)
+    , _groupingEnabled(true)
 {
     setItemIndexMethod(QGraphicsScene::NoIndex);
 
@@ -182,6 +183,32 @@ QUndoStack &BasicGraphicsScene::undoStack()
     return *_undoStack;
 }
 
+void BasicGraphicsScene::setGroupingEnabled(bool enabled)
+{
+    if (_groupingEnabled == enabled)
+        return;
+
+    if (!enabled) {
+        for (auto &groupEntry : _groups) {
+            auto &group = groupEntry.second;
+            if (!group)
+                continue;
+
+            for (auto *node : group->childNodes()) {
+                if (!node)
+                    continue;
+
+                node->unsetNodeGroup();
+                node->lock(false);
+            }
+        }
+
+        _groups.clear();
+    }
+
+    _groupingEnabled = enabled;
+}
+
 std::unique_ptr<ConnectionGraphicsObject> const &BasicGraphicsScene::makeDraftConnection(
     ConnectionId const incompleteConnectionId)
 {
@@ -209,6 +236,9 @@ void BasicGraphicsScene::clearScene()
 std::vector<std::shared_ptr<ConnectionId>> BasicGraphicsScene::connectionsWithinGroup(
     const QUuid &groupID)
 {
+    if (!_groupingEnabled)
+        return {};
+
     std::vector<std::shared_ptr<ConnectionId>> ret{};
 
     for (auto const &connection : _connectionGraphicsObjects) {
@@ -402,6 +432,9 @@ std::weak_ptr<NodeGroup> BasicGraphicsScene::createGroup(std::vector<NodeGraphic
                                                          QString groupName,
                                                          QUuid groupId)
 {
+    if (!_groupingEnabled)
+        return std::weak_ptr<NodeGroup>();
+
     if (nodes.empty())
         return std::weak_ptr<NodeGroup>();
 
@@ -456,6 +489,9 @@ std::vector<NodeGraphicsObject *> BasicGraphicsScene::selectedNodes() const
 
 std::vector<GroupGraphicsObject *> BasicGraphicsScene::selectedGroups() const
 {
+    if (!_groupingEnabled)
+        return {};
+
     QList<QGraphicsItem *> graphicsItems = selectedItems();
 
     std::vector<GroupGraphicsObject *> result;
@@ -474,6 +510,9 @@ std::vector<GroupGraphicsObject *> BasicGraphicsScene::selectedGroups() const
 
 void BasicGraphicsScene::addNodeToGroup(NodeId nodeId, QUuid const &groupId)
 {
+    if (!_groupingEnabled)
+        return;
+
     auto groupIt = _groups.find(groupId);
     auto nodeIt = _nodeGraphicsObjects.find(nodeId);
     if (groupIt == _groups.end() || nodeIt == _nodeGraphicsObjects.end())
@@ -487,6 +526,9 @@ void BasicGraphicsScene::addNodeToGroup(NodeId nodeId, QUuid const &groupId)
 
 void BasicGraphicsScene::removeNodeFromGroup(NodeId nodeId)
 {
+    if (!_groupingEnabled)
+        return;
+
     auto nodeIt = _nodeGraphicsObjects.find(nodeId);
     if (nodeIt == _nodeGraphicsObjects.end())
         return;
@@ -504,6 +546,9 @@ void BasicGraphicsScene::removeNodeFromGroup(NodeId nodeId)
 
 std::weak_ptr<QtNodes::NodeGroup> BasicGraphicsScene::createGroupFromSelection(QString groupName)
 {
+    if (!_groupingEnabled)
+        return std::weak_ptr<NodeGroup>();
+
     auto nodes = selectedNodes();
     return createGroup(nodes, groupName);
 }
@@ -559,6 +604,9 @@ void BasicGraphicsScene::loadConnectionToMap(QJsonObject const &connectionJson,
 std::pair<std::weak_ptr<NodeGroup>, std::unordered_map<QUuid, QUuid>>
 BasicGraphicsScene::restoreGroup(QJsonObject const &groupJson)
 {
+    if (!_groupingEnabled)
+        return {std::weak_ptr<NodeGroup>(), {}};
+
     // since the new nodes will have the same IDs as in the file and the connections
     // need these old IDs to be restored, we must create new IDs and map them to the
     // old ones so the connections are properly restored
@@ -600,32 +648,33 @@ QMenu *BasicGraphicsScene::createStdMenu(QPointF const scenePos)
 {
     QMenu *menu = new QMenu();
 
-    QMenu *addToGroupMenu = menu->addMenu("Add to group...");
+    if (_groupingEnabled) {
+        QMenu *addToGroupMenu = menu->addMenu("Add to group...");
 
-    for (const auto &[uuid, groupPtr] : _groups) {
-        if (!groupPtr)
-            continue;
+        for (const auto &[uuid, groupPtr] : _groups) {
+            if (!groupPtr)
+                continue;
 
-        auto groupName = groupPtr->name();
+            auto groupName = groupPtr->name();
 
-        QAction *groupAction = addToGroupMenu->addAction(groupName);
+            QAction *groupAction = addToGroupMenu->addAction(groupName);
 
-        for (const auto &node : selectedNodes()) {
-            connect(groupAction, &QAction::triggered, [this, uuid, node]() {
-                this->addNodeToGroup(node->nodeId(), uuid);
-            });
+            for (const auto &node : selectedNodes()) {
+                connect(groupAction, &QAction::triggered, [this, uuid, node]() {
+                    this->addNodeToGroup(node->nodeId(), uuid);
+                });
+            }
         }
-    }
 
-    QAction *createGroupAction = menu->addAction("Create group from selection");
+        QAction *createGroupAction = menu->addAction("Create group from selection");
+        connect(createGroupAction, &QAction::triggered, [this]() { createGroupFromSelection(); });
+    }
 
     QAction *copyAction = menu->addAction("Copy");
     copyAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_C));
 
     QAction *cutAction = menu->addAction("Cut");
     cutAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_X));
-
-    connect(createGroupAction, &QAction::triggered, [this]() { createGroupFromSelection(); });
 
     connect(copyAction, &QAction::triggered, this, &BasicGraphicsScene::onCopySelectedObjects);
 
@@ -642,7 +691,10 @@ QMenu *BasicGraphicsScene::createGroupMenu(QPointF const scenePos, GroupGraphics
 {
     QMenu *menu = new QMenu();
 
-    QAction *saveGroup = menu->addAction("Save group...");
+    QAction *saveGroup = nullptr;
+    if (_groupingEnabled) {
+        saveGroup = menu->addAction("Save group...");
+    }
 
     QAction *copyAction = menu->addAction("Copy");
     copyAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_C));
@@ -650,9 +702,11 @@ QMenu *BasicGraphicsScene::createGroupMenu(QPointF const scenePos, GroupGraphics
     QAction *cutAction = menu->addAction("Cut");
     cutAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_X));
 
-    connect(saveGroup, &QAction::triggered, [this, groupGo] {
-        saveGroupFile(groupGo->group().id());
-    });
+    if (saveGroup) {
+        connect(saveGroup, &QAction::triggered, [this, groupGo] {
+            saveGroupFile(groupGo->group().id());
+        });
+    }
 
     connect(copyAction, &QAction::triggered, this, &BasicGraphicsScene::onCopySelectedObjects);
 
@@ -667,6 +721,9 @@ QMenu *BasicGraphicsScene::createGroupMenu(QPointF const scenePos, GroupGraphics
 
 void BasicGraphicsScene::saveGroupFile(const QUuid &groupID)
 {
+    if (!_groupingEnabled)
+        return;
+
     QString fileName = QFileDialog::getSaveFileName(nullptr,
                                                     tr("Save Node Group"),
                                                     QDir::homePath(),
@@ -691,6 +748,9 @@ void BasicGraphicsScene::saveGroupFile(const QUuid &groupID)
 
 std::weak_ptr<NodeGroup> BasicGraphicsScene::loadGroupFile()
 {
+    if (!_groupingEnabled)
+        return std::weak_ptr<NodeGroup>();
+
     QString fileName = QFileDialog::getOpenFileName(nullptr,
                                                     tr("Open Node Group"),
                                                     QDir::currentPath(),

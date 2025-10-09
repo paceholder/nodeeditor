@@ -305,39 +305,43 @@ void NodeGraphicsObject::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
         if (event->lastPos() != event->pos()) {
             auto diff = event->pos() - event->lastPos();
-            if (auto nodeGroup = _nodeGroup.lock(); nodeGroup) {
-                nodeGroup->groupGraphicsObject().moveConnections();
-                if (nodeGroup->groupGraphicsObject().locked()) {
-                    nodeGroup->groupGraphicsObject().moveNodes(diff);
-                }
-            } else {
-                moveConnections();
-                // if it intersects with a group, expand group
-                QList<QGraphicsItem *> overlapItems = collidingItems();
-                for (auto &item : overlapItems) {
-                    auto ggo = qgraphicsitem_cast<GroupGraphicsObject *>(item);
-                    if (ggo != nullptr) {
-                        if (!ggo->locked()) {
-                            if (!_draggingIntoGroup) {
-                                _draggingIntoGroup = true;
-                                _possibleGroup = ggo;
-                                _originalGroupSize = _possibleGroup->mapRectToScene(ggo->rect());
-                                _possibleGroup->setPossibleChild(this);
-                                break;
-                            } else {
-                                if (ggo == _possibleGroup) {
-                                    if (!boundingRect().intersects(
-                                            mapRectFromScene(_originalGroupSize))) {
-                                        _draggingIntoGroup = false;
-                                        _originalGroupSize = QRectF();
-                                        _possibleGroup->unsetPossibleChild();
-                                        _possibleGroup = nullptr;
+            if (nodeScene()->groupingEnabled()) {
+                if (auto nodeGroup = _nodeGroup.lock(); nodeGroup) {
+                    nodeGroup->groupGraphicsObject().moveConnections();
+                    if (nodeGroup->groupGraphicsObject().locked()) {
+                        nodeGroup->groupGraphicsObject().moveNodes(diff);
+                    }
+                } else {
+                    moveConnections();
+                    // if it intersects with a group, expand group
+                    QList<QGraphicsItem *> overlapItems = collidingItems();
+                    for (auto &item : overlapItems) {
+                        auto ggo = qgraphicsitem_cast<GroupGraphicsObject *>(item);
+                        if (ggo != nullptr) {
+                            if (!ggo->locked()) {
+                                if (!_draggingIntoGroup) {
+                                    _draggingIntoGroup = true;
+                                    _possibleGroup = ggo;
+                                    _originalGroupSize = _possibleGroup->mapRectToScene(ggo->rect());
+                                    _possibleGroup->setPossibleChild(this);
+                                    break;
+                                } else {
+                                    if (ggo == _possibleGroup) {
+                                        if (!boundingRect().intersects(
+                                                mapRectFromScene(_originalGroupSize))) {
+                                            _draggingIntoGroup = false;
+                                            _originalGroupSize = QRectF();
+                                            _possibleGroup->unsetPossibleChild();
+                                            _possibleGroup = nullptr;
+                                        }
                                     }
                                 }
                             }
                         }
                     }
                 }
+            } else {
+                moveConnections();
             }
         }
         event->ignore();
@@ -359,7 +363,8 @@ void NodeGraphicsObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     // position connections precisely after fast node move
     moveConnections();
 
-    if (_draggingIntoGroup && _possibleGroup && _nodeGroup.expired()) {
+    if (nodeScene()->groupingEnabled() && _draggingIntoGroup && _possibleGroup
+        && _nodeGroup.expired()) {
         nodeScene()->addNodeToGroup(_nodeId, _possibleGroup->group().id());
         _possibleGroup->unsetPossibleChild();
         _draggingIntoGroup = false;

@@ -84,9 +84,6 @@ int main(int argc, char *argv[])
     auto loadAction = menu->addAction("Load Scene");
     loadAction->setShortcut(QKeySequence::Open);
 
-    auto loadGroupAction = menu->addAction("Load Group...");
-    //loadGroupAction->setShortcut(QKeySequence::Open);
-
     QVBoxLayout *l = new QVBoxLayout(&mainWidget);
 
     DataFlowGraphModel dataFlowGraphModel(registry);
@@ -106,13 +103,16 @@ int main(int argc, char *argv[])
 
     QObject::connect(loadAction, &QAction::triggered, scene, &DataFlowGraphicsScene::load);
 
-    QObject::connect(loadGroupAction, &QAction::triggered, [scene] { scene->loadGroupFile(); });
-
     QObject::connect(scene, &DataFlowGraphicsScene::sceneLoaded, view, &GraphicsView::centerScene);
 
     QObject::connect(scene, &DataFlowGraphicsScene::modified, &mainWidget, [&mainWidget]() {
         mainWidget.setWindowModified(true);
     });
+
+    if (scene->groupingEnabled()) {
+        auto loadGroupAction = menu->addAction("Load Group...");
+        QObject::connect(loadGroupAction, &QAction::triggered, [scene] { scene->loadGroupFile(); });
+    }
 
     mainWidget.setWindowTitle("[*]Data Flow: simplest calculator");
     mainWidget.resize(800, 600);
