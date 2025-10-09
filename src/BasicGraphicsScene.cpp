@@ -95,7 +95,7 @@ BasicGraphicsScene::BasicGraphicsScene(AbstractGraphModel &graphModel, QObject *
     , _nodeDrag(false)
     , _undoStack(new QUndoStack(this))
     , _orientation(Qt::Horizontal)
-    , _groupingEnabled(true)
+    , _groupingEnabled(false)
 {
     setItemIndexMethod(QGraphicsScene::NoIndex);
 
