@@ -646,12 +646,16 @@ std::unordered_map<QUuid, std::shared_ptr<NodeGroup>> const &BasicGraphicsScene:
 
 QMenu *BasicGraphicsScene::createStdMenu(QPointF const scenePos)
 {
+    Q_UNUSED(scenePos);
     QMenu *menu = new QMenu();
 
     if (_groupingEnabled) {
         QMenu *addToGroupMenu = menu->addMenu("Add to group...");
 
-        for (const auto &[uuid, groupPtr] : _groups) {
+        for (const auto &groupMap : _groups) {
+            auto groupPtr = groupMap.second;
+            auto uuid = groupMap.first;
+
             if (!groupPtr)
                 continue;
 
@@ -689,6 +693,7 @@ QMenu *BasicGraphicsScene::createStdMenu(QPointF const scenePos)
 
 QMenu *BasicGraphicsScene::createGroupMenu(QPointF const scenePos, GroupGraphicsObject *groupGo)
 {
+    Q_UNUSED(scenePos);
     QMenu *menu = new QMenu();
 
     QAction *saveGroup = nullptr;
