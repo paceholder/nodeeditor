@@ -22,13 +22,13 @@
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
 #include <QtCore/QJsonParseError>
+#include <QtCore/QJsonValueConstRef>
 #include <QtCore/QUuid>
 #include <QtCore/QtGlobal>
 
 #include <stdexcept>
 #include <utility>
 #include <vector>
-
 
 namespace QtNodes {
 

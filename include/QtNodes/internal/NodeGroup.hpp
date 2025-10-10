@@ -18,9 +18,9 @@ namespace QtNodes {
 class DataFlowGraphModel;
 class GroupGraphicsObject;
 class NodeState;
-class ConnectionId;
 class NodeConnectionInteraction;
 class NodeGraphicsObject;
+struct ConnectionId;
 
 /**
  * @brief The NodeGroup class defines a controller for node groups. It is
