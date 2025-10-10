@@ -32,9 +32,9 @@ class NodeGraphicsObject;
 class NodeStyle;
 class DeleteCommand;
 class CopyCommand;
-class ConnectionId;
 class NodeGroup;
 class GroupGraphicsObject;
+struct ConnectionId;
 
 /// An instance of QGraphicsScene, holds connections and nodes.
 class NODE_EDITOR_PUBLIC BasicGraphicsScene : public QGraphicsScene

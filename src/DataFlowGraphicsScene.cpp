@@ -22,7 +22,7 @@
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
 #include <QtCore/QJsonParseError>
-#include <QtCore/QJsonValueConstRef>
+#include <QtCore/QJsonValue>
 #include <QtCore/QUuid>
 #include <QtCore/QtGlobal>
 
@@ -224,14 +224,14 @@ bool DataFlowGraphicsScene::load()
     if (sceneJson.contains("groups")) {
         QJsonArray const groupsJsonArray = sceneJson["groups"].toArray();
 
-        for (QJsonValueConstRef groupValue : groupsJsonArray) {
+        for (QJsonValue groupValue : groupsJsonArray) {
             QJsonObject const groupObject = groupValue.toObject();
 
             QJsonArray const nodeIdsJson = groupObject["nodes"].toArray();
             std::vector<NodeGraphicsObject *> groupNodes;
             groupNodes.reserve(nodeIdsJson.size());
 
-            for (QJsonValueConstRef idValue : nodeIdsJson) {
+            for (QJsonValue idValue : nodeIdsJson) {
                 NodeId const nodeId = static_cast<NodeId>(idValue.toInt());
                 if (auto *nodeObject = nodeGraphicsObject(nodeId)) {
                     groupNodes.push_back(nodeObject);
