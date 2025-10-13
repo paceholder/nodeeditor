@@ -14,6 +14,7 @@ add_executable(test_nodes
   src/TestSerialization.cpp
   src/TestUndoCommands.cpp
   src/TestBasicGraphicsScene.cpp
+  src/TestNodeGroup.cpp
   src/TestUIInteraction.cpp
   src/TestDataFlow.cpp
   include/ApplicationSetup.hpp
