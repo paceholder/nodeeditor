@@ -53,6 +53,9 @@ public:
      */
     bool disconnect(PortType portToDisconnect) const;
 
+    /**
+     * @brief Getter for the NodeGraphicsObject object.
+     */
     NodeGraphicsObject &nodeGraphicsObject() { return _ngo; }
 
 private:
