@@ -409,13 +409,7 @@ QRect NodeGraphicsObject::statusIconRect() const
 {
     QVariant var = _graphModel.nodeData(_nodeId, NodeRole::ProcessingStatus);
 
-    // auto spacing = static_cast<int>(_spacing);
     auto iconPos =
-        //     = portScenePosition(std::max(var.value<QtNodes::NodeDelegateModel>().nPorts(PortType::Out),
-        //                                  var.value<QtNodes::NodeDelegateModel>().nPorts(PortType::In)),
-        //                         PortType::Out)
-        //           .toPoint()
-        // +
         QPoint{-statusIconSize().width() / 2, 0};
 
     return QRect{iconPos, statusIconSize()};
