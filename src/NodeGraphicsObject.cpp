@@ -15,7 +15,6 @@
 
 #include <cstdlib>
 
-
 namespace QtNodes {
 
 NodeGraphicsObject::NodeGraphicsObject(BasicGraphicsScene &scene, NodeId nodeId)
@@ -37,8 +36,7 @@ NodeGraphicsObject::NodeGraphicsObject(BasicGraphicsScene &scene, NodeId nodeId)
 
     NodeStyle nodeStyle(nodeStyleJson);
 
-    if(nodeStyle.ShadowEnabled)
-    {
+    if (nodeStyle.ShadowEnabled) {
         auto effect = new QGraphicsDropShadowEffect;
         effect->setOffset(4, 4);
         effect->setBlurRadius(20);
@@ -79,10 +77,10 @@ BasicGraphicsScene *NodeGraphicsObject::nodeScene() const
 
 void NodeGraphicsObject::updateQWidgetEmbedPos()
 {
-  if (_proxyWidget) {
-    AbstractNodeGeometry &geometry = nodeScene()->nodeGeometry();
-    _proxyWidget->setPos(geometry.widgetPosition(_nodeId));
-  }
+    if (_proxyWidget) {
+        AbstractNodeGeometry &geometry = nodeScene()->nodeGeometry();
+        _proxyWidget->setPos(geometry.widgetPosition(_nodeId));
+    }
 }
 
 void NodeGraphicsObject::embedQWidget()
@@ -372,4 +370,55 @@ void NodeGraphicsObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     Q_EMIT nodeScene()->nodeContextMenu(_nodeId, mapToScene(event->pos()));
 }
 
+void NodeGraphicsObject::updateStatusIconSize() const
+{
+    QVariant var = _graphModel.nodeData(_nodeId, NodeRole::ProcessingStatus);
+
+    auto processingStatusValue = var.value<QtNodes::NodeProcessingStatus>();
+
+    bool oldStatus = _statusIconActive;
+    _statusIconActive = processingStatusValue != QtNodes::NodeProcessingStatus::NoStatus;
+
+    if (oldStatus != _statusIconActive) {
+        _statusIconSize.setWidth(_statusIconActive ? 32 : 0);
+        _statusIconSize.setHeight(_statusIconActive ? 32 : 0);
+    }
+}
+
+QRect NodeGraphicsObject::statusIconRect() const
+{
+    QVariant var = _graphModel.nodeData(_nodeId, NodeRole::ProcessingStatus);
+
+    auto iconPos = QPoint{-statusIconSize().width() / 2, 0};
+
+    return QRect{iconPos, statusIconSize()};
+}
+
+const QIcon NodeGraphicsObject::processingStatusIcon() const
+{
+    QVariant var = _graphModel.nodeData(_nodeId, NodeRole::ProcessingStatus);
+
+    switch (var.value<QtNodes::NodeProcessingStatus>()) {
+    case QtNodes::NodeProcessingStatus::NoStatus:
+        return QIcon();
+    case QtNodes::NodeProcessingStatus::Updated:
+        return _statusUpdated;
+    case QtNodes::NodeProcessingStatus::Processing:
+        return _statusProcessing;
+    case QtNodes::NodeProcessingStatus::Pending:
+        return _statusPending;
+    case QtNodes::NodeProcessingStatus::Empty:
+        return _statusEmpty;
+    case QtNodes::NodeProcessingStatus::Failed:
+        return _statusInvalid;
+    case QtNodes::NodeProcessingStatus::Partial:
+        return _statusPartial;
+    }
+    return _statusInvalid;
+}
+
+QSize NodeGraphicsObject::statusIconSize() const
+{
+    return _statusIconSize;
+}
 } // namespace QtNodes
