@@ -1,80 +1,20 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:svg="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- Generator: Adobe Illustrator 29.8.3, SVG Export Plug-In . SVG Version: 2.1.1 Build 3)  -->
+  <defs>
+    <style>
+      .st0 {
+        fill: #233ea0;
+      }
 
-<svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="64"
-   height="64"
-   viewBox="0 0 16.933333 16.933333"
-   version="1.1"
-   id="svg1382"
-   inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)"
-   sodipodi:docname="node_processing.svg"
-   inkscape:export-filename="/home/pedro/FabNS/node_status_icons/processing.png"
-   inkscape:export-xdpi="96"
-   inkscape:export-ydpi="96">
-  <defs
-     id="defs1376" />
-  <sodipodi:namedview
-     id="base"
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1.0"
-     inkscape:pageopacity="0.0"
-     inkscape:pageshadow="2"
-     inkscape:zoom="11.2"
-     inkscape:cx="27.571352"
-     inkscape:cy="30.378605"
-     inkscape:document-units="px"
-     inkscape:current-layer="layer1"
-     showgrid="false"
-     units="px"
-     width="64px"
-     inkscape:pagecheckerboard="true"
-     inkscape:window-width="1920"
-     inkscape:window-height="948"
-     inkscape:window-x="1920"
-     inkscape:window-y="27"
-     inkscape:window-maximized="1" />
-  <metadata
-     id="metadata1379">
-    <rdf:RDF>
-      <cc:Work
-         rdf:about="">
-        <dc:format>image/svg+xml</dc:format>
-        <dc:type
-           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
-      </cc:Work>
-    </rdf:RDF>
-  </metadata>
-  <g
-     inkscape:label="Layer 1"
-     inkscape:groupmode="layer"
-     id="layer1"
-     transform="translate(0,-280.06667)">
-    <ellipse
-       style="opacity:1;fill:#233ea0;fill-opacity:1;stroke:#4623c2;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-       id="path1929"
-       cx="8.4691029"
-       cy="288.53925"
-       rx="6.2561321"
-       ry="6.4646702" />
-    <path
-       style="fill:none;stroke:#fffffe;stroke-width:1.49999997;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 8.4732793,288.5008 v -4.83313"
-       id="path1941"
-       inkscape:connector-curvature="0" />
-    <path
-       style="fill:none;stroke:#fffffe;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="M 11.431215,286.79304 8.4732793,288.5008"
-       id="path1941-3"
-       inkscape:connector-curvature="0" />
+      .st1 {
+        fill: #fffffe;
+      }
+    </style>
+  </defs>
+  <g id="svg1382" inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)">
+    <sodipodi:namedview id="base" width="64px" bordercolor="#666666" borderopacity="1.0" inkscape:current-layer="layer1" inkscape:cx="27.571352" inkscape:cy="30.378605" inkscape:document-units="px" inkscape:pagecheckerboard="true" inkscape:pageopacity="0.0" inkscape:pageshadow="2" inkscape:window-height="948" inkscape:window-maximized="1" inkscape:window-width="1920" inkscape:window-x="1920" inkscape:window-y="27" inkscape:zoom="11.2" pagecolor="#ffffff" showgrid="false" units="px"/>
+    <ellipse class="st0" cx="64.01" cy="64.02" rx="60.78" ry="62.81"/>
+    <path class="st1" d="M99.1,43.41c-2.01-3.49-6.47-4.68-9.95-2.67l-17.81,10.28V16.69c0-4.02-3.26-7.29-7.29-7.29s-7.29,3.26-7.29,7.29v46.96s0,.05,0,.08c0,.16.01.32.02.48,0,.08,0,.17.02.25.02.15.04.29.07.44.02.09.03.19.05.28.03.12.06.24.09.36.03.12.06.23.1.34.03.1.07.19.1.29.05.13.1.27.16.4.04.08.08.16.11.24.07.14.14.28.21.42.01.02.02.05.04.07.02.04.05.07.07.1.12.21.26.41.4.6.05.06.09.13.14.19.17.22.36.43.56.63.05.05.11.1.16.15.16.15.32.29.48.42.08.06.16.12.24.18.17.12.35.24.53.35.06.03.12.07.18.11.25.14.51.26.78.37.04.01.07.03.11.04.23.09.47.17.71.24.07.02.14.04.21.05.21.05.43.09.65.13.07.01.15.03.22.03.27.03.54.05.82.05.01,0,.03,0,.04,0,.03,0,.06,0,.1,0,.25,0,.5-.02.74-.05.09-.01.19-.03.28-.04.2-.03.39-.07.58-.11.09-.02.18-.04.27-.07.24-.07.48-.15.71-.24.03-.01.07-.02.1-.04.28-.11.54-.25.8-.4.02-.01.04-.02.05-.03l28.74-16.59c3.49-2.01,4.68-6.47,2.67-9.95Z"/>
   </g>
 </svg>
