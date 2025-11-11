@@ -5,7 +5,6 @@
 
 #include <QtCore/QPointF>
 #include <QtCore/QPointer>
-#include <QtCore/QUuid>
 
 #include "Definitions.hpp"
 #include "Export.hpp"

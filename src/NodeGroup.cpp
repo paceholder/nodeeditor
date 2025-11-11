@@ -16,12 +16,12 @@ using QtNodes::NodeId;
 int NodeGroup::_groupCount = 0;
 
 NodeGroup::NodeGroup(std::vector<NodeGraphicsObject *> nodes,
-                     const QUuid &uid,
+                     GroupId groupId,
                      QString name,
                      QObject *parent)
     : QObject(parent)
     , _name(std::move(name))
-    , _uid(uid)
+    , _id(groupId)
     , _childNodes(std::move(nodes))
     , _groupGraphicsObject(nullptr)
 {
@@ -33,7 +33,7 @@ QByteArray NodeGroup::saveToFile() const
     QJsonObject groupJson;
 
     groupJson["name"] = _name;
-    groupJson["id"] = _uid.toString();
+    groupJson["id"] = static_cast<qint64>(_id);
 
     QJsonArray nodesJson;
     for (auto const &node : _childNodes) {
@@ -53,9 +53,9 @@ QByteArray NodeGroup::saveToFile() const
     return groupDocument.toJson();
 }
 
-QUuid NodeGroup::id() const
+QtNodes::GroupId NodeGroup::id() const
 {
-    return _uid;
+    return _id;
 }
 
 GroupGraphicsObject &NodeGroup::groupGraphicsObject()

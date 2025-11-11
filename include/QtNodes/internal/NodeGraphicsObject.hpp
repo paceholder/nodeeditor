@@ -4,7 +4,6 @@
 #include "NodeGroup.hpp"
 #include "NodeState.hpp"
 #include <QRectF>
-#include <QtCore/QUuid>
 #include <QtWidgets/QGraphicsObject>
 
 class QGraphicsProxyWidget;

@@ -10,10 +10,7 @@
 
 #include <catch2/catch.hpp>
 
-#include <QByteArray>
 #include <QCoreApplication>
-#include <QDataStream>
-#include <QIODevice>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -30,6 +27,7 @@ using QtNodes::ConnectionId;
 using QtNodes::DataFlowGraphModel;
 using QtNodes::NodeDelegateModel;
 using QtNodes::NodeDelegateModelRegistry;
+using QtNodes::GroupId;
 using QtNodes::NodeGraphicsObject;
 using QtNodes::NodeGroup;
 using QtNodes::NodeId;
@@ -84,26 +82,6 @@ std::set<NodeId> toNodeIdSet(std::vector<NodeId> const &ids)
     return {ids.begin(), ids.end()};
 }
 
-QUuid encodeNodeId(NodeId nodeId)
-{
-    QByteArray bytes(16, 0);
-    QDataStream stream(&bytes, QIODevice::WriteOnly);
-    stream << static_cast<quint32>(nodeId);
-    return QUuid::fromRfc4122(bytes);
-}
-
-NodeId decodeNodeUuid(QUuid const &uuid)
-{
-    auto bytes = uuid.toRfc4122();
-    if (bytes.size() < static_cast<int>(sizeof(quint32)))
-        return QtNodes::InvalidNodeId;
-
-    QDataStream stream(bytes);
-    quint32 value = 0;
-    stream >> value;
-    return static_cast<NodeId>(value);
-}
-
 } // namespace
 
 TEST_CASE("Node group creation", "[node-group]")
@@ -145,7 +123,7 @@ TEST_CASE("Node group creation", "[node-group]")
         constexpr std::size_t groupCount = 2;
 
         std::vector<std::vector<NodeId>> expectedNodeIds(groupCount);
-        std::vector<QUuid> groupIds;
+        std::vector<GroupId> groupIds;
 
         for (std::size_t groupIndex = 0; groupIndex < groupCount; ++groupIndex) {
             std::vector<NodeGraphicsObject *> nodeObjects;
@@ -315,7 +293,7 @@ TEST_CASE("Saving and restoring node groups", "[node-group]")
 
         auto groupJson = QJsonDocument::fromJson(group->saveToFile()).object();
         CHECK(groupJson["name"].toString() == QStringLiteral("SerializableGroup"));
-        CHECK(QUuid(groupJson["id"].toString()) == group->id());
+        CHECK(static_cast<GroupId>(groupJson["id"].toInt()) == group->id());
 
         auto nodesJson = groupJson["nodes"].toArray();
         CHECK(nodesJson.size() == 2);
@@ -375,9 +353,9 @@ TEST_CASE("Saving and restoring node groups", "[node-group]")
         CHECK(restoredIds.size() == nodeIds.size());
 
         for (auto originalId : nodeIds) {
-            auto mappingIt = idMapping.find(encodeNodeId(originalId));
+            auto mappingIt = idMapping.find(static_cast<GroupId>(originalId));
             REQUIRE(mappingIt != idMapping.end());
-            NodeId restoredId = decodeNodeUuid(mappingIt->second);
+            NodeId restoredId = static_cast<NodeId>(mappingIt->second);
             CHECK(std::find(restoredIds.begin(), restoredIds.end(), restoredId)
                   != restoredIds.end());
         }

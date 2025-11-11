@@ -1,10 +1,8 @@
 #pragma once
 
+#include <vector>
 #include <QtCore/QByteArray>
 #include <QtCore/QObject>
-#include <QtCore/QUuid>
-
-#include <vector>
 
 #include "DataFlowGraphModel.hpp"
 #include "Definitions.hpp"
@@ -35,11 +33,12 @@ public:
     /**
    * @brief Constructor to create a node group with the given nodes.
    * @param nodes List of node pointers to be included in the group.
+   * @param groupId Group's identifier.
    * @param name Group's name. If none is given, it is automatically generated.
    * @param parent Parent object.
    */
     NodeGroup(std::vector<NodeGraphicsObject *> nodes,
-              const QUuid &uid,
+              GroupId groupId,
               QString name = QString(),
               QObject *parent = nullptr);
 
@@ -52,9 +51,9 @@ public:
     QByteArray saveToFile() const;
 
     /**
-   * @brief Returns this group's universal ID.
+   * @brief Returns this group's identifier.
    */
-    QUuid id() const;
+    GroupId id() const;
 
     /**
    * @brief Returns a reference to this group's graphical object.
@@ -119,10 +118,10 @@ private:
 
     // addressing
     /**
-   * @brief Universal ID of this group. It is the only unique identifier of
+   * @brief Identifier of this group. It is the only unique identifier of
    * the group.
    */
-    QUuid _uid;
+    GroupId _id;
 
     // data
     /**

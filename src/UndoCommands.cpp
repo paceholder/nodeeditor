@@ -66,7 +66,7 @@ static QJsonObject serializeSelectedItems(BasicGraphicsScene *scene)
             auto &group = groupGo->group();
 
             QJsonObject groupJson;
-            groupJson["id"] = group.id().toString();
+            groupJson["id"] = static_cast<qint64>(group.id());
             groupJson["name"] = group.name();
 
             QJsonArray nodeIdsJson;
@@ -272,7 +272,7 @@ DeleteCommand::DeleteCommand(BasicGraphicsScene *scene)
             }
 
             QJsonObject groupJson;
-            groupJson["id"] = groupData.id().toString();
+            groupJson["id"] = static_cast<qint64>(groupData.id());
             groupJson["name"] = groupData.name();
             groupJson["nodes"] = groupNodeIdsJsonArray;
             groupsJsonArray.append(groupJson);

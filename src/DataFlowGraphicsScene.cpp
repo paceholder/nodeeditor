@@ -30,6 +30,43 @@
 #include <utility>
 #include <vector>
 
+namespace {
+
+using QtNodes::GroupId;
+using QtNodes::InvalidGroupId;
+
+GroupId jsonValueToGroupId(QJsonValue const &value)
+{
+    if (value.isDouble()) {
+        return static_cast<GroupId>(value.toInt());
+    }
+
+    if (value.isString()) {
+        auto const textValue = value.toString();
+
+        bool ok = false;
+        auto const numericValue = textValue.toULongLong(&ok, 10);
+        if (ok) {
+            return static_cast<GroupId>(numericValue);
+        }
+
+        QUuid uuidValue(textValue);
+        if (!uuidValue.isNull()) {
+            auto const bytes = uuidValue.toRfc4122();
+            if (bytes.size() >= static_cast<int>(sizeof(quint32))) {
+                QDataStream stream(bytes);
+                quint32 value32 = 0U;
+                stream >> value32;
+                return static_cast<GroupId>(value32);
+            }
+        }
+    }
+
+    return InvalidGroupId;
+}
+
+} // namespace
+
 namespace QtNodes {
 
 DataFlowGraphicsScene::DataFlowGraphicsScene(DataFlowGraphModel &graphModel, QObject *parent)
@@ -164,12 +201,12 @@ bool DataFlowGraphicsScene::save() const
             QJsonObject sceneJson = _graphModel.save();
 
             QJsonArray groupsJsonArray;
-            for (auto const &[uuid, groupPtr] : groups()) {
+            for (auto const &[groupId, groupPtr] : groups()) {
                 if (!groupPtr)
                     continue;
 
                 QJsonObject groupJson;
-                groupJson["id"] = uuid.toString();
+                groupJson["id"] = static_cast<qint64>(groupId);
                 groupJson["name"] = groupPtr->name();
 
                 QJsonArray nodeIdsJson;
@@ -242,7 +279,7 @@ bool DataFlowGraphicsScene::load()
                 continue;
 
             QString const groupName = groupObject["name"].toString();
-            QUuid const groupId = QUuid::fromString(groupObject["id"].toString());
+            GroupId const groupId = jsonValueToGroupId(groupObject["id"]);
 
             auto const groupWeak = createGroup(groupNodes, groupName, groupId);
             if (auto group = groupWeak.lock()) {

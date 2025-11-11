@@ -39,6 +39,8 @@
 
 namespace {
 
+using QtNodes::GroupId;
+using QtNodes::InvalidGroupId;
 using QtNodes::InvalidNodeId;
 using QtNodes::NodeId;
 
@@ -72,16 +74,6 @@ NodeId jsonValueToNodeId(QJsonValue const &value)
     return InvalidNodeId;
 }
 
-QUuid nodeIdToGroupUuid(NodeId const nodeId)
-{
-    QByteArray bytes(16, 0);
-
-    QDataStream stream(&bytes, QIODevice::WriteOnly);
-    stream << static_cast<quint32>(nodeId);
-
-    return QUuid::fromRfc4122(bytes);
-}
-
 } // namespace
 
 namespace QtNodes {
@@ -95,7 +87,7 @@ BasicGraphicsScene::BasicGraphicsScene(AbstractGraphModel &graphModel, QObject *
     , _nodeDrag(false)
     , _undoStack(new QUndoStack(this))
     , _orientation(Qt::Horizontal)
-    , _groupingEnabled(false)
+    , _groupingEnabled(true)
 {
     setItemIndexMethod(QGraphicsScene::NoIndex);
 
@@ -204,6 +196,7 @@ void BasicGraphicsScene::setGroupingEnabled(bool enabled)
         }
 
         _groups.clear();
+        _nextGroupId = 0;
     }
 
     _groupingEnabled = enabled;
@@ -233,8 +226,7 @@ void BasicGraphicsScene::clearScene()
     }
 }
 
-std::vector<std::shared_ptr<ConnectionId>> BasicGraphicsScene::connectionsWithinGroup(
-    const QUuid &groupID)
+std::vector<std::shared_ptr<ConnectionId>> BasicGraphicsScene::connectionsWithinGroup(GroupId groupID)
 {
     if (!_groupingEnabled)
         return {};
@@ -430,7 +422,7 @@ void BasicGraphicsScene::onModelReset()
 
 std::weak_ptr<NodeGroup> BasicGraphicsScene::createGroup(std::vector<NodeGraphicsObject *> &nodes,
                                                          QString groupName,
-                                                         QUuid groupId)
+                                                         GroupId groupId)
 {
     if (!_groupingEnabled)
         return std::weak_ptr<NodeGroup>();
@@ -447,8 +439,16 @@ std::weak_ptr<NodeGroup> BasicGraphicsScene::createGroup(std::vector<NodeGraphic
         groupName = "Group " + QString::number(NodeGroup::groupCount());
     }
 
-    if (groupId.isNull()) {
-        groupId = QUuid::createUuid();
+    if (groupId == InvalidGroupId) {
+        groupId = nextGroupId();
+    } else {
+        if (_groups.count(groupId) != 0) {
+            throw std::runtime_error("Group identifier collision");
+        }
+
+        if (groupId >= _nextGroupId && _nextGroupId != InvalidGroupId) {
+            _nextGroupId = groupId + 1;
+        }
     }
 
     auto group = std::make_shared<NodeGroup>(nodes, groupId, groupName, this);
@@ -508,7 +508,7 @@ std::vector<GroupGraphicsObject *> BasicGraphicsScene::selectedGroups() const
     return result;
 }
 
-void BasicGraphicsScene::addNodeToGroup(NodeId nodeId, QUuid const &groupId)
+void BasicGraphicsScene::addNodeToGroup(NodeId nodeId, GroupId groupId)
 {
     if (!_groupingEnabled)
         return;
@@ -601,7 +601,7 @@ void BasicGraphicsScene::loadConnectionToMap(QJsonObject const &connectionJson,
     }
 }
 
-std::pair<std::weak_ptr<NodeGroup>, std::unordered_map<QUuid, QUuid>>
+std::pair<std::weak_ptr<NodeGroup>, std::unordered_map<GroupId, GroupId>>
 BasicGraphicsScene::restoreGroup(QJsonObject const &groupJson)
 {
     if (!_groupingEnabled)
@@ -610,7 +610,7 @@ BasicGraphicsScene::restoreGroup(QJsonObject const &groupJson)
     // since the new nodes will have the same IDs as in the file and the connections
     // need these old IDs to be restored, we must create new IDs and map them to the
     // old ones so the connections are properly restored
-    std::unordered_map<QUuid, QUuid> IDsMap{};
+    std::unordered_map<GroupId, GroupId> IDsMap{};
     std::unordered_map<NodeId, NodeId> nodeIdMap{};
 
     std::vector<NodeGraphicsObject *> group_children{};
@@ -625,7 +625,7 @@ BasicGraphicsScene::restoreGroup(QJsonObject const &groupJson)
 
         if (oldNodeId != InvalidNodeId) {
             nodeIdMap.emplace(oldNodeId, newNodeId);
-            IDsMap.emplace(nodeIdToGroupUuid(oldNodeId), nodeIdToGroupUuid(newNodeId));
+            IDsMap.emplace(static_cast<GroupId>(oldNodeId), static_cast<GroupId>(newNodeId));
         }
 
         group_children.push_back(&nodeRef);
@@ -639,7 +639,7 @@ BasicGraphicsScene::restoreGroup(QJsonObject const &groupJson)
     return std::make_pair(createGroup(group_children, groupJson["name"].toString()), IDsMap);
 }
 
-std::unordered_map<QUuid, std::shared_ptr<NodeGroup>> const &BasicGraphicsScene::groups() const
+std::unordered_map<GroupId, std::shared_ptr<NodeGroup>> const &BasicGraphicsScene::groups() const
 {
     return _groups;
 }
@@ -654,7 +654,7 @@ QMenu *BasicGraphicsScene::createStdMenu(QPointF const scenePos)
 
         for (const auto &groupMap : _groups) {
             auto groupPtr = groupMap.second;
-            auto uuid = groupMap.first;
+            auto id = groupMap.first;
 
             if (!groupPtr)
                 continue;
@@ -664,8 +664,8 @@ QMenu *BasicGraphicsScene::createStdMenu(QPointF const scenePos)
             QAction *groupAction = addToGroupMenu->addAction(groupName);
 
             for (const auto &node : selectedNodes()) {
-                connect(groupAction, &QAction::triggered, [this, uuid, node]() {
-                    this->addNodeToGroup(node->nodeId(), uuid);
+                connect(groupAction, &QAction::triggered, [this, id, node]() {
+                    this->addNodeToGroup(node->nodeId(), id);
                 });
             }
         }
@@ -724,7 +724,7 @@ QMenu *BasicGraphicsScene::createGroupMenu(QPointF const scenePos, GroupGraphics
     return menu;
 }
 
-void BasicGraphicsScene::saveGroupFile(const QUuid &groupID)
+void BasicGraphicsScene::saveGroupFile(GroupId groupID)
 {
     if (!_groupingEnabled)
         return;
@@ -779,6 +779,24 @@ std::weak_ptr<NodeGroup> BasicGraphicsScene::loadGroupFile()
     const QJsonObject fileJson = QJsonDocument::fromJson(wholeFile).object();
 
     return restoreGroup(fileJson).first;
+}
+
+GroupId BasicGraphicsScene::nextGroupId()
+{
+    if (_nextGroupId == InvalidGroupId) {
+        throw std::runtime_error("No available group identifiers");
+    }
+
+    while (_groups.count(_nextGroupId) != 0) {
+        ++_nextGroupId;
+        if (_nextGroupId == InvalidGroupId) {
+            throw std::runtime_error("No available group identifiers");
+        }
+    }
+
+    GroupId const newId = _nextGroupId;
+    ++_nextGroupId;
+    return newId;
 }
 
 } // namespace QtNodes

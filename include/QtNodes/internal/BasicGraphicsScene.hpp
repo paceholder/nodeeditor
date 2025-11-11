@@ -7,11 +7,9 @@
 #include "Export.hpp"
 #include "GroupGraphicsObject.hpp"
 #include "NodeGroup.hpp"
-#include "QUuidStdHash.hpp"
 #include "UndoCommands.hpp"
 
 #include <QtCore/QJsonObject>
-#include <QtCore/QUuid>
 #include <QtWidgets/QGraphicsScene>
 #include <QtWidgets/QMenu>
 
@@ -111,8 +109,7 @@ public:
      * @return List of (pointers of) connections whose both endpoints belong to members of
      * the specified group.
      */
-    std::vector<std::shared_ptr<ConnectionId>> connectionsWithinGroup(const QUuid &groupID);
-
+    std::vector<std::shared_ptr<ConnectionId>> connectionsWithinGroup(GroupId groupID);
     /**
      * @brief Creates a group in the scene containing the given nodes.
      * @param nodes Reference to the list of nodes to be included in the group.
@@ -122,7 +119,7 @@ public:
      */
     std::weak_ptr<NodeGroup> createGroup(std::vector<NodeGraphicsObject *> &nodes,
                                          QString name = QStringLiteral(""),
-                                         QUuid groupId = QUuid());
+                                         GroupId groupId = InvalidGroupId);
 
     /**
      * @brief Creates a group in the scene containing the currently selected nodes.
@@ -137,13 +134,13 @@ public:
      * @return Pair consisting of a pointer to the newly-created group and the mapping
      * between old and new nodes.
      */
-    std::pair<std::weak_ptr<NodeGroup>, std::unordered_map<QUuid, QUuid>> restoreGroup(
+    std::pair<std::weak_ptr<NodeGroup>, std::unordered_map<GroupId, GroupId>> restoreGroup(
         QJsonObject const &groupJson);
 
     /**
      * @brief Returns a const reference to the mapping of existing groups.
      */
-    std::unordered_map<QUuid, std::shared_ptr<NodeGroup>> const &groups() const;
+    std::unordered_map<GroupId, std::shared_ptr<NodeGroup>> const &groups() const;
 
     /**
      * @brief Loads a group from a file specified by the user.
@@ -155,7 +152,7 @@ public:
      * @brief Saves a group in a .group file.
      * @param groupID Group's id.
      */
-    void saveGroupFile(const QUuid &groupID);
+    void saveGroupFile(GroupId groupID);
 
     /**
      * @brief Calculates the selected nodes.
@@ -174,7 +171,7 @@ public:
      * @param nodeId Node's id.
      * @param groupId Group's id.
      */
-    void addNodeToGroup(NodeId nodeId, QUuid const &groupId);
+    void addNodeToGroup(NodeId nodeId, GroupId groupId);
 
     /**
      * @brief Removes a node from a group, if the node exists and is within a group.
@@ -295,7 +292,10 @@ private:
 
     std::unordered_map<NodeId, UniqueNodeGraphicsObject> _nodeGraphicsObjects;
     std::unordered_map<ConnectionId, UniqueConnectionGraphicsObject> _connectionGraphicsObjects;
-    std::unordered_map<QUuid, SharedGroup> _groups{};
+    GroupId nextGroupId();
+
+    std::unordered_map<GroupId, SharedGroup> _groups{};
+    GroupId _nextGroupId{0};
     std::unique_ptr<ConnectionGraphicsObject> _draftConnection;
     std::unique_ptr<AbstractNodeGeometry> _nodeGeometry;
     std::unique_ptr<AbstractNodePainter> _nodePainter;
