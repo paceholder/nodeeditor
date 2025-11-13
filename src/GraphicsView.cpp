@@ -75,116 +75,93 @@ QAction *GraphicsView::deleteSelectionAction() const
 void GraphicsView::setScene(BasicGraphicsScene *scene)
 {
     QGraphicsView::setScene(scene);
+    if (!scene)
+    {
+        // Clear actions.
+        delete _clearSelectionAction;
+        delete _deleteSelectionAction;
+        delete _duplicateSelectionAction;
+        delete _copySelectionAction;
+        delete _pasteAction;
+        _clearSelectionAction = nullptr;
+        _deleteSelectionAction = nullptr;
+        _duplicateSelectionAction = nullptr;
+        _copySelectionAction = nullptr;
+        _pasteAction = nullptr;
+        return;
+    }
 
     {
         // setup actions
-        if (_clearSelectionAction)
-        {
-            delete _clearSelectionAction; 
-            _clearSelectionAction = {};
-        } 
-        if (scene)
-        {
-            _clearSelectionAction = new QAction(QStringLiteral("Clear Selection"), this);
-            _clearSelectionAction->setShortcut(Qt::Key_Escape);
-    
-            connect(_clearSelectionAction, &QAction::triggered, scene, &QGraphicsScene::clearSelection);
-    
-            addAction(_clearSelectionAction);
-        }
+        delete _clearSelectionAction;
+        _clearSelectionAction = new QAction(QStringLiteral("Clear Selection"), this);
+        _clearSelectionAction->setShortcut(Qt::Key_Escape);
+
+        connect(_clearSelectionAction, &QAction::triggered, scene, &QGraphicsScene::clearSelection);
+
+        addAction(_clearSelectionAction);
     }
 
     {
-        if (_deleteSelectionAction) 
-        {
-            delete _deleteSelectionAction; 
-            _deleteSelectionAction = {};
-        }
-        if (scene)
-        {
-            _deleteSelectionAction = new QAction(QStringLiteral("Delete Selection"), this);
-            _deleteSelectionAction->setShortcutContext(Qt::ShortcutContext::WidgetShortcut);
-            _deleteSelectionAction->setShortcut(QKeySequence(QKeySequence::Delete));
-            _deleteSelectionAction->setAutoRepeat(false);
-            connect(_deleteSelectionAction,
-                    &QAction::triggered,
-                    this,
-                    &GraphicsView::onDeleteSelectedObjects);
+        delete _deleteSelectionAction;
+        _deleteSelectionAction = new QAction(QStringLiteral("Delete Selection"), this);
+        _deleteSelectionAction->setShortcutContext(Qt::ShortcutContext::WidgetShortcut);
+        _deleteSelectionAction->setShortcut(QKeySequence(QKeySequence::Delete));
+        _deleteSelectionAction->setAutoRepeat(false);
+        connect(_deleteSelectionAction,
+                &QAction::triggered,
+                this,
+                &GraphicsView::onDeleteSelectedObjects);
 
-            addAction(_deleteSelectionAction);
-        }
+        addAction(_deleteSelectionAction);
     }
 
     {
-        if (_duplicateSelectionAction) 
-        {
-            delete _duplicateSelectionAction; 
-            _duplicateSelectionAction = {};
-        }
-        if (scene)
-        {
-            _duplicateSelectionAction = new QAction(QStringLiteral("Duplicate Selection"), this);
-            _duplicateSelectionAction->setShortcutContext(Qt::ShortcutContext::WidgetShortcut);
-            _duplicateSelectionAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_D));
-            _duplicateSelectionAction->setAutoRepeat(false);
-            connect(_duplicateSelectionAction,
-                    &QAction::triggered,
-                    this,
-                    &GraphicsView::onDuplicateSelectedObjects);
+        delete _duplicateSelectionAction;
+        _duplicateSelectionAction = new QAction(QStringLiteral("Duplicate Selection"), this);
+        _duplicateSelectionAction->setShortcutContext(Qt::ShortcutContext::WidgetShortcut);
+        _duplicateSelectionAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_D));
+        _duplicateSelectionAction->setAutoRepeat(false);
+        connect(_duplicateSelectionAction,
+                &QAction::triggered,
+                this,
+                &GraphicsView::onDuplicateSelectedObjects);
 
-            addAction(_duplicateSelectionAction);
-        }
+        addAction(_duplicateSelectionAction);
     }
 
     {
-        if (_copySelectionAction)
-        {
-            delete _copySelectionAction; 
-            _copySelectionAction = {};
-        }
-        if (scene)
-        {
-            _copySelectionAction = new QAction(QStringLiteral("Copy Selection"), this);
-            _copySelectionAction->setShortcutContext(Qt::ShortcutContext::WidgetShortcut);
-            _copySelectionAction->setShortcut(QKeySequence(QKeySequence::Copy));
-            _copySelectionAction->setAutoRepeat(false);
-            connect(_copySelectionAction,
-                    &QAction::triggered,
-                    this,
-                    &GraphicsView::onCopySelectedObjects);
+        delete _copySelectionAction;
+        _copySelectionAction = new QAction(QStringLiteral("Copy Selection"), this);
+        _copySelectionAction->setShortcutContext(Qt::ShortcutContext::WidgetShortcut);
+        _copySelectionAction->setShortcut(QKeySequence(QKeySequence::Copy));
+        _copySelectionAction->setAutoRepeat(false);
+        connect(_copySelectionAction,
+                &QAction::triggered,
+                this,
+                &GraphicsView::onCopySelectedObjects);
 
-            addAction(_copySelectionAction);
-        }
+        addAction(_copySelectionAction);
     }
 
     {
-        if (_pasteAction) 
-        {
-            delete _pasteAction; 
-            _pasteAction = {};
-        }
-        if (scene)
-        {
-            _pasteAction = new QAction(QStringLiteral("Paste Selection"), this);
-            _pasteAction->setShortcutContext(Qt::ShortcutContext::WidgetShortcut);
-            _pasteAction->setShortcut(QKeySequence(QKeySequence::Paste));
-            _pasteAction->setAutoRepeat(false);
-            connect(_pasteAction, &QAction::triggered, this, &GraphicsView::onPasteObjects);
+        delete _pasteAction;
+        _pasteAction = new QAction(QStringLiteral("Paste Selection"), this);
+        _pasteAction->setShortcutContext(Qt::ShortcutContext::WidgetShortcut);
+        _pasteAction->setShortcut(QKeySequence(QKeySequence::Paste));
+        _pasteAction->setAutoRepeat(false);
+        connect(_pasteAction, &QAction::triggered, this, &GraphicsView::onPasteObjects);
 
-            addAction(_pasteAction);
-        }
+        addAction(_pasteAction);
     }
 
-    if (scene)
-    {
-        auto undoAction = scene->undoStack().createUndoAction(this, tr("&Undo"));
-        undoAction->setShortcuts(QKeySequence::Undo);
-        addAction(undoAction);
-    
-        auto redoAction = scene->undoStack().createRedoAction(this, tr("&Redo"));
-        redoAction->setShortcuts(QKeySequence::Redo);
-        addAction(redoAction);
-    }
+    auto undoAction = scene->undoStack().createUndoAction(this, tr("&Undo"));
+    undoAction->setShortcuts(QKeySequence::Undo);
+    addAction(undoAction);
+
+    auto redoAction = scene->undoStack().createRedoAction(this, tr("&Redo"));
+    redoAction->setShortcuts(QKeySequence::Redo);
+    addAction(redoAction);
 }
 
 void GraphicsView::centerScene()
@@ -209,15 +186,14 @@ void GraphicsView::contextMenuEvent(QContextMenuEvent *event)
         return;
     }
 
+    if (!nodeScene()) return;
+
     auto const scenePos = mapToScene(event->pos());
 
-    if (auto scene = nodeScene())
-    {
-        QMenu *menu = scene->createSceneMenu(scenePos);
-    
-        if (menu) {
-            menu->exec(event->globalPos());
-        }
+    QMenu *menu = nodeScene()->createSceneMenu(scenePos);
+
+    if (menu) {
+        menu->exec(event->globalPos());
     }
 }
 
@@ -315,29 +291,34 @@ void GraphicsView::setupScale(double scale)
 
 void GraphicsView::onDeleteSelectedObjects()
 {
-    if (auto scene = nodeScene()) scene->undoStack().push(new DeleteCommand(scene));
+    if (!nodeScene()) return; 
+
+    nodeScene()->undoStack().push(new DeleteCommand(nodeScene()));
 }
 
 void GraphicsView::onDuplicateSelectedObjects()
 {
-    qDebug() << "ON DUPLICATE";
+    if (!nodeScene()) return; 
+
     QPointF const pastePosition = scenePastePosition();
-    if (auto scene = nodeScene())
-    {
-        scene->undoStack().push(new CopyCommand(scene));
-        scene->undoStack().push(new PasteCommand(scene, pastePosition));
-    }
+
+    nodeScene()->undoStack().push(new CopyCommand(nodeScene()));
+    nodeScene()->undoStack().push(new PasteCommand(nodeScene(), pastePosition));
 }
 
 void GraphicsView::onCopySelectedObjects()
 {
-    if (auto scene = nodeScene()) scene->undoStack().push(new CopyCommand(scene));
+    if (!nodeScene()) return; 
+
+    nodeScene()->undoStack().push(new CopyCommand(nodeScene()));
 }
 
 void GraphicsView::onPasteObjects()
 {
+    if (!nodeScene()) return; 
+
     QPointF const pastePosition = scenePastePosition();
-    if (auto scene = nodeScene()) scene->undoStack().push(new PasteCommand(scene, pastePosition));
+    nodeScene()->undoStack().push(new PasteCommand(nodeScene(), pastePosition));
 }
 
 void GraphicsView::keyPressEvent(QKeyEvent *event)
@@ -378,7 +359,10 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
 void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 {
     QGraphicsView::mouseMoveEvent(event);
-    if (scene() && scene()->mouseGrabberItem() == nullptr && event->buttons() == Qt::LeftButton) {
+
+    if (!scene()) return;
+
+    if (scene()->mouseGrabberItem() == nullptr && event->buttons() == Qt::LeftButton) {
         // Make sure shift is not being pressed
         if ((event->modifiers() & Qt::ShiftModifier) == 0) {
             QPointF difference = _clickPos - mapToScene(event->pos());
