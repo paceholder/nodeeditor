@@ -57,8 +57,14 @@ void DefaultHorizontalNodeGeometry::recomputeSize(NodeId const nodeId) const
         height += _portSpacing / 2;
     }
 
-    height += _portSpacing; // space above caption
-    height += _portSpacing; // space below caption
+    height += _portSpasing; // space above caption
+    height += _portSpasing; // space below caption
+
+    QVariant var = _graphModel.nodeData(nodeId, NodeRole::ProcessingStatus);
+    auto processingStatusValue = var.value<int>();
+
+    if (processingStatusValue != 0)
+        height += 20;
 
     unsigned int inPortWidth = maxPortsTextAdvance(nodeId, PortType::In);
     unsigned int outPortWidth = maxPortsTextAdvance(nodeId, PortType::Out);
