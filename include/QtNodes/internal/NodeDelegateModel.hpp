@@ -1,5 +1,8 @@
 #pragma once
 
+#include <QMetaType>
+#include <QPixmap>
+
 #include "Definitions.hpp"
 #include "Export.hpp"
 #include "NodeData.hpp"
