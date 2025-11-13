@@ -312,8 +312,7 @@ void DefaultNodePainter::drawProcessingIndicator(QPainter *painter, NodeGraphics
     QSize size = geometry.size(nodeId);
 
     QIcon icon = ngo.processingStatusIcon();
-    QSize iconSize(16, 16);
-    QPixmap pixmap = icon.pixmap(iconSize);
+    QPixmap pixmap = icon.pixmap(64);
 
     QRect r(size.width() - 28.0, size.height() - 28.0, 20.0, 20.0);
     painter->drawPixmap(r, pixmap);
