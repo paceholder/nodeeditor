@@ -51,4 +51,19 @@ void NodeDelegateModel::setNodeStyle(NodeStyle const &style)
     _nodeStyle = style;
 }
 
+void NodeDelegateModel::setProcessingIconStyle(ProcessingIconStyle placement)
+{
+    _processingIconStyle = placement;
+}
+
+ProcessingIconStyle NodeDelegateModel::processingIconStyle() const
+{
+    return _processingIconStyle;
+}
+
+void NodeDelegateModel::setNodeProcessingStatus(NodeProcessingStatus status)
+{
+    _processingStatus = status;
+}
+
 } // namespace QtNodes

@@ -20,6 +20,14 @@ ImageLoaderModel::ImageLoaderModel()
     _label->setMaximumSize(500, 300);
 
     _label->installEventFilter(this);
+
+    QtNodes::ProcessingIconStyle style;
+    style._margin = 4.0;
+    style._pos = QtNodes::ProcessingIconPos::BottomLeft;
+    style._size = 10.0;
+
+    setProcessingIconStyle(style);
+    setNodeProcessingStatus(QtNodes::NodeProcessingStatus::Updated);
 }
 
 unsigned int ImageLoaderModel::nPorts(PortType portType) const
