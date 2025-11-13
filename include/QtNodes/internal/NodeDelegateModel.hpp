@@ -44,6 +44,24 @@ enum class NodeProcessingStatus : int {
     Partial = 6,    ///< Computation finished incompletely; only partial results are available.
 };
 
+/**
+    * Describes the position of the processing icon on the node ui
+     */
+enum class ProcessingIconPos {
+    BottomLeft = 0,  /// icon on the bottom left position
+    BottomRight = 1, /// icon on the bottom right position
+};
+
+/**
+ * Defines the processing icon style;
+ */
+struct ProcessingIconStyle
+{
+    ProcessingIconPos _pos{ProcessingIconPos::BottomRight};
+    double _size{20.0};
+    double _margin{8.0};
+};
+
 class StyleCollection;
 
 /**
@@ -101,6 +119,10 @@ public:
     NodeStyle const &nodeStyle() const;
 
     void setNodeStyle(NodeStyle const &style);
+
+    void setProcessingIconStyle(ProcessingIconStyle new_style);
+
+    ProcessingIconStyle processingIconStyle() const;
 
 public:
     virtual void setInData(std::shared_ptr<NodeData> nodeData, PortIndex const portIndex) = 0;
@@ -177,6 +199,8 @@ private:
     NodeValidationState _nodeValidationState;
 
     NodeProcessingStatus _processingStatus{NodeProcessingStatus::NoStatus};
+
+    ProcessingIconStyle _processingIconStyle{};
 };
 
 } // namespace QtNodes
