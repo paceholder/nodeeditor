@@ -339,6 +339,31 @@ void DefaultNodePainter::drawResizeRect(QPainter *painter, NodeGraphicsObject &n
     }
 }
 
+void DefaultNodePainter::drawProcessingIndicator(QPainter *painter, NodeGraphicsObject &ngo) const
+{
+    AbstractGraphModel &model = ngo.graphModel();
+    NodeId const nodeId = ngo.nodeId();
+
+    auto *dfModel = dynamic_cast<DataFlowGraphModel *>(&model);
+    if (!dfModel)
+        return;
+
+    auto *delegate = dfModel->delegateModel<NodeDelegateModel>(nodeId);
+    if (!delegate)
+        return;
+
+    AbstractNodeGeometry &geometry = ngo.nodeScene()->nodeGeometry();
+
+    ngo.updateStatusIconSize();
+    QSize size = geometry.size(nodeId);
+
+    QIcon icon = ngo.processingStatusIcon();
+    QPixmap pixmap = icon.pixmap(64);
+
+    QRect r(size.width() - 28.0, size.height() - 28.0, 20.0, 20.0);
+    painter->drawPixmap(r, pixmap);
+}
+
 void DefaultNodePainter::drawValidationIcon(QPainter *painter, NodeGraphicsObject &ngo) const
 {
     AbstractGraphModel &model = ngo.graphModel();
