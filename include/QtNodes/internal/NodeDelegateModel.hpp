@@ -149,6 +149,10 @@ Q_SIGNALS:
 
 private:
     NodeStyle _nodeStyle;
+
+    NodeValidationState _nodeValidationState;
+
+    NodeProcessingStatus _processingStatus{NodeProcessingStatus::NoStatus};
 };
 
 } // namespace QtNodes
