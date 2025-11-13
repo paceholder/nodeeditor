@@ -15,6 +15,26 @@
 class RandomNumberModel : public MathOperationDataModel
 {
 public:
+    RandomNumberModel() {
+        this->setNodeProcessingStatus(QtNodes::NodeProcessingStatus::Empty);
+
+
+        QObject::connect(this, &NodeDelegateModel::computingStarted, this, [this]() {
+            if (_number1.lock() && _number2.lock()) {
+                this->setNodeProcessingStatus(
+                    QtNodes::NodeProcessingStatus::Processing);
+            }
+
+            emit requestNodeUpdate();
+        });
+        QObject::connect(this, &NodeDelegateModel::computingFinished, this, [this]() {
+            this->setNodeProcessingStatus(
+                QtNodes::NodeProcessingStatus::Updated);
+
+            emit requestNodeUpdate();
+        });
+    }
+
     virtual ~RandomNumberModel() {}
 
 public:

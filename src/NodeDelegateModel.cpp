@@ -51,14 +51,58 @@ void NodeDelegateModel::setNodeStyle(NodeStyle const &style)
     _nodeStyle = style;
 }
 
-void NodeDelegateModel::setProcessingIconStyle(ProcessingIconStyle placement)
+QPixmap NodeDelegateModel::processingStatusIcon() const
 {
-    _processingIconStyle = placement;
+    int resolution = _nodeStyle.processingIconStyle._resolution;
+    switch (_processingStatus) {
+    case NodeProcessingStatus::NoStatus:
+        return {};
+    case NodeProcessingStatus::Updated:
+        return _nodeStyle.statusUpdated.pixmap(resolution);
+    case NodeProcessingStatus::Processing:
+        return _nodeStyle.statusProcessing.pixmap(resolution);
+    case NodeProcessingStatus::Pending:
+        return _nodeStyle.statusPending.pixmap(resolution);
+    case NodeProcessingStatus::Empty:
+        return _nodeStyle.statusEmpty.pixmap(resolution);
+    case NodeProcessingStatus::Failed:
+        return _nodeStyle.statusInvalid.pixmap(resolution);
+    case NodeProcessingStatus::Partial:
+        return _nodeStyle.statusPartial.pixmap(resolution);
+    }
+
+    return {};
 }
 
-ProcessingIconStyle NodeDelegateModel::processingIconStyle() const
+void NodeDelegateModel::setStatusIcon(NodeProcessingStatus status, const QPixmap &pixmap)
 {
-    return _processingIconStyle;
+    switch (status) {
+    case NodeProcessingStatus::NoStatus:
+        break;
+    case NodeProcessingStatus::Updated:
+        _nodeStyle.statusUpdated = QIcon(pixmap);
+        break;
+    case NodeProcessingStatus::Processing:
+        _nodeStyle.statusProcessing = QIcon(pixmap);
+        break;
+    case NodeProcessingStatus::Pending:
+        _nodeStyle.statusPending = QIcon(pixmap);
+        break;
+    case NodeProcessingStatus::Empty:
+        _nodeStyle.statusEmpty = QIcon(pixmap);
+        break;
+    case NodeProcessingStatus::Failed:
+        _nodeStyle.statusInvalid = QIcon(pixmap);
+        break;
+    case NodeProcessingStatus::Partial:
+        _nodeStyle.statusPartial = QIcon(pixmap);
+        break;
+    }
+}
+
+void NodeDelegateModel::setStatusIconStyle(const ProcessingIconStyle &style)
+{
+    _nodeStyle.processingIconStyle = style;
 }
 
 void NodeDelegateModel::setNodeProcessingStatus(NodeProcessingStatus status)

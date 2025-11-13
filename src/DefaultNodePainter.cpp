@@ -354,13 +354,12 @@ void DefaultNodePainter::drawProcessingIndicator(QPainter *painter, NodeGraphics
 
     AbstractNodeGeometry &geometry = ngo.nodeScene()->nodeGeometry();
 
-    ngo.updateStatusIconSize();
     QSize size = geometry.size(nodeId);
 
-    QIcon icon = ngo.processingStatusIcon();
-    QPixmap pixmap = icon.pixmap(64);
+    QPixmap pixmap = delegate->processingStatusIcon();
+    NodeStyle nodeStyle = delegate->nodeStyle();
 
-    ProcessingIconStyle iconStyle = delegate->processingIconStyle();
+    ProcessingIconStyle iconStyle = nodeStyle.processingIconStyle;
 
     qreal iconSize = iconStyle._size;
     qreal margin = iconStyle._margin;
