@@ -3,6 +3,7 @@
 #include <memory>
 
 #include <QMetaType>
+#include <QPixmap>
 #include <QtWidgets/QWidget>
 
 #include "Definitions.hpp"
