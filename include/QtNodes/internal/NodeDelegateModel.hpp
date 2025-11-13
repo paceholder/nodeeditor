@@ -32,16 +32,16 @@ struct NodeValidationState
 };
 
 /**
- * Describes the node status, depending on its current situation
- */
+* Describes the node status, depending on its current situation
+*/
 enum class NodeProcessingStatus : int {
-    NoStatus = 0,   ///
-    Updated = 1,    ///
-    Processing = 2, ///
-    Pending = 3,    ///
-    Empty = 4,      ///
-    Failed = 5,     ///
-    Partial = 6,    ///
+    NoStatus = 0,   ///< No processing status is shown in the Node UI.
+    Updated = 1,    ///< Node is up to date; its outputs reflect the current inputs and parameters.
+    Processing = 2, ///< Node is currently running a computation.
+    Pending = 3,    ///< Node is out of date and waiting to be recomputed (e.g. manual/queued run).
+    Empty = 4,      ///< Node has no valid input data; nothing to compute.
+    Failed = 5,     ///< The last computation ended with an error.
+    Partial = 6,    ///< Computation finished incompletely; only partial results are available.
 };
 
 class StyleCollection;
