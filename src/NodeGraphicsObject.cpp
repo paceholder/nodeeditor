@@ -16,7 +16,6 @@
 
 #include <cstdlib>
 
-
 namespace QtNodes {
 
 NodeGraphicsObject::NodeGraphicsObject(BasicGraphicsScene &scene, NodeId nodeId)
@@ -65,6 +64,8 @@ NodeGraphicsObject::NodeGraphicsObject(BasicGraphicsScene &scene, NodeId nodeId)
         if (_nodeId == nodeId)
             setLockedState();
     });
+
+    QVariant var = _graphModel.nodeData(_nodeId, NodeRole::ProcessingStatus);
 }
 
 AbstractGraphModel &NodeGraphicsObject::graphModel() const
