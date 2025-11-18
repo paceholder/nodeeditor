@@ -28,7 +28,7 @@ public:
     virtual QSize size(NodeId const nodeId) const = 0;
 
     /**
-   * The function is triggeren when a nuber of ports is changed or when an
+   * The function is triggeren when a number of ports is changed or when an
    * embedded widget needs an update.
    */
     virtual void recomputeSize(NodeId const nodeId) const = 0;
