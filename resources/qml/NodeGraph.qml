@@ -181,14 +181,14 @@ Item {
             graph: root
                     
                     // Model Roles
-                    property int nodeId: model.nodeId
-                    property string nodeType: model.nodeType
-                    property real initialX: model.position.x
-                    property real initialY: model.position.y
-                    property string caption: model.caption
-                    property int inPorts: model.inPorts
-                    property int outPorts: model.outPorts
-                    property var delegateModel: model.delegateModel // The C++ QObject*
+                    nodeId: model.nodeId
+                    nodeType: model.nodeType
+                    initialX: model.position.x
+                    initialY: model.position.y
+                    caption: model.caption
+                    inPorts: model.inPorts
+                    outPorts: model.outPorts
+                    delegateModel: model.delegateModel // The C++ QObject*
                     contentDelegate: root.nodeContentDelegate
                     
                     onXChanged: {

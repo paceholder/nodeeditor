@@ -24,14 +24,14 @@ Shape {
 
     // 0 = In, 1 = Out. 
     // Source is Out (1), Dest is In (0).
-    property point startPos: sourceNode ? sourceNode.getPortPos(1, sourcePortIndex) : Qt.point(0,0)
-    property point endPos: destNode ? destNode.getPortPos(0, destPortIndex) : Qt.point(0,0)
+    property point startPos: (sourceNode && sourceNode.completed) ? sourceNode.getPortPos(1, sourcePortIndex) : Qt.point(0,0)
+    property point endPos: (destNode && destNode.completed) ? destNode.getPortPos(0, destPortIndex) : Qt.point(0,0)
 
-    visible: sourceNode !== undefined && destNode !== undefined
+    visible: sourceNode !== undefined && destNode !== undefined && sourceNode.completed && destNode.completed
 
     ShapePath {
         strokeWidth: 3
-        strokeColor: "black"
+        strokeColor: "#eeeeee"
         fillColor: "transparent"
         
         startX: root.startPos.x
