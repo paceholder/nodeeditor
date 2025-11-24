@@ -88,7 +88,10 @@ Item {
                 model: graphModel ? graphModel.connections : null
                 delegate: Connection {
                     graph: root
-                    modelData: model
+                    property int sourceNodeId: model.sourceNodeId
+                    property int sourcePortIndex: model.sourcePortIndex
+                    property int destNodeId: model.destNodeId
+                    property int destPortIndex: model.destPortIndex
                 }
             }
             
@@ -100,14 +103,14 @@ Item {
                     graph: root
                     
                     // Model Roles
-                    nodeId: model.nodeId
-                    nodeType: model.nodeType
-                    initialX: model.position.x
-                    initialY: model.position.y
-                    caption: model.caption
-                    inPorts: model.inPorts
-                    outPorts: model.outPorts
-                    delegateModel: model.model // The C++ QObject*
+                    property int nodeId: model.nodeId
+                    property string nodeType: model.nodeType
+                    property real initialX: model.position.x
+                    property real initialY: model.position.y
+                    property string caption: model.caption
+                    property int inPorts: model.inPorts
+                    property int outPorts: model.outPorts
+                    property var delegateModel: model.delegateModel // The C++ QObject*
                     contentDelegate: root.nodeContentDelegate
                     
                     onXChanged: {

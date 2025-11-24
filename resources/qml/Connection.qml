@@ -4,10 +4,12 @@ import QtQuick.Shapes 1.15
 Shape {
     id: root
     property var graph
-    property var modelData // The model roles are available directly in context, but passing 'model' helps sometimes.
     
-    // Roles from ConnectionsListModel
-    // sourceNodeId, sourcePortIndex, destNodeId, destPortIndex
+    // Roles from ConnectionsListModel are expected to be set on this item by the Repeater
+    property int sourceNodeId: -1
+    property int sourcePortIndex: -1
+    property int destNodeId: -1
+    property int destPortIndex: -1
     
     property var sourceNode: graph.nodeItems[sourceNodeId]
     property var destNode: graph.nodeItems[destNodeId]

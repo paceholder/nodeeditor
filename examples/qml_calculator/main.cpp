@@ -1,6 +1,7 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include <QQuickStyle>
 
 #include <QtNodes/qml/QuickGraphModel.hpp>
 #include <QtNodes/qml/NodesListModel.hpp>
@@ -25,6 +26,7 @@ static std::shared_ptr<NodeDelegateModelRegistry> registerDataModels()
 
 int main(int argc, char *argv[])
 {
+    QQuickStyle::setStyle("Fusion");
     QGuiApplication app(argc, argv);
 
     qmlRegisterType<QuickGraphModel>("QtNodes", 1, 0, "QuickGraphModel");

@@ -80,7 +80,7 @@ QHash<int, QByteArray> NodesListModel::roleNames() const
     roles[CaptionRole] = "caption";
     roles[InPortCountRole] = "inPorts";
     roles[OutPortCountRole] = "outPorts";
-    roles[DelegateModelRole] = "model";
+    roles[DelegateModelRole] = "delegateModel";
     roles[ResizableRole] = "resizable";
     roles[WidthRole] = "width";
     roles[HeightRole] = "height";

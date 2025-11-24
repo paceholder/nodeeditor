@@ -58,7 +58,7 @@ endif()
 
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Widgets Gui OpenGL)
 if(BUILD_QML)
-  find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Quick Qml)
+  find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Quick Qml QuickControls2)
   if(NOT Qt${QT_VERSION_MAJOR}Quick_FOUND)
       message(WARNING "Qt Quick not found, QML support disabled")
       set(BUILD_QML OFF)
