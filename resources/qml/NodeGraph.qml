@@ -60,7 +60,6 @@ Item {
                  var ctx = getContext("2d")
                  ctx.clearRect(0, 0, width, height)
                  
-                 ctx.strokeStyle = "#505050"
                  ctx.lineWidth = 1
                  
                  var gridSize = 20 * zoom
@@ -72,6 +71,8 @@ Item {
                  if (startX < 0) startX += gridSize
                  if (startY < 0) startY += gridSize
                  
+                 // Minor lines
+                 ctx.strokeStyle = "#353535"
                  ctx.beginPath()
                  
                  // Vertical lines
@@ -89,8 +90,7 @@ Item {
                  ctx.stroke()
                  
                  // Major lines
-                 /*
-                 ctx.strokeStyle = "#707070"
+                 ctx.strokeStyle = "#151515"
                  ctx.beginPath()
                  var mStartX = (offset.x % majorGridSize)
                  var mStartY = (offset.y % majorGridSize)
@@ -106,7 +106,6 @@ Item {
                      ctx.lineTo(width, my)
                  }
                  ctx.stroke()
-                 */
              }
         }
 
@@ -120,21 +119,25 @@ Item {
             scale: root.zoomLevel
             transformOrigin: Item.TopLeft
 
-            // Connections
-            Repeater {
-                model: graphModel ? graphModel.connections : null
-                delegate: Connection {
-                    graph: root
-                    property int sourceNodeId: model.sourceNodeId
-                    property int sourcePortIndex: model.sourcePortIndex
-                    property int destNodeId: model.destNodeId
-                    property int destPortIndex: model.destPortIndex
-                }
-            }
+    // Connections
+    property var graphConnections: graphModel ? graphModel.connections : null
+
+    Repeater {
+        model: graphConnections
+        delegate: Connection {
+            graph: root
+            property int sourceNodeId: model.sourceNodeId
+            property int sourcePortIndex: model.sourcePortIndex
+            property int destNodeId: model.destNodeId
+            property int destPortIndex: model.destPortIndex
+        }
+    }
             
-            // Nodes
-            Repeater {
-                model: graphModel ? graphModel.nodes : null
+    // Nodes
+    property var graphNodes: graphModel ? graphModel.nodes : null
+
+    Repeater {
+        model: graphNodes
                 delegate: Node {
                     id: nodeDelegate
                     graph: root
@@ -190,11 +193,11 @@ Item {
             acceptedButtons: Qt.MiddleButton | Qt.LeftButton
             property point lastPos
 
-            onPressed: {
+            onPressed: (mouse) => {
                 lastPos = Qt.point(mouse.x, mouse.y)
             }
 
-            onPositionChanged: {
+            onPositionChanged: (mouse) => {
                 if (pressedButtons & Qt.MiddleButton || (pressedButtons & Qt.LeftButton && (mouse.modifiers & Qt.AltModifier))) {
                     var delta = Qt.point(mouse.x - lastPos.x, mouse.y - lastPos.y)
                     root.panOffset = Qt.point(root.panOffset.x + delta.x, root.panOffset.y + delta.y)
@@ -202,7 +205,7 @@ Item {
                 }
             }
 
-            onWheel: {
+            onWheel: (wheel) => {
                 var zoomFactor = 1.1
                 if (wheel.angleDelta.y < 0) {
                     zoomLevel /= zoomFactor
