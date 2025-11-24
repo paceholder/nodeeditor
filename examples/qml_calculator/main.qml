@@ -29,6 +29,27 @@ Window {
             height: parent.height - 40
             graphModel: model
             
+            Component.onCompleted: {
+                var n1 = model.addNode("NumberSource")
+                var n2 = model.addNode("NumberSource")
+                var n3 = model.addNode("Addition")
+                var n4 = model.addNode("NumberDisplay")
+                
+                if (n1 >= 0 && n2 >= 0 && n3 >= 0 && n4 >= 0) {
+                    model.nodes.moveNode(n1, 100, 100)
+                    model.nodes.moveNode(n2, 100, 250)
+                    model.nodes.moveNode(n3, 400, 175)
+                    model.nodes.moveNode(n4, 700, 175)
+                    
+                    // Connect Source 1 to Addition In 0
+                    model.addConnection(n1, 0, n3, 0)
+                    // Connect Source 2 to Addition In 1
+                    model.addConnection(n2, 0, n3, 1)
+                    // Connect Addition Out 0 to Display In 0
+                    model.addConnection(n3, 0, n4, 0)
+                }
+            }
+            
             nodeContentDelegate: Component {
                 Item {
                     property var delegateModel

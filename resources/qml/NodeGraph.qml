@@ -71,6 +71,37 @@ Item {
         color: "#2b2b2b"
         clip: true
 
+        // Input Handler for Pan/Zoom
+        MouseArea {
+            anchors.fill: parent
+            acceptedButtons: Qt.MiddleButton | Qt.LeftButton
+            property point lastPos: Qt.point(0, 0)
+
+            onPressed: (mouse) => {
+                lastPos = Qt.point(mouse.x, mouse.y)
+            }
+
+            onPositionChanged: (mouse) => {
+                if (pressedButtons & Qt.MiddleButton || (pressedButtons & Qt.LeftButton && (mouse.modifiers & Qt.AltModifier))) {
+                    var delta = Qt.point(mouse.x - lastPos.x, mouse.y - lastPos.y)
+                    root.panOffset = Qt.point(root.panOffset.x + delta.x, root.panOffset.y + delta.y)
+                    lastPos = Qt.point(mouse.x, mouse.y)
+                }
+            }
+
+            onWheel: (wheel) => {
+                var zoomFactor = 1.1
+                if (wheel.angleDelta.y < 0) {
+                    zoomLevel /= zoomFactor
+                } else {
+                    zoomLevel *= zoomFactor
+                }
+                // Clamp zoom
+                if (zoomLevel < 0.1) zoomLevel = 0.1
+                if (zoomLevel > 5.0) zoomLevel = 5.0
+            }
+        }
+
         // Grid Shader
         /*
         ShaderEffect {
@@ -224,37 +255,6 @@ Item {
             }
         }
     }
-        }
-
-        // Input Handler for Pan/Zoom
-        MouseArea {
-            anchors.fill: parent
-            acceptedButtons: Qt.MiddleButton | Qt.LeftButton
-            property point lastPos: Qt.point(0, 0)
-
-            onPressed: (mouse) => {
-                lastPos = Qt.point(mouse.x, mouse.y)
-            }
-
-            onPositionChanged: (mouse) => {
-                if (pressedButtons & Qt.MiddleButton || (pressedButtons & Qt.LeftButton && (mouse.modifiers & Qt.AltModifier))) {
-                    var delta = Qt.point(mouse.x - lastPos.x, mouse.y - lastPos.y)
-                    root.panOffset = Qt.point(root.panOffset.x + delta.x, root.panOffset.y + delta.y)
-                    lastPos = Qt.point(mouse.x, mouse.y)
-                }
-            }
-
-            onWheel: (wheel) => {
-                var zoomFactor = 1.1
-                if (wheel.angleDelta.y < 0) {
-                    zoomLevel /= zoomFactor
-                } else {
-                    zoomLevel *= zoomFactor
-                }
-                // Clamp zoom
-                if (zoomLevel < 0.1) zoomLevel = 0.1
-                if (zoomLevel > 5.0) zoomLevel = 5.0
-            }
-        }
     }
-}
+    }
+    }
