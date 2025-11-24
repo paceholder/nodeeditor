@@ -33,6 +33,7 @@ option(BUILD_SHARED_LIBS "Build as shared library" ON)
 option(BUILD_DEBUG_POSTFIX_D "Append d suffix to debug libraries" OFF)
 option(QT_NODES_FORCE_TEST_COLOR "Force colorized unit test output" OFF)
 option(USE_QT6 "Build with Qt6 (Enabled by default)" ON)
+option(BUILD_QML "Build QML support" ON)
 
 if(QT_NODES_DEVELOPER_DEFAULTS)
   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
@@ -56,6 +57,14 @@ else()
 endif()
 
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Widgets Gui OpenGL)
+if(BUILD_QML)
+  find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Quick Qml)
+  if(NOT Qt${QT_VERSION_MAJOR}Quick_FOUND)
+      message(WARNING "Qt Quick not found, QML support disabled")
+      set(BUILD_QML OFF)
+  endif()
+endif()
+
 message(STATUS "QT_VERSION: ${QT_VERSION}, QT_DIR: ${QT_DIR}")
 
 if (${QT_VERSION} VERSION_LESS 5.11.0)
@@ -89,6 +98,15 @@ set(CPP_SOURCE_FILES
   src/locateNode.cpp
   resources/resources.qrc
 )
+
+if(BUILD_QML)
+  list(APPEND CPP_SOURCE_FILES
+    src/qml/NodesListModel.cpp
+    src/qml/ConnectionsListModel.cpp
+    src/qml/QuickGraphModel.cpp
+    resources/qml.qrc
+  )
+endif()
 
 set(HPP_HEADER_FILES
   include/QtNodes/internal/AbstractConnectionPainter.hpp
@@ -129,6 +147,14 @@ set(HPP_HEADER_FILES
   include/QtNodes/internal/UndoCommands.hpp
 )
 
+if(BUILD_QML)
+  list(APPEND HPP_HEADER_FILES
+    include/QtNodes/qml/NodesListModel.hpp
+    include/QtNodes/qml/ConnectionsListModel.hpp
+    include/QtNodes/qml/QuickGraphModel.hpp
+  )
+endif()
+
 # If we want to give the option to build a static library,
 # set BUILD_SHARED_LIBS option to OFF
 add_library(QtNodes
@@ -155,6 +181,10 @@ target_link_libraries(QtNodes
     Qt${QT_VERSION_MAJOR}::Gui
     Qt${QT_VERSION_MAJOR}::OpenGL
 )
+
+if(BUILD_QML)
+  target_link_libraries(QtNodes PUBLIC Qt${QT_VERSION_MAJOR}::Quick Qt${QT_VERSION_MAJOR}::Qml)
+endif()
 
 target_compile_definitions(QtNodes
   PUBLIC
