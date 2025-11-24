@@ -38,26 +38,76 @@ Item {
             property point offset: root.panOffset
             property size size: Qt.size(width, height)
             
-            fragmentShader: "
-                varying highp vec2 qt_TexCoord0;
-                uniform highp float zoom;
-                uniform highp vec2 offset;
-                uniform highp vec2 size;
-                
-                void main() {
-                    lowp vec2 coord = (qt_TexCoord0 * size - offset) / zoom;
-                    lowp vec2 grid = abs(fract(coord / 20.0 - 0.5) - 0.5) / fwidth(coord / 20.0);
-                    lowp float line = min(grid.x, grid.y);
-                    lowp float alpha = 1.0 - min(line, 1.0);
-                    
-                    // Major grid lines
-                    lowp vec2 grid2 = abs(fract(coord / 100.0 - 0.5) - 0.5) / fwidth(coord / 100.0);
-                    lowp float line2 = min(grid2.x, grid2.y);
-                    lowp float alpha2 = 1.0 - min(line2, 1.0);
-                    
-                    gl_FragColor = vec4(0.6, 0.6, 0.6, max(alpha * 0.1, alpha2 * 0.3));
-                }
-            "
+            // In Qt6, we'd normally use .qsb files. 
+            // But to keep it simple and cross-version compatible (Qt5/Qt6), 
+            // let's revert to the standard Shape-based grid for now, 
+            // as inline shaders are deprecated/removed in Qt6's RHI.
+            // Or we can use a Canvas which is easier than Shapes for infinite grids.
+            visible: false 
+        }
+        
+        // Canvas Grid
+        Canvas {
+             id: gridCanvas
+             anchors.fill: parent
+             property real zoom: root.zoomLevel
+             property point offset: root.panOffset
+             
+             onZoomChanged: requestPaint()
+             onOffsetChanged: requestPaint()
+             
+             onPaint: {
+                 var ctx = getContext("2d")
+                 ctx.clearRect(0, 0, width, height)
+                 
+                 ctx.strokeStyle = "#505050"
+                 ctx.lineWidth = 1
+                 
+                 var gridSize = 20 * zoom
+                 var majorGridSize = 100 * zoom
+                 
+                 var startX = (offset.x % gridSize)
+                 var startY = (offset.y % gridSize)
+                 
+                 if (startX < 0) startX += gridSize
+                 if (startY < 0) startY += gridSize
+                 
+                 ctx.beginPath()
+                 
+                 // Vertical lines
+                 for (var x = startX; x < width; x += gridSize) {
+                     ctx.moveTo(x, 0)
+                     ctx.lineTo(x, height)
+                 }
+                 
+                 // Horizontal lines
+                 for (var y = startY; y < height; y += gridSize) {
+                     ctx.moveTo(0, y)
+                     ctx.lineTo(width, y)
+                 }
+                 
+                 ctx.stroke()
+                 
+                 // Major lines
+                 /*
+                 ctx.strokeStyle = "#707070"
+                 ctx.beginPath()
+                 var mStartX = (offset.x % majorGridSize)
+                 var mStartY = (offset.y % majorGridSize)
+                 if (mStartX < 0) mStartX += majorGridSize
+                 if (mStartY < 0) mStartY += majorGridSize
+                 
+                 for (var mx = mStartX; mx < width; mx += majorGridSize) {
+                     ctx.moveTo(mx, 0)
+                     ctx.lineTo(mx, height)
+                 }
+                 for (var my = mStartY; my < height; my += majorGridSize) {
+                     ctx.moveTo(0, my)
+                     ctx.lineTo(width, my)
+                 }
+                 ctx.stroke()
+                 */
+             }
         }
 
         // Graph Content Area
