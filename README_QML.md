@@ -13,18 +13,18 @@ The implementation follows a Model-View-ViewModel (MVVM) pattern adapted for Qt/
 
 ### 2. QML Components (`resources/qml/`)
 *   **`NodeGraph.qml`**: The main canvas component.
-    *   Handles **Infinite Panning & Zooming**.
-    *   Renders a dynamic **Grid** using standard Canvas drawing.
-    *   Manages the lifecycle of Nodes and Connections using `Repeater`s.
-    *   Handles **Connection Drafting**: Drawing a temporary line while the user drags from a port.
+    *   Handles **Infinite Panning & Zooming** using a background `MouseArea` and transform/scale logic.
+    *   Renders a dynamic **Infinite Grid** using a `Canvas` item (avoiding shader compatibility issues).
+    *   Manages the lifecycle of Nodes and Connections using `Repeater`s linked to the C++ models.
+    *   Handles **Connection Drafting**: Implements geometry-based hit-testing to reliably find target nodes/ports under the mouse cursor, ignoring z-order overlays.
 *   **`Node.qml`**: A generic node shell.
     *   Displays the node caption and background.
     *   Generates input/output ports dynamically.
-    *   Uses a `Loader` with a `nodeContentDelegate` to allow users to inject **custom QML content** inside the node (e.g., text fields, images).
-    *   Handles node dragging and position updates.
+    *   Uses a `Loader` with a `nodeContentDelegate` to allow users to inject **custom QML content** inside the node (e.g., text fields, images) with full property binding propagation.
+    *   Handles node dragging and position updates, with feedback loops prevented by threshold checks.
 *   **`Connection.qml`**:
     *   Renders connections as smooth cubic Bezier curves using `QtQuick.Shapes`.
-    *   Updates geometry in real-time when linked nodes are moved.
+    *   Updates geometry in real-time when linked nodes are moved by monitoring specific `xChanged`/`yChanged` signals.
 
 ## Features Implemented
 
@@ -35,6 +35,11 @@ The implementation follows a Model-View-ViewModel (MVVM) pattern adapted for Qt/
 *   ✅ **Connection Creation**: Drag from any port to a compatible target port to create a connection.
 *   ✅ **Customizable Nodes**: Users can define the look and behavior of specific node types (e.g., "NumberSource") completely in QML.
 *   ✅ **Example Application**: `qml_calculator` demonstrates a working calculator where C++ handles the math and QML handles the UI.
+
+## Technical Notes
+*   **Grid Implementation**: The grid is drawn using an HTML5-style `Canvas` API rather than GLSL shaders. This ensures compatibility with Qt 6's RHI (which removed inline OpenGL shaders) while maintaining performance for infinite grid rendering.
+*   **Z-Ordering & Hit Testing**: Custom geometry-based hit testing is used for connection drafting because the temporary connection line (a `Shape` item) overlays the nodes, blocking standard `childAt` calls.
+*   **Coordinate Mapping**: All drag operations use `mapToItem`/`mapFromItem` relative to the main `canvas` item to ensure correct positioning regardless of the current pan/zoom state.
 
 ## How to Build
 
