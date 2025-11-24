@@ -41,6 +41,31 @@ Item {
     
     function updateDraftConnection(pos) {
         dragCurrent = pos
+        
+        // Hit testing for potential target port
+        // Use geometry-based search instead of childAt to avoid z-ordering issues with the drag line itself
+        var targetNode = null
+        
+        for (var id in nodeItems) {
+            var node = nodeItems[id]
+            // nodeItems is a map, check if node is valid
+            if (node && node.visible) {
+                // Map canvas pos to node local
+                var localPos = node.mapFromItem(canvas, pos.x, pos.y)
+                if (node.contains(Qt.point(localPos.x, localPos.y))) {
+                    targetNode = node
+                    break
+                }
+            }
+        }
+        
+        if (targetNode && typeof targetNode.getPortInfoAt === 'function') {
+            var nodeLocalPos = canvas.mapToItem(targetNode, pos.x, pos.y)
+            var portInfo = targetNode.getPortInfoAt(nodeLocalPos.x, nodeLocalPos.y)
+            setActivePort(portInfo)
+        } else {
+            setActivePort(null)
+        }
     }
     
     function endDraftConnection() {

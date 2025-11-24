@@ -94,13 +94,25 @@ Rectangle {
                     anchors.fill: parent
                     hoverEnabled: true
                     onEntered: {
-                        parent.scale = 1.2
-                        graph.setActivePort({nodeId: root.nodeId, portType: 0, portIndex: index})
+                        // Only highlight if not dragging or if we are the target
+                        if (!graph.isDragging) {
+                            parent.scale = 1.2
+                            graph.setActivePort({nodeId: root.nodeId, portType: 0, portIndex: index})
+                        }
                     }
                     onExited: {
-                        parent.scale = 1.0
-                        graph.setActivePort(null)
+                        if (!graph.isDragging) {
+                            parent.scale = 1.0
+                            graph.setActivePort(null)
+                        }
                     }
+                    
+                    // Visual feedback based on activePort
+                    property bool isActive: {
+                        var ap = graph.activePort
+                        return ap && ap.nodeId === root.nodeId && ap.portType === 0 && ap.portIndex === index
+                    }
+                    onIsActiveChanged: parent.scale = isActive ? 1.4 : 1.0
                     onPressed: (mouse) => {
                         var pos = mapToItem(graph.canvas, width/2, height/2)
                         graph.startDraftConnection(root.nodeId, 0, index, pos)
@@ -139,13 +151,23 @@ Rectangle {
                     anchors.fill: parent
                     hoverEnabled: true
                     onEntered: {
-                        parent.scale = 1.2
-                        graph.setActivePort({nodeId: root.nodeId, portType: 1, portIndex: index})
+                        if (!graph.isDragging) {
+                            parent.scale = 1.2
+                            graph.setActivePort({nodeId: root.nodeId, portType: 1, portIndex: index})
+                        }
                     }
                     onExited: {
-                        parent.scale = 1.0
-                        graph.setActivePort(null)
+                        if (!graph.isDragging) {
+                            parent.scale = 1.0
+                            graph.setActivePort(null)
+                        }
                     }
+                    
+                    property bool isActive: {
+                        var ap = graph.activePort
+                        return ap && ap.nodeId === root.nodeId && ap.portType === 1 && ap.portIndex === index
+                    }
+                    onIsActiveChanged: parent.scale = isActive ? 1.4 : 1.0
                     
                     onPressed: (mouse) => {
                         var pos = mapToItem(graph.canvas, width/2, height/2)
@@ -161,6 +183,34 @@ Rectangle {
                 }
             }
         }
+    }
+
+    function getPortInfoAt(x, y) {
+        // Map node-local coordinates to find which port is under mouse
+        // Check input ports
+        var inPos = inPortsColumn.mapFromItem(root, x, y)
+        var inChild = inPortsColumn.childAt(inPos.x, inPos.y)
+        
+        if (inChild) {
+             // Find index of this child in the repeater
+             for (var i = 0; i < inRepeater.count; ++i) {
+                 if (inRepeater.itemAt(i) === inChild) {
+                     return {nodeId: root.nodeId, portType: 0, portIndex: i}
+                 }
+             }
+        }
+        
+        var outPos = outPortsColumn.mapFromItem(root, x, y)
+        var outChild = outPortsColumn.childAt(outPos.x, outPos.y)
+        
+        if (outChild) {
+             for (var j = 0; j < outRepeater.count; ++j) {
+                 if (outRepeater.itemAt(j) === outChild) {
+                     return {nodeId: root.nodeId, portType: 1, portIndex: j}
+                 }
+             }
+        }
+        return null
     }
 
     function getPortPos(type, index) {
