@@ -223,10 +223,10 @@ Item {
                     contentDelegate: root.nodeContentDelegate
                     
                     onXChanged: {
-                         if (completed) graphModel.nodes.moveNode(nodeId, x, y)
+                         if (completed && Math.abs(x - initialX) > 0.1) graphModel.nodes.moveNode(nodeId, x, y)
                     }
                     onYChanged: {
-                         if (completed) graphModel.nodes.moveNode(nodeId, x, y)
+                         if (completed && Math.abs(y - initialY) > 0.1) graphModel.nodes.moveNode(nodeId, x, y)
                     }
                     
                     Component.onCompleted: {

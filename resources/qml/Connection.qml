@@ -22,10 +22,42 @@ Shape {
         }
     }
 
+    // Monitor changes in node position
+    Connections {
+        target: sourceNode
+        function onXChanged() { root.updateStartPos() }
+        function onYChanged() { root.updateStartPos() }
+    }
+    Connections {
+        target: destNode
+        function onXChanged() { root.updateEndPos() }
+        function onYChanged() { root.updateEndPos() }
+    }
+
     // 0 = In, 1 = Out. 
     // Source is Out (1), Dest is In (0).
-    property point startPos: (sourceNode && sourceNode.completed) ? sourceNode.getPortPos(1, sourcePortIndex) : Qt.point(0,0)
-    property point endPos: (destNode && destNode.completed) ? destNode.getPortPos(0, destPortIndex) : Qt.point(0,0)
+    property point startPos: Qt.point(0,0)
+    property point endPos: Qt.point(0,0)
+    
+    function updateStartPos() {
+        if (sourceNode && sourceNode.completed) {
+            startPos = sourceNode.getPortPos(1, sourcePortIndex)
+        }
+    }
+    
+    function updateEndPos() {
+        if (destNode && destNode.completed) {
+            endPos = destNode.getPortPos(0, destPortIndex)
+        }
+    }
+    
+    onSourceNodeChanged: updateStartPos()
+    onDestNodeChanged: updateEndPos()
+    
+    Component.onCompleted: {
+        updateStartPos()
+        updateEndPos()
+    }
 
     visible: sourceNode !== undefined && destNode !== undefined && sourceNode.completed && destNode.completed
 
