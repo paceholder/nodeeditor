@@ -6,6 +6,7 @@ import QtNodes 1.0
 Item {
     id: root
     property QuickGraphModel graphModel
+    property alias canvas: canvas
 
     property var nodeItems: ({})
     property Component nodeContentDelegate // User provided content

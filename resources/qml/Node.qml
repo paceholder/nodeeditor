@@ -102,11 +102,11 @@ Rectangle {
                         graph.setActivePort(null)
                     }
                     onPressed: (mouse) => {
-                        var pos = root.mapToItem(graph.canvas, x + parent.x + inPortsColumn.x + width/2, y + parent.y + inPortsColumn.y + height/2)
+                        var pos = mapToItem(graph.canvas, width/2, height/2)
                         graph.startDraftConnection(root.nodeId, 0, index, pos)
                     }
                     onPositionChanged: (mouse) => {
-                        var pos = root.mapToItem(graph.canvas, mouse.x + x + parent.x + inPortsColumn.x, mouse.y + y + parent.y + inPortsColumn.y)
+                        var pos = mapToItem(graph.canvas, mouse.x, mouse.y)
                         graph.updateDraftConnection(pos)
                     }
                     onReleased: {
@@ -148,11 +148,11 @@ Rectangle {
                     }
                     
                     onPressed: (mouse) => {
-                        var pos = root.mapToItem(graph.canvas, x + parent.x + outPortsColumn.x + width/2, y + parent.y + outPortsColumn.y + height/2)
+                        var pos = mapToItem(graph.canvas, width/2, height/2)
                         graph.startDraftConnection(root.nodeId, 1, index, pos)
                     }
                     onPositionChanged: (mouse) => {
-                         var pos = root.mapToItem(graph.canvas, mouse.x + x + parent.x + outPortsColumn.x, mouse.y + y + parent.y + outPortsColumn.y)
+                         var pos = mapToItem(graph.canvas, mouse.x, mouse.y)
                          graph.updateDraftConnection(pos)
                     }
                     onReleased: {
