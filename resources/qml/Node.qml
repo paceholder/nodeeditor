@@ -55,6 +55,7 @@ Rectangle {
         
         onLoaded: {
             if (item) {
+                // Use explicit binding objects to ensure updates propagate
                 item.delegateModel = Qt.binding(function(){ return root.delegateModel })
                 item.nodeType = Qt.binding(function(){ return root.nodeType })
             }

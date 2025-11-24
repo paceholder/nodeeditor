@@ -120,10 +120,8 @@ Item {
             transformOrigin: Item.TopLeft
 
     // Connections
-    property var graphConnections: graphModel ? graphModel.connections : null
-
     Repeater {
-        model: graphConnections
+        model: graphModel ? graphModel.connections : null
         delegate: Connection {
             graph: root
             property int sourceNodeId: model.sourceNodeId
@@ -134,13 +132,11 @@ Item {
     }
             
     // Nodes
-    property var graphNodes: graphModel ? graphModel.nodes : null
-
     Repeater {
-        model: graphNodes
-                delegate: Node {
-                    id: nodeDelegate
-                    graph: root
+        model: graphModel ? graphModel.nodes : null
+        delegate: Node {
+            id: nodeDelegate
+            graph: root
                     
                     // Model Roles
                     property int nodeId: model.nodeId
