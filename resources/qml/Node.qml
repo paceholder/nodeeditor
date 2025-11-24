@@ -53,9 +53,22 @@ Rectangle {
         height: parent.height - 50
         sourceComponent: contentDelegate
         
-        // Pass properties to the loaded item
-        property var delegateModel: root.delegateModel
-        property string nodeType: root.nodeType
+        onLoaded: {
+            if (item) {
+                item.delegateModel = Qt.binding(function(){ return root.delegateModel })
+                item.nodeType = Qt.binding(function(){ return root.nodeType })
+            }
+        }
+
+        Connections {
+            target: root
+            function onDelegateModelChanged() {
+                if (contentLoader.item) contentLoader.item.delegateModel = root.delegateModel
+            }
+            function onNodeTypeChanged() {
+                 if (contentLoader.item) contentLoader.item.nodeType = root.nodeType
+            }
+        }
     }
 
     // Input Ports

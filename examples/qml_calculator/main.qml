@@ -31,7 +31,8 @@ Window {
             
             nodeContentDelegate: Component {
                 Item {
-                    // delegateModel and nodeType are provided by the Loader in Node.qml
+                    property var delegateModel
+                    property string nodeType
                     
                     TextField {
                         anchors.centerIn: parent
