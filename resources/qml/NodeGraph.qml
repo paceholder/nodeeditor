@@ -21,10 +21,50 @@ Item {
     property real zoomLevel: 1.0
     property point panOffset: Qt.point(0, 0)
     
+    // Port dragging
+    property var activePort: null
+    
     // Temporary drafting connection
-    property point dragStart
-    property point dragCurrent
+    property point dragStart: Qt.point(0, 0)
+    property point dragCurrent: Qt.point(0, 0)
     property bool isDragging: false
+    
+    function startDraftConnection(nodeId, portType, portIndex, pos) {
+        dragStart = pos
+        dragCurrent = pos
+        isDragging = true
+        activeConnectionStart = {nodeId: nodeId, portType: portType, portIndex: portIndex}
+    }
+    
+    property var activeConnectionStart: null
+    
+    function updateDraftConnection(pos) {
+        dragCurrent = pos
+    }
+    
+    function endDraftConnection() {
+        isDragging = false
+        if (activePort && activeConnectionStart) {
+            // Check if connecting Out -> In or In -> Out
+            var start = activeConnectionStart
+            var end = activePort
+            
+            // We only allow Out -> In connection creation in this simple logic
+            // If drag started from Out (1) and ended at In (0)
+            if (start.portType === 1 && end.portType === 0) {
+                graphModel.addConnection(start.nodeId, start.portIndex, end.nodeId, end.portIndex)
+            }
+            // If drag started from In (0) and ended at Out (1) - usually we drag from source to dest
+            else if (start.portType === 0 && end.portType === 1) {
+                graphModel.addConnection(end.nodeId, end.portIndex, start.nodeId, start.portIndex)
+            }
+        }
+        activeConnectionStart = null
+    }
+    
+    function setActivePort(portInfo) {
+        activePort = portInfo
+    }
 
     Rectangle {
         anchors.fill: parent
@@ -32,6 +72,7 @@ Item {
         clip: true
 
         // Grid Shader
+        /*
         ShaderEffect {
             anchors.fill: parent
             property real zoom: root.zoomLevel
@@ -45,6 +86,7 @@ Item {
             // Or we can use a Canvas which is easier than Shapes for infinite grids.
             visible: false 
         }
+        */
         
         // Canvas Grid
         Canvas {
@@ -124,10 +166,10 @@ Item {
         model: graphModel ? graphModel.connections : null
         delegate: Connection {
             graph: root
-            property int sourceNodeId: model.sourceNodeId
-            property int sourcePortIndex: model.sourcePortIndex
-            property int destNodeId: model.destNodeId
-            property int destPortIndex: model.destPortIndex
+            sourceNodeId: model.sourceNodeId
+            sourcePortIndex: model.sourcePortIndex
+            destNodeId: model.destNodeId
+            destPortIndex: model.destPortIndex
         }
     }
             
@@ -157,6 +199,7 @@ Item {
                     }
                     
                     Component.onCompleted: {
+                        console.log("Node created. ID:", nodeId, "Caption:", caption, "In:", inPorts, "Out:", outPorts)
                         root.registerNode(nodeId, nodeDelegate)
                     }
                 }
@@ -187,7 +230,7 @@ Item {
         MouseArea {
             anchors.fill: parent
             acceptedButtons: Qt.MiddleButton | Qt.LeftButton
-            property point lastPos
+            property point lastPos: Qt.point(0, 0)
 
             onPressed: (mouse) => {
                 lastPos = Qt.point(mouse.x, mouse.y)

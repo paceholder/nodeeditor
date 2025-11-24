@@ -93,10 +93,24 @@ Rectangle {
                 MouseArea {
                     anchors.fill: parent
                     hoverEnabled: true
-                    onEntered: parent.scale = 1.2
-                    onExited: parent.scale = 1.0
-                    onPressed: {
-                        // Handle drop? In ports usually receive connections.
+                    onEntered: {
+                        parent.scale = 1.2
+                        graph.setActivePort({nodeId: root.nodeId, portType: 0, portIndex: index})
+                    }
+                    onExited: {
+                        parent.scale = 1.0
+                        graph.setActivePort(null)
+                    }
+                    onPressed: (mouse) => {
+                        var pos = root.mapToItem(graph.canvas, x + parent.x + inPortsColumn.x + width/2, y + parent.y + inPortsColumn.y + height/2)
+                        graph.startDraftConnection(root.nodeId, 0, index, pos)
+                    }
+                    onPositionChanged: (mouse) => {
+                        var pos = root.mapToItem(graph.canvas, mouse.x + x + parent.x + inPortsColumn.x, mouse.y + y + parent.y + inPortsColumn.y)
+                        graph.updateDraftConnection(pos)
+                    }
+                    onReleased: {
+                        graph.endDraftConnection()
                     }
                 }
             }
@@ -124,12 +138,25 @@ Rectangle {
                 MouseArea {
                     anchors.fill: parent
                     hoverEnabled: true
-                    onEntered: parent.scale = 1.2
-                    onExited: parent.scale = 1.0
+                    onEntered: {
+                        parent.scale = 1.2
+                        graph.setActivePort({nodeId: root.nodeId, portType: 1, portIndex: index})
+                    }
+                    onExited: {
+                        parent.scale = 1.0
+                        graph.setActivePort(null)
+                    }
                     
-                    onPressed: {
-                        // Start dragging connection
-                        // Notify graph
+                    onPressed: (mouse) => {
+                        var pos = root.mapToItem(graph.canvas, x + parent.x + outPortsColumn.x + width/2, y + parent.y + outPortsColumn.y + height/2)
+                        graph.startDraftConnection(root.nodeId, 1, index, pos)
+                    }
+                    onPositionChanged: (mouse) => {
+                         var pos = root.mapToItem(graph.canvas, mouse.x + x + parent.x + outPortsColumn.x, mouse.y + y + parent.y + outPortsColumn.y)
+                         graph.updateDraftConnection(pos)
+                    }
+                    onReleased: {
+                        graph.endDraftConnection()
                     }
                 }
             }
