@@ -205,25 +205,25 @@ Item {
                 }
             }
             
-            // Dragging Connection
-            Shape {
-                visible: root.isDragging
-                ShapePath {
-                    strokeWidth: 2
-                    strokeColor: "orange"
-                    fillColor: "transparent"
-                    startX: root.dragStart.x
-                    startY: root.dragStart.y
-                    PathCubic {
-                        x: root.dragCurrent.x
-                        y: root.dragCurrent.y
-                        control1X: root.dragStart.x + 50
-                        control1Y: root.dragStart.y
-                        control2X: root.dragCurrent.x - 50
-                        control2Y: root.dragCurrent.y
-                    }
-                }
+    // Dragging Connection
+    Shape {
+        visible: root.isDragging
+        ShapePath {
+            strokeWidth: 2
+            strokeColor: "orange"
+            fillColor: "transparent"
+            startX: root.dragStart.x
+            startY: root.dragStart.y
+            PathCubic {
+                x: root.dragCurrent.x
+                y: root.dragCurrent.y
+                control1X: root.dragStart.x + Math.abs(root.dragCurrent.x - root.dragStart.x) * 0.5
+                control1Y: root.dragStart.y
+                control2X: root.dragCurrent.x - Math.abs(root.dragCurrent.x - root.dragStart.x) * 0.5
+                control2Y: root.dragCurrent.y
             }
+        }
+    }
         }
 
         // Input Handler for Pan/Zoom
