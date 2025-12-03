@@ -5,6 +5,7 @@ import QtQuick.Layouts 1.15
 import QtNodes 1.0
 
 Window {
+    id: mainWindow
     visible: true
     width: 1280
     height: 800
@@ -45,145 +46,324 @@ Window {
         selectionRectBorder: "#2196F3"
     }
     
-    Column {
+    // Draggable node item component
+    component DraggableNodeButton: Rectangle {
+        id: dragButton
+        property string nodeType
+        property string label
+        property color accentColor: darkTheme ? "#888" : "#666"
+        
+        width: parent.width - 10
+        height: 36
+        radius: 4
+        color: dragArea.containsMouse ? (darkTheme ? "#4a4a4a" : "#d0d0d0") : (darkTheme ? "#3a3a3a" : "#e8e8e8")
+        border.color: accentColor
+        border.width: 1
+        
+        Text {
+            anchors.centerIn: parent
+            text: label
+            color: accentColor
+            font.pixelSize: 11
+            font.bold: true
+        }
+        
+        MouseArea {
+            id: dragArea
+            anchors.fill: parent
+            hoverEnabled: true
+            
+            property point startPos
+            property bool isDragging: false
+            
+            onPressed: (mouse) => {
+                startPos = Qt.point(mouse.x, mouse.y)
+                isDragging = false
+            }
+            
+            onPositionChanged: (mouse) => {
+                if (pressed) {
+                    var delta = Qt.point(mouse.x - startPos.x, mouse.y - startPos.y)
+                    if (!isDragging && (Math.abs(delta.x) > 5 || Math.abs(delta.y) > 5)) {
+                        isDragging = true
+                        dragProxy.nodeType = nodeType
+                        dragProxy.label = label
+                        dragProxy.accentColor = accentColor
+                        dragProxy.visible = true
+                    }
+                    if (isDragging) {
+                        var globalPos = mapToItem(mainWindow.contentItem, mouse.x, mouse.y)
+                        dragProxy.x = globalPos.x - dragProxy.width / 2
+                        dragProxy.y = globalPos.y - dragProxy.height / 2
+                    }
+                }
+            }
+            
+            onReleased: (mouse) => {
+                if (isDragging) {
+                    var globalPos = mapToItem(mainWindow.contentItem, mouse.x, mouse.y)
+                    var canvasPos = mapToItem(nodeGraph, mouse.x, mouse.y)
+                    
+                    // Check if dropped on canvas
+                    if (canvasPos.x > 0 && canvasPos.y > 0 && 
+                        canvasPos.x < nodeGraph.width && canvasPos.y < nodeGraph.height) {
+                        // Convert to canvas coordinates considering zoom and pan
+                        var graphPos = nodeGraph.mapToCanvas(canvasPos.x, canvasPos.y)
+                        var nodeId = model.addNode(nodeType)
+                        if (nodeId >= 0) {
+                            model.nodes.moveNode(nodeId, graphPos.x - 75, graphPos.y - 40)
+                        }
+                    }
+                    dragProxy.visible = false
+                }
+                isDragging = false
+            }
+        }
+    }
+    
+    // Drag proxy that follows the mouse
+    Rectangle {
+        id: dragProxy
+        visible: false
+        width: 120
+        height: 36
+        radius: 4
+        z: 1000
+        opacity: 0.8
+        
+        property string nodeType
+        property string label
+        property color accentColor
+        
+        color: darkTheme ? "#3a3a3a" : "#e8e8e8"
+        border.color: accentColor
+        border.width: 2
+        
+        Text {
+            anchors.centerIn: parent
+            text: dragProxy.label
+            color: dragProxy.accentColor
+            font.pixelSize: 11
+            font.bold: true
+        }
+    }
+    
+    Row {
         anchors.fill: parent
         
-        // Toolbar with node buttons
+        // Left sidebar with node palette
         Rectangle {
-            width: parent.width
-            height: 50
-            color: darkTheme ? "#3c3c3c" : "#e0e0e0"
+            id: sidebar
+            width: 140
+            height: parent.height
+            color: darkTheme ? "#2d2d2d" : "#f0f0f0"
             
-            RowLayout {
+            Column {
                 anchors.fill: parent
-                anchors.margins: 5
-                spacing: 10
+                spacing: 0
                 
-                Button {
-                    text: darkTheme ? "☀ Light" : "🌙 Dark"
-                    onClicked: darkTheme = !darkTheme
-                }
-                
-                Rectangle { width: 1; height: 30; color: darkTheme ? "#555" : "#bbb" }
-                
-                Button {
-                    text: "↶ Undo"
-                    enabled: model.canUndo
-                    onClicked: model.undo()
-                }
-                Button {
-                    text: "↷ Redo"
-                    enabled: model.canRedo
-                    onClicked: model.redo()
-                }
-                
-                Rectangle { width: 1; height: 30; color: darkTheme ? "#555" : "#bbb" }
-                
-                Label { 
-                    text: "Numbers:" 
-                    color: darkTheme ? "#aaa" : "#555"
-                    font.bold: true
-                }
-                Button { 
-                    text: "Number" 
-                    onClicked: model.addNode("NumberSource")
-                    palette.buttonText: "#4CAF50"
-                }
-                
-                Rectangle { width: 1; height: 30; color: darkTheme ? "#555" : "#bbb" }
-                
-                Label { 
-                    text: "Math:" 
-                    color: darkTheme ? "#aaa" : "#555"
-                    font.bold: true
-                }
-                Button { text: "Add"; onClicked: model.addNode("Addition") }
-                Button { text: "Subtract"; onClicked: model.addNode("Subtract") }
-                Button { text: "Multiply"; onClicked: model.addNode("Multiply") }
-                Button { text: "Divide"; onClicked: model.addNode("Divide") }
-                
-                Rectangle { width: 1; height: 30; color: darkTheme ? "#555" : "#bbb" }
-                
-                Label { 
-                    text: "String:" 
-                    color: darkTheme ? "#aaa" : "#555"
-                    font.bold: true
-                }
-                Button { 
-                    text: "Format" 
-                    onClicked: model.addNode("FormatNumber")
-                    palette.buttonText: "#FF9800"
-                }
-                Button { 
-                    text: "Text Display" 
-                    onClicked: model.addNode("StringDisplay")
-                    palette.buttonText: "#FF9800"
+                // Top toolbar section
+                Rectangle {
+                    width: parent.width
+                    height: 50
+                    color: darkTheme ? "#3c3c3c" : "#e0e0e0"
+                    
+                    Row {
+                        anchors.centerIn: parent
+                        spacing: 5
+                        
+                        Button {
+                            width: 36
+                            height: 36
+                            text: darkTheme ? "☀" : "🌙"
+                            onClicked: darkTheme = !darkTheme
+                            ToolTip.visible: hovered
+                            ToolTip.text: darkTheme ? "Light Theme" : "Dark Theme"
+                        }
+                        
+                        Button {
+                            width: 36
+                            height: 36
+                            text: "↶"
+                            enabled: model.canUndo
+                            onClicked: model.undo()
+                            ToolTip.visible: hovered
+                            ToolTip.text: "Undo (Ctrl+Z)"
+                        }
+                        
+                        Button {
+                            width: 36
+                            height: 36
+                            text: "↷"
+                            enabled: model.canRedo
+                            onClicked: model.redo()
+                            ToolTip.visible: hovered
+                            ToolTip.text: "Redo (Ctrl+Y)"
+                        }
+                    }
                 }
                 
-                Rectangle { width: 1; height: 30; color: darkTheme ? "#555" : "#bbb" }
-                
-                Label { 
-                    text: "Integer:" 
-                    color: darkTheme ? "#aaa" : "#555"
-                    font.bold: true
+                // Scrollable node palette
+                ScrollView {
+                    width: parent.width
+                    height: parent.height - 50
+                    clip: true
+                    
+                    Column {
+                        width: sidebar.width
+                        spacing: 5
+                        padding: 5
+                        
+                        // Numbers section
+                        Label {
+                            text: "NUMBERS"
+                            color: darkTheme ? "#888" : "#666"
+                            font.bold: true
+                            font.pixelSize: 10
+                            leftPadding: 5
+                            topPadding: 10
+                        }
+                        
+                        DraggableNodeButton {
+                            nodeType: "NumberSource"
+                            label: "Number"
+                            accentColor: "#4CAF50"
+                        }
+                        
+                        DraggableNodeButton {
+                            nodeType: "IntegerSource"
+                            label: "Integer"
+                            accentColor: "#2196F3"
+                        }
+                        
+                        // Math section
+                        Label {
+                            text: "MATH"
+                            color: darkTheme ? "#888" : "#666"
+                            font.bold: true
+                            font.pixelSize: 10
+                            leftPadding: 5
+                            topPadding: 10
+                        }
+                        
+                        DraggableNodeButton {
+                            nodeType: "Addition"
+                            label: "Add (+)"
+                            accentColor: darkTheme ? "#aaa" : "#555"
+                        }
+                        
+                        DraggableNodeButton {
+                            nodeType: "Subtract"
+                            label: "Subtract (−)"
+                            accentColor: darkTheme ? "#aaa" : "#555"
+                        }
+                        
+                        DraggableNodeButton {
+                            nodeType: "Multiply"
+                            label: "Multiply (×)"
+                            accentColor: darkTheme ? "#aaa" : "#555"
+                        }
+                        
+                        DraggableNodeButton {
+                            nodeType: "Divide"
+                            label: "Divide (÷)"
+                            accentColor: darkTheme ? "#aaa" : "#555"
+                        }
+                        
+                        // Conversion section
+                        Label {
+                            text: "CONVERSION"
+                            color: darkTheme ? "#888" : "#666"
+                            font.bold: true
+                            font.pixelSize: 10
+                            leftPadding: 5
+                            topPadding: 10
+                        }
+                        
+                        DraggableNodeButton {
+                            nodeType: "ToInteger"
+                            label: "To Integer"
+                            accentColor: "#2196F3"
+                        }
+                        
+                        DraggableNodeButton {
+                            nodeType: "FormatNumber"
+                            label: "Format Text"
+                            accentColor: "#FF9800"
+                        }
+                        
+                        // Logic section
+                        Label {
+                            text: "LOGIC"
+                            color: darkTheme ? "#888" : "#666"
+                            font.bold: true
+                            font.pixelSize: 10
+                            leftPadding: 5
+                            topPadding: 10
+                        }
+                        
+                        DraggableNodeButton {
+                            nodeType: "GreaterThan"
+                            label: "A > B"
+                            accentColor: "#9C27B0"
+                        }
+                        
+                        // Display section
+                        Label {
+                            text: "DISPLAY"
+                            color: darkTheme ? "#888" : "#666"
+                            font.bold: true
+                            font.pixelSize: 10
+                            leftPadding: 5
+                            topPadding: 10
+                        }
+                        
+                        DraggableNodeButton {
+                            nodeType: "NumberDisplay"
+                            label: "Decimal Display"
+                            accentColor: "#4CAF50"
+                        }
+                        
+                        DraggableNodeButton {
+                            nodeType: "IntegerDisplay"
+                            label: "Integer Display"
+                            accentColor: "#2196F3"
+                        }
+                        
+                        DraggableNodeButton {
+                            nodeType: "BooleanDisplay"
+                            label: "Boolean Display"
+                            accentColor: "#9C27B0"
+                        }
+                        
+                        DraggableNodeButton {
+                            nodeType: "StringDisplay"
+                            label: "Text Display"
+                            accentColor: "#FF9800"
+                        }
+                        
+                        // Spacer at bottom
+                        Item { width: 1; height: 20 }
+                    }
                 }
-                Button { 
-                    text: "Int" 
-                    onClicked: model.addNode("IntegerSource")
-                    palette.buttonText: "#2196F3"
-                }
-                Button { 
-                    text: "To Int" 
-                    onClicked: model.addNode("ToInteger")
-                    palette.buttonText: "#2196F3"
-                }
-                
-                Rectangle { width: 1; height: 30; color: darkTheme ? "#555" : "#bbb" }
-                
-                Label { 
-                    text: "Logic:" 
-                    color: darkTheme ? "#aaa" : "#555"
-                    font.bold: true
-                }
-                Button { 
-                    text: "A > B" 
-                    onClicked: model.addNode("GreaterThan")
-                    palette.buttonText: "#9C27B0"
-                }
-                
-                Rectangle { width: 1; height: 30; color: darkTheme ? "#555" : "#bbb" }
-                
-                Label { 
-                    text: "Display:" 
-                    color: darkTheme ? "#aaa" : "#555"
-                    font.bold: true
-                }
-                Button { 
-                    text: "Decimal" 
-                    onClicked: model.addNode("NumberDisplay")
-                    palette.buttonText: "#4CAF50"
-                }
-                Button { 
-                    text: "Int" 
-                    onClicked: model.addNode("IntegerDisplay")
-                    palette.buttonText: "#2196F3"
-                }
-                Button { 
-                    text: "Bool" 
-                    onClicked: model.addNode("BooleanDisplay")
-                    palette.buttonText: "#9C27B0"
-                }
-                
-                Item { Layout.fillWidth: true }
             }
         }
         
+        // Main canvas area
         NodeGraph {
             id: nodeGraph
-            width: parent.width
-            height: parent.height - 50
+            width: parent.width - sidebar.width
+            height: parent.height
             graphModel: model
             style: darkTheme ? darkStyle : lightStyle
+            
+            // Helper function to convert screen coords to canvas coords
+            function mapToCanvas(screenX, screenY) {
+                return Qt.point(
+                    (screenX - panOffset.x) / zoomLevel,
+                    (screenY - panOffset.y) / zoomLevel
+                )
+            }
             
             Component.onCompleted: {
                 // Create a demo graph: (5 + 3) * 2 = 16, formatted as text
