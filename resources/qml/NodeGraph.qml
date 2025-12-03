@@ -45,6 +45,7 @@ Item {
     function selectNode(nodeId, additive) {
         if (!additive) {
             selectedNodeIds = {}
+            clearConnectionSelection()
         }
         if (!selectedNodeIds.hasOwnProperty(nodeId)) {
             selectedNodeIds[nodeId] = true
@@ -75,6 +76,7 @@ Item {
         selectedNodeIds = {}
         selectionVersion++
         selectionChanged()
+        clearConnectionSelection()
     }
     
     function selectNodesInRect(rect) {
@@ -91,6 +93,56 @@ Item {
         selectionChanged()
     }
     
+    function selectConnectionsInRect(rect) {
+        if (!graphModel || !graphModel.connections) return
+        
+        var connModel = graphModel.connections
+        for (var i = 0; i < connModel.rowCount(); i++) {
+            var idx = connModel.index(i, 0)
+            var srcNodeId = connModel.data(idx, 258) // SourceNodeIdRole
+            var srcPortIdx = connModel.data(idx, 259) // SourcePortIndexRole
+            var dstNodeId = connModel.data(idx, 260) // DestNodeIdRole
+            var dstPortIdx = connModel.data(idx, 261) // DestPortIndexRole
+            
+            var srcNode = nodeItems[srcNodeId]
+            var dstNode = nodeItems[dstNodeId]
+            
+            if (srcNode && dstNode && srcNode.completed && dstNode.completed) {
+                var startPos = srcNode.getPortPos(1, srcPortIdx)
+                var endPos = dstNode.getPortPos(0, dstPortIdx)
+                
+                if (curveIntersectsRect(startPos, endPos, rect)) {
+                    selectedConnections.push({
+                        outNodeId: srcNodeId,
+                        outPortIndex: srcPortIdx,
+                        inNodeId: dstNodeId,
+                        inPortIndex: dstPortIdx
+                    })
+                }
+            }
+        }
+        connectionSelectionChanged()
+    }
+    
+    function curveIntersectsRect(startPos, endPos, rect) {
+        var cp1x = startPos.x + Math.abs(endPos.x - startPos.x) * 0.5
+        var cp1y = startPos.y
+        var cp2x = endPos.x - Math.abs(endPos.x - startPos.x) * 0.5
+        var cp2y = endPos.y
+        
+        for (var t = 0; t <= 1; t += 0.05) {
+            var u = 1 - t
+            var bx = u*u*u*startPos.x + 3*u*u*t*cp1x + 3*u*t*t*cp2x + t*t*t*endPos.x
+            var by = u*u*u*startPos.y + 3*u*u*t*cp1y + 3*u*t*t*cp2y + t*t*t*endPos.y
+            
+            if (bx >= rect.x && bx <= rect.x + rect.width &&
+                by >= rect.y && by <= rect.y + rect.height) {
+                return true
+            }
+        }
+        return false
+    }
+    
     function rectsIntersect(r1, r2) {
         return !(r2.x > r1.x + r1.width ||
                  r2.x + r2.width < r1.x ||
@@ -101,6 +153,73 @@ Item {
     function getSelectedNodeIds() {
         return Object.keys(selectedNodeIds).map(function(id) { return parseInt(id) })
     }
+    
+    // Connection selection management
+    property var selectedConnections: []
+    
+    signal connectionSelectionChanged()
+    
+    function isConnectionSelected(outNodeId, outPortIndex, inNodeId, inPortIndex) {
+        for (var i = 0; i < selectedConnections.length; i++) {
+            var c = selectedConnections[i]
+            if (c.outNodeId === outNodeId && c.outPortIndex === outPortIndex &&
+                c.inNodeId === inNodeId && c.inPortIndex === inPortIndex) {
+                return true
+            }
+        }
+        return false
+    }
+    
+    function selectConnection(outNodeId, outPortIndex, inNodeId, inPortIndex, additive) {
+        if (!additive) {
+            selectedConnections = []
+            clearSelection()
+        }
+        selectedConnections.push({
+            outNodeId: outNodeId,
+            outPortIndex: outPortIndex,
+            inNodeId: inNodeId,
+            inPortIndex: inPortIndex
+        })
+        connectionSelectionChanged()
+    }
+    
+    function clearConnectionSelection() {
+        selectedConnections = []
+        connectionSelectionChanged()
+    }
+    
+    function deleteSelectedConnections() {
+        for (var i = 0; i < selectedConnections.length; i++) {
+            var c = selectedConnections[i]
+            graphModel.removeConnection(c.outNodeId, c.outPortIndex, c.inNodeId, c.inPortIndex)
+        }
+        selectedConnections = []
+        connectionSelectionChanged()
+    }
+    
+    function deleteSelectedNodes() {
+        var ids = getSelectedNodeIds()
+        for (var i = 0; i < ids.length; i++) {
+            graphModel.removeNode(ids[i])
+            delete nodeItems[ids[i]]
+        }
+        clearSelection()
+    }
+    
+    function deleteSelected() {
+        deleteSelectedConnections()
+        deleteSelectedNodes()
+    }
+    
+    Keys.onPressed: (event) => {
+        if (event.key === Qt.Key_Delete || event.key === Qt.Key_Backspace || event.key === Qt.Key_X) {
+            deleteSelected()
+            event.accepted = true
+        }
+    }
+    
+    focus: true
     
     // Marquee selection
     property bool isMarqueeSelecting: false
@@ -223,14 +342,16 @@ Item {
             
             onReleased: (mouse) => {
                 if (root.isMarqueeSelecting) {
-                    // Select nodes in marquee rect
+                    // Select nodes and connections in marquee rect
                     var x = Math.min(root.marqueeStart.x, root.marqueeEnd.x)
                     var y = Math.min(root.marqueeStart.y, root.marqueeEnd.y)
                     var w = Math.abs(root.marqueeEnd.x - root.marqueeStart.x)
                     var h = Math.abs(root.marqueeEnd.y - root.marqueeStart.y)
                     
                     if (w > 5 || h > 5) {
-                        root.selectNodesInRect(Qt.rect(x, y, w, h))
+                        var rect = Qt.rect(x, y, w, h)
+                        root.selectNodesInRect(rect)
+                        root.selectConnectionsInRect(rect)
                     }
                     root.isMarqueeSelecting = false
                 }
