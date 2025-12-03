@@ -117,14 +117,27 @@ Item {
 
             onWheel: (wheel) => {
                 var zoomFactor = 1.1
-                if (wheel.angleDelta.y < 0) {
-                    zoomLevel /= zoomFactor
-                } else {
-                    zoomLevel *= zoomFactor
-                }
-                // Clamp zoom
-                if (zoomLevel < 0.1) zoomLevel = 0.1
-                if (zoomLevel > 5.0) zoomLevel = 5.0
+                var oldZoom = zoomLevel
+                var newZoom = (wheel.angleDelta.y < 0) ? oldZoom / zoomFactor : oldZoom * zoomFactor
+                
+                // Clamp
+                newZoom = Math.max(0.1, Math.min(5.0, newZoom))
+                
+                // Mouse position on screen
+                var mouseX = wheel.x
+                var mouseY = wheel.y
+                
+                // Position in canvas (world coordinates)
+                var canvasX = (mouseX - panOffset.x) / oldZoom
+                var canvasY = (mouseY - panOffset.y) / oldZoom
+                
+                // Adjust pan to keep point fixed under mouse
+                panOffset = Qt.point(
+                    mouseX - canvasX * newZoom,
+                    mouseY - canvasY * newZoom
+                )
+                
+                zoomLevel = newZoom
             }
         }
 
