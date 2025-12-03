@@ -1,26 +1,29 @@
-if (Qt6_FOUND)
+if (USE_QT6)
   find_package(Qt6 COMPONENTS Test)
-  set(Qt Qt)
 else()
   find_package(Qt5 COMPONENTS Test)
-  set(Qt Qt5)
 endif()
 
 add_executable(test_nodes
   test_main.cpp
-  src/TestDragging.cpp
-  src/TestDataModelRegistry.cpp
-  src/TestFlowScene.cpp
-  src/TestNodeGraphicsObject.cpp
+  src/TestAbstractGraphModel.cpp
+  src/TestAbstractGraphModelSignals.cpp
+  src/TestDataFlowGraphModel.cpp
+  src/TestNodeDelegateModelRegistry.cpp
+  src/TestConnectionId.cpp
+  src/TestSerialization.cpp
+  src/TestUndoCommands.cpp
+  src/TestBasicGraphicsScene.cpp
+  src/TestUIInteraction.cpp
+  src/TestDataFlow.cpp
   include/ApplicationSetup.hpp
-  include/Stringify.hpp
-  include/StubNodeDataModel.hpp
+  include/TestGraphModel.hpp
+  include/UITestHelper.hpp
+  include/TestDataFlowNodes.hpp
 )
 
 target_include_directories(test_nodes
   PRIVATE
-    ../src
-    ../include/internal
     include
 )
 
@@ -28,7 +31,7 @@ target_link_libraries(test_nodes
   PRIVATE
     QtNodes::QtNodes
     Catch2::Catch2
-    ${Qt}::Test
+    Qt${QT_VERSION_MAJOR}::Test
 )
 
 add_test(

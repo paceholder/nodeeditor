@@ -1,6 +1,6 @@
 #include "NodeStyle.hpp"
 
-#include <iostream>
+#include "StyleCollection.hpp"
 
 #include <QtCore/QJsonArray>
 #include <QtCore/QJsonObject>
@@ -8,7 +8,6 @@
 
 #include <QtCore/QDebug>
 
-#include "StyleCollection.hpp"
 
 using QtNodes::NodeStyle;
 

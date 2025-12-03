@@ -1,11 +1,5 @@
 #include "NodeGraphicsObject.hpp"
 
-#include <cstdlib>
-#include <iostream>
-
-#include <QtWidgets/QGraphicsEffect>
-#include <QtWidgets/QtWidgets>
-
 #include "AbstractGraphModel.hpp"
 #include "AbstractNodeGeometry.hpp"
 #include "AbstractNodePainter.hpp"
@@ -13,8 +7,14 @@
 #include "ConnectionGraphicsObject.hpp"
 #include "ConnectionIdUtils.hpp"
 #include "NodeConnectionInteraction.hpp"
+#include "NodeDelegateModel.hpp"
 #include "StyleCollection.hpp"
 #include "UndoCommands.hpp"
+
+#include <QtWidgets/QGraphicsEffect>
+#include <QtWidgets/QtWidgets>
+
+#include <cstdlib>
 
 namespace QtNodes {
 
@@ -37,8 +37,7 @@ NodeGraphicsObject::NodeGraphicsObject(BasicGraphicsScene &scene, NodeId nodeId)
 
     NodeStyle nodeStyle(nodeStyleJson);
 
-    if(nodeStyle.ShadowEnabled)
-    {
+    if (nodeStyle.ShadowEnabled) {
         auto effect = new QGraphicsDropShadowEffect;
         effect->setOffset(4, 4);
         effect->setBlurRadius(20);
@@ -65,6 +64,15 @@ NodeGraphicsObject::NodeGraphicsObject(BasicGraphicsScene &scene, NodeId nodeId)
         if (_nodeId == nodeId)
             setLockedState();
     });
+
+    QVariant var = _graphModel.nodeData(_nodeId, NodeRole::ProcessingStatus);
+
+    auto processingStatusValue = var.value<QtNodes::NodeProcessingStatus>();
+
+    _statusIconActive = processingStatusValue != QtNodes::NodeProcessingStatus::NoStatus;
+
+    _statusIconSize.setWidth(_statusIconActive ? 32 : 0);
+    _statusIconSize.setHeight(_statusIconActive ? 32 : 0);
 }
 
 AbstractGraphModel &NodeGraphicsObject::graphModel() const
@@ -79,10 +87,10 @@ BasicGraphicsScene *NodeGraphicsObject::nodeScene() const
 
 void NodeGraphicsObject::updateQWidgetEmbedPos()
 {
-  if (_proxyWidget) {
-    AbstractNodeGeometry &geometry = nodeScene()->nodeGeometry();
-    _proxyWidget->setPos(geometry.widgetPosition(_nodeId));
-  }
+    if (_proxyWidget) {
+        AbstractNodeGeometry &geometry = nodeScene()->nodeGeometry();
+        _proxyWidget->setPos(geometry.widgetPosition(_nodeId));
+    }
 }
 
 void NodeGraphicsObject::embedQWidget()
@@ -161,6 +169,16 @@ void NodeGraphicsObject::reactToConnection(ConnectionGraphicsObject const *cgo)
 
 void NodeGraphicsObject::paint(QPainter *painter, QStyleOptionGraphicsItem const *option, QWidget *)
 {
+    QString tooltip;
+    QVariant var = _graphModel.nodeData(_nodeId, NodeRole::ValidationState);
+    if (var.canConvert<NodeValidationState>()) {
+        auto state = var.value<NodeValidationState>();
+        if (state._state != NodeValidationState::State::Valid) {
+            tooltip = state._stateMessage;
+        }
+    }
+    setToolTip(tooltip);
+
     painter->setClipRect(option->exposedRect);
 
     nodeScene()->nodePainter().paint(painter, *this);
@@ -177,8 +195,9 @@ QVariant NodeGraphicsObject::itemChange(GraphicsItemChange change, const QVarian
 
 void NodeGraphicsObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    //if (_nodeState.locked())
-    //return;
+    if (graphModel().nodeFlags(_nodeId) & NodeFlag::Locked) {
+        return;
+    }
 
     AbstractNodeGeometry &geometry = nodeScene()->nodeGeometry();
 
@@ -225,6 +244,8 @@ void NodeGraphicsObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
                                                                                    portToCheck,
                                                                                    portIndex);
 
+            // From the moment of creation a draft connection
+            // grabs the mouse events and waits for the mouse button release
             nodeScene()->makeDraftConnection(incompleteConnectionId);
         }
     }
@@ -367,6 +388,65 @@ void NodeGraphicsObject::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 void NodeGraphicsObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
     Q_EMIT nodeScene()->nodeContextMenu(_nodeId, mapToScene(event->pos()));
+}
+
+void NodeGraphicsObject::updateStatusIconSize() const
+{
+    QVariant var = _graphModel.nodeData(_nodeId, NodeRole::ProcessingStatus);
+
+    auto processingStatusValue = var.value<QtNodes::NodeProcessingStatus>();
+
+    bool oldStatus = _statusIconActive;
+    _statusIconActive = processingStatusValue != QtNodes::NodeProcessingStatus::NoStatus;
+
+    if (oldStatus != _statusIconActive) {
+        _statusIconSize.setWidth(_statusIconActive ? 32 : 0);
+        _statusIconSize.setHeight(_statusIconActive ? 32 : 0);
+    }
+}
+
+QRect NodeGraphicsObject::statusIconRect() const
+{
+    QVariant var = _graphModel.nodeData(_nodeId, NodeRole::ProcessingStatus);
+
+    // auto spacing = static_cast<int>(_spacing);
+    auto iconPos =
+        //     = portScenePosition(std::max(var.value<QtNodes::NodeDelegateModel>().nPorts(PortType::Out),
+        //                                  var.value<QtNodes::NodeDelegateModel>().nPorts(PortType::In)),
+        //                         PortType::Out)
+        //           .toPoint()
+        // +
+        QPoint{-statusIconSize().width() / 2, 0};
+
+    return QRect{iconPos, statusIconSize()};
+}
+
+const QIcon NodeGraphicsObject::processingStatusIcon() const
+{
+    QVariant var = _graphModel.nodeData(_nodeId, NodeRole::ProcessingStatus);
+
+    switch (var.value<QtNodes::NodeProcessingStatus>()) {
+    case QtNodes::NodeProcessingStatus::NoStatus:
+        return QIcon();
+    case QtNodes::NodeProcessingStatus::Updated:
+        return _statusUpdated;
+    case QtNodes::NodeProcessingStatus::Processing:
+        return _statusProcessing;
+    case QtNodes::NodeProcessingStatus::Pending:
+        return _statusPending;
+    case QtNodes::NodeProcessingStatus::Empty:
+        return _statusEmpty;
+    case QtNodes::NodeProcessingStatus::Failed:
+        return _statusInvalid;
+    case QtNodes::NodeProcessingStatus::Partial:
+        return _statusPartial;
+    }
+    return _statusInvalid;
+}
+
+QSize NodeGraphicsObject::statusIconSize() const
+{
+    return _statusIconSize;
 }
 
 } // namespace QtNodes

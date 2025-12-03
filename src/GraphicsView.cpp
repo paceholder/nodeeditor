@@ -21,7 +21,6 @@
 #include <QtWidgets>
 
 #include <cmath>
-#include <iostream>
 
 using QtNodes::BasicGraphicsScene;
 using QtNodes::GraphicsView;
@@ -280,6 +279,7 @@ void GraphicsView::onDeleteSelectedObjects()
 
 void GraphicsView::onDuplicateSelectedObjects()
 {
+    qDebug() << "ON DUPLICATE";
     QPointF const pastePosition = scenePastePosition();
 
     nodeScene()->undoStack().push(new CopyCommand(nodeScene()));
