@@ -32,6 +32,81 @@ Item {
         nodeItem.z = topZ
     }
     
+    // Selection management
+    property var selectedNodeIds: ({})
+    property int selectionVersion: 0
+    
+    signal selectionChanged()
+    
+    function isNodeSelected(nodeId) {
+        return selectedNodeIds.hasOwnProperty(nodeId)
+    }
+    
+    function selectNode(nodeId, additive) {
+        if (!additive) {
+            selectedNodeIds = {}
+        }
+        if (!selectedNodeIds.hasOwnProperty(nodeId)) {
+            selectedNodeIds[nodeId] = true
+            selectionVersion++
+            selectionChanged()
+        }
+    }
+    
+    function deselectNode(nodeId) {
+        if (selectedNodeIds.hasOwnProperty(nodeId)) {
+            delete selectedNodeIds[nodeId]
+            selectionVersion++
+            selectionChanged()
+        }
+    }
+    
+    function toggleNodeSelection(nodeId) {
+        if (selectedNodeIds.hasOwnProperty(nodeId)) {
+            delete selectedNodeIds[nodeId]
+        } else {
+            selectedNodeIds[nodeId] = true
+        }
+        selectionVersion++
+        selectionChanged()
+    }
+    
+    function clearSelection() {
+        selectedNodeIds = {}
+        selectionVersion++
+        selectionChanged()
+    }
+    
+    function selectNodesInRect(rect) {
+        for (var id in nodeItems) {
+            var node = nodeItems[id]
+            if (node) {
+                var nodeRect = Qt.rect(node.x, node.y, node.width, node.height)
+                if (rectsIntersect(rect, nodeRect)) {
+                    selectedNodeIds[id] = true
+                }
+            }
+        }
+        selectionVersion++
+        selectionChanged()
+    }
+    
+    function rectsIntersect(r1, r2) {
+        return !(r2.x > r1.x + r1.width ||
+                 r2.x + r2.width < r1.x ||
+                 r2.y > r1.y + r1.height ||
+                 r2.y + r2.height < r1.y)
+    }
+    
+    function getSelectedNodeIds() {
+        return Object.keys(selectedNodeIds).map(function(id) { return parseInt(id) })
+    }
+    
+    // Marquee selection
+    property bool isMarqueeSelecting: false
+    property point marqueeStart: Qt.point(0, 0)
+    property point marqueeEnd: Qt.point(0, 0)
+    
     // Temporary drafting connection
     property point dragStart: Qt.point(0, 0)
     property point dragCurrent: Qt.point(0, 0)
@@ -104,7 +179,7 @@ Item {
         color: "#2b2b2b"
         clip: true
 
-        // Input Handler for Pan/Zoom
+        // Input Handler for Pan/Zoom/Selection
         MouseArea {
             anchors.fill: parent
             acceptedButtons: Qt.MiddleButton | Qt.LeftButton
@@ -113,6 +188,23 @@ Item {
             onPressed: (mouse) => {
                 root.forceActiveFocus()
                 lastPos = Qt.point(mouse.x, mouse.y)
+                
+                // Left click without Alt starts marquee selection
+                if (mouse.button === Qt.LeftButton && !(mouse.modifiers & Qt.AltModifier)) {
+                    // Convert screen position to canvas coordinates
+                    var canvasPos = Qt.point(
+                        (mouse.x - root.panOffset.x) / root.zoomLevel,
+                        (mouse.y - root.panOffset.y) / root.zoomLevel
+                    )
+                    root.marqueeStart = canvasPos
+                    root.marqueeEnd = canvasPos
+                    root.isMarqueeSelecting = true
+                    
+                    // Clear selection unless Ctrl is held
+                    if (!(mouse.modifiers & Qt.ControlModifier)) {
+                        root.clearSelection()
+                    }
+                }
             }
 
             onPositionChanged: (mouse) => {
@@ -120,6 +212,27 @@ Item {
                     var delta = Qt.point(mouse.x - lastPos.x, mouse.y - lastPos.y)
                     root.panOffset = Qt.point(root.panOffset.x + delta.x, root.panOffset.y + delta.y)
                     lastPos = Qt.point(mouse.x, mouse.y)
+                } else if (root.isMarqueeSelecting) {
+                    var canvasPos = Qt.point(
+                        (mouse.x - root.panOffset.x) / root.zoomLevel,
+                        (mouse.y - root.panOffset.y) / root.zoomLevel
+                    )
+                    root.marqueeEnd = canvasPos
+                }
+            }
+            
+            onReleased: (mouse) => {
+                if (root.isMarqueeSelecting) {
+                    // Select nodes in marquee rect
+                    var x = Math.min(root.marqueeStart.x, root.marqueeEnd.x)
+                    var y = Math.min(root.marqueeStart.y, root.marqueeEnd.y)
+                    var w = Math.abs(root.marqueeEnd.x - root.marqueeStart.x)
+                    var h = Math.abs(root.marqueeEnd.y - root.marqueeStart.y)
+                    
+                    if (w > 5 || h > 5) {
+                        root.selectNodesInRect(Qt.rect(x, y, w, h))
+                    }
+                    root.isMarqueeSelecting = false
                 }
             }
 
@@ -301,6 +414,18 @@ Item {
                 control2Y: root.dragCurrent.y
             }
         }
+    }
+    
+    // Marquee Selection Rectangle
+    Rectangle {
+        visible: root.isMarqueeSelecting
+        x: Math.min(root.marqueeStart.x, root.marqueeEnd.x)
+        y: Math.min(root.marqueeStart.y, root.marqueeEnd.y)
+        width: Math.abs(root.marqueeEnd.x - root.marqueeStart.x)
+        height: Math.abs(root.marqueeEnd.y - root.marqueeStart.y)
+        color: "#224a9eff"
+        border.color: "#4a9eff"
+        border.width: 1
     }
     }
     }

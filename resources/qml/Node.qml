@@ -15,6 +15,10 @@ Rectangle {
     property real initialY
     
     property bool completed: false
+    property bool selected: {
+        graph.selectionVersion
+        return graph.isNodeSelected(nodeId)
+    }
     
     x: initialX
     y: initialY
@@ -23,8 +27,8 @@ Rectangle {
     height: Math.max(Math.max(inPorts, outPorts) * 20 + 40, 50)
     
     color: "#2d2d2d"
-    border.color: "black"
-    border.width: 2
+    border.color: selected ? "#4a9eff" : "black"
+    border.width: selected ? 3 : 2
     radius: 5
 
     Component.onCompleted: {
@@ -32,15 +36,58 @@ Rectangle {
     }
     
     TapHandler {
-        onTapped: graph.forceActiveFocus()
+        onTapped: (eventPoint, button) => {
+            graph.forceActiveFocus()
+            var additive = (eventPoint.event.modifiers & Qt.ControlModifier)
+            if (additive) {
+                graph.toggleNodeSelection(nodeId)
+            } else {
+                graph.selectNode(nodeId, false)
+            }
+        }
     }
     
     DragHandler {
+        id: dragHandler
         target: root
+        
+        property point lastPos: Qt.point(0, 0)
+        property bool isDraggingGroup: false
+        
         onActiveChanged: {
             if (active) {
                 graph.forceActiveFocus()
                 graph.bringToFront(root)
+                lastPos = Qt.point(root.x, root.y)
+                
+                // If this node is selected and there are multiple selections, enable group drag
+                isDraggingGroup = root.selected && Object.keys(graph.selectedNodeIds).length > 1
+                
+                // If not selected, select only this node
+                if (!root.selected) {
+                    graph.selectNode(nodeId, false)
+                }
+            }
+        }
+        
+        onTranslationChanged: {
+            if (isDraggingGroup) {
+                var deltaX = root.x - lastPos.x
+                var deltaY = root.y - lastPos.y
+                
+                // Move all other selected nodes by the same delta
+                var selectedIds = graph.getSelectedNodeIds()
+                for (var i = 0; i < selectedIds.length; i++) {
+                    var id = selectedIds[i]
+                    if (id !== nodeId) {
+                        var node = graph.nodeItems[id]
+                        if (node) {
+                            node.x += deltaX
+                            node.y += deltaY
+                        }
+                    }
+                }
+                lastPos = Qt.point(root.x, root.y)
             }
         }
     }
