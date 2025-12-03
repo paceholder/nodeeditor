@@ -75,6 +75,7 @@ Rectangle {
     // Input Ports
     Column {
         id: inPortsColumn
+        z: 10
         anchors.left: parent.left
         anchors.top: parent.top
         anchors.topMargin: 35
@@ -93,6 +94,7 @@ Rectangle {
                 MouseArea {
                     anchors.fill: parent
                     hoverEnabled: true
+                    preventStealing: true
                     onEntered: {
                         // Only highlight if not dragging or if we are the target
                         if (!graph.isDragging) {
@@ -132,6 +134,7 @@ Rectangle {
     // Output Ports
     Column {
         id: outPortsColumn
+        z: 10
         anchors.right: parent.right
         anchors.top: parent.top
         anchors.topMargin: 35
@@ -150,6 +153,7 @@ Rectangle {
                 MouseArea {
                     anchors.fill: parent
                     hoverEnabled: true
+                    preventStealing: true
                     onEntered: {
                         if (!graph.isDragging) {
                             parent.scale = 1.2
