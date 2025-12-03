@@ -38,7 +38,10 @@ Rectangle {
     DragHandler {
         target: root
         onActiveChanged: {
-            if (active) graph.forceActiveFocus()
+            if (active) {
+                graph.forceActiveFocus()
+                graph.bringToFront(root)
+            }
         }
     }
     

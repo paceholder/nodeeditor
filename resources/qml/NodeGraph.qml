@@ -25,6 +25,13 @@ Item {
     // Port dragging
     property var activePort: null
     
+    // Z-order management
+    property int topZ: 1
+    function bringToFront(nodeItem) {
+        topZ++
+        nodeItem.z = topZ
+    }
+    
     // Temporary drafting connection
     property point dragStart: Qt.point(0, 0)
     property point dragCurrent: Qt.point(0, 0)
