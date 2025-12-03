@@ -104,6 +104,7 @@ Item {
             property point lastPos: Qt.point(0, 0)
 
             onPressed: (mouse) => {
+                root.forceActiveFocus()
                 lastPos = Qt.point(mouse.x, mouse.y)
             }
 

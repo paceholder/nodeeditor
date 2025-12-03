@@ -31,8 +31,15 @@ Rectangle {
         completed = true
     }
     
+    TapHandler {
+        onTapped: graph.forceActiveFocus()
+    }
+    
     DragHandler {
         target: root
+        onActiveChanged: {
+            if (active) graph.forceActiveFocus()
+        }
     }
     
     Text {
