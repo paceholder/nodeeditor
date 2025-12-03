@@ -88,4 +88,25 @@ void QuickGraphModel::removeConnection(int outNodeId, int outPortIndex, int inNo
     _model->deleteConnection(connId);
 }
 
+QVariantMap QuickGraphModel::getConnectionAtInput(int nodeId, int portIndex)
+{
+    QVariantMap result;
+    result["valid"] = false;
+    
+    if (!_model) return result;
+    
+    auto connections = _model->allConnectionIds(static_cast<NodeId>(nodeId));
+    for (const auto& conn : connections) {
+        if (conn.inNodeId == static_cast<NodeId>(nodeId) && 
+            conn.inPortIndex == static_cast<PortIndex>(portIndex)) {
+            result["valid"] = true;
+            result["outNodeId"] = static_cast<int>(conn.outNodeId);
+            result["outPortIndex"] = static_cast<int>(conn.outPortIndex);
+            return result;
+        }
+    }
+    
+    return result;
+}
+
 } // namespace QtNodes

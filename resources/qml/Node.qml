@@ -116,8 +116,19 @@ Rectangle {
                     }
                     onIsActiveChanged: parent.scale = isActive ? 1.4 : 1.0
                     onPressed: (mouse) => {
-                        var pos = mapToItem(graph.canvas, width/2, height/2)
-                        graph.startDraftConnection(root.nodeId, 0, index, pos)
+                        var existing = graph.graphModel.getConnectionAtInput(root.nodeId, index)
+                        
+                        if (existing.valid) {
+                            // Remove existing connection and start draft from source
+                            graph.graphModel.removeConnection(existing.outNodeId, existing.outPortIndex,
+                                                              root.nodeId, index)
+                            var sourceNode = graph.nodeItems[existing.outNodeId]
+                            var sourcePos = sourceNode.getPortPos(1, existing.outPortIndex)
+                            graph.startDraftConnection(existing.outNodeId, 1, existing.outPortIndex, sourcePos)
+                        } else {
+                            var pos = mapToItem(graph.canvas, width/2, height/2)
+                            graph.startDraftConnection(root.nodeId, 0, index, pos)
+                        }
                     }
                     onPositionChanged: (mouse) => {
                         var pos = mapToItem(graph.canvas, mouse.x, mouse.y)

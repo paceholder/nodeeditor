@@ -35,6 +35,7 @@ public:
     
     Q_INVOKABLE void addConnection(int outNodeId, int outPortIndex, int inNodeId, int inPortIndex);
     Q_INVOKABLE void removeConnection(int outNodeId, int outPortIndex, int inNodeId, int inPortIndex);
+    Q_INVOKABLE QVariantMap getConnectionAtInput(int nodeId, int portIndex);
 
 private:
     std::shared_ptr<DataFlowGraphModel> _model;
