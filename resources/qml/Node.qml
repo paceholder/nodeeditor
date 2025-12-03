@@ -154,10 +154,18 @@ Rectangle {
             id: inRepeater
             model: inPorts
             delegate: Rectangle {
+                id: inPortRect
                 width: 12; height: 12
                 radius: 6
-                color: "green"
-                border.color: "black"
+                property string portTypeId: graph.getPortTypeId(root.nodeId, 0, index)
+                property bool isCompatible: !graph.isDragging || 
+                    (graph.activeConnectionStart && graph.activeConnectionStart.portType === 1 && 
+                     graph.draftConnectionTypeId === portTypeId)
+                property bool isDimmed: graph.isDragging && !isCompatible
+                color: graph.getPortColor(portTypeId)
+                opacity: isDimmed ? 0.3 : 1.0
+                border.color: isCompatible && graph.isDragging ? "#ffffff" : "black"
+                border.width: isCompatible && graph.isDragging ? 2 : 1
                 
                 MouseArea {
                     anchors.fill: parent
@@ -226,10 +234,18 @@ Rectangle {
             id: outRepeater
             model: outPorts
             delegate: Rectangle {
+                id: outPortRect
                 width: 12; height: 12
                 radius: 6
-                color: "orange"
-                border.color: "black"
+                property string portTypeId: graph.getPortTypeId(root.nodeId, 1, index)
+                property bool isCompatible: !graph.isDragging || 
+                    (graph.activeConnectionStart && graph.activeConnectionStart.portType === 0 && 
+                     graph.draftConnectionTypeId === portTypeId)
+                property bool isDimmed: graph.isDragging && !isCompatible
+                color: graph.getPortColor(portTypeId)
+                opacity: isDimmed ? 0.3 : 1.0
+                border.color: isCompatible && graph.isDragging ? "#ffffff" : "black"
+                border.width: isCompatible && graph.isDragging ? 2 : 1
                 
                 MouseArea {
                     anchors.fill: parent

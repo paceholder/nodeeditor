@@ -10,6 +10,24 @@ Item {
 
     property var nodeItems: ({})
     property Component nodeContentDelegate // User provided content
+    
+    // Port type colors mapping
+    property var portTypeColors: ({
+        "decimal": "#4CAF50",
+        "integer": "#2196F3", 
+        "string": "#FF9800",
+        "boolean": "#9C27B0",
+        "default": "#9E9E9E"
+    })
+    
+    function getPortColor(typeId) {
+        return portTypeColors[typeId] || portTypeColors["default"]
+    }
+    
+    function getPortTypeId(nodeId, portType, portIndex) {
+        if (!graphModel) return "default"
+        return graphModel.getPortDataTypeId(nodeId, portType, portIndex) || "default"
+    }
 
     function registerNode(id, item) {
         nodeItems[id] = item
@@ -236,7 +254,10 @@ Item {
         dragCurrent = pos
         isDragging = true
         activeConnectionStart = {nodeId: nodeId, portType: portType, portIndex: portIndex}
+        draftConnectionTypeId = getPortTypeId(nodeId, portType, portIndex)
     }
+    
+    property string draftConnectionTypeId: ""
     
     property var activeConnectionStart: null
     
@@ -271,6 +292,7 @@ Item {
     
     function endDraftConnection() {
         isDragging = false
+        draftConnectionTypeId = ""
         if (activePort && activeConnectionStart) {
             // Check if connecting Out -> In or In -> Out
             var start = activeConnectionStart

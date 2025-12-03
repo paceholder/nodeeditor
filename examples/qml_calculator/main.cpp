@@ -11,6 +11,16 @@
 #include "QmlNumberSourceDataModel.hpp"
 #include "QmlNumberDisplayDataModel.hpp"
 #include "AdditionModel.hpp"
+#include "MultiplyModel.hpp"
+#include "SubtractModel.hpp"
+#include "DivideModel.hpp"
+#include "FormatNumberModel.hpp"
+#include "StringDisplayModel.hpp"
+#include "IntegerSourceModel.hpp"
+#include "IntegerDisplayModel.hpp"
+#include "ToIntegerModel.hpp"
+#include "GreaterThanModel.hpp"
+#include "BooleanDisplayModel.hpp"
 
 using QtNodes::NodeDelegateModelRegistry;
 using QtNodes::QuickGraphModel;
@@ -18,9 +28,23 @@ using QtNodes::QuickGraphModel;
 static std::shared_ptr<NodeDelegateModelRegistry> registerDataModels()
 {
     auto ret = std::make_shared<NodeDelegateModelRegistry>();
+    // Decimal nodes
     ret->registerModel<QmlNumberSourceDataModel>("NumberSource");
     ret->registerModel<QmlNumberDisplayDataModel>("NumberDisplay");
     ret->registerModel<AdditionModel>("Addition");
+    ret->registerModel<MultiplyModel>("Multiply");
+    ret->registerModel<SubtractModel>("Subtract");
+    ret->registerModel<DivideModel>("Divide");
+    // String nodes
+    ret->registerModel<FormatNumberModel>("FormatNumber");
+    ret->registerModel<StringDisplayModel>("StringDisplay");
+    // Integer nodes
+    ret->registerModel<IntegerSourceModel>("IntegerSource");
+    ret->registerModel<IntegerDisplayModel>("IntegerDisplay");
+    ret->registerModel<ToIntegerModel>("ToInteger");
+    // Boolean nodes
+    ret->registerModel<GreaterThanModel>("GreaterThan");
+    ret->registerModel<BooleanDisplayModel>("BooleanDisplay");
     return ret;
 }
 

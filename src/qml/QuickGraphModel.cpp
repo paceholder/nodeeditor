@@ -2,6 +2,7 @@
 
 #include "QtNodes/internal/DataFlowGraphModel.hpp"
 #include "QtNodes/internal/NodeDelegateModelRegistry.hpp"
+#include "QtNodes/internal/NodeData.hpp"
 
 namespace QtNodes {
 
@@ -107,6 +108,33 @@ QVariantMap QuickGraphModel::getConnectionAtInput(int nodeId, int portIndex)
     }
     
     return result;
+}
+
+QString QuickGraphModel::getPortDataTypeId(int nodeId, int portType, int portIndex)
+{
+    if (!_model) return QString();
+    
+    auto dataType = _model->portData(
+        static_cast<NodeId>(nodeId),
+        static_cast<PortType>(portType),
+        static_cast<PortIndex>(portIndex),
+        PortRole::DataType
+    ).value<NodeDataType>();
+    
+    return dataType.id;
+}
+
+bool QuickGraphModel::connectionPossible(int outNodeId, int outPortIndex, int inNodeId, int inPortIndex)
+{
+    if (!_model) return false;
+    
+    ConnectionId connId;
+    connId.outNodeId = static_cast<NodeId>(outNodeId);
+    connId.outPortIndex = static_cast<PortIndex>(outPortIndex);
+    connId.inNodeId = static_cast<NodeId>(inNodeId);
+    connId.inPortIndex = static_cast<PortIndex>(inPortIndex);
+    
+    return _model->connectionPossible(connId);
 }
 
 } // namespace QtNodes

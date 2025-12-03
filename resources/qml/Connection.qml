@@ -16,6 +16,9 @@ Item {
     property bool selected: graph.isConnectionSelected(sourceNodeId, sourcePortIndex, destNodeId, destPortIndex)
     property bool hovered: false
     
+    property string portTypeId: graph.getPortTypeId(sourceNodeId, 1, sourcePortIndex)
+    property color lineColor: graph.getPortColor(portTypeId)
+    
     Connections {
         target: graph
         function onNodeRegistryChanged() {
@@ -161,7 +164,7 @@ Item {
         
         ShapePath {
             strokeWidth: root.hovered ? 3.5 : 3
-            strokeColor: root.hovered ? "#ffffff" : "#eeeeee"
+            strokeColor: root.hovered ? Qt.lighter(root.lineColor, 1.3) : root.lineColor
             fillColor: "transparent"
             
             startX: root.startPos.x
