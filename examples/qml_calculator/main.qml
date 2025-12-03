@@ -63,6 +63,9 @@ Window {
                         onEditingFinished: { 
                             if (delegateModel) delegateModel.number = parseFloat(text) 
                         }
+                        onActiveFocusChanged: {
+                            if (activeFocus) selectAll()
+                        }
                         color: "black"
                         background: Rectangle { color: "white" }
                     }
