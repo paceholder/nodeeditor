@@ -9,6 +9,7 @@
 #include "Export.hpp"
 #include "NodeData.hpp"
 #include "NodeStyle.hpp"
+#include <QtGui/QColor>
 #include "Serializable.hpp"
 
 namespace QtNodes {
@@ -101,6 +102,9 @@ public:
     NodeStyle const &nodeStyle() const;
 
     void setNodeStyle(NodeStyle const &style);
+
+    /// Convenience helper to change the node background color.
+    void setBackgroundColor(QColor const &color);
 
 public:
     virtual void setInData(std::shared_ptr<NodeData> nodeData, PortIndex const portIndex) = 0;

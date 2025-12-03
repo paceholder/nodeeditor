@@ -61,4 +61,9 @@ void NodeDelegateModel::setNodeProcessingStatus(NodeProcessingStatus status)
     _processingStatus = status;
 }
 
+void NodeDelegateModel::setBackgroundColor(QColor const &color)
+{
+    _nodeStyle.setBackgroundColor(color);
+}
+
 } // namespace QtNodes
