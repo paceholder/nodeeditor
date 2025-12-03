@@ -294,18 +294,30 @@ Item {
         isDragging = false
         draftConnectionTypeId = ""
         if (activePort && activeConnectionStart) {
-            // Check if connecting Out -> In or In -> Out
             var start = activeConnectionStart
             var end = activePort
             
-            // We only allow Out -> In connection creation in this simple logic
-            // If drag started from Out (1) and ended at In (0)
+            var outNodeId, outPortIndex, inNodeId, inPortIndex
+            
+            // Determine Out -> In direction
             if (start.portType === 1 && end.portType === 0) {
-                graphModel.addConnection(start.nodeId, start.portIndex, end.nodeId, end.portIndex)
+                outNodeId = start.nodeId
+                outPortIndex = start.portIndex
+                inNodeId = end.nodeId
+                inPortIndex = end.portIndex
+            } else if (start.portType === 0 && end.portType === 1) {
+                outNodeId = end.nodeId
+                outPortIndex = end.portIndex
+                inNodeId = start.nodeId
+                inPortIndex = start.portIndex
+            } else {
+                activeConnectionStart = null
+                return
             }
-            // If drag started from In (0) and ended at Out (1) - usually we drag from source to dest
-            else if (start.portType === 0 && end.portType === 1) {
-                graphModel.addConnection(end.nodeId, end.portIndex, start.nodeId, start.portIndex)
+            
+            // Only create connection if types are compatible
+            if (graphModel.connectionPossible(outNodeId, outPortIndex, inNodeId, inPortIndex)) {
+                graphModel.addConnection(outNodeId, outPortIndex, inNodeId, inPortIndex)
             }
         }
         activeConnectionStart = null
