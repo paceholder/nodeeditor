@@ -228,6 +228,16 @@ Item {
         if (event.key === Qt.Key_Delete || event.key === Qt.Key_Backspace || event.key === Qt.Key_X) {
             deleteSelected()
             event.accepted = true
+        } else if (event.key === Qt.Key_Z && (event.modifiers & Qt.ControlModifier)) {
+            if (event.modifiers & Qt.ShiftModifier) {
+                if (graphModel) graphModel.redo()
+            } else {
+                if (graphModel) graphModel.undo()
+            }
+            event.accepted = true
+        } else if (event.key === Qt.Key_Y && (event.modifiers & Qt.ControlModifier)) {
+            if (graphModel) graphModel.redo()
+            event.accepted = true
         }
     }
     

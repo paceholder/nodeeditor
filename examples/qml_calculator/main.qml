@@ -64,7 +64,20 @@ Window {
                     onClicked: darkTheme = !darkTheme
                 }
                 
-                Rectangle { width: 1; height: 30; color: "#555" }
+                Rectangle { width: 1; height: 30; color: darkTheme ? "#555" : "#bbb" }
+                
+                Button {
+                    text: "↶ Undo"
+                    enabled: model.canUndo
+                    onClicked: model.undo()
+                }
+                Button {
+                    text: "↷ Redo"
+                    enabled: model.canRedo
+                    onClicked: model.redo()
+                }
+                
+                Rectangle { width: 1; height: 30; color: darkTheme ? "#555" : "#bbb" }
                 
                 Label { 
                     text: "Numbers:" 

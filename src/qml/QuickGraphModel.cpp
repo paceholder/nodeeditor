@@ -4,13 +4,162 @@
 #include "QtNodes/internal/NodeDelegateModelRegistry.hpp"
 #include "QtNodes/internal/NodeData.hpp"
 
+#include <QUndoStack>
+#include <QUndoCommand>
+#include <QJsonObject>
+
 namespace QtNodes {
+
+// Undo command for adding a node
+class AddNodeCommand : public QUndoCommand
+{
+public:
+    AddNodeCommand(DataFlowGraphModel* graphModel, 
+                   const QString& nodeType, QUndoCommand* parent = nullptr)
+        : QUndoCommand(parent)
+        , _graphModel(graphModel)
+        , _nodeType(nodeType)
+        , _nodeId(-1)
+    {
+        setText(QString("Add %1").arg(nodeType));
+    }
+    
+    void undo() override
+    {
+        if (_nodeId >= 0 && _graphModel) {
+            _savedState = _graphModel->saveNode(static_cast<NodeId>(_nodeId));
+            _graphModel->deleteNode(static_cast<NodeId>(_nodeId));
+        }
+    }
+    
+    void redo() override
+    {
+        if (_graphModel) {
+            if (_nodeId < 0) {
+                _nodeId = static_cast<int>(_graphModel->addNode(_nodeType));
+            } else if (!_savedState.isEmpty()) {
+                _graphModel->loadNode(_savedState);
+            }
+        }
+    }
+    
+    int nodeId() const { return _nodeId; }
+    
+private:
+    DataFlowGraphModel* _graphModel;
+    QString _nodeType;
+    int _nodeId;
+    QJsonObject _savedState;
+};
+
+// Undo command for removing a node
+class RemoveNodeCommand : public QUndoCommand
+{
+public:
+    RemoveNodeCommand(DataFlowGraphModel* graphModel, int nodeId, QUndoCommand* parent = nullptr)
+        : QUndoCommand(parent)
+        , _graphModel(graphModel)
+        , _nodeId(nodeId)
+    {
+        setText(QString("Remove Node %1").arg(nodeId));
+        if (_graphModel) {
+            _savedState = _graphModel->saveNode(static_cast<NodeId>(_nodeId));
+        }
+    }
+    
+    void undo() override
+    {
+        if (_graphModel && !_savedState.isEmpty()) {
+            _graphModel->loadNode(_savedState);
+        }
+    }
+    
+    void redo() override
+    {
+        if (_graphModel) {
+            _savedState = _graphModel->saveNode(static_cast<NodeId>(_nodeId));
+            _graphModel->deleteNode(static_cast<NodeId>(_nodeId));
+        }
+    }
+    
+private:
+    DataFlowGraphModel* _graphModel;
+    int _nodeId;
+    QJsonObject _savedState;
+};
+
+// Undo command for adding a connection
+class AddConnectionCommand : public QUndoCommand
+{
+public:
+    AddConnectionCommand(DataFlowGraphModel* graphModel, const ConnectionId& connId, 
+                         QUndoCommand* parent = nullptr)
+        : QUndoCommand(parent)
+        , _graphModel(graphModel)
+        , _connId(connId)
+    {
+        setText("Add Connection");
+    }
+    
+    void undo() override
+    {
+        if (_graphModel) {
+            _graphModel->deleteConnection(_connId);
+        }
+    }
+    
+    void redo() override
+    {
+        if (_graphModel) {
+            _graphModel->addConnection(_connId);
+        }
+    }
+    
+private:
+    DataFlowGraphModel* _graphModel;
+    ConnectionId _connId;
+};
+
+// Undo command for removing a connection
+class RemoveConnectionCommand : public QUndoCommand
+{
+public:
+    RemoveConnectionCommand(DataFlowGraphModel* graphModel, const ConnectionId& connId, 
+                            QUndoCommand* parent = nullptr)
+        : QUndoCommand(parent)
+        , _graphModel(graphModel)
+        , _connId(connId)
+    {
+        setText("Remove Connection");
+    }
+    
+    void undo() override
+    {
+        if (_graphModel) {
+            _graphModel->addConnection(_connId);
+        }
+    }
+    
+    void redo() override
+    {
+        if (_graphModel) {
+            _graphModel->deleteConnection(_connId);
+        }
+    }
+    
+private:
+    DataFlowGraphModel* _graphModel;
+    ConnectionId _connId;
+};
 
 QuickGraphModel::QuickGraphModel(QObject *parent)
     : QObject(parent)
     , _nodesList(nullptr)
     , _connectionsList(nullptr)
+    , _undoStack(new QUndoStack(this))
 {
+    connect(_undoStack, &QUndoStack::canUndoChanged, this, &QuickGraphModel::undoStateChanged);
+    connect(_undoStack, &QUndoStack::canRedoChanged, this, &QuickGraphModel::undoStateChanged);
 }
 
 QuickGraphModel::~QuickGraphModel()
@@ -56,13 +205,18 @@ ConnectionsListModel* QuickGraphModel::connections() const
 int QuickGraphModel::addNode(QString const &nodeType)
 {
     if (!_model) return -1;
-    return static_cast<int>(_model->addNode(nodeType));
+    
+    auto* cmd = new AddNodeCommand(_model.get(), nodeType);
+    _undoStack->push(cmd);
+    return cmd->nodeId();
 }
 
 bool QuickGraphModel::removeNode(int nodeId)
 {
     if (!_model) return false;
-    return _model->deleteNode(static_cast<NodeId>(nodeId));
+    
+    _undoStack->push(new RemoveNodeCommand(_model.get(), nodeId));
+    return true;
 }
 
 void QuickGraphModel::addConnection(int outNodeId, int outPortIndex, int inNodeId, int inPortIndex)
@@ -74,7 +228,7 @@ void QuickGraphModel::addConnection(int outNodeId, int outPortIndex, int inNodeI
     connId.inNodeId = static_cast<NodeId>(inNodeId);
     connId.inPortIndex = static_cast<PortIndex>(inPortIndex);
     
-    _model->addConnection(connId);
+    _undoStack->push(new AddConnectionCommand(_model.get(), connId));
 }
 
 void QuickGraphModel::removeConnection(int outNodeId, int outPortIndex, int inNodeId, int inPortIndex)
@@ -86,7 +240,7 @@ void QuickGraphModel::removeConnection(int outNodeId, int outPortIndex, int inNo
     connId.inNodeId = static_cast<NodeId>(inNodeId);
     connId.inPortIndex = static_cast<PortIndex>(inPortIndex);
     
-    _model->deleteConnection(connId);
+    _undoStack->push(new RemoveConnectionCommand(_model.get(), connId));
 }
 
 QVariantMap QuickGraphModel::getConnectionAtInput(int nodeId, int portIndex)
@@ -135,6 +289,26 @@ bool QuickGraphModel::connectionPossible(int outNodeId, int outPortIndex, int in
     connId.inPortIndex = static_cast<PortIndex>(inPortIndex);
     
     return _model->connectionPossible(connId);
+}
+
+bool QuickGraphModel::canUndo() const
+{
+    return _undoStack->canUndo();
+}
+
+bool QuickGraphModel::canRedo() const
+{
+    return _undoStack->canRedo();
+}
+
+void QuickGraphModel::undo()
+{
+    _undoStack->undo();
+}
+
+void QuickGraphModel::redo()
+{
+    _undoStack->redo();
 }
 
 } // namespace QtNodes

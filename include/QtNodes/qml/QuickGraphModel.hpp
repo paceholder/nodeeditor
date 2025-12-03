@@ -6,6 +6,8 @@
 #include "NodesListModel.hpp"
 #include "ConnectionsListModel.hpp"
 
+class QUndoStack;
+
 namespace QtNodes {
 
 class DataFlowGraphModel;
@@ -16,6 +18,8 @@ class QuickGraphModel : public QObject
     Q_OBJECT
     Q_PROPERTY(QtNodes::NodesListModel* nodes READ nodes CONSTANT)
     Q_PROPERTY(QtNodes::ConnectionsListModel* connections READ connections CONSTANT)
+    Q_PROPERTY(bool canUndo READ canUndo NOTIFY undoStateChanged)
+    Q_PROPERTY(bool canRedo READ canRedo NOTIFY undoStateChanged)
 
 public:
     explicit QuickGraphModel(QObject *parent = nullptr);
@@ -38,11 +42,21 @@ public:
     Q_INVOKABLE QVariantMap getConnectionAtInput(int nodeId, int portIndex);
     Q_INVOKABLE QString getPortDataTypeId(int nodeId, int portType, int portIndex);
     Q_INVOKABLE bool connectionPossible(int outNodeId, int outPortIndex, int inNodeId, int inPortIndex);
+    
+    // Undo/Redo
+    bool canUndo() const;
+    bool canRedo() const;
+    Q_INVOKABLE void undo();
+    Q_INVOKABLE void redo();
+
+Q_SIGNALS:
+    void undoStateChanged();
 
 private:
     std::shared_ptr<DataFlowGraphModel> _model;
     NodesListModel* _nodesList;
     ConnectionsListModel* _connectionsList;
+    QUndoStack* _undoStack;
 };
 
 } // namespace QtNodes
