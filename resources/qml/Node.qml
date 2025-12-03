@@ -20,16 +20,19 @@ Rectangle {
         return graph.isNodeSelected(nodeId)
     }
     
+    // Style shortcut - use direct access for reactivity
+    property var style: graph ? graph.style : null
+    
     x: initialX
     y: initialY
     
-    width: 150
-    height: Math.max(Math.max(inPorts, outPorts) * 20 + 40, 50)
+    width: style.nodeMinWidth
+    height: Math.max(Math.max(inPorts, outPorts) * (style.portSize + style.nodePortSpacing) + style.nodeHeaderHeight + 5, 50)
     
-    color: "#2d2d2d"
-    border.color: selected ? "#4a9eff" : "black"
-    border.width: selected ? 3 : 2
-    radius: 5
+    color: style.nodeBackground
+    border.color: selected ? style.nodeSelectedBorder : style.nodeBorder
+    border.width: selected ? style.nodeSelectedBorderWidth : style.nodeBorderWidth
+    radius: style.nodeRadius
 
     Component.onCompleted: {
         completed = true
@@ -108,17 +111,18 @@ Rectangle {
         anchors.top: parent.top
         anchors.topMargin: 8
         text: caption
-        color: "#eeeeee"
-        font.bold: true
+        color: graph && graph.style ? graph.style.nodeCaptionColor : "#eeeeee"
+        font.bold: graph && graph.style ? graph.style.nodeCaptionBold : true
+        font.pixelSize: graph && graph.style ? graph.style.nodeCaptionFontSize : 12
     }
     
     Loader {
         id: contentLoader
         anchors.top: parent.top
-        anchors.topMargin: 35
+        anchors.topMargin: style.nodeHeaderHeight
         anchors.horizontalCenter: parent.horizontalCenter
         width: parent.width - 20
-        height: parent.height - 50
+        height: parent.height - style.nodeHeaderHeight - 15
         sourceComponent: contentDelegate
         
         onLoaded: {
@@ -146,35 +150,34 @@ Rectangle {
         z: 10
         anchors.left: parent.left
         anchors.top: parent.top
-        anchors.topMargin: 35
-        anchors.leftMargin: -5 // Overlap edge
-        spacing: 10
+        anchors.topMargin: style.nodeHeaderHeight
+        anchors.leftMargin: -style.portSize / 2 + 1
+        spacing: style.nodePortSpacing
         
         Repeater {
             id: inRepeater
             model: inPorts
             delegate: Rectangle {
                 id: inPortRect
-                width: 12; height: 12
-                radius: 6
+                width: style.portSize; height: style.portSize
+                radius: style.portSize / 2
                 property string portTypeId: graph.getPortTypeId(root.nodeId, 0, index)
                 property bool isCompatible: !graph.isDragging || 
                     (graph.activeConnectionStart && graph.activeConnectionStart.portType === 1 && 
                      graph.draftConnectionTypeId === portTypeId)
                 property bool isDimmed: graph.isDragging && !isCompatible
                 color: graph.getPortColor(portTypeId)
-                opacity: isDimmed ? 0.3 : 1.0
-                border.color: isCompatible && graph.isDragging ? "#ffffff" : "black"
-                border.width: isCompatible && graph.isDragging ? 2 : 1
+                opacity: isDimmed ? style.portDimmedOpacity : 1.0
+                border.color: isCompatible && graph.isDragging ? style.portHighlightBorder : style.portBorderColor
+                border.width: isCompatible && graph.isDragging ? style.portHighlightBorderWidth : style.portBorderWidth
                 
                 MouseArea {
                     anchors.fill: parent
                     hoverEnabled: true
                     preventStealing: true
                     onEntered: {
-                        // Only highlight if not dragging or if we are the target
                         if (!graph.isDragging) {
-                            parent.scale = 1.2
+                            parent.scale = style.portHoverScale
                             graph.setActivePort({nodeId: root.nodeId, portType: 0, portIndex: index})
                         }
                     }
@@ -185,12 +188,11 @@ Rectangle {
                         }
                     }
                     
-                    // Visual feedback based on activePort
                     property bool isActive: {
                         var ap = graph.activePort
                         return ap && ap.nodeId === root.nodeId && ap.portType === 0 && ap.portIndex === index
                     }
-                    onIsActiveChanged: parent.scale = isActive ? 1.4 : 1.0
+                    onIsActiveChanged: parent.scale = isActive ? style.portActiveScale : 1.0
                     onPressed: (mouse) => {
                         var existing = graph.graphModel.getConnectionAtInput(root.nodeId, index)
                         var mousePos = mapToItem(graph.canvas, mouse.x, mouse.y)
@@ -226,26 +228,26 @@ Rectangle {
         z: 10
         anchors.right: parent.right
         anchors.top: parent.top
-        anchors.topMargin: 35
-        anchors.rightMargin: -5
-        spacing: 10
+        anchors.topMargin: style.nodeHeaderHeight
+        anchors.rightMargin: -style.portSize / 2 + 1
+        spacing: style.nodePortSpacing
         
         Repeater {
             id: outRepeater
             model: outPorts
             delegate: Rectangle {
                 id: outPortRect
-                width: 12; height: 12
-                radius: 6
+                width: style.portSize; height: style.portSize
+                radius: style.portSize / 2
                 property string portTypeId: graph.getPortTypeId(root.nodeId, 1, index)
                 property bool isCompatible: !graph.isDragging || 
                     (graph.activeConnectionStart && graph.activeConnectionStart.portType === 0 && 
                      graph.draftConnectionTypeId === portTypeId)
                 property bool isDimmed: graph.isDragging && !isCompatible
                 color: graph.getPortColor(portTypeId)
-                opacity: isDimmed ? 0.3 : 1.0
-                border.color: isCompatible && graph.isDragging ? "#ffffff" : "black"
-                border.width: isCompatible && graph.isDragging ? 2 : 1
+                opacity: isDimmed ? style.portDimmedOpacity : 1.0
+                border.color: isCompatible && graph.isDragging ? style.portHighlightBorder : style.portBorderColor
+                border.width: isCompatible && graph.isDragging ? style.portHighlightBorderWidth : style.portBorderWidth
                 
                 MouseArea {
                     anchors.fill: parent
@@ -253,7 +255,7 @@ Rectangle {
                     preventStealing: true
                     onEntered: {
                         if (!graph.isDragging) {
-                            parent.scale = 1.2
+                            parent.scale = style.portHoverScale
                             graph.setActivePort({nodeId: root.nodeId, portType: 1, portIndex: index})
                         }
                     }
@@ -268,7 +270,7 @@ Rectangle {
                         var ap = graph.activePort
                         return ap && ap.nodeId === root.nodeId && ap.portType === 1 && ap.portIndex === index
                     }
-                    onIsActiveChanged: parent.scale = isActive ? 1.4 : 1.0
+                    onIsActiveChanged: parent.scale = isActive ? style.portActiveScale : 1.0
                     
                     onPressed: (mouse) => {
                         var pos = mapToItem(graph.canvas, width/2, height/2)

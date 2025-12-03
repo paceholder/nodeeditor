@@ -11,17 +11,11 @@ Item {
     property var nodeItems: ({})
     property Component nodeContentDelegate // User provided content
     
-    // Port type colors mapping
-    property var portTypeColors: ({
-        "decimal": "#4CAF50",
-        "integer": "#2196F3", 
-        "string": "#FF9800",
-        "boolean": "#9C27B0",
-        "default": "#9E9E9E"
-    })
+    // Style - can be overridden by user
+    property NodeGraphStyle style: NodeGraphStyle {}
     
     function getPortColor(typeId) {
-        return portTypeColors[typeId] || portTypeColors["default"]
+        return style.getPortColor(typeId)
     }
     
     function getPortTypeId(nodeId, portType, portIndex) {
@@ -329,7 +323,7 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        color: "#2b2b2b"
+        color: style.canvasBackground
         clip: true
 
         // Input Handler for Pan/Zoom/Selection
@@ -440,9 +434,15 @@ Item {
              anchors.fill: parent
              property real zoom: root.zoomLevel
              property point offset: root.panOffset
+             property color minorColor: style.gridMinorLine
+             property color majorColor: style.gridMajorLine
+             property real minorSpacing: style.gridMinorSpacing
+             property real majorSpacing: style.gridMajorSpacing
              
              onZoomChanged: requestPaint()
              onOffsetChanged: requestPaint()
+             onMinorColorChanged: requestPaint()
+             onMajorColorChanged: requestPaint()
              
              onPaint: {
                  var ctx = getContext("2d")
@@ -450,8 +450,8 @@ Item {
                  
                  ctx.lineWidth = 1
                  
-                 var gridSize = 20 * zoom
-                 var majorGridSize = 100 * zoom
+                 var gridSize = minorSpacing * zoom
+                 var majorGridSize = majorSpacing * zoom
                  
                  var startX = (offset.x % gridSize)
                  var startY = (offset.y % gridSize)
@@ -460,7 +460,7 @@ Item {
                  if (startY < 0) startY += gridSize
                  
                  // Minor lines
-                 ctx.strokeStyle = "#353535"
+                 ctx.strokeStyle = minorColor
                  ctx.beginPath()
                  
                  // Vertical lines
@@ -478,7 +478,7 @@ Item {
                  ctx.stroke()
                  
                  // Major lines
-                 ctx.strokeStyle = "#151515"
+                 ctx.strokeStyle = majorColor
                  ctx.beginPath()
                  var mStartX = (offset.x % majorGridSize)
                  var mStartY = (offset.y % majorGridSize)
@@ -555,8 +555,8 @@ Item {
     Shape {
         visible: root.isDragging
         ShapePath {
-            strokeWidth: 2
-            strokeColor: "orange"
+            strokeWidth: style.draftConnectionWidth
+            strokeColor: style.draftConnectionColor
             fillColor: "transparent"
             startX: root.dragStart.x
             startY: root.dragStart.y
@@ -578,9 +578,9 @@ Item {
         y: Math.min(root.marqueeStart.y, root.marqueeEnd.y)
         width: Math.abs(root.marqueeEnd.x - root.marqueeStart.x)
         height: Math.abs(root.marqueeEnd.y - root.marqueeStart.y)
-        color: "#224a9eff"
-        border.color: "#4a9eff"
-        border.width: 1
+        color: style.selectionRectFill
+        border.color: style.selectionRectBorder
+        border.width: style.selectionRectBorderWidth
     }
     }
     }

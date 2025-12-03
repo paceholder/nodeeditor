@@ -3,5 +3,6 @@
         <file>qml/NodeGraph.qml</file>
         <file>qml/Node.qml</file>
         <file>qml/Connection.qml</file>
+        <file>qml/NodeGraphStyle.qml</file>
     </qresource>
 </RCC>

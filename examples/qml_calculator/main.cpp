@@ -60,6 +60,7 @@ int main(int argc, char *argv[])
     qmlRegisterType(QUrl("qrc:/QtNodes/QML/qml/NodeGraph.qml"), "QtNodes", 1, 0, "NodeGraph");
     qmlRegisterType(QUrl("qrc:/QtNodes/QML/qml/Node.qml"), "QtNodes", 1, 0, "Node");
     qmlRegisterType(QUrl("qrc:/QtNodes/QML/qml/Connection.qml"), "QtNodes", 1, 0, "Connection");
+    qmlRegisterType(QUrl("qrc:/QtNodes/QML/qml/NodeGraphStyle.qml"), "QtNodes", 1, 0, "NodeGraphStyle");
     
     auto registry = registerDataModels();
     auto graphModel = new QuickGraphModel();

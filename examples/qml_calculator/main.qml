@@ -10,7 +10,40 @@ Window {
     height: 800
     title: "QML Calculator - Extended"
 
-    property QuickGraphModel model: _graphModel 
+    property QuickGraphModel model: _graphModel
+    property bool darkTheme: true
+    
+    // Custom dark theme
+    NodeGraphStyle {
+        id: darkStyle
+        canvasBackground: "#1e1e1e"
+        gridMinorLine: "#2a2a2a"
+        gridMajorLine: "#0f0f0f"
+        nodeBackground: "#2d2d2d"
+        nodeBorder: "#1a1a1a"
+        nodeSelectedBorder: "#4a9eff"
+        nodeCaptionColor: "#eeeeee"
+        nodeContentColor: "#ffffff"
+        connectionSelectionOutline: "#4a9eff"
+        selectionRectFill: "#224a9eff"
+        selectionRectBorder: "#4a9eff"
+    }
+    
+    // Custom light theme
+    NodeGraphStyle {
+        id: lightStyle
+        canvasBackground: "#f5f5f5"
+        gridMinorLine: "#e0e0e0"
+        gridMajorLine: "#c0c0c0"
+        nodeBackground: "#ffffff"
+        nodeBorder: "#cccccc"
+        nodeSelectedBorder: "#2196F3"
+        nodeCaptionColor: "#333333"
+        nodeContentColor: "#333333"
+        connectionSelectionOutline: "#2196F3"
+        selectionRectFill: "#222196F3"
+        selectionRectBorder: "#2196F3"
+    }
     
     Column {
         anchors.fill: parent
@@ -19,16 +52,23 @@ Window {
         Rectangle {
             width: parent.width
             height: 50
-            color: "#3c3c3c"
+            color: darkTheme ? "#3c3c3c" : "#e0e0e0"
             
             RowLayout {
                 anchors.fill: parent
                 anchors.margins: 5
                 spacing: 10
                 
+                Button {
+                    text: darkTheme ? "☀ Light" : "🌙 Dark"
+                    onClicked: darkTheme = !darkTheme
+                }
+                
+                Rectangle { width: 1; height: 30; color: "#555" }
+                
                 Label { 
                     text: "Numbers:" 
-                    color: "#aaa"
+                    color: darkTheme ? "#aaa" : "#555"
                     font.bold: true
                 }
                 Button { 
@@ -37,11 +77,11 @@ Window {
                     palette.buttonText: "#4CAF50"
                 }
                 
-                Rectangle { width: 1; height: 30; color: "#555" }
+                Rectangle { width: 1; height: 30; color: darkTheme ? "#555" : "#bbb" }
                 
                 Label { 
                     text: "Math:" 
-                    color: "#aaa"
+                    color: darkTheme ? "#aaa" : "#555"
                     font.bold: true
                 }
                 Button { text: "Add"; onClicked: model.addNode("Addition") }
@@ -49,11 +89,11 @@ Window {
                 Button { text: "Multiply"; onClicked: model.addNode("Multiply") }
                 Button { text: "Divide"; onClicked: model.addNode("Divide") }
                 
-                Rectangle { width: 1; height: 30; color: "#555" }
+                Rectangle { width: 1; height: 30; color: darkTheme ? "#555" : "#bbb" }
                 
                 Label { 
                     text: "String:" 
-                    color: "#aaa"
+                    color: darkTheme ? "#aaa" : "#555"
                     font.bold: true
                 }
                 Button { 
@@ -67,11 +107,11 @@ Window {
                     palette.buttonText: "#FF9800"
                 }
                 
-                Rectangle { width: 1; height: 30; color: "#555" }
+                Rectangle { width: 1; height: 30; color: darkTheme ? "#555" : "#bbb" }
                 
                 Label { 
                     text: "Integer:" 
-                    color: "#aaa"
+                    color: darkTheme ? "#aaa" : "#555"
                     font.bold: true
                 }
                 Button { 
@@ -85,11 +125,11 @@ Window {
                     palette.buttonText: "#2196F3"
                 }
                 
-                Rectangle { width: 1; height: 30; color: "#555" }
+                Rectangle { width: 1; height: 30; color: darkTheme ? "#555" : "#bbb" }
                 
                 Label { 
                     text: "Logic:" 
-                    color: "#aaa"
+                    color: darkTheme ? "#aaa" : "#555"
                     font.bold: true
                 }
                 Button { 
@@ -98,11 +138,11 @@ Window {
                     palette.buttonText: "#9C27B0"
                 }
                 
-                Rectangle { width: 1; height: 30; color: "#555" }
+                Rectangle { width: 1; height: 30; color: darkTheme ? "#555" : "#bbb" }
                 
                 Label { 
                     text: "Display:" 
-                    color: "#aaa"
+                    color: darkTheme ? "#aaa" : "#555"
                     font.bold: true
                 }
                 Button { 
@@ -126,9 +166,11 @@ Window {
         }
         
         NodeGraph {
+            id: nodeGraph
             width: parent.width
             height: parent.height - 50
             graphModel: model
+            style: darkTheme ? darkStyle : lightStyle
             
             Component.onCompleted: {
                 // Create a demo graph: (5 + 3) * 2 = 16, formatted as text
@@ -172,6 +214,7 @@ Window {
                 Item {
                     property var delegateModel
                     property string nodeType
+                    property var contentColor: nodeGraph.style.nodeContentColor
                     
                     // NumberSource - editable number input
                     TextField {
@@ -205,7 +248,7 @@ Window {
                         anchors.centerIn: parent
                         visible: nodeType === "Addition"
                         text: "+"
-                        color: "white"
+                        color: contentColor
                         font.pixelSize: 36
                         font.bold: true
                     }
@@ -214,7 +257,7 @@ Window {
                         anchors.centerIn: parent
                         visible: nodeType === "Subtract"
                         text: "−"
-                        color: "white"
+                        color: contentColor
                         font.pixelSize: 36
                         font.bold: true
                     }
@@ -223,7 +266,7 @@ Window {
                         anchors.centerIn: parent
                         visible: nodeType === "Multiply"
                         text: "×"
-                        color: "white"
+                        color: contentColor
                         font.pixelSize: 36
                         font.bold: true
                     }
@@ -232,7 +275,7 @@ Window {
                         anchors.centerIn: parent
                         visible: nodeType === "Divide"
                         text: "÷"
-                        color: "white"
+                        color: contentColor
                         font.pixelSize: 36
                         font.bold: true
                     }

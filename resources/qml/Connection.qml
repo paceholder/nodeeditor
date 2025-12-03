@@ -4,6 +4,7 @@ import QtQuick.Shapes 1.15
 Item {
     id: root
     property var graph
+    property var style: graph ? graph.style : null
     
     property int sourceNodeId: -1
     property int sourcePortIndex: -1
@@ -140,8 +141,8 @@ Item {
         visible: root.selected
         
         ShapePath {
-            strokeWidth: 7
-            strokeColor: "#4a9eff"
+            strokeWidth: style.connectionSelectionOutlineWidth
+            strokeColor: style.connectionSelectionOutline
             fillColor: "transparent"
             
             startX: root.startPos.x
@@ -163,7 +164,7 @@ Item {
         anchors.fill: parent
         
         ShapePath {
-            strokeWidth: root.hovered ? 3.5 : 3
+            strokeWidth: root.hovered ? style.connectionHoverWidth : style.connectionWidth
             strokeColor: root.hovered ? Qt.lighter(root.lineColor, 1.3) : root.lineColor
             fillColor: "transparent"
             
