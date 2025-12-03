@@ -47,6 +47,23 @@ Rectangle {
         }
     }
     
+    // Separate handler for pointer press to handle selection on mouse down
+    PointHandler {
+        id: pointHandler
+        acceptedButtons: Qt.LeftButton
+        onActiveChanged: {
+            if (active) {
+                graph.forceActiveFocus()
+                var additive = (point.modifiers & Qt.ControlModifier)
+                if (additive) {
+                    graph.toggleNodeSelection(nodeId)
+                } else if (!root.selected) {
+                    graph.selectNode(nodeId, false)
+                }
+            }
+        }
+    }
+    
     DragHandler {
         id: dragHandler
         target: root
@@ -56,17 +73,11 @@ Rectangle {
         
         onActiveChanged: {
             if (active) {
-                graph.forceActiveFocus()
                 graph.bringToFront(root)
                 lastPos = Qt.point(root.x, root.y)
                 
                 // If this node is selected and there are multiple selections, enable group drag
                 isDraggingGroup = root.selected && Object.keys(graph.selectedNodeIds).length > 1
-                
-                // If not selected, select only this node
-                if (!root.selected) {
-                    graph.selectNode(nodeId, false)
-                }
             }
         }
         
