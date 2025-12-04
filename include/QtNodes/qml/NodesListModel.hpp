@@ -4,12 +4,13 @@
 #include <QtCore/QPointF>
 #include <vector>
 #include "QtNodes/internal/Definitions.hpp"
+#include "QtNodes/internal/Export.hpp"
 
 namespace QtNodes {
 
 class AbstractGraphModel;
 
-class NodesListModel : public QAbstractListModel
+class NODE_EDITOR_PUBLIC NodesListModel : public QAbstractListModel
 {
     Q_OBJECT
 public:

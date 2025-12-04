@@ -5,6 +5,7 @@
 
 #include "NodesListModel.hpp"
 #include "ConnectionsListModel.hpp"
+#include "QtNodes/internal/Export.hpp"
 
 class QUndoStack;
 
@@ -13,7 +14,7 @@ namespace QtNodes {
 class DataFlowGraphModel;
 class NodeDelegateModelRegistry;
 
-class QuickGraphModel : public QObject
+class NODE_EDITOR_PUBLIC QuickGraphModel : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QtNodes::NodesListModel* nodes READ nodes CONSTANT)

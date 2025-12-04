@@ -3,12 +3,13 @@
 #include <QtCore/QAbstractListModel>
 #include <vector>
 #include "QtNodes/internal/Definitions.hpp"
+#include "QtNodes/internal/Export.hpp"
 
 namespace QtNodes {
 
 class AbstractGraphModel;
 
-class ConnectionsListModel : public QAbstractListModel
+class NODE_EDITOR_PUBLIC ConnectionsListModel : public QAbstractListModel
 {
     Q_OBJECT
 public:
