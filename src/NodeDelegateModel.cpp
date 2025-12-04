@@ -24,7 +24,7 @@ void NodeDelegateModel::load(QJsonObject const &)
     //
 }
 
-void NodeDelegateModel::setValidatonState(const NodeValidationState &validationState)
+void NodeDelegateModel::setValidationState(const NodeValidationState &validationState)
 {
     _nodeValidationState = validationState;
 }
@@ -54,6 +54,16 @@ NodeStyle const &NodeDelegateModel::nodeStyle() const
 void NodeDelegateModel::setNodeStyle(NodeStyle const &style)
 {
     _nodeStyle = style;
+}
+
+void NodeDelegateModel::setNodeProcessingStatus(NodeProcessingStatus status)
+{
+    _processingStatus = status;
+}
+
+void NodeDelegateModel::setBackgroundColor(QColor const &color)
+{
+    _nodeStyle.setBackgroundColor(color);
 }
 
 } // namespace QtNodes

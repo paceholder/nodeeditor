@@ -157,3 +157,16 @@ QJsonObject NodeStyle::toJson() const
 
     return root;
 }
+
+void NodeStyle::setBackgroundColor(QColor const &color)
+{
+    GradientColor0 = color;
+    GradientColor1 = color;
+    GradientColor2 = color;
+    GradientColor3 = color;
+}
+
+QColor NodeStyle::backgroundColor() const
+{
+    return GradientColor0;
+}

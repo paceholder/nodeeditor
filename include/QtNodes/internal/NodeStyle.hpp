@@ -26,6 +26,12 @@ public:
 
     QJsonObject toJson() const override;
 
+    /// Set uniform background color for the node.
+    void setBackgroundColor(QColor const &color);
+
+    /// Current uniform background color.
+    QColor backgroundColor() const;
+
 public:
     QColor NormalBoundaryColor;
     QColor SelectedBoundaryColor;
