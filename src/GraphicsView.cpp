@@ -170,7 +170,7 @@ void GraphicsView::contextMenuEvent(QContextMenuEvent *event)
     QMenu *menu;
 
     if (itemAt(event->pos())) {
-        menu = nodeScene()->createFreezeMenu(mapToScene(event->pos()));
+        menu = nodeScene()->createFreezeMenu();
     } else {
         menu = nodeScene()->createSceneMenu(mapToScene(event->pos()));
     }
