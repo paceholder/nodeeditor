@@ -234,7 +234,7 @@ QMenu *BasicGraphicsScene::createFreezeMenu(QPointF const scenePos)
 
     treeView->expandAll();
 
-    connect(treeView, &QTreeWidget::itemClicked, [this, menu, scenePos](QTreeWidgetItem *item, int) {
+    connect(treeView, &QTreeWidget::itemClicked, [this, menu](QTreeWidgetItem *item, int) {
         if (item->text(0) == "Freeze") {
             freezeModelAndConnections(true);
 
@@ -394,8 +394,7 @@ void BasicGraphicsScene::freezeModelAndConnections(bool isFreeze)
 {
     for (QGraphicsItem *item : selectedItems()) {
         if (auto n = qgraphicsitem_cast<NodeGraphicsObject *>(item)) {
-            unsigned int portCount
-                = graphModel().nodeData(n->nodeId(), NodeRole::OutPortCount).toUInt();
+            int portCount = graphModel().nodeData(n->nodeId(), NodeRole::OutPortCount).toInt();
             for (int i = 0; i < portCount; i++) {
                 auto graphConnections = graphModel().connections(n->nodeId(),
                                                                  QtNodes::PortType::Out,
