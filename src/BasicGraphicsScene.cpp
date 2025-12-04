@@ -204,7 +204,7 @@ QMenu *BasicGraphicsScene::createSceneMenu(QPointF const scenePos)
     return nullptr;
 }
 
-QMenu *BasicGraphicsScene::createFreezeMenu(QPointF const scenePos)
+QMenu *BasicGraphicsScene::createFreezeMenu()
 {
     QMenu *menu = new QMenu();
 
