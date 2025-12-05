@@ -19,6 +19,7 @@ public:
     RandomNumberModel() {
         this->setNodeProcessingStatus(QtNodes::NodeProcessingStatus::Empty);
 
+
         QObject::connect(this, &NodeDelegateModel::computingStarted, this, [this]() {
             this->setNodeProcessingStatus(
                 QtNodes::NodeProcessingStatus::Processing);
