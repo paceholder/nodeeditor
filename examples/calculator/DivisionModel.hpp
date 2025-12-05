@@ -59,23 +59,23 @@ private:
         if (n2 && (n2->number() == 0.0)) {
             state._state = QtNodes::NodeValidationState::State::Error;
             state._stateMessage = QStringLiteral("Division by zero error");
-            setValidatonState(state);
+            setValidationState(state);
             _result.reset();
         } else if ( n2 && (n2->number() < 1e-5)) {
             state._state = QtNodes::NodeValidationState::State::Warning;
             state._stateMessage = QStringLiteral("Very small divident. Result might overflow");
-            setValidatonState(state);
+            setValidationState(state);
             if (n1) {
                 _result = std::make_shared<DecimalData>(n1->number() / n2->number());
             } else {
                 _result.reset();
             }
         } else if (n1 && n2) {
-            setValidatonState(state);
+            setValidationState(state);
             _result = std::make_shared<DecimalData>(n1->number() / n2->number());
         } else {
             QtNodes::NodeValidationState state;
-            setValidatonState(state);
+            setValidationState(state);
             _result.reset();
         }
 

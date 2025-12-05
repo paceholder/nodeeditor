@@ -2,5 +2,11 @@
     <qresource prefix="/">
         <file>DefaultStyle.json</file>
         <file>info-tooltip.svg</file>
+        <file>status_icons/empty.svg</file>
+        <file>status_icons/failed.svg</file>
+        <file>status_icons/partial.svg</file>
+        <file>status_icons/pending.svg</file>
+        <file>status_icons/processing.svg</file>
+        <file>status_icons/updated.svg</file> 
     </qresource>
 </RCC>
