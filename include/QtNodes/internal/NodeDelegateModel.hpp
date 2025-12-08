@@ -4,6 +4,7 @@
 
 #include <QMetaType>
 #include <QPixmap>
+#include <QtGui/QColor>
 #include <QtWidgets/QWidget>
 
 #include "Definitions.hpp"
@@ -102,6 +103,9 @@ public:
     NodeStyle const &nodeStyle() const;
 
     void setNodeStyle(NodeStyle const &style);
+
+    /// Convenience helper to change the node background color.
+    void setBackgroundColor(QColor const &color);
 
     QPixmap processingStatusIcon() const;
 
