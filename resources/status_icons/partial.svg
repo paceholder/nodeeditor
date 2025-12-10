@@ -1,4 +1,7 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> a973ef0 (pull new node_processing_status and solve conflicts)
 <?xml version="1.0" encoding="UTF-8"?>
 <svg id="Layer_1" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 128 128">
   <!-- Generator: Adobe Illustrator 29.8.3, SVG Export Plug-In . SVG Version: 2.1.1 Build 3)  -->
@@ -40,6 +43,7 @@
   <rect class="st1" x="95.05" y="86.29" width="8.06" height="8.06"/>
   <rect class="st1" x="80.93" y="86.27" width="8.06" height="8.06"/>
   <rect class="st1" x="109.17" y="86.28" width="8.06" height="8.06"/>
+<<<<<<< HEAD
 </svg>
 =======
 <?xml version="1.0" encoding="utf-8"?>
@@ -69,3 +73,6 @@
 <rect x="331.6" y="252.8" transform="matrix(-1.836970e-16 1 -1 -1.836970e-16 609.3203 -78.7791)" class="st2" width="24.9" height="24.9"/>
 </svg>
 >>>>>>> 5d30a5d (solve conflicts)
+=======
+</svg>
+>>>>>>> a973ef0 (pull new node_processing_status and solve conflicts)

@@ -9,9 +9,7 @@
 NumberSourceDataModel::NumberSourceDataModel()
     : _lineEdit{nullptr}
     , _number(std::make_shared<DecimalData>(0.0))
-{
-    this->setNodeProcessingStatus(QtNodes::NodeProcessingStatus::NoStatus);
-}
+{}
 
 QJsonObject NumberSourceDataModel::save() const
 {

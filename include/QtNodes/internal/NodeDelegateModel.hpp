@@ -121,6 +121,12 @@ public:
     /// Convenience helper to change the node background color.
     void setBackgroundColor(QColor const &color);
 
+    QPixmap processingStatusIcon() const;
+
+    void setStatusIcon(NodeProcessingStatus status, const QPixmap &pixmap);
+
+    void setStatusIconStyle(ProcessingIconStyle const &style);
+
 public:
     virtual void setInData(std::shared_ptr<NodeData> nodeData, PortIndex const portIndex) = 0;
 
