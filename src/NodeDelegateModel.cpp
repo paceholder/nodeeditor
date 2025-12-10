@@ -24,6 +24,11 @@ void NodeDelegateModel::load(QJsonObject const &)
     //
 }
 
+void NodeDelegateModel::setValidationState(const NodeValidationState &validationState)
+{
+    _nodeValidationState = validationState;
+}
+
 ConnectionPolicy NodeDelegateModel::portConnectionPolicy(PortType portType, PortIndex) const
 {
     auto result = ConnectionPolicy::One;
@@ -108,6 +113,11 @@ void NodeDelegateModel::setStatusIconStyle(const ProcessingIconStyle &style)
 void NodeDelegateModel::setNodeProcessingStatus(NodeProcessingStatus status)
 {
     _processingStatus = status;
+}
+
+void NodeDelegateModel::setBackgroundColor(QColor const &color)
+{
+    _nodeStyle.setBackgroundColor(color);
 }
 
 } // namespace QtNodes

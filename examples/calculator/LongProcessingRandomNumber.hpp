@@ -4,7 +4,7 @@
 #include <QTimer>
 #include <QtCore/QObject>
 #include <QtWidgets/QLabel>
-#include <random>
+#include <QtCore/QRandomGenerator64>
 
 #include "MathOperationDataModel.hpp"
 #include "DecimalData.hpp"
@@ -17,7 +17,6 @@ class RandomNumberModel : public MathOperationDataModel
 public:
     RandomNumberModel() {
         this->setNodeProcessingStatus(QtNodes::NodeProcessingStatus::Empty);
-
 
         QObject::connect(this, &NodeDelegateModel::computingStarted, this, [this]() {
             if (_number1.lock() && _number2.lock()) {
@@ -34,7 +33,6 @@ public:
             emit requestNodeUpdate();
         });
     }
-
     virtual ~RandomNumberModel() {}
 
 public:
@@ -42,11 +40,10 @@ public:
 
     QString name() const override { return QStringLiteral("Random Number"); }
 
-    bool labelEditable() const override { return true; }
-
 private:
     void compute() override
     {
+        Q_EMIT computingStarted();
         PortIndex const outPortIndex = 0;
 
         auto n1 = _number1.lock();
@@ -62,17 +59,18 @@ private:
                     double a = n1->number();
                     double b = n2->number();
 
-                    double minVal = std::min(a, b);
-                    double maxVal = std::max(a, b);
+                    if (a > b) {
+                        setNodeProcessingStatus(QtNodes::NodeProcessingStatus::Failed);
 
-                    std::random_device rd;
-                    std::mt19937 gen(rd());
+                        emit requestNodeUpdate();
+                        return;
+                    }
 
-                    std::uniform_real_distribution<double> dist(minVal, maxVal);
-
-                    double randomValue = dist(gen);
+                    double upper = std::nextafter(b, std::numeric_limits<double>::max());
+                    double randomValue = QRandomGenerator::global()->generateDouble() * (upper - a) + a;
 
                     _result = std::make_shared<DecimalData>(randomValue);
+                    Q_EMIT computingFinished();
                 } else {
                     _result.reset();
                 }

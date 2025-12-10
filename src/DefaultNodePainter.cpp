@@ -5,6 +5,8 @@
 #include "BasicGraphicsScene.hpp"
 #include "ConnectionGraphicsObject.hpp"
 #include "ConnectionIdUtils.hpp"
+#include "DataFlowGraphModel.hpp"
+#include "NodeDelegateModel.hpp"
 #include "NodeGraphicsObject.hpp"
 #include "NodeState.hpp"
 #include "StyleCollection.hpp"
@@ -30,6 +32,8 @@ void DefaultNodePainter::paint(QPainter *painter, NodeGraphicsObject &ngo) const
     drawNodeCaption(painter, ngo);
 
     drawEntryLabels(painter, ngo);
+
+    drawProcessingIndicator(painter, ngo);
 
     drawResizeRect(painter, ngo);
 

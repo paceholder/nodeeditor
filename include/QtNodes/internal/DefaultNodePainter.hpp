@@ -32,5 +32,12 @@ public:
     void drawEntryLabels(QPainter *painter, NodeGraphicsObject &ngo) const;
 
     void drawResizeRect(QPainter *painter, NodeGraphicsObject &ngo) const;
+
+    void drawProcessingIndicator(QPainter *painter, NodeGraphicsObject &ngo) const;
+
+    void drawValidationIcon(QPainter *painter, NodeGraphicsObject &ngo) const;
+
+private:
+    QIcon _toolTipIcon{"://info-tooltip.svg"};
 };
 } // namespace QtNodes

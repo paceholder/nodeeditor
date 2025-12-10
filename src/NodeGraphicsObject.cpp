@@ -389,8 +389,6 @@ void NodeGraphicsObject::updateStatusIconSize() const
 
 QRect NodeGraphicsObject::statusIconRect() const
 {
-    QVariant var = _graphModel.nodeData(_nodeId, NodeRole::ProcessingStatus);
-
     auto iconPos = QPoint{-statusIconSize().width() / 2, 0};
 
     return QRect{iconPos, statusIconSize()};
