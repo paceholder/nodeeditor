@@ -190,4 +190,15 @@ bool DataFlowGraphicsScene::load()
     return true;
 }
 
+void DataFlowGraphicsScene::updateConnectionGraphics(
+    const std::unordered_set<ConnectionId> &connections, bool state)
+{
+    for (auto const &c : connections) {
+        if (auto *cgo = connectionGraphicsObject(c)) {
+            cgo->connectionState().setFrozen(state);
+            cgo->update();
+        }
+    }
+}
+
 } // namespace QtNodes

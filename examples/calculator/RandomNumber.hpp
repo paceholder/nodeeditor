@@ -15,6 +15,10 @@
 class RandomNumberModel : public MathOperationDataModel
 {
 public:
+    RandomNumberModel() {
+        setFrozenMenu(true);
+    }
+
     virtual ~RandomNumberModel() {}
 
 public:

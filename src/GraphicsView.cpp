@@ -2,6 +2,8 @@
 
 #include "BasicGraphicsScene.hpp"
 #include "ConnectionGraphicsObject.hpp"
+#include "DataFlowGraphModel.hpp"
+#include "NodeDelegateModel.hpp"
 #include "NodeGraphicsObject.hpp"
 #include "StyleCollection.hpp"
 #include "UndoCommands.hpp"
@@ -23,7 +25,10 @@
 #include <cmath>
 
 using QtNodes::BasicGraphicsScene;
+using QtNodes::DataFlowGraphModel;
 using QtNodes::GraphicsView;
+using QtNodes::NodeDelegateModel;
+using QtNodes::NodeGraphicsObject;
 
 GraphicsView::GraphicsView(QWidget *parent)
     : QGraphicsView(parent)
@@ -167,11 +172,21 @@ void GraphicsView::centerScene()
 void GraphicsView::contextMenuEvent(QContextMenuEvent *event)
 {
     QGraphicsView::contextMenuEvent(event);
-    QMenu *menu;
+    QMenu *menu = nullptr;
 
-    if (itemAt(event->pos())) {
+    bool isFrozenMenu;
+
+    if (auto *dfModel = dynamic_cast<DataFlowGraphModel *>(&nodeScene()->graphModel())) {
+        if (auto n = qgraphicsitem_cast<NodeGraphicsObject *>(itemAt(event->pos()))) {
+            if (auto *delegate = dfModel->delegateModel<NodeDelegateModel>(n->nodeId())) {
+                isFrozenMenu = delegate->frozenMenu();
+            }
+        }
+    }
+
+    if (itemAt(event->pos()) && isFrozenMenu) {
         menu = nodeScene()->createFreezeMenu();
-    } else {
+    } else if (!itemAt(event->pos())) {
         menu = nodeScene()->createSceneMenu(mapToScene(event->pos()));
     }
 
