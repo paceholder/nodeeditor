@@ -41,11 +41,17 @@ Rectangle {
     TapHandler {
         onTapped: (eventPoint, button) => {
             graph.forceActiveFocus()
-            var additive = (eventPoint.event.modifiers & Qt.ControlModifier)
+            var additive = eventPoint && eventPoint.event ? (eventPoint.event.modifiers & Qt.ControlModifier) : false
             if (additive) {
                 graph.toggleNodeSelection(nodeId)
             } else {
                 graph.selectNode(nodeId, false)
+            }
+        }
+        onDoubleTapped: (eventPoint, button) => {
+            // Emit signal for node configuration
+            if (graph && graph.nodeDoubleClicked) {
+                graph.nodeDoubleClicked(nodeId, nodeType, delegateModel)
             }
         }
     }

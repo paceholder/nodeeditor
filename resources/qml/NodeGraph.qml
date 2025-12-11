@@ -29,6 +29,7 @@ Item {
     }
     
     signal nodeRegistryChanged()
+    signal nodeDoubleClicked(int nodeId, string nodeType, var delegateModel)
 
     // Zoom and Pan
     property real zoomLevel: 1.0
