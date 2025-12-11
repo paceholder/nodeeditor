@@ -63,51 +63,48 @@ NodeId DataFlowGraphModel::addNode(QString const nodeType)
 {
     std::unique_ptr<NodeDelegateModel> model = _registry->create(nodeType);
 
-    if (model) {
-        NodeId newId = newNodeId();
+    if (!model)
+        return InvalidNodeId;
 
-        connect(model.get(),
-                &NodeDelegateModel::dataUpdated,
-                [newId, this](PortIndex const portIndex) {
-                    onOutPortDataUpdated(newId, portIndex);
-                });
+    NodeId newId = newNodeId();
 
-        connect(model.get(),
-                &NodeDelegateModel::portsAboutToBeDeleted,
-                this,
-                [newId, this](PortType const portType, PortIndex const first, PortIndex const last) {
-                    portsAboutToBeDeleted(newId, portType, first, last);
-                });
+    connect(model.get(), &NodeDelegateModel::dataUpdated, [newId, this](PortIndex const portIndex) {
+        onOutPortDataUpdated(newId, portIndex);
+    });
 
-        connect(model.get(),
-                &NodeDelegateModel::portsDeleted,
-                this,
-                &DataFlowGraphModel::portsDeleted);
+    connect(model.get(),
+            &NodeDelegateModel::portsAboutToBeDeleted,
+            this,
+            [newId, this](PortType const portType, PortIndex const first, PortIndex const last) {
+                portsAboutToBeDeleted(newId, portType, first, last);
+            });
 
-        connect(model.get(),
-                &NodeDelegateModel::portsAboutToBeInserted,
-                this,
-                [newId, this](PortType const portType, PortIndex const first, PortIndex const last) {
-                    portsAboutToBeInserted(newId, portType, first, last);
-                });
+    connect(model.get(), &NodeDelegateModel::portsDeleted, this, &DataFlowGraphModel::portsDeleted);
 
-        connect(model.get(),
-                &NodeDelegateModel::portsInserted,
-                this,
-                &DataFlowGraphModel::portsInserted);
+    connect(model.get(),
+            &NodeDelegateModel::portsAboutToBeInserted,
+            this,
+            [newId, this](PortType const portType, PortIndex const first, PortIndex const last) {
+                portsAboutToBeInserted(newId, portType, first, last);
+            });
 
-        connect(model.get(), &NodeDelegateModel::requestNodeUpdate, this, [newId, this]() {
-            Q_EMIT nodeUpdated(newId);
-        });
+    connect(model.get(),
+            &NodeDelegateModel::portsInserted,
+            this,
+            &DataFlowGraphModel::portsInserted);
 
-        _models[newId] = std::move(model);
+    connect(model.get(), &NodeDelegateModel::requestNodeUpdate, this, [newId, this]() {
+        Q_EMIT nodeUpdated(newId);
+    });
 
-        Q_EMIT nodeCreated(newId);
+    _models[newId] = std::move(model);
 
-        return newId;
-    }
+    _labels[newId] = _models[newId]->label();
+    _labelsVisible[newId] = _models[newId]->labelVisible();
 
-    return InvalidNodeId;
+    Q_EMIT nodeCreated(newId);
+
+    return newId;
 }
 
 bool DataFlowGraphModel::connectionPossible(ConnectionId const connectionId) const
@@ -299,6 +296,18 @@ QVariant DataFlowGraphModel::nodeData(NodeId nodeId, NodeRole role) const
         result = QVariant::fromValue(validationState);
     } break;
 
+    case NodeRole::LabelVisible:
+        result = _labelsVisible.at(nodeId);
+        break;
+
+    case NodeRole::Label:
+        result = _labels.at(nodeId);
+        break;
+
+    case NodeRole::LabelEditable:
+        result = model->labelEditable();
+        break;
+
     case NodeRole::ProcessingStatus: {
         auto processingStatus = model->processingStatus();
         result = QVariant::fromValue(processingStatus);
@@ -382,6 +391,21 @@ bool DataFlowGraphModel::setNodeData(NodeId nodeId, NodeRole role, QVariant valu
         }
         Q_EMIT nodeUpdated(nodeId);
     } break;
+
+    case NodeRole::LabelVisible: {
+        _labelsVisible[nodeId] = value.toBool();
+        Q_EMIT nodeUpdated(nodeId);
+        result = true;
+    } break;
+
+    case NodeRole::Label: {
+        _labels[nodeId] = value.toString();
+        Q_EMIT nodeUpdated(nodeId);
+        result = true;
+    } break;
+
+    case NodeRole::LabelEditable:
+        break;
     }
 
     return result;
@@ -489,6 +513,8 @@ bool DataFlowGraphModel::deleteNode(NodeId const nodeId)
     }
 
     _nodeGeometryData.erase(nodeId);
+    _labels.erase(nodeId);
+    _labelsVisible.erase(nodeId);
     _models.erase(nodeId);
 
     Q_EMIT nodeDeleted(nodeId);
@@ -503,6 +529,9 @@ QJsonObject DataFlowGraphModel::saveNode(NodeId const nodeId) const
     nodeJson["id"] = static_cast<qint64>(nodeId);
 
     nodeJson["internal-data"] = _models.at(nodeId)->save();
+
+    nodeJson["label"] = _labels.at(nodeId);
+    nodeJson["labelVisible"] = _labelsVisible.at(nodeId);
 
     {
         QPointF const pos = nodeData(nodeId, NodeRole::Position).value<QPointF>();
@@ -599,7 +628,13 @@ void DataFlowGraphModel::loadNode(QJsonObject const &nodeJson)
 
         setNodeData(restoredNodeId, NodeRole::Position, pos);
 
-        _models[restoredNodeId]->load(internalDataJson);
+        auto *restoredModel = _models[restoredNodeId].get();
+        _labels[restoredNodeId] = nodeJson["label"].toString(restoredModel->label());
+        _labelsVisible[restoredNodeId] = nodeJson.contains("labelVisible")
+                                             ? nodeJson["labelVisible"].toBool()
+                                             : restoredModel->labelVisible();
+
+        restoredModel->load(internalDataJson);
     } else {
         throw std::logic_error(std::string("No registered model with name ")
                                + delegateModelName.toLocal8Bit().data());

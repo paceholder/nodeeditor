@@ -1,26 +1,42 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 25.0.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 viewBox="0 0 384 384" style="enable-background:new 0 0 384 384;" xml:space="preserve">
-<style type="text/css">
-	.st0{fill:#FFFFFF;}
-	.st1{opacity:0.8;fill:#FFFFFF;}
-	.st2{opacity:0.6;fill:#FFFFFF;}
-	.st3{opacity:0.4;fill:#FFFFFF;}
-</style>
-<rect x="163.4" y="-137.9" transform="matrix(-1.836970e-16 1 -1 -1.836970e-16 237.4589 -146.5411)" class="st0" width="57.2" height="366.7"/>
-<rect x="163.4" y="-64.6" transform="matrix(-1.836970e-16 1 -1 -1.836970e-16 310.7294 -73.2706)" class="st1" width="57.2" height="366.7"/>
-<rect x="163.4" y="8.6" transform="matrix(-1.836970e-16 1 -1 -1.836970e-16 384 2.842171e-14)" class="st2" width="57.2" height="366.7"/>
-<rect x="88.5" y="156.8" transform="matrix(-1.836970e-16 1 -1 -1.836970e-16 382.3869 148.1543)" class="st3" width="57.2" height="216.9"/>
-<rect x="200.7" y="326.1" transform="matrix(-1.836970e-16 1 -1 -1.836970e-16 551.6876 125.3947)" class="st2" width="24.9" height="24.9"/>
-<rect x="26.2" y="326.1" transform="matrix(-1.836970e-16 1 -1 -1.836970e-16 377.1498 299.9324)" class="st2" width="24.9" height="24.9"/>
-<rect x="69.8" y="326.1" transform="matrix(-1.836970e-16 1 -1 -1.836970e-16 420.7843 256.298)" class="st2" width="24.9" height="24.9"/>
-<rect x="113.4" y="326.1" transform="matrix(-1.836970e-16 1 -1 -1.836970e-16 464.4187 212.6636)" class="st2" width="24.9" height="24.9"/>
-<rect x="157.1" y="326.1" transform="matrix(-1.836970e-16 1 -1 -1.836970e-16 508.0531 169.0292)" class="st2" width="24.9" height="24.9"/>
-<rect x="244.3" y="326.1" transform="matrix(-1.836970e-16 1 -1 -1.836970e-16 595.322 81.7603)" class="st2" width="24.9" height="24.9"/>
-<rect x="288" y="326.1" transform="matrix(-1.836970e-16 1 -1 -1.836970e-16 638.9564 38.1259)" class="st2" width="24.9" height="24.9"/>
-<rect x="331.6" y="326.1" transform="matrix(-1.836970e-16 1 -1 -1.836970e-16 682.5908 -5.5085)" class="st2" width="24.9" height="24.9"/>
-<rect x="288" y="252.8" transform="matrix(-1.836970e-16 1 -1 -1.836970e-16 565.6859 -35.1447)" class="st2" width="24.9" height="24.9"/>
-<rect x="244.3" y="252.8" transform="matrix(-1.836970e-16 1 -1 -1.836970e-16 522.0514 8.4897)" class="st2" width="24.9" height="24.9"/>
-<rect x="331.6" y="252.8" transform="matrix(-1.836970e-16 1 -1 -1.836970e-16 609.3203 -78.7791)" class="st2" width="24.9" height="24.9"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 128 128">
+  <!-- Generator: Adobe Illustrator 29.8.3, SVG Export Plug-In . SVG Version: 2.1.1 Build 3)  -->
+  <defs>
+    <style>
+      .st0, .st1, .st2, .st3 {
+        fill: #fff;
+      }
+
+      .st1 {
+        opacity: .6;
+      }
+
+      .st1, .st2, .st3 {
+        isolation: isolate;
+      }
+
+      .st2 {
+        opacity: .4;
+      }
+
+      .st3 {
+        opacity: .8;
+      }
+    </style>
+  </defs>
+  <rect class="st0" x="4.68" y="9.94" width="118.64" height="18.51"/>
+  <rect class="st3" x="4.67" y="33.65" width="118.64" height="18.51"/>
+  <rect class="st1" x="4.69" y="57.35" width="118.64" height="18.51"/>
+  <rect class="st2" x="4.69" y="81.05" width="70.17" height="18.51"/>
+  <rect class="st1" x="66.81" y="109.99" width="8.06" height="8.06"/>
+  <rect class="st1" x="10.34" y="110" width="8.06" height="8.06"/>
+  <rect class="st1" x="24.46" y="109.99" width="8.06" height="8.06"/>
+  <rect class="st1" x="38.57" y="109.98" width="8.06" height="8.06"/>
+  <rect class="st1" x="52.69" y="110" width="8.06" height="8.06"/>
+  <rect class="st1" x="80.92" y="109.98" width="8.06" height="8.06"/>
+  <rect class="st1" x="95.04" y="110" width="8.06" height="8.06"/>
+  <rect class="st1" x="109.16" y="109.99" width="8.06" height="8.06"/>
+  <rect class="st1" x="95.05" y="86.29" width="8.06" height="8.06"/>
+  <rect class="st1" x="80.93" y="86.27" width="8.06" height="8.06"/>
+  <rect class="st1" x="109.17" y="86.28" width="8.06" height="8.06"/>
 </svg>
