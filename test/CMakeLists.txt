@@ -4,8 +4,6 @@ else()
   find_package(Qt5 COMPONENTS Test)
 endif()
 
-find_package(Catch2)
-
 add_executable(test_nodes
   test_main.cpp
   src/TestAbstractGraphModel.cpp
