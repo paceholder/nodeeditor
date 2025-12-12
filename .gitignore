@@ -1,6 +1,6 @@
 *.pyc
 CMakeLists.txt.user
-
+.idea
 build*/
 .vscode/
 
