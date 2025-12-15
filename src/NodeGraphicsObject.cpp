@@ -63,8 +63,6 @@ NodeGraphicsObject::NodeGraphicsObject(BasicGraphicsScene &scene, NodeId nodeId)
         if (_nodeId == nodeId)
             setLockedState();
     });
-
-    QVariant var = _graphModel.nodeData(_nodeId, NodeRole::ProcessingStatus);
 }
 
 AbstractGraphModel &NodeGraphicsObject::graphModel() const
@@ -177,10 +175,6 @@ QVariant NodeGraphicsObject::itemChange(GraphicsItemChange change, const QVarian
 
 void NodeGraphicsObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    if (graphModel().nodeFlags(_nodeId) & NodeFlag::Locked) {
-        return;
-    }
-
     AbstractNodeGeometry &geometry = nodeScene()->nodeGeometry();
 
     for (PortType portToCheck : {PortType::In, PortType::Out}) {

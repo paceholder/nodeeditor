@@ -63,48 +63,54 @@ NodeId DataFlowGraphModel::addNode(QString const nodeType)
 {
     std::unique_ptr<NodeDelegateModel> model = _registry->create(nodeType);
 
-    if (!model)
-        return InvalidNodeId;
+    if (model) {
+        NodeId newId = newNodeId();
 
-    NodeId newId = newNodeId();
+        connect(model.get(),
+                &NodeDelegateModel::dataUpdated,
+                [newId, this](PortIndex const portIndex) {
+                    onOutPortDataUpdated(newId, portIndex);
+                });
 
-    connect(model.get(), &NodeDelegateModel::dataUpdated, [newId, this](PortIndex const portIndex) {
-        onOutPortDataUpdated(newId, portIndex);
-    });
+        connect(model.get(),
+                &NodeDelegateModel::portsAboutToBeDeleted,
+                this,
+                [newId, this](PortType const portType, PortIndex const first, PortIndex const last) {
+                    portsAboutToBeDeleted(newId, portType, first, last);
+                });
 
-    connect(model.get(),
-            &NodeDelegateModel::portsAboutToBeDeleted,
-            this,
-            [newId, this](PortType const portType, PortIndex const first, PortIndex const last) {
-                portsAboutToBeDeleted(newId, portType, first, last);
-            });
+        connect(model.get(),
+                &NodeDelegateModel::portsDeleted,
+                this,
+                &DataFlowGraphModel::portsDeleted);
 
-    connect(model.get(), &NodeDelegateModel::portsDeleted, this, &DataFlowGraphModel::portsDeleted);
+        connect(model.get(),
+                &NodeDelegateModel::portsAboutToBeInserted,
+                this,
+                [newId, this](PortType const portType, PortIndex const first, PortIndex const last) {
+                    portsAboutToBeInserted(newId, portType, first, last);
+                });
 
-    connect(model.get(),
-            &NodeDelegateModel::portsAboutToBeInserted,
-            this,
-            [newId, this](PortType const portType, PortIndex const first, PortIndex const last) {
-                portsAboutToBeInserted(newId, portType, first, last);
-            });
+        connect(model.get(),
+                &NodeDelegateModel::portsInserted,
+                this,
+                &DataFlowGraphModel::portsInserted);
 
-    connect(model.get(),
-            &NodeDelegateModel::portsInserted,
-            this,
-            &DataFlowGraphModel::portsInserted);
+        connect(model.get(), &NodeDelegateModel::requestNodeUpdate, this, [newId, this]() {
+            Q_EMIT nodeUpdated(newId);
+        });
 
-    connect(model.get(), &NodeDelegateModel::requestNodeUpdate, this, [newId, this]() {
-        Q_EMIT nodeUpdated(newId);
-    });
+        _models[newId] = std::move(model);
 
-    _models[newId] = std::move(model);
+        _labels[newId] = _models[newId]->label();
+        _labelsVisible[newId] = _models[newId]->labelVisible();
 
-    _labels[newId] = _models[newId]->label();
-    _labelsVisible[newId] = _models[newId]->labelVisible();
+        Q_EMIT nodeCreated(newId);
 
-    Q_EMIT nodeCreated(newId);
+        return newId;
+    }
 
-    return newId;
+    return InvalidNodeId;
 }
 
 bool DataFlowGraphModel::connectionPossible(ConnectionId const connectionId) const
@@ -287,7 +293,7 @@ QVariant DataFlowGraphModel::nodeData(NodeId nodeId, NodeRole role) const
         break;
 
     case NodeRole::Widget: {
-        auto w = model->embeddedWidget();
+        auto *w = model->embeddedWidget();
         result = QVariant::fromValue(w);
     } break;
 

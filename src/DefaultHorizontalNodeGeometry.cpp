@@ -61,11 +61,6 @@ void DefaultHorizontalNodeGeometry::recomputeSize(NodeId const nodeId) const
 
     QVariant var = _graphModel.nodeData(nodeId, NodeRole::ProcessingStatus);
 
-    auto processingStatusValue = var.value<int>();
-
-    if (processingStatusValue != 0)
-        height += 20;
-
     unsigned int inPortWidth = maxPortsTextAdvance(nodeId, PortType::In);
     unsigned int outPortWidth = maxPortsTextAdvance(nodeId, PortType::Out);
 
