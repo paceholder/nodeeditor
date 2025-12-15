@@ -33,9 +33,13 @@ void DefaultNodePainter::paint(QPainter *painter, NodeGraphicsObject &ngo) const
 
     drawEntryLabels(painter, ngo);
 
+    drawProcessingIndicator(painter, ngo);
+
     drawResizeRect(painter, ngo);
 
     drawNodeLabel(painter, ngo);
+
+    drawValidationIcon(painter, ngo);
 }
 
 void DefaultNodePainter::drawNodeRect(QPainter *painter, NodeGraphicsObject &ngo) const
@@ -52,15 +56,35 @@ void DefaultNodePainter::drawNodeRect(QPainter *painter, NodeGraphicsObject &ngo
 
     NodeStyle nodeStyle(json.object());
 
-    auto color = ngo.isSelected() ? nodeStyle.SelectedBoundaryColor : nodeStyle.NormalBoundaryColor;
+    QVariant var = model.nodeData(nodeId, NodeRole::ValidationState);
 
-    if (ngo.nodeState().hovered()) {
-        QPen p(color, nodeStyle.HoveredPenWidth);
-        painter->setPen(p);
-    } else {
-        QPen p(color, nodeStyle.PenWidth);
-        painter->setPen(p);
+    QColor color = ngo.isSelected() ? nodeStyle.SelectedBoundaryColor
+                                    : nodeStyle.NormalBoundaryColor;
+
+    auto validationState = NodeValidationState::State::Valid;
+    if (var.canConvert<NodeValidationState>()) {
+        auto state = var.value<NodeValidationState>();
+        validationState = state._state;
+        switch (validationState) {
+        case NodeValidationState::State::Error:
+            color = nodeStyle.ErrorColor;
+            break;
+        case NodeValidationState::State::Warning:
+            color = nodeStyle.WarningColor;
+            break;
+        default:
+            break;
+        }
     }
+
+    float penWidth = ngo.nodeState().hovered() ? nodeStyle.HoveredPenWidth : nodeStyle.PenWidth;
+    if (validationState != NodeValidationState::State::Valid) {
+        float factor = (validationState == NodeValidationState::State::Error) ? 3.0f : 2.0f;
+        penWidth *= factor;
+    }
+
+    QPen p(color, penWidth);
+    painter->setPen(p);
 
     QLinearGradient gradient(QPointF(0.0, 0.0), QPointF(2.0, size.height()));
     gradient.setColorAt(0.0, nodeStyle.GradientColor0);
@@ -317,6 +341,88 @@ void DefaultNodePainter::drawResizeRect(QPainter *painter, NodeGraphicsObject &n
 
         painter->drawEllipse(geometry.resizeHandleRect(nodeId));
     }
+}
+
+void DefaultNodePainter::drawProcessingIndicator(QPainter *painter, NodeGraphicsObject &ngo) const
+{
+    AbstractGraphModel &model = ngo.graphModel();
+    NodeId const nodeId = ngo.nodeId();
+
+    auto *dfModel = dynamic_cast<DataFlowGraphModel *>(&model);
+    if (!dfModel)
+        return;
+
+    auto *delegate = dfModel->delegateModel<NodeDelegateModel>(nodeId);
+    if (!delegate)
+        return;
+
+    AbstractNodeGeometry &geometry = ngo.nodeScene()->nodeGeometry();
+
+    QSize size = geometry.size(nodeId);
+
+    QPixmap pixmap = delegate->processingStatusIcon();
+    NodeStyle nodeStyle = delegate->nodeStyle();
+
+    ProcessingIconStyle iconStyle = nodeStyle.processingIconStyle;
+
+    qreal iconSize = iconStyle._size;
+    qreal margin = iconStyle._margin;
+
+    qreal x = margin;
+
+    if (iconStyle._pos == ProcessingIconPos::BottomRight) {
+        x = size.width() - iconSize - margin;
+    }
+
+    QRect r(x, size.height() - iconSize - margin, iconSize, iconSize);
+    painter->drawPixmap(r, pixmap);
+}
+
+void DefaultNodePainter::drawValidationIcon(QPainter *painter, NodeGraphicsObject &ngo) const
+{
+    AbstractGraphModel &model = ngo.graphModel();
+    NodeId const nodeId = ngo.nodeId();
+    AbstractNodeGeometry &geometry = ngo.nodeScene()->nodeGeometry();
+
+    QVariant var = model.nodeData(nodeId, NodeRole::ValidationState);
+    if (!var.canConvert<NodeValidationState>())
+        return;
+
+    auto state = var.value<NodeValidationState>();
+    if (state._state == NodeValidationState::State::Valid)
+        return;
+
+    QJsonDocument json = QJsonDocument::fromVariant(model.nodeData(nodeId, NodeRole::Style));
+    NodeStyle nodeStyle(json.object());
+
+    QSize size = geometry.size(nodeId);
+
+    QIcon icon(":/info-tooltip.svg");
+    QSize iconSize(16, 16);
+    QPixmap pixmap = icon.pixmap(iconSize);
+
+    QColor color = (state._state == NodeValidationState::State::Error) ? nodeStyle.ErrorColor
+                                                                       : nodeStyle.WarningColor;
+
+    QPointF center(size.width(), 0.0);
+    center += QPointF(iconSize.width() / 2.0, -iconSize.height() / 2.0);
+
+    painter->save();
+
+    // Draw a colored circle behind the icon to highlight validation issues
+    painter->setPen(Qt::NoPen);
+    painter->setBrush(color);
+    painter->drawEllipse(center, iconSize.width() / 2.0 + 2.0, iconSize.height() / 2.0 + 2.0);
+
+    QPainter imgPainter(&pixmap);
+    imgPainter.setCompositionMode(QPainter::CompositionMode_SourceIn);
+    imgPainter.fillRect(pixmap.rect(), nodeStyle.FontColor);
+    imgPainter.end();
+
+    painter->drawPixmap(center.toPoint() - QPoint(iconSize.width() / 2, iconSize.height() / 2),
+                        pixmap);
+
+    painter->restore();
 }
 
 } // namespace QtNodes

@@ -78,6 +78,21 @@ QAction *GraphicsView::deleteSelectionAction() const
 void GraphicsView::setScene(BasicGraphicsScene *scene)
 {
     QGraphicsView::setScene(scene);
+    if (!scene)
+    {
+        // Clear actions.
+        delete _clearSelectionAction;
+        delete _deleteSelectionAction;
+        delete _duplicateSelectionAction;
+        delete _copySelectionAction;
+        delete _pasteAction;
+        _clearSelectionAction = nullptr;
+        _deleteSelectionAction = nullptr;
+        _duplicateSelectionAction = nullptr;
+        _copySelectionAction = nullptr;
+        _pasteAction = nullptr;
+        return;
+    }
 
     {
         // setup actions
@@ -173,6 +188,8 @@ void GraphicsView::contextMenuEvent(QContextMenuEvent *event)
         QGraphicsView::contextMenuEvent(event);
         return;
     }
+
+    if (!nodeScene()) return;
 
     auto const scenePos = mapToScene(event->pos());
 
@@ -277,12 +294,15 @@ void GraphicsView::setupScale(double scale)
 
 void GraphicsView::onDeleteSelectedObjects()
 {
+    if (!nodeScene()) return; 
+
     nodeScene()->undoStack().push(new DeleteCommand(nodeScene()));
 }
 
 void GraphicsView::onDuplicateSelectedObjects()
 {
-    qDebug() << "ON DUPLICATE";
+    if (!nodeScene()) return; 
+
     QPointF const pastePosition = scenePastePosition();
 
     nodeScene()->undoStack().push(new CopyCommand(nodeScene()));
@@ -291,11 +311,15 @@ void GraphicsView::onDuplicateSelectedObjects()
 
 void GraphicsView::onCopySelectedObjects()
 {
+    if (!nodeScene()) return; 
+
     nodeScene()->undoStack().push(new CopyCommand(nodeScene()));
 }
 
 void GraphicsView::onPasteObjects()
 {
+    if (!nodeScene()) return; 
+
     QPointF const pastePosition = scenePastePosition();
     nodeScene()->undoStack().push(new PasteCommand(nodeScene(), pastePosition));
 }
@@ -405,6 +429,9 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
 void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 {
     QGraphicsView::mouseMoveEvent(event);
+
+    if (!scene()) return;
+
     if (scene()->mouseGrabberItem() == nullptr && event->buttons() == Qt::LeftButton) {
         // Make sure shift is not being pressed
         if ((event->modifiers() & Qt::ShiftModifier) == 0) {

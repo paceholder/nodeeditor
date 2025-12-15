@@ -19,9 +19,8 @@ Q_NAMESPACE_EXPORT(NODE_EDITOR_PUBLIC)
 #endif
 
     /**
- * Constants used for fetching QVariant data from GraphModel.
- */
-
+     * Constants used for fetching QVariant data from GraphModel.
+     */
     enum class NodeRole {
         Type = 0,              ///< Type of the current node, usually a string.
         Position = 1,          ///< `QPointF` positon of the node on the scene.
@@ -39,7 +38,6 @@ Q_NAMESPACE_EXPORT(NODE_EDITOR_PUBLIC)
         Label = 14,            ///< `QString` for node label.
         LabelEditable = 15,    ///< `bool` to indicate label editing support.
     };
-
 Q_ENUM_NS(NodeRole)
 
 /**

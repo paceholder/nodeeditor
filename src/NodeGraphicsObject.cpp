@@ -7,6 +7,7 @@
 #include "ConnectionGraphicsObject.hpp"
 #include "ConnectionIdUtils.hpp"
 #include "NodeConnectionInteraction.hpp"
+#include "NodeDelegateModel.hpp"
 #include "StyleCollection.hpp"
 #include "UndoCommands.hpp"
 
@@ -59,10 +60,12 @@ NodeGraphicsObject::NodeGraphicsObject(BasicGraphicsScene &scene, NodeId nodeId)
 
     setPos(pos);
 
-    connect(&_graphModel, &AbstractGraphModel::nodeFlagsUpdated, [this](NodeId const nodeId) {
+    connect(&_graphModel, &AbstractGraphModel::nodeFlagsUpdated, this, [this](NodeId const nodeId) {
         if (_nodeId == nodeId)
             setLockedState();
     });
+
+    QVariant var = _graphModel.nodeData(_nodeId, NodeRole::ProcessingStatus);
 }
 
 AbstractGraphModel &NodeGraphicsObject::graphModel() const
@@ -159,6 +162,16 @@ void NodeGraphicsObject::reactToConnection(ConnectionGraphicsObject const *cgo)
 
 void NodeGraphicsObject::paint(QPainter *painter, QStyleOptionGraphicsItem const *option, QWidget *)
 {
+    QString tooltip;
+    QVariant var = _graphModel.nodeData(_nodeId, NodeRole::ValidationState);
+    if (var.canConvert<NodeValidationState>()) {
+        auto state = var.value<NodeValidationState>();
+        if (state._state != NodeValidationState::State::Valid) {
+            tooltip = state._stateMessage;
+        }
+    }
+    setToolTip(tooltip);
+
     painter->setClipRect(option->exposedRect);
 
     nodeScene()->nodePainter().paint(painter, *this);
@@ -175,6 +188,10 @@ QVariant NodeGraphicsObject::itemChange(GraphicsItemChange change, const QVarian
 
 void NodeGraphicsObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
+    if (graphModel().nodeFlags(_nodeId) & NodeFlag::Locked) {
+        return;
+    }
+
     AbstractNodeGeometry &geometry = nodeScene()->nodeGeometry();
 
     for (PortType portToCheck : {PortType::In, PortType::Out}) {
