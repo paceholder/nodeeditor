@@ -7,6 +7,6 @@
         <file>status_icons/partial.svg</file>
         <file>status_icons/pending.svg</file>
         <file>status_icons/processing.svg</file>
-        <file>status_icons/updated.svg</file> 
+        <file>status_icons/updated.svg</file>
     </qresource>
 </RCC>
