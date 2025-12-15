@@ -36,6 +36,8 @@ public:
 
     void drawValidationIcon(QPainter *painter, NodeGraphicsObject &ngo) const;
 
+    void drawProgressValue(QPainter *painter, NodeGraphicsObject &ngo) const;
+
 private:
     QIcon _toolTipIcon{"://info-tooltip.svg"};
 };
