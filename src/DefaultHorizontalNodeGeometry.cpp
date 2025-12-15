@@ -56,16 +56,11 @@ void DefaultHorizontalNodeGeometry::recomputeSize(NodeId const nodeId) const
         height += _portSpacing / 2;
     }
 
-    height += _portSpasing; // space above caption
-    height += _portSpasing; // space below caption
+    height += _portSpacing; // space above caption
+    height += _portSpacing; // space below caption
 
     QVariant var = _graphModel.nodeData(nodeId, NodeRole::ProcessingStatus);
-    auto processingStatusValue = var.value<int>();
 
-    if (processingStatusValue != 0)
-        height += 20;
-
-    QVariant var = _graphModel.nodeData(nodeId, NodeRole::ProcessingStatus);
     auto processingStatusValue = var.value<int>();
 
     if (processingStatusValue != 0)

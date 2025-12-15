@@ -1,9 +1,9 @@
 #pragma once
 
-#include <QtGui/QPainter>
-
 #include "AbstractNodePainter.hpp"
 #include "Definitions.hpp"
+#include <QIcon>
+#include <QtGui/QPainter>
 
 namespace QtNodes {
 
