@@ -96,6 +96,10 @@ NodeId DataFlowGraphModel::addNode(QString const nodeType)
                 this,
                 &DataFlowGraphModel::portsInserted);
 
+        connect(model.get(), &NodeDelegateModel::requestNodeUpdate, this, [newId, this]() {
+            Q_EMIT nodeUpdated(newId);
+        });
+
         _models[newId] = std::move(model);
 
         Q_EMIT nodeCreated(newId);
@@ -286,8 +290,18 @@ QVariant DataFlowGraphModel::nodeData(NodeId nodeId, NodeRole role) const
         break;
 
     case NodeRole::Widget: {
-        auto w = model->embeddedWidget();
+        auto *w = model->embeddedWidget();
         result = QVariant::fromValue(w);
+    } break;
+
+    case NodeRole::ValidationState: {
+        auto validationState = model->validationState();
+        result = QVariant::fromValue(validationState);
+    } break;
+
+    case NodeRole::ProcessingStatus: {
+        auto processingStatus = model->processingStatus();
+        result = QVariant::fromValue(processingStatus);
     } break;
     }
 
@@ -348,6 +362,26 @@ bool DataFlowGraphModel::setNodeData(NodeId nodeId, NodeRole role, QVariant valu
 
     case NodeRole::Widget:
         break;
+
+    case NodeRole::ValidationState: {
+        if (value.canConvert<NodeValidationState>()) {
+            auto state = value.value<NodeValidationState>();
+            if (auto node = delegateModel<NodeDelegateModel>(nodeId); node != nullptr) {
+                node->setValidationState(state);
+            }
+        }
+        Q_EMIT nodeUpdated(nodeId);
+    } break;
+
+    case NodeRole::ProcessingStatus: {
+        if (value.canConvert<QtNodes::NodeProcessingStatus>()) {
+            auto status = value.value<QtNodes::NodeProcessingStatus>();
+            if (auto node = delegateModel<NodeDelegateModel>(nodeId); node != nullptr) {
+                node->setNodeProcessingStatus(status);
+            }
+        }
+        Q_EMIT nodeUpdated(nodeId);
+    } break;
     }
 
     return result;
@@ -533,7 +567,8 @@ void DataFlowGraphModel::loadNode(QJsonObject const &nodeJson)
         connect(model.get(),
                 &NodeDelegateModel::portsAboutToBeDeleted,
                 this,
-                [restoredNodeId, this](PortType const portType, PortIndex const first, PortIndex const last) {
+                [restoredNodeId,
+                 this](PortType const portType, PortIndex const first, PortIndex const last) {
                     portsAboutToBeDeleted(restoredNodeId, portType, first, last);
                 });
 
@@ -545,7 +580,8 @@ void DataFlowGraphModel::loadNode(QJsonObject const &nodeJson)
         connect(model.get(),
                 &NodeDelegateModel::portsAboutToBeInserted,
                 this,
-                [restoredNodeId, this](PortType const portType, PortIndex const first, PortIndex const last) {
+                [restoredNodeId,
+                 this](PortType const portType, PortIndex const first, PortIndex const last) {
                     portsAboutToBeInserted(restoredNodeId, portType, first, last);
                 });
 
@@ -553,6 +589,9 @@ void DataFlowGraphModel::loadNode(QJsonObject const &nodeJson)
                 &NodeDelegateModel::portsInserted,
                 this,
                 &DataFlowGraphModel::portsInserted);
+        connect(model.get(), &NodeDelegateModel::requestNodeUpdate, this, [restoredNodeId, this]() {
+            Q_EMIT nodeUpdated(restoredNodeId);
+        });
 
         _models[restoredNodeId] = std::move(model);
 

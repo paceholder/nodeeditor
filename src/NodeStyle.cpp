@@ -8,7 +8,6 @@
 
 #include <QtCore/QDebug>
 
-
 using QtNodes::NodeStyle;
 
 inline void initResources()
@@ -89,14 +88,14 @@ void NodeStyle::setNodeStyle(QString jsonText)
 
 #define NODE_STYLE_READ_BOOL(values, variable) \
     { \
-            auto valueRef = values[#variable]; \
-            NODE_STYLE_CHECK_UNDEFINED_VALUE(valueRef, variable) \
-            variable = valueRef.toBool(); \
+        auto valueRef = values[#variable]; \
+        NODE_STYLE_CHECK_UNDEFINED_VALUE(valueRef, variable) \
+        variable = valueRef.toBool(); \
     }
 
 #define NODE_STYLE_WRITE_BOOL(values, variable) \
     { \
-            values[#variable] = variable; \
+        values[#variable] = variable; \
     }
 
 void NodeStyle::loadJson(QJsonObject const &json)
@@ -156,4 +155,17 @@ QJsonObject NodeStyle::toJson() const
     root["NodeStyle"] = obj;
 
     return root;
+}
+
+void NodeStyle::setBackgroundColor(QColor const &color)
+{
+    GradientColor0 = color;
+    GradientColor1 = color;
+    GradientColor2 = color;
+    GradientColor3 = color;
+}
+
+QColor NodeStyle::backgroundColor() const
+{
+    return GradientColor0;
 }
