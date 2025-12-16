@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QtNodes/NodeDelegateModel>
-
 #include <QtCore/QJsonObject>
 #include <QtCore/QObject>
 #include <QtWidgets/QLabel>
