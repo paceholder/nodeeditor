@@ -2,6 +2,7 @@
 
 #include "BasicGraphicsScene.hpp"
 #include "ConnectionGraphicsObject.hpp"
+#include "DataFlowGraphModel.hpp"
 #include "NodeGraphicsObject.hpp"
 #include "StyleCollection.hpp"
 #include "UndoCommands.hpp"
@@ -23,6 +24,7 @@
 #include <cmath>
 
 using QtNodes::BasicGraphicsScene;
+using QtNodes::DataFlowGraphModel;
 using QtNodes::GraphicsView;
 
 GraphicsView::GraphicsView(QWidget *parent)
@@ -161,6 +163,13 @@ void GraphicsView::setScene(BasicGraphicsScene *scene)
     auto redoAction = scene->undoStack().createRedoAction(this, tr("&Redo"));
     redoAction->setShortcuts(QKeySequence::Redo);
     addAction(redoAction);
+
+    /// Connections to context menu funcionality
+    connect(scene, &BasicGraphicsScene::zoomFitAllClicked, this, &GraphicsView::zoomFitAll);
+    connect(scene,
+            &BasicGraphicsScene::zoomFitSelectedClicked,
+            this,
+            &GraphicsView::zoomFitSelected);
 }
 
 void GraphicsView::centerScene()
@@ -193,16 +202,17 @@ void GraphicsView::contextMenuEvent(QContextMenuEvent *event)
         }
     }
 
-    if (!nodeScene())
-        return;
-
-    auto const scenePos = mapToScene(event->pos());
-
-    QMenu *menu = nodeScene()->createSceneMenu(scenePos);
+    if (itemAt(event->pos()) && isZoomFitMenu) {
+        menu = nodeScene()->createZoomMenu(mapToScene(event->pos()));
+    } else if (!itemAt(event->pos())) {
+        menu = nodeScene()->createSceneMenu(mapToScene(event->pos()));
+    }
 
     if (menu) {
         menu->exec(event->globalPos());
     }
+
+    return;
 }
 
 void GraphicsView::wheelEvent(QWheelEvent *event)
@@ -451,7 +461,6 @@ QPointF GraphicsView::scenePastePosition()
 void GraphicsView::zoomFitAll()
 {
     fitInView(scene()->itemsBoundingRect(), Qt::KeepAspectRatio);
-    //clipCurrentScale();
 }
 
 void GraphicsView::zoomFitSelected()
@@ -465,6 +474,5 @@ void GraphicsView::zoomFitSelected()
         }
 
         fitInView(unitedBoundingRect, Qt::KeepAspectRatio);
-        //clipCurrentScale();
     }
 }

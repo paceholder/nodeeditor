@@ -132,6 +132,10 @@ public:
 
     virtual bool resizable() const { return false; }
 
+    bool zoomFitMenu() const { return _zoomFitMenu; }
+
+    void setZoomFitMenu(bool state) { _zoomFitMenu = state; }
+
 public Q_SLOTS:
     virtual void inputConnectionCreated(ConnectionId const &) {}
     virtual void inputConnectionDeleted(ConnectionId const &) {}
@@ -188,6 +192,8 @@ private:
     NodeValidationState _nodeValidationState;
 
     NodeProcessingStatus _processingStatus{NodeProcessingStatus::NoStatus};
+
+    bool _zoomFitMenu{false};
 };
 
 } // namespace QtNodes

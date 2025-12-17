@@ -17,7 +17,6 @@
 #include <tuple>
 #include <unordered_map>
 
-
 class QUndoStack;
 
 namespace QtNodes {
@@ -112,6 +111,8 @@ public:
      */
     virtual QMenu *createSceneMenu(QPointF const scenePos);
 
+    QMenu *createZoomMenu(QPointF const scenePos);
+
 Q_SIGNALS:
     void modified(BasicGraphicsScene *);
     void nodeMoved(NodeId const nodeId, QPointF const &newLocation);
@@ -125,6 +126,9 @@ Q_SIGNALS:
 
     /// Signal allows showing custom context menu upon clicking a node.
     void nodeContextMenu(NodeId const nodeId, QPointF const pos);
+    /// Signals to call Graphics View's zoomFit methods
+    void zoomFitAllClicked();
+    void zoomFitSelectedClicked();
 
 private:
     /**
