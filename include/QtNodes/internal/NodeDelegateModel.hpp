@@ -1,17 +1,50 @@
 #pragma once
 
+#include <memory>
+
+#include <QMetaType>
+#include <QPixmap>
+#include <QtGui/QColor>
+#include <QtWidgets/QWidget>
+
 #include "Definitions.hpp"
 #include "Export.hpp"
 #include "NodeData.hpp"
 #include "NodeStyle.hpp"
 #include "Serializable.hpp"
 
-#include <QtWidgets/QWidget>
-
-#include <memory>
-
-
 namespace QtNodes {
+
+/**
+ * Describes whether a node configuration is usable and defines a description message
+ */
+struct NodeValidationState
+{
+    enum class State : int {
+        Valid = 0,   ///< All required inputs are present and correct.
+        Warning = 1, ///< Some inputs are missing or questionable, processing may be unreliable.
+        Error = 2,   ///< Inputs or settings are invalid, preventing successful computation.
+    };
+    bool isValid() { return _state == State::Valid; };
+    QString const message() { return _stateMessage; }
+    State state() { return _state; }
+
+    State _state{State::Valid};
+    QString _stateMessage{""};
+};
+
+/**
+* Describes the node status, depending on its current situation
+*/
+enum class NodeProcessingStatus : int {
+    NoStatus = 0,   ///< No processing status is shown in the Node UI.
+    Updated = 1,    ///< Node is up to date; its outputs reflect the current inputs and parameters.
+    Processing = 2, ///< Node is currently running a computation.
+    Pending = 3,    ///< Node is out of date and waiting to be recomputed (e.g. manual/queued run).
+    Empty = 4,      ///< Node has no valid input data; nothing to compute.
+    Failed = 5,     ///< The last computation ended with an error.
+    Partial = 6,    ///< Computation finished incompletely; only partial results are available.
+};
 
 class StyleCollection;
 
@@ -21,7 +54,9 @@ class StyleCollection;
  * AbstractGraphModel.
  * This class is the same what has been called NodeDataModel before v3.
  */
-class NODE_EDITOR_PUBLIC NodeDelegateModel : public QObject, public Serializable
+class NODE_EDITOR_PUBLIC NodeDelegateModel
+    : public QObject
+    , public Serializable
 {
     Q_OBJECT
 
@@ -30,14 +65,14 @@ public:
 
     virtual ~NodeDelegateModel() = default;
 
+    /// It is possible to hide caption in GUI
+    virtual bool captionVisible() const { return true; }
+
     /// Name makes this model unique
     virtual QString name() const = 0;
 
     /// Caption is used in GUI
     virtual QString caption() const = 0;
-
-    /// It is possible to hide caption in GUI
-    virtual bool captionVisible() const { return true; }
 
     /// Port caption is used in GUI to label individual ports
     virtual QString portCaption(PortType, PortIndex) const { return QString(); }
@@ -45,8 +80,19 @@ public:
     /// It is possible to hide port caption in GUI
     virtual bool portCaptionVisible(PortType, PortIndex) const { return false; }
 
+    /// Validation State will default to Valid, but you can manipulate it by overriding in an inherited class
+    virtual NodeValidationState validationState() const { return _nodeValidationState; }
+
+    /// Returns the curent processing status
+    virtual NodeProcessingStatus processingStatus() const { return _processingStatus; }
+
     QJsonObject save() const override;
+
     void load(QJsonObject const &) override;
+
+    void setValidationState(const NodeValidationState &validationState);
+
+    void setNodeProcessingStatus(NodeProcessingStatus status);
 
     virtual unsigned int nPorts(PortType portType) const = 0;
 
@@ -55,8 +101,19 @@ public:
     virtual ConnectionPolicy portConnectionPolicy(PortType, PortIndex) const;
 
     NodeStyle const &nodeStyle() const;
+
     void setNodeStyle(NodeStyle const &style);
 
+    /// Convenience helper to change the node background color.
+    void setBackgroundColor(QColor const &color);
+
+    QPixmap processingStatusIcon() const;
+
+    void setStatusIcon(NodeProcessingStatus status, const QPixmap &pixmap);
+
+    void setStatusIconStyle(ProcessingIconStyle const &style);
+
+public:
     virtual void setInData(std::shared_ptr<NodeData> nodeData, PortIndex const portIndex) = 0;
 
     virtual std::shared_ptr<NodeData> outData(PortIndex const port) = 0;
@@ -89,10 +146,20 @@ Q_SIGNALS:
     void dataInvalidated(PortIndex const index);
 
     void computingStarted();
+
     void computingFinished();
 
     void embeddedWidgetSizeUpdated();
 
+    /// Request an update of the node's UI.
+    /**
+     * Emit this signal whenever some internal state change requires
+     * the node to be repainted. The containing graph model will
+     * propagate the update to the scene.
+     */
+    void requestNodeUpdate();
+
+    /// Call this function before deleting the data associated with ports.
     /**
      * @brief Call this function before deleting the data associated with ports.
      * The function notifies the Graph Model and makes it remove and recompute the
@@ -117,6 +184,13 @@ Q_SIGNALS:
 
 private:
     NodeStyle _nodeStyle;
+
+    NodeValidationState _nodeValidationState;
+
+    NodeProcessingStatus _processingStatus{NodeProcessingStatus::NoStatus};
 };
 
 } // namespace QtNodes
+
+Q_DECLARE_METATYPE(QtNodes::NodeValidationState)
+Q_DECLARE_METATYPE(QtNodes::NodeProcessingStatus)
