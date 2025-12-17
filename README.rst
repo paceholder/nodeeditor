@@ -1,7 +1,8 @@
 QtNodes
 #######
 
-https://github.com/paceholder/nodeeditor/actions/workflows/cmake_build.yml/badge.svg
+.. image:: https://github.com/paceholder/nodeeditor/actions/workflows/cmake_build.yml/badge.svg
+   :target: https://github.com/paceholder/nodeeditor/actions/workflows/cmake_build.yml
 
 Introduction
 ============
