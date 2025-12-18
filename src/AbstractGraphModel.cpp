@@ -40,7 +40,9 @@ void AbstractGraphModel::portsAboutToBeDeleted(NodeId const nodeId,
             // Erases the information about the port on one side;
             auto c = makeIncompleteConnectionId(connectionId, portType);
 
-            c = makeCompleteConnectionId(c, nodeId, portIndex - nRemovedPorts);
+            c = makeCompleteConnectionId(c,
+                                         nodeId,
+                                         portIndex - static_cast<QtNodes::PortIndex>(nRemovedPorts));
 
             _shiftedByDynamicPortsConnections.push_back(c);
 
@@ -84,7 +86,9 @@ void AbstractGraphModel::portsAboutToBeInserted(NodeId const nodeId,
             // Erases the information about the port on one side;
             auto c = makeIncompleteConnectionId(connectionId, portType);
 
-            c = makeCompleteConnectionId(c, nodeId, portIndex + nNewPorts);
+            c = makeCompleteConnectionId(c,
+                                         nodeId,
+                                         portIndex + static_cast<QtNodes::PortIndex>(nNewPorts));
 
             _shiftedByDynamicPortsConnections.push_back(c);
 
