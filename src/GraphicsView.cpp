@@ -2,6 +2,8 @@
 
 #include "BasicGraphicsScene.hpp"
 #include "ConnectionGraphicsObject.hpp"
+#include "DataFlowGraphModel.hpp"
+#include "NodeDelegateModel.hpp"
 #include "NodeGraphicsObject.hpp"
 #include "StyleCollection.hpp"
 #include "UndoCommands.hpp"
@@ -23,7 +25,10 @@
 #include <cmath>
 
 using QtNodes::BasicGraphicsScene;
+using QtNodes::DataFlowGraphModel;
 using QtNodes::GraphicsView;
+using QtNodes::NodeDelegateModel;
+using QtNodes::NodeGraphicsObject;
 
 GraphicsView::GraphicsView(QWidget *parent)
     : QGraphicsView(parent)
@@ -75,8 +80,7 @@ QAction *GraphicsView::deleteSelectionAction() const
 void GraphicsView::setScene(BasicGraphicsScene *scene)
 {
     QGraphicsView::setScene(scene);
-    if (!scene)
-    {
+    if (!scene) {
         // Clear actions.
         delete _clearSelectionAction;
         delete _deleteSelectionAction;
@@ -181,20 +185,30 @@ void GraphicsView::centerScene()
 
 void GraphicsView::contextMenuEvent(QContextMenuEvent *event)
 {
-    if (itemAt(event->pos())) {
-        QGraphicsView::contextMenuEvent(event);
-        return;
+    QGraphicsView::contextMenuEvent(event);
+    QMenu *menu = nullptr;
+
+    bool isFrozenMenu;
+
+    if (auto *dfModel = dynamic_cast<DataFlowGraphModel *>(&nodeScene()->graphModel())) {
+        if (auto n = qgraphicsitem_cast<NodeGraphicsObject *>(itemAt(event->pos()))) {
+            if (auto *delegate = dfModel->delegateModel<NodeDelegateModel>(n->nodeId())) {
+                isFrozenMenu = delegate->frozenMenu();
+            }
+        }
     }
 
-    if (!nodeScene()) return;
-
-    auto const scenePos = mapToScene(event->pos());
-
-    QMenu *menu = nodeScene()->createSceneMenu(scenePos);
+    if (itemAt(event->pos()) && isFrozenMenu) {
+        menu = nodeScene()->createFreezeMenu();
+    } else if (!itemAt(event->pos())) {
+        menu = nodeScene()->createSceneMenu(mapToScene(event->pos()));
+    }
 
     if (menu) {
         menu->exec(event->globalPos());
     }
+
+    return;
 }
 
 void GraphicsView::wheelEvent(QWheelEvent *event)
@@ -291,14 +305,16 @@ void GraphicsView::setupScale(double scale)
 
 void GraphicsView::onDeleteSelectedObjects()
 {
-    if (!nodeScene()) return; 
+    if (!nodeScene())
+        return;
 
     nodeScene()->undoStack().push(new DeleteCommand(nodeScene()));
 }
 
 void GraphicsView::onDuplicateSelectedObjects()
 {
-    if (!nodeScene()) return; 
+    if (!nodeScene())
+        return;
 
     QPointF const pastePosition = scenePastePosition();
 
@@ -308,14 +324,16 @@ void GraphicsView::onDuplicateSelectedObjects()
 
 void GraphicsView::onCopySelectedObjects()
 {
-    if (!nodeScene()) return; 
+    if (!nodeScene())
+        return;
 
     nodeScene()->undoStack().push(new CopyCommand(nodeScene()));
 }
 
 void GraphicsView::onPasteObjects()
 {
-    if (!nodeScene()) return; 
+    if (!nodeScene())
+        return;
 
     QPointF const pastePosition = scenePastePosition();
     nodeScene()->undoStack().push(new PasteCommand(nodeScene(), pastePosition));
@@ -360,7 +378,8 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 {
     QGraphicsView::mouseMoveEvent(event);
 
-    if (!scene()) return;
+    if (!scene())
+        return;
 
     if (scene()->mouseGrabberItem() == nullptr && event->buttons() == Qt::LeftButton) {
         // Make sure shift is not being pressed

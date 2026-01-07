@@ -5,7 +5,6 @@
 #include "ConnectionIdHash.hpp"
 #include "Definitions.hpp"
 #include "Export.hpp"
-
 #include "QUuidStdHash.hpp"
 
 #include <QtCore/QUuid>
@@ -16,7 +15,6 @@
 #include <memory>
 #include <tuple>
 #include <unordered_map>
-
 
 class QUndoStack;
 
@@ -29,7 +27,7 @@ class ConnectionGraphicsObject;
 class NodeGraphicsObject;
 class NodeStyle;
 
-/// An instance of QGraphicsScene, holds connections and nodes.
+/// An instance of QGraphicsScene , holds connections and nodes.
 class NODE_EDITOR_PUBLIC BasicGraphicsScene : public QGraphicsScene
 {
     Q_OBJECT
@@ -111,6 +109,10 @@ public:
      * Default implementation returns `nullptr`.
      */
     virtual QMenu *createSceneMenu(QPointF const scenePos);
+
+    QMenu *createFreezeMenu();
+
+    void freezeModelAndConnections(bool isFreeze);
 
 Q_SIGNALS:
     void modified(BasicGraphicsScene *);

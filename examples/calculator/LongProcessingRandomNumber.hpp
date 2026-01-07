@@ -16,6 +16,8 @@ class RandomNumberModel : public MathOperationDataModel
 {
 public:
     RandomNumberModel() {
+        setFrozenMenu(true);
+
         this->setNodeProcessingStatus(QtNodes::NodeProcessingStatus::Empty);
 
 
@@ -44,6 +46,9 @@ public:
 private:
     void compute() override
     {
+        if (frozen())
+            return;
+
         Q_EMIT computingStarted();
         PortIndex const outPortIndex = 0;
 

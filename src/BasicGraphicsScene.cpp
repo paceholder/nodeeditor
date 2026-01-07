@@ -3,14 +3,20 @@
 #include "AbstractNodeGeometry.hpp"
 #include "ConnectionGraphicsObject.hpp"
 #include "ConnectionIdUtils.hpp"
+#include "DataFlowGraphModel.hpp"
 #include "DefaultConnectionPainter.hpp"
 #include "DefaultHorizontalNodeGeometry.hpp"
 #include "DefaultNodePainter.hpp"
 #include "DefaultVerticalNodeGeometry.hpp"
+#include "NodeDelegateModel.hpp"
 #include "NodeGraphicsObject.hpp"
 
 #include <QUndoStack>
 
+#include <QHeaderView>
+#include <QLineEdit>
+#include <QTreeWidget>
+#include <QWidgetAction>
 #include <QtWidgets/QFileDialog>
 #include <QtWidgets/QGraphicsSceneMoveEvent>
 
@@ -203,6 +209,68 @@ QMenu *BasicGraphicsScene::createSceneMenu(QPointF const scenePos)
     return nullptr;
 }
 
+QMenu *BasicGraphicsScene::createFreezeMenu()
+{
+    QMenu *menu = new QMenu();
+
+    auto *txtBox = new QLineEdit(menu);
+    txtBox->setPlaceholderText(QStringLiteral("Filter"));
+    txtBox->setClearButtonEnabled(true);
+
+    auto *txtBoxAction = new QWidgetAction(menu);
+    txtBoxAction->setDefaultWidget(txtBox);
+    menu->addAction(txtBoxAction);
+
+    QTreeWidget *treeView = new QTreeWidget(menu);
+    treeView->header()->close();
+
+    treeView->setMaximumHeight(100);
+    treeView->setMaximumWidth(150);
+
+    auto *treeViewAction = new QWidgetAction(menu);
+    treeViewAction->setDefaultWidget(treeView);
+    menu->addAction(treeViewAction);
+
+    auto freezeItem = new QTreeWidgetItem(treeView);
+    freezeItem->setText(0, "Freeze");
+
+    auto unfreezeItem = new QTreeWidgetItem(treeView);
+    unfreezeItem->setText(0, "Unfreeze");
+
+    treeView->expandAll();
+
+    connect(treeView, &QTreeWidget::itemClicked, [this, menu](QTreeWidgetItem *item, int) {
+        if (item->text(0) == "Freeze") {
+            freezeModelAndConnections(true);
+
+            menu->close();
+            return;
+        }
+        if (item->text(0) == "Unfreeze") {
+            freezeModelAndConnections(false);
+
+            menu->close();
+            return;
+        }
+    });
+
+    // Filtro
+    connect(txtBox, &QLineEdit::textChanged, [treeView](const QString &text) {
+        QTreeWidgetItemIterator it(treeView);
+        while (*it) {
+            auto modelName = (*it)->text(0);
+            const bool match = (modelName.contains(text, Qt::CaseInsensitive));
+            (*it)->setHidden(!match);
+            ++it;
+        }
+    });
+
+    txtBox->setFocus();
+    menu->setAttribute(Qt::WA_DeleteOnClose);
+
+    return menu;
+}
+
 void BasicGraphicsScene::traverseGraphAndPopulateGraphicsObjects()
 {
     auto allNodeIds = _graphModel.allNodeIds();
@@ -325,6 +393,33 @@ void BasicGraphicsScene::onModelReset()
     clear();
 
     traverseGraphAndPopulateGraphicsObjects();
+}
+
+void BasicGraphicsScene::freezeModelAndConnections(bool isFreeze)
+{
+    for (QGraphicsItem *item : selectedItems()) {
+        if (auto n = qgraphicsitem_cast<NodeGraphicsObject *>(item)) {
+            int portCount = graphModel().nodeData(n->nodeId(), NodeRole::OutPortCount).toInt();
+            for (int i = 0; i < portCount; i++) {
+                auto graphConnections = graphModel().connections(n->nodeId(),
+                                                                 QtNodes::PortType::Out,
+                                                                 QtNodes::PortIndex(i));
+
+                for (auto const &c : graphConnections) {
+                    if (auto *cgo = connectionGraphicsObject(c)) {
+                        cgo->connectionState().setFrozen(isFreeze);
+                        cgo->update();
+                    }
+                }
+            }
+
+            if (auto *dfModel = dynamic_cast<DataFlowGraphModel *>(&graphModel())) {
+                if (auto *delegate = dfModel->delegateModel<NodeDelegateModel>(n->nodeId())) {
+                    delegate->setFrozenState(isFreeze);
+                }
+            }
+        }
+    }
 }
 
 } // namespace QtNodes

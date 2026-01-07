@@ -25,6 +25,7 @@ public:
     ConnectionState(ConnectionGraphicsObject &cgo)
         : _cgo(cgo)
         , _hovered(false)
+        , _frozen(false)
     {}
 
     ConnectionState(ConnectionState const &) = delete;
@@ -42,6 +43,9 @@ public:
     bool hovered() const;
     void setHovered(bool hovered);
 
+    bool frozen() const { return _frozen; }
+    void setFrozen(bool frozen) { _frozen = frozen; }
+
 public:
     /// Caches NodeId for further interaction.
     void setLastHoveredNode(NodeId const nodeId);
@@ -56,5 +60,7 @@ private:
     bool _hovered;
 
     NodeId _lastHoveredNode{InvalidNodeId};
+
+    bool _frozen;
 };
 } // namespace QtNodes
