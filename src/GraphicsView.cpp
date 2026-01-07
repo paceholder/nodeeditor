@@ -192,7 +192,7 @@ void GraphicsView::contextMenuEvent(QContextMenuEvent *event)
     QGraphicsView::contextMenuEvent(event);
     QMenu *menu = nullptr;
 
-    bool isZoomFitMenu;
+    bool isZoomFitMenu = false;
 
     if (auto *dfModel = dynamic_cast<DataFlowGraphModel *>(&nodeScene()->graphModel())) {
         if (auto n = qgraphicsitem_cast<NodeGraphicsObject *>(itemAt(event->pos()))) {
@@ -211,8 +211,6 @@ void GraphicsView::contextMenuEvent(QContextMenuEvent *event)
     if (menu) {
         menu->exec(event->globalPos());
     }
-
-    return;
 }
 
 void GraphicsView::wheelEvent(QWheelEvent *event)
