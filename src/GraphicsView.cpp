@@ -2,6 +2,7 @@
 
 #include "BasicGraphicsScene.hpp"
 #include "ConnectionGraphicsObject.hpp"
+#include "DataFlowGraphModel.hpp"
 #include "NodeGraphicsObject.hpp"
 #include "StyleCollection.hpp"
 #include "UndoCommands.hpp"
@@ -23,7 +24,9 @@
 #include <cmath>
 
 using QtNodes::BasicGraphicsScene;
+using QtNodes::DataFlowGraphModel;
 using QtNodes::GraphicsView;
+using QtNodes::NodeGraphicsObject;
 
 GraphicsView::GraphicsView(QWidget *parent)
     : QGraphicsView(parent)
@@ -75,8 +78,7 @@ QAction *GraphicsView::deleteSelectionAction() const
 void GraphicsView::setScene(BasicGraphicsScene *scene)
 {
     QGraphicsView::setScene(scene);
-    if (!scene)
-    {
+    if (!scene) {
         // Clear actions.
         delete _clearSelectionAction;
         delete _deleteSelectionAction;
@@ -162,6 +164,13 @@ void GraphicsView::setScene(BasicGraphicsScene *scene)
     auto redoAction = scene->undoStack().createRedoAction(this, tr("&Redo"));
     redoAction->setShortcuts(QKeySequence::Redo);
     addAction(redoAction);
+
+    /// Connections to context menu funcionality
+    connect(scene, &BasicGraphicsScene::zoomFitAllClicked, this, &GraphicsView::zoomFitAll);
+    connect(scene,
+            &BasicGraphicsScene::zoomFitSelectedClicked,
+            this,
+            &GraphicsView::zoomFitSelected);
 }
 
 void GraphicsView::centerScene()
@@ -181,16 +190,23 @@ void GraphicsView::centerScene()
 
 void GraphicsView::contextMenuEvent(QContextMenuEvent *event)
 {
-    if (itemAt(event->pos())) {
-        QGraphicsView::contextMenuEvent(event);
-        return;
+    QGraphicsView::contextMenuEvent(event);
+    QMenu *menu = nullptr;
+
+    bool isZoomFitMenu = false;
+
+    auto *dfModel = &nodeScene()->graphModel();
+    auto n = qgraphicsitem_cast<NodeGraphicsObject *>(itemAt(event->pos()));
+
+    if (dfModel && n) {
+        isZoomFitMenu = dfModel->nodeZoomFitMenu(n->nodeId());
     }
 
-    if (!nodeScene()) return;
-
-    auto const scenePos = mapToScene(event->pos());
-
-    QMenu *menu = nodeScene()->createSceneMenu(scenePos);
+    if (itemAt(event->pos()) && isZoomFitMenu) {
+        menu = nodeScene()->createZoomMenu(mapToScene(event->pos()));
+    } else if (!itemAt(event->pos())) {
+        menu = nodeScene()->createSceneMenu(mapToScene(event->pos()));
+    }
 
     if (menu) {
         menu->exec(event->globalPos());
@@ -291,14 +307,16 @@ void GraphicsView::setupScale(double scale)
 
 void GraphicsView::onDeleteSelectedObjects()
 {
-    if (!nodeScene()) return; 
+    if (!nodeScene())
+        return;
 
     nodeScene()->undoStack().push(new DeleteCommand(nodeScene()));
 }
 
 void GraphicsView::onDuplicateSelectedObjects()
 {
-    if (!nodeScene()) return; 
+    if (!nodeScene())
+        return;
 
     QPointF const pastePosition = scenePastePosition();
 
@@ -308,14 +326,16 @@ void GraphicsView::onDuplicateSelectedObjects()
 
 void GraphicsView::onCopySelectedObjects()
 {
-    if (!nodeScene()) return; 
+    if (!nodeScene())
+        return;
 
     nodeScene()->undoStack().push(new CopyCommand(nodeScene()));
 }
 
 void GraphicsView::onPasteObjects()
 {
-    if (!nodeScene()) return; 
+    if (!nodeScene())
+        return;
 
     QPointF const pastePosition = scenePastePosition();
     nodeScene()->undoStack().push(new PasteCommand(nodeScene(), pastePosition));
@@ -360,7 +380,8 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 {
     QGraphicsView::mouseMoveEvent(event);
 
-    if (!scene()) return;
+    if (!scene())
+        return;
 
     if (scene()->mouseGrabberItem() == nullptr && event->buttons() == Qt::LeftButton) {
         // Make sure shift is not being pressed
@@ -433,4 +454,23 @@ QPointF GraphicsView::scenePastePosition()
         origin = viewRect.center();
 
     return mapToScene(origin);
+}
+
+void GraphicsView::zoomFitAll()
+{
+    fitInView(scene()->itemsBoundingRect(), Qt::KeepAspectRatio);
+}
+
+void GraphicsView::zoomFitSelected()
+{
+    if (scene()->selectedItems().count() > 0) {
+        QRectF unitedBoundingRect{};
+
+        for (QGraphicsItem *item : scene()->selectedItems()) {
+            unitedBoundingRect = unitedBoundingRect.united(
+                item->mapRectToScene(item->boundingRect()));
+        }
+
+        fitInView(unitedBoundingRect, Qt::KeepAspectRatio);
+    }
 }

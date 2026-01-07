@@ -646,4 +646,15 @@ void DataFlowGraphModel::propagateEmptyDataTo(NodeId const nodeId, PortIndex con
     setPortData(nodeId, PortType::In, portIndex, emptyData, PortRole::Data);
 }
 
+bool DataFlowGraphModel::nodeZoomFitMenu(NodeId const nodeId)
+{
+    bool isZoomFitMenu = false;
+    auto delegate = delegateModel<NodeDelegateModel>(nodeId);
+
+    if (delegate)
+        isZoomFitMenu = delegate->zoomFitMenu();
+
+    return isZoomFitMenu;
+}
+
 } // namespace QtNodes

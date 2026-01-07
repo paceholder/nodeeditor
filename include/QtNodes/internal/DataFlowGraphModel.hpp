@@ -14,7 +14,9 @@
 
 namespace QtNodes {
 
-class NODE_EDITOR_PUBLIC DataFlowGraphModel : public AbstractGraphModel, public Serializable
+class NODE_EDITOR_PUBLIC DataFlowGraphModel
+    : public AbstractGraphModel
+    , public Serializable
 {
     Q_OBJECT
 
@@ -42,7 +44,6 @@ public:
     bool connectionExists(ConnectionId const connectionId) const override;
 
     NodeId addNode(QString const nodeType) override;
-
 
     bool connectionPossible(ConnectionId const connectionId) const override;
 
@@ -75,7 +76,6 @@ public:
 
     void loadNode(QJsonObject const &nodeJson) override;
 
-
     // From Serializable
     QJsonObject save() const override;
 
@@ -100,6 +100,8 @@ public:
 
     /// Loops do not make any sense in uni-direction data propagation
     bool loopsEnabled() const override { return false; }
+
+    bool nodeZoomFitMenu(NodeId) override;
 
 Q_SIGNALS:
     void inPortDataWasSet(NodeId const, PortType const, PortIndex const);
