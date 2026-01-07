@@ -56,6 +56,7 @@ else()
 endif()
 
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Widgets Gui OpenGL)
+find_package(Qt${QT_VERSION_MAJOR} QUIET COMPONENTS Quick)
 message(STATUS "QT_VERSION: ${QT_VERSION}, QT_DIR: ${QT_DIR}")
 
 if (${QT_VERSION} VERSION_LESS 5.11.0)
@@ -129,6 +130,12 @@ set(HPP_HEADER_FILES
   include/QtNodes/internal/UndoCommands.hpp
 )
 
+if(Qt${QT_VERSION_MAJOR}Quick_FOUND AND ${QT_VERSION} VERSION_GREATER_EQUAL 6.0.0)
+  message(STATUS "Qt Quick found")
+  list(APPEND CPP_SOURCE_FILES src/QmlWrapper.cpp)
+  list(APPEND HPP_HEADER_FILES include/QtNodes/internal/QmlWrapper.hpp)
+endif()
+
 # If we want to give the option to build a static library,
 # set BUILD_SHARED_LIBS option to OFF
 add_library(QtNodes
@@ -155,6 +162,12 @@ target_link_libraries(QtNodes
     Qt${QT_VERSION_MAJOR}::Gui
     Qt${QT_VERSION_MAJOR}::OpenGL
 )
+if(Qt${QT_VERSION_MAJOR}Quick_FOUND AND ${QT_VERSION} VERSION_GREATER_EQUAL 6.0.0)
+  target_link_libraries(QtNodes
+    PUBLIC
+      Qt${QT_VERSION_MAJOR}::Quick
+)
+endif()
 
 target_compile_definitions(QtNodes
   PUBLIC
