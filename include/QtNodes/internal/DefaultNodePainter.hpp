@@ -1,10 +1,9 @@
 #pragma once
 
-#include <QIcon>
-#include <QtGui/QPainter>
-
 #include "AbstractNodePainter.hpp"
 #include "Definitions.hpp"
+#include <QIcon>
+#include <QtGui/QPainter>
 
 namespace QtNodes {
 
@@ -27,6 +26,8 @@ public:
     void drawFilledConnectionPoints(QPainter *painter, NodeGraphicsObject &ngo) const;
 
     void drawNodeCaption(QPainter *painter, NodeGraphicsObject &ngo) const;
+
+    void drawNodeLabel(QPainter *painter, NodeGraphicsObject &ngo) const;
 
     void drawEntryLabels(QPainter *painter, NodeGraphicsObject &ngo) const;
 
