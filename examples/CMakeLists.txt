@@ -16,3 +16,7 @@ add_subdirectory(dynamic_ports)
 
 add_subdirectory(lock_nodes_and_connections)
 
+if(BUILD_QML)
+    add_subdirectory(qml_calculator)
+endif()
+
