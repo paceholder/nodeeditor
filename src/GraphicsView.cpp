@@ -26,6 +26,7 @@
 using QtNodes::BasicGraphicsScene;
 using QtNodes::DataFlowGraphModel;
 using QtNodes::GraphicsView;
+using QtNodes::NodeGraphicsObject;
 
 GraphicsView::GraphicsView(QWidget *parent)
     : QGraphicsView(parent)
@@ -194,12 +195,11 @@ void GraphicsView::contextMenuEvent(QContextMenuEvent *event)
 
     bool isZoomFitMenu = false;
 
-    if (auto *dfModel = dynamic_cast<DataFlowGraphModel *>(&nodeScene()->graphModel())) {
-        if (auto n = qgraphicsitem_cast<NodeGraphicsObject *>(itemAt(event->pos()))) {
-            if (auto *delegate = dfModel->delegateModel<NodeDelegateModel>(n->nodeId())) {
-                isZoomFitMenu = delegate->zoomFitMenu();
-            }
-        }
+    auto *dfModel = &nodeScene()->graphModel();
+    auto n = qgraphicsitem_cast<NodeGraphicsObject *>(itemAt(event->pos()));
+
+    if (dfModel && n) {
+        isZoomFitMenu = dfModel->nodeZoomFitMenu(n->nodeId());
     }
 
     if (itemAt(event->pos()) && isZoomFitMenu) {

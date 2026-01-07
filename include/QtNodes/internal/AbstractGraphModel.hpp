@@ -1,15 +1,14 @@
 #pragma once
 
-#include "Export.hpp"
 #include "ConnectionIdHash.hpp"
 #include "Definitions.hpp"
+#include "Export.hpp"
 
 #include <QtCore/QJsonObject>
 #include <QtCore/QObject>
 #include <QtCore/QVariant>
 
 #include <unordered_set>
-
 
 namespace QtNodes {
 
@@ -51,8 +50,7 @@ public:
      */
     virtual std::unordered_set<ConnectionId> connections(NodeId nodeId,
                                                          PortType portType,
-                                                         PortIndex index) const
-        = 0;
+                                                         PortIndex index) const = 0;
 
     /// Checks if two nodes with the given `connectionId` are connected.
     virtual bool connectionExists(ConnectionId const connectionId) const = 0;
@@ -132,8 +130,10 @@ public:
      * @returns Port Data Type, Port Data, Connection Policy, Port
      * Caption.
      */
-    virtual QVariant portData(NodeId nodeId, PortType portType, PortIndex index, PortRole role) const
-        = 0;
+    virtual QVariant portData(NodeId nodeId,
+                              PortType portType,
+                              PortIndex index,
+                              PortRole role) const = 0;
 
     /**
      * A utility function that unwraps the `QVariant` value returned from the
@@ -187,6 +187,8 @@ public:
     virtual void loadNode(QJsonObject const &) {}
 
     virtual bool loopsEnabled() const { return true; }
+
+    virtual bool nodeZoomFitMenu(NodeId) { return false; }
 
 public:
     /**
