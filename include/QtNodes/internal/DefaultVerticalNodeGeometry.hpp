@@ -33,9 +33,15 @@ public:
 
     QRectF captionRect(NodeId const nodeId) const override;
 
+    QPointF labelPosition(const NodeId nodeId) const override;
+
+    QRectF labelRect(NodeId const nodeId) const override;
+
     QPointF widgetPosition(NodeId const nodeId) const override;
 
     QRect resizeHandleRect(NodeId const nodeId) const override;
+
+    int getPortSpacing() override { return _portSpacing; }
 
 private:
     QRectF portTextRect(NodeId const nodeId,
@@ -54,7 +60,7 @@ private:
     // constness of the Node.
 
     mutable unsigned int _portSize;
-    unsigned int _portSpasing;
+    unsigned int _portSpacing;
     mutable QFontMetrics _fontMetrics;
     mutable QFontMetrics _boldFontMetrics;
 };
