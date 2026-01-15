@@ -164,13 +164,6 @@ void GraphicsView::setScene(BasicGraphicsScene *scene)
     auto redoAction = scene->undoStack().createRedoAction(this, tr("&Redo"));
     redoAction->setShortcuts(QKeySequence::Redo);
     addAction(redoAction);
-
-    /// Connections to context menu funcionality
-    connect(scene, &BasicGraphicsScene::zoomFitAllClicked, this, &GraphicsView::zoomFitAll);
-    connect(scene,
-            &BasicGraphicsScene::zoomFitSelectedClicked,
-            this,
-            &GraphicsView::zoomFitSelected);
 }
 
 void GraphicsView::centerScene()
@@ -190,23 +183,17 @@ void GraphicsView::centerScene()
 
 void GraphicsView::contextMenuEvent(QContextMenuEvent *event)
 {
-    QGraphicsView::contextMenuEvent(event);
-    QMenu *menu = nullptr;
-
-    bool isZoomFitMenu = false;
-
-    auto *dfModel = &nodeScene()->graphModel();
-    auto n = qgraphicsitem_cast<NodeGraphicsObject *>(itemAt(event->pos()));
-
-    if (dfModel && n) {
-        isZoomFitMenu = dfModel->nodeZoomFitMenu(n->nodeId());
+    if (itemAt(event->pos())) {
+        QGraphicsView::contextMenuEvent(event);
+        return;
     }
 
-    if (itemAt(event->pos()) && isZoomFitMenu) {
-        menu = nodeScene()->createZoomMenu(mapToScene(event->pos()));
-    } else if (!itemAt(event->pos())) {
-        menu = nodeScene()->createSceneMenu(mapToScene(event->pos()));
-    }
+    if (!nodeScene())
+        return;
+
+    auto const scenePos = mapToScene(event->pos());
+
+    QMenu *menu = nodeScene()->createSceneMenu(scenePos);
 
     if (menu) {
         menu->exec(event->globalPos());
