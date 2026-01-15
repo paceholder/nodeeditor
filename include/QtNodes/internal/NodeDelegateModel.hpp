@@ -4,6 +4,7 @@
 
 #include <QMetaType>
 #include <QPixmap>
+#include <QtGui/QColor>
 #include <QtWidgets/QWidget>
 
 #include "Definitions.hpp"
@@ -11,7 +12,6 @@
 #include "NodeData.hpp"
 #include "NodeStyle.hpp"
 #include "Serializable.hpp"
-#include <QtGui/QColor>
 
 namespace QtNodes {
 
@@ -82,15 +82,6 @@ public:
 
     /// Validation State will default to Valid, but you can manipulate it by overriding in an inherited class
     virtual NodeValidationState validationState() const { return _nodeValidationState; }
-
-    /// Nicknames can be assigned to nodes and shown in GUI
-    virtual QString label() const { return QString(); }
-
-    /// It is possible to hide the nickname in GUI
-    virtual bool labelVisible() const { return true; }
-
-    /// Controls whether the label can be edited or not
-    virtual bool labelEditable() const { return false; }
 
     /// Returns the curent processing status
     virtual NodeProcessingStatus processingStatus() const { return _processingStatus; }

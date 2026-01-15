@@ -11,8 +11,6 @@
 #include <QJsonObject>
 
 #include <memory>
-#include <unordered_map>
-#include <QString>
 
 namespace QtNodes {
 
@@ -141,9 +139,6 @@ private:
     std::unordered_set<ConnectionId> _connectivity;
 
     mutable std::unordered_map<NodeId, NodeGeometryData> _nodeGeometryData;
-
-    std::unordered_map<NodeId, QString> _labels;
-    std::unordered_map<NodeId, bool> _labelsVisible;
 };
 
 } // namespace QtNodes

@@ -38,8 +38,6 @@ void DefaultNodePainter::paint(QPainter *painter, NodeGraphicsObject &ngo) const
     drawResizeRect(painter, ngo);
 
     drawValidationIcon(painter, ngo);
-
-    drawNodeLabel(painter, ngo);
 }
 
 void DefaultNodePainter::drawNodeRect(QPainter *painter, NodeGraphicsObject &ngo) const
@@ -224,21 +222,12 @@ void DefaultNodePainter::drawNodeCaption(QPainter *painter, NodeGraphicsObject &
     if (!model.nodeData(nodeId, NodeRole::CaptionVisible).toBool())
         return;
 
-    QString const nickname = model.nodeData(nodeId, NodeRole::Label).toString();
     QString const name = model.nodeData(nodeId, NodeRole::Caption).toString();
 
     QFont f = painter->font();
-    f.setBold(nickname.isEmpty());
-    f.setItalic(!nickname.isEmpty());
+    f.setBold(true);
 
-    QFontMetricsF metrics(f);
-
-    QRectF bounding = metrics.boundingRect(name);
-    QRectF capRect = geometry.captionRect(nodeId);
-    QPointF capPos = geometry.captionPosition(nodeId);
-    double centerX = capPos.x() + capRect.width() / 2.0;
-
-    QPointF position(centerX - bounding.width() / 2.0, capPos.y());
+    QPointF position = geometry.captionPosition(nodeId);
 
     QJsonDocument json = QJsonDocument::fromVariant(model.nodeData(nodeId, NodeRole::Style));
     NodeStyle nodeStyle(json.object());
@@ -246,45 +235,6 @@ void DefaultNodePainter::drawNodeCaption(QPainter *painter, NodeGraphicsObject &
     painter->setFont(f);
     painter->setPen(nodeStyle.FontColor);
     painter->drawText(position, name);
-
-    f.setBold(false);
-    f.setItalic(false);
-    painter->setFont(f);
-}
-
-void DefaultNodePainter::drawNodeLabel(QPainter *painter, NodeGraphicsObject &ngo) const
-{
-    AbstractGraphModel &model = ngo.graphModel();
-    NodeId const nodeId = ngo.nodeId();
-    AbstractNodeGeometry &geometry = ngo.nodeScene()->nodeGeometry();
-
-    if (!model.nodeData(nodeId, NodeRole::LabelVisible).toBool())
-        return;
-
-    QString const nickname = model.nodeData(nodeId, NodeRole::Label).toString();
-
-    QFont f = painter->font();
-    f.setBold(true);
-    f.setItalic(false);
-
-    QFontMetricsF metrics(f);
-
-    QRectF bounding = metrics.boundingRect(nickname);
-    QRectF capRect = geometry.captionRect(nodeId);
-    QPointF capPos = geometry.captionPosition(nodeId);
-    double centerX = capPos.x() + capRect.width() / 2.0;
-
-    double textHeight = metrics.height();
-    double y = capPos.y() - textHeight - 2.0;
-
-    QPointF position(centerX - bounding.width() / 2.0, y);
-
-    QJsonDocument json = QJsonDocument::fromVariant(model.nodeData(nodeId, NodeRole::Style));
-    NodeStyle nodeStyle(json.object());
-
-    painter->setFont(f);
-    painter->setPen(nodeStyle.FontColor);
-    painter->drawText(position, nickname);
 
     f.setBold(false);
     painter->setFont(f);
