@@ -101,8 +101,6 @@ public:
     /// Loops do not make any sense in uni-direction data propagation
     bool loopsEnabled() const override { return false; }
 
-    bool nodeZoomFitMenu(NodeId) override;
-
 Q_SIGNALS:
     void inPortDataWasSet(NodeId const, PortType const, PortIndex const);
 

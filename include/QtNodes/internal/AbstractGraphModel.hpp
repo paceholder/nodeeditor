@@ -188,8 +188,6 @@ public:
 
     virtual bool loopsEnabled() const { return true; }
 
-    virtual bool nodeZoomFitMenu(NodeId) { return false; }
-
 public:
     /**
      * Function clears connections attached to the ports that are scheduled to be
