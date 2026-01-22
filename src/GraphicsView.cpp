@@ -2,6 +2,7 @@
 
 #include "BasicGraphicsScene.hpp"
 #include "ConnectionGraphicsObject.hpp"
+#include "DataFlowGraphModel.hpp"
 #include "NodeGraphicsObject.hpp"
 #include "StyleCollection.hpp"
 #include "UndoCommands.hpp"
@@ -23,7 +24,9 @@
 #include <cmath>
 
 using QtNodes::BasicGraphicsScene;
+using QtNodes::DataFlowGraphModel;
 using QtNodes::GraphicsView;
+using QtNodes::NodeGraphicsObject;
 
 GraphicsView::GraphicsView(QWidget *parent)
     : QGraphicsView(parent)
@@ -75,8 +78,7 @@ QAction *GraphicsView::deleteSelectionAction() const
 void GraphicsView::setScene(BasicGraphicsScene *scene)
 {
     QGraphicsView::setScene(scene);
-    if (!scene)
-    {
+    if (!scene) {
         // Clear actions.
         delete _clearSelectionAction;
         delete _deleteSelectionAction;
@@ -186,7 +188,8 @@ void GraphicsView::contextMenuEvent(QContextMenuEvent *event)
         return;
     }
 
-    if (!nodeScene()) return;
+    if (!nodeScene())
+        return;
 
     auto const scenePos = mapToScene(event->pos());
 
@@ -291,14 +294,16 @@ void GraphicsView::setupScale(double scale)
 
 void GraphicsView::onDeleteSelectedObjects()
 {
-    if (!nodeScene()) return; 
+    if (!nodeScene())
+        return;
 
     nodeScene()->undoStack().push(new DeleteCommand(nodeScene()));
 }
 
 void GraphicsView::onDuplicateSelectedObjects()
 {
-    if (!nodeScene()) return; 
+    if (!nodeScene())
+        return;
 
     QPointF const pastePosition = scenePastePosition();
 
@@ -308,14 +313,16 @@ void GraphicsView::onDuplicateSelectedObjects()
 
 void GraphicsView::onCopySelectedObjects()
 {
-    if (!nodeScene()) return; 
+    if (!nodeScene())
+        return;
 
     nodeScene()->undoStack().push(new CopyCommand(nodeScene()));
 }
 
 void GraphicsView::onPasteObjects()
 {
-    if (!nodeScene()) return; 
+    if (!nodeScene())
+        return;
 
     QPointF const pastePosition = scenePastePosition();
     nodeScene()->undoStack().push(new PasteCommand(nodeScene(), pastePosition));
@@ -360,7 +367,8 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 {
     QGraphicsView::mouseMoveEvent(event);
 
-    if (!scene()) return;
+    if (!scene())
+        return;
 
     if (scene()->mouseGrabberItem() == nullptr && event->buttons() == Qt::LeftButton) {
         // Make sure shift is not being pressed
@@ -433,4 +441,23 @@ QPointF GraphicsView::scenePastePosition()
         origin = viewRect.center();
 
     return mapToScene(origin);
+}
+
+void GraphicsView::zoomFitAll()
+{
+    fitInView(scene()->itemsBoundingRect(), Qt::KeepAspectRatio);
+}
+
+void GraphicsView::zoomFitSelected()
+{
+    if (scene()->selectedItems().count() > 0) {
+        QRectF unitedBoundingRect{};
+
+        for (QGraphicsItem *item : scene()->selectedItems()) {
+            unitedBoundingRect = unitedBoundingRect.united(
+                item->mapRectToScene(item->boundingRect()));
+        }
+
+        fitInView(unitedBoundingRect, Qt::KeepAspectRatio);
+    }
 }
