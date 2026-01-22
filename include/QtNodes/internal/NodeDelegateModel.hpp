@@ -137,10 +137,6 @@ public:
 
     void setFrozenState(bool state) { _frozen = state; }
 
-    bool frozenMenu() const { return _frozenMenu; }
-
-    void setFrozenMenu(bool state) { _frozenMenu = state; }
-
 public Q_SLOTS:
     virtual void inputConnectionCreated(ConnectionId const &) {}
     virtual void inputConnectionDeleted(ConnectionId const &) {}
@@ -195,8 +191,6 @@ private:
     NodeStyle _nodeStyle;
 
     bool _frozen{false};
-
-    bool _frozenMenu{false};
 
     NodeValidationState _nodeValidationState;
 

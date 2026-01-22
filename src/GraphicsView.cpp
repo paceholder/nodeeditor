@@ -185,30 +185,21 @@ void GraphicsView::centerScene()
 
 void GraphicsView::contextMenuEvent(QContextMenuEvent *event)
 {
-    QGraphicsView::contextMenuEvent(event);
-    QMenu *menu = nullptr;
-
-    bool isFrozenMenu;
-
-    if (auto *dfModel = dynamic_cast<DataFlowGraphModel *>(&nodeScene()->graphModel())) {
-        if (auto n = qgraphicsitem_cast<NodeGraphicsObject *>(itemAt(event->pos()))) {
-            if (auto *delegate = dfModel->delegateModel<NodeDelegateModel>(n->nodeId())) {
-                isFrozenMenu = delegate->frozenMenu();
-            }
-        }
+    if (itemAt(event->pos())) {
+        QGraphicsView::contextMenuEvent(event);
+        return;
     }
 
-    if (itemAt(event->pos()) && isFrozenMenu) {
-        menu = nodeScene()->createFreezeMenu();
-    } else if (!itemAt(event->pos())) {
-        menu = nodeScene()->createSceneMenu(mapToScene(event->pos()));
-    }
+    if (!nodeScene())
+        return;
+
+    auto const scenePos = mapToScene(event->pos());
+
+    QMenu *menu = nodeScene()->createSceneMenu(scenePos);
 
     if (menu) {
         menu->exec(event->globalPos());
     }
-
-    return;
 }
 
 void GraphicsView::wheelEvent(QWheelEvent *event)

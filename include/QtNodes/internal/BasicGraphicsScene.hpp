@@ -110,8 +110,6 @@ public:
      */
     virtual QMenu *createSceneMenu(QPointF const scenePos);
 
-    QMenu *createFreezeMenu();
-
     void freezeModelAndConnections(bool isFreeze);
 
 Q_SIGNALS:
