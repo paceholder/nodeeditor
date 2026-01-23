@@ -125,6 +125,9 @@ Q_SIGNALS:
 
     /// Signal allows showing custom context menu upon clicking a node.
     void nodeContextMenu(NodeId const nodeId, QPointF const pos);
+    /// Signals to call Graphics View's zoomFit methods
+    void zoomFitAllClicked();
+    void zoomFitSelectedClicked();
 
 private:
     /**
