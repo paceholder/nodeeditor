@@ -13,6 +13,7 @@ set(CALC_HEADER_FILES
   NumberDisplayDataModel.hpp
   NumberSourceDataModel.hpp
   SubtractionModel.hpp
+  LongProcessingRandomNumber.hpp
 )
 
 add_executable(calculator

@@ -303,6 +303,10 @@ QVariant DataFlowGraphModel::nodeData(NodeId nodeId, NodeRole role) const
         auto processingStatus = model->processingStatus();
         result = QVariant::fromValue(processingStatus);
     } break;
+
+    case NodeRole::ProgressValue:
+        result = model->progressValue();
+        break;
     }
 
     return result;
@@ -382,8 +386,10 @@ bool DataFlowGraphModel::setNodeData(NodeId nodeId, NodeRole role, QVariant valu
         }
         Q_EMIT nodeUpdated(nodeId);
     } break;
-    }
 
+    case NodeRole::ProgressValue:
+        break;
+    }
     return result;
 }
 
