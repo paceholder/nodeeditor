@@ -328,21 +328,6 @@ void DefaultNodePainter::drawValidationIcon(QPainter *painter, NodeGraphicsObjec
     QPointF center(size.width(), 0.0);
     center += QPointF(iconSize.width() / 2.0, -iconSize.height() / 2.0);
 
-<<<<<<< HEAD
-=======
-    painter->save();
-
-    // Draw a colored circle behind the icon to highlight validation issues
-    painter->setPen(Qt::NoPen);
-    painter->setBrush(color);
-    painter->drawEllipse(center, iconSize.width() / 2.0 + 2.0, iconSize.height() / 2.0 + 2.0);
-
-    QPainter imgPainter(&pixmap);
-    imgPainter.setCompositionMode(QPainter::CompositionMode_SourceIn);
-    imgPainter.fillRect(pixmap.rect(), nodeStyle.FontColor);
-    imgPainter.end();
-
->>>>>>> f953fcab52f505a74271c5f665d6627dce63b66d
     painter->drawPixmap(center.toPoint() - QPoint(iconSize.width() / 2, iconSize.height() / 2),
                         pixmap);
 }

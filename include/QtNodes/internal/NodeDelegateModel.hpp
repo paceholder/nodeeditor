@@ -68,9 +68,6 @@ public:
     /// Validation State will default to Valid, but you can manipulate it by overriding in an inherited class
     virtual NodeValidationState validationState() const { return _nodeValidationState; }
 
-    /// Returns the curent processing status
-    virtual NodeProcessingStatus processingStatus() const { return _processingStatus; }
-
     QJsonObject save() const override;
 
     void load(QJsonObject const &) override;
