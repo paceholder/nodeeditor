@@ -11,6 +11,10 @@
 
 #include <QUndoStack>
 
+#include <QHeaderView>
+#include <QLineEdit>
+#include <QTreeWidget>
+#include <QWidgetAction>
 #include <QtWidgets/QFileDialog>
 #include <QtWidgets/QGraphicsSceneMoveEvent>
 
