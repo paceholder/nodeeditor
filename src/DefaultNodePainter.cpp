@@ -5,7 +5,6 @@
 #include "BasicGraphicsScene.hpp"
 #include "ConnectionGraphicsObject.hpp"
 #include "ConnectionIdUtils.hpp"
-#include "DataFlowGraphModel.hpp"
 #include "NodeDelegateModel.hpp"
 #include "NodeGraphicsObject.hpp"
 #include "NodeState.hpp"
@@ -33,13 +32,9 @@ void DefaultNodePainter::paint(QPainter *painter, NodeGraphicsObject &ngo) const
 
     drawEntryLabels(painter, ngo);
 
-    drawProcessingIndicator(painter, ngo);
-
     drawResizeRect(painter, ngo);
 
     drawValidationIcon(painter, ngo);
-
-    drawNodeLabel(painter, ngo);
 }
 
 void DefaultNodePainter::drawNodeRect(QPainter *painter, NodeGraphicsObject &ngo) const
@@ -57,7 +52,6 @@ void DefaultNodePainter::drawNodeRect(QPainter *painter, NodeGraphicsObject &ngo
     NodeStyle nodeStyle(json.object());
 
     QVariant var = model.nodeData(nodeId, NodeRole::ValidationState);
-
     bool invalid = false;
 
     QColor color = ngo.isSelected() ? nodeStyle.SelectedBoundaryColor
@@ -99,7 +93,6 @@ void DefaultNodePainter::drawNodeRect(QPainter *painter, NodeGraphicsObject &ngo
 
         painter->setBrush(gradient);
     }
-
     QRectF boundary(0, 0, size.width(), size.height());
 
     double const radius = 3.0;
@@ -230,21 +223,12 @@ void DefaultNodePainter::drawNodeCaption(QPainter *painter, NodeGraphicsObject &
     if (!model.nodeData(nodeId, NodeRole::CaptionVisible).toBool())
         return;
 
-    QString const nickname = model.nodeData(nodeId, NodeRole::Label).toString();
     QString const name = model.nodeData(nodeId, NodeRole::Caption).toString();
 
     QFont f = painter->font();
-    f.setBold(nickname.isEmpty());
-    f.setItalic(!nickname.isEmpty());
+    f.setBold(true);
 
-    QFontMetricsF metrics(f);
-
-    QRectF bounding = metrics.boundingRect(name);
-    QRectF capRect = geometry.captionRect(nodeId);
-    QPointF capPos = geometry.captionPosition(nodeId);
-    double centerX = capPos.x() + capRect.width() / 2.0;
-
-    QPointF position(centerX - bounding.width() / 2.0, capPos.y());
+    QPointF position = geometry.captionPosition(nodeId);
 
     QJsonDocument json = QJsonDocument::fromVariant(model.nodeData(nodeId, NodeRole::Style));
     NodeStyle nodeStyle(json.object());
@@ -252,45 +236,6 @@ void DefaultNodePainter::drawNodeCaption(QPainter *painter, NodeGraphicsObject &
     painter->setFont(f);
     painter->setPen(nodeStyle.FontColor);
     painter->drawText(position, name);
-
-    f.setBold(false);
-    f.setItalic(false);
-    painter->setFont(f);
-}
-
-void DefaultNodePainter::drawNodeLabel(QPainter *painter, NodeGraphicsObject &ngo) const
-{
-    AbstractGraphModel &model = ngo.graphModel();
-    NodeId const nodeId = ngo.nodeId();
-    AbstractNodeGeometry &geometry = ngo.nodeScene()->nodeGeometry();
-
-    if (!model.nodeData(nodeId, NodeRole::LabelVisible).toBool())
-        return;
-
-    QString const nickname = model.nodeData(nodeId, NodeRole::Label).toString();
-
-    QFont f = painter->font();
-    f.setBold(true);
-    f.setItalic(false);
-
-    QFontMetricsF metrics(f);
-
-    QRectF bounding = metrics.boundingRect(nickname);
-    QRectF capRect = geometry.captionRect(nodeId);
-    QPointF capPos = geometry.captionPosition(nodeId);
-    double centerX = capPos.x() + capRect.width() / 2.0;
-
-    double textHeight = metrics.height();
-    double y = capPos.y() - textHeight - 2.0;
-
-    QPointF position(centerX - bounding.width() / 2.0, y);
-
-    QJsonDocument json = QJsonDocument::fromVariant(model.nodeData(nodeId, NodeRole::Style));
-    NodeStyle nodeStyle(json.object());
-
-    painter->setFont(f);
-    painter->setPen(nodeStyle.FontColor);
-    painter->drawText(position, nickname);
 
     f.setBold(false);
     painter->setFont(f);
@@ -347,41 +292,6 @@ void DefaultNodePainter::drawResizeRect(QPainter *painter, NodeGraphicsObject &n
 
         painter->drawEllipse(geometry.resizeHandleRect(nodeId));
     }
-}
-
-void DefaultNodePainter::drawProcessingIndicator(QPainter *painter, NodeGraphicsObject &ngo) const
-{
-    AbstractGraphModel &model = ngo.graphModel();
-    NodeId const nodeId = ngo.nodeId();
-
-    auto *dfModel = dynamic_cast<DataFlowGraphModel *>(&model);
-    if (!dfModel)
-        return;
-
-    auto *delegate = dfModel->delegateModel<NodeDelegateModel>(nodeId);
-    if (!delegate)
-        return;
-
-    AbstractNodeGeometry &geometry = ngo.nodeScene()->nodeGeometry();
-
-    QSize size = geometry.size(nodeId);
-
-    QPixmap pixmap = delegate->processingStatusIcon();
-    NodeStyle nodeStyle = delegate->nodeStyle();
-
-    ProcessingIconStyle iconStyle = nodeStyle.processingIconStyle;
-
-    qreal iconSize = iconStyle._size;
-    qreal margin = iconStyle._margin;
-
-    qreal x = margin;
-
-    if (iconStyle._pos == ProcessingIconPos::BottomRight) {
-        x = size.width() - iconSize - margin;
-    }
-
-    QRect r(x, size.height() - iconSize - margin, iconSize, iconSize);
-    painter->drawPixmap(r, pixmap);
 }
 
 void DefaultNodePainter::drawValidationIcon(QPainter *painter, NodeGraphicsObject &ngo) const

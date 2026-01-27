@@ -1,6 +1,10 @@
 #pragma once
 
+#include "NodeDelegateModel.hpp"
+#include "NodeGroup.hpp"
+#include "NodeState.hpp"
 #include <QIcon>
+#include <QRectF>
 #include <QtCore/QUuid>
 #include <QtWidgets/QGraphicsObject>
 
