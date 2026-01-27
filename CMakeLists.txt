@@ -169,6 +169,9 @@ target_compile_definitions(QtNodes
     QT_NO_KEYWORDS
 )
 
+if(MSVC)
+  string(REGEX REPLACE "/W[0-4]" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+endif()
 
 target_compile_options(QtNodes
   PRIVATE

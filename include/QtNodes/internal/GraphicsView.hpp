@@ -53,13 +53,17 @@ public Q_SLOTS:
 
     void setupScale(double scale);
 
-    void onDeleteSelectedObjects();
+    virtual void onDeleteSelectedObjects();
 
-    void onDuplicateSelectedObjects();
+    virtual void onDuplicateSelectedObjects();
 
-    void onCopySelectedObjects();
+    virtual void onCopySelectedObjects();
 
-    void onPasteObjects();
+    virtual void onPasteObjects();
+
+    void zoomFitAll();
+
+    void zoomFitSelected();
 
 Q_SIGNALS:
     void scaleChanged(double scale);

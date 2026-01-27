@@ -265,7 +265,7 @@ QVariant DataFlowGraphModel::nodeData(NodeId nodeId, NodeRole role) const
         break;
 
     case NodeRole::Style: {
-        auto style = StyleCollection::nodeStyle();
+        auto style = _models.at(nodeId)->nodeStyle();
         result = style.toJson().toVariantMap();
     } break;
 
@@ -295,18 +295,6 @@ QVariant DataFlowGraphModel::nodeData(NodeId nodeId, NodeRole role) const
         auto validationState = model->validationState();
         result = QVariant::fromValue(validationState);
     } break;
-
-    case NodeRole::LabelVisible:
-        result = _labelsVisible.at(nodeId);
-        break;
-
-    case NodeRole::Label:
-        result = _labels.at(nodeId);
-        break;
-
-    case NodeRole::LabelEditable:
-        result = model->labelEditable();
-        break;
 
     case NodeRole::ProcessingStatus: {
         auto processingStatus = model->processingStatus();
@@ -391,21 +379,6 @@ bool DataFlowGraphModel::setNodeData(NodeId nodeId, NodeRole role, QVariant valu
         }
         Q_EMIT nodeUpdated(nodeId);
     } break;
-
-    case NodeRole::LabelVisible: {
-        _labelsVisible[nodeId] = value.toBool();
-        Q_EMIT nodeUpdated(nodeId);
-        result = true;
-    } break;
-
-    case NodeRole::Label: {
-        _labels[nodeId] = value.toString();
-        Q_EMIT nodeUpdated(nodeId);
-        result = true;
-    } break;
-
-    case NodeRole::LabelEditable:
-        break;
     }
 
     return result;
