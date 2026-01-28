@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QtCore/QUuid>
+
 #include "Export.hpp"
 
 #include "Definitions.hpp"

@@ -2,6 +2,7 @@
 
 #include <utility>
 
+#include <QtCore/QUuid>
 #include <QtWidgets/QGraphicsObject>
 
 #include "ConnectionState.hpp"

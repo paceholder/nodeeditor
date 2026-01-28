@@ -5,6 +5,7 @@
 #include "BasicGraphicsScene.hpp"
 #include "ConnectionGraphicsObject.hpp"
 #include "ConnectionIdUtils.hpp"
+#include "DataFlowGraphModel.hpp"
 #include "NodeDelegateModel.hpp"
 #include "NodeGraphicsObject.hpp"
 #include "NodeState.hpp"
@@ -31,6 +32,8 @@ void DefaultNodePainter::paint(QPainter *painter, NodeGraphicsObject &ngo) const
     drawNodeCaption(painter, ngo);
 
     drawEntryLabels(painter, ngo);
+
+    drawProcessingIndicator(painter, ngo);
 
     drawResizeRect(painter, ngo);
 
@@ -292,6 +295,41 @@ void DefaultNodePainter::drawResizeRect(QPainter *painter, NodeGraphicsObject &n
 
         painter->drawEllipse(geometry.resizeHandleRect(nodeId));
     }
+}
+
+void DefaultNodePainter::drawProcessingIndicator(QPainter *painter, NodeGraphicsObject &ngo) const
+{
+    AbstractGraphModel &model = ngo.graphModel();
+    NodeId const nodeId = ngo.nodeId();
+
+    auto *dfModel = dynamic_cast<DataFlowGraphModel *>(&model);
+    if (!dfModel)
+        return;
+
+    auto *delegate = dfModel->delegateModel<NodeDelegateModel>(nodeId);
+    if (!delegate)
+        return;
+
+    AbstractNodeGeometry &geometry = ngo.nodeScene()->nodeGeometry();
+
+    QSize size = geometry.size(nodeId);
+
+    QPixmap pixmap = delegate->processingStatusIcon();
+    NodeStyle nodeStyle = delegate->nodeStyle();
+
+    ProcessingIconStyle iconStyle = nodeStyle.processingIconStyle;
+
+    qreal iconSize = iconStyle._size;
+    qreal margin = iconStyle._margin;
+
+    qreal x = margin;
+
+    if (iconStyle._pos == ProcessingIconPos::BottomRight) {
+        x = size.width() - iconSize - margin;
+    }
+
+    QRect r(x, size.height() - iconSize - margin, iconSize, iconSize);
+    painter->drawPixmap(r, pixmap);
 }
 
 void DefaultNodePainter::drawValidationIcon(QPainter *painter, NodeGraphicsObject &ngo) const

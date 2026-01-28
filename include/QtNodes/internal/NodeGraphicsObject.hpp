@@ -8,6 +8,8 @@
 #include <QtCore/QUuid>
 #include <QtWidgets/QGraphicsObject>
 
+#include "NodeState.hpp"
+
 class QGraphicsProxyWidget;
 
 namespace QtNodes {
