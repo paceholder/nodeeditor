@@ -34,7 +34,7 @@ Warning
 Branches
 --------
 
-There are branchses ``v2`` and ``v3`` for versions ``2.x.x`` and ``3.x``
+There are branches ``v2`` and ``v3`` for versions ``2.x.x`` and ``3.x``
 respectively. The branch ``master`` contains the latest dev state.
 
 
@@ -74,7 +74,7 @@ Dependencies
 ------------
 
 * Qt >5.15
-* CMake 3.8
+* CMake 3.11
 * Catch2
 
 
@@ -118,7 +118,7 @@ For building a static lib use:
 
 ::
 
-    cmake .. -BUILD_SHARED_LIBS=off
+    cmake .. -DBUILD_SHARED_LIBS=off
 
 Linux
 -----
@@ -193,9 +193,9 @@ For detailed testing documentation, see the `Testing Guide <https://qtnodes.read
 Help Needed
 ===========
 
-#. Python wrappring using PySide.
+#. Python wrapping using PySide.
 #. QML frontend.
-#. Wirting a ClangFormat config.
+#. Writing a ClangFormat config.
 
 Any suggestions are welcome!
 
@@ -220,7 +220,7 @@ Contribution
    #. Describe your issue in details
    #. Provide some use cases.
 
-#. I maintain this probject in my free time, when I am not busy with my work or
+#. I maintain this project in my free time, when I am not busy with my work or
    my family. **If I do not react or do not answer for too long, please ping
    me**.
 
@@ -288,7 +288,7 @@ every automotive developer. Thanks to modularity it is easy to implement new,
 custom features.
 
 
-.. image:: docs/_static/showcase_CANdevStudio.png
+.. image:: assets/showcase-candevstudio.png
 
 
 Chigraph
@@ -297,7 +297,7 @@ Chigraph
 `Chigraph <https://github.com/chigraph/chigraph>`_ is a visual programming
 language for beginners that is unique in that it is an intuitive flow graph:
 
-.. image:: docs/_static/chigraph.png
+.. image:: assets/chigraph.png
 
 
 It features easy bindings to C/C++, package management, and a cool interface.
@@ -310,4 +310,4 @@ Spkgen particle editor
 particles engine that uses a node-based interface to create particles effects for
 games
 
-.. image:: docs/_static/spkgen.png
+.. image:: assets/spkgen.png

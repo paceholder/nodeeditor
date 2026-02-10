@@ -1,0 +1,48 @@
+@startuml dataflow-diagram
+!theme plain
+skinparam backgroundColor #2B2B2B
+skinparam defaultFontColor #E0E0E0
+skinparam componentBorderColor #606060
+skinparam componentBackgroundColor #3C3F41
+skinparam arrowColor #4299E1
+skinparam noteBorderColor #606060
+skinparam noteBackgroundColor #4A4D4F
+
+skinparam rectangle {
+    BackgroundColor #3C3F41
+    BorderColor #606060
+    FontColor #E0E0E0
+    RoundCorner 15
+}
+
+rectangle "Source Node\n(NumberSourceDataModel)" as source #48BB78 {
+}
+
+rectangle "Operator Node\n(AdditionModel)" as operator #4299E1 {
+}
+
+rectangle "Display Node\n(NumberDisplayDataModel)" as display #ED8936 {
+}
+
+source -right-> operator : "outData()"
+operator -right-> display : "outData()"
+
+note bottom of source
+  **Emits data**
+  Creates values
+  (e.g., number input)
+end note
+
+note bottom of operator
+  **Processes data**
+  Receives via setInData()
+  Outputs via outData()
+end note
+
+note bottom of display
+  **Consumes data**
+  Receives and shows
+  the final result
+end note
+
+@enduml
