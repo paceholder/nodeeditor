@@ -16,3 +16,6 @@ add_subdirectory(dynamic_ports)
 
 add_subdirectory(lock_nodes_and_connections)
 
+add_subdirectory(node_validation)
+
+add_subdirectory(custom_painter)
