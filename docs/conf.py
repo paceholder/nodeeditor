@@ -21,6 +21,11 @@ if read_the_docs_build:
     configureDoxyfile(input_dir, output_dir)
     subprocess.call('doxygen', shell=True)
     breathe_projects['QtNodes'] = output_dir + '/xml/'
+else:
+    # Local build: use CMake-generated Doxygen XML
+    build_xml_path = '../build/docs/doxygen/xml/'
+    if os.path.exists(build_xml_path):
+        breathe_projects['QtNodes'] = build_xml_path
 
 
 # -- Project information -----------------------------------------------------

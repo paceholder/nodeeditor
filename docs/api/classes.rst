@@ -1,38 +1,56 @@
 QtNodes Class Reference
 =======================
 
-Basic Classes
--------------
+This page provides auto-generated API documentation from the source code.
+
+Core Classes
+------------
+
+Graph Model
+^^^^^^^^^^^
 
 .. doxygenclass:: QtNodes::AbstractGraphModel
    :members:
 
-.. doxygenstruct:: QtNodes::NodeDataType
+.. doxygenclass:: QtNodes::DataFlowGraphModel
    :members:
 
-.. doxygenclass:: QtNodes::NodeData
-   :members:
-
-.. doxygenstruct:: QtNodes::ConnectionId
-   :members:
+Scene and View
+^^^^^^^^^^^^^^
 
 .. doxygenclass:: QtNodes::BasicGraphicsScene
+   :members:
+
+.. doxygenclass:: QtNodes::DataFlowGraphicsScene
    :members:
 
 .. doxygenclass:: QtNodes::GraphicsView
    :members:
 
-.. doxygenclass:: QtNodes::GraphicsViewStyle
-   :members:
+Node Classes
+------------
+
+Graphics
+^^^^^^^^
 
 .. doxygenclass:: QtNodes::NodeGraphicsObject
    :members:
+   :no-link:
+
+.. doxygenclass:: QtNodes::NodeState
+   :members:
+
+Painting
+^^^^^^^^
 
 .. doxygenclass:: QtNodes::AbstractNodePainter
    :members:
 
 .. doxygenclass:: QtNodes::DefaultNodePainter
    :members:
+
+Geometry
+^^^^^^^^
 
 .. doxygenclass:: QtNodes::AbstractNodeGeometry
    :members:
@@ -43,50 +61,24 @@ Basic Classes
 .. doxygenclass:: QtNodes::DefaultVerticalNodeGeometry
    :members:
 
-.. doxygenclass:: QtNodes::NodeState
-   :members:
-
-.. doxygenclass:: QtNodes::NodeStyle
-   :members:
+Connection Classes
+------------------
 
 .. doxygenclass:: QtNodes::ConnectionGraphicsObject
+   :members:
+   :no-link:
+
+.. doxygenclass:: QtNodes::AbstractConnectionPainter
    :members:
 
 .. doxygenclass:: QtNodes::DefaultConnectionPainter
    :members:
 
-.. doxygenclass:: QtNodes::ConnectionStyle
-   :members:
-
 .. doxygenclass:: QtNodes::NodeConnectionInteraction
    :members:
 
-Undo Redo
----------
-
-.. doxygenclass:: QtNodes::DeleteCommand
-   :members:
-
-.. doxygenclass:: QtNodes::DuplicateCommand
-   :members:
-
-.. doxygenclass:: QtNodes::DisconnectCommand
-   :members:
-
-.. doxygenclass:: QtNodes::ConnectCommand
-   :members:
-
-.. doxygenclass:: QtNodes::MoveNodeCommand
-   :members:
-
-Dataflow Classes
-----------------
-
-.. doxygenclass:: QtNodes::DataFlowGraphicsScene
-   :members:
-
-.. doxygenclass:: QtNodes::DataFlowGraphModel
-   :members:
+Data Flow Classes
+-----------------
 
 .. doxygenclass:: QtNodes::NodeDelegateModel
    :members:
@@ -94,12 +86,75 @@ Dataflow Classes
 .. doxygenclass:: QtNodes::NodeDelegateModelRegistry
    :members:
 
-Definitions
------------
+.. doxygenclass:: QtNodes::NodeData
+   :members:
+
+Styling
+-------
+
+.. doxygenclass:: QtNodes::NodeStyle
+   :members:
+
+.. doxygenclass:: QtNodes::ConnectionStyle
+   :members:
+
+.. doxygenclass:: QtNodes::GraphicsViewStyle
+   :members:
+
+.. doxygenclass:: QtNodes::StyleCollection
+   :members:
+
+Undo Commands
+-------------
+
+.. doxygenclass:: QtNodes::CreateCommand
+   :members:
+
+.. doxygenclass:: QtNodes::DeleteCommand
+   :members:
+
+.. doxygenclass:: QtNodes::ConnectCommand
+   :members:
+
+.. doxygenclass:: QtNodes::DisconnectCommand
+   :members:
+
+.. doxygenclass:: QtNodes::MoveNodeCommand
+   :members:
+
+.. doxygenclass:: QtNodes::CopyCommand
+   :members:
+
+.. doxygenclass:: QtNodes::PasteCommand
+   :members:
+
+Data Types
+----------
+
+Structs
+^^^^^^^
+
+.. doxygenstruct:: QtNodes::NodeDataType
+   :members:
+
+.. doxygenstruct:: QtNodes::ConnectionId
+   :members:
+
+.. doxygenstruct:: QtNodes::NodeValidationState
+   :members:
+
+.. doxygenstruct:: QtNodes::ProcessingIconStyle
+   :members:
+
+Type Definitions
+^^^^^^^^^^^^^^^^
 
 .. doxygentypedef:: QtNodes::NodeId
 
 .. doxygentypedef:: QtNodes::PortIndex
+
+Enumerations
+^^^^^^^^^^^^
 
 .. doxygenenum:: QtNodes::NodeRole
 
@@ -107,6 +162,10 @@ Definitions
 
 .. doxygenenum:: QtNodes::PortRole
 
+.. doxygenenum:: QtNodes::PortType
+
 .. doxygenenum:: QtNodes::ConnectionPolicy
 
-.. doxygenenum:: QtNodes::PortType
+.. doxygenenum:: QtNodes::NodeProcessingStatus
+
+.. doxygenenum:: QtNodes::ProcessingIconPos
