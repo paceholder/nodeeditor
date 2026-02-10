@@ -1,3 +1,4 @@
+#include "ApplicationSetup.hpp"
 #include "TestGraphModel.hpp"
 #include "TestDataFlowNodes.hpp"
 
@@ -35,6 +36,7 @@ TEST_CASE("Loop detection configuration", "[loops]")
 
     SECTION("DataFlowGraphModel disables loops by default")
     {
+        auto app = applicationSetup();
         auto registry = std::make_shared<NodeDelegateModelRegistry>();
         registry->registerModel<TestSourceNode>("Sources");
 
@@ -57,6 +59,7 @@ TEST_CASE("Loop detection configuration", "[loops]")
 
 TEST_CASE("Loop detection in DataFlowGraphModel", "[loops]")
 {
+    auto app = applicationSetup();
     auto registry = std::make_shared<NodeDelegateModelRegistry>();
     registry->registerModel<TestSourceNode>("Sources");
     registry->registerModel<TestDisplayNode>("Sinks");
@@ -86,8 +89,9 @@ TEST_CASE("Loop detection in DataFlowGraphModel", "[loops]")
 
     SECTION("Indirect loop A->B->A is prevented")
     {
-        NodeId node1 = model.addNode("TestSourceNode");
-        NodeId node2 = model.addNode("TestSourceNode");
+        // Use TestDisplayNode which has both input and output ports
+        NodeId node1 = model.addNode("TestDisplayNode");
+        NodeId node2 = model.addNode("TestDisplayNode");
 
         // Create A->B connection
         ConnectionId conn1{node1, 0, node2, 0};
@@ -101,9 +105,10 @@ TEST_CASE("Loop detection in DataFlowGraphModel", "[loops]")
 
     SECTION("Three node loop A->B->C->A is prevented")
     {
-        NodeId node1 = model.addNode("TestSourceNode");
-        NodeId node2 = model.addNode("TestSourceNode");
-        NodeId node3 = model.addNode("TestSourceNode");
+        // Use TestDisplayNode which has both input and output ports
+        NodeId node1 = model.addNode("TestDisplayNode");
+        NodeId node2 = model.addNode("TestDisplayNode");
+        NodeId node3 = model.addNode("TestDisplayNode");
 
         // Create A->B
         ConnectionId conn1{node1, 0, node2, 0};
