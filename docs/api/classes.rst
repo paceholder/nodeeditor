@@ -52,7 +52,7 @@ Basic Classes
 .. doxygenclass:: QtNodes::ConnectionGraphicsObject
    :members:
 
-.. doxygenclass:: QtNodes::ConnectionPainter
+.. doxygenclass:: QtNodes::DefaultConnectionPainter
    :members:
 
 .. doxygenclass:: QtNodes::ConnectionStyle
