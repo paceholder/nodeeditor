@@ -132,7 +132,7 @@ inline QJsonObject toJson(ConnectionId const &connId)
 
     connJson["outNodeId"] = static_cast<qint64>(connId.outNodeId);
     connJson["outPortIndex"] = static_cast<qint64>(connId.outPortIndex);
-    connJson["intNodeId"] = static_cast<qint64>(connId.inNodeId);
+    connJson["inNodeId"] = static_cast<qint64>(connId.inNodeId);
     connJson["inPortIndex"] = static_cast<qint64>(connId.inPortIndex);
 
     return connJson;
@@ -140,9 +140,17 @@ inline QJsonObject toJson(ConnectionId const &connId)
 
 inline ConnectionId fromJson(QJsonObject const &connJson)
 {
+    // Support both "inNodeId" (correct) and "intNodeId" (legacy typo) for backward compatibility
+    NodeId inNodeId = InvalidNodeId;
+    if (connJson.contains("inNodeId")) {
+        inNodeId = static_cast<NodeId>(connJson["inNodeId"].toInt(InvalidNodeId));
+    } else if (connJson.contains("intNodeId")) {
+        inNodeId = static_cast<NodeId>(connJson["intNodeId"].toInt(InvalidNodeId));
+    }
+
     ConnectionId connId{static_cast<NodeId>(connJson["outNodeId"].toInt(InvalidNodeId)),
                         static_cast<PortIndex>(connJson["outPortIndex"].toInt(InvalidPortIndex)),
-                        static_cast<NodeId>(connJson["intNodeId"].toInt(InvalidNodeId)),
+                        inNodeId,
                         static_cast<PortIndex>(connJson["inPortIndex"].toInt(InvalidPortIndex))};
 
     return connId;

@@ -306,21 +306,32 @@ void DefaultNodePainter::drawProcessingIndicator(QPainter *painter, NodeGraphics
     if (!delegate)
         return;
 
+    // Skip if status is NoStatus
+    if (delegate->processingStatus() == NodeProcessingStatus::NoStatus)
+        return;
+
     AbstractNodeGeometry &geometry = ngo.nodeScene()->nodeGeometry();
 
     QSize size = geometry.size(nodeId);
 
     QPixmap pixmap = delegate->processingStatusIcon();
-    NodeStyle nodeStyle = delegate->nodeStyle();
+    if (pixmap.isNull())
+        return;
 
-    ProcessingIconStyle iconStyle = nodeStyle.processingIconStyle;
+    ProcessingIconStyle const &iconStyle = delegate->nodeStyle().processingIconStyle;
 
     qreal iconSize = iconStyle._size;
     qreal margin = iconStyle._margin;
 
-    qreal x = margin;
+    // Determine position, avoiding conflict with resize handle
+    ProcessingIconPos pos = iconStyle._pos;
+    bool isResizable = model.nodeFlags(nodeId) & NodeFlag::Resizable;
+    if (isResizable && pos == ProcessingIconPos::BottomRight) {
+        pos = ProcessingIconPos::BottomLeft;
+    }
 
-    if (iconStyle._pos == ProcessingIconPos::BottomRight) {
+    qreal x = margin;
+    if (pos == ProcessingIconPos::BottomRight) {
         x = size.width() - iconSize - margin;
     }
 

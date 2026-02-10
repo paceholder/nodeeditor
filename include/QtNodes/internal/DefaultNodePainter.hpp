@@ -37,6 +37,6 @@ public:
     void drawValidationIcon(QPainter *painter, NodeGraphicsObject &ngo) const;
 
 private:
-    QIcon _toolTipIcon{"://info-tooltip.svg"};
+    QIcon _toolTipIcon{":/info-tooltip.svg"};
 };
 } // namespace QtNodes
