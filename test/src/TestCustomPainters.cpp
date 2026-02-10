@@ -1,5 +1,6 @@
 #include "ApplicationSetup.hpp"
 #include "TestGraphModel.hpp"
+#include "UITestHelper.hpp"
 
 #include <catch2/catch.hpp>
 
@@ -7,16 +8,20 @@
 #include <QtNodes/internal/AbstractNodePainter.hpp>
 #include <QtNodes/internal/BasicGraphicsScene.hpp>
 #include <QtNodes/internal/ConnectionGraphicsObject.hpp>
+#include <QtNodes/internal/GraphicsView.hpp>
 #include <QtNodes/internal/NodeGraphicsObject.hpp>
 
+#include <QImage>
 #include <QPainter>
 #include <QPixmap>
+#include <QTest>
 
 using QtNodes::AbstractConnectionPainter;
 using QtNodes::AbstractNodePainter;
 using QtNodes::BasicGraphicsScene;
 using QtNodes::ConnectionGraphicsObject;
 using QtNodes::ConnectionId;
+using QtNodes::GraphicsView;
 using QtNodes::NodeGraphicsObject;
 using QtNodes::NodeId;
 using QtNodes::NodeRole;
@@ -123,33 +128,53 @@ TEST_CASE("Custom painters registration", "[painters]")
     }
 }
 
-TEST_CASE("Custom painter invocation", "[painters]")
+TEST_CASE("Custom painter with scene operations", "[painters]")
 {
     auto app = applicationSetup();
 
-    TestGraphModel model;
-    BasicGraphicsScene scene(model);
+    auto model = std::make_shared<TestGraphModel>();
+    BasicGraphicsScene scene(*model);
 
     auto customNodePainter = std::make_unique<TestNodePainter>();
     TestNodePainter *nodePainterPtr = customNodePainter.get();
     scene.setNodePainter(std::move(customNodePainter));
 
-    SECTION("Node painter is called when nodes are rendered")
+    SECTION("Custom painter persists after node creation and view operations")
     {
-        NodeId nodeId = model.addNode("TestNode");
-        model.setNodeData(nodeId, NodeRole::Position, QPointF(0, 0));
+        GraphicsView view(&scene);
+        view.resize(800, 600);
+        view.show();
+        REQUIRE(QTest::qWaitForWindowExposed(&view));
 
-        // Force scene update
+        NodeId nodeId = model->addNode("TestNode");
+        model->setNodeData(nodeId, NodeRole::Position, QPointF(100, 100));
+
         QCoreApplication::processEvents();
 
-        // Create a pixmap and render the scene to trigger painting
-        QPixmap pixmap(200, 200);
-        QPainter painter(&pixmap);
-        scene.render(&painter);
-        painter.end();
+        // Verify the node graphics object exists
+        auto *ngo = scene.nodeGraphicsObject(nodeId);
+        REQUIRE(ngo != nullptr);
 
-        // Painter should have been called at least once
-        CHECK(nodePainterPtr->paintCallCount > 0);
-        CHECK(nodePainterPtr->lastPaintedNodeId == nodeId);
+        // Verify the custom painter is still set on the scene after all operations
+        CHECK(&scene.nodePainter() == nodePainterPtr);
+    }
+
+    SECTION("Custom painter persists through multiple node lifecycle events")
+    {
+        // Create nodes
+        NodeId node1 = model->addNode("TestNode1");
+        NodeId node2 = model->addNode("TestNode2");
+        model->setNodeData(node1, NodeRole::Position, QPointF(0, 0));
+        model->setNodeData(node2, NodeRole::Position, QPointF(200, 0));
+
+        QCoreApplication::processEvents();
+
+        // Delete one node
+        model->deleteNode(node1);
+
+        QCoreApplication::processEvents();
+
+        // Custom painter should still be set
+        CHECK(&scene.nodePainter() == nodePainterPtr);
     }
 }

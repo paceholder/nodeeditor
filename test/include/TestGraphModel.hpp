@@ -241,8 +241,39 @@ public:
                 posObj["y"] = pos.y();
                 result["position"] = posObj;
             }
+            auto typeIt = data.find(NodeRole::Type);
+            if (typeIt != data.end()) {
+                result["type"] = typeIt->second.toString();
+            }
         }
         return result;
+    }
+
+    void loadNode(QJsonObject const &nodeJson) override
+    {
+        NodeId id = static_cast<NodeId>(nodeJson["id"].toInt());
+
+        _nodeIds.insert(id);
+
+        if (id >= _nextNodeId) {
+            _nextNodeId = id + 1;
+        }
+
+        QJsonObject posObj = nodeJson["position"].toObject();
+        QPointF pos(posObj["x"].toDouble(), posObj["y"].toDouble());
+        _nodeData[id][NodeRole::Position] = pos;
+
+        if (nodeJson.contains("type")) {
+            _nodeData[id][NodeRole::Type] = nodeJson["type"].toString();
+        } else {
+            _nodeData[id][NodeRole::Type] = QString("TestNode");
+        }
+
+        _nodeData[id][NodeRole::Caption] = QString("Node %1").arg(id);
+        _nodeData[id][NodeRole::InPortCount] = 1u;
+        _nodeData[id][NodeRole::OutPortCount] = 1u;
+
+        Q_EMIT nodeCreated(id);
     }
 
 private:
