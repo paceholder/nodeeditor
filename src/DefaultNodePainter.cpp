@@ -55,43 +55,47 @@ void DefaultNodePainter::drawNodeRect(QPainter *painter, NodeGraphicsObject &ngo
     NodeStyle nodeStyle(json.object());
 
     QVariant var = model.nodeData(nodeId, NodeRole::ValidationState);
+    bool invalid = false;
 
     QColor color = ngo.isSelected() ? nodeStyle.SelectedBoundaryColor
                                     : nodeStyle.NormalBoundaryColor;
 
-    auto validationState = NodeValidationState::State::Valid;
     if (var.canConvert<NodeValidationState>()) {
         auto state = var.value<NodeValidationState>();
-        validationState = state._state;
-        switch (validationState) {
-        case NodeValidationState::State::Error:
+        switch (state._state) {
+        case NodeValidationState::State::Error: {
+            invalid = true;
             color = nodeStyle.ErrorColor;
-            break;
-        case NodeValidationState::State::Warning:
+        } break;
+        case NodeValidationState::State::Warning: {
+            invalid = true;
             color = nodeStyle.WarningColor;
             break;
         default:
             break;
         }
+        }
     }
 
-    float penWidth = ngo.nodeState().hovered() ? nodeStyle.HoveredPenWidth : nodeStyle.PenWidth;
-    if (validationState != NodeValidationState::State::Valid) {
-        float factor = (validationState == NodeValidationState::State::Error) ? 3.0f : 2.0f;
-        penWidth *= factor;
+    if (ngo.nodeState().hovered()) {
+        QPen p(color, nodeStyle.HoveredPenWidth);
+        painter->setPen(p);
+    } else {
+        QPen p(color, nodeStyle.PenWidth);
+        painter->setPen(p);
     }
 
-    QPen p(color, penWidth);
-    painter->setPen(p);
+    if (invalid) {
+        painter->setBrush(color);
+    } else {
+        QLinearGradient gradient(QPointF(0.0, 0.0), QPointF(2.0, size.height()));
+        gradient.setColorAt(0.0, nodeStyle.GradientColor0);
+        gradient.setColorAt(0.10, nodeStyle.GradientColor1);
+        gradient.setColorAt(0.90, nodeStyle.GradientColor2);
+        gradient.setColorAt(1.0, nodeStyle.GradientColor3);
 
-    QLinearGradient gradient(QPointF(0.0, 0.0), QPointF(2.0, size.height()));
-    gradient.setColorAt(0.0, nodeStyle.GradientColor0);
-    gradient.setColorAt(0.10, nodeStyle.GradientColor1);
-    gradient.setColorAt(0.90, nodeStyle.GradientColor2);
-    gradient.setColorAt(1.0, nodeStyle.GradientColor3);
-
-    painter->setBrush(gradient);
-
+        painter->setBrush(gradient);
+    }
     QRectF boundary(0, 0, size.width(), size.height());
 
     double const radius = 3.0;
@@ -365,25 +369,16 @@ void DefaultNodePainter::drawValidationIcon(QPainter *painter, NodeGraphicsObjec
     QColor color = (state._state == NodeValidationState::State::Error) ? nodeStyle.ErrorColor
                                                                        : nodeStyle.WarningColor;
 
+    QPainter imgPainter(&pixmap);
+    imgPainter.setCompositionMode(QPainter::CompositionMode_SourceIn);
+    imgPainter.fillRect(pixmap.rect(), color);
+    imgPainter.end();
+
     QPointF center(size.width(), 0.0);
     center += QPointF(iconSize.width() / 2.0, -iconSize.height() / 2.0);
 
-    painter->save();
-
-    // Draw a colored circle behind the icon to highlight validation issues
-    painter->setPen(Qt::NoPen);
-    painter->setBrush(color);
-    painter->drawEllipse(center, iconSize.width() / 2.0 + 2.0, iconSize.height() / 2.0 + 2.0);
-
-    QPainter imgPainter(&pixmap);
-    imgPainter.setCompositionMode(QPainter::CompositionMode_SourceIn);
-    imgPainter.fillRect(pixmap.rect(), nodeStyle.FontColor);
-    imgPainter.end();
-
     painter->drawPixmap(center.toPoint() - QPoint(iconSize.width() / 2, iconSize.height() / 2),
                         pixmap);
-
-    painter->restore();
 }
 
 } // namespace QtNodes

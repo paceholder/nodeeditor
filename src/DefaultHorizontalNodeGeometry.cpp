@@ -1,4 +1,5 @@
 #include "DefaultHorizontalNodeGeometry.hpp"
+
 #include "AbstractGraphModel.hpp"
 #include "NodeData.hpp"
 

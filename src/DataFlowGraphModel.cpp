@@ -586,6 +586,7 @@ void DataFlowGraphModel::loadNode(QJsonObject const &nodeJson)
                 &NodeDelegateModel::portsInserted,
                 this,
                 &DataFlowGraphModel::portsInserted);
+
         connect(model.get(), &NodeDelegateModel::requestNodeUpdate, this, [restoredNodeId, this]() {
             Q_EMIT nodeUpdated(restoredNodeId);
         });

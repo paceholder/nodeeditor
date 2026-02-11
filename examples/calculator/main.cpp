@@ -112,6 +112,11 @@ int main(int argc, char *argv[])
         mainWidget.setWindowModified(true);
     });
 
+    if (scene->groupingEnabled()) {
+        auto loadGroupAction = menu->addAction("Load Group...");
+        QObject::connect(loadGroupAction, &QAction::triggered, [scene] { scene->loadGroupFile(); });
+    }
+
     mainWidget.setWindowTitle("[*]Data Flow: simplest calculator");
     mainWidget.resize(800, 600);
     // Center window.

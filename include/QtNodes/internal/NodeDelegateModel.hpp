@@ -65,14 +65,14 @@ public:
 
     virtual ~NodeDelegateModel() = default;
 
-    /// It is possible to hide caption in GUI
-    virtual bool captionVisible() const { return true; }
-
     /// Name makes this model unique
     virtual QString name() const = 0;
 
     /// Caption is used in GUI
     virtual QString caption() const = 0;
+
+    /// It is possible to hide caption in GUI
+    virtual bool captionVisible() const { return true; }
 
     /// Port caption is used in GUI to label individual ports
     virtual QString portCaption(PortType, PortIndex) const { return QString(); }
@@ -90,10 +90,11 @@ public:
 
     void load(QJsonObject const &) override;
 
-    void setValidationState(const NodeValidationState &validationState);
-
     void setNodeProcessingStatus(NodeProcessingStatus status);
 
+    void setValidationState(const NodeValidationState &validationState);
+
+public:
     virtual unsigned int nPorts(PortType portType) const = 0;
 
     virtual NodeDataType dataType(PortType portType, PortIndex portIndex) const = 0;
@@ -146,7 +147,6 @@ Q_SIGNALS:
     void dataInvalidated(PortIndex const index);
 
     void computingStarted();
-
     void computingFinished();
 
     void embeddedWidgetSizeUpdated();
@@ -160,6 +160,7 @@ Q_SIGNALS:
     void requestNodeUpdate();
 
     /// Call this function before deleting the data associated with ports.
+
     /**
      * @brief Call this function before deleting the data associated with ports.
      * The function notifies the Graph Model and makes it remove and recompute the
