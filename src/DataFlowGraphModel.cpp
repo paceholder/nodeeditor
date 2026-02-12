@@ -444,6 +444,9 @@ bool DataFlowGraphModel::setPortData(
     switch (role) {
     case PortRole::Data:
         if (portType == PortType::In) {
+            if (model->frozen())
+                return false;
+
             model->setInData(value.value<std::shared_ptr<NodeData>>(), portIndex);
 
             // Triggers repainting on the scene.

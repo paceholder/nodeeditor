@@ -1,8 +1,10 @@
 #pragma once
 
 #include "BasicGraphicsScene.hpp"
+#include "ConnectionGraphicsObject.hpp"
 #include "DataFlowGraphModel.hpp"
 #include "Export.hpp"
+#include "NodeConnectionInteraction.hpp"
 
 namespace QtNodes {
 
@@ -22,6 +24,7 @@ public:
 public:
     std::vector<NodeId> selectedNodes() const;
     QMenu *createSceneMenu(QPointF const scenePos) override;
+    void updateConnectionGraphics(const std::unordered_set<ConnectionId> &connections, bool state);
 
 public Q_SLOTS:
     bool save() const;

@@ -9,7 +9,6 @@
 
 #include <QtGui/QIcon>
 
-
 namespace QtNodes {
 
 QPainterPath DefaultConnectionPainter::cubicPath(ConnectionGraphicsObject const &connection) const
@@ -27,11 +26,12 @@ QPainterPath DefaultConnectionPainter::cubicPath(ConnectionGraphicsObject const 
     return cubic;
 }
 
-void DefaultConnectionPainter::drawSketchLine(QPainter *painter, ConnectionGraphicsObject const &cgo) const
+void DefaultConnectionPainter::drawSketchLine(QPainter *painter,
+                                              ConnectionGraphicsObject const &cgo) const
 {
     ConnectionState const &state = cgo.connectionState();
 
-    if (state.requiresPort()) {
+    if (state.requiresPort() || state.frozen()) {
         auto const &connectionStyle = QtNodes::StyleCollection::connectionStyle();
 
         QPen pen;
@@ -49,7 +49,8 @@ void DefaultConnectionPainter::drawSketchLine(QPainter *painter, ConnectionGraph
     }
 }
 
-void DefaultConnectionPainter::drawHoveredOrSelected(QPainter *painter, ConnectionGraphicsObject const &cgo) const
+void DefaultConnectionPainter::drawHoveredOrSelected(QPainter *painter,
+                                                     ConnectionGraphicsObject const &cgo) const
 {
     bool const hovered = cgo.connectionState().hovered();
     bool const selected = cgo.isSelected();
@@ -74,11 +75,12 @@ void DefaultConnectionPainter::drawHoveredOrSelected(QPainter *painter, Connecti
     }
 }
 
-void DefaultConnectionPainter::drawNormalLine(QPainter *painter, ConnectionGraphicsObject const &cgo) const
+void DefaultConnectionPainter::drawNormalLine(QPainter *painter,
+                                              ConnectionGraphicsObject const &cgo) const
 {
     ConnectionState const &state = cgo.connectionState();
 
-    if (state.requiresPort())
+    if (state.requiresPort() || state.frozen())
         return;
 
     // colors
@@ -132,6 +134,7 @@ void DefaultConnectionPainter::drawNormalLine(QPainter *painter, ConnectionGraph
         painter->setBrush(Qt::NoBrush);
 
         QColor cOut = normalColorOut;
+
         if (selected)
             cOut = cOut.darker(200);
         p.setColor(cOut);
@@ -200,7 +203,8 @@ void DefaultConnectionPainter::paint(QPainter *painter, ConnectionGraphicsObject
     painter->drawEllipse(cgo.in(), pointRadius, pointRadius);
 }
 
-QPainterPath DefaultConnectionPainter::getPainterStroke(ConnectionGraphicsObject const &connection) const
+QPainterPath DefaultConnectionPainter::getPainterStroke(
+    ConnectionGraphicsObject const &connection) const
 {
     auto cubic = cubicPath(connection);
 
