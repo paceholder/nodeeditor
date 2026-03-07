@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 128 128">
+  <!-- Generator: Adobe Illustrator 29.8.3, SVG Export Plug-In . SVG Version: 2.1.1 Build 3)  -->
+  <defs>
+    <style>
+      .st0, .st1, .st2, .st3 {
+        fill: #fff;
+      }
+
+      .st1 {
+        opacity: .6;
+      }
+
+      .st1, .st2, .st3 {
+        isolation: isolate;
+      }
+
+      .st2 {
+        opacity: .4;
+      }
+
+      .st3 {
+        opacity: .8;
+      }
+    </style>
+  </defs>
+  <rect class="st0" x="4.68" y="9.94" width="118.64" height="18.51"/>
+  <rect class="st3" x="4.67" y="33.65" width="118.64" height="18.51"/>
+  <rect class="st1" x="4.69" y="57.35" width="118.64" height="18.51"/>
+  <rect class="st2" x="4.69" y="81.05" width="70.17" height="18.51"/>
+  <rect class="st1" x="66.81" y="109.99" width="8.06" height="8.06"/>
+  <rect class="st1" x="10.34" y="110" width="8.06" height="8.06"/>
+  <rect class="st1" x="24.46" y="109.99" width="8.06" height="8.06"/>
+  <rect class="st1" x="38.57" y="109.98" width="8.06" height="8.06"/>
+  <rect class="st1" x="52.69" y="110" width="8.06" height="8.06"/>
+  <rect class="st1" x="80.92" y="109.98" width="8.06" height="8.06"/>
+  <rect class="st1" x="95.04" y="110" width="8.06" height="8.06"/>
+  <rect class="st1" x="109.16" y="109.99" width="8.06" height="8.06"/>
+  <rect class="st1" x="95.05" y="86.29" width="8.06" height="8.06"/>
+  <rect class="st1" x="80.93" y="86.27" width="8.06" height="8.06"/>
+  <rect class="st1" x="109.17" y="86.28" width="8.06" height="8.06"/>
+</svg>
