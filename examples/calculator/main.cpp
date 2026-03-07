@@ -41,7 +41,7 @@ static std::shared_ptr<NodeDelegateModelRegistry> registerDataModels()
 
     ret->registerModel<DivisionModel>("Operators");
 
-    ret->registerModel<RandomNumberModel>("Operators");
+    ret->registerModel<LongProcessingRandomNumber>("Operators");
 
     return ret;
 }

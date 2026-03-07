@@ -21,6 +21,14 @@ NodeStyle::NodeStyle()
     // order fiasco: https://isocpp.org/wiki/faq/ctors#static-init-order
     initResources();
 
+    // Initialize status icons after resources are loaded
+    statusUpdated = QIcon(":/status_icons/updated.svg");
+    statusProcessing = QIcon(":/status_icons/processing.svg");
+    statusPending = QIcon(":/status_icons/pending.svg");
+    statusInvalid = QIcon(":/status_icons/failed.svg");
+    statusEmpty = QIcon(":/status_icons/empty.svg");
+    statusPartial = QIcon(":/status_icons/partial.svg");
+
     // This configuration is stored inside the compiled unit and is loaded statically
     loadJsonFile(":DefaultStyle.json");
 }
@@ -155,4 +163,17 @@ QJsonObject NodeStyle::toJson() const
     root["NodeStyle"] = obj;
 
     return root;
+}
+
+void NodeStyle::setBackgroundColor(QColor const &color)
+{
+    GradientColor0 = color;
+    GradientColor1 = color;
+    GradientColor2 = color;
+    GradientColor3 = color;
+}
+
+QColor NodeStyle::backgroundColor() const
+{
+    return GradientColor0;
 }
