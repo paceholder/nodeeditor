@@ -20,9 +20,7 @@ NodeDataType MathOperationDataModel::dataType(PortType, PortIndex) const
 
 std::shared_ptr<NodeData> MathOperationDataModel::outData(PortIndex)
 {
-    auto output = std::static_pointer_cast<NodeData>(_result);
-
-    return output;
+    return std::static_pointer_cast<NodeData>(_result);
 }
 
 void MathOperationDataModel::setInData(std::shared_ptr<NodeData> data, PortIndex portIndex)
