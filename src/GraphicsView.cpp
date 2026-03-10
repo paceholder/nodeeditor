@@ -3,6 +3,8 @@
 #include "BasicGraphicsScene.hpp"
 #include "ConnectionGraphicsObject.hpp"
 #include "DataFlowGraphModel.hpp"
+#include "Definitions.hpp"
+#include "GroupGraphicsObject.hpp"
 #include "NodeGraphicsObject.hpp"
 #include "StyleCollection.hpp"
 #include "UndoCommands.hpp"
@@ -32,6 +34,7 @@ GraphicsView::GraphicsView(QWidget *parent)
     : QGraphicsView(parent)
     , _clearSelectionAction(Q_NULLPTR)
     , _deleteSelectionAction(Q_NULLPTR)
+    , _cutSelectionAction(Q_NULLPTR)
     , _duplicateSelectionAction(Q_NULLPTR)
     , _copySelectionAction(Q_NULLPTR)
     , _pasteAction(Q_NULLPTR)
@@ -119,6 +122,21 @@ void GraphicsView::setScene(BasicGraphicsScene *scene)
     }
 
     {
+        delete _cutSelectionAction;
+        _cutSelectionAction = new QAction(QStringLiteral("Cut Selection"), this);
+        _cutSelectionAction->setShortcutContext(Qt::ShortcutContext::WidgetShortcut);
+        _cutSelectionAction->setShortcut(QKeySequence(QKeySequence::Cut));
+        _cutSelectionAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_X));
+        _cutSelectionAction->setAutoRepeat(false);
+        connect(_cutSelectionAction, &QAction::triggered, [this] {
+            onCopySelectedObjects();
+            onDeleteSelectedObjects();
+        });
+
+        addAction(_cutSelectionAction);
+    }
+
+    {
         delete _duplicateSelectionAction;
         _duplicateSelectionAction = new QAction(QStringLiteral("Duplicate Selection"), this);
         _duplicateSelectionAction->setShortcutContext(Qt::ShortcutContext::WidgetShortcut);
@@ -183,21 +201,38 @@ void GraphicsView::centerScene()
 
 void GraphicsView::contextMenuEvent(QContextMenuEvent *event)
 {
-    if (itemAt(event->pos())) {
-        QGraphicsView::contextMenuEvent(event);
-        return;
+    QGraphicsView::contextMenuEvent(event);
+    QMenu *menu = nullptr;
+    const QPointF scenePos = mapToScene(event->pos());
+
+    auto clickedItems = items(event->pos());
+
+    for (QGraphicsItem *item : clickedItems) {
+        if (auto *nodeItem = qgraphicsitem_cast<NodeGraphicsObject *>(item)) {
+            Q_UNUSED(nodeItem);
+            menu = nodeScene()->createStdMenu(scenePos);
+            break;
+        }
+
+        if (auto *groupItem = qgraphicsitem_cast<GroupGraphicsObject *>(item)) {
+            menu = nodeScene()->createGroupMenu(scenePos, groupItem);
+            break;
+        }
     }
 
-    if (!nodeScene())
-        return;
-
-    auto const scenePos = mapToScene(event->pos());
-
-    QMenu *menu = nodeScene()->createSceneMenu(scenePos);
+    if (!menu) {
+        if (!clickedItems.empty()) {
+            menu = nodeScene()->createStdMenu(scenePos);
+        } else {
+            menu = nodeScene()->createSceneMenu(scenePos);
+        }
+    }
 
     if (menu) {
         menu->exec(event->globalPos());
     }
+
+    return;
 }
 
 void GraphicsView::wheelEvent(QWheelEvent *event)

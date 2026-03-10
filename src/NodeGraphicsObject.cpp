@@ -1,5 +1,4 @@
 #include "NodeGraphicsObject.hpp"
-
 #include "AbstractGraphModel.hpp"
 #include "AbstractNodeGeometry.hpp"
 #include "AbstractNodePainter.hpp"
@@ -8,8 +7,10 @@
 #include "ConnectionIdUtils.hpp"
 #include "NodeConnectionInteraction.hpp"
 #include "NodeDelegateModel.hpp"
+#include "NodeGroup.hpp"
 #include "StyleCollection.hpp"
 #include "UndoCommands.hpp"
+#include <QString>
 
 #include <QtWidgets/QGraphicsEffect>
 #include <QtWidgets/QtWidgets>
@@ -22,6 +23,10 @@ NodeGraphicsObject::NodeGraphicsObject(BasicGraphicsScene &scene, NodeId nodeId)
     : _nodeId(nodeId)
     , _graphModel(scene.graphModel())
     , _nodeState(*this)
+    , _locked(false)
+    , _draggingIntoGroup(false)
+    , _possibleGroup(nullptr)
+    , _originalGroupSize()
     , _proxyWidget(nullptr)
 {
     scene.addItem(this);
@@ -64,8 +69,6 @@ NodeGraphicsObject::NodeGraphicsObject(BasicGraphicsScene &scene, NodeId nodeId)
         if (_nodeId == nodeId)
             setLockedState();
     });
-
-    QVariant var = _graphModel.nodeData(_nodeId, NodeRole::ProcessingStatus);
 }
 
 AbstractGraphModel &NodeGraphicsObject::graphModel() const
@@ -141,6 +144,11 @@ void NodeGraphicsObject::setGeometryChanged()
     prepareGeometryChange();
 }
 
+void NodeGraphicsObject::setNodeGroup(std::shared_ptr<NodeGroup> group)
+{
+    _nodeGroup = group;
+}
+
 void NodeGraphicsObject::moveConnections() const
 {
     auto const &connected = _graphModel.allConnectionIds(_nodeId);
@@ -188,7 +196,8 @@ QVariant NodeGraphicsObject::itemChange(GraphicsItemChange change, const QVarian
 
 void NodeGraphicsObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    if (graphModel().nodeFlags(_nodeId) & NodeFlag::Locked) {
+    if (_locked) {
+        nodeScene()->clearSelection();
         return;
     }
 
@@ -292,11 +301,50 @@ void NodeGraphicsObject::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
             event->accept();
         }
     } else {
-        auto diff = event->pos() - event->lastPos();
+        QGraphicsObject::mouseMoveEvent(event);
 
-        nodeScene()->undoStack().push(new MoveNodeCommand(nodeScene(), diff));
-
-        event->accept();
+        if (event->lastPos() != event->pos()) {
+            auto diff = event->pos() - event->lastPos();
+            if (nodeScene()->groupingEnabled()) {
+                if (auto nodeGroup = _nodeGroup.lock(); nodeGroup) {
+                    nodeGroup->groupGraphicsObject().moveConnections();
+                    if (nodeGroup->groupGraphicsObject().locked()) {
+                        nodeGroup->groupGraphicsObject().moveNodes(diff);
+                    }
+                } else {
+                    moveConnections();
+                    // if it intersects with a group, expand group
+                    QList<QGraphicsItem *> overlapItems = collidingItems();
+                    for (auto &item : overlapItems) {
+                        auto ggo = qgraphicsitem_cast<GroupGraphicsObject *>(item);
+                        if (ggo != nullptr) {
+                            if (!ggo->locked()) {
+                                if (!_draggingIntoGroup) {
+                                    _draggingIntoGroup = true;
+                                    _possibleGroup = ggo;
+                                    _originalGroupSize = _possibleGroup->mapRectToScene(ggo->rect());
+                                    _possibleGroup->setPossibleChild(this);
+                                    break;
+                                } else {
+                                    if (ggo == _possibleGroup) {
+                                        if (!boundingRect().intersects(
+                                                mapRectFromScene(_originalGroupSize))) {
+                                            _draggingIntoGroup = false;
+                                            _originalGroupSize = QRectF();
+                                            _possibleGroup->unsetPossibleChild();
+                                            _possibleGroup = nullptr;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                moveConnections();
+            }
+        }
+        event->ignore();
     }
 
     QRectF r = nodeScene()->sceneRect();
@@ -315,6 +363,15 @@ void NodeGraphicsObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     // position connections precisely after fast node move
     moveConnections();
 
+    if (nodeScene()->groupingEnabled() && _draggingIntoGroup && _possibleGroup
+        && _nodeGroup.expired()) {
+        nodeScene()->addNodeToGroup(_nodeId, _possibleGroup->group().id());
+        _possibleGroup->unsetPossibleChild();
+        _draggingIntoGroup = false;
+        _originalGroupSize = QRectF();
+        _possibleGroup = nullptr;
+    }
+
     nodeScene()->nodeClicked(_nodeId);
 }
 
@@ -324,6 +381,11 @@ void NodeGraphicsObject::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
     QList<QGraphicsItem *> overlapItems = collidingItems();
 
     for (QGraphicsItem *item : overlapItems) {
+        if (auto group = qgraphicsitem_cast<GroupGraphicsObject *>(item)) {
+            Q_UNUSED(group);
+            continue;
+        }
+
         if (item->zValue() > 0.0) {
             item->setZValue(0.0);
         }
@@ -381,6 +443,28 @@ void NodeGraphicsObject::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 void NodeGraphicsObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
     Q_EMIT nodeScene()->nodeContextMenu(_nodeId, mapToScene(event->pos()));
+}
+
+void NodeGraphicsObject::lock(bool locked)
+{
+    _locked = locked;
+
+    setFlag(QGraphicsItem::ItemIsFocusable, !locked);
+    setFlag(QGraphicsItem::ItemIsSelectable, !locked);
+}
+
+QJsonObject NodeGraphicsObject::save() const
+{
+    QJsonObject nodeJson = _graphModel.saveNode(_nodeId);
+    if (nodeJson.isEmpty()) {
+        nodeJson["id"] = QString::number(_nodeId);
+        QJsonObject obj;
+        obj["x"] = pos().x();
+        obj["y"] = pos().y();
+        nodeJson["position"] = obj;
+    }
+
+    return nodeJson;
 }
 
 } // namespace QtNodes

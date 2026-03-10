@@ -5,10 +5,11 @@
 #include "ConnectionIdHash.hpp"
 #include "Definitions.hpp"
 #include "Export.hpp"
+#include "GroupGraphicsObject.hpp"
+#include "NodeGroup.hpp"
+#include "UndoCommands.hpp"
 
-#include "QUuidStdHash.hpp"
-
-#include <QtCore/QUuid>
+#include <QtCore/QJsonObject>
 #include <QtWidgets/QGraphicsScene>
 #include <QtWidgets/QMenu>
 
@@ -27,6 +28,11 @@ class AbstractNodePainter;
 class ConnectionGraphicsObject;
 class NodeGraphicsObject;
 class NodeStyle;
+class DeleteCommand;
+class CopyCommand;
+class NodeGroup;
+class GroupGraphicsObject;
+struct ConnectionId;
 
 /// An instance of QGraphicsScene, holds connections and nodes.
 class NODE_EDITOR_PUBLIC BasicGraphicsScene : public QGraphicsScene
@@ -62,6 +68,17 @@ public:
 
     QUndoStack &undoStack();
 
+    /**
+     * @brief Setter for the _groupingEnabled flag.
+     * @param boolean to set or not the flag.
+     */
+    void setGroupingEnabled(bool enabled);
+
+    /**
+     * @brief Getter for the _groupingEnabled flag.
+     */
+    bool groupingEnabled() const { return _groupingEnabled; }
+
 public:
     /**
      * @brief Creates a "draft" instance of ConnectionGraphicsObject.
@@ -87,6 +104,83 @@ public:
     /// Deletes all the nodes. Connections are removed automatically.
     void clearScene();
 
+    /**
+     * @brief Creates a list of the connections that are incident only to nodes within a
+     * given group.
+     * @param groupID ID of the desired group.
+     * @return List of (pointers of) connections whose both endpoints belong to members of
+     * the specified group.
+     */
+    std::vector<std::shared_ptr<ConnectionId>> connectionsWithinGroup(GroupId groupID);
+    /**
+     * @brief Creates a group in the scene containing the given nodes.
+     * @param nodes Reference to the list of nodes to be included in the group.
+     * @param name Group's name.
+     * @param groupId Group's id.
+     * @return Pointer to the newly-created group.
+     */
+    std::weak_ptr<NodeGroup> createGroup(std::vector<NodeGraphicsObject *> &nodes,
+                                         QString name = QStringLiteral(""),
+                                         GroupId groupId = InvalidGroupId);
+
+    /**
+     * @brief Creates a group in the scene containing the currently selected nodes.
+     * @param name Group's name
+     * @return Pointer to the newly-created group.
+     */
+    std::weak_ptr<NodeGroup> createGroupFromSelection(QString groupName = QStringLiteral(""));
+
+    /**
+     * @brief Restores a group from a JSON object.
+     * @param groupJson JSON object containing the group data.
+     * @return Pair consisting of a pointer to the newly-created group and the mapping
+     * between old and new nodes.
+     */
+    std::pair<std::weak_ptr<NodeGroup>, std::unordered_map<GroupId, GroupId>> restoreGroup(
+        QJsonObject const &groupJson);
+
+    /**
+     * @brief Returns a const reference to the mapping of existing groups.
+     */
+    std::unordered_map<GroupId, std::shared_ptr<NodeGroup>> const &groups() const;
+
+    /**
+     * @brief Loads a group from a file specified by the user.
+     * @return Pointer to the newly-created group.
+     */
+    std::weak_ptr<NodeGroup> loadGroupFile();
+
+    /**
+     * @brief Saves a group in a .group file.
+     * @param groupID Group's id.
+     */
+    void saveGroupFile(GroupId groupID);
+
+    /**
+     * @brief Calculates the selected nodes.
+     * @return Vector containing the NodeGraphicsObject pointers related to the selected nodes.
+     */
+    std::vector<NodeGraphicsObject *> selectedNodes() const;
+
+    /**
+     * @brief Calculates the selected groups.
+     * @return Vector containing the GroupGraphicsObject pointers related to the selected groups.
+     */
+    std::vector<GroupGraphicsObject *> selectedGroups() const;
+
+    /**
+     * @brief Adds a node to a group, if both node and group exists.
+     * @param nodeId Node's id.
+     * @param groupId Group's id.
+     */
+    void addNodeToGroup(NodeId nodeId, GroupId groupId);
+
+    /**
+     * @brief Removes a node from a group, if the node exists and is within a group.
+     * @param nodeId Node's id.
+     */
+    void removeNodeFromGroup(NodeId nodeId);
+
 public:
     /**
      * @returns NodeGraphicsObject associated with the given nodeId.
@@ -110,6 +204,17 @@ public:
      * Default implementation returns `nullptr`.
      */
     virtual QMenu *createSceneMenu(QPointF const scenePos);
+
+    /**
+     * @brief Creates the default menu when a node is selected.
+     */
+    QMenu *createStdMenu(QPointF const scenePos);
+
+    /**
+     * @brief Creates the menu when a group is selected.
+     * @param groupGo reference to the GroupGraphicsObject related to the selected group.
+     */
+    QMenu *createGroupMenu(QPointF const scenePos, GroupGraphicsObject *groupGo);
 
 Q_SIGNALS:
     void modified(BasicGraphicsScene *);
@@ -141,6 +246,24 @@ private:
     /// Redraws adjacent nodes for given `connectionId`
     void updateAttachedNodes(ConnectionId const connectionId, PortType const portType);
 
+    /**
+     * @brief Loads a JSON object that represents a node, with the option
+     * to keep the stored node id or generate a new one.
+     * @param nodeJson The JSON object representing a node.
+     * @param keepOriginalId If true, the loaded node will have the same id as the one stored in
+     * the file; otherwise, a new id will be generated
+     * @return A reference to the NodeGraphicsObject related to the loaded node.
+     */
+    NodeGraphicsObject &loadNodeToMap(QJsonObject nodeJson, bool keepOriginalId = false);
+
+    /**
+     * @brief Loads a connection between nodes from a JSON file.
+     * @param connectionJson JSON object that stores the connection's endpoints.
+     * @param nodeIdMap Map of nodes (i.e. all possible endpoints).
+     */
+    void loadConnectionToMap(QJsonObject const &connectionJson,
+                             std::unordered_map<NodeId, NodeId> const &nodeIdMap);
+
 public Q_SLOTS:
     /// Slot called when the `connectionId` is erased form the AbstractGraphModel.
     virtual void onConnectionDeleted(ConnectionId const connectionId);
@@ -155,14 +278,29 @@ public Q_SLOTS:
     virtual void onNodeClicked(NodeId const nodeId);
     virtual void onModelReset();
 
+    /**
+     * @brief Slot called to trigger the copy command action.
+     */
+    void onCopySelectedObjects() { undoStack().push(new CopyCommand(this)); }
+
+    /**
+     * @brief Slot called to trigger the delete command action.
+     */
+    void onDeleteSelectedObjects() { undoStack().push(new DeleteCommand(this)); }
+
 private:
     AbstractGraphModel &_graphModel;
 
     using UniqueNodeGraphicsObject = std::unique_ptr<NodeGraphicsObject>;
     using UniqueConnectionGraphicsObject = std::unique_ptr<ConnectionGraphicsObject>;
+    using SharedGroup = std::shared_ptr<NodeGroup>;
 
     std::unordered_map<NodeId, UniqueNodeGraphicsObject> _nodeGraphicsObjects;
     std::unordered_map<ConnectionId, UniqueConnectionGraphicsObject> _connectionGraphicsObjects;
+    GroupId nextGroupId();
+
+    std::unordered_map<GroupId, SharedGroup> _groups{};
+    GroupId _nextGroupId{0};
     std::unique_ptr<ConnectionGraphicsObject> _draftConnection;
     std::unique_ptr<AbstractNodeGeometry> _nodeGeometry;
     std::unique_ptr<AbstractNodePainter> _nodePainter;
@@ -170,6 +308,7 @@ private:
     bool _nodeDrag;
     QUndoStack *_undoStack;
     Qt::Orientation _orientation;
+    bool _groupingEnabled;
 };
 
 } // namespace QtNodes
