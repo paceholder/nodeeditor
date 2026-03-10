@@ -78,12 +78,13 @@ public:
 
     float Opacity;
 
-    QIcon statusUpdated{QStringLiteral("://status_icons/updated.svg")};
-    QIcon statusProcessing{QStringLiteral("://status_icons/processing.svg")};
-    QIcon statusPending{QStringLiteral("://status_icons/pending.svg")};
-    QIcon statusInvalid{QStringLiteral("://status_icons/failed.svg")};
-    QIcon statusEmpty{QStringLiteral("://status_icons/empty.svg")};
-    QIcon statusPartial{QStringLiteral("://status_icons/partial.svg")};
+    // Status icons - initialized in constructor after Q_INIT_RESOURCE
+    QIcon statusUpdated;
+    QIcon statusProcessing;
+    QIcon statusPending;
+    QIcon statusInvalid;
+    QIcon statusEmpty;
+    QIcon statusPartial;
 
     ProcessingIconStyle processingIconStyle{};
 };

@@ -17,6 +17,11 @@ add_executable(test_nodes
   src/TestNodeGroup.cpp
   src/TestUIInteraction.cpp
   src/TestDataFlow.cpp
+  src/TestNodeValidation.cpp
+  src/TestCustomPainters.cpp
+  src/TestCopyPaste.cpp
+  src/TestZoomFeatures.cpp
+  src/TestLoopDetection.cpp
   include/ApplicationSetup.hpp
   include/TestGraphModel.hpp
   include/UITestHelper.hpp

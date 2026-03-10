@@ -8,6 +8,7 @@
 #include <QtCore/QUuid>
 #include <QtWidgets/QGraphicsObject>
 
+#include "Export.hpp"
 #include "NodeState.hpp"
 
 class QGraphicsProxyWidget;
@@ -20,7 +21,7 @@ class NodeGroup;
 class NodeDelegateModel;
 class GroupGraphicsObject;
 
-class NodeGraphicsObject : public QGraphicsObject
+class NODE_EDITOR_PUBLIC NodeGraphicsObject : public QGraphicsObject
 {
     Q_OBJECT
 public:

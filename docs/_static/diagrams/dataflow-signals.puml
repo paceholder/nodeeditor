@@ -1,0 +1,51 @@
+@startuml dataflow-signals
+!theme plain
+skinparam backgroundColor #2B2B2B
+skinparam defaultFontColor #E0E0E0
+skinparam sequenceArrowColor #4299E1
+skinparam sequenceLifeLineBorderColor #606060
+skinparam sequenceParticipantBorderColor #606060
+skinparam sequenceParticipantBackgroundColor #3C3F41
+skinparam sequenceBoxBorderColor #606060
+skinparam sequenceBoxBackgroundColor #2D3748
+
+participant "Source\nDelegate" as src #48BB78
+participant "DataFlow\nGraphModel" as model #4A5568
+participant "Operator\nDelegate" as op #4299E1
+participant "Display\nDelegate" as disp #ED8936
+
+src -> src : User changes\nvalue in widget
+activate src
+src -> src : emit dataUpdated(portIndex)
+src -> model : [signal] dataUpdated
+deactivate src
+activate model
+
+model -> model : Lookup connections\nfrom this port
+model -> op : setInData(data, portIndex)
+deactivate model
+activate op
+
+op -> op : Process input
+op -> op : Calculate result
+op -> op : emit dataUpdated(0)
+op -> model : [signal] dataUpdated
+deactivate op
+activate model
+
+model -> model : Lookup connections\nfrom operator output
+model -> disp : setInData(data, portIndex)
+deactivate model
+activate disp
+
+disp -> disp : Update display\nwidget
+deactivate disp
+
+note over model
+  DataFlowGraphModel
+  routes data between
+  connected delegates
+  automatically
+end note
+
+@enduml

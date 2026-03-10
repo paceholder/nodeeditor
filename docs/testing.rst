@@ -81,7 +81,7 @@ Tests are organized in ``test/`` directory:
     ├── include/
     │   ├── ApplicationSetup.hpp    # Qt app setup
     │   ├── TestGraphModel.hpp      # Test graph model
-    │   └── StubNodeDataModel.hpp   # Node delegate stub
+    │   └── TestDataFlowNodes.hpp   # Node delegate stub
     └── src/
         ├── TestAbstractGraphModel.cpp
         ├── TestAbstractGraphModelSignals.cpp
@@ -89,9 +89,14 @@ Tests are organized in ``test/`` directory:
         ├── TestNodeDelegateModelRegistry.cpp
         ├── TestBasicGraphicsScene.cpp
         ├── TestConnectionId.cpp
+        ├── TestCopyPaste.cpp
+        ├── TestCustomPainters.cpp
+        ├── TestLoopDetection.cpp
+        ├── TestNodeValidation.cpp
         ├── TestSerialization.cpp
         ├── TestUIInteraction.cpp
-        └── TestUndoCommands.cpp
+        ├── TestUndoCommands.cpp
+        └── TestZoomFeatures.cpp
 
 Test Categories
 ---------------
@@ -145,6 +150,36 @@ Test Categories
   - Context menu interactions (right-click)
   - Stress testing with rapid mouse movements and memory load
   - Virtual display testing with proper window exposure handling
+
+**Validation Tests ([validation])**
+  - NodeValidationState struct functionality
+  - NodeProcessingStatus enum values
+  - Setting validation and processing status through NodeDelegateModel
+  - Integration with DataFlowGraphModel
+
+**Custom Painters Tests ([painters])**
+  - Custom node painter registration
+  - Custom connection painter registration
+  - Painter replacement behavior
+  - Paint method invocation verification
+
+**Copy/Paste Tests ([copypaste])**
+  - Single node copy
+  - Multiple node copy with connections
+  - Paste operations
+  - Duplicate operations (Ctrl+D)
+
+**Zoom Tests ([zoom])**
+  - Scale range configuration
+  - zoomFitAll behavior
+  - zoomFitSelected behavior
+  - scaleChanged signal emission
+
+**Loop Detection Tests ([loops])**
+  - loopsEnabled configuration in AbstractGraphModel
+  - DataFlowGraphModel loop prevention
+  - Direct self-loop prevention
+  - Indirect cycle detection
 
 Key Features
 ------------

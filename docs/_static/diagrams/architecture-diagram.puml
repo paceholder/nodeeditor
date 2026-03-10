@@ -1,0 +1,53 @@
+@startuml architecture-diagram
+!theme plain
+skinparam backgroundColor #2B2B2B
+skinparam defaultFontColor #E0E0E0
+skinparam classBorderColor #606060
+skinparam classBackgroundColor #3C3F41
+skinparam arrowColor #A0A0A0
+skinparam noteBorderColor #606060
+skinparam noteBackgroundColor #4A4D4F
+
+skinparam rectangle {
+    BackgroundColor #3C3F41
+    BorderColor #606060
+    FontColor #E0E0E0
+}
+
+rectangle "Your Application" as app #4A5568 {
+    rectangle "Your Data\n(nodes, connections,\npositions, values)" as data #718096
+}
+
+rectangle "QtNodes Library" as lib #2D3748 {
+    rectangle "AbstractGraphModel\n(or DataFlowGraphModel)" as model #4A5568
+    rectangle "BasicGraphicsScene\n(or DataFlowGraphicsScene)" as scene #4A5568
+    rectangle "GraphicsView" as view #4A5568
+}
+
+rectangle "User Interface" as ui #1A202C {
+    rectangle "Window with\ninteractive nodes" as window #2D3748
+}
+
+data -right-> model : "implements"
+model -right-> scene : "visualizes"
+scene -right-> view : "displays in"
+view -right-> window : "renders to"
+
+note bottom of model
+  You subclass this
+  to store your graph data
+end note
+
+note bottom of scene
+  Automatically creates
+  graphics objects from
+  model data
+end note
+
+note bottom of view
+  Handles zoom, pan,
+  selection, and
+  user interactions
+end note
+
+@enduml
