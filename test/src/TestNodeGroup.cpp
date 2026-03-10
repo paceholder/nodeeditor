@@ -25,9 +25,9 @@
 using QtNodes::BasicGraphicsScene;
 using QtNodes::ConnectionId;
 using QtNodes::DataFlowGraphModel;
+using QtNodes::GroupId;
 using QtNodes::NodeDelegateModel;
 using QtNodes::NodeDelegateModelRegistry;
-using QtNodes::GroupId;
 using QtNodes::NodeGraphicsObject;
 using QtNodes::NodeGroup;
 using QtNodes::NodeId;
@@ -312,7 +312,7 @@ TEST_CASE("Saving and restoring node groups", "[node-group]")
 
         auto connectionObject = connectionsJson.first().toObject();
         CHECK(static_cast<NodeId>(connectionObject["outNodeId"].toInt()) == nodeIds[0]);
-        CHECK(static_cast<NodeId>(connectionObject["intNodeId"].toInt()) == nodeIds[1]);
+        CHECK(static_cast<NodeId>(connectionObject["inNodeId"].toInt()) == nodeIds[1]);
     }
 
     SECTION("Restoring a group from serialized data")
