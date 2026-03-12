@@ -97,6 +97,11 @@ using NodeId = unsigned int;
 
 static constexpr NodeId InvalidNodeId = std::numeric_limits<NodeId>::max();
 
+/// Unique Id associated with each node group.
+using GroupId = unsigned int;
+
+static constexpr GroupId InvalidGroupId = std::numeric_limits<GroupId>::max();
+
 /**
  * A unique connection identificator that stores
  * out `NodeId`, out `PortIndex`, in `NodeId`, in `PortIndex`
