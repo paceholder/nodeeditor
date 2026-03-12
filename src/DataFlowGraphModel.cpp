@@ -271,14 +271,14 @@ QVariant DataFlowGraphModel::nodeData(NodeId nodeId, NodeRole role) const
         break;
 
     case NodeRole::Style: {
-        auto style = _models.at(nodeId)->nodeStyle();
+        auto style = model->nodeStyle();
         result = style.toJson().toVariantMap();
     } break;
 
     case NodeRole::InternalData: {
         QJsonObject nodeJson;
 
-        nodeJson["internal-data"] = _models.at(nodeId)->save();
+        nodeJson["internal-data"] = model->save();
 
         result = nodeJson.toVariantMap();
         break;
@@ -302,13 +302,16 @@ QVariant DataFlowGraphModel::nodeData(NodeId nodeId, NodeRole role) const
         result = QVariant::fromValue(validationState);
     } break;
 
-    case NodeRole::LabelVisible:
-        result = _labelsVisible.at(nodeId);
-        break;
+    case NodeRole::LabelVisible: {
+        auto const labelVisibleIt = _labelsVisible.find(nodeId);
+        result = (labelVisibleIt != _labelsVisible.end()) ? labelVisibleIt->second
+                                                          : model->labelVisible();
+    } break;
 
-    case NodeRole::Label:
-        result = _labels.at(nodeId);
-        break;
+    case NodeRole::Label: {
+        auto const labelIt = _labels.find(nodeId);
+        result = (labelIt != _labels.end()) ? labelIt->second : model->label();
+    } break;
 
     case NodeRole::LabelEditable:
         result = model->labelEditable();
@@ -532,12 +535,22 @@ QJsonObject DataFlowGraphModel::saveNode(NodeId const nodeId) const
 {
     QJsonObject nodeJson;
 
+    auto const modelIt = _models.find(nodeId);
+    if (modelIt == _models.end()) {
+        return nodeJson;
+    }
+
+    auto const &model = modelIt->second;
+
     nodeJson["id"] = static_cast<qint64>(nodeId);
+    nodeJson["internal-data"] = model->save();
 
-    nodeJson["internal-data"] = _models.at(nodeId)->save();
+    auto const labelIt = _labels.find(nodeId);
+    nodeJson["label"] = (labelIt != _labels.end()) ? labelIt->second : model->label();
 
-    nodeJson["label"] = _labels.at(nodeId);
-    nodeJson["labelVisible"] = _labelsVisible.at(nodeId);
+    auto const labelVisibleIt = _labelsVisible.find(nodeId);
+    nodeJson["labelVisible"] = (labelVisibleIt != _labelsVisible.end()) ? labelVisibleIt->second
+                                                                        : model->labelVisible();
 
     {
         QPointF const pos = nodeData(nodeId, NodeRole::Position).value<QPointF>();

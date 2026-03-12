@@ -37,7 +37,14 @@ QByteArray NodeGroup::saveToFile() const
 
     QJsonArray nodesJson;
     for (auto const &node : _childNodes) {
-        nodesJson.append(node->save());
+        if (!node)
+            continue;
+
+        QJsonObject const nodeJson = node->save();
+        if (nodeJson.isEmpty())
+            continue;
+
+        nodesJson.append(nodeJson);
     }
     groupJson["nodes"] = nodesJson;
 
