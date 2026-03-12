@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Definitions.hpp"
-
+#include "NodeGraphicsObject.hpp"
 #include <QtCore/QPointF>
 
 namespace QtNodes {
@@ -52,6 +52,11 @@ public:
      * 3. Repaint both previously connected nodes.
      */
     bool disconnect(PortType portToDisconnect) const;
+
+    /**
+     * @brief Getter for the NodeGraphicsObject object.
+     */
+    NodeGraphicsObject &nodeGraphicsObject() { return _ngo; }
 
 private:
     PortType connectionRequiredPort() const;
