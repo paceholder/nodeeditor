@@ -278,6 +278,20 @@ QString QuickGraphModel::getPortDataTypeId(int nodeId, int portType, int portInd
     return dataType.id;
 }
 
+QString QuickGraphModel::getPortCaption(int nodeId, int portType, int portIndex)
+{
+    if (!_model) return QString();
+
+    auto caption = _model->portData(
+        static_cast<NodeId>(nodeId),
+        static_cast<PortType>(portType),
+        static_cast<PortIndex>(portIndex),
+        PortRole::Caption
+    ).value<QString>();
+
+    return caption;
+}
+
 bool QuickGraphModel::connectionPossible(int outNodeId, int outPortIndex, int inNodeId, int inPortIndex)
 {
     if (!_model) return false;

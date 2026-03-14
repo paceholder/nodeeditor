@@ -288,7 +288,7 @@ Item {
                 Text {
                     anchors.verticalCenter: parent.verticalCenter
                     x: portSz * 1.5 + 3
-                    text: inPorts === 1 ? "Input" : String.fromCharCode(65 + index)
+                    text: graph.getPortCaption(root.nodeId, 0, index) || (inPorts === 1 ? "Input" : String.fromCharCode(65 + index))
                     font.pixelSize: 10
                     font.family: "Poppins"
                     color: Qt.rgba(0, 0, 0, 0.7)
@@ -365,7 +365,7 @@ Item {
                 Text {
                     anchors.verticalCenter: parent.verticalCenter
                     x: -portSz / 2 - 3 - contentWidth
-                    text: outPorts === 1 ? "Output" : "Out " + index
+                    text: graph.getPortCaption(root.nodeId, 1, index) || (outPorts === 1 ? "Output" : "Out " + index)
                     font.pixelSize: 10
                     font.family: "Poppins"
                     color: Qt.rgba(0, 0, 0, 0.7)

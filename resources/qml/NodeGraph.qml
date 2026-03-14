@@ -23,6 +23,11 @@ Item {
         return graphModel.getPortDataTypeId(nodeId, portType, portIndex) || "default"
     }
 
+    function getPortCaption(nodeId, portType, portIndex) {
+        if (!graphModel) return ""
+        return graphModel.getPortCaption(nodeId, portType, portIndex) || ""
+    }
+
     function registerNode(id, item) {
         nodeItems[id] = item
         nodeRegistryChanged()
