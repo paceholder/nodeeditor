@@ -29,7 +29,7 @@ Item {
     property color portColumnColor: style ? style.darkenColor(nodeColor, 0.10) : nodeColor
 
     property real headerHeight: style ? style.nodeHeaderHeight : 35
-    property real portSz: style ? style.portSize : 15
+    property real portSz: style ? style.portSize : 10
     property real portSpacing: style ? style.nodePortSpacing : 10
     property real nodeRadius: style ? style.nodeRadius : 5
 
