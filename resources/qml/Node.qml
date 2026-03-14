@@ -109,7 +109,19 @@ Item {
             ctx.beginPath()
             var bodyLeft = inPorts > 0 ? colW : 0
             var bodyRight = outPorts > 0 ? w - colW : w
-            ctx.rect(bodyLeft, hh, bodyRight - bodyLeft, h - hh)
+            var bw = bodyRight - bodyLeft
+            var bh = h - hh
+            var blr = inPorts > 0 ? 0 : r  // bottom-left radius
+            var brr = outPorts > 0 ? 0 : r  // bottom-right radius
+
+            ctx.moveTo(bodyLeft, hh)
+            ctx.lineTo(bodyRight, hh)
+            ctx.lineTo(bodyRight, h - brr)
+            if (brr > 0) ctx.arcTo(bodyRight, h, bodyRight - brr, h, brr)
+            ctx.lineTo(bodyLeft + blr, h)
+            if (blr > 0) ctx.arcTo(bodyLeft, h, bodyLeft, h - blr, blr)
+            ctx.lineTo(bodyLeft, hh)
+            ctx.closePath()
             ctx.fillStyle = root.bodyColor.toString()
             ctx.fill()
 
