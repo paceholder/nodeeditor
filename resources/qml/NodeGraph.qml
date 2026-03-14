@@ -573,7 +573,8 @@ Item {
             strokeWidth: style.draftConnectionWidth
             strokeColor: style.draftConnectionColor
             fillColor: "transparent"
-            dashPattern: [6, 4]
+            strokeStyle: ShapePath.DashLine
+            dashPattern: [4, 3]
             startX: root.dragStart.x
             startY: root.dragStart.y
             PathCubic {
