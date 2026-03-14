@@ -1,5 +1,4 @@
 import QtQuick 2.15
-import QtQuick.Shapes 1.15
 
 Item {
     id: root
@@ -30,7 +29,7 @@ Item {
     property color portColumnColor: style ? style.darkenColor(nodeColor, 0.10) : nodeColor
 
     property real headerHeight: style ? style.nodeHeaderHeight : 35
-    property real portSz: style ? style.portSize : 10
+    property real portSz: style ? style.portSize : 15
     property real portSpacing: style ? style.nodePortSpacing : 10
     property real nodeRadius: style ? style.nodeRadius : 5
 
@@ -46,169 +45,150 @@ Item {
 
     Component.onCompleted: completed = true
 
-    // Helper: build SVG path string for a rounded rect
-    function svgRoundRect(x, y, w, h, r) {
-        return "M " + (x+r) + " " + y
-             + " L " + (x+w-r) + " " + y
-             + " A " + r + " " + r + " 0 0 1 " + (x+w) + " " + (y+r)
-             + " L " + (x+w) + " " + (y+h-r)
-             + " A " + r + " " + r + " 0 0 1 " + (x+w-r) + " " + (y+h)
-             + " L " + (x+r) + " " + (y+h)
-             + " A " + r + " " + r + " 0 0 1 " + x + " " + (y+h-r)
-             + " L " + x + " " + (y+r)
-             + " A " + r + " " + r + " 0 0 1 " + (x+r) + " " + y
-             + " Z"
-    }
-
-    // Helper: SVG circle path (for cutouts)
-    function svgCircle(cx, cy, r) {
-        return " M " + (cx+r) + " " + cy
-             + " A " + r + " " + r + " 0 1 0 " + (cx-r) + " " + cy
-             + " A " + r + " " + r + " 0 1 0 " + (cx+r) + " " + cy + " Z"
-    }
-
-    // Build the full SVG path for background with cutouts
-    function buildCutoutPath() {
-        var w = root.width
-        var h = root.height
-        var r = nodeRadius
-        var cutR = portSz * 0.75
-
-        var path = svgRoundRect(0, 0, w, h, r)
-
-        for (var i = 0; i < inPorts; i++) {
-            var iy = headerHeight + 5 + i * (portSz + portSpacing) + portSz / 2
-            path += svgCircle(0, iy, cutR)
-        }
-        for (var j = 0; j < outPorts; j++) {
-            var oy = headerHeight + 5 + j * (portSz + portSpacing) + portSz / 2
-            path += svgCircle(w, oy, cutR)
-        }
-        return path
-    }
-
-    // Build border path with gaps at port positions
-    function buildBorderPath() {
-        var w = root.width
-        var h = root.height
-        var r = nodeRadius
-        var hh = headerHeight
-        var cutR = portSz * 0.75
-
-        // Top edge
-        var path = "M " + r + " 0"
-             + " L " + (w-r) + " 0"
-             + " A " + r + " " + r + " 0 0 1 " + w + " " + r
-
-        // Right edge with gaps
-        var lastRY = r
-        for (var ro = 0; ro < outPorts; ro++) {
-            var roy = hh + 5 + ro * (portSz + portSpacing) + portSz / 2
-            path += " L " + w + " " + (roy - cutR)
-            path += " M " + w + " " + (roy + cutR)
-            lastRY = roy + cutR
-        }
-
-        // Continue right to bottom
-        path += " L " + w + " " + (h-r)
-             + " A " + r + " " + r + " 0 0 1 " + (w-r) + " " + h
-
-        // Bottom edge
-        path += " L " + r + " " + h
-             + " A " + r + " " + r + " 0 0 1 0 " + (h-r)
-
-        // Left edge with gaps (bottom to top)
-        for (var ri = inPorts - 1; ri >= 0; ri--) {
-            var riy = hh + 5 + ri * (portSz + portSpacing) + portSz / 2
-            path += " L 0 " + (riy + cutR)
-            path += " M 0 " + (riy - cutR)
-        }
-
-        // Continue left to top
-        path += " L 0 " + r
-             + " A " + r + " " + r + " 0 0 1 " + r + " 0"
-
-        return path
-    }
+    // Trigger canvas repaint on relevant changes
+    onNodeColorChanged: nodeCanvas.requestPaint()
+    onInPortsChanged: nodeCanvas.requestPaint()
+    onOutPortsChanged: nodeCanvas.requestPaint()
+    onWidthChanged: nodeCanvas.requestPaint()
+    onHeightChanged: nodeCanvas.requestPaint()
+    onSelectedChanged: nodeCanvas.requestPaint()
 
     // =================================================================
-    // Shape: GPU-rendered body with transparent cutouts
+    // Canvas: draws body with real transparent cutouts at port positions
     // =================================================================
-    Shape {
+    Canvas {
+        id: nodeCanvas
         anchors.fill: parent
-        antialiasing: true
-        smooth: true
 
-        // Port column background with cutouts (evenodd makes holes)
-        ShapePath {
-            fillColor: root.portColumnColor
-            strokeColor: "transparent"
-            fillRule: ShapePath.OddEvenFill
-            PathSvg { path: buildCutoutPath() }
-        }
-    }
+        onPaint: {
+            var ctx = getContext("2d")
+            ctx.reset()
+            ctx.clearRect(0, 0, width, height)
 
-    // Body center (between port columns)
-    Rectangle {
-        x: inPorts > 0 ? portSz + 4 : 0
-        y: headerHeight
-        width: root.width - (inPorts > 0 ? portSz + 4 : 0) - (outPorts > 0 ? portSz + 4 : 0)
-        height: root.height - headerHeight
-        color: bodyColor
-    }
+            var w = root.width
+            var h = root.height
+            var r = nodeRadius
+            var hh = headerHeight
+            var cutR = portSz * 0.75
+            var colW = portSz + 4  // port column width
 
-    // Header
-    Shape {
-        width: root.width
-        height: headerHeight
-        antialiasing: true
-        smooth: true
+            // --- Background with port cutouts (evenodd) ---
+            ctx.beginPath()
 
-        ShapePath {
-            fillColor: root.headerColor
-            strokeColor: "transparent"
-            PathSvg {
-                path: {
-                    var w = root.width
-                    var r = nodeRadius
-                    var hh = headerHeight
-                    return "M " + r + " 0"
-                         + " L " + (w-r) + " 0"
-                         + " A " + r + " " + r + " 0 0 1 " + w + " " + r
-                         + " L " + w + " " + hh
-                         + " L 0 " + hh
-                         + " L 0 " + r
-                         + " A " + r + " " + r + " 0 0 1 " + r + " 0 Z"
+            // Outer rounded rectangle
+            ctx.moveTo(r, 0)
+            ctx.lineTo(w - r, 0)
+            ctx.arcTo(w, 0, w, r, r)
+            ctx.lineTo(w, h - r)
+            ctx.arcTo(w, h, w - r, h, r)
+            ctx.lineTo(r, h)
+            ctx.arcTo(0, h, 0, h - r, r)
+            ctx.lineTo(0, r)
+            ctx.arcTo(0, 0, r, 0, r)
+            ctx.closePath()
+
+            // Input port cutouts
+            for (var i = 0; i < inPorts; i++) {
+                var iy = hh + 5 + i * (portSz + portSpacing) + portSz / 2
+                ctx.moveTo(cutR, iy)
+                ctx.arc(0, iy, cutR, 0, 2 * Math.PI, false)
+            }
+
+            // Output port cutouts
+            for (var j = 0; j < outPorts; j++) {
+                var oy = hh + 5 + j * (portSz + portSpacing) + portSz / 2
+                ctx.moveTo(w + cutR, oy)
+                ctx.arc(w, oy, cutR, 0, 2 * Math.PI, false)
+            }
+
+            // Fill port column color (darker, behind everything)
+            ctx.fillStyle = root.portColumnColor.toString()
+            ctx.fill("evenodd")
+
+            // --- Body center (main color, between port columns) ---
+            ctx.beginPath()
+            var bodyLeft = inPorts > 0 ? colW : 0
+            var bodyRight = outPorts > 0 ? w - colW : w
+            ctx.rect(bodyLeft, hh, bodyRight - bodyLeft, h - hh)
+            ctx.fillStyle = root.bodyColor.toString()
+            ctx.fill()
+
+            // --- Header fill ---
+            ctx.beginPath()
+            ctx.moveTo(r, 0)
+            ctx.lineTo(w - r, 0)
+            ctx.arcTo(w, 0, w, r, r)
+            ctx.lineTo(w, hh)
+            ctx.lineTo(0, hh)
+            ctx.lineTo(0, r)
+            ctx.arcTo(0, 0, r, 0, r)
+            ctx.closePath()
+            ctx.fillStyle = root.headerColor.toString()
+            ctx.fill()
+
+            // --- Divider line ---
+            ctx.beginPath()
+            ctx.moveTo(0, hh)
+            ctx.lineTo(w, hh)
+            ctx.strokeStyle = "rgba(0,0,0,0.3)"
+            ctx.lineWidth = 1
+            ctx.stroke()
+
+            // --- Node border (with same cutouts) ---
+            ctx.beginPath()
+
+            // Top edge
+            ctx.moveTo(r, 0)
+            ctx.lineTo(w - r, 0)
+            ctx.arcTo(w, 0, w, r, r)
+
+            // Right edge with output port gaps
+            if (outPorts > 0) {
+                for (var ro = 0; ro < outPorts; ro++) {
+                    var roy = hh + 5 + ro * (portSz + portSpacing) + portSz / 2
+                    // Line to top of cutout
+                    ctx.lineTo(w, roy - cutR)
+                    // Arc around the cutout (go around the outside)
+                    ctx.moveTo(w, roy + cutR)
                 }
             }
-        }
-    }
 
-    // Divider line
-    Rectangle {
-        x: 0
-        y: headerHeight
-        width: root.width
-        height: 1
-        color: Qt.rgba(0, 0, 0, 0.3)
-    }
+            // Continue right edge to bottom
+            ctx.lineTo(w, h - r)
+            ctx.arcTo(w, h, w - r, h, r)
 
-    // Border with gaps
-    Shape {
-        anchors.fill: parent
-        antialiasing: true
-        smooth: true
+            // Bottom edge
+            ctx.lineTo(r, h)
+            ctx.arcTo(0, h, 0, h - r, r)
 
-        ShapePath {
-            fillColor: "transparent"
-            strokeColor: root.selected ? (style ? style.nodeSelectedBorder : "#4a9eff") : Qt.rgba(0, 0, 0, 0.5)
-            strokeWidth: root.selected ? 2 : 0.5
-            PathSvg { path: buildBorderPath() }
+            // Left edge with input port gaps
+            if (inPorts > 0) {
+                // Go from bottom up
+                var lastY = h - r
+                for (var ri = inPorts - 1; ri >= 0; ri--) {
+                    var riy = hh + 5 + ri * (portSz + portSpacing) + portSz / 2
+                    ctx.lineTo(0, riy + cutR)
+                    ctx.moveTo(0, riy - cutR)
+                }
+            }
+
+            // Continue left edge to top
+            ctx.lineTo(0, r)
+            ctx.arcTo(0, 0, r, 0, r)
+
+            if (root.selected) {
+                ctx.strokeStyle = style ? style.nodeSelectedBorder.toString() : "#4a9eff"
+                ctx.lineWidth = 2
+            } else {
+                ctx.strokeStyle = "rgba(0,0,0,0.5)"
+                ctx.lineWidth = 0.5
+            }
+            ctx.stroke()
         }
     }
 
     // =================================================================
-    // Header icon + caption
+    // Header icon + caption (on top of canvas)
     // =================================================================
     Image {
         id: iconImg
