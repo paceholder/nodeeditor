@@ -571,7 +571,7 @@ Item {
         visible: root.isDragging
         ShapePath {
             strokeWidth: style.draftConnectionWidth
-            strokeColor: style.draftConnectionColor
+            strokeColor: root.draftConnectionTypeId !== "" ? root.getPortColor(root.draftConnectionTypeId) : style.draftConnectionColor
             fillColor: "transparent"
             strokeStyle: ShapePath.DashLine
             dashPattern: [4, 3]
