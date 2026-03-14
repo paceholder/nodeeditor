@@ -43,6 +43,7 @@ public:
     Q_INVOKABLE QVariantMap getConnectionAtInput(int nodeId, int portIndex);
     Q_INVOKABLE QString getPortDataTypeId(int nodeId, int portType, int portIndex);
     Q_INVOKABLE bool connectionPossible(int outNodeId, int outPortIndex, int inNodeId, int inPortIndex);
+    Q_INVOKABLE bool portConnected(int nodeId, int portType, int portIndex);
     
     // Undo/Redo
     bool canUndo() const;

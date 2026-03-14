@@ -58,8 +58,32 @@ QtObject {
     property color selectionRectBorder: "#4a9eff"
     property real selectionRectBorderWidth: 1
     
-    // Helper function
+    // Node type visual styles: maps nodeType → { color, icon }
+    // Override this in your app to customize per-node-type appearance
+    property var nodeTypeStyles: ({})
+
+    // Helper functions
     function getPortColor(typeId) {
         return portTypeColors[typeId] || portTypeColors["default"]
+    }
+
+    function getNodeColor(nodeType) {
+        var s = nodeTypeStyles[nodeType]
+        return s && s.color ? s.color : nodeBackground
+    }
+
+    function getNodeIcon(nodeType) {
+        var s = nodeTypeStyles[nodeType]
+        return s && s.icon ? s.icon : ""
+    }
+
+    function lightenColor(baseColor, amount) {
+        var c = Qt.color(baseColor)
+        return Qt.hsla(c.hslHue, c.hslSaturation, Math.min(c.hslLightness + amount, 1.0), c.a)
+    }
+
+    function darkenColor(baseColor, amount) {
+        var c = Qt.color(baseColor)
+        return Qt.hsla(c.hslHue, c.hslSaturation, Math.max(c.hslLightness - amount, 0.0), c.a)
     }
 }

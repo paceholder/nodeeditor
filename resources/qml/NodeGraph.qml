@@ -48,6 +48,7 @@ Item {
     // Selection management
     property var selectedNodeIds: ({})
     property int selectionVersion: 0
+    property int connectionVersion: 0
     
     signal selectionChanged()
     
@@ -206,6 +207,7 @@ Item {
         for (var i = 0; i < selectedConnections.length; i++) {
             var c = selectedConnections[i]
             graphModel.removeConnection(c.outNodeId, c.outPortIndex, c.inNodeId, c.inPortIndex)
+            connectionVersion++
         }
         selectedConnections = []
         connectionSelectionChanged()
@@ -217,6 +219,7 @@ Item {
             graphModel.removeNode(ids[i])
             delete nodeItems[ids[i]]
         }
+        connectionVersion++
         clearSelection()
     }
     
@@ -323,6 +326,7 @@ Item {
             // Only create connection if types are compatible
             if (graphModel.connectionPossible(outNodeId, outPortIndex, inNodeId, inPortIndex)) {
                 graphModel.addConnection(outNodeId, outPortIndex, inNodeId, inPortIndex)
+                connectionVersion++
             }
         }
         activeConnectionStart = null
@@ -562,13 +566,14 @@ Item {
                 }
             }
             
-    // Dragging Connection
+    // Dragging Connection (dashed while not connected)
     Shape {
         visible: root.isDragging
         ShapePath {
             strokeWidth: style.draftConnectionWidth
             strokeColor: style.draftConnectionColor
             fillColor: "transparent"
+            dashPattern: [6, 4]
             startX: root.dragStart.x
             startY: root.dragStart.y
             PathCubic {

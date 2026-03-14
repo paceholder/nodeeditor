@@ -291,6 +291,22 @@ bool QuickGraphModel::connectionPossible(int outNodeId, int outPortIndex, int in
     return _model->connectionPossible(connId);
 }
 
+bool QuickGraphModel::portConnected(int nodeId, int portType, int portIndex)
+{
+    if (!_model) return false;
+
+    auto conns = _model->allConnectionIds(static_cast<NodeId>(nodeId));
+    for (const auto& c : conns) {
+        if (portType == 0 && c.inNodeId == static_cast<NodeId>(nodeId)
+            && c.inPortIndex == static_cast<PortIndex>(portIndex))
+            return true;
+        if (portType == 1 && c.outNodeId == static_cast<NodeId>(nodeId)
+            && c.outPortIndex == static_cast<PortIndex>(portIndex))
+            return true;
+    }
+    return false;
+}
+
 bool QuickGraphModel::canUndo() const
 {
     return _undoStack->canUndo();
