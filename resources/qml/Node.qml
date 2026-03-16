@@ -402,7 +402,7 @@ Item {
             else graph.selectNode(nodeId, false)
         }
         onDoubleTapped: (eventPoint, button) => {
-            if (graph && graph.nodeDoubleClicked) graph.nodeDoubleClicked(nodeId, nodeType, delegateModel)
+            if (graph && graph.nodeDoubleClicked) graph.nodeDoubleClicked(nodeId, nodeType, delegateModel, caption)
         }
     }
 

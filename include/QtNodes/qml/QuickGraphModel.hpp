@@ -36,6 +36,7 @@ public:
     ConnectionsListModel* connections() const;
 
     Q_INVOKABLE int addNode(QString const &nodeType);
+    Q_INVOKABLE int addNodeWithId(int forcedId, QString const &nodeType);
     Q_INVOKABLE bool removeNode(int nodeId);
     
     Q_INVOKABLE void addConnection(int outNodeId, int outPortIndex, int inNodeId, int inPortIndex);

@@ -59,6 +59,34 @@ bool DataFlowGraphModel::connectionExists(ConnectionId const connectionId) const
     return (_connectivity.find(connectionId) != _connectivity.end());
 }
 
+NodeId DataFlowGraphModel::addNodeWithId(NodeId forcedId, QString const nodeType)
+{
+    std::unique_ptr<NodeDelegateModel> model = _registry->create(nodeType);
+    if (!model) return InvalidNodeId;
+
+    // Use forced ID and update counter to avoid future collisions
+    if (forcedId >= _nextNodeId) _nextNodeId = forcedId + 1;
+
+    NodeId newId = forcedId;
+
+    connect(model.get(), &NodeDelegateModel::dataUpdated,
+            [newId, this](PortIndex const portIndex) { onOutPortDataUpdated(newId, portIndex); });
+    connect(model.get(), &NodeDelegateModel::portsAboutToBeDeleted, this,
+            [newId, this](PortType const portType, PortIndex const first, PortIndex const last) {
+                portsAboutToBeDeleted(newId, portType, first, last);
+            });
+    connect(model.get(), &NodeDelegateModel::portsDeleted, this, &DataFlowGraphModel::portsDeleted);
+    connect(model.get(), &NodeDelegateModel::portsAboutToBeInserted, this,
+            [newId, this](PortType const portType, PortIndex const first, PortIndex const last) {
+                portsAboutToBeInserted(newId, portType, first, last);
+            });
+    connect(model.get(), &NodeDelegateModel::portsInserted, this, &DataFlowGraphModel::portsInserted);
+
+    _models[newId] = std::move(model);
+    Q_EMIT nodeCreated(newId);
+    return newId;
+}
+
 NodeId DataFlowGraphModel::addNode(QString const nodeType)
 {
     std::unique_ptr<NodeDelegateModel> model = _registry->create(nodeType);
@@ -260,7 +288,7 @@ QVariant DataFlowGraphModel::nodeData(NodeId nodeId, NodeRole role) const
         break;
 
     case NodeRole::Caption:
-        result = model->caption();
+        result = model->displayCaption();
         break;
 
     case NodeRole::Style: {
@@ -336,8 +364,14 @@ bool DataFlowGraphModel::setNodeData(NodeId nodeId, NodeRole role, QVariant valu
     case NodeRole::CaptionVisible:
         break;
 
-    case NodeRole::Caption:
-        break;
+    case NodeRole::Caption: {
+        auto it = _models.find(nodeId);
+        if (it != _models.end()) {
+            it->second->setCustomCaption(value.toString());
+            Q_EMIT nodeUpdated(nodeId);
+            result = true;
+        }
+    } break;
 
     case NodeRole::Style:
         break;

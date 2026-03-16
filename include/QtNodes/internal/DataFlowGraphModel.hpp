@@ -43,6 +43,9 @@ public:
 
     NodeId addNode(QString const nodeType) override;
 
+    /// Add a node with a specific ID (for restoring from save files)
+    NodeId addNodeWithId(NodeId forcedId, QString const nodeType);
+
 
     bool connectionPossible(ConnectionId const connectionId) const override;
 

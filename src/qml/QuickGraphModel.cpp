@@ -205,10 +205,19 @@ ConnectionsListModel* QuickGraphModel::connections() const
 int QuickGraphModel::addNode(QString const &nodeType)
 {
     if (!_model) return -1;
-    
+
     auto* cmd = new AddNodeCommand(_model.get(), nodeType);
     _undoStack->push(cmd);
     return cmd->nodeId();
+}
+
+int QuickGraphModel::addNodeWithId(int forcedId, QString const &nodeType)
+{
+    if (!_model) return -1;
+
+    // Bypass undo for load operations — directly create with forced ID
+    auto result = _model->addNodeWithId(static_cast<NodeId>(forcedId), nodeType);
+    return (result != InvalidNodeId) ? static_cast<int>(result) : -1;
 }
 
 bool QuickGraphModel::removeNode(int nodeId)

@@ -54,6 +54,14 @@ public:
     /// Caption is used in GUI
     virtual QString caption() const = 0;
 
+    /// Set a custom caption that overrides caption() for display
+    void setCustomCaption(const QString& caption) { _customCaption = caption; }
+
+    /// Get the display caption: custom if set, otherwise default
+    QString displayCaption() const {
+        return _customCaption.isEmpty() ? caption() : _customCaption;
+    }
+
     /// It is possible to hide caption in GUI
     virtual bool captionVisible() const { return true; }
 
@@ -144,6 +152,8 @@ private:
     NodeStyle _nodeStyle;
 
     NodeValidationState _nodeValidationState;
+
+    QString _customCaption;
 };
 
 } // namespace QtNodes
