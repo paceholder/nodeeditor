@@ -248,6 +248,7 @@ Q_SIGNALS:
 
 private:
     std::vector<ConnectionId> _shiftedByDynamicPortsConnections;
+    NodeId _dynamicPortsNodeId = InvalidNodeId;
 };
 
 } // namespace QtNodes

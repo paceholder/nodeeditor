@@ -10,6 +10,7 @@ void AbstractGraphModel::portsAboutToBeDeleted(NodeId const nodeId,
                                                PortIndex const last)
 {
     _shiftedByDynamicPortsConnections.clear();
+    _dynamicPortsNodeId = nodeId;
 
     auto portCountRole = portType == PortType::In ? NodeRole::InPortCount : NodeRole::OutPortCount;
 
@@ -56,6 +57,11 @@ void AbstractGraphModel::portsDeleted()
     }
 
     _shiftedByDynamicPortsConnections.clear();
+
+    if (_dynamicPortsNodeId != InvalidNodeId) {
+        Q_EMIT nodeUpdated(_dynamicPortsNodeId);
+        _dynamicPortsNodeId = InvalidNodeId;
+    }
 }
 
 void AbstractGraphModel::portsAboutToBeInserted(NodeId const nodeId,
@@ -64,6 +70,7 @@ void AbstractGraphModel::portsAboutToBeInserted(NodeId const nodeId,
                                                 PortIndex const last)
 {
     _shiftedByDynamicPortsConnections.clear();
+    _dynamicPortsNodeId = nodeId;
 
     auto portCountRole = portType == PortType::In ? NodeRole::InPortCount : NodeRole::OutPortCount;
 
@@ -100,6 +107,12 @@ void AbstractGraphModel::portsInserted()
     }
 
     _shiftedByDynamicPortsConnections.clear();
+
+    // Notify that node data changed so QML views update port counts
+    if (_dynamicPortsNodeId != InvalidNodeId) {
+        Q_EMIT nodeUpdated(_dynamicPortsNodeId);
+        _dynamicPortsNodeId = InvalidNodeId;
+    }
 }
 
 } // namespace QtNodes
