@@ -6,6 +6,7 @@
 #include "DataFlowGraphModel.hpp"
 #include "Definitions.hpp"
 #include "GroupGraphicsObject.hpp"
+#include "NodeDelegateModel.hpp"
 #include "NodeGraphicsObject.hpp"
 #include "StyleCollection.hpp"
 #include "UndoCommands.hpp"
@@ -31,6 +32,7 @@
 using QtNodes::BasicGraphicsScene;
 using QtNodes::DataFlowGraphModel;
 using QtNodes::GraphicsView;
+using QtNodes::NodeDelegateModel;
 using QtNodes::NodeGraphicsObject;
 
 GraphicsView::GraphicsView(QWidget *parent)
