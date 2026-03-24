@@ -6,6 +6,7 @@
 #include "NodeStyle.hpp"
 #include "Serializable.hpp"
 #include <QtGui/QColor>
+#include <QtWidgets/QWidget>
 
 namespace QtNodes {
 
