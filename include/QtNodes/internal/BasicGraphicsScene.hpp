@@ -7,9 +7,10 @@
 #include "Export.hpp"
 #include "GroupGraphicsObject.hpp"
 #include "NodeGroup.hpp"
+#include "QUuidStdHash.hpp"
 #include "UndoCommands.hpp"
-
 #include <QtCore/QJsonObject>
+#include <QtCore/QUuid>
 #include <QtWidgets/QGraphicsScene>
 #include <QtWidgets/QMenu>
 
@@ -34,7 +35,7 @@ class NodeGroup;
 class GroupGraphicsObject;
 struct ConnectionId;
 
-/// An instance of QGraphicsScene, holds connections and nodes.
+/// An instance of QGraphicsScene , holds connections and nodes.
 class NODE_EDITOR_PUBLIC BasicGraphicsScene : public QGraphicsScene
 {
     Q_OBJECT
@@ -204,6 +205,12 @@ public:
      * Default implementation returns `nullptr`.
      */
     virtual QMenu *createSceneMenu(QPointF const scenePos);
+
+    /**
+     * @brief Freezes and unfreezes the model and connections of the selected nodes.
+     * @param isFreeze reference for freezing or unfreezing the model and connections of the selected nodes.
+     */
+    void freezeModelAndConnections(bool isFreeze);
 
     /**
      * @brief Creates the default menu when a node is selected.

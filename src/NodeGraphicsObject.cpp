@@ -466,5 +466,4 @@ QJsonObject NodeGraphicsObject::save() const
 
     return nodeJson;
 }
-
 } // namespace QtNodes

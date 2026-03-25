@@ -1,17 +1,12 @@
 #pragma once
 
-#include <memory>
-
-#include <QMetaType>
-#include <QPixmap>
-#include <QtGui/QColor>
-#include <QtWidgets/QWidget>
-
 #include "Definitions.hpp"
 #include "Export.hpp"
 #include "NodeData.hpp"
 #include "NodeStyle.hpp"
 #include "Serializable.hpp"
+#include <QtGui/QColor>
+#include <QtWidgets/QWidget>
 
 namespace QtNodes {
 
@@ -80,6 +75,15 @@ public:
     /// It is possible to hide port caption in GUI
     virtual bool portCaptionVisible(PortType, PortIndex) const { return false; }
 
+    /// Nicknames can be assigned to nodes and shown in GUI
+    virtual QString label() const { return QString(); }
+
+    /// It is possible to hide the nickname in GUI
+    virtual bool labelVisible() const { return true; }
+
+    /// Controls whether the label can be edited or not
+    virtual bool labelEditable() const { return false; }
+
     /// Validation State will default to Valid, but you can manipulate it by overriding in an inherited class
     virtual NodeValidationState validationState() const { return _nodeValidationState; }
 
@@ -139,6 +143,10 @@ public:
 
     virtual bool resizable() const { return false; }
 
+    bool frozen() const { return _frozen; }
+
+    void setFrozenState(bool state) { _frozen = state; }
+
 public Q_SLOTS:
     virtual void inputConnectionCreated(ConnectionId const &) {}
     virtual void inputConnectionDeleted(ConnectionId const &) {}
@@ -191,6 +199,8 @@ Q_SIGNALS:
 
 private:
     NodeStyle _nodeStyle;
+
+    bool _frozen{false};
 
     NodeValidationState _nodeValidationState;
 

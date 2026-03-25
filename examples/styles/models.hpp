@@ -36,6 +36,8 @@ public:
 
     QString name() const override { return QString("MyDataModel"); }
 
+    bool labelEditable() const override { return true; }
+
 public:
     QJsonObject save() const override
     {

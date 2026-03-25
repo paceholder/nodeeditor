@@ -102,6 +102,9 @@ NodeId DataFlowGraphModel::addNode(QString const nodeType)
 
         _models[newId] = std::move(model);
 
+        _labels[newId] = _models[newId]->label();
+        _labelsVisible[newId] = _models[newId]->labelVisible();
+
         Q_EMIT nodeCreated(newId);
 
         return newId;
@@ -268,14 +271,14 @@ QVariant DataFlowGraphModel::nodeData(NodeId nodeId, NodeRole role) const
         break;
 
     case NodeRole::Style: {
-        auto style = _models.at(nodeId)->nodeStyle();
+        auto style = model->nodeStyle();
         result = style.toJson().toVariantMap();
     } break;
 
     case NodeRole::InternalData: {
         QJsonObject nodeJson;
 
-        nodeJson["internal-data"] = _models.at(nodeId)->save();
+        nodeJson["internal-data"] = model->save();
 
         result = nodeJson.toVariantMap();
         break;
@@ -298,6 +301,21 @@ QVariant DataFlowGraphModel::nodeData(NodeId nodeId, NodeRole role) const
         auto validationState = model->validationState();
         result = QVariant::fromValue(validationState);
     } break;
+
+    case NodeRole::LabelVisible: {
+        auto const labelVisibleIt = _labelsVisible.find(nodeId);
+        result = (labelVisibleIt != _labelsVisible.end()) ? labelVisibleIt->second
+                                                          : model->labelVisible();
+    } break;
+
+    case NodeRole::Label: {
+        auto const labelIt = _labels.find(nodeId);
+        result = (labelIt != _labels.end()) ? labelIt->second : model->label();
+    } break;
+
+    case NodeRole::LabelEditable:
+        result = model->labelEditable();
+        break;
 
     case NodeRole::ProcessingStatus: {
         auto processingStatus = model->processingStatus();
@@ -387,9 +405,25 @@ bool DataFlowGraphModel::setNodeData(NodeId nodeId, NodeRole role, QVariant valu
         Q_EMIT nodeUpdated(nodeId);
     } break;
 
+    case NodeRole::LabelVisible: {
+        _labelsVisible[nodeId] = value.toBool();
+        Q_EMIT nodeUpdated(nodeId);
+        result = true;
+    } break;
+
+    case NodeRole::Label: {
+        _labels[nodeId] = value.toString();
+        Q_EMIT nodeUpdated(nodeId);
+        result = true;
+    } break;
+
+    case NodeRole::LabelEditable:
+        break;
+
     case NodeRole::ProgressValue:
         break;
     }
+
     return result;
 }
 
@@ -450,6 +484,9 @@ bool DataFlowGraphModel::setPortData(
     switch (role) {
     case PortRole::Data:
         if (portType == PortType::In) {
+            if (model->frozen())
+                return false;
+
             model->setInData(value.value<std::shared_ptr<NodeData>>(), portIndex);
 
             // Triggers repainting on the scene.
@@ -495,6 +532,8 @@ bool DataFlowGraphModel::deleteNode(NodeId const nodeId)
     }
 
     _nodeGeometryData.erase(nodeId);
+    _labels.erase(nodeId);
+    _labelsVisible.erase(nodeId);
     _models.erase(nodeId);
 
     Q_EMIT nodeDeleted(nodeId);
@@ -506,9 +545,22 @@ QJsonObject DataFlowGraphModel::saveNode(NodeId const nodeId) const
 {
     QJsonObject nodeJson;
 
-    nodeJson["id"] = static_cast<qint64>(nodeId);
+    auto const modelIt = _models.find(nodeId);
+    if (modelIt == _models.end()) {
+        return nodeJson;
+    }
 
-    nodeJson["internal-data"] = _models.at(nodeId)->save();
+    auto const &model = modelIt->second;
+
+    nodeJson["id"] = static_cast<qint64>(nodeId);
+    nodeJson["internal-data"] = model->save();
+
+    auto const labelIt = _labels.find(nodeId);
+    nodeJson["label"] = (labelIt != _labels.end()) ? labelIt->second : model->label();
+
+    auto const labelVisibleIt = _labelsVisible.find(nodeId);
+    nodeJson["labelVisible"] = (labelVisibleIt != _labelsVisible.end()) ? labelVisibleIt->second
+                                                                        : model->labelVisible();
 
     {
         QPointF const pos = nodeData(nodeId, NodeRole::Position).value<QPointF>();
@@ -606,7 +658,13 @@ void DataFlowGraphModel::loadNode(QJsonObject const &nodeJson)
 
         setNodeData(restoredNodeId, NodeRole::Position, pos);
 
-        _models[restoredNodeId]->load(internalDataJson);
+        auto *restoredModel = _models[restoredNodeId].get();
+        _labels[restoredNodeId] = nodeJson["label"].toString(restoredModel->label());
+        _labelsVisible[restoredNodeId] = nodeJson.contains("labelVisible")
+                                             ? nodeJson["labelVisible"].toBool()
+                                             : restoredModel->labelVisible();
+
+        restoredModel->load(internalDataJson);
     } else {
         throw std::logic_error(std::string("No registered model with name ")
                                + delegateModelName.toLocal8Bit().data());
