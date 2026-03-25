@@ -25,8 +25,13 @@ private:
     QJsonObject toJson() const override;
 
 public:
-    QColor BackgroundColor;
-    QColor FineGridColor;
-    QColor CoarseGridColor;
+    QColor backgroundColor() const;
+    QColor fineGridColor() const;
+    QColor coarseGridColor() const;
+
+private:
+    QColor _BackgroundColor;
+    QColor _FineGridColor;
+    QColor _CoarseGridColor;
 };
 } // namespace QtNodes

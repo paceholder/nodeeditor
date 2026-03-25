@@ -5,7 +5,6 @@ else()
 endif()
 
 add_executable(test_nodes
-  test_main.cpp
   src/TestAbstractGraphModel.cpp
   src/TestAbstractGraphModelSignals.cpp
   src/TestDataFlowGraphModel.cpp
@@ -36,7 +35,7 @@ target_include_directories(test_nodes
 target_link_libraries(test_nodes
   PRIVATE
     QtNodes::QtNodes
-    Catch2::Catch2
+    Catch2::Catch2WithMain
     Qt${QT_VERSION_MAJOR}::Test
 )
 

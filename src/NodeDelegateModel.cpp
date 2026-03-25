@@ -11,22 +11,22 @@ QIcon const &status_icon(NodeStyle const &style, NodeProcessingStatus status)
 {
     switch (status) {
     case NodeProcessingStatus::Updated:
-        return style.statusUpdated;
+        return style.statusUpdated();
     case NodeProcessingStatus::Processing:
-        return style.statusProcessing;
+        return style.statusProcessing();
     case NodeProcessingStatus::Pending:
-        return style.statusPending;
+        return style.statusPending();
     case NodeProcessingStatus::Empty:
-        return style.statusEmpty;
+        return style.statusEmpty();
     case NodeProcessingStatus::Failed:
-        return style.statusInvalid;
+        return style.statusInvalid();
     case NodeProcessingStatus::Partial:
-        return style.statusPartial;
+        return style.statusPartial();
     case NodeProcessingStatus::NoStatus:
         break;
     }
 
-    return style.statusEmpty;
+    return style.statusEmpty();
 }
 
 } // namespace
@@ -89,7 +89,7 @@ QImage NodeDelegateModel::processingStatusImage(qreal dpr) const
 {
     std::lock_guard<std::mutex> lock(_processingStatusIconMutex);
 
-    int const resolution = _nodeStyle.processingIconStyle._resolution;
+    int const resolution = _nodeStyle.processingIconStyle()._resolution;
 
     if (_processingStatus == NodeProcessingStatus::NoStatus) {
         return {};
@@ -117,7 +117,7 @@ QImage NodeDelegateModel::processingStatusImage(qreal dpr) const
 ProcessingIconStyle NodeDelegateModel::processingIconStyle() const
 {
     std::lock_guard<std::mutex> lock(_processingStatusIconMutex);
-    return _nodeStyle.processingIconStyle;
+    return _nodeStyle.processingIconStyle();
 }
 
 void NodeDelegateModel::setStatusIcon(NodeProcessingStatus status, const QPixmap &pixmap)
@@ -128,22 +128,22 @@ void NodeDelegateModel::setStatusIcon(NodeProcessingStatus status, const QPixmap
     case NodeProcessingStatus::NoStatus:
         break;
     case NodeProcessingStatus::Updated:
-        _nodeStyle.statusUpdated = QIcon(pixmap);
+        _nodeStyle.setStatusUpdated(QIcon(pixmap));
         break;
     case NodeProcessingStatus::Processing:
-        _nodeStyle.statusProcessing = QIcon(pixmap);
+        _nodeStyle.setStatusProcessing(QIcon(pixmap));
         break;
     case NodeProcessingStatus::Pending:
-        _nodeStyle.statusPending = QIcon(pixmap);
+        _nodeStyle.setStatusPending(QIcon(pixmap));
         break;
     case NodeProcessingStatus::Empty:
-        _nodeStyle.statusEmpty = QIcon(pixmap);
+        _nodeStyle.setStatusEmpty(QIcon(pixmap));
         break;
     case NodeProcessingStatus::Failed:
-        _nodeStyle.statusInvalid = QIcon(pixmap);
+        _nodeStyle.setStatusInvalid(QIcon(pixmap));
         break;
     case NodeProcessingStatus::Partial:
-        _nodeStyle.statusPartial = QIcon(pixmap);
+        _nodeStyle.setStatusPartial(QIcon(pixmap));
         break;
     }
 
@@ -153,7 +153,7 @@ void NodeDelegateModel::setStatusIcon(NodeProcessingStatus status, const QPixmap
 void NodeDelegateModel::setStatusIconStyle(const ProcessingIconStyle &style)
 {
     std::lock_guard<std::mutex> lock(_processingStatusIconMutex);
-    _nodeStyle.processingIconStyle = style;
+    _nodeStyle.setProcessingIconStyle(style);
     _processingStatusIconDirty = true;
 }
 

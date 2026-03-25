@@ -11,7 +11,7 @@
 
 namespace QtNodes {
 
-inline NodeId getNodeId(PortType portType, ConnectionId const &connectionId)
+inline NodeId getNodeId(PortType portType, ConnectionId const &connectionId) noexcept
 {
     NodeId id = InvalidNodeId;
 
@@ -24,7 +24,7 @@ inline NodeId getNodeId(PortType portType, ConnectionId const &connectionId)
     return id;
 }
 
-inline PortIndex getPortIndex(PortType portType, ConnectionId const &connectionId)
+inline PortIndex getPortIndex(PortType portType, ConnectionId const &connectionId) noexcept
 {
     PortIndex index = InvalidPortIndex;
 
@@ -37,7 +37,7 @@ inline PortIndex getPortIndex(PortType portType, ConnectionId const &connectionI
     return index;
 }
 
-inline PortType oppositePort(PortType port)
+inline PortType oppositePort(PortType port) noexcept
 {
     switch (port) {
     case PortType::In:
@@ -49,12 +49,12 @@ inline PortType oppositePort(PortType port)
     }
 }
 
-inline bool isPortIndexValid(PortIndex index)
+inline bool isPortIndexValid(PortIndex index) noexcept
 {
     return index != InvalidPortIndex;
 }
 
-inline bool isPortTypeValid(PortType portType)
+inline bool isPortTypeValid(PortType portType) noexcept
 {
     return portType != PortType::None;
 }
@@ -138,8 +138,13 @@ inline bool tryFromJson(QJsonObject const &connJson, ConnectionId &connId)
 
     if (!detail::read_node_id(connJson["outNodeId"], outNodeId)
         || !detail::read_port_index(connJson["outPortIndex"], outPortIndex)
-        || !detail::read_node_id(connJson["inNodeId"], inNodeId)
         || !detail::read_port_index(connJson["inPortIndex"], inPortIndex)) {
+        return false;
+    }
+
+    // Support both "inNodeId" (correct) and "intNodeId" (legacy typo)
+    if (!detail::read_node_id(connJson["inNodeId"], inNodeId)
+        && !detail::read_node_id(connJson["intNodeId"], inNodeId)) {
         return false;
     }
 
@@ -157,7 +162,7 @@ inline ConnectionId fromJson(QJsonObject const &connJson)
     return connId;
 }
 
-inline NodeRole portCountRole(PortType portType)
+inline NodeRole portCountRole(PortType portType) noexcept
 {
     return (portType == PortType::Out) ? NodeRole::OutPortCount : NodeRole::InPortCount;
 }

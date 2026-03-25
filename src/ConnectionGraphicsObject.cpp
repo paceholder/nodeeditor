@@ -93,7 +93,7 @@ BasicGraphicsScene *ConnectionGraphicsObject::nodeScene() const
     return sceneObject;
 }
 
-ConnectionId const &ConnectionGraphicsObject::connectionId() const
+ConnectionId const &ConnectionGraphicsObject::connectionId() const noexcept
 {
     return _connectionId;
 }
@@ -169,7 +169,7 @@ QPointF const &ConnectionGraphicsObject::cachedSamplePoint(int index) const
     return _cachedSamplePoints[index];
 }
 
-QPointF const &ConnectionGraphicsObject::cachedMidPoint() const
+QPointF const &ConnectionGraphicsObject::cachedMidPoint() const noexcept
 {
     rebuildCachedGeometry();
     return _cachedMidPoint;

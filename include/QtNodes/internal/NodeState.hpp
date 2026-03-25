@@ -23,13 +23,13 @@ public:
     NodeState(NodeGraphicsObject &ngo);
 
 public:
-    bool hovered() const { return _hovered; }
+    bool hovered() const noexcept { return _hovered; }
 
-    void setHovered(bool hovered = true) { _hovered = hovered; }
+    void setHovered(bool hovered = true) noexcept { _hovered = hovered; }
 
     void setResizing(bool resizing);
 
-    bool resizing() const;
+    bool resizing() const noexcept;
 
     ConnectionGraphicsObject const *connectionForReaction() const;
 

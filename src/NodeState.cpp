@@ -19,7 +19,7 @@ void NodeState::setResizing(bool resizing)
     _resizing = resizing;
 }
 
-bool NodeState::resizing() const
+bool NodeState::resizing() const noexcept
 {
     return _resizing;
 }

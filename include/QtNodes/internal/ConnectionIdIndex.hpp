@@ -16,7 +16,7 @@ public:
 public:
     ConnectionSet const &connectivity() const noexcept { return _connectivity; }
 
-    ConnectionSet const &allConnectionIds(NodeId const nodeId) const
+    ConnectionSet const &allConnectionIds(NodeId const nodeId) const noexcept
     {
         auto it = _nodeConnections.find(nodeId);
         if (it == _nodeConnections.end()) {
@@ -26,7 +26,7 @@ public:
         return it->second;
     }
 
-    ConnectionSet const &connections(NodeId nodeId, PortType portType, PortIndex portIndex) const
+    ConnectionSet const &connections(NodeId nodeId, PortType portType, PortIndex portIndex) const noexcept
     {
         if (portType == PortType::None) {
             return emptyConnections();

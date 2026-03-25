@@ -73,12 +73,12 @@ BasicGraphicsScene::BasicGraphicsScene(AbstractGraphModel &graphModel, QObject *
 
 BasicGraphicsScene::~BasicGraphicsScene() = default;
 
-AbstractGraphModel const &BasicGraphicsScene::graphModel() const
+AbstractGraphModel const &BasicGraphicsScene::graphModel() const noexcept
 {
     return _graphModel;
 }
 
-AbstractGraphModel &BasicGraphicsScene::graphModel()
+AbstractGraphModel &BasicGraphicsScene::graphModel() noexcept
 {
     return _graphModel;
 }

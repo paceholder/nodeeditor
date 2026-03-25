@@ -5,7 +5,7 @@
 #include <QtNodes/NodeDelegateModelRegistry>
 #include <QtNodes/Definitions>
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_all.hpp>
 
 using QtNodes::ConnectionId;
 using QtNodes::DataFlowGraphModel;

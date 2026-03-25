@@ -2,7 +2,7 @@
 #include "TestGraphModel.hpp"
 #include "UITestHelper.hpp"
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_all.hpp>
 
 #include <QtNodes/internal/AbstractConnectionPainter.hpp>
 #include <QtNodes/internal/AbstractNodePainter.hpp>

@@ -1,7 +1,7 @@
 #include "ApplicationSetup.hpp"
 #include "TestGraphModel.hpp"
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_all.hpp>
 
 #include <QtNodes/internal/BasicGraphicsScene.hpp>
 #include <QtNodes/internal/GraphicsView.hpp>

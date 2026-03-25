@@ -21,12 +21,12 @@ NodeStyle::NodeStyle()
     initResources();
 
     // Initialize status icons after resources are loaded
-    statusUpdated = QIcon(":/status_icons/updated.svg");
-    statusProcessing = QIcon(":/status_icons/processing.svg");
-    statusPending = QIcon(":/status_icons/pending.svg");
-    statusInvalid = QIcon(":/status_icons/failed.svg");
-    statusEmpty = QIcon(":/status_icons/empty.svg");
-    statusPartial = QIcon(":/status_icons/partial.svg");
+    _statusUpdated = QIcon(":/status_icons/updated.svg");
+    _statusProcessing = QIcon(":/status_icons/processing.svg");
+    _statusPending = QIcon(":/status_icons/pending.svg");
+    _statusInvalid = QIcon(":/status_icons/failed.svg");
+    _statusEmpty = QIcon(":/status_icons/empty.svg");
+    _statusPartial = QIcon(":/status_icons/partial.svg");
 
     // This configuration is stored inside the compiled unit and is loaded statically
     loadJsonFile(":DefaultStyle.json");
@@ -53,52 +53,52 @@ void NodeStyle::loadJson(QJsonObject const &json)
 {
     QJsonObject obj = json["NodeStyle"].toObject();
 
-    readColor(obj, "NormalBoundaryColor", NormalBoundaryColor);
-    readColor(obj, "SelectedBoundaryColor", SelectedBoundaryColor);
-    readColor(obj, "GradientColor0", GradientColor0);
-    readColor(obj, "GradientColor1", GradientColor1);
-    readColor(obj, "GradientColor2", GradientColor2);
-    readColor(obj, "GradientColor3", GradientColor3);
-    readColor(obj, "ShadowColor", ShadowColor);
-    readBool(obj, "ShadowEnabled", ShadowEnabled);
-    readColor(obj, "FontColor", FontColor);
-    readColor(obj, "FontColorFaded", FontColorFaded);
-    readColor(obj, "ConnectionPointColor", ConnectionPointColor);
-    readColor(obj, "FilledConnectionPointColor", FilledConnectionPointColor);
-    readColor(obj, "WarningColor", WarningColor);
-    readColor(obj, "ErrorColor", ErrorColor);
+    readColor(obj, "NormalBoundaryColor", _NormalBoundaryColor);
+    readColor(obj, "SelectedBoundaryColor", _SelectedBoundaryColor);
+    readColor(obj, "GradientColor0", _GradientColor0);
+    readColor(obj, "GradientColor1", _GradientColor1);
+    readColor(obj, "GradientColor2", _GradientColor2);
+    readColor(obj, "GradientColor3", _GradientColor3);
+    readColor(obj, "ShadowColor", _ShadowColor);
+    readBool(obj, "ShadowEnabled", _ShadowEnabled);
+    readColor(obj, "FontColor", _FontColor);
+    readColor(obj, "FontColorFaded", _FontColorFaded);
+    readColor(obj, "ConnectionPointColor", _ConnectionPointColor);
+    readColor(obj, "FilledConnectionPointColor", _FilledConnectionPointColor);
+    readColor(obj, "WarningColor", _WarningColor);
+    readColor(obj, "ErrorColor", _ErrorColor);
 
-    readFloat(obj, "PenWidth", PenWidth);
-    readFloat(obj, "HoveredPenWidth", HoveredPenWidth);
-    readFloat(obj, "ConnectionPointDiameter", ConnectionPointDiameter);
+    readFloat(obj, "PenWidth", _PenWidth);
+    readFloat(obj, "HoveredPenWidth", _HoveredPenWidth);
+    readFloat(obj, "ConnectionPointDiameter", _ConnectionPointDiameter);
 
-    readFloat(obj, "Opacity", Opacity);
+    readFloat(obj, "Opacity", _Opacity);
 }
 
 QJsonObject NodeStyle::toJson() const
 {
     QJsonObject obj;
 
-    writeColor(obj, "NormalBoundaryColor", NormalBoundaryColor);
-    writeColor(obj, "SelectedBoundaryColor", SelectedBoundaryColor);
-    writeColor(obj, "GradientColor0", GradientColor0);
-    writeColor(obj, "GradientColor1", GradientColor1);
-    writeColor(obj, "GradientColor2", GradientColor2);
-    writeColor(obj, "GradientColor3", GradientColor3);
-    writeColor(obj, "ShadowColor", ShadowColor);
-    writeBool(obj, "ShadowEnabled", ShadowEnabled);
-    writeColor(obj, "FontColor", FontColor);
-    writeColor(obj, "FontColorFaded", FontColorFaded);
-    writeColor(obj, "ConnectionPointColor", ConnectionPointColor);
-    writeColor(obj, "FilledConnectionPointColor", FilledConnectionPointColor);
-    writeColor(obj, "WarningColor", WarningColor);
-    writeColor(obj, "ErrorColor", ErrorColor);
+    writeColor(obj, "NormalBoundaryColor", _NormalBoundaryColor);
+    writeColor(obj, "SelectedBoundaryColor", _SelectedBoundaryColor);
+    writeColor(obj, "GradientColor0", _GradientColor0);
+    writeColor(obj, "GradientColor1", _GradientColor1);
+    writeColor(obj, "GradientColor2", _GradientColor2);
+    writeColor(obj, "GradientColor3", _GradientColor3);
+    writeColor(obj, "ShadowColor", _ShadowColor);
+    writeBool(obj, "ShadowEnabled", _ShadowEnabled);
+    writeColor(obj, "FontColor", _FontColor);
+    writeColor(obj, "FontColorFaded", _FontColorFaded);
+    writeColor(obj, "ConnectionPointColor", _ConnectionPointColor);
+    writeColor(obj, "FilledConnectionPointColor", _FilledConnectionPointColor);
+    writeColor(obj, "WarningColor", _WarningColor);
+    writeColor(obj, "ErrorColor", _ErrorColor);
 
-    writeFloat(obj, "PenWidth", PenWidth);
-    writeFloat(obj, "HoveredPenWidth", HoveredPenWidth);
-    writeFloat(obj, "ConnectionPointDiameter", ConnectionPointDiameter);
+    writeFloat(obj, "PenWidth", _PenWidth);
+    writeFloat(obj, "HoveredPenWidth", _HoveredPenWidth);
+    writeFloat(obj, "ConnectionPointDiameter", _ConnectionPointDiameter);
 
-    writeFloat(obj, "Opacity", Opacity);
+    writeFloat(obj, "Opacity", _Opacity);
 
     QJsonObject root;
     root["NodeStyle"] = obj;
@@ -108,13 +108,48 @@ QJsonObject NodeStyle::toJson() const
 
 void NodeStyle::setBackgroundColor(QColor const &color)
 {
-    GradientColor0 = color;
-    GradientColor1 = color;
-    GradientColor2 = color;
-    GradientColor3 = color;
+    _GradientColor0 = color;
+    _GradientColor1 = color;
+    _GradientColor2 = color;
+    _GradientColor3 = color;
 }
 
 QColor NodeStyle::backgroundColor() const
 {
-    return GradientColor0;
+    return _GradientColor0;
 }
+
+QColor NodeStyle::normalBoundaryColor() const { return _NormalBoundaryColor; }
+QColor NodeStyle::selectedBoundaryColor() const { return _SelectedBoundaryColor; }
+QColor NodeStyle::gradientColor0() const { return _GradientColor0; }
+QColor NodeStyle::gradientColor1() const { return _GradientColor1; }
+QColor NodeStyle::gradientColor2() const { return _GradientColor2; }
+QColor NodeStyle::gradientColor3() const { return _GradientColor3; }
+QColor NodeStyle::shadowColor() const { return _ShadowColor; }
+bool NodeStyle::shadowEnabled() const { return _ShadowEnabled; }
+QColor NodeStyle::fontColor() const { return _FontColor; }
+QColor NodeStyle::fontColorFaded() const { return _FontColorFaded; }
+QColor NodeStyle::connectionPointColor() const { return _ConnectionPointColor; }
+QColor NodeStyle::filledConnectionPointColor() const { return _FilledConnectionPointColor; }
+QColor NodeStyle::warningColor() const { return _WarningColor; }
+QColor NodeStyle::errorColor() const { return _ErrorColor; }
+QColor NodeStyle::toolTipIconColor() const { return _ToolTipIconColor; }
+float NodeStyle::penWidth() const { return _PenWidth; }
+float NodeStyle::hoveredPenWidth() const { return _HoveredPenWidth; }
+float NodeStyle::connectionPointDiameter() const { return _ConnectionPointDiameter; }
+float NodeStyle::opacity() const { return _Opacity; }
+QIcon const &NodeStyle::statusUpdated() const { return _statusUpdated; }
+QIcon const &NodeStyle::statusProcessing() const { return _statusProcessing; }
+QIcon const &NodeStyle::statusPending() const { return _statusPending; }
+QIcon const &NodeStyle::statusInvalid() const { return _statusInvalid; }
+QIcon const &NodeStyle::statusEmpty() const { return _statusEmpty; }
+QIcon const &NodeStyle::statusPartial() const { return _statusPartial; }
+ProcessingIconStyle const &NodeStyle::processingIconStyle() const { return _processingIconStyle; }
+
+void NodeStyle::setStatusUpdated(QIcon const &icon) { _statusUpdated = icon; }
+void NodeStyle::setStatusProcessing(QIcon const &icon) { _statusProcessing = icon; }
+void NodeStyle::setStatusPending(QIcon const &icon) { _statusPending = icon; }
+void NodeStyle::setStatusInvalid(QIcon const &icon) { _statusInvalid = icon; }
+void NodeStyle::setStatusEmpty(QIcon const &icon) { _statusEmpty = icon; }
+void NodeStyle::setStatusPartial(QIcon const &icon) { _statusPartial = icon; }
+void NodeStyle::setProcessingIconStyle(ProcessingIconStyle const &style) { _processingIconStyle = style; }

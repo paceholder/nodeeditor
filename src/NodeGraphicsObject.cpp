@@ -98,7 +98,7 @@ NodeGraphicsObject::NodeGraphicsObject(BasicGraphicsScene &scene, NodeId nodeId)
                                                                      _nodeId,
                                                                      fallback_style);
 
-    setOpacity(nodeStyle.Opacity);
+    setOpacity(nodeStyle.opacity());
 
     setAcceptHoverEvents(true);
 

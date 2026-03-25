@@ -44,9 +44,9 @@ public:
 
 public:
     /// @returns associated AbstractGraphModel.
-    AbstractGraphModel const &graphModel() const;
+    AbstractGraphModel const &graphModel() const noexcept;
 
-    AbstractGraphModel &graphModel();
+    AbstractGraphModel &graphModel() noexcept;
 
     AbstractNodeGeometry const &nodeGeometry() const;
 
@@ -190,7 +190,7 @@ public:
      */
     ConnectionGraphicsObject *connectionGraphicsObject(ConnectionId connectionId);
 
-    Qt::Orientation orientation() const { return _orientation; }
+    Qt::Orientation orientation() const noexcept { return _orientation; }
 
     void setOrientation(Qt::Orientation const orientation);
 

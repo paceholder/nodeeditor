@@ -53,39 +53,74 @@ public:
     QColor backgroundColor() const;
 
 public:
-    QColor NormalBoundaryColor;
-    QColor SelectedBoundaryColor;
-    QColor GradientColor0;
-    QColor GradientColor1;
-    QColor GradientColor2;
-    QColor GradientColor3;
-    QColor ShadowColor;
-    bool ShadowEnabled{false};
-    QColor FontColor;
-    QColor FontColorFaded;
+    QColor normalBoundaryColor() const;
+    QColor selectedBoundaryColor() const;
+    QColor gradientColor0() const;
+    QColor gradientColor1() const;
+    QColor gradientColor2() const;
+    QColor gradientColor3() const;
+    QColor shadowColor() const;
+    bool shadowEnabled() const;
+    QColor fontColor() const;
+    QColor fontColorFaded() const;
+    QColor connectionPointColor() const;
+    QColor filledConnectionPointColor() const;
+    QColor warningColor() const;
+    QColor errorColor() const;
+    QColor toolTipIconColor() const;
+    float penWidth() const;
+    float hoveredPenWidth() const;
+    float connectionPointDiameter() const;
+    float opacity() const;
+    QIcon const &statusUpdated() const;
+    QIcon const &statusProcessing() const;
+    QIcon const &statusPending() const;
+    QIcon const &statusInvalid() const;
+    QIcon const &statusEmpty() const;
+    QIcon const &statusPartial() const;
+    ProcessingIconStyle const &processingIconStyle() const;
 
-    QColor ConnectionPointColor;
-    QColor FilledConnectionPointColor;
+    void setStatusUpdated(QIcon const &icon);
+    void setStatusProcessing(QIcon const &icon);
+    void setStatusPending(QIcon const &icon);
+    void setStatusInvalid(QIcon const &icon);
+    void setStatusEmpty(QIcon const &icon);
+    void setStatusPartial(QIcon const &icon);
+    void setProcessingIconStyle(ProcessingIconStyle const &style);
 
-    QColor WarningColor;
-    QColor ErrorColor;
-    QColor ToolTipIconColor;
+private:
+    QColor _NormalBoundaryColor;
+    QColor _SelectedBoundaryColor;
+    QColor _GradientColor0;
+    QColor _GradientColor1;
+    QColor _GradientColor2;
+    QColor _GradientColor3;
+    QColor _ShadowColor;
+    bool _ShadowEnabled{false};
+    QColor _FontColor;
+    QColor _FontColorFaded;
 
-    float PenWidth{0.0f};
-    float HoveredPenWidth{0.0f};
+    QColor _ConnectionPointColor;
+    QColor _FilledConnectionPointColor;
 
-    float ConnectionPointDiameter{0.0f};
+    QColor _WarningColor;
+    QColor _ErrorColor;
+    QColor _ToolTipIconColor;
 
-    float Opacity{0.0f};
+    float _PenWidth{0.0f};
+    float _HoveredPenWidth{0.0f};
 
-    // Status icons - initialized in constructor after Q_INIT_RESOURCE
-    QIcon statusUpdated;
-    QIcon statusProcessing;
-    QIcon statusPending;
-    QIcon statusInvalid;
-    QIcon statusEmpty;
-    QIcon statusPartial;
+    float _ConnectionPointDiameter{0.0f};
 
-    ProcessingIconStyle processingIconStyle{};
+    float _Opacity{0.0f};
+
+    QIcon _statusUpdated;
+    QIcon _statusProcessing;
+    QIcon _statusPending;
+    QIcon _statusInvalid;
+    QIcon _statusEmpty;
+    QIcon _statusPartial;
+
+    ProcessingIconStyle _processingIconStyle{};
 };
 } // namespace QtNodes

@@ -9,7 +9,7 @@
 #include <QtNodes/internal/NodeGraphicsObject.hpp>
 #include <QtNodes/internal/ConnectionGraphicsObject.hpp>
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_all.hpp>
 
 #include <QTest>
 #include <QSignalSpy>

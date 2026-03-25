@@ -36,8 +36,8 @@ public:
     PortType requiredPort() const;
     bool requiresPort() const;
 
-    bool hovered() const;
-    void setHovered(bool hovered);
+    bool hovered() const noexcept;
+    void setHovered(bool hovered) noexcept;
 
     bool frozen() const { return _frozen; }
     void setFrozen(bool frozen) { _frozen = frozen; }
@@ -46,7 +46,7 @@ public:
     /// Caches NodeId for further interaction.
     void setLastHoveredNode(NodeId const nodeId);
 
-    NodeId lastHoveredNode() const;
+    NodeId lastHoveredNode() const noexcept;
 
     void resetLastHoveredNode();
 

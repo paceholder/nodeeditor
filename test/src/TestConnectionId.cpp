@@ -1,7 +1,7 @@
 #include <QtNodes/Definitions>
 #include <QtNodes/ConnectionIdUtils>
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_all.hpp>
 
 using QtNodes::ConnectionId;
 using QtNodes::NodeId;

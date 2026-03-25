@@ -8,7 +8,7 @@
 #include <QtNodes/internal/ConnectionGraphicsObject.hpp>
 #include <QtNodes/Definitions>
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_all.hpp>
 #include <QTest>
 #include <QSignalSpy>
 #include <QGraphicsSceneMouseEvent>

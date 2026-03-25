@@ -30,12 +30,12 @@ bool ConnectionState::requiresPort() const
     return id.outNodeId == InvalidNodeId || id.inNodeId == InvalidNodeId;
 }
 
-bool ConnectionState::hovered() const
+bool ConnectionState::hovered() const noexcept
 {
     return _hovered;
 }
 
-void ConnectionState::setHovered(bool hovered)
+void ConnectionState::setHovered(bool hovered) noexcept
 {
     _hovered = hovered;
 }
@@ -45,7 +45,7 @@ void ConnectionState::setLastHoveredNode(NodeId const nodeId)
     _lastHoveredNode = nodeId;
 }
 
-NodeId ConnectionState::lastHoveredNode() const
+NodeId ConnectionState::lastHoveredNode() const noexcept
 {
     return _lastHoveredNode;
 }

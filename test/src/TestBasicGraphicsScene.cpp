@@ -6,7 +6,7 @@
 #include <QtNodes/internal/NodeRenderingUtils.hpp>
 #include <QtNodes/internal/StyleCollection.hpp>
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_all.hpp>
 
 #include <QGraphicsView>
 #include <QJsonObject>
@@ -122,7 +122,7 @@ TEST_CASE("BasicGraphicsScene functionality", "[graphics]")
         auto *nodeGraphics = scene.nodeGraphicsObject(nodeId);
         REQUIRE(nodeGraphics != nullptr);
 
-        CHECK(nodeGraphics->opacity() == Approx(QtNodes::StyleCollection::nodeStyle().Opacity));
+        CHECK(nodeGraphics->opacity() == Approx(QtNodes::StyleCollection::nodeStyle().opacity()));
     }
 }
 

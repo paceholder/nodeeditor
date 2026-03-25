@@ -8,7 +8,7 @@
 #include <QtNodes/internal/NodeGraphicsObject.hpp>
 #include <QtNodes/internal/NodeGroup.hpp>
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_all.hpp>
 
 #include <QCoreApplication>
 #include <QJsonArray>

@@ -25,7 +25,7 @@ public:
     // Needed for qgraphicsitem_cast
     enum { Type = UserType + 2 };
 
-    int type() const override { return Type; }
+    int type() const noexcept override { return Type; }
 
 public:
     ConnectionGraphicsObject(BasicGraphicsScene &scene, ConnectionId const connectionId);
@@ -37,7 +37,7 @@ public:
 
     BasicGraphicsScene *nodeScene() const;
 
-    ConnectionId const &connectionId() const;
+    ConnectionId const &connectionId() const noexcept;
 
     QRectF boundingRect() const override;
 
@@ -45,9 +45,9 @@ public:
 
     QPointF const &endPoint(PortType portType) const;
 
-    QPointF out() const { return _out; }
+    QPointF out() const noexcept { return _out; }
 
-    QPointF in() const { return _in; }
+    QPointF in() const noexcept { return _in; }
 
     std::pair<QPointF, QPointF> pointsC1C2() const;
 
@@ -57,11 +57,11 @@ public:
     /// Cached painter stroke for hit testing, rebuilt only when endpoints change.
     QPainterPath const &cachedStrokePath() const;
 
-    int cachedSamplePointCount() const { return k_path_sample_count; }
+    int cachedSamplePointCount() const noexcept { return k_path_sample_count; }
 
     QPointF const &cachedSamplePoint(int index) const;
 
-    QPointF const &cachedMidPoint() const;
+    QPointF const &cachedMidPoint() const noexcept;
 
     void setEndPoint(PortType portType, QPointF const &point);
 

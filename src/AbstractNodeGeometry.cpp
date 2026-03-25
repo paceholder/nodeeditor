@@ -35,7 +35,7 @@ PortIndex AbstractNodeGeometry::checkPortHit(NodeId const nodeId,
     if (portType == PortType::None)
         return result;
 
-    double const tolerance = 2.0 * nodeStyle.ConnectionPointDiameter;
+    double const tolerance = 2.0 * nodeStyle.connectionPointDiameter();
 
     size_t const n = _graphModel.nodeData<unsigned int>(nodeId, portCountRole(portType));
 

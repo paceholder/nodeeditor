@@ -156,7 +156,7 @@ GraphicsView::GraphicsView(QWidget *parent)
 
     auto const &flowViewStyle = StyleCollection::flowViewStyle();
 
-    setBackgroundBrush(flowViewStyle.BackgroundColor);
+    setBackgroundBrush(flowViewStyle.backgroundColor());
 
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -784,13 +784,13 @@ void GraphicsView::drawBackground(QPainter *painter, const QRectF &r)
 
     auto const &flowViewStyle = StyleCollection::flowViewStyle();
 
-    QPen pfine(flowViewStyle.FineGridColor, 1.0);
+    QPen pfine(flowViewStyle.fineGridColor(), 1.0);
     pfine.setCosmetic(crisp_grid);
 
     painter->setPen(pfine);
     drawGrid(15);
 
-    QPen p(flowViewStyle.CoarseGridColor, 1.0);
+    QPen p(flowViewStyle.coarseGridColor(), 1.0);
     p.setCosmetic(crisp_grid);
 
     painter->setPen(p);

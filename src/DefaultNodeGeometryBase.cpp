@@ -28,7 +28,7 @@ QRectF DefaultNodeGeometryBase::boundingRect(NodeId const nodeId) const
     QSize s = size(nodeId);
     std::optional<NodeStyle> fallback_style;
     NodeStyle const &style = node_rendering::resolved_node_style(_graphModel, nodeId, fallback_style);
-    QMarginsF const margins = node_rendering::node_visual_margins(style.ShadowEnabled);
+    QMarginsF const margins = node_rendering::node_visual_margins(style.shadowEnabled());
 
     QRectF r(QPointF(0, 0), s);
 
