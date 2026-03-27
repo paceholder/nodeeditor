@@ -138,7 +138,7 @@ public:
      * between old and new nodes.
      */
     std::pair<std::weak_ptr<NodeGroup>, std::unordered_map<GroupId, GroupId>> restoreGroup(
-        QJsonObject const &groupJson);
+        QJsonObject const &groupJson, QHash<NodeId, QJsonObject> const &nodeById);
 
     /**
      * @brief Returns a const reference to the mapping of existing groups.
@@ -181,6 +181,51 @@ public:
      * @param nodeId Node's id.
      */
     void removeNodeFromGroup(NodeId nodeId);
+
+    std::unordered_map<QUuid, QUuid> loadItems(const QByteArray &data,
+                                               QPointF pastePos,
+                                               bool usePastePos = true);
+
+    std::unordered_map<QUuid, QUuid> loadFromMemory(const QByteArray &data);
+
+    QUuid encodeNodeId(NodeId nodeId)
+    {
+        QByteArray bytes(16, 0);
+        QDataStream stream(&bytes, QIODevice::WriteOnly);
+        stream << static_cast<quint32>(nodeId);
+        return QUuid::fromRfc4122(bytes);
+    }
+
+    NodeId decodeNodeUuid(QUuid const &uuid)
+    {
+        auto bytes = uuid.toRfc4122();
+        if (bytes.size() < static_cast<int>(sizeof(quint32)))
+            return QtNodes::InvalidNodeId;
+
+        QDataStream stream(bytes);
+        quint32 value = 0;
+        stream >> value;
+        return static_cast<NodeId>(value);
+    }
+
+    std::unordered_map<NodeId, NodeId> convertMap(std::unordered_map<QUuid, QUuid> const &uuidMap)
+    {
+        std::unordered_map<NodeId, NodeId> idMap;
+
+        // Iterando pelo mapa de QUuids e convertendo para NodeIds
+        for (const auto &pair : uuidMap) {
+            // Decodificando os QUuids para NodeIds
+            NodeId keyNodeId = decodeNodeUuid(pair.first);
+            NodeId valueNodeId = decodeNodeUuid(pair.second);
+
+            // Inserindo no novo mapa
+            if (keyNodeId != QtNodes::InvalidNodeId && valueNodeId != QtNodes::InvalidNodeId) {
+                idMap[keyNodeId] = valueNodeId;
+            }
+        }
+
+        return idMap;
+    }
 
 public:
     /**

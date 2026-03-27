@@ -46,6 +46,8 @@ public:
 
     double getScale() const;
 
+    BasicGraphicsScene *getNodeScene() { return nodeScene(); }
+
 public Q_SLOTS:
     void scaleUp();
 
