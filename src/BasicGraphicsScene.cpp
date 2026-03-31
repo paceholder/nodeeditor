@@ -681,6 +681,43 @@ std::unordered_map<QUuid, QUuid> BasicGraphicsScene::loadFromMemory(const QByteA
     return map;
 }
 
+QUuid BasicGraphicsScene::encodeNodeId(NodeId nodeId)
+{
+    QByteArray bytes(16, 0);
+    QDataStream stream(&bytes, QIODevice::WriteOnly);
+    stream << static_cast<quint32>(nodeId);
+    return QUuid::fromRfc4122(bytes);
+}
+
+NodeId BasicGraphicsScene::decodeNodeUuid(QUuid const &uuid)
+{
+    auto bytes = uuid.toRfc4122();
+    if (bytes.size() < static_cast<int>(sizeof(quint32)))
+        return QtNodes::InvalidNodeId;
+
+    QDataStream stream(bytes);
+    quint32 value = 0;
+    stream >> value;
+    return static_cast<NodeId>(value);
+}
+
+std::unordered_map<NodeId, NodeId> BasicGraphicsScene::convertMap(
+    std::unordered_map<QUuid, QUuid> const &uuidMap)
+{
+    std::unordered_map<NodeId, NodeId> idMap;
+
+    for (const auto &pair : uuidMap) {
+        NodeId keyNodeId = decodeNodeUuid(pair.first);
+        NodeId valueNodeId = decodeNodeUuid(pair.second);
+
+        if (keyNodeId != QtNodes::InvalidNodeId && valueNodeId != QtNodes::InvalidNodeId) {
+            idMap[keyNodeId] = valueNodeId;
+        }
+    }
+
+    return idMap;
+}
+
 std::weak_ptr<QtNodes::NodeGroup> BasicGraphicsScene::createGroupFromSelection(QString groupName)
 {
     if (!_groupingEnabled)

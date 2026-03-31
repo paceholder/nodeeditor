@@ -182,50 +182,45 @@ public:
      */
     void removeNodeFromGroup(NodeId nodeId);
 
+    /**
+     * @brief Loads serialized item (nodes, connections and groups) into the scene.
+     * @param data Serialized scene payload.
+     * @param pastePos Reference position used when pasting content.
+     * @param usePastePos When true, places the loaded content relative to pastePos position.
+     * @return Mapping between original node UUIDs and newly created node UUIDs.
+     */
     std::unordered_map<QUuid, QUuid> loadItems(const QByteArray &data,
                                                QPointF pastePos,
                                                bool usePastePos = true);
 
+    /**
+     * @brief Loads scene data from memory.
+     * @param data Serialized scene payload.
+     * @return Mapping between original node UUIDs and newly created node UUIDs.
+     */
     std::unordered_map<QUuid, QUuid> loadFromMemory(const QByteArray &data);
 
-    QUuid encodeNodeId(NodeId nodeId)
-    {
-        QByteArray bytes(16, 0);
-        QDataStream stream(&bytes, QIODevice::WriteOnly);
-        stream << static_cast<quint32>(nodeId);
-        return QUuid::fromRfc4122(bytes);
-    }
+    /**
+     * @brief Encodes NodeId into a QUuid representation.
+     * @param nodeId Node identifier.
+     * @return QUuid carrying the binary value of nodeId.
+     */
+    QUuid encodeNodeId(NodeId nodeId);
 
-    NodeId decodeNodeUuid(QUuid const &uuid)
-    {
-        auto bytes = uuid.toRfc4122();
-        if (bytes.size() < static_cast<int>(sizeof(quint32)))
-            return QtNodes::InvalidNodeId;
+    /**
+     * @brief Decodes a node QUuid into a NodeId.
+     * @param uuid QUuid containing an encoded node id.
+     * @return Decoded NodeId.
+     */
+    NodeId decodeNodeUuid(QUuid const &uuid);
 
-        QDataStream stream(bytes);
-        quint32 value = 0;
-        stream >> value;
-        return static_cast<NodeId>(value);
-    }
+    /**
+     * @brief Converts a QUuid-to-QUuid map into a NodeId-to-NodeId map.
+     * @param uuidMap Map containing encoded old and new node QUuid pairs.
+     * @return Map with decoded NodeId pairs, excluding invalid entries.
+     */
 
-    std::unordered_map<NodeId, NodeId> convertMap(std::unordered_map<QUuid, QUuid> const &uuidMap)
-    {
-        std::unordered_map<NodeId, NodeId> idMap;
-
-        // Iterando pelo mapa de QUuids e convertendo para NodeIds
-        for (const auto &pair : uuidMap) {
-            // Decodificando os QUuids para NodeIds
-            NodeId keyNodeId = decodeNodeUuid(pair.first);
-            NodeId valueNodeId = decodeNodeUuid(pair.second);
-
-            // Inserindo no novo mapa
-            if (keyNodeId != QtNodes::InvalidNodeId && valueNodeId != QtNodes::InvalidNodeId) {
-                idMap[keyNodeId] = valueNodeId;
-            }
-        }
-
-        return idMap;
-    }
+    std::unordered_map<NodeId, NodeId> convertMap(std::unordered_map<QUuid, QUuid> const &uuidMap);
 
 public:
     /**
