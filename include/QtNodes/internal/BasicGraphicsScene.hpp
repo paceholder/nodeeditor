@@ -138,7 +138,7 @@ public:
      * between old and new nodes.
      */
     std::pair<std::weak_ptr<NodeGroup>, std::unordered_map<GroupId, GroupId>> restoreGroup(
-        QJsonObject const &groupJson, QHash<NodeId, QJsonObject> const &nodeById);
+        QJsonObject const &groupJson, QHash<NodeId, QJsonObject> const &nodeById = {});
 
     /**
      * @brief Returns a const reference to the mapping of existing groups.

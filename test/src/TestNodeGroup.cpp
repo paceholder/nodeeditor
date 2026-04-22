@@ -343,8 +343,7 @@ TEST_CASE("Saving and restoring node groups", "[node-group]")
         BasicGraphicsScene newScene(newModel);
         newScene.setGroupingEnabled(true);
 
-        QHash<NodeId, QJsonObject> nodeById;
-        auto [restoredGroupWeak, idMapping] = newScene.restoreGroup(groupJson, nodeById);
+        auto [restoredGroupWeak, idMapping] = newScene.restoreGroup(groupJson);
         auto restoredGroup = restoredGroupWeak.lock();
         REQUIRE(restoredGroup);
 
