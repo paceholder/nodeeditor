@@ -210,7 +210,10 @@ void ConnectionGraphicsObject::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
     prepareGeometryChange();
 
-    auto view = static_cast<QGraphicsView *>(event->widget());
+    auto views = scene()->views();
+    Q_ASSERT(!views.isEmpty());
+    auto view = views.first();
+    Q_ASSERT(view);
     auto ngo = locateNodeAt(event->scenePos(), *nodeScene(), view->transform());
     if (ngo) {
         ngo->reactToConnection(this);
@@ -242,7 +245,9 @@ void ConnectionGraphicsObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event
     ungrabMouse();
     event->accept();
 
-    auto view = static_cast<QGraphicsView *>(event->widget());
+    auto views = scene()->views();
+    Q_ASSERT(!views.isEmpty());
+    auto view = views.first();
 
     Q_ASSERT(view);
 
