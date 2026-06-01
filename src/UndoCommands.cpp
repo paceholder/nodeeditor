@@ -3,6 +3,7 @@
 #include "BasicGraphicsScene.hpp"
 #include "ConnectionGraphicsObject.hpp"
 #include "ConnectionIdUtils.hpp"
+#include "ConnectionIdHash.hpp"
 #include "Definitions.hpp"
 #include "GroupGraphicsObject.hpp"
 #include "NodeGraphicsObject.hpp"
@@ -24,6 +25,7 @@ static QJsonObject serializeSelectedItems(BasicGraphicsScene *scene)
     auto &graphModel = scene->graphModel();
 
     std::unordered_set<NodeId> selectedNodes;
+    std::unordered_set<ConnectionId> selectedConnections;
 
     QJsonArray nodesJsonArray;
     QJsonArray groupsJsonArray;
@@ -43,10 +45,6 @@ static QJsonObject serializeSelectedItems(BasicGraphicsScene *scene)
         if (auto group = qgraphicsitem_cast<GroupGraphicsObject *>(item)) {
             for (auto *node : group->group().childNodes()) {
                 appendNode(node);
-
-                for (auto const &connectionId : graphModel.allConnectionIds(node->nodeId())) {
-                    connJsonArray.append(toJson(connectionId));
-                }
             }
         }
     }
@@ -54,10 +52,6 @@ static QJsonObject serializeSelectedItems(BasicGraphicsScene *scene)
     for (QGraphicsItem *item : scene->selectedItems()) {
         if (auto ngo = qgraphicsitem_cast<NodeGraphicsObject *>(item)) {
             appendNode(ngo);
-
-            for (auto const &connectionId : graphModel.allConnectionIds(ngo->nodeId())) {
-                connJsonArray.append(toJson(connectionId));
-            }
         }
     }
 
@@ -79,13 +73,27 @@ static QJsonObject serializeSelectedItems(BasicGraphicsScene *scene)
         }
     }
 
+    auto appendConnection = [&](ConnectionId const &connectionId) {
+        if (selectedNodes.count(connectionId.outNodeId) == 0
+            || selectedNodes.count(connectionId.inNodeId) == 0) {
+            return;
+        }
+
+        auto const inserted = selectedConnections.insert(connectionId);
+        if (inserted.second) {
+            connJsonArray.append(toJson(connectionId));
+        }
+    };
+
+    for (NodeId nodeId : selectedNodes) {
+        for (auto const &connectionId : graphModel.allConnectionIds(nodeId)) {
+            appendConnection(connectionId);
+        }
+    }
+
     for (QGraphicsItem *item : scene->selectedItems()) {
         if (auto c = qgraphicsitem_cast<ConnectionGraphicsObject *>(item)) {
-            auto const &cid = c->connectionId();
-
-            if (selectedNodes.count(cid.outNodeId) > 0 && selectedNodes.count(cid.inNodeId) > 0) {
-                connJsonArray.append(toJson(cid));
-            }
+            appendConnection(c->connectionId());
         }
     }
 
