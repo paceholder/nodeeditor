@@ -372,12 +372,13 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
 {
     switch (event->key()) {
 #ifdef Q_OS_MACOS
-    case Qt::Key_Backspace: {
+    case Qt::Key_Backspace:
+#endif
+    case Qt::Key_Delete: {
         onDeleteSelectedObjects();
         event->accept();
         return;
     }
-#endif
     case Qt::Key_F2: {
         BasicGraphicsScene *sc = nodeScene();
 
