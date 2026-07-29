@@ -371,6 +371,13 @@ void GraphicsView::onPasteObjects()
 void GraphicsView::keyPressEvent(QKeyEvent *event)
 {
     switch (event->key()) {
+#ifdef Q_OS_MACOS
+    case Qt::Key_Backspace: {
+        onDeleteSelectedObjects();
+        event->accept();
+        return;
+    }
+#endif
     case Qt::Key_F2: {
         BasicGraphicsScene *sc = nodeScene();
 

@@ -409,16 +409,17 @@ TEST_CASE("UI Interaction - Keyboard Shortcuts", "[ui][visual]")
             QSignalSpy deletionSpy(model.get(), &TestGraphModel::nodeDeleted);
 
             // Simulate delete key press
-            QKeyEvent deleteEvent(QEvent::KeyPress, Qt::Key_Delete, Qt::NoModifier);
-            QApplication::sendEvent(&view, &deleteEvent);
+            // The physical Delete key on macOS is reported as Backspace
+#ifdef Q_OS_MACOS
+            QTest::keyClick(&view, Qt::Key_Backspace);
+#else
+            QTest::keyClick(&view, Qt::Key_Delete);
+#endif
             UITestHelper::waitForUI();
 
-            // Check if deletion signal was emitted or node was removed
-            INFO("Node deletion signals emitted: " << deletionSpy.count());
+            // Check if node was removed
             CHECK(deletionSpy.count() >= 0); // Accept any count, implementation may vary
-            
-            // (Implementation may vary depending on how delete is handled)
-            CHECK(true); // Test passed if no crash occurred
+            CHECK_FALSE(model->nodeExists(nodeId));
         }
     }
 
