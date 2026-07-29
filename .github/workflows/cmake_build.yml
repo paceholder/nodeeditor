@@ -83,7 +83,7 @@ jobs:
       run: cmake -S . -Bbuild -DCMAKE_BUILD_TYPE=${{ matrix.configuration }} -DBUILD_DOCS=OFF -DUSE_QT6=${{ matrix.use_qt6 }}
 
     - name: Build with ${{ matrix.compiler }}
-      run: cmake --build build --config ${{ matrix.configuration }}
+      run: cmake --build build --config ${{ matrix.configuration }} --verbose
 
     - name: Run Tests (Linux)
       if: startsWith (matrix.os, 'ubuntu')
