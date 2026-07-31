@@ -15,6 +15,7 @@ add_executable(test_nodes
   src/TestUndoCommands.cpp
   src/TestBasicGraphicsScene.cpp
   src/TestNodeGroup.cpp
+  src/TestNodeNickname.cpp
   src/TestUIInteraction.cpp
   src/TestDataFlow.cpp
   src/TestNodeValidation.cpp
