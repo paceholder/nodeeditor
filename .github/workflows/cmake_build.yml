@@ -37,7 +37,7 @@ jobs:
           - toolchain: macos-clang
             os: macos-latest
             compiler: clang
-            qt_version: "6.7.1"
+            qt_version: "6.9.2"
             modules: ""
             use_qt6: "ON"
 
@@ -51,7 +51,7 @@ jobs:
           - toolchain: windows-msvc
             os: windows-latest
             compiler: msvc
-            qt_version: "6.3.0"
+            qt_version: "6.9.2"
             modules: "qt5compat"
             use_qt6: "ON"
 
@@ -62,7 +62,7 @@ jobs:
         submodules: true
 
     - name: Install Qt
-      uses: jurplel/install-qt-action@v3
+      uses: jurplel/install-qt-action@v4
       with:
         version: ${{ matrix.qt_version }}
         modules: ${{ matrix.modules }}
