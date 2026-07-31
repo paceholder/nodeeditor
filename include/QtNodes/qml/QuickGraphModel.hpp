@@ -49,6 +49,8 @@ public:
     
     // Undo/Redo
     bool canUndo() const;
+    /// Undo stack (p/ apps amarrarem dirty-state ao isClean/setClean)
+    QUndoStack* undoStack() const { return _undoStack; }
     bool canRedo() const;
     Q_INVOKABLE void undo();
     Q_INVOKABLE void redo();
