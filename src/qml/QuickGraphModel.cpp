@@ -76,7 +76,9 @@ public:
     
     void redo() override
     {
-        if (_graphModel) {
+        // Node may be gone already (cascade from a previous multi-delete) —
+        // saveNode() would throw out_of_range and abort the app.
+        if (_graphModel && _graphModel->nodeExists(static_cast<NodeId>(_nodeId))) {
             _savedState = _graphModel->saveNode(static_cast<NodeId>(_nodeId));
             _graphModel->deleteNode(static_cast<NodeId>(_nodeId));
         }
@@ -223,7 +225,15 @@ int QuickGraphModel::addNodeWithId(int forcedId, QString const &nodeType)
 bool QuickGraphModel::removeNode(int nodeId)
 {
     if (!_model) return false;
-    
+
+    // Multi-delete guard: deleting a selection fires one removeNode per id,
+    // and the first deletion can cascade (master sync) and take neighbours
+    // with it. A stale id reaching RemoveNodeCommand crashed the app —
+    // saveNode() does _models.at(id) and the out_of_range aborts. Same
+    // pattern as the existing connection-deletion guard.
+    if (!_model->nodeExists(static_cast<NodeId>(nodeId)))
+        return false;
+
     _undoStack->push(new RemoveNodeCommand(_model.get(), nodeId));
     return true;
 }
