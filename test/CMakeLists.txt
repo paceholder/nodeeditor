@@ -9,6 +9,7 @@ add_executable(test_nodes
   src/TestAbstractGraphModel.cpp
   src/TestAbstractGraphModelSignals.cpp
   src/TestDataFlowGraphModel.cpp
+  src/TestNodePosition.cpp
   src/TestNodeDelegateModelRegistry.cpp
   src/TestConnectionId.cpp
   src/TestSerialization.cpp

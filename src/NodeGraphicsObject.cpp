@@ -188,6 +188,10 @@ void NodeGraphicsObject::paint(QPainter *painter, QStyleOptionGraphicsItem const
 QVariant NodeGraphicsObject::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     if (change == ItemScenePositionHasChanged && scene()) {
+        QPointF const position = pos();
+        if (_graphModel.nodeData<QPointF>(_nodeId, NodeRole::Position) != position) {
+            _graphModel.setNodeData(_nodeId, NodeRole::Position, position);
+        }
         moveConnections();
     }
 
