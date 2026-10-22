@@ -101,6 +101,8 @@ QVariant SimpleGraphModel::nodeData(NodeId nodeId, NodeRole role) const
 
     case NodeRole::Style: {
         auto style = StyleCollection::nodeStyle();
+        // CustomNodePainter draws no shadow, so keep the Qt graphics effect.
+        style.PaintedShadowEnabled = false;
         result = style.toJson().toVariantMap();
     } break;
 

@@ -44,6 +44,40 @@ void DefaultNodePainter::paint(QPainter *painter, NodeGraphicsObject &ngo) const
     drawProgressValue(painter, ngo);
 }
 
+static void drawPaintedShadow(QPainter *painter,
+                              QRectF const &boundary,
+                              double radius,
+                              QColor const &shadowColor)
+{
+    // Fake a soft shadow without a graphics effect. Draw the node shape many times,
+    // from the largest and faintest layer to the smallest. The translucent layers add up,
+    // so the shadow is dark near the node and fades out. The node is drawn on top afterwards.
+    // The numbers are fitted to QGraphicsDropShadowEffect with offset 4 and blur radius 20.
+    // The halo must fit into the margins reserved by default geometries (20 px).
+    int const outerSpread = 15;          // the largest layer is 15 px bigger than the shape
+    int const innerSpread = -4;          // the smallest layer is 4 px smaller
+    double const shadowOffset = 4.0;     // the shadow is shifted right and down
+    double const innerLayerAlpha = 0.32; // opacity of the smallest layer, 1.0 = ShadowColor
+    int const layerCount = outerSpread - innerSpread + 1;
+
+    painter->save();
+    painter->setRenderHint(QPainter::Antialiasing, true);
+    painter->setPen(Qt::NoPen);
+
+    QRectF const shadowBody = boundary.translated(shadowOffset, shadowOffset);
+    for (int spread = outerSpread; spread >= innerSpread; --spread) {
+        double const t = double(outerSpread + 1 - spread) / layerCount;
+        QColor shade = shadowColor;
+        shade.setAlphaF(shade.alphaF() * innerLayerAlpha * t * t * t);
+        painter->setBrush(shade);
+        double const layerRadius = std::max(0.0, radius + spread);
+        painter->drawRoundedRect(shadowBody.adjusted(-spread, -spread, spread, spread),
+                                 layerRadius,
+                                 layerRadius);
+    }
+    painter->restore();
+}
+
 void DefaultNodePainter::drawNodeRect(QPainter *painter, NodeGraphicsObject &ngo) const
 {
     AbstractGraphModel &model = ngo.graphModel();
@@ -103,6 +137,9 @@ void DefaultNodePainter::drawNodeRect(QPainter *painter, NodeGraphicsObject &ngo
     QRectF boundary(0, 0, size.width(), size.height());
 
     double const radius = 3.0;
+
+    if (nodeStyle.ShadowEnabled && nodeStyle.PaintedShadowEnabled)
+        drawPaintedShadow(painter, boundary, radius, nodeStyle.ShadowColor);
 
     painter->drawRoundedRect(boundary, radius, radius);
 }

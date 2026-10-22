@@ -156,6 +156,12 @@ consider:
 - Implementing virtualization (only create graphics for visible nodes)
 - Disabling shadows and complex styles
 
+**Why is a large node cut off when I zoom in?**
+
+This is a Qt bug (`QTBUG-77400 <https://bugreports.qt.io/browse/QTBUG-77400>`_)
+with ``QGraphicsDropShadowEffect``. The default shadow avoids it. If you use the
+Qt effect, set ``ShadowEnabled`` to false. See :ref:`Node Shadows <node-shadows>`.
+
 **Why is my graph slow to render?**
 
 Check for:
