@@ -20,6 +20,7 @@ add_executable(test_nodes
   src/TestDataFlow.cpp
   src/TestNodeValidation.cpp
   src/TestCustomPainters.cpp
+  src/TestFastNodeShadows.cpp
   src/TestCopyPaste.cpp
   src/TestZoomFeatures.cpp
   src/TestLoopDetection.cpp

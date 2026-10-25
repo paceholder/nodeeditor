@@ -119,6 +119,8 @@ Controls node appearance:
      - Background gradient stops
    * - ``ShadowEnabled``
      - Drop shadow on/off
+   * - ``FastShadowEnabled``
+     - Approximate shadow drawn by the default painter; defaults to false
    * - ``ConnectionPointColor``
      - Empty port circles
    * - ``FilledConnectionPointColor``
@@ -127,6 +129,37 @@ Controls node appearance:
      - Validation error indicator
    * - ``WarningColor``
      - Validation warning indicator
+
+Lightweight Node Shadows
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Set both ``ShadowEnabled`` and ``FastShadowEnabled`` to true to replace
+``QGraphicsDropShadowEffect`` with translucent rounded rectangles drawn by
+``DefaultNodePainter``. Configure the style before creating nodes:
+
+.. code-block:: cpp
+
+   NodeStyle style = StyleCollection::nodeStyle();
+   style.ShadowEnabled = true;
+   style.FastShadowEnabled = true;
+   StyleCollection::setNodeStyle(style);
+
+For a custom graph model, return ``style.toJson().toVariantMap()`` for
+``NodeRole::Style``. The same setting is available as ``FastShadowEnabled``
+inside the ``NodeStyle`` JSON object. Older JSON without this key keeps the
+original graphics effect. ``ShadowEnabled = false`` disables both modes.
+
+The approximation is not pixel-identical to Qt's blur and does not apply a
+graphics effect to embedded widgets. Custom painters must draw their own
+shadow when this option is enabled. Custom node geometries must include the
+shadow in their ``boundingRect()``: it extends 6 logical pixels above and to
+the left of the node body, and 14 below and to the right. Both default
+geometries provide sufficient margins.
+
+This option avoids the separate graphics effect, but a performance gain is
+not guaranteed. Measure your own graphs, zoom levels and display scaling
+before choosing a mode. It does not change global pixmap caching or resolve
+the underlying Qt graphics-effect caching issue.
 
 ConnectionStyle
 ---------------

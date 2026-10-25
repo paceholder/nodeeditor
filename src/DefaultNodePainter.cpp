@@ -104,6 +104,24 @@ void DefaultNodePainter::drawNodeRect(QPainter *painter, NodeGraphicsObject &ngo
 
     double const radius = 3.0;
 
+    if (nodeStyle.ShadowEnabled && nodeStyle.FastShadowEnabled) {
+        // Keep the approximation within the margins reserved by default geometries.
+        // Unlike a graphics effect, this does not blur embedded widgets.
+        painter->save();
+        painter->setRenderHint(QPainter::Antialiasing, true);
+        painter->setPen(Qt::NoPen);
+
+        QRectF const shadowBody = boundary.translated(4.0, 4.0);
+        for (int spread = 10; spread >= 1; --spread) {
+            QColor shade = nodeStyle.ShadowColor;
+            shade.setAlphaF(shade.alphaF() * 0.01 * (11 - spread));
+            painter->setBrush(shade);
+            painter->drawRoundedRect(shadowBody.adjusted(-spread, -spread, spread, spread),
+                                     radius + spread, radius + spread);
+        }
+        painter->restore();
+    }
+
     painter->drawRoundedRect(boundary, radius, radius);
 }
 

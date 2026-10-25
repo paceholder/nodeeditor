@@ -42,7 +42,8 @@ NodeGraphicsObject::NodeGraphicsObject(BasicGraphicsScene &scene, NodeId nodeId)
 
     NodeStyle nodeStyle(nodeStyleJson);
 
-    if (nodeStyle.ShadowEnabled) {
+    // The lightweight shadow is drawn by DefaultNodePainter.
+    if (nodeStyle.ShadowEnabled && !nodeStyle.FastShadowEnabled) {
         auto effect = new QGraphicsDropShadowEffect;
         effect->setOffset(4, 4);
         effect->setBlurRadius(20);
