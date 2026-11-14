@@ -353,6 +353,7 @@ private:
     std::unique_ptr<AbstractNodePainter> _nodePainter;
     std::unique_ptr<AbstractConnectionPainter> _connectionPainter;
     bool _nodeDrag;
+    friend class NodeGraphicsObject;
     QUndoStack *_undoStack;
     Qt::Orientation _orientation;
     bool _groupingEnabled;

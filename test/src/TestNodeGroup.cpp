@@ -6,6 +6,7 @@
 #include <QtNodes/NodeDelegateModel>
 #include <QtNodes/NodeDelegateModelRegistry>
 #include <QtNodes/internal/NodeGraphicsObject.hpp>
+#include <QtNodes/internal/GroupGraphicsObject.hpp>
 #include <QtNodes/internal/NodeGroup.hpp>
 
 #include <catch2/catch.hpp>
@@ -14,7 +15,9 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QGraphicsSceneMouseEvent>
 #include <QPointF>
+#include <QUndoStack>
 
 #include <algorithm>
 #include <memory>
@@ -369,4 +372,88 @@ TEST_CASE("Saving and restoring node groups", "[node-group]")
         CHECK(restoredSet.count(connectionIt->outNodeId) == 1);
         CHECK(restoredSet.count(connectionIt->inNodeId) == 1);
     }
+}
+
+TEST_CASE("Dragging a group moves its nodes through the model", "[node-group][drag]")
+{
+    auto app = applicationSetup();
+
+    auto registry = createDummyRegistry();
+    DataFlowGraphModel model(registry);
+    BasicGraphicsScene scene(model);
+    scene.setGroupingEnabled(true);
+
+    NodeId const inGroup1 = createNode(model, scene);
+    NodeId const inGroup2 = createNode(model, scene);
+    NodeId const outside = createNode(model, scene);
+    model.setNodeData(inGroup1, NodeRole::Position, QPointF(0, 0));
+    model.setNodeData(inGroup2, NodeRole::Position, QPointF(200, 0));
+    model.setNodeData(outside, NodeRole::Position, QPointF(0, 300));
+
+    std::vector<NodeGraphicsObject *> nodes{scene.nodeGraphicsObject(inGroup1),
+                                            scene.nodeGraphicsObject(inGroup2)};
+    auto group = scene.createGroup(nodes, QStringLiteral("Dragged")).lock();
+    REQUIRE(group);
+
+    QPointF const diff(10, 5);
+    QGraphicsSceneMouseEvent move(QEvent::GraphicsSceneMouseMove);
+    move.setPos(diff);
+    move.setLastPos(QPointF(0, 0));
+    scene.sendEvent(&group->groupGraphicsObject(), &move);
+
+    auto position = [&](NodeId id) { return model.nodeData(id, NodeRole::Position).value<QPointF>(); };
+
+    SECTION("Group nodes reach the model, other nodes stay")
+    {
+        CHECK(position(inGroup1) == QPointF(0, 0) + diff);
+        CHECK(position(inGroup2) == QPointF(200, 0) + diff);
+        CHECK(position(outside) == QPointF(0, 300));
+        CHECK(scene.nodeGraphicsObject(inGroup1)->pos() == position(inGroup1));
+    }
+
+    SECTION("The move is undoable")
+    {
+        REQUIRE(scene.undoStack().count() == 1);
+        scene.undoStack().undo();
+        CHECK(position(inGroup1) == QPointF(0, 0));
+        CHECK(position(inGroup2) == QPointF(200, 0));
+    }
+
+    SECTION("A selected node outside the group moves together with it")
+    {
+        scene.nodeGraphicsObject(outside)->setSelected(true);
+        scene.sendEvent(&group->groupGraphicsObject(), &move);
+
+        CHECK(position(outside) == QPointF(0, 300) + diff);
+        CHECK(position(inGroup1) == QPointF(0, 0) + diff * 2);
+    }
+}
+
+TEST_CASE("A mouse move on a node of a locked group moves nothing", "[node-group][drag]")
+{
+    auto app = applicationSetup();
+
+    auto registry = createDummyRegistry();
+    DataFlowGraphModel model(registry);
+    BasicGraphicsScene scene(model);
+    scene.setGroupingEnabled(true);
+
+    NodeId const a = createNode(model, scene);
+    NodeId const b = createNode(model, scene);
+    model.setNodeData(a, NodeRole::Position, QPointF(0, 0));
+    model.setNodeData(b, NodeRole::Position, QPointF(200, 0));
+
+    std::vector<NodeGraphicsObject *> nodes{scene.nodeGraphicsObject(a),
+                                            scene.nodeGraphicsObject(b)};
+    auto group = scene.createGroup(nodes, QStringLiteral("Locked")).lock();
+    REQUIRE(group);
+    group->groupGraphicsObject().lock(true);
+
+    QGraphicsSceneMouseEvent move(QEvent::GraphicsSceneMouseMove);
+    move.setPos(QPointF(10, 5));
+    move.setLastPos(QPointF(0, 0));
+    scene.sendEvent(scene.nodeGraphicsObject(a), &move);
+
+    CHECK(model.nodeData(a, NodeRole::Position).value<QPointF>() == QPointF(0, 0));
+    CHECK(model.nodeData(b, NodeRole::Position).value<QPointF>() == QPointF(200, 0));
 }
