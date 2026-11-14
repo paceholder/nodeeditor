@@ -99,7 +99,13 @@ private:
 class NODE_EDITOR_PUBLIC MoveNodeCommand : public QUndoCommand
 {
 public:
+    /// Moves the currently selected nodes.
     MoveNodeCommand(BasicGraphicsScene *scene, QPointF const &diff);
+
+    /// Moves the given nodes, regardless of the selection.
+    MoveNodeCommand(BasicGraphicsScene *scene,
+                    std::unordered_set<NodeId> const &nodeIds,
+                    QPointF const &diff);
 
     void undo() override;
     void redo() override;
@@ -117,7 +123,7 @@ public:
 
 private:
     BasicGraphicsScene *_scene;
-    std::unordered_set<NodeId> _selectedNodes;
+    std::unordered_set<NodeId> _nodeIds;
     QPointF _diff;
 };
 

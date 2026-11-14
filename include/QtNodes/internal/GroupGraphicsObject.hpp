@@ -2,6 +2,7 @@
 
 #include "BasicGraphicsScene.hpp"
 #include "Definitions.hpp"
+#include "Export.hpp"
 #include "NodeGroup.hpp"
 #include <QPen>
 #include <QtWidgets/QGraphicsRectItem>
@@ -45,7 +46,7 @@ class NodeGraphicsObject;
  * @brief The GroupGraphicsObject class handles the graphical part of a node group.
  * Each node group is associated with a unique GroupGraphicsObject.
  */
-class GroupGraphicsObject
+class NODE_EDITOR_PUBLIC GroupGraphicsObject
     : public QObject
     , public QGraphicsRectItem
 {

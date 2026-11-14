@@ -2,6 +2,7 @@
 #include "BasicGraphicsScene.hpp"
 #include "NodeConnectionInteraction.hpp"
 #include "NodeGraphicsObject.hpp"
+#include "UndoCommands.hpp"
 #include <QGraphicsSceneMouseEvent>
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
@@ -107,10 +108,11 @@ void GroupGraphicsObject::moveConnections()
 
 void GroupGraphicsObject::moveNodes(const QPointF &offset)
 {
+    // Writes to the model. No undo command is pushed.
+    auto &model = _scene.graphModel();
     for (auto &node : group().childNodes()) {
-        auto newPosition = QPointF(node->x() + offset.x(), node->y() + offset.y());
-        node->setPos(newPosition);
-        node->update();
+        auto const pos = model.nodeData<QPointF>(node->nodeId(), NodeRole::Position);
+        model.setNodeData(node->nodeId(), NodeRole::Position, pos + offset);
     }
 }
 
@@ -190,10 +192,21 @@ void GroupGraphicsObject::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 
 void GroupGraphicsObject::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
-    QGraphicsItem::mouseMoveEvent(event);
     if (event->lastPos() != event->pos()) {
         auto diff = event->pos() - event->lastPos();
-        moveNodes(diff);
+
+        // Children of the group plus any other selected nodes move together.
+        std::unordered_set<NodeId> nodeIds;
+        for (auto &node : group().childNodes()) {
+            nodeIds.insert(node->nodeId());
+        }
+        for (QGraphicsItem *item : _scene.selectedItems()) {
+            if (auto node = qgraphicsitem_cast<NodeGraphicsObject *>(item)) {
+                nodeIds.insert(node->nodeId());
+            }
+        }
+
+        _scene.undoStack().push(new MoveNodeCommand(&_scene, nodeIds, diff));
         moveConnections();
     }
 }

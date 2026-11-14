@@ -550,17 +550,24 @@ MoveNodeCommand::MoveNodeCommand(BasicGraphicsScene *scene, QPointF const &diff)
     : _scene(scene)
     , _diff(diff)
 {
-    _selectedNodes.clear();
     for (QGraphicsItem *item : _scene->selectedItems()) {
         if (auto n = qgraphicsitem_cast<NodeGraphicsObject *>(item)) {
-            _selectedNodes.insert(n->nodeId());
+            _nodeIds.insert(n->nodeId());
         }
     }
 }
 
+MoveNodeCommand::MoveNodeCommand(BasicGraphicsScene *scene,
+                                 std::unordered_set<NodeId> const &nodeIds,
+                                 QPointF const &diff)
+    : _scene(scene)
+    , _nodeIds(nodeIds)
+    , _diff(diff)
+{}
+
 void MoveNodeCommand::undo()
 {
-    for (auto nodeId : _selectedNodes) {
+    for (auto nodeId : _nodeIds) {
         auto oldPos = _scene->graphModel().nodeData(nodeId, NodeRole::Position).value<QPointF>();
 
         oldPos -= _diff;
@@ -571,7 +578,7 @@ void MoveNodeCommand::undo()
 
 void MoveNodeCommand::redo()
 {
-    for (auto nodeId : _selectedNodes) {
+    for (auto nodeId : _nodeIds) {
         auto oldPos = _scene->graphModel().nodeData(nodeId, NodeRole::Position).value<QPointF>();
 
         oldPos += _diff;
@@ -589,7 +596,7 @@ bool MoveNodeCommand::mergeWith(QUndoCommand const *c)
 {
     auto mc = static_cast<MoveNodeCommand const *>(c);
 
-    if (_selectedNodes == mc->_selectedNodes) {
+    if (_nodeIds == mc->_nodeIds) {
         _diff += mc->_diff;
         return true;
     }

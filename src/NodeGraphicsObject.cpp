@@ -196,6 +196,9 @@ QVariant NodeGraphicsObject::itemChange(GraphicsItemChange change, const QVarian
 
 void NodeGraphicsObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
+    // Position updates from setup or undo must not count as a drag.
+    nodeScene()->_nodeDrag = false;
+
     if (_locked) {
         nodeScene()->clearSelection();
         return;
@@ -301,16 +304,15 @@ void NodeGraphicsObject::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
             event->accept();
         }
     } else {
-        QGraphicsObject::mouseMoveEvent(event);
-
         if (event->lastPos() != event->pos()) {
             auto diff = event->pos() - event->lastPos();
+
+            // The model moves the nodes, the scene follows its signals.
+            nodeScene()->undoStack().push(new MoveNodeCommand(nodeScene(), diff));
+
             if (nodeScene()->groupingEnabled()) {
                 if (auto nodeGroup = _nodeGroup.lock(); nodeGroup) {
                     nodeGroup->groupGraphicsObject().moveConnections();
-                    if (nodeGroup->groupGraphicsObject().locked()) {
-                        nodeGroup->groupGraphicsObject().moveNodes(diff);
-                    }
                 } else {
                     moveConnections();
                     // if it intersects with a group, expand group
