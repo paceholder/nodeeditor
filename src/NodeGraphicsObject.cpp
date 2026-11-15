@@ -123,13 +123,14 @@ void NodeGraphicsObject::embedQWidget()
 
 void NodeGraphicsObject::setLockedState()
 {
-    NodeFlags flags = _graphModel.nodeFlags(_nodeId);
+    bool const modelLocked = _graphModel.nodeFlags(_nodeId).testFlag(NodeFlag::Locked);
 
-    bool const locked = flags.testFlag(NodeFlag::Locked);
-
-    setFlag(QGraphicsItem::ItemIsMovable, !locked);
-    setFlag(QGraphicsItem::ItemIsSelectable, !locked);
-    setFlag(QGraphicsItem::ItemSendsScenePositionChanges, !locked);
+    // The model lock and the group lock both write these flags. Set them in one place,
+    // so that one lock does not undo the other.
+    setFlag(QGraphicsItem::ItemIsMovable, !modelLocked);
+    setFlag(QGraphicsItem::ItemIsSelectable, !modelLocked && !_locked);
+    setFlag(QGraphicsItem::ItemSendsScenePositionChanges, !modelLocked);
+    setFlag(QGraphicsItem::ItemIsFocusable, !_locked);
 }
 
 QRectF NodeGraphicsObject::boundingRect() const
@@ -198,6 +199,10 @@ void NodeGraphicsObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     // Position updates from setup or undo must not count as a drag.
     nodeScene()->_nodeDrag = false;
+
+    if (_graphModel.nodeFlags(_nodeId) & NodeFlag::Locked) {
+        return;
+    }
 
     if (_locked) {
         nodeScene()->clearSelection();
@@ -451,8 +456,7 @@ void NodeGraphicsObject::lock(bool locked)
 {
     _locked = locked;
 
-    setFlag(QGraphicsItem::ItemIsFocusable, !locked);
-    setFlag(QGraphicsItem::ItemIsSelectable, !locked);
+    setLockedState();
 }
 
 QJsonObject NodeGraphicsObject::save() const
