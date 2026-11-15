@@ -130,7 +130,15 @@ BasicGraphicsScene::BasicGraphicsScene(AbstractGraphModel &graphModel, QObject *
     traverseGraphAndPopulateGraphicsObjects();
 }
 
-BasicGraphicsScene::~BasicGraphicsScene() = default;
+BasicGraphicsScene::~BasicGraphicsScene()
+{
+    // A group that is still referenced elsewhere must not delete its item after the scene
+    // is gone. Delete the items now, while the scene is alive.
+    for (auto &entry : _groups) {
+        if (entry.second)
+            entry.second->setGraphicsObject(nullptr);
+    }
+}
 
 AbstractGraphModel const &BasicGraphicsScene::graphModel() const
 {
@@ -419,6 +427,9 @@ void BasicGraphicsScene::onNodeClicked(NodeId const nodeId)
 
 void BasicGraphicsScene::onModelReset()
 {
+    // The groups own graphics items that clear() would delete a second time.
+    _groups.clear();
+
     _connectionGraphicsObjects.clear();
     _nodeGraphicsObjects.clear();
 
@@ -485,7 +496,7 @@ std::weak_ptr<NodeGroup> BasicGraphicsScene::createGroup(std::vector<NodeGraphic
         }
     }
 
-    auto group = std::make_shared<NodeGroup>(nodes, groupId, groupName, this);
+    auto group = std::make_shared<NodeGroup>(nodes, groupId, groupName);
     auto ggo = std::make_unique<GroupGraphicsObject>(*this, *group);
 
     group->setGraphicsObject(std::move(ggo));
@@ -554,6 +565,14 @@ void BasicGraphicsScene::addNodeToGroup(NodeId nodeId, GroupId groupId)
 
     auto group = groupIt->second;
     auto node = nodeIt->second.get();
+
+    if (auto currentGroup = node->nodeGroup().lock()) {
+        if (currentGroup == group)
+            return;
+
+        removeNodeFromGroup(nodeId);
+    }
+
     group->addNode(node);
     node->setNodeGroup(group);
 }

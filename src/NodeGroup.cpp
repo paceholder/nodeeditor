@@ -100,7 +100,8 @@ QString const &NodeGroup::name() const
 void NodeGroup::setGraphicsObject(std::unique_ptr<GroupGraphicsObject> &&graphics_object)
 {
     _groupGraphicsObject = std::move(graphics_object);
-    _groupGraphicsObject->lock(true);
+    if (_groupGraphicsObject)
+        _groupGraphicsObject->lock(true);
 }
 
 bool NodeGroup::empty() const

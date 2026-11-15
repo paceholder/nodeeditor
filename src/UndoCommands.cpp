@@ -568,6 +568,10 @@ MoveNodeCommand::MoveNodeCommand(BasicGraphicsScene *scene,
 void MoveNodeCommand::undo()
 {
     for (auto nodeId : _nodeIds) {
+        // The node may have been deleted outside the undo stack.
+        if (!_scene->graphModel().nodeExists(nodeId))
+            continue;
+
         auto oldPos = _scene->graphModel().nodeData(nodeId, NodeRole::Position).value<QPointF>();
 
         oldPos -= _diff;
@@ -579,6 +583,10 @@ void MoveNodeCommand::undo()
 void MoveNodeCommand::redo()
 {
     for (auto nodeId : _nodeIds) {
+        // The node may have been deleted outside the undo stack.
+        if (!_scene->graphModel().nodeExists(nodeId))
+            continue;
+
         auto oldPos = _scene->graphModel().nodeData(nodeId, NodeRole::Position).value<QPointF>();
 
         oldPos += _diff;
