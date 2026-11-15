@@ -5,6 +5,7 @@
 #include <QtNodes/Definitions>
 #include <QtNodes/NodeDelegateModel>
 #include <QtNodes/NodeDelegateModelRegistry>
+#include <QtNodes/internal/ConnectionGraphicsObject.hpp>
 #include <QtNodes/internal/NodeGraphicsObject.hpp>
 #include <QtNodes/internal/GroupGraphicsObject.hpp>
 #include <QtNodes/internal/NodeGroup.hpp>
@@ -456,4 +457,142 @@ TEST_CASE("A mouse move on a node of a locked group moves nothing", "[node-group
 
     CHECK(model.nodeData(a, NodeRole::Position).value<QPointF>() == QPointF(0, 0));
     CHECK(model.nodeData(b, NodeRole::Position).value<QPointF>() == QPointF(200, 0));
+}
+
+namespace {
+// DataFlowGraphModel has no way to set NodeFlag::Locked, so a test model adds it.
+class LockableModel : public DataFlowGraphModel
+{
+public:
+    using DataFlowGraphModel::DataFlowGraphModel;
+
+    QtNodes::NodeFlags nodeFlags(NodeId nodeId) const override
+    {
+        auto flags = DataFlowGraphModel::nodeFlags(nodeId);
+        if (_locked.count(nodeId) != 0)
+            flags |= QtNodes::NodeFlag::Locked;
+        return flags;
+    }
+
+    void setLocked(NodeId nodeId, bool locked)
+    {
+        if (locked)
+            _locked.insert(nodeId);
+        else
+            _locked.erase(nodeId);
+        Q_EMIT nodeFlagsUpdated(nodeId);
+    }
+
+private:
+    std::set<NodeId> _locked;
+};
+
+void pressPort(BasicGraphicsScene &scene, NodeId nodeId, PortType type)
+{
+    auto *item = scene.nodeGraphicsObject(nodeId);
+    QPointF const portPos = scene.nodeGeometry().portPosition(nodeId, type, 0);
+
+    QGraphicsSceneMouseEvent press(QEvent::GraphicsSceneMousePress);
+    press.setButton(Qt::LeftButton);
+    press.setPos(portPos);
+    press.setScenePos(item->mapToScene(portPos));
+    scene.sendEvent(item, &press);
+}
+
+int countConnectionItems(BasicGraphicsScene &scene)
+{
+    int count = 0;
+    for (QGraphicsItem *item : scene.items()) {
+        if (dynamic_cast<QtNodes::ConnectionGraphicsObject *>(item))
+            ++count;
+    }
+    return count;
+}
+} // namespace
+
+TEST_CASE("A model-locked node does not start a draft connection", "[node-lock]")
+{
+    auto app = applicationSetup();
+
+    auto registry = createDummyRegistry();
+    LockableModel model(registry);
+    BasicGraphicsScene scene(model);
+
+    NodeId const a = createNode(model, scene);
+    model.setLocked(a, true);
+
+    pressPort(scene, a, PortType::Out);
+
+    CHECK(countConnectionItems(scene) == 0);
+}
+
+TEST_CASE("A model-locked node does not detach a connection", "[node-lock]")
+{
+    auto app = applicationSetup();
+
+    auto registry = createDummyRegistry();
+    LockableModel model(registry);
+    BasicGraphicsScene scene(model);
+
+    NodeId const a = createNode(model, scene);
+    NodeId const b = createNode(model, scene);
+    ConnectionId const connection{a, 0, b, 0};
+    model.addConnection(connection);
+    QCoreApplication::processEvents();
+    REQUIRE(model.connectionExists(connection));
+
+    model.setLocked(b, true);
+    pressPort(scene, b, PortType::In);
+
+    CHECK(model.connectionExists(connection));
+}
+
+TEST_CASE("A node stays unselectable while its model lock or its group lock is set", "[node-lock]")
+{
+    auto app = applicationSetup();
+
+    auto registry = createDummyRegistry();
+    LockableModel model(registry);
+    BasicGraphicsScene scene(model);
+    scene.setGroupingEnabled(true);
+
+    NodeId const a = createNode(model, scene);
+    NodeId const b = createNode(model, scene);
+    auto *item = scene.nodeGraphicsObject(a);
+    auto selectable = [&] { return bool(item->flags() & QGraphicsItem::ItemIsSelectable); };
+
+    REQUIRE(selectable());
+
+    std::vector<NodeGraphicsObject *> nodes{item, scene.nodeGraphicsObject(b)};
+    auto group = scene.createGroup(nodes, QStringLiteral("Locked")).lock();
+    REQUIRE(group);
+    group->groupGraphicsObject().lock(true);
+    REQUIRE_FALSE(selectable());
+
+    SECTION("Unlocking the model flag keeps the group lock")
+    {
+        model.setLocked(a, true);
+        model.setLocked(a, false);
+        CHECK_FALSE(selectable());
+    }
+
+    SECTION("Unlocking the group keeps the model lock")
+    {
+        model.setLocked(a, true);
+        group->groupGraphicsObject().lock(false);
+        CHECK_FALSE(selectable());
+    }
+
+    SECTION("Removing the node from its group keeps the model lock")
+    {
+        model.setLocked(a, true);
+        scene.removeNodeFromGroup(a);
+        CHECK_FALSE(selectable());
+    }
+
+    SECTION("With both locks gone the node is selectable")
+    {
+        group->groupGraphicsObject().lock(false);
+        CHECK(selectable());
+    }
 }
