@@ -6,6 +6,7 @@
 #include <QtNodes/NodeDelegateModel>
 #include <QtNodes/NodeDelegateModelRegistry>
 #include <QtNodes/internal/ConnectionGraphicsObject.hpp>
+#include <QtNodes/internal/UndoCommands.hpp>
 #include <QtNodes/internal/NodeGraphicsObject.hpp>
 #include <QtNodes/internal/GroupGraphicsObject.hpp>
 #include <QtNodes/internal/NodeGroup.hpp>
@@ -18,6 +19,7 @@
 #include <QJsonObject>
 #include <QGraphicsSceneMouseEvent>
 #include <QPointF>
+#include <QSignalSpy>
 #include <QUndoStack>
 
 #include <algorithm>
@@ -595,4 +597,127 @@ TEST_CASE("A node stays unselectable while its model lock or its group lock is s
         group->groupGraphicsObject().lock(false);
         CHECK(selectable());
     }
+}
+
+TEST_CASE("A model reset with a group does not leave dangling group items", "[node-group][lifetime]")
+{
+    auto app = applicationSetup();
+
+    auto registry = createDummyRegistry();
+    DataFlowGraphModel model(registry);
+    auto scene = std::make_unique<BasicGraphicsScene>(model);
+    scene->setGroupingEnabled(true);
+
+    NodeId const a = createNode(model, *scene);
+    NodeId const b = createNode(model, *scene);
+    std::vector<NodeGraphicsObject *> nodes{scene->nodeGraphicsObject(a),
+                                            scene->nodeGraphicsObject(b)};
+    REQUIRE(scene->createGroup(nodes, QStringLiteral("Reset")).lock());
+
+    // Changing the orientation resets the model view of the scene.
+    scene->setOrientation(Qt::Vertical);
+
+    CHECK(scene->groups().empty());
+
+    // Destroying the scene used to delete the group item a second time.
+    scene.reset();
+}
+
+TEST_CASE("A node is in at most one group", "[node-group][lifetime]")
+{
+    auto app = applicationSetup();
+
+    auto registry = createDummyRegistry();
+    DataFlowGraphModel model(registry);
+    BasicGraphicsScene scene(model);
+    scene.setGroupingEnabled(true);
+
+    NodeId const a = createNode(model, scene);
+    NodeId const b = createNode(model, scene);
+    NodeId const c = createNode(model, scene);
+    NodeId const d = createNode(model, scene);
+
+    std::vector<NodeGraphicsObject *> first{scene.nodeGraphicsObject(a),
+                                            scene.nodeGraphicsObject(b)};
+    std::vector<NodeGraphicsObject *> second{scene.nodeGraphicsObject(c),
+                                             scene.nodeGraphicsObject(d)};
+    auto group1 = scene.createGroup(first, QStringLiteral("First")).lock();
+    auto group2 = scene.createGroup(second, QStringLiteral("Second")).lock();
+    REQUIRE(group1);
+    REQUIRE(group2);
+
+    SECTION("Adding a node to its own group does not duplicate it")
+    {
+        scene.addNodeToGroup(a, group1->id());
+
+        CHECK(toNodeIdSet(group1->nodeIDs()) == std::set<NodeId>{a, b});
+        CHECK(group1->childNodes().size() == 2);
+    }
+
+    SECTION("Adding a node to another group removes it from the old one")
+    {
+        scene.addNodeToGroup(a, group2->id());
+
+        CHECK(toNodeIdSet(group1->nodeIDs()) == std::set<NodeId>{b});
+        CHECK(toNodeIdSet(group2->nodeIDs()) == std::set<NodeId>{a, c, d});
+        CHECK(scene.nodeGraphicsObject(a)->nodeGroup().lock() == group2);
+    }
+
+    SECTION("Moving the last node out of a group removes the empty group")
+    {
+        scene.addNodeToGroup(a, group2->id());
+        scene.addNodeToGroup(b, group2->id());
+
+        CHECK(scene.groups().count(group1->id()) == 0);
+        CHECK(toNodeIdSet(group2->nodeIDs()) == std::set<NodeId>{a, b, c, d});
+    }
+}
+
+TEST_CASE("A group does not have the scene as QObject parent", "[node-group][lifetime]")
+{
+    auto app = applicationSetup();
+
+    auto registry = createDummyRegistry();
+    DataFlowGraphModel model(registry);
+    auto scene = std::make_unique<BasicGraphicsScene>(model);
+    scene->setGroupingEnabled(true);
+
+    NodeId const a = createNode(model, *scene);
+    std::vector<NodeGraphicsObject *> nodes{scene->nodeGraphicsObject(a)};
+    auto group = scene->createGroup(nodes, QStringLiteral("Owned")).lock();
+    REQUIRE(group);
+
+    // The scene holds the group in a shared_ptr. A QObject parent would delete it a second time.
+    CHECK(group->parent() == nullptr);
+
+    // A group kept past the life of the scene is released without a crash.
+    scene.reset();
+    group.reset();
+}
+
+TEST_CASE("Undo of a move skips nodes that no longer exist", "[node-group][lifetime]")
+{
+    auto app = applicationSetup();
+
+    auto registry = createDummyRegistry();
+    DataFlowGraphModel model(registry);
+    BasicGraphicsScene scene(model);
+
+    NodeId const a = createNode(model, scene);
+    NodeId const b = createNode(model, scene);
+    model.setNodeData(a, NodeRole::Position, QPointF(0, 0));
+    model.setNodeData(b, NodeRole::Position, QPointF(100, 0));
+
+    scene.undoStack().push(new QtNodes::MoveNodeCommand(&scene, {a, b}, QPointF(10, 0)));
+
+    // Deleted outside the undo stack.
+    model.deleteNode(b);
+
+    QSignalSpy spy(&model, &DataFlowGraphModel::nodePositionUpdated);
+    scene.undoStack().undo();
+
+    REQUIRE(spy.count() == 1);
+    CHECK(spy.at(0).at(0).value<NodeId>() == a);
+    CHECK(model.nodeData(a, NodeRole::Position).value<QPointF>() == QPointF(0, 0));
+    CHECK_FALSE(model.nodeExists(b));
 }
