@@ -7,3 +7,7 @@ build*/
 qt-build
 
 tags
+
+# OpenSpec working directory (local planning)
+openspec/
+.claude/
