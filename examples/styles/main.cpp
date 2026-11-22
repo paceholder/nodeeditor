@@ -3,6 +3,7 @@
 #include <QtNodes/ConnectionStyle>
 #include <QtNodes/DataFlowGraphModel>
 #include <QtNodes/DataFlowGraphicsScene>
+#include <QtNodes/Definitions>
 #include <QtNodes/GraphicsView>
 #include <QtNodes/GraphicsViewStyle>
 #include <QtNodes/NodeData>
@@ -17,6 +18,8 @@ using QtNodes::DataFlowGraphModel;
 using QtNodes::GraphicsView;
 using QtNodes::GraphicsViewStyle;
 using QtNodes::NodeDelegateModelRegistry;
+using QtNodes::NodeId;
+using QtNodes::NodeRole;
 using QtNodes::NodeStyle;
 
 static std::shared_ptr<NodeDelegateModelRegistry> registerDataModels()
@@ -24,6 +27,8 @@ static std::shared_ptr<NodeDelegateModelRegistry> registerDataModels()
     auto ret = std::make_shared<NodeDelegateModelRegistry>();
 
     ret->registerModel<MyDataModel>();
+    // Same node with its own per-node style. Add both from the context menu to compare.
+    ret->registerModel<MyGreenDataModel>();
 
     return ret;
 }
@@ -92,6 +97,16 @@ int main(int argc, char *argv[])
 
     std::shared_ptr<NodeDelegateModelRegistry> registry = registerDataModels();
     DataFlowGraphModel dataFlowGraphModel(registry);
+
+    // Start with both node types side by side to compare the global style
+    // (left column) with the per-node style (right column).
+    for (int i = 0; i < 2; ++i) {
+        NodeId plain = dataFlowGraphModel.addNode("MyDataModel");
+        dataFlowGraphModel.setNodeData(plain, NodeRole::Position, QPointF(0, i * 150));
+
+        NodeId green = dataFlowGraphModel.addNode("MyGreenDataModel");
+        dataFlowGraphModel.setNodeData(green, NodeRole::Position, QPointF(250, i * 150));
+    }
 
     DataFlowGraphicsScene scene(dataFlowGraphModel);
 

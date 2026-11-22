@@ -4,6 +4,9 @@
 
 #include <QtNodes/NodeData>
 #include <QtNodes/NodeDelegateModel>
+#include <QtNodes/NodeStyle>
+
+#include <QtGui/QColor>
 
 #include <memory>
 
@@ -61,4 +64,26 @@ public:
     void setInData(std::shared_ptr<NodeData>, PortIndex const) override {}
 
     QWidget *embeddedWidget() override { return nullptr; }
+};
+
+//------------------------------------------------------------------------------
+
+/// Shows a per-node style. This node has the same ports as MyDataModel,
+/// but its delegate model overrides the background and border colors of
+/// the global style. It does this in the constructor, before the node is shown.
+class MyGreenDataModel : public MyDataModel
+{
+    Q_OBJECT
+public:
+    MyGreenDataModel()
+    {
+        QtNodes::NodeStyle style = nodeStyle();
+        style.setBackgroundColor(QColor(200, 235, 200));
+        style.NormalBoundaryColor = QColor(60, 140, 60);
+        setNodeStyle(style);
+    }
+
+    QString caption() const override { return QString("My Green Data Model"); }
+
+    QString name() const override { return QString("MyGreenDataModel"); }
 };
