@@ -174,7 +174,8 @@ For ports on all sides, create a custom ``AbstractNodeGeometry``.
 
 **Can I group nodes?**
 
-Node grouping is planned but not yet implemented. Track progress on GitHub.
+Yes, since 3.1.4. Call ``BasicGraphicsScene::setGroupingEnabled(true)``. Groups have known
+limits in 3.x. They are explained in :doc:`migration/v3-to-v4`, together with the plan for v4.
 
 **Can I have curved connections?**
 

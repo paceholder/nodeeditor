@@ -275,13 +275,13 @@ Build graphs in code (useful for testing or loading custom formats):
        }
    }
 
-Node Groups (Future)
---------------------
+Node Groups
+-----------
 
 .. note::
 
-   Node grouping is planned but not yet implemented. See the
-   `GitHub issues <https://github.com/paceholder/nodeeditor/issues>`_ for status.
+   Call ``BasicGraphicsScene::setGroupingEnabled(true)`` to enable groups. Groups have known
+   limits in 3.x, for example group changes cannot be undone. See :doc:`../migration/v3-to-v4`.
 
 .. seealso::
 
