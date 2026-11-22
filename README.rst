@@ -105,6 +105,13 @@ Current State (v3)
 Building
 ========
 
+C++ standard
+------------
+
+The sources use C++17 and Qt 6 requires it, so build with C++17 or newer. QtNodes does not
+impose a standard on projects that include it. Your project sets it, for example with
+``set(CMAKE_CXX_STANDARD 17)``, so that all of its targets stay consistent.
+
 Set this option to false if you want to build with Qt5 version instead of Qt6:
 
 ::
