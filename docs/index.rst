@@ -93,6 +93,7 @@ Other Resources
    :maxdepth: 1
 
    migration/v2-to-v3
+   migration/v3-to-v4
    faq
    testing
    license_link
