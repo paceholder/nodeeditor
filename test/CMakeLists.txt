@@ -16,6 +16,7 @@ add_executable(test_nodes
   src/TestBasicGraphicsScene.cpp
   src/TestNodeGroup.cpp
   src/TestNodeNickname.cpp
+  src/TestEmbeddedWidgetOwnership.cpp
   src/TestUIInteraction.cpp
   src/TestNodeDrag.cpp
   src/TestDataFlow.cpp

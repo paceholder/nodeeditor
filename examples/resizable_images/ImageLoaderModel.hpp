@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include <QtCore/QObject>
+#include <QtCore/QPointer>
 #include <QtWidgets/QLabel>
 
 #include <QtNodes/NodeDelegateModel>
@@ -25,7 +26,7 @@ class ImageLoaderModel : public NodeDelegateModel
 public:
     ImageLoaderModel();
 
-    ~ImageLoaderModel() = default;
+    ~ImageLoaderModel() override { delete _label; }
 
 public:
     QString caption() const override { return QString("Image Source"); }
@@ -51,7 +52,7 @@ protected:
     bool eventFilter(QObject *object, QEvent *event) override;
 
 private:
-    QLabel *_label;
+    QPointer<QLabel> _label;
 
     QPixmap _pixmap;
 };

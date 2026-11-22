@@ -3,6 +3,7 @@
 #include <QtNodes/NodeDelegateModel>
 
 #include <QtCore/QObject>
+#include <QtCore/QPointer>
 
 #include <iostream>
 
@@ -25,7 +26,7 @@ class NumberSourceDataModel : public NodeDelegateModel
 public:
     NumberSourceDataModel();
 
-    virtual ~NumberSourceDataModel() {}
+    virtual ~NumberSourceDataModel();
 
 public:
     QString caption() const override { return QStringLiteral("Number Source"); }
@@ -60,5 +61,5 @@ private Q_SLOTS:
 private:
     std::shared_ptr<DecimalData> _number;
 
-    QLineEdit *_lineEdit;
+    QPointer<QLineEdit> _lineEdit;
 };

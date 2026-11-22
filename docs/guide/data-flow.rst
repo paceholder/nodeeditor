@@ -217,6 +217,8 @@ Add interactive controls to your nodes:
    class NumberSourceNode : public NodeDelegateModel
    {
    public:
+       ~NumberSourceNode() override { delete _spinBox; }
+
        QWidget* embeddedWidget() override
        {
            if (!_spinBox) {
@@ -235,13 +237,33 @@ Add interactive controls to your nodes:
        }
 
    private:
-       QDoubleSpinBox* _spinBox = nullptr;
+       QPointer<QDoubleSpinBox> _spinBox;
        std::shared_ptr<NumberData> _data;
    };
 
 .. image:: /_static/screenshots/embedded-widget.png
    :alt: Node with embedded spin box
    :width: 400px
+
+Widget ownership
+~~~~~~~~~~~~~~~~
+
+Two objects can own the widget, and either can be destroyed first:
+
+- The model creates the widget. When the node is shown, its ``QGraphicsProxyWidget`` takes
+  it over and deletes it with the node.
+- A widget that is never shown has no other owner. The registry builds a temporary model to
+  read its ``name()``. If the constructor creates the widget, only the model can free it.
+
+Follow these rules:
+
+- Create the widget lazily in ``embeddedWidget()``, as above. The temporary model never calls
+  it, so it never makes a widget.
+- Delete the widget in the model destructor. This frees a widget that was never shown.
+- Keep the widget in a ``QPointer``. A ``QPointer`` does not delete anything. It follows the
+  ``QObject`` and becomes null when the object is destroyed, whoever destroys it. If the proxy
+  has already deleted the widget, the destructor ``delete`` does nothing. With a raw pointer
+  it would delete the widget twice and crash.
 
 Validation State
 ----------------

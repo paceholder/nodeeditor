@@ -3,6 +3,7 @@
 #include <QtNodes/NodeDelegateModel>
 
 #include <QtCore/QObject>
+#include <QtCore/QPointer>
 
 #include <iostream>
 
@@ -25,7 +26,7 @@ class NumberDisplayDataModel : public NodeDelegateModel
 public:
     NumberDisplayDataModel();
 
-    ~NumberDisplayDataModel() = default;
+    ~NumberDisplayDataModel();
 
 public:
     QString caption() const override { return QStringLiteral("Result"); }
@@ -50,5 +51,5 @@ public:
 private:
     std::shared_ptr<DecimalData> _numberData;
 
-    QLabel *_label;
+    QPointer<QLabel> _label;
 };

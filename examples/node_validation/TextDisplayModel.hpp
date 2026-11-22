@@ -3,6 +3,7 @@
 #include <QtNodes/NodeDelegateModel>
 
 #include <QtCore/QObject>
+#include <QtCore/QPointer>
 #include <QtWidgets/QLabel>
 
 #include "TextData.hpp"
@@ -22,6 +23,8 @@ public:
     TextDisplayModel()
         : _label(nullptr)
     {}
+
+    ~TextDisplayModel() override { delete _label; }
 
     QString caption() const override { return QStringLiteral("Text Display"); }
 
@@ -66,5 +69,5 @@ public:
     }
 
 private:
-    QLabel *_label;
+    QPointer<QLabel> _label;
 };

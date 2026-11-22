@@ -5,6 +5,7 @@
 #include <QtNodes/NodeDelegateModel>
 
 #include <QtCore/QObject>
+#include <QtCore/QPointer>
 #include <QtWidgets/QLabel>
 
 #include <iostream>
@@ -25,7 +26,7 @@ class TextDisplayDataModel : public NodeDelegateModel
 public:
     TextDisplayDataModel();
 
-    virtual ~TextDisplayDataModel() {}
+    virtual ~TextDisplayDataModel() { delete _label; }
 
 public:
     QString caption() const override { return QString("Text Display"); }
@@ -48,6 +49,6 @@ public:
     QWidget *embeddedWidget() override { return _label; }
 
 private:
-    QLabel *_label;
+    QPointer<QLabel> _label;
     QString _inputText;
 };
