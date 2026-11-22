@@ -287,6 +287,11 @@ Or in a ``NodeDelegateModel``:
        }
    };
 
+Set the style before the node is shown. To change it later, call
+``setNodeStyle()`` and then emit ``requestNodeUpdate()``.
+
+The ``styles`` example uses this route. It has a second node type with a green background.
+
 Loading Styles from File
 ------------------------
 
