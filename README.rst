@@ -75,7 +75,7 @@ Dependencies
 ------------
 
 * Qt >5.15
-* CMake 3.11
+* CMake 3.13
 * Catch2
 
 
