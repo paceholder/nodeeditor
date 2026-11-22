@@ -34,8 +34,9 @@ Warning
 Branches
 --------
 
-There are branches ``v2`` and ``v3`` for versions ``2.x.x`` and ``3.x``
-respectively. The branch ``master`` contains the latest dev state.
+There is a branch ``v3`` for version ``3.x``. The branch ``master`` contains the latest
+dev state. Older versions are available as tags: ``1.0`` and ``2.*`` (the last ``2.x.x``
+release is ``2.2.4``).
 
 
 .. contents:: Navigation
