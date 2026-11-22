@@ -128,6 +128,9 @@ For building a static lib use:
 
     cmake .. -DBUILD_SHARED_LIBS=off
 
+See the "Shared and static library" section of the installation docs
+(``docs/getting-started/installation.rst``) for what the library defines and what to avoid.
+
 Linux
 -----
 

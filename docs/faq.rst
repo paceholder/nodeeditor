@@ -144,6 +144,12 @@ Ensure you're using the correct build type:
    cmake .. -DCMAKE_BUILD_TYPE=Release
    cmake --build . --config Release
 
+**Error "Cannot link against shared and static simultaneously"**
+
+Your target defines ``NODE_EDITOR_STATIC`` or ``NODE_EDITOR_SHARED`` by hand. QtNodes already
+defines the right one for you. Remove your definition and choose the type with
+``BUILD_SHARED_LIBS``. See :doc:`getting-started/installation`.
+
 Performance Questions
 ---------------------
 
