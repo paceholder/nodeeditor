@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QtCore/QObject>
+#include <QtCore/QPointer>
 
 #include "TextData.hpp"
 
@@ -23,6 +24,8 @@ class TextSourceDataModel : public NodeDelegateModel
 
 public:
     TextSourceDataModel();
+
+    ~TextSourceDataModel() override;
 
 public:
     QString caption() const override { return QString("Text Source"); }
@@ -49,5 +52,5 @@ private Q_SLOTS:
     void onTextEdited(QString const &string);
 
 private:
-    QLineEdit *_lineEdit;
+    QPointer<QLineEdit> _lineEdit;
 };

@@ -3,6 +3,7 @@
 #include <QtNodes/NodeDelegateModel>
 
 #include <QtCore/QObject>
+#include <QtCore/QPointer>
 #include <QtCore/QTimer>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QVBoxLayout>
@@ -30,6 +31,9 @@ public:
         , _label(nullptr)
         , _minLength(3)
     {}
+
+    // The label is a child of the widget, so deleting the widget deletes it.
+    ~ValidatedModel() override { delete _widget; }
 
     QString caption() const override { return QStringLiteral("Text Validator"); }
 
@@ -152,7 +156,7 @@ private:
 
 private:
     std::shared_ptr<TextData> _outputData;
-    QWidget *_widget;
-    QLabel *_label;
+    QPointer<QWidget> _widget;
+    QPointer<QLabel> _label;
     int _minLength;
 };

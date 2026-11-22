@@ -3,6 +3,7 @@
 #include <QtNodes/NodeDelegateModel>
 
 #include <QtCore/QObject>
+#include <QtCore/QPointer>
 #include <QtWidgets/QLineEdit>
 
 #include "TextData.hpp"
@@ -22,6 +23,8 @@ public:
     TextSourceModel()
         : _lineEdit(nullptr)
     {}
+
+    ~TextSourceModel() override { delete _lineEdit; }
 
     QString caption() const override { return QStringLiteral("Text Source"); }
 
@@ -65,5 +68,5 @@ private Q_SLOTS:
 
 private:
     std::shared_ptr<TextData> _data;
-    QLineEdit *_lineEdit;
+    QPointer<QLineEdit> _lineEdit;
 };

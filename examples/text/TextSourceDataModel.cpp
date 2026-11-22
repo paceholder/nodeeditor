@@ -8,6 +8,11 @@ TextSourceDataModel::TextSourceDataModel()
     //
 }
 
+TextSourceDataModel::~TextSourceDataModel()
+{
+    delete _lineEdit;
+}
+
 unsigned int TextSourceDataModel::nPorts(PortType portType) const
 {
     unsigned int result = 1;

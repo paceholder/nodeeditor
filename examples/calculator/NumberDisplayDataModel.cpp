@@ -6,6 +6,11 @@ NumberDisplayDataModel::NumberDisplayDataModel()
     : _label{nullptr}
 {}
 
+NumberDisplayDataModel::~NumberDisplayDataModel()
+{
+    delete _label;
+}
+
 unsigned int NumberDisplayDataModel::nPorts(PortType portType) const
 {
     unsigned int result = 1;

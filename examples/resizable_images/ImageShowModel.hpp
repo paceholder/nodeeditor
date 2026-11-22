@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include <QtCore/QObject>
+#include <QtCore/QPointer>
 #include <QtWidgets/QLabel>
 
 #include <QtNodes/NodeDelegateModel>
@@ -23,7 +24,7 @@ class ImageShowModel : public NodeDelegateModel
 public:
     ImageShowModel();
 
-    ~ImageShowModel() = default;
+    ~ImageShowModel() override { delete _label; }
 
 public:
     QString caption() const override { return QString("Image Display"); }
@@ -49,7 +50,7 @@ protected:
     bool eventFilter(QObject *object, QEvent *event) override;
 
 private:
-    QLabel *_label;
+    QPointer<QLabel> _label;
 
     std::shared_ptr<NodeData> _nodeData;
 };
