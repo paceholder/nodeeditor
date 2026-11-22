@@ -18,6 +18,7 @@ add_executable(test_nodes
   src/TestNodeNickname.cpp
   src/TestUIInteraction.cpp
   src/TestNodeDrag.cpp
+  src/TestLockedNodePress.cpp
   src/TestDataFlow.cpp
   src/TestNodeValidation.cpp
   src/TestCustomPainters.cpp
