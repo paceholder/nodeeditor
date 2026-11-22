@@ -86,7 +86,7 @@ private:
         Q_EMIT computingStarted();
         PortIndex const outPortIndex = 0;
 
-        QTimer::singleShot(_totalDurationMs, this, [this, n1, n2]() {
+        QTimer::singleShot(_totalDurationMs, this, [this, n1, n2, outPortIndex]() {
             if (n1 && n2) {
                 double a = n1->number();
                 double b = n2->number();

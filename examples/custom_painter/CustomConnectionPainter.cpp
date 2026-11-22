@@ -99,7 +99,8 @@ void CustomConnectionPainter::drawArrow(QPainter *painter, QPointF const &tip, Q
 
     // Arrow parameters
     qreal arrowSize = 10.0;
-    qreal arrowAngle = M_PI / 6.0; // 30 degrees
+    constexpr qreal pi = 3.14159265358979323846;
+    qreal arrowAngle = pi / 6.0; // 30 degrees
 
     // Calculate arrow points
     QPointF arrowP1 = tip
