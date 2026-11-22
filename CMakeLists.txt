@@ -1,5 +1,6 @@
-cmake_minimum_required(VERSION 3.11)
+cmake_minimum_required(VERSION 3.13)
 
+cmake_policy(SET CMP0077 NEW) # new in 3.13. The NEW behavior of this policy is that option() keeps a normal variable set by the parent project, such as BUILD_SHARED_LIBS.
 cmake_policy(SET CMP0072 NEW) # new in 3.11. The NEW behavior for this policy is to set OpenGL_GL_PREFERENCE to GLVND.
 cmake_policy(SET CMP0068 NEW) # new in 3.9. The NEW behavior of this policy is to ignore the RPATH settings for install_name on macOS.
 

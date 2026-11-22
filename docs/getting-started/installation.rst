@@ -6,7 +6,7 @@ Requirements
 
 - **Qt** 5.15+ or Qt 6.x
 - **Qt SVG module** (for processing status icons)
-- **CMake** 3.11+
+- **CMake** 3.13+
 - **C++ Compiler** with C++17 support (GCC 7+, Clang 5+, MSVC 2019+)
 - **Catch2** (optional, for running tests)
 
@@ -100,12 +100,11 @@ Choose the library type with ``BUILD_SHARED_LIBS``. The default is ``ON`` (share
 - A static QtNodes does not make Qt static. QtNodes links Qt ``Core``, ``Widgets``, ``Gui`` and
   ``OpenGL`` publicly, so your application still needs Qt.
 - With ``add_subdirectory`` or ``FetchContent``, set ``BUILD_SHARED_LIBS`` before QtNodes is
-  added, and set it in the cache. A plain ``set(BUILD_SHARED_LIBS OFF)`` has no effect on
-  QtNodes.
+  added. A plain ``set()`` works. The cache form and ``-DBUILD_SHARED_LIBS=OFF`` work too.
 
 .. code-block:: cmake
 
-   set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+   set(BUILD_SHARED_LIBS OFF)
    add_subdirectory(external/nodeeditor)
 
 Using vcpkg
