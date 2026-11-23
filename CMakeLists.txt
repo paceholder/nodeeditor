@@ -93,6 +93,13 @@ set(CPP_SOURCE_FILES
   resources/resources.qrc
 )
 
+set(QT_NODES_GENERATED_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/include)
+
+configure_file(cmake/Version.hpp.in
+  ${QT_NODES_GENERATED_INCLUDE_DIR}/QtNodes/internal/Version.hpp
+  @ONLY
+)
+
 set(HPP_HEADER_FILES
   include/QtNodes/internal/AbstractConnectionPainter.hpp
   include/QtNodes/internal/AbstractGraphModel.hpp
@@ -148,6 +155,7 @@ target_include_directories(QtNodes
   PUBLIC
     $<INSTALL_INTERFACE:include>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${QT_NODES_GENERATED_INCLUDE_DIR}>
   PRIVATE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/QtNodes/internal>
@@ -243,6 +251,9 @@ install(TARGETS QtNodes
 
 install(DIRECTORY include/
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+install(FILES ${QT_NODES_GENERATED_INCLUDE_DIR}/QtNodes/internal/Version.hpp
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/QtNodes/internal)
 
 install(EXPORT QtNodesTargets
   FILE QtNodesTargets.cmake
