@@ -261,3 +261,35 @@ TEST_CASE("Data Flow - Multiple Connections", "[dataflow][visual]")
         CHECK(display2Model->getText() == "Only Display2"); // Gets new data
     }
 }
+
+namespace {
+
+/// Tells whether anything is connected to inPortDataWasSet().
+class ConnectionProbeModel : public DataFlowGraphModel
+{
+public:
+    using DataFlowGraphModel::DataFlowGraphModel;
+
+    bool hasInPortDataListener() const
+    {
+        return isSignalConnected(QMetaMethod::fromSignal(&DataFlowGraphModel::inPortDataWasSet));
+    }
+};
+
+} // namespace
+
+TEST_CASE("Deleting a DataFlowGraphicsScene disconnects it from the model that outlives it",
+          "[dataflow][lifetime]")
+{
+    auto app = applicationSetup();
+
+    ConnectionProbeModel model(createTestRegistry());
+    REQUIRE_FALSE(model.hasInPortDataListener());
+
+    auto *scene = new DataFlowGraphicsScene(model);
+    REQUIRE(model.hasInPortDataListener());
+
+    delete scene;
+
+    CHECK_FALSE(model.hasInPortDataListener());
+}
