@@ -1,4 +1,5 @@
 #include "ApplicationSetup.hpp"
+#include "LockableModel.hpp"
 #include "TestGraphModel.hpp"
 #include "UITestHelper.hpp"
 
@@ -13,40 +14,16 @@
 
 using QtNodes::BasicGraphicsScene;
 using QtNodes::GraphicsView;
-using QtNodes::NodeFlag;
-using QtNodes::NodeFlags;
 using QtNodes::NodeId;
 using QtNodes::NodeRole;
 using QtNodes::PortType;
-
-namespace {
-
-class LockableGraphModel : public TestGraphModel
-{
-public:
-    NodeFlags nodeFlags(NodeId) const override
-    {
-        return _locked ? NodeFlags(NodeFlag::Locked) : NodeFlags(NodeFlag::NoFlags);
-    }
-
-    void setLocked(NodeId nodeId, bool locked)
-    {
-        _locked = locked;
-        Q_EMIT nodeFlagsUpdated(nodeId);
-    }
-
-private:
-    bool _locked = false;
-};
-
-} // namespace
 
 TEST_CASE("Clicking a port of a locked node does not crash or start a connection",
           "[ui][lock]")
 {
     auto app = applicationSetup();
 
-    LockableGraphModel model;
+    LockableModel<TestGraphModel> model;
     BasicGraphicsScene scene(model);
     GraphicsView view(&scene);
     view.resize(800, 600);

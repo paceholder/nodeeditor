@@ -1,4 +1,5 @@
 #include "ApplicationSetup.hpp"
+#include "TestDelegateModels.hpp"
 
 #include <QtNodes/DataFlowGraphModel>
 #include <QtNodes/NodeDelegateModel>
@@ -16,26 +17,20 @@ using QtNodes::NodeId;
 using QtNodes::NodeRole;
 using QtNodes::PortType;
 
-class TestNodeDelegate : public NodeDelegateModel
+namespace {
+
+std::unique_ptr<NodeDelegateModel> createTestNode()
 {
-public:
-    QString name() const override { return "TestNode"; }
-    QString caption() const override { return "Test Node"; }
-    unsigned int nPorts(QtNodes::PortType portType) const override
-    {
-        return (portType == PortType::In) ? 2 : 1;
-    }
-    QtNodes::NodeDataType dataType(QtNodes::PortType, QtNodes::PortIndex) const override { return {}; }
-    void setInData(std::shared_ptr<QtNodes::NodeData>, QtNodes::PortIndex const) override {}
-    std::shared_ptr<QtNodes::NodeData> outData(QtNodes::PortIndex const) override { return nullptr; }
-    QWidget* embeddedWidget() override { return nullptr; }
-};
+    return std::make_unique<StubDelegateModel>("TestNode", "Test Node", 2, 1);
+}
+
+} // namespace
 
 TEST_CASE("DataFlowGraphModel basic functionality", "[dataflow]")
 {
     auto app = applicationSetup();
     auto registry = std::make_shared<NodeDelegateModelRegistry>();
-    registry->registerModel<TestNodeDelegate>("TestNode");
+    registry->registerModel(createTestNode, "TestNode");
 
     DataFlowGraphModel model(registry);
 
@@ -76,7 +71,7 @@ TEST_CASE("DataFlowGraphModel connections", "[dataflow]")
 {
     auto app = applicationSetup();
     auto registry = std::make_shared<NodeDelegateModelRegistry>();
-    registry->registerModel<TestNodeDelegate>("TestNode");
+    registry->registerModel(createTestNode, "TestNode");
 
     DataFlowGraphModel model(registry);
 
@@ -142,7 +137,7 @@ TEST_CASE("DataFlowGraphModel serialization support", "[dataflow]")
 {
     auto app = applicationSetup();
     auto registry = std::make_shared<NodeDelegateModelRegistry>();
-    registry->registerModel<TestNodeDelegate>("TestNode");
+    registry->registerModel(createTestNode, "TestNode");
 
     DataFlowGraphModel model(registry);
 

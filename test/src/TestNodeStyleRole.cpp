@@ -1,4 +1,5 @@
 #include "ApplicationSetup.hpp"
+#include "TestDelegateModels.hpp"
 
 #include <catch2/catch.hpp>
 
@@ -25,25 +26,17 @@ using QtNodes::StyleCollection;
 namespace {
 
 /// Delegate that sets its own style in the constructor.
-class StyledModel : public NodeDelegateModel
+class StyledModel : public StubDelegateModel
 {
-    Q_OBJECT
 public:
     StyledModel()
+        : StubDelegateModel("Styled", "Styled")
     {
         NodeStyle style = nodeStyle();
         style.PenWidth = 7.0f;
         style.setBackgroundColor(QColor(10, 20, 30));
         setNodeStyle(style);
     }
-
-    QString caption() const override { return "Styled"; }
-    QString name() const override { return "Styled"; }
-    unsigned int nPorts(PortType) const override { return 0; }
-    QtNodes::NodeDataType dataType(PortType, PortIndex) const override { return {}; }
-    std::shared_ptr<QtNodes::NodeData> outData(PortIndex) override { return nullptr; }
-    void setInData(std::shared_ptr<QtNodes::NodeData>, PortIndex) override {}
-    QWidget *embeddedWidget() override { return nullptr; }
 
     void changeStyle(QColor const &color)
     {
@@ -56,18 +49,10 @@ public:
 };
 
 /// Delegate that never sets its style. It keeps the global style copied at construction.
-class PlainModel : public NodeDelegateModel
+std::unique_ptr<NodeDelegateModel> createPlainModel()
 {
-    Q_OBJECT
-public:
-    QString caption() const override { return "Plain"; }
-    QString name() const override { return "Plain"; }
-    unsigned int nPorts(PortType) const override { return 0; }
-    QtNodes::NodeDataType dataType(PortType, PortIndex) const override { return {}; }
-    std::shared_ptr<QtNodes::NodeData> outData(PortIndex) override { return nullptr; }
-    void setInData(std::shared_ptr<QtNodes::NodeData>, PortIndex) override {}
-    QWidget *embeddedWidget() override { return nullptr; }
-};
+    return std::make_unique<StubDelegateModel>("Plain", "Plain");
+}
 
 NodeStyle styleOf(DataFlowGraphModel &model, NodeId id)
 {
@@ -133,7 +118,7 @@ TEST_CASE("A node that never sets a style keeps the global style from the time i
 {
     GlobalStyleGuard guard;
     auto registry = std::make_shared<NodeDelegateModelRegistry>();
-    registry->registerModel<PlainModel>("Test");
+    registry->registerModel(createPlainModel, "Test");
     DataFlowGraphModel model(registry);
 
     NodeStyle changed = StyleCollection::nodeStyle();
@@ -170,5 +155,3 @@ TEST_CASE("A node update request after a style change makes the model emit nodeU
     CHECK(spy.first().first().value<NodeId>() == id);
     CHECK(styleOf(model, id).GradientColor0 == QColor(1, 2, 3));
 }
-
-#include "TestNodeStyleRole.moc"

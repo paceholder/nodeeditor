@@ -1,4 +1,5 @@
 #include "ApplicationSetup.hpp"
+#include "TestDelegateModels.hpp"
 
 #include <QtNodes/DataFlowGraphModel>
 #include <QtNodes/NodeDelegateModel>
@@ -20,27 +21,21 @@ using QtNodes::NodeDelegateModelRegistry;
 using QtNodes::NodeId;
 using QtNodes::NodeRole;
 
-class SerializableTestModel : public NodeDelegateModel
+namespace {
+
+std::unique_ptr<NodeDelegateModel> createSerializableModel()
 {
-public:
-    QString name() const override { return "SerializableTestModel"; }
-    QString caption() const override { return "Test Model for Serialization"; }
-    
-    unsigned int nPorts(QtNodes::PortType portType) const override
-    {
-        return (portType == QtNodes::PortType::In) ? 1 : 1;
-    }
-    QtNodes::NodeDataType dataType(QtNodes::PortType, QtNodes::PortIndex) const override { return {}; }
-    void setInData(std::shared_ptr<QtNodes::NodeData>, QtNodes::PortIndex const) override {}
-    std::shared_ptr<QtNodes::NodeData> outData(QtNodes::PortIndex const) override { return nullptr; }
-    QWidget* embeddedWidget() override { return nullptr; }
-};
+    return std::make_unique<StubDelegateModel>("SerializableTestModel",
+                                               "Test Model for Serialization", 1, 1);
+}
+
+} // namespace
 
 TEST_CASE("DataFlowGraphModel serialization", "[serialization]")
 {
     auto app = applicationSetup();
     auto registry = std::make_shared<NodeDelegateModelRegistry>();
-    registry->registerModel<SerializableTestModel>("SerializableTestModel");
+    registry->registerModel(createSerializableModel, "SerializableTestModel");
 
     DataFlowGraphModel model(registry);
 
@@ -139,7 +134,7 @@ TEST_CASE("Individual node serialization", "[serialization]")
 {
     auto app = applicationSetup();
     auto registry = std::make_shared<NodeDelegateModelRegistry>();
-    registry->registerModel<SerializableTestModel>("SerializableTestModel");
+    registry->registerModel(createSerializableModel, "SerializableTestModel");
 
     DataFlowGraphModel model(registry);
 
