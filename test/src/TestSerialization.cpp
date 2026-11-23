@@ -5,6 +5,7 @@
 #include <QtNodes/NodeDelegateModel>
 #include <QtNodes/NodeDelegateModelRegistry>
 #include <QtNodes/Definitions>
+#include <QtNodes/internal/ConnectionIdUtils.hpp>
 
 #include <catch2/catch.hpp>
 
@@ -152,4 +153,39 @@ TEST_CASE("Individual node serialization", "[serialization]")
         CHECK(nodeJson.contains("id"));
         CHECK(nodeJson.contains("position"));
     }
+}
+
+TEST_CASE("DataFlowGraphModel loads node ids above the signed 32-bit range", "[serialization]")
+{
+    auto app = applicationSetup();
+    auto registry = std::make_shared<NodeDelegateModelRegistry>();
+    registry->registerModel(createSerializableModel, "SerializableTestModel");
+
+    DataFlowGraphModel model(registry);
+    NodeId const a = model.addNode("SerializableTestModel");
+    NodeId const b = model.addNode("SerializableTestModel");
+    model.addConnection(ConnectionId{a, 0, b, 0});
+
+    quint32 const bigA = 3000000000u;
+    quint32 const bigB = 3000000001u;
+
+    QJsonObject json = model.save();
+
+    QJsonArray nodes = json["nodes"].toArray();
+    for (int i = 0; i < nodes.size(); ++i) {
+        QJsonObject node = nodes[i].toObject();
+        node["id"] = static_cast<qint64>(node["id"].toInt() == static_cast<int>(a) ? bigA : bigB);
+        nodes[i] = node;
+    }
+    json["nodes"] = nodes;
+
+    QJsonObject conn = QtNodes::toJson(ConnectionId{bigA, 0, bigB, 0});
+    json["connections"] = QJsonArray{conn};
+
+    DataFlowGraphModel loaded(registry);
+    loaded.load(json);
+
+    CHECK(loaded.nodeExists(bigA));
+    CHECK(loaded.nodeExists(bigB));
+    CHECK(loaded.connectionExists(ConnectionId{bigA, 0, bigB, 0}));
 }
