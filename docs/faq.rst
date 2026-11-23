@@ -72,6 +72,9 @@ Implement ``saveNode()`` and ``loadNode()`` in your model:
        // Recreate node from saved data
    }
 
+The library writes the node id itself. With the default ``saveNode()`` and
+``loadNode()``, undo of a delete cannot restore the node.
+
 **Embedded widget doesn't show**
 
 Ensure your ``embeddedWidget()`` returns a valid widget:

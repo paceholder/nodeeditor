@@ -18,6 +18,14 @@
 
 namespace QtNodes {
 
+// The library writes the node id itself. A model may not store it in saveNode().
+static QJsonObject saveNodeWithId(AbstractGraphModel const &graphModel, NodeId const nodeId)
+{
+    QJsonObject json = graphModel.saveNode(nodeId);
+    json["id"] = static_cast<qint64>(nodeId);
+    return json;
+}
+
 static QJsonObject serializeSelectedItems(BasicGraphicsScene *scene)
 {
     QJsonObject serializedScene;
@@ -37,7 +45,7 @@ static QJsonObject serializeSelectedItems(BasicGraphicsScene *scene)
 
         auto const inserted = selectedNodes.insert(node->nodeId());
         if (inserted.second) {
-            nodesJsonArray.append(graphModel.saveNode(node->nodeId()));
+            nodesJsonArray.append(saveNodeWithId(graphModel, node->nodeId()));
         }
     };
 
@@ -115,9 +123,12 @@ static void insertSerializedItems(QJsonObject const &json, BasicGraphicsScene *s
 
         graphModel.loadNode(obj);
 
+        // The model may not restore the node, for example with the default loadNode().
         auto id = obj["id"].toInt();
-        scene->nodeGraphicsObject(id)->setZValue(1.0);
-        scene->nodeGraphicsObject(id)->setSelected(true);
+        if (auto *ngo = scene->nodeGraphicsObject(id)) {
+            ngo->setZValue(1.0);
+            ngo->setSelected(true);
+        }
     }
 
     QJsonArray const &connJsonArray = json["connections"].toArray();
@@ -130,7 +141,8 @@ static void insertSerializedItems(QJsonObject const &json, BasicGraphicsScene *s
         // Restore the connection
         graphModel.addConnection(connId);
 
-        scene->connectionGraphicsObject(connId)->setSelected(true);
+        if (auto *cgo = scene->connectionGraphicsObject(connId))
+            cgo->setSelected(true);
     }
 
     if (json.contains("groups")) {
@@ -213,7 +225,7 @@ CreateCommand::CreateCommand(BasicGraphicsScene *scene,
 void CreateCommand::undo()
 {
     QJsonArray nodesJsonArray;
-    nodesJsonArray.append(_scene->graphModel().saveNode(_nodeId));
+    nodesJsonArray.append(saveNodeWithId(_scene->graphModel(), _nodeId));
     _sceneJson["nodes"] = nodesJsonArray;
 
     _scene->graphModel().deleteNode(_nodeId);
@@ -264,7 +276,7 @@ DeleteCommand::DeleteCommand(BasicGraphicsScene *scene)
             connJsonArray.append(toJson(cid));
         }
 
-        nodesJsonArray.append(graphModel.saveNode(node->nodeId()));
+        nodesJsonArray.append(saveNodeWithId(graphModel, node->nodeId()));
     };
 
     QJsonArray groupsJsonArray;

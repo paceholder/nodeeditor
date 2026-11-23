@@ -305,6 +305,10 @@ Override ``saveNode()`` and ``loadNode()`` to support save/load:
        return json;
    }
 
+The default ``saveNode()`` returns an empty object and the default
+``loadNode()`` does nothing. Without both functions, undo of a delete cannot
+restore the node. See :doc:`undo-redo`.
+
 See :doc:`serialization` for complete save/load implementation.
 
 Complete Example
