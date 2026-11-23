@@ -38,7 +38,7 @@ using QtNodes::InvalidGroupId;
 GroupId jsonValueToGroupId(QJsonValue const &value)
 {
     if (value.isDouble()) {
-        return static_cast<GroupId>(value.toInt());
+        return QtNodes::jsonValueToUInt32(value);
     }
 
     if (value.isString()) {
@@ -269,7 +269,7 @@ bool DataFlowGraphicsScene::load()
             groupNodes.reserve(nodeIdsJson.size());
 
             for (QJsonValue idValue : nodeIdsJson) {
-                NodeId const nodeId = static_cast<NodeId>(idValue.toInt());
+                NodeId const nodeId = jsonValueToUInt32(idValue);
                 if (auto *nodeObject = nodeGraphicsObject(nodeId)) {
                     groupNodes.push_back(nodeObject);
                 }

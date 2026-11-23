@@ -49,7 +49,7 @@ using QtNodes::NodeId;
 NodeId jsonValueToNodeId(QJsonValue const &value)
 {
     if (value.isDouble()) {
-        return static_cast<NodeId>(value.toInt());
+        return QtNodes::jsonValueToUInt32(value);
     }
 
     if (value.isString()) {
@@ -614,7 +614,7 @@ std::unordered_map<QUuid, QUuid> BasicGraphicsScene::loadItems(const QByteArray 
     nodeById.reserve(nodesJsonArray.size());
     for (const QJsonValue &v : nodesJsonArray) {
         QJsonObject o = v.toObject();
-        NodeId id = static_cast<NodeId>(o.value("id").toInt(InvalidNodeId));
+        NodeId id = QtNodes::jsonValueToUInt32(o.value("id"));
         if (id != InvalidNodeId)
             nodeById.insert(id, o);
     }
@@ -653,7 +653,7 @@ std::unordered_map<QUuid, QUuid> BasicGraphicsScene::loadItems(const QByteArray 
 
     for (QJsonValueRef node : nodesJsonArray) {
         QJsonObject nodeObj = node.toObject();
-        NodeId oldNodeId = static_cast<NodeId>(nodeObj.value("id").toInt(InvalidNodeId));
+        NodeId oldNodeId = QtNodes::jsonValueToUInt32(nodeObj.value("id"));
 
         if (createdOldNodeIds.contains(oldNodeId)) {
             continue;
@@ -811,7 +811,7 @@ BasicGraphicsScene::restoreGroup(QJsonObject const &groupJson,
         QJsonObject nodeObject;
 
         if (nodeVal.isDouble()) {
-            NodeId const oldNodeId = static_cast<NodeId>(nodeVal.toInt(InvalidNodeId));
+            NodeId const oldNodeId = QtNodes::jsonValueToUInt32(nodeVal);
             if (oldNodeId == InvalidNodeId) {
                 qWarning() << "restoreGroup(): invalid node id in group:" << nodeVal;
                 continue;
