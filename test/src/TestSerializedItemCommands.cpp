@@ -4,11 +4,16 @@
 #include <QtNodes/BasicGraphicsScene>
 #include <QtNodes/Definitions>
 #include <QtNodes/internal/NodeGraphicsObject.hpp>
+#include <QtNodes/internal/GroupGraphicsObject.hpp>
+#include <QtNodes/internal/NodeGroup.hpp>
 #include <QtNodes/internal/UndoCommands.hpp>
 
 #include <catch2/catch.hpp>
 
+#include <QApplication>
+#include <QClipboard>
 #include <QCoreApplication>
+#include <QMimeData>
 #include <QUndoStack>
 
 #include <algorithm>
@@ -514,4 +519,45 @@ TEST_CASE("Paste keeps connections for node ids above the signed 32-bit range",
     REQUIRE(model.deletedIds.size() == 2);
     for (NodeId id : model.deletedIds)
         CHECK(id >= BigIdGraphModel::firstId);
+}
+
+TEST_CASE("Loading serialized items restores a group and a connection for ids above the signed "
+          "32-bit range",
+          "[undo][serialized][group]")
+{
+    auto app = applicationSetup();
+
+    BigIdGraphModel model;
+    BasicGraphicsScene scene(model);
+    scene.setGroupingEnabled(true);
+
+    NodeId const a = addNodeAt(model, QPointF(0, 0));
+    NodeId const b = addNodeAt(model, QPointF(100, 0));
+    model.addConnection(ConnectionId{a, 0, b, 0});
+
+    selectOnly(scene, {a, b});
+    auto const group = scene.createGroupFromSelection("Big").lock();
+    REQUIRE(group != nullptr);
+
+    // Nodes in a group are locked. Select the group to copy it with its nodes.
+    scene.clearSelection();
+    group->groupGraphicsObject().setSelected(true);
+    scene.undoStack().push(new CopyCommand(&scene));
+
+    QMimeData const *mimeData = QApplication::clipboard()->mimeData();
+    REQUIRE(mimeData != nullptr);
+    QByteArray const data = mimeData->data("application/qt-nodes-graph");
+    REQUIRE_FALSE(data.isEmpty());
+
+    BigIdGraphModel otherModel;
+    BasicGraphicsScene otherScene(otherModel);
+    otherScene.setGroupingEnabled(true);
+    otherScene.loadFromMemory(data);
+
+    CHECK(otherModel.allNodeIds().size() == 2);
+    REQUIRE(otherScene.groups().size() == 1);
+    CHECK(otherScene.groups().begin()->second->childNodes().size() == 2);
+
+    NodeId const first = *otherModel.allNodeIds().begin();
+    CHECK(otherModel.allConnectionIds(first).size() == 1);
 }
