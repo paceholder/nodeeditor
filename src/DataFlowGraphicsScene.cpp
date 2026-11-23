@@ -75,6 +75,7 @@ DataFlowGraphicsScene::DataFlowGraphicsScene(DataFlowGraphModel &graphModel, QOb
 {
     connect(&_graphModel,
             &DataFlowGraphModel::inPortDataWasSet,
+            this,
             [this](NodeId const nodeId, PortType const, PortIndex const) { onNodeUpdated(nodeId); });
 }
 
