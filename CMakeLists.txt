@@ -5,7 +5,7 @@ cmake_policy(SET CMP0072 NEW) # new in 3.11. The NEW behavior for this policy is
 cmake_policy(SET CMP0068 NEW) # new in 3.9. The NEW behavior of this policy is to ignore the RPATH settings for install_name on macOS.
 
 
-project(QtNodesLibrary CXX)
+project(QtNodesLibrary VERSION 3.2.1 LANGUAGES CXX)
 
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
@@ -199,6 +199,8 @@ set_target_properties(QtNodes
     ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
     LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+    VERSION ${PROJECT_VERSION}
+    SOVERSION ${PROJECT_VERSION_MAJOR}
 )
 
 ###########
@@ -255,7 +257,14 @@ configure_package_config_file(${CMAKE_CURRENT_LIST_DIR}/cmake/QtNodesConfig.cmak
   INSTALL_DESTINATION ${INSTALL_CONFIGDIR}
 )
 
+write_basic_package_version_file(
+  ${CMAKE_CURRENT_BINARY_DIR}/QtNodesConfigVersion.cmake
+  VERSION ${PROJECT_VERSION}
+  COMPATIBILITY SameMajorVersion
+)
+
 install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/QtNodesConfig.cmake
+  ${CMAKE_CURRENT_BINARY_DIR}/QtNodesConfigVersion.cmake
   DESTINATION ${INSTALL_CONFIGDIR}
 )
