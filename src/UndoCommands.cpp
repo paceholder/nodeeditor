@@ -124,7 +124,7 @@ static void insertSerializedItems(QJsonObject const &json, BasicGraphicsScene *s
         graphModel.loadNode(obj);
 
         // The model may not restore the node, for example with the default loadNode().
-        auto id = obj["id"].toInt();
+        NodeId const id = jsonValueToUInt32(obj["id"]);
         if (auto *ngo = scene->nodeGraphicsObject(id)) {
             ngo->setZValue(1.0);
             ngo->setSelected(true);
@@ -157,7 +157,7 @@ static void insertSerializedItems(QJsonObject const &json, BasicGraphicsScene *s
             std::vector<NodeGraphicsObject *> groupNodes;
 
             for (const QJsonValue &idVal : nodeIdsJson) {
-                NodeId nodeId = static_cast<NodeId>(idVal.toInt());
+                NodeId nodeId = jsonValueToUInt32(idVal);
                 if (auto *ngo = scene->nodeGraphicsObject(nodeId)) {
                     groupNodes.push_back(ngo);
                 }
@@ -184,7 +184,7 @@ static void deleteSerializedItems(QJsonObject &sceneJson, AbstractGraphModel &gr
 
     for (QJsonValueRef node : nodesJsonArray) {
         QJsonObject nodeJson = node.toObject();
-        graphModel.deleteNode(nodeJson["id"].toInt());
+        graphModel.deleteNode(jsonValueToUInt32(nodeJson["id"]));
     }
 }
 
@@ -460,7 +460,7 @@ QJsonObject PasteCommand::makeNewNodeIdsInScene(QJsonObject const &sceneJson)
     for (QJsonValueRef node : nodesJsonArray) {
         QJsonObject nodeJson = node.toObject();
 
-        NodeId oldNodeId = nodeJson["id"].toInt();
+        NodeId oldNodeId = jsonValueToUInt32(nodeJson["id"]);
 
         NodeId newNodeId = graphModel.newNodeId();
 
@@ -503,7 +503,7 @@ QJsonObject PasteCommand::makeNewNodeIdsInScene(QJsonObject const &sceneJson)
 
             QJsonArray newNodeIdsJson;
             for (const QJsonValue &idVal : nodeIdsJson) {
-                NodeId oldId = static_cast<NodeId>(idVal.toInt());
+                NodeId oldId = jsonValueToUInt32(idVal);
                 NodeId newId = mapNodeIds[oldId];
                 newNodeIdsJson.append(static_cast<qint64>(newId));
             }

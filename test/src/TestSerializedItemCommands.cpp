@@ -432,3 +432,86 @@ TEST_CASE("Paste does not crash when the model keeps the default saveNode",
     CHECK(model.nodeExists(b));
     CHECK(model.connectionExists(ConnectionId{a, 0, b, 0}));
 }
+
+namespace {
+
+/// Node ids start above the range of a signed 32-bit integer.
+class BigIdGraphModel : public RecordingGraphModel
+{
+public:
+    NodeId newNodeId() override { return _nextBigId++; }
+
+    static constexpr NodeId firstId = 3000000000u;
+
+private:
+    NodeId _nextBigId = firstId;
+};
+
+} // namespace
+
+TEST_CASE("Delete and undo work for node ids above the signed 32-bit range",
+          "[undo][serialized]")
+{
+    auto app = applicationSetup();
+
+    BigIdGraphModel model;
+    BasicGraphicsScene scene(model);
+
+    NodeId const a = addNodeAt(model, QPointF(0, 0));
+    NodeId const b = addNodeAt(model, QPointF(100, 50));
+    REQUIRE(a == BigIdGraphModel::firstId);
+    REQUIRE(b == BigIdGraphModel::firstId + 1);
+
+    ConnectionId const ab{a, 0, b, 0};
+    model.addConnection(ab);
+    model.deletedIds.clear();
+
+    selectOnly(scene, {b});
+    scene.undoStack().push(new DeleteCommand(&scene));
+
+    CHECK(model.deletedIds == std::vector<NodeId>{b});
+    CHECK(model.nodeExists(a));
+    CHECK_FALSE(model.nodeExists(b));
+
+    scene.undoStack().undo();
+
+    CHECK(model.nodeExists(b));
+    CHECK(model.nodeData(b, NodeRole::Position).toPointF() == QPointF(100, 50));
+    CHECK(model.connectionExists(ab));
+    CHECK(scene.nodeGraphicsObject(b) != nullptr);
+
+    model.deletedIds.clear();
+    scene.undoStack().redo();
+
+    CHECK(model.deletedIds == std::vector<NodeId>{b});
+    CHECK_FALSE(model.nodeExists(b));
+}
+
+TEST_CASE("Paste keeps connections for node ids above the signed 32-bit range",
+          "[undo][serialized]")
+{
+    auto app = applicationSetup();
+
+    BigIdGraphModel model;
+    BasicGraphicsScene scene(model);
+
+    NodeId const a = addNodeAt(model, QPointF(0, 0));
+    NodeId const b = addNodeAt(model, QPointF(100, 0));
+    model.addConnection(ConnectionId{a, 0, b, 0});
+
+    selectOnly(scene, {a, b});
+    scene.undoStack().push(new CopyCommand(&scene));
+    scene.undoStack().push(new PasteCommand(&scene, QPointF(300, 300)));
+
+    REQUIRE(model.allNodeIds().size() == 4);
+    for (NodeId id : model.allNodeIds())
+        CHECK(id >= BigIdGraphModel::firstId);
+
+    model.deletedIds.clear();
+    scene.undoStack().undo();
+
+    CHECK(model.allNodeIds().size() == 2);
+    REQUIRE(model.deletedIds.size() == 2);
+    for (NodeId id : model.deletedIds)
+        CHECK(id >= BigIdGraphModel::firstId);
+}
