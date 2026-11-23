@@ -1,4 +1,5 @@
 #include "ApplicationSetup.hpp"
+#include "TestDelegateModels.hpp"
 
 #include <QtNodes/DataFlowGraphModel>
 #include <QtNodes/Definitions>
@@ -23,20 +24,16 @@ namespace {
 
 // Creates a test nickname node, implementing the NodeDelegateModel interface
 // As a minimal node, it has no inputs or outputs, no port data type, and no embedded widget
-class NicknameNode : public NodeDelegateModel
+class NicknameNode : public StubDelegateModel
 {
-    public:
-        QString name() const override { return QStringLiteral("NicknameNode"); }
-        QString caption() const override { return QStringLiteral("Test Node"); }
-        QString label() const override { return QStringLiteral("Default nickname"); }
-        bool labelVisible() const override { return false; }
-        bool labelEditable() const override { return true; }
+public:
+    NicknameNode()
+        : StubDelegateModel(QStringLiteral("NicknameNode"), QStringLiteral("Test Node"))
+    {}
 
-        unsigned int nPorts(PortType) const override { return 0; }
-        NodeDataType dataType(PortType, PortIndex) const override { return {}; }
-        void setInData(std::shared_ptr<NodeData>, PortIndex) override {}
-        std::shared_ptr<NodeData> outData(PortIndex) override { return nullptr; }
-        QWidget *embeddedWidget() override { return nullptr; }
+    QString label() const override { return QStringLiteral("Default nickname"); }
+    bool labelVisible() const override { return false; }
+    bool labelEditable() const override { return true; }
 };
 
 std::shared_ptr<NodeDelegateModelRegistry> makeRegistry()

@@ -32,6 +32,8 @@ add_executable(test_nodes
   include/TestGraphModel.hpp
   include/UITestHelper.hpp
   include/TestDataFlowNodes.hpp
+  include/TestDelegateModels.hpp
+  include/LockableModel.hpp
 )
 
 target_include_directories(test_nodes

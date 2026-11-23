@@ -1,4 +1,6 @@
 #include "ApplicationSetup.hpp"
+#include "LockableModel.hpp"
+#include "TestDelegateModels.hpp"
 
 #include <QtNodes/BasicGraphicsScene>
 #include <QtNodes/DataFlowGraphModel>
@@ -42,31 +44,16 @@ using QtNodes::PortIndex;
 using QtNodes::PortType;
 
 namespace {
-class DummyNodeModel : public NodeDelegateModel
+std::unique_ptr<NodeDelegateModel> createDummyNode()
 {
-public:
-    QString caption() const override { return QStringLiteral("Dummy Node"); }
-    QString name() const override { return QStringLiteral("DummyNode"); }
-
-    unsigned int nPorts(PortType portType) const override
-    {
-        Q_UNUSED(portType);
-        return 1U;
-    }
-
-    QtNodes::NodeDataType dataType(PortType, PortIndex) const override { return {}; }
-
-    std::shared_ptr<QtNodes::NodeData> outData(PortIndex const) override { return nullptr; }
-
-    void setInData(std::shared_ptr<QtNodes::NodeData>, PortIndex const) override {}
-
-    QWidget *embeddedWidget() override { return nullptr; }
-};
+    return std::make_unique<StubDelegateModel>(QStringLiteral("DummyNode"),
+                                               QStringLiteral("Dummy Node"), 1, 1);
+}
 
 std::shared_ptr<NodeDelegateModelRegistry> createDummyRegistry()
 {
     auto registry = std::make_shared<NodeDelegateModelRegistry>();
-    registry->registerModel<DummyNodeModel>(QStringLiteral("Test"));
+    registry->registerModel(createDummyNode, QStringLiteral("Test"));
     return registry;
 }
 
@@ -462,33 +449,6 @@ TEST_CASE("A mouse move on a node of a locked group moves nothing", "[node-group
 }
 
 namespace {
-// DataFlowGraphModel has no way to set NodeFlag::Locked, so a test model adds it.
-class LockableModel : public DataFlowGraphModel
-{
-public:
-    using DataFlowGraphModel::DataFlowGraphModel;
-
-    QtNodes::NodeFlags nodeFlags(NodeId nodeId) const override
-    {
-        auto flags = DataFlowGraphModel::nodeFlags(nodeId);
-        if (_locked.count(nodeId) != 0)
-            flags |= QtNodes::NodeFlag::Locked;
-        return flags;
-    }
-
-    void setLocked(NodeId nodeId, bool locked)
-    {
-        if (locked)
-            _locked.insert(nodeId);
-        else
-            _locked.erase(nodeId);
-        Q_EMIT nodeFlagsUpdated(nodeId);
-    }
-
-private:
-    std::set<NodeId> _locked;
-};
-
 void pressPort(BasicGraphicsScene &scene, NodeId nodeId, PortType type)
 {
     auto *item = scene.nodeGraphicsObject(nodeId);
@@ -517,7 +477,7 @@ TEST_CASE("A model-locked node does not start a draft connection", "[node-lock]"
     auto app = applicationSetup();
 
     auto registry = createDummyRegistry();
-    LockableModel model(registry);
+    LockableModel<DataFlowGraphModel> model(registry);
     BasicGraphicsScene scene(model);
 
     NodeId const a = createNode(model, scene);
@@ -533,7 +493,7 @@ TEST_CASE("A model-locked node does not detach a connection", "[node-lock]")
     auto app = applicationSetup();
 
     auto registry = createDummyRegistry();
-    LockableModel model(registry);
+    LockableModel<DataFlowGraphModel> model(registry);
     BasicGraphicsScene scene(model);
 
     NodeId const a = createNode(model, scene);
@@ -554,7 +514,7 @@ TEST_CASE("A node stays unselectable while its model lock or its group lock is s
     auto app = applicationSetup();
 
     auto registry = createDummyRegistry();
-    LockableModel model(registry);
+    LockableModel<DataFlowGraphModel> model(registry);
     BasicGraphicsScene scene(model);
     scene.setGroupingEnabled(true);
 

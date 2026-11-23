@@ -1,3 +1,5 @@
+#include "TestDelegateModels.hpp"
+
 #include <catch2/catch.hpp>
 
 #include <QtNodes/DataFlowGraphModel>
@@ -16,29 +18,20 @@ using QtNodes::NodeValidationState;
 using QtNodes::PortIndex;
 using QtNodes::PortType;
 
-/// Test delegate model that exposes validation and status setters
-class TestValidatedModel : public NodeDelegateModel
-{
-    Q_OBJECT
-public:
-    QString caption() const override { return "Test Validated"; }
-    QString name() const override { return "TestValidated"; }
+namespace {
 
-    unsigned int nPorts(PortType portType) const override
-    {
-        return portType == PortType::In ? 1 : 1;
-    }
+/// Test delegate model that exposes validation and status setters
+class TestValidatedModel : public StubDelegateModel
+{
+public:
+    TestValidatedModel()
+        : StubDelegateModel("TestValidated", "Test Validated", 1, 1)
+    {}
 
     QtNodes::NodeDataType dataType(PortType, PortIndex) const override
     {
         return QtNodes::NodeDataType{"test", "Test"};
     }
-
-    std::shared_ptr<QtNodes::NodeData> outData(PortIndex) override { return nullptr; }
-
-    void setInData(std::shared_ptr<QtNodes::NodeData>, PortIndex) override {}
-
-    QWidget *embeddedWidget() override { return nullptr; }
 
     // Expose validation methods for testing
     void setTestValidationState(NodeValidationState::State state, QString const &message)
@@ -51,6 +44,8 @@ public:
 
     void setTestProcessingStatus(NodeProcessingStatus status) { setNodeProcessingStatus(status); }
 };
+
+} // namespace
 
 TEST_CASE("NodeValidationState basic functionality", "[validation]")
 {
@@ -147,5 +142,3 @@ TEST_CASE("NodeProcessingStatus enum values", "[validation]")
     CHECK(static_cast<int>(NodeProcessingStatus::Failed) == 5);
     CHECK(static_cast<int>(NodeProcessingStatus::Partial) == 6);
 }
-
-#include "TestNodeValidation.moc"
