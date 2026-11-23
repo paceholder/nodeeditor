@@ -229,7 +229,7 @@ public:
     QJsonObject saveNode(NodeId const nodeId) const override
     {
         QJsonObject result;
-        result["id"] = static_cast<int>(nodeId);
+        result["id"] = static_cast<qint64>(nodeId);
         auto nodeIt = _nodeData.find(nodeId);
         if (nodeIt != _nodeData.end()) {
             const auto &data = nodeIt->second;
@@ -251,7 +251,7 @@ public:
 
     void loadNode(QJsonObject const &nodeJson) override
     {
-        NodeId id = static_cast<NodeId>(nodeJson["id"].toInt());
+        NodeId id = static_cast<NodeId>(nodeJson["id"].toDouble());
 
         _nodeIds.insert(id);
 

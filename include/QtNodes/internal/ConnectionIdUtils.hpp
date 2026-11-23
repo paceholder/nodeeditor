@@ -5,6 +5,7 @@
 #include <QJsonObject>
 
 #include <iostream>
+#include <limits>
 #include <string>
 
 namespace QtNodes {
@@ -138,20 +139,46 @@ inline QJsonObject toJson(ConnectionId const &connId)
     return connJson;
 }
 
+// The invalid value is the same for all ids. jsonValueToUInt32() returns it on failure.
+static_assert(InvalidNodeId == InvalidGroupId && InvalidNodeId == InvalidPortIndex
+                  && InvalidNodeId == std::numeric_limits<quint32>::max(),
+              "InvalidNodeId, InvalidGroupId and InvalidPortIndex must be the same value");
+
+/**
+ * Reads an unsigned 32-bit id from JSON.
+ * Returns the maximum value (InvalidNodeId, InvalidGroupId, InvalidPortIndex) when the value is
+ * not a number in the unsigned 32-bit range.
+ * QJsonValue::toInt() returns the default value for numbers above the int range.
+ * This function accepts the whole unsigned range.
+ */
+inline quint32 jsonValueToUInt32(QJsonValue const &value)
+{
+    constexpr quint32 invalid = std::numeric_limits<quint32>::max();
+
+    if (!value.isDouble())
+        return invalid;
+
+    double const number = value.toDouble();
+    if (number < 0.0 || number > static_cast<double>(invalid))
+        return invalid;
+
+    return static_cast<quint32>(number);
+}
+
 inline ConnectionId fromJson(QJsonObject const &connJson)
 {
     // Support both "inNodeId" (correct) and "intNodeId" (legacy typo) for backward compatibility
     NodeId inNodeId = InvalidNodeId;
     if (connJson.contains("inNodeId")) {
-        inNodeId = static_cast<NodeId>(connJson["inNodeId"].toInt(InvalidNodeId));
+        inNodeId = jsonValueToUInt32(connJson["inNodeId"]);
     } else if (connJson.contains("intNodeId")) {
-        inNodeId = static_cast<NodeId>(connJson["intNodeId"].toInt(InvalidNodeId));
+        inNodeId = jsonValueToUInt32(connJson["intNodeId"]);
     }
 
-    ConnectionId connId{static_cast<NodeId>(connJson["outNodeId"].toInt(InvalidNodeId)),
-                        static_cast<PortIndex>(connJson["outPortIndex"].toInt(InvalidPortIndex)),
+    ConnectionId connId{jsonValueToUInt32(connJson["outNodeId"]),
+                        jsonValueToUInt32(connJson["outPortIndex"]),
                         inNodeId,
-                        static_cast<PortIndex>(connJson["inPortIndex"].toInt(InvalidPortIndex))};
+                        jsonValueToUInt32(connJson["inPortIndex"])};
 
     return connId;
 }
