@@ -54,6 +54,8 @@ signals.
 - Styling: JSON styles via `NodeStyle`, `ConnectionStyle`, `GraphicsViewStyle`, managed by the
   `StyleCollection` singleton.
 - Serialization: the `Serializable` interface, `save()`/`load()` with `QJsonObject`.
+  Read ids from JSON with `jsonValueToUInt32()`, never `toInt()`. `toInt()` returns 0 for
+  ids of 2^31 or more.
 
 Core types: `NodeId` and `PortIndex` are `unsigned int` (`InvalidNodeId` is the maximum
 value). `PortType` is `In`, `Out` or `None`. `ConnectionId` is
