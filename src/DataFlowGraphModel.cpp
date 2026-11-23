@@ -602,7 +602,7 @@ void DataFlowGraphModel::loadNode(QJsonObject const &nodeJson)
     // loading.
     // 2. When undoing the deletion command.  Conflict is not possible
     // because all the new ids were created past the removed nodes.
-    NodeId restoredNodeId = nodeJson["id"].toInt();
+    NodeId restoredNodeId = jsonValueToUInt32(nodeJson["id"]);
 
     _nextNodeId = std::max(_nextNodeId, restoredNodeId + 1);
 
