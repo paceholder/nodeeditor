@@ -99,10 +99,16 @@ model implements ``saveNode()`` and ``loadNode()``:
        restoreNodeInternalData(nodeId, json["internal-data"].toObject());
    }
 
+The library writes the ``"id"`` key itself after it calls ``saveNode()``.
+Your ``saveNode()`` does not need to save the node id for the undo commands.
+It still needs to save the data that ``loadNode()`` reads back.
+
 .. warning::
 
-   Without proper ``saveNode()``/``loadNode()``, deleted nodes cannot be
-   restored by undo.
+   The default ``saveNode()`` returns an empty object and the default
+   ``loadNode()`` does nothing. With the defaults, the delete command still
+   deletes the right node, but undo cannot restore it. The node stays deleted.
+   To restore a deleted node by undo, implement both functions.
 
 Custom Undo Commands
 --------------------

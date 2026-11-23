@@ -159,6 +159,14 @@ public:
     /**
      * Reimplement the function if you want to store/restore the node's
      * inner state during undo/redo node deletion operations.
+     *
+     * The library writes the "id" key itself after this call. You do not
+     * need to save the node id for the undo commands.
+     *
+     * To restore a deleted node by undo, saveNode() and loadNode() must
+     * save and restore the node state. The default implementation returns
+     * an empty object. Then undo of a delete cannot restore the node. The
+     * node stays deleted.
      */
     virtual QJsonObject saveNode(NodeId const) const { return {}; }
 
@@ -183,6 +191,9 @@ public:
      *
      * The function must do almost exacly the same thing as the normal addNode().
      * The main difference is in a model-specific `inner-data` processing.
+     *
+     * The default implementation does nothing. Then undo of a delete cannot
+     * restore the node. The node stays deleted.
      */
     virtual void loadNode(QJsonObject const &) {}
 
