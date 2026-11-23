@@ -26,6 +26,7 @@ add_executable(test_nodes
   src/TestPaintedNodeShadows.cpp
   src/TestNodeStyleRole.cpp
   src/TestCopyPaste.cpp
+  src/TestSerializedItemCommands.cpp
   src/TestZoomFeatures.cpp
   src/TestLoopDetection.cpp
   include/ApplicationSetup.hpp
