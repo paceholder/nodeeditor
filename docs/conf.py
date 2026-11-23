@@ -1,4 +1,4 @@
-import subprocess, os
+import subprocess, os, re
 
 def configureDoxyfile(input_dir, output_dir):
     with open('Doxyfile.in', 'r') as file :
@@ -34,8 +34,10 @@ project = 'QtNodes'
 copyright = '2022, Dmitry Pinaev'
 author = 'Dmitry Pinaev'
 
-# The full version, including alpha/beta/rc tags
-release = '3.0'
+# The version is declared once, in project() of the top CMakeLists.txt.
+with open(os.path.join(os.path.dirname(__file__), '..', 'CMakeLists.txt')) as f:
+    release = re.search(r'project\(\s*QtNodesLibrary\s+VERSION\s+([\d.]+)', f.read()).group(1)
+version = '.'.join(release.split('.')[:2])
 
 
 # -- General configuration ---------------------------------------------------
